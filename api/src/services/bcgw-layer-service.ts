@@ -352,7 +352,7 @@ export class BcgwLayerService {
    * @return {*}
    * @memberof BcgwLayerService
    */
-  async getRegionsForFeature(feature: Feature, connection: IDBConnection) {
+  async getRegionsForFeature(feature: Feature, connection: IDBConnection): Promise<RegionDetails[]> {
     // Array of all matching region details for the feature
     let response: RegionDetails[] = [];
 

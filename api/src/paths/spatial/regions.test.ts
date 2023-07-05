@@ -1,12 +1,10 @@
 import chai, { expect } from 'chai';
-import { Feature } from 'geojson';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ZodError } from 'zod';
 import * as db from '../../database/db';
 import { BcgwLayerService } from '../../services/bcgw-layer-service';
-//import { HTTPError } from '../../errors/http-error';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as regions from './regions';
 
@@ -14,6 +12,10 @@ chai.use(sinonChai);
 
 describe.only('getRegions', () => {
   const dbConnectionObj = getMockDBConnection();
+
+  afterEach(() => {
+    sinon.restore();
+  });
 
   it('throws a ZodError for invalid geoJSON features', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -23,23 +25,6 @@ describe.only('getRegions', () => {
         features: [{ __invalidGeoJsonFeature: true }]
       }
     } as any;
-
-    /*
-    const actualResult: any = {
-      id: null,
-      date: null
-    };
-
-    const sampleRes = {
-      status: () => {
-        return {
-          json: (result: any) => {
-            actualResult = result;
-          }
-        };
-      }
-    };
-    */
 
     try {
       const result = regions.getRegions();
@@ -51,21 +36,27 @@ describe.only('getRegions', () => {
     }
   });
 
-  it.only('sorts features into known and unknown arrays', async () => {
+  it.only('gets all regions from features', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(BcgwLayerService.prototype, 'findRegionName').callsFake((feature: Feature) => {
-      return (
-        (feature.id &&
-          {
-            testid1: null,
-            testid2: { regionName: 'region2', sourceLayer: 'source2' },
-            testid3: null,
-            testid4: { regionName: 'region4', sourceLayer: 'source4' }
-          }[feature.id]) ||
-        null
-      );
-    });
+    const getRegionsForFeatureStub = sinon.stub(BcgwLayerService.prototype, 'getRegionsForFeature');
+    
+    getRegionsForFeatureStub
+      .onCall(0)
+      .resolves([
+        { regionName: 'region1', sourceLayer: 'source1' }
+      ])
+      .onCall(1)
+      .resolves([
+        { regionName: 'region1', sourceLayer: 'source1' },
+        { regionName: 'region2', sourceLayer: 'source2' }
+      ])
+      .onCall(2)
+      .resolves([
+        { regionName: 'region2', sourceLayer: 'source2' },
+        { regionName: 'region3', sourceLayer: 'source3' },
+        { regionName: 'region4', sourceLayer: 'source4' }
+      ]);
 
     const sampleReq = {
       body: {
@@ -87,21 +78,13 @@ describe.only('getRegions', () => {
             geometry: { type: 'Point', coordinates: [0, 0] },
             properties: {},
             id: 'testid3'
-          },
-          {
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [0, 0] },
-            properties: {},
-            id: 'testid4'
           }
         ]
       }
     } as any;
 
-    /*
-    const actualResult: any = {
-      id: null,
-      date: null
+    let actualResult: any = {
+      regions: []
     };
 
     const sampleRes = {
@@ -113,10 +96,17 @@ describe.only('getRegions', () => {
         };
       }
     };
-    */
 
     const result = regions.getRegions();
 
-    await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+    expect(actualResult).to.eql({
+      regions: [
+        { regionName: 'region1', sourceLayer: 'source1' },
+        { regionName: 'region2', sourceLayer: 'source2' },
+        { regionName: 'region3', sourceLayer: 'source3' },
+        { regionName: 'region4', sourceLayer: 'source4' }
+      ]
+    })
   });
 });
