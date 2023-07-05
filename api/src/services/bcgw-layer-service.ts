@@ -307,10 +307,10 @@ export class BcgwLayerService {
    * it shouldn't). As a result we cannot reply fully on the layer query results alone.
    *
    * @param {RegionDetails[]} regionDetails
-   * @return {*}
+   * @return {*}  {RegionDetails[]}
    * @memberof BcgwLayerService
    */
-  getMappedRegionDetails(regionDetails: RegionDetails[]) {
+  getMappedRegionDetails(regionDetails: RegionDetails[]): RegionDetails[] {
     if (!regionDetails?.length) {
       // feature is missing any identifying attributes
       return [];
@@ -358,8 +358,7 @@ export class BcgwLayerService {
 
     const postgisService = new PostgisService(connection);
     // Convert the feature geometry to WKT format
-    const result = await postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005);
-    const geometryWKTString = result.geometry;
+    const geometryWKTString = await postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005);
 
     // Attempt to detect if the feature is a known BCGW feature
     const regionDetails = this.findRegionDetails(feature);

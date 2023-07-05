@@ -9,12 +9,14 @@ export class PostgisRepository extends BaseRepository {
   /**
    * Convert the provided GeoJSON geometry into Well-Known Text (WKT) in the provided Spatial Reference ID (SRID).
    *
+   * @see https://postgis.net/docs/ST_AsText.html
+   *
    * @param {Geometry} geometry
    * @param {Srid} srid
-   * @return {*}
+   * @return {*}  {Promise<string>}
    * @memberof PostgisRepository
    */
-  async getGeoJsonGeometryAsWkt(geometry: Geometry, srid: Srid) {
+  async getGeoJsonGeometryAsWkt(geometry: Geometry, srid: Srid): Promise<string> {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -32,6 +34,6 @@ export class PostgisRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0];
+    return response.rows[0].geometry;
   }
 }

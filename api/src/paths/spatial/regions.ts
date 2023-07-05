@@ -115,23 +115,16 @@ export function getRegions(): RequestHandler {
 
       let regionsDetails: RegionDetails[] = [];
 
-      try {
-        await connection.open();
+      const bcgwLayerService = new BcgwLayerService();
 
-        const bcgwLayerService = new BcgwLayerService();
+      await connection.open();
 
-        for (const feature of features) {
-          const result = await bcgwLayerService.getRegionsForFeature(feature, connection);
-          regionsDetails = regionsDetails.concat(result);
-        }
-
-        await connection.commit();
-      } catch (error) {
-        await connection.rollback();
-        throw error;
-      } finally {
-        connection.release();
+      for (const feature of features) {
+        const result = await bcgwLayerService.getRegionsForFeature(feature, connection);
+        regionsDetails = regionsDetails.concat(result);
       }
+
+      await connection.commit();
 
       // Convert array first into JSON, then into Set, then back to array in order to
       // remove duplicate region information.
@@ -145,7 +138,10 @@ export function getRegions(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getRegions', message: 'error', error });
+      await connection.rollback();
       throw error;
+    } finally {
+      connection.release();
     }
   };
 }

@@ -15,12 +15,14 @@ export class PostgisService extends DBService {
   /**
    * Convert the provided geometry into Well-Known Text (WKT) in the provided Spatial Reference ID (SRID).
    *
+   * @see https://postgis.net/docs/using_postgis_dbmanagement.html#OpenGISWKBWKT
+   *
    * @param {Geometry} geometry
    * @param {Srid} srid
-   * @return {*}
+   * @return {*}  {Promise<string>}
    * @memberof PostgisRepository
    */
-  async getGeoJsonGeometryAsWkt(geometry: Geometry, srid: Srid) {
+  async getGeoJsonGeometryAsWkt(geometry: Geometry, srid: Srid): Promise<string> {
     return this.postgisRepository.getGeoJsonGeometryAsWkt(geometry, srid);
   }
 }

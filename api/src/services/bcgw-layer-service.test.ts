@@ -438,9 +438,7 @@ describe('BcgwLayerService', () => {
       it('returns region details array', async () => {
         const dbConnectionObj = getMockDBConnection();
 
-        sinon
-          .stub(PostgisService.prototype, 'getGeoJsonGeometryAsWkt')
-          .resolves({ geometry: 'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))' });
+        sinon.stub(PostgisService.prototype, 'getGeoJsonGeometryAsWkt').resolves('POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))');
 
         // Mock WFS response
         sinon.stub(BcgwLayerService.prototype, 'getAllRegionDetailsForWktString').resolves([
@@ -485,9 +483,7 @@ describe('BcgwLayerService', () => {
       it('returns region details array', async () => {
         const dbConnectionObj = getMockDBConnection();
 
-        sinon
-          .stub(PostgisService.prototype, 'getGeoJsonGeometryAsWkt')
-          .resolves({ geometry: 'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))' });
+        sinon.stub(PostgisService.prototype, 'getGeoJsonGeometryAsWkt').resolves('POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))');
 
         // Mock WFS response
         sinon.stub(BcgwLayerService.prototype, 'getAllRegionDetailsForWktString').resolves([
