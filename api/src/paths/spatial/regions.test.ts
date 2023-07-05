@@ -10,7 +10,7 @@ import * as regions from './regions';
 
 chai.use(sinonChai);
 
-describe.only('getRegions', () => {
+describe('getRegions', () => {
   const dbConnectionObj = getMockDBConnection();
 
   afterEach(() => {
@@ -36,27 +36,26 @@ describe.only('getRegions', () => {
     }
   });
 
-  it.only('gets all regions from features', async () => {
+  it('gets all regions from features', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getRegionsForFeatureStub = sinon.stub(BcgwLayerService.prototype, 'getRegionsForFeature');
-    
-    getRegionsForFeatureStub
-      .onCall(0)
-      .resolves([
-        { regionName: 'region1', sourceLayer: 'source1' }
-      ])
-      .onCall(1)
-      .resolves([
-        { regionName: 'region1', sourceLayer: 'source1' },
-        { regionName: 'region2', sourceLayer: 'source2' }
-      ])
-      .onCall(2)
-      .resolves([
-        { regionName: 'region2', sourceLayer: 'source2' },
-        { regionName: 'region3', sourceLayer: 'source3' },
-        { regionName: 'region4', sourceLayer: 'source4' }
-      ]);
+
+    getRegionsForFeatureStub.onCall(0).resolves([
+      { regionName: 'region1', sourceLayer: 'source1' },
+      { regionName: 'region5', sourceLayer: 'source5' }
+    ]);
+
+    getRegionsForFeatureStub.onCall(1).resolves([
+      { regionName: 'region1', sourceLayer: 'source1' },
+      { regionName: 'region2', sourceLayer: 'source2' }
+    ]);
+
+    getRegionsForFeatureStub.onCall(2).resolves([
+      { regionName: 'region2', sourceLayer: 'source2' },
+      { regionName: 'region3', sourceLayer: 'source3' },
+      { regionName: 'region4', sourceLayer: 'source4' }
+    ]);
 
     const sampleReq = {
       body: {
@@ -100,13 +99,15 @@ describe.only('getRegions', () => {
     const result = regions.getRegions();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
     expect(actualResult).to.eql({
       regions: [
         { regionName: 'region1', sourceLayer: 'source1' },
+        { regionName: 'region5', sourceLayer: 'source5' },
         { regionName: 'region2', sourceLayer: 'source2' },
         { regionName: 'region3', sourceLayer: 'source3' },
         { regionName: 'region4', sourceLayer: 'source4' }
       ]
-    })
+    });
   });
 });

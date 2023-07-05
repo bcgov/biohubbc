@@ -133,8 +133,14 @@ export function getRegions(): RequestHandler {
         connection.release();
       }
 
-      // Convert array to set and back to remove duplicate region information
-      const response = { regions: Array.from(new Set(regionsDetails)) };
+      // Convert array first into JSON, then into Set, then back to array in order to
+      // remove duplicate region information.
+      const regionDetailsJson = regionsDetails.map((value) => JSON.stringify(value));
+      const response = {
+        regions: Array.from(new Set<string>(regionDetailsJson)).map(
+          (value: string) => JSON.parse(value) as RegionDetails
+        )
+      };
 
       return res.status(200).json(response);
     } catch (error) {
