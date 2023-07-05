@@ -1,5 +1,6 @@
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
@@ -16,21 +17,21 @@ const mockUseApi = {
     getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, []>(),
     updateSurvey: jest.fn()
   },
-  external: {
-    post: jest.fn()
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
 describe('SurveyStudyArea', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.external.post.mockResolvedValue({
-      features: []
-    });
-
     mockUseApi.survey.getSurveyForView.mockClear();
     mockUseApi.survey.updateSurvey.mockClear();
-    mockUseApi.external.post.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
