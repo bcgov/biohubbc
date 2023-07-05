@@ -3,54 +3,84 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
+import { HTTPError } from '../../errors/http-error';
 import { BcgwLayerService } from '../../services/bcgw-layer-service';
-import { getMockDBConnection } from '../../__mocks__/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as regions from './regions';
 
 chai.use(sinonChai);
 
 describe('getRegions', () => {
-  const dbConnectionObj = getMockDBConnection();
-
   afterEach(() => {
     sinon.restore();
   });
 
+  it('catches error, and re-throws error', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(BcgwLayerService.prototype, 'getRegionsForFeature').rejects(new Error('a test error'));
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.body = {
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid1'
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid2'
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid3'
+        }
+      ]
+    };
+
+    const requestHandler = regions.getRegions();
+
+    try {
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('a test error');
+    }
+  });
+
   it('successfully returns an empty array', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(BcgwLayerService.prototype, 'getRegionsForFeature').resolves([]);
 
-    const sampleReq = {
-      body: {
-        features: []
-      }
-    } as any;
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    let actualResult: any = {
-      regions: []
+    mockReq.body = {
+      features: []
     };
 
-    const sampleRes = {
-      status: () => {
-        return {
-          json: (result: any) => {
-            actualResult = result;
-          }
-        };
-      }
-    };
+    const requestHandler = regions.getRegions();
 
-    const result = regions.getRegions();
+    await requestHandler(mockReq, mockRes, mockNext);
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.eql({
-      regions: []
-    });
+    expect(mockRes.statusValue).to.eql(200);
+    expect(mockRes.jsonValue).to.eql({ regions: [] });
   });
 
   it('gets all regions from features', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getRegionsForFeatureStub = sinon.stub(BcgwLayerService.prototype, 'getRegionsForFeature');
@@ -71,50 +101,36 @@ describe('getRegions', () => {
       { regionName: 'region4', sourceLayer: 'source4' }
     ]);
 
-    const sampleReq = {
-      body: {
-        features: [
-          {
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [0, 0] },
-            properties: {},
-            id: 'testid1'
-          },
-          {
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [0, 0] },
-            properties: {},
-            id: 'testid2'
-          },
-          {
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [0, 0] },
-            properties: {},
-            id: 'testid3'
-          }
-        ]
-      }
-    } as any;
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    let actualResult: any = {
-      regions: []
-    };
-
-    const sampleRes = {
-      status: () => {
-        return {
-          json: (result: any) => {
-            actualResult = result;
-          }
-        };
-      }
+    mockReq.body = {
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid1'
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid2'
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {},
+          id: 'testid3'
+        }
+      ]
     };
 
     const result = regions.getRegions();
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+    await result(mockReq, mockRes, mockNext);
 
-    expect(actualResult).to.eql({
+    expect(mockRes.jsonValue).to.eql({
       regions: [
         { regionName: 'region1', sourceLayer: 'source1' },
         { regionName: 'region5', sourceLayer: 'source5' },

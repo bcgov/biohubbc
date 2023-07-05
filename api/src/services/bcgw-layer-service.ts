@@ -234,7 +234,7 @@ export class BcgwLayerService {
    * @memberof BcgwLayerService
    */
   findRegionDetails(feature: Feature): RegionDetails | null {
-    if (!feature.id ?? !feature.properties) {
+    if (!feature.id || !feature.properties) {
       // feature is missing any identifying attributes
       return null;
     }
