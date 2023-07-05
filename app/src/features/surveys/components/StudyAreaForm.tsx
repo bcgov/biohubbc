@@ -1,4 +1,4 @@
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import MapBoundary from 'components/boundary/MapBoundary';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';

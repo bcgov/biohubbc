@@ -1,5 +1,5 @@
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { render } from 'test-helpers/test-utils';
 import HorizontalSplitFormComponent from './HorizontalSplitFormComponent';
 

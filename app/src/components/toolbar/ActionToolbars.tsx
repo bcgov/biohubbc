@@ -1,13 +1,13 @@
-import Box from '@material-ui/core/Box';
-import Button, { ButtonProps } from '@material-ui/core/Button';
-import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button, { ButtonProps } from '@mui/material/Button';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Toolbar, { ToolbarProps } from '@mui/material/Toolbar';
+import Typography, { TypographyProps } from '@mui/material/Typography';
 import clsx from 'clsx';
 import React, { ReactNode, useState } from 'react';
 
@@ -155,7 +155,6 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
         open={open}
         onClose={handleClose}
         anchorEl={anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right'
@@ -229,7 +228,6 @@ export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props
         open={open}
         onClose={handleClose}
         anchorEl={anchorEl}
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right'

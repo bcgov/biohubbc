@@ -49,14 +49,16 @@ const FundingSourceAutocomplete: React.FC<IFundingSourceAutocompleteProps<string
       options={props.options}
       required={props.required}
       filterLimit={props.filterLimit}
-      optionFilter="label" // this assumes funding source agencies AND first nations groups have unique names to filter on
+      // @TODO remove?
+      // optionFilter="label" // this assumes funding source agencies AND first nations groups have unique names to filter on
       onChange={(event, option: any) => {
         if (option?.type === FundingSourceType.FIRST_NATIONS) {
           setName('first_nations_name');
         } else {
           setName('agency_name');
         }
-        props.onChange(event, option);
+        // @TODO
+        props.onChange(event as unknown as ChangeEvent<Record<string, unknown>>, option);
       }}
     />
   );

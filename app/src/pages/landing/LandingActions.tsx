@@ -1,8 +1,10 @@
-import { makeStyles, Theme, Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { mdiInformationOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';

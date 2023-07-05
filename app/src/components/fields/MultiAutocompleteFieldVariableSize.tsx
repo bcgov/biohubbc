@@ -1,11 +1,11 @@
-import Checkbox from '@material-ui/core/Checkbox';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import TextField from '@material-ui/core/TextField';
-import CheckBox from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
-import { FilterOptionsState } from '@material-ui/lab';
-import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@material-ui/lab/Autocomplete';
+import Checkbox from '@mui/material/Checkbox';
+import ListSubheader from '@mui/material/ListSubheader';
+import { makeStyles } from '@mui/styles';
+import TextField from '@mui/material/TextField';
+import CheckBox from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
+import { FilterOptionsState } from '@mui/material';
+import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@mui/material/Autocomplete';
 import { useFormikContext } from 'formik';
 import { DebouncedFunc } from 'lodash-es';
 import get from 'lodash-es/get';
@@ -256,7 +256,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       data-testid={props.id}
       options={options}
       getOptionLabel={(option) => option.label}
-      getOptionSelected={handleGetOptionSelected}
+      isOptionEqualToValue={handleGetOptionSelected}
       disableCloseOnSelect
       disableListWrap
       classes={classes}
@@ -264,7 +264,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       onInputChange={handleOnInputChange}
       onChange={handleOnChange}
       filterOptions={handleFiltering}
-      renderOption={(option, { selected }) => {
+      renderOption={(_renderProps, option, { selected }) => {
         return (
           <>
             <Checkbox

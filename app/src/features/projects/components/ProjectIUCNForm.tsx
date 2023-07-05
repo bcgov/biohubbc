@@ -1,16 +1,16 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 import { mdiArrowRight, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
-import { FieldArray, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
@@ -79,7 +79,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
     <form onSubmit={handleSubmit}>
       <FieldArray
         name="iucn.classificationDetails"
-        render={(arrayHelpers: any) => (
+        render={(arrayHelpers: FieldArrayRenderProps) => (
           <Box>
             {values.iucn.classificationDetails.map((classificationDetail, index) => {
               const classificationMeta = getFieldMeta(`classificationDetails.[${index}].classification`);

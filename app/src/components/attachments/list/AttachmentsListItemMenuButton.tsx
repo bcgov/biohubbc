@@ -1,8 +1,8 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
@@ -45,7 +45,6 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
           <Menu
-            getContentAnchorEl={null}
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'right'

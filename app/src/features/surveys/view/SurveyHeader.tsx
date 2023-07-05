@@ -1,14 +1,14 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
 import {
   mdiArrowLeft,
   mdiCalendarRangeOutline,
@@ -232,7 +232,6 @@ const SurveyHeader = () => {
                   }}
                   keepMounted
                   anchorEl={menuAnchorEl}
-                  getContentAnchorEl={null}
                   open={Boolean(menuAnchorEl)}
                   onClose={() => setMenuAnchorEl(null)}>
                   <MenuItem onClick={() => history.push('edit')}>

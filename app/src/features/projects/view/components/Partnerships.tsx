@@ -1,7 +1,7 @@
-import Box from '@material-ui/core/Box';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';

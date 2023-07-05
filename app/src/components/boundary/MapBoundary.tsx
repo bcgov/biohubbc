@@ -1,15 +1,15 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Alert from '@material-ui/lab/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import { makeStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 import { mdiRefresh, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
@@ -30,27 +30,26 @@ import {
   handleShapefileUpload
 } from 'utils/mapBoundaryUploadHelpers';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    zoomToBoundaryExtentBtn: {
-      padding: '3px',
-      borderRadius: '4px',
-      background: '#ffffff',
-      color: '#000000',
-      border: '2px solid rgba(0,0,0,0.2)',
-      backgroundClip: 'padding-box',
-      '&:hover': {
-        backgroundColor: '#eeeeee'
-      }
-    },
-    mapLayerControl: {
-      width: '300px',
-      '& .MuiInputBase-root': {
-        height: '44px'
-      }
+const useStyles = makeStyles(() => ({
+
+  zoomToBoundaryExtentBtn: {
+    padding: '3px',
+    borderRadius: '4px',
+    background: '#ffffff',
+    color: '#000000',
+    border: '2px solid rgba(0,0,0,0.2)',
+    backgroundClip: 'padding-box',
+    '&:hover': {
+      backgroundColor: '#eeeeee'
     }
-  })
-);
+  },
+  mapLayerControl: {
+    width: '300px',
+    '& .MuiInputBase-root': {
+      height: '44px'
+    }
+  }
+}));
 
 export interface IMapBoundaryProps {
   name: string;

@@ -1,6 +1,8 @@
-import { Box, Divider, Typography } from '@material-ui/core';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { Formik, FormikProps } from 'formik';

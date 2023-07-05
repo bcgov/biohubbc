@@ -1,7 +1,7 @@
-import Container from '@material-ui/core/Container';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar from '@material-ui/core/Toolbar';
+import Container from '@mui/material/Container';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Toolbar from '@mui/material/Toolbar';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({

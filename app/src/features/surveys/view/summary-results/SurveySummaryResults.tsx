@@ -1,6 +1,6 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';

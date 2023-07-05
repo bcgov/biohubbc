@@ -1,9 +1,8 @@
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { IAutocompleteFieldOptionWithType } from 'features/projects/components/FundingSourceAutocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import React, { ChangeEvent } from 'react';
+import { SyntheticEvent } from 'react';
 
 export interface IAutocompleteFieldOption<T extends string | number> {
   value: T;
@@ -14,25 +13,23 @@ export interface IAutocompleteField<T extends string | number> {
   id: string;
   label: string;
   name: string;
-  options: IAutocompleteFieldOption<T>[] | IAutocompleteFieldOptionWithType<T>[];
+  options: IAutocompleteFieldOption<T>[];
   required?: boolean;
   filterLimit?: number;
-  optionFilter?: 'value' | 'label'; // added so options can filter based on different datasets
-  onChange?: (
-    event: ChangeEvent<Record<string, unknown>>,
-    option: IAutocompleteFieldOption<T> | IAutocompleteFieldOptionWithType<T> | null
-  ) => void;
+  onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
 }
 
 // To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
 
-const AutocompleteField: React.FC<IAutocompleteField<string | number>> = <T extends string | number>(
+const AutocompleteField: React.FC<React.PropsWithChildren<IAutocompleteField<string | number>>> = <
+  T extends string | number
+>(
   props: IAutocompleteField<T>
 ) => {
   const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
 
   const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
-    const result = props.options.find((option) => existingValue === option[props.optionFilter ?? 'value']);
+    const result = props.options.find((option) => existingValue === option.value);
 
     if (!result) {
       return null as unknown as IAutocompleteFieldOption<T>;
@@ -63,7 +60,7 @@ const AutocompleteField: React.FC<IAutocompleteField<string | number>> = <T exte
       value={getExistingValue(get(values, props.name))}
       options={props.options}
       getOptionLabel={(option) => option.label}
-      getOptionSelected={handleGetOptionSelected}
+      isOptionEqualToValue={handleGetOptionSelected}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       onChange={(event, option) => {
         if (props.onChange) {

@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Collapse from '@material-ui/core/Collapse';
-import Link from '@material-ui/core/Link';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Collapse from '@mui/material/Collapse';
+import Link from '@mui/material/Link';
+import { makeStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
 import { SPATIAL_COMPONENT_TYPE } from 'constants/spatial';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';

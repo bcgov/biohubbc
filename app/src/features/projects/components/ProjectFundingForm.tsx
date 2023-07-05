@@ -1,22 +1,22 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import { grey } from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { AddFundingI18N } from 'constants/i18n';
-import { FieldArray, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
@@ -120,7 +120,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
         <Box>
           <FieldArray
             name="funding.fundingSources"
-            render={(arrayHelpers) => (
+            render={(arrayHelpers: FieldArrayRenderProps) => (
               <Box>
                 <EditDialog
                   dialogTitle={AddFundingI18N.addTitle}

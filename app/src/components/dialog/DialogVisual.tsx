@@ -1,6 +1,6 @@
-import Avatar from '@material-ui/core/Avatar';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import Avatar from '@mui/material/Avatar';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { mdiAlert, mdiCheck, mdiExclamation, mdiFileCheckOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';

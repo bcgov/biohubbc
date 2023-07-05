@@ -1,7 +1,7 @@
-import { Button } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
 import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';

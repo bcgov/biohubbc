@@ -1,10 +1,10 @@
-import { Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import Toolbar from '@mui/material/Toolbar';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React from 'react';

@@ -1,11 +1,11 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { grey } from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import assert from 'assert';
@@ -33,31 +33,30 @@ import { LatLngBoundsExpression } from 'leaflet';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    zoomToBoundaryExtentBtn: {
-      padding: '3px',
-      borderRadius: '4px',
-      background: '#ffffff',
-      color: '#000000',
-      border: '2px solid rgba(0,0,0,0.2)',
-      backgroundClip: 'padding-box',
-      '&:hover': {
-        backgroundColor: '#eeeeee'
-      }
-    },
-    metaSectionHeader: {
-      color: grey[600],
-      fontWeight: 700,
-      textTransform: 'uppercase',
-      letterSpacing: '0.02rem',
-      '& + hr': {
-        marginTop: theme.spacing(0.75),
-        marginBottom: theme.spacing(0.75)
-      }
+const useStyles = makeStyles((theme: Theme) => ({
+
+  zoomToBoundaryExtentBtn: {
+    padding: '3px',
+    borderRadius: '4px',
+    background: '#ffffff',
+    color: '#000000',
+    border: '2px solid rgba(0,0,0,0.2)',
+    backgroundClip: 'padding-box',
+    '&:hover': {
+      backgroundColor: '#eeeeee'
     }
-  })
-);
+  },
+  metaSectionHeader: {
+    color: grey[600],
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.02rem',
+    '& + hr': {
+      marginTop: theme.spacing(0.75),
+      marginBottom: theme.spacing(0.75)
+    }
+  }
+}));
 
 /**
  * Location boundary content for a project.

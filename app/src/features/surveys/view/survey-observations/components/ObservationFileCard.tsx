@@ -1,11 +1,12 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import { Theme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import {
   mdiDotsVertical,
   mdiFileAlertOutline,
