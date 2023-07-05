@@ -150,7 +150,7 @@ export class BcgwLayerService {
     );
 
     // Return array of region name values
-    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:REGION_NAME']) || [];
+    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:REGION_NAME']) ?? [];
   }
 
   /**
@@ -174,7 +174,7 @@ export class BcgwLayerService {
     );
 
     // Return array of region name values
-    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:REGION_NAME']) || [];
+    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:REGION_NAME']) ?? [];
   }
 
   /**
@@ -198,7 +198,7 @@ export class BcgwLayerService {
     );
 
     // Return array of region name values
-    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:PROTECTED_LANDS_NAME']) || [];
+    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:PROTECTED_LANDS_NAME']) ?? [];
   }
 
   /**
@@ -222,7 +222,7 @@ export class BcgwLayerService {
     );
 
     // Return array of region name values
-    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:WILDLIFE_MGMT_UNIT_ID']) || [];
+    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:WILDLIFE_MGMT_UNIT_ID']) ?? [];
   }
 
   /**
@@ -234,7 +234,7 @@ export class BcgwLayerService {
    * @memberof BcgwLayerService
    */
   findRegionDetails(feature: Feature): RegionDetails | null {
-    if (!feature.id || !feature.properties) {
+    if (!feature.id ?? !feature.properties) {
       // feature is missing any identifying attributes
       return null;
     }

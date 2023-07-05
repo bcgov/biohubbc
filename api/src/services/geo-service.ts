@@ -234,7 +234,7 @@ export class GeoService {
   baseUrl: string;
 
   constructor(options?: { baseUrl?: string }) {
-    this.baseUrl = options?.baseUrl || process.env.BcgwBaseUrl || 'https://openmaps.gov.bc.ca/geo/pub/ows';
+    this.baseUrl = options?.baseUrl ?? process.env.BcgwBaseUrl ?? 'https://openmaps.gov.bc.ca/geo/pub/ows';
   }
 
   /**
@@ -300,7 +300,7 @@ export class WebFeatureService extends GeoService {
    * @memberof WebFeatureService
    */
   async getCapabilities(options?: OwsBaseOptions): Promise<unknown> {
-    const version = options?.version || '2.0.0';
+    const version = options?.version ?? '2.0.0';
 
     const url = this._buildURL({
       ...options,
@@ -320,7 +320,7 @@ export class WebFeatureService extends GeoService {
    * @memberof WebFeatureService
    */
   async getFeature(options: WfsGetBaseOptions | WfsGetFilterBaseOptions): Promise<unknown> {
-    const version = options?.version || '2.0.0';
+    const version = options?.version ?? '2.0.0';
 
     if ('cql_filter' in options) {
       const { cql_filter, ...rest } = options;
@@ -351,7 +351,7 @@ export class WebFeatureService extends GeoService {
    * @memberof WebFeatureService
    */
   async getPropertyValue(options: WfsGetPropertyValueOptions | WfsGetPropertyValueFilterOptions): Promise<unknown> {
-    const version = options?.version || '2.0.0';
+    const version = options?.version ?? '2.0.0';
 
     if ('cql_filter' in options) {
       const { cql_filter, ...rest } = options;
@@ -396,7 +396,7 @@ export class WebMapService extends GeoService {
    * @memberof WebMapService
    */
   async getCapabilities(options?: OwsBaseOptions): Promise<unknown> {
-    const version = options?.version || '1.3.0';
+    const version = options?.version ?? '1.3.0';
 
     const url = this._buildURL({
       ...options,
@@ -416,7 +416,7 @@ export class WebMapService extends GeoService {
    * @memberof WebMapService
    */
   async getMap(options: WmsGetMapOptions): Promise<unknown> {
-    const version = options?.version || '1.3.0';
+    const version = options?.version ?? '1.3.0';
 
     const url = this._buildURL({ ...options, request: 'GetMap', service: Wms, version: version });
 

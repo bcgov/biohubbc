@@ -2,7 +2,6 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ZodError } from 'zod';
 import * as db from '../../database/db';
 import { BcgwLayerService } from '../../services/bcgw-layer-service';
 import { getMockDBConnection } from '../../__mocks__/db';
@@ -17,23 +16,38 @@ describe('getRegions', () => {
     sinon.restore();
   });
 
-  it('throws a ZodError for invalid geoJSON features', async () => {
+  it('successfully returns an empty array', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(BcgwLayerService.prototype, 'getRegionsForFeature').resolves([]);
 
     const sampleReq = {
       body: {
-        features: [{ __invalidGeoJsonFeature: true }]
+        features: []
       }
     } as any;
 
-    try {
-      const result = regions.getRegions();
+    let actualResult: any = {
+      regions: []
+    };
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError: any) {
-      expect(actualError).to.be.instanceOf(ZodError);
-    }
+    const sampleRes = {
+      status: () => {
+        return {
+          json: (result: any) => {
+            actualResult = result;
+          }
+        };
+      }
+    };
+
+    const result = regions.getRegions();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql({
+      regions: []
+    });
   });
 
   it('gets all regions from features', async () => {
