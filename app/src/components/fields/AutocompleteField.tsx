@@ -29,8 +29,7 @@ const AutocompleteField: React.FC<React.PropsWithChildren<IAutocompleteField<str
   const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
 
   const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
-    const result = props.options.find((option) => existingValue === option.value);
-
+    const result = props.options.find((option) => existingValue === option.label);
     if (!result) {
       return null as unknown as IAutocompleteFieldOption<T>;
     }

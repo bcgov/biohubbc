@@ -2,6 +2,7 @@ import CheckBox from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
 import { Chip } from '@mui/material';
 import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
@@ -94,7 +95,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
 
   const defaultChipDisplay = (option: any, renderProps: any, checkedStatus: any) => {
     return (
-      <li key={option.value} {...renderProps}>
+      <Box component="li" {...renderProps}>
         <Checkbox
           icon={<CheckBoxOutlineBlank fontSize="small" />}
           checkedIcon={<CheckBox fontSize="small" color="primary" />}
@@ -105,13 +106,12 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
           color="default"
         />
         {option.label}
-      </li>
+      </Box>
     );
   };
 
   const existingValues: IMultiAutocompleteFieldOption[] =
     value && value.length > 0 ? options.filter((option) => value.includes(option)) : [];
-
   return (
     <Autocomplete
       multiple
