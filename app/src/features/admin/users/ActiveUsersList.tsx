@@ -1,9 +1,10 @@
+import { mdiChevronDown, mdiDotsVertical, mdiInformationOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
-import { makeStyles } from '@mui/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -13,8 +14,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { mdiChevronDown, mdiDotsVertical, mdiInformationOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
+import { makeStyles } from '@mui/styles';
 import EditDialog from 'components/dialog/EditDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { AddSystemUserI18N, DeleteSystemUserI18N, UpdateSystemUserI18N } from 'constants/i18n';
@@ -349,13 +349,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           </TableContainer>
           {activeUsers?.length > 0 && (
             <TablePagination
+              component={'div'}
               rowsPerPageOptions={[5, 10, 15, 20]}
-              component="div"
               count={activeUsers.length}
               rowsPerPage={rowsPerPage}
               page={page}
-              onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-              onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
+              onPageChange={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
+              onRowsPerPageChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 handleChangeRowsPerPage(event, setPage, setRowsPerPage)
               }
             />
