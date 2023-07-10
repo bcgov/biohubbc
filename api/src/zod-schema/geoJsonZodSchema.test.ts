@@ -14,7 +14,7 @@ import {
   GeoJSONZodSchema
 } from './geoJsonZodSchema';
 
-describe('geoJsonZodSchema', () => {
+describe.only('geoJsonZodSchema', () => {
   describe('GeoJSONPointZodSchema', () => {
     it('validates and returns correct geo json', () => {
       const geoJson = {
@@ -76,7 +76,7 @@ describe('geoJsonZodSchema', () => {
       expect(() => GeoJSONPolygonZodSchema.parse(geoJson)).not.to.throw();
     });
 
-    it('throws an exception on incorrect geo json', () => {
+    it.only('throws an exception on incorrect geo json', () => {
       const geoJson = {
         coordinates: [
           [
@@ -86,6 +86,11 @@ describe('geoJsonZodSchema', () => {
         ],
         type: 'Polygon'
       };
+      try {
+        GeoJSONPolygonZodSchema.parse(geoJson);
+      } catch (error) {
+        console.log(error);
+      }
       expect(() => GeoJSONPolygonZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
