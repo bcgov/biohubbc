@@ -45,26 +45,19 @@ export const Srid3857 = 3857;
  */
 export type Crs = typeof Epsg4326 | typeof Epsg3005 | typeof Epsg3857;
 
-/**
- * Common (Spatial Reference System) SRS types.
- *
- * Synonymous with {@link Crs}.
- */
-export type Srs = Crs;
-
 export type Srid = typeof Srid4326 | typeof Srid3005 | typeof Srid3857;
 
 /**
  * Web Map Service (WMS) type.
  */
 export type Wms = 'WMS';
-export const Wms: Wms = 'WMS';
+export const WMS: Wms = 'WMS';
 
 /**
  * Web Feature Service (WFS) type.
  */
 export type Wfs = 'WFS';
-export const Wfs: Wfs = 'WFS';
+export const WFS: Wfs = 'WFS';
 
 /**
  * Base request parameters for both WMS and WFS services.
@@ -305,7 +298,7 @@ export class WebFeatureService extends GeoService {
     const url = this._buildURL({
       ...options,
       request: 'GetCapabilities',
-      service: Wfs,
+      service: WFS,
       version: version
     });
 
@@ -325,7 +318,7 @@ export class WebFeatureService extends GeoService {
     if ('cql_filter' in options) {
       const { cql_filter, ...rest } = options;
 
-      const url = this._buildURL({ ...rest, request: 'GetFeature', service: Wfs, version: version });
+      const url = this._buildURL({ ...rest, request: 'GetFeature', service: WFS, version: version });
 
       // cql_filter can get too big for a traditional GET request, and so must be sent in the body of a post request
       const body = { cql_filter: cql_filter };
@@ -336,7 +329,7 @@ export class WebFeatureService extends GeoService {
     const url = this._buildURL({
       ...options,
       request: 'GetFeature',
-      service: Wfs,
+      service: WFS,
       version: version
     });
 
@@ -359,7 +352,7 @@ export class WebFeatureService extends GeoService {
       const url = this._buildURL({
         ...rest,
         request: 'GetPropertyValue',
-        service: Wfs,
+        service: WFS,
         version: version
       });
 
@@ -372,7 +365,7 @@ export class WebFeatureService extends GeoService {
     const url = this._buildURL({
       ...options,
       request: 'GetPropertyValue',
-      service: Wfs,
+      service: WFS,
       version: version
     });
 
@@ -401,7 +394,7 @@ export class WebMapService extends GeoService {
     const url = this._buildURL({
       ...options,
       request: 'GetCapabilities',
-      service: Wms,
+      service: WMS,
       version: version
     });
 
@@ -418,7 +411,7 @@ export class WebMapService extends GeoService {
   async getMap(options: WmsGetMapOptions): Promise<unknown> {
     const version = options?.version ?? '1.3.0';
 
-    const url = this._buildURL({ ...options, request: 'GetMap', service: Wms, version: version });
+    const url = this._buildURL({ ...options, request: 'GetMap', service: WMS, version: version });
 
     return this._externalGet(url);
   }

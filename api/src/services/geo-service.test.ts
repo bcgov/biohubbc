@@ -3,7 +3,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { BcgwEnvRegionsLayer, BcgwNrmRegionsLayer } from './bcgw-layer-service';
-import { Epsg3005, GeoService, WebFeatureService, WebMapService, Wfs, Wms } from './geo-service';
+import { Epsg3005, GeoService, WebFeatureService, WebMapService, WFS, WMS } from './geo-service';
 
 chai.use(sinonChai);
 
@@ -96,7 +96,7 @@ describe('WebFeatureService', () => {
 
       expect(_buildURLSpy).to.have.been.calledOnceWith({
         request: 'GetCapabilities',
-        service: Wfs,
+        service: WFS,
         version: '2.0.0'
       });
       expect(_externalGetStub).to.have.been.calledOnceWith(_buildURLSpy.returnValues[0]);
@@ -125,7 +125,7 @@ describe('WebFeatureService', () => {
           typeNames: BcgwEnvRegionsLayer,
           outputFormat: 'json',
           request: 'GetFeature',
-          service: Wfs,
+          service: WFS,
           version: '2.0.0'
         });
         expect(_externalGetStub).to.have.been.calledOnceWith(_buildURLSpy.returnValues[0]);
@@ -154,7 +154,7 @@ describe('WebFeatureService', () => {
           typeNames: BcgwEnvRegionsLayer,
           outputFormat: 'json',
           request: 'GetFeature',
-          service: Wfs,
+          service: WFS,
           version: '2.0.0'
         });
         expect(_externalPostStub).to.have.been.calledOnceWith(_buildURLSpy.returnValues[0], {
@@ -186,7 +186,7 @@ describe('WebFeatureService', () => {
           typeNames: BcgwEnvRegionsLayer,
           valueReference: 'REGION_NAME',
           request: 'GetPropertyValue',
-          service: Wfs,
+          service: WFS,
           version: '2.0.0'
         });
         expect(_externalGetStub).to.have.been.calledOnceWith(_buildURLSpy.returnValues[0]);
@@ -215,7 +215,7 @@ describe('WebFeatureService', () => {
           typeNames: BcgwEnvRegionsLayer,
           valueReference: 'REGION_NAME',
           request: 'GetPropertyValue',
-          service: Wfs,
+          service: WFS,
           version: '2.0.0'
         });
         expect(_externalPostStub).to.have.been.calledOnceWith(_buildURLSpy.returnValues[0], {
@@ -245,7 +245,7 @@ describe('WebMapService', () => {
 
       expect(_buildURLSpy).to.have.been.calledOnceWith({
         request: 'GetCapabilities',
-        service: Wms,
+        service: WMS,
         version: '1.3.0'
       });
       expect(_externalGetStub).to.have.been.calledOnceWith(_buildURLSpy.returnValues[0]);
@@ -277,7 +277,7 @@ describe('WebMapService', () => {
         width: 500,
         layers: BcgwNrmRegionsLayer,
         request: 'GetMap',
-        service: Wms,
+        service: WMS,
         version: '1.3.0'
       });
       expect(_externalGetStub).to.have.been.calledOnceWith(_buildURLSpy.returnValues[0]);
