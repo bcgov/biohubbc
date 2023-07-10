@@ -1,11 +1,10 @@
-import { createMuiTheme } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { ThemeProvider } from '@material-ui/core/styles';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import { ThemeProvider } from '@mui/material/styles';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
@@ -85,7 +84,7 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
             return <>{code?.label}</>;
           }}
           MenuProps={{
-            getContentAnchorEl: null,
+            anchorEl: null,
             className: 'menuTest',
             anchorOrigin: {
               vertical: 'bottom',
