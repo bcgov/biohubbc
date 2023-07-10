@@ -4,10 +4,10 @@ import InputLabel from '@mui/material/InputLabel';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import React from 'react';
+import React, { useState } from 'react';
 import appTheme from 'themes/appTheme';
 
 export interface ISelectWithSubtextFieldOption {
@@ -24,35 +24,42 @@ export interface ISelectWithSubtextField {
   required?: boolean;
 }
 
-const selectWithSubtextTheme = createMuiTheme({
+const updatedSelect = createTheme({
   ...appTheme,
-  overrides: {
-    ...(appTheme?.overrides || {}),
+  components: {
     MuiMenu: {
-      paper: {
-        minWidth: '72ch !important',
-        maxWidth: '72ch !important',
-        maxHeight: 500
+      styleOverrides: {
+        paper: {
+          minWidth: '72ch !important',
+          maxWidth: '72ch !important',
+          maxHeight: 500
+        }
       }
     },
     MuiMenuItem: {
-      root: {
-        whiteSpace: 'break-spaces',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+      styleOverrides: {
+        root: {
+          whiteSpace: 'break-spaces',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+        }
       }
     },
     MuiListItemText: {
-      primary: {
-        fontSize: '14px',
-        fontWeight: 700
-      },
-      secondary: {
-        marginTop: appTheme.spacing(0.5)
+      styleOverrides: {
+        primary: {
+          fontSize: '14px',
+          fontWeight: 700
+        },
+        secondary: {
+          marginTop: appTheme.spacing(0.5)
+        }
       }
     },
     MuiInputLabel: {
-      root: {
-        paddingRight: '20px'
+      styleOverrides: {
+        root: {
+          paddingRight: '20px'
+        }
       }
     }
   }
@@ -60,9 +67,10 @@ const selectWithSubtextTheme = createMuiTheme({
 
 const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
   const { values, touched, errors, handleChange } = useFormikContext<ISelectWithSubtextFieldOption>();
+  const [menuAnchorEl, setMenuAnchorEl] = useState<any | null>(null);
 
   return (
-    <ThemeProvider theme={selectWithSubtextTheme}>
+    <ThemeProvider theme={updatedSelect}>
       <FormControl
         fullWidth
         variant="outlined"
@@ -76,6 +84,9 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
           label={props.label}
           value={get(values, props.name)}
           onChange={handleChange}
+          onOpen={(e) => {
+            setMenuAnchorEl(e.currentTarget);
+          }}
           displayEmpty
           inputProps={{ id: props.id, 'aria-label': props.label }}
           renderValue={(value) => {
@@ -84,7 +95,7 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
             return <>{code?.label}</>;
           }}
           MenuProps={{
-            anchorEl: null,
+            anchorEl: menuAnchorEl,
             className: 'menuTest',
             anchorOrigin: {
               vertical: 'bottom',
