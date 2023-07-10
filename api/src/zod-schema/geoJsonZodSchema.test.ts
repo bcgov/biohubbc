@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import { ZodError } from 'zod';
 import {
   GeoJSONFeatureCollectionZodSchema,
   GeoJSONFeatureZodSchema,
@@ -85,8 +86,7 @@ describe('geoJsonZodSchema', () => {
         ],
         type: 'Polygon'
       };
-
-      expect(() => GeoJSONPolygonZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONPolygonZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 
