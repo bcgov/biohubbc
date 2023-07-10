@@ -14,7 +14,7 @@ import {
   GeoJSONZodSchema
 } from './geoJsonZodSchema';
 
-describe.only('geoJsonZodSchema', () => {
+describe('geoJsonZodSchema', () => {
   describe('GeoJSONPointZodSchema', () => {
     it('validates and returns correct geo json', () => {
       const geoJson = {
@@ -31,7 +31,7 @@ describe.only('geoJsonZodSchema', () => {
         type: 'Point'
       };
 
-      expect(() => GeoJSONPointZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONPointZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 
@@ -54,7 +54,7 @@ describe.only('geoJsonZodSchema', () => {
         type: 'LineString'
       };
 
-      expect(() => GeoJSONLineStringZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONLineStringZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 
@@ -76,7 +76,7 @@ describe.only('geoJsonZodSchema', () => {
       expect(() => GeoJSONPolygonZodSchema.parse(geoJson)).not.to.throw();
     });
 
-    it.only('throws an exception on incorrect geo json', () => {
+    it('throws an exception on incorrect geo json', () => {
       const geoJson = {
         coordinates: [
           [
@@ -86,11 +86,6 @@ describe.only('geoJsonZodSchema', () => {
         ],
         type: 'Polygon'
       };
-      try {
-        GeoJSONPolygonZodSchema.parse(geoJson);
-      } catch (error) {
-        console.log(error);
-      }
       expect(() => GeoJSONPolygonZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
@@ -114,7 +109,7 @@ describe.only('geoJsonZodSchema', () => {
         type: 'MultiPoint'
       };
 
-      expect(() => GeoJSONMultiPointZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONMultiPointZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 
@@ -146,7 +141,7 @@ describe.only('geoJsonZodSchema', () => {
         type: 'MultiLineString'
       };
 
-      expect(() => GeoJSONMultiLineStringZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONMultiLineStringZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 
@@ -193,7 +188,7 @@ describe.only('geoJsonZodSchema', () => {
         type: 'MultiPolygon'
       };
 
-      expect(() => GeoJSONMultiPolygonZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONMultiPolygonZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 
@@ -285,7 +280,7 @@ describe.only('geoJsonZodSchema', () => {
         ]
       };
 
-      expect(() => GeoJSONGeometryCollectionZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONGeometryCollectionZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 
@@ -317,7 +312,7 @@ describe.only('geoJsonZodSchema', () => {
         }
       };
 
-      expect(() => GeoJSONFeatureZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONFeatureZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 
@@ -379,7 +374,7 @@ describe.only('geoJsonZodSchema', () => {
         }
       };
 
-      expect(() => GeoJSONFeatureCollectionZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONFeatureCollectionZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 
@@ -534,7 +529,7 @@ describe.only('geoJsonZodSchema', () => {
         }
       };
 
-      expect(() => GeoJSONZodSchema.parse(geoJson)).to.throw();
+      expect(() => GeoJSONZodSchema.parse(geoJson)).to.throw(ZodError);
     });
   });
 });

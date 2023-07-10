@@ -2,6 +2,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { Feature } from 'geojson';
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
+import { getLogger } from '../utils/logger';
 import { Epsg3005, Srid3005, WebFeatureService, WebMapService } from './geo-service';
 import { PostgisService } from './postgis-service';
 
@@ -81,6 +82,7 @@ const envToNrmRegionsMapping = {
 
 export type RegionDetails = { regionName: string; sourceLayer: string };
 
+const defaultLog = getLogger('services/bcgw-layer-service');
 /**
  * Service for fetching information from known BCGW layers.
  *
@@ -143,14 +145,18 @@ export class BcgwLayerService {
       valueReference: 'REGION_NAME'
     });
 
-    // TODO handle when zod fails, as it currently crashes the frontend due to the 500 error
-    // Convert XML response to JSON and verify with Zod
-    const responseObj = this._getGetRegionPropertyValueZodSchema('REGION_NAME').parse(
-      this.xmlParser.parse(responseXml as string)
-    );
+    try {
+      // Convert XML response to JSON and verify with Zod
+      const responseObj = this._getGetRegionPropertyValueZodSchema('REGION_NAME').parse(
+        this.xmlParser.parse(responseXml as string)
+      );
 
-    // Return array of region name values
-    return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:REGION_NAME']) ?? [];
+      // Return array of region name values
+      return responseObj['wfs:ValueCollection']['wfs:member']?.map((item) => item['pub:REGION_NAME']) ?? [];
+    } catch (error) {
+      defaultLog.error({ label: 'getEnvRegionNames', message: 'error', error });
+      return [];
+    }
   }
 
   /**
