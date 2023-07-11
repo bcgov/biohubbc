@@ -8,6 +8,23 @@ import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helper
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import ProjectsListPage from './ProjectsListPage';
 
+/*
+  This test suite had issues after the mui 5 upgrade.
+  After some investigation a bug with the peer dependency `nwsapi` was found. 
+  The issue is tracked here: https://github.com/dperini/nwsapi/issues/90
+
+  The error itself was `Uncaught [SyntaxError: Illegal break statement]` that was being thrown when these tests were being run.
+
+  The current fix was to override the version of the `nwsapi` dependency:
+  "devDependencies": {
+    "nwsapi": "2.2.5"
+  },
+  "overrides": {
+    "nwsapi": "$nwsapi"
+  }
+
+*/
+
 const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
