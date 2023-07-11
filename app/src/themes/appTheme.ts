@@ -1,8 +1,8 @@
 import { grey } from '@mui/material/colors';
-import { createMuiTheme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 import 'styles.scss';
 
-const appTheme = createMuiTheme({
+const appTheme = createTheme({
   breakpoints: {
     values: {
       xs: 0,
@@ -226,83 +226,85 @@ const appTheme = createMuiTheme({
     },
     MuiLink: {
       styleOverrides: {
-      root: {
-        textAlign: 'left',
-        color: '#1a5a96',
-        borderRadius: '1px',
-        cursor: 'pointer',
-        '&:focus': {
-          outline: '2px solid #3B99FC',
-          outlineOffset: '2px'
+        root: {
+          textAlign: 'left',
+          color: '#1a5a96',
+          borderRadius: '1px',
+          cursor: 'pointer',
+          '&:focus': {
+            outline: '2px solid #3B99FC',
+            outlineOffset: '2px'
+          }
         }
       }
-    }
     },
     MuiLinearProgress: {
       styleOverrides: {
-      root: {
-        height: '6px',
-        borderRadius: '3px'
+        root: {
+          height: '6px',
+          borderRadius: '3px'
+        }
       }
-    }
     },
     MuiListItem: {
       styleOverrides: {
-      root: {
-        '&:last-of-type': {
-          borderBottom: 'none'
+        root: {
+          '&:last-of-type': {
+            borderBottom: 'none'
+          }
         }
       }
-    }
     },
     MuiListItemIcon: {
       styleOverrides: {
-      root: {
-        minWidth: '42px'
+        root: {
+          minWidth: '42px'
+        }
       }
-    }
     },
     MuiPaper: {
       styleOverrides: {
-      rounded: {
-        borderRadius: '6px'
+        rounded: {
+          borderRadius: '6px'
+        }
       }
-    }
     },
     MuiTable: {
       styleOverrides: {
-      root: {
-        '& th': {
-          letterSpacing: '0.02rem',
-          textTransform: 'uppercase',
-          paddingTop: '12px',
-          paddingBottom: '12px'
-        },
-        '& tr:last-of-type td': {
-          borderBottom: 'none'
-        },
-        '& .MuiLink-root': {
-          fontFamily: 'inherit',
-          fontSize: 'inherit'
+        root: {
+          '& th': {
+            letterSpacing: '0.02rem',
+            textTransform: 'uppercase',
+            paddingTop: '12px',
+            paddingBottom: '12px'
+          },
+          '& tr:last-of-type td': {
+            borderBottom: 'none'
+          },
+          '& .MuiLink-root': {
+            fontFamily: 'inherit',
+            fontSize: 'inherit'
+          }
         }
       }
-    }
     },
     MuiTableCell: {
       styleOverrides: {
-      head: {
-        fontSize: '0.875rem',
-        fontWeight: 700,
-        color: grey[600]
-      }}
+        head: {
+          fontSize: '0.875rem',
+          fontWeight: 700,
+          color: grey[600]
+        }
+      }
     },
     MuiTab: {
       styleOverrides: {
-      root: {
-        textTransform: 'none',
-        minWidth: '100px !important',
-        fontWeight: 700
-      }}
+        root: {
+          textTransform: 'none',
+          minWidth: '100px !important',
+          fontWeight: 700
+        }
+      }
     }
   }
 });

@@ -1,11 +1,11 @@
+import { mdiArrowLeft } from '@mdi/js';
+import Icon from '@mdi/react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { mdiArrowLeft } from '@mdi/js';
-import Icon from '@mdi/react';
 import React from 'react';
 
 export interface IFullScreenViewMapProps {

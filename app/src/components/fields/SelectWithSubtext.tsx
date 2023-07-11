@@ -25,7 +25,6 @@ export interface ISelectWithSubtextField {
 }
 
 const updatedSelect = createTheme({
-  ...appTheme,
   components: {
     MuiMenu: {
       styleOverrides: {
