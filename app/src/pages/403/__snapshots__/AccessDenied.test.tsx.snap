@@ -3,10 +3,10 @@
 exports[`AccessDenied renders a spinner when user is authenticated and \`hasLoadedAllUserInfo\` is false 1`] = `
 <DocumentFragment>
   <div
-    class="MuiContainer-root MuiContainer-maxWidthLg"
+    class="MuiContainer-root MuiContainer-maxWidthLg css-s6i9wm-MuiContainer-root"
   >
     <div
-      class="MuiBox-root MuiBox-root-3"
+      class="MuiBox-root css-gxcw53"
     >
       <svg
         role="presentation"
@@ -22,24 +22,20 @@ exports[`AccessDenied renders a spinner when user is authenticated and \`hasLoad
         Access Denied
       </h1>
       <p
-        class="MuiTypography-root MuiTypography-body1"
+        class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
       >
         You do not have permission to access this page.
       </p>
       <div
-        class="MuiBox-root MuiBox-root-4"
+        class="MuiBox-root css-xuhmcu"
       >
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge MuiButton-disableElevation"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-disableElevation css-z0zc2g-MuiButtonBase-root-MuiButton-root"
           data-testid="request_access"
           tabindex="0"
           type="submit"
         >
-          <span
-            class="MuiButton-label"
-          >
-            Request Access
-          </span>
+          Request Access
         </button>
       </div>
     </div>

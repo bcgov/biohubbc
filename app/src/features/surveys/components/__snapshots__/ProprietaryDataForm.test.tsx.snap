@@ -4,146 +4,148 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <fieldset
-          class="MuiFormControl-root"
+          class="MuiFormControl-root css-1nrlq1o-MuiFormControl-root"
         >
           <p
-            class="MuiTypography-root makeStyles-alignCenter-1 MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-alignCenter-1 css-ewuypk-MuiTypography-root"
           >
             <span>
               Is the data captured in this survey proprietary?
             </span>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-2 MuiButton-textPrimary MuiButton-disableElevation"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation makeStyles-learnMoreBtn-2 css-9swv2b-MuiButtonBase-root-MuiButton-root"
               data-testid="prop-dialog-btn"
               tabindex="0"
               type="button"
             >
               <span
-                class="MuiButton-label"
+                class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
               >
-                <span
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  Learn more
-                </span>
+                Learn more
               </span>
             </button>
           </p>
           <div
-            class="MuiBox-root MuiBox-root-4"
+            class="MuiBox-root css-164r41r"
           >
             <div
               aria-label="Survey Data Proprietary"
-              class="MuiFormGroup-root"
+              class="MuiFormGroup-root css-dmmspl-MuiFormGroup-root"
               role="radiogroup"
             >
               <label
-                class="MuiFormControlLabel-root"
+                class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-required css-j204z7-MuiFormControlLabel-root"
               >
                 <span
-                  aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-5 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-6 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary Mui-checked MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                 >
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input css-1m9pwf3"
+                    name="proprietor.survey_data_proprietary"
+                    required=""
+                    type="radio"
+                    value="false"
+                  />
                   <span
-                    class="MuiIconButton-label"
+                    class="css-hyxlzm"
                   >
-                    <input
-                      checked=""
-                      class="PrivateSwitchBase-input-8"
-                      name="proprietor.survey_data_proprietary"
-                      required=""
-                      type="radio"
-                      value="false"
-                    />
-                    <div
-                      class="PrivateRadioButtonIcon-root-9 PrivateRadioButtonIcon-checked-11"
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                      data-testid="RadioButtonUncheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                        />
-                      </svg>
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-10"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                        />
-                      </svg>
-                    </div>
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-11zohuh-MuiSvgIcon-root"
+                      data-testid="RadioButtonCheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
                   </span>
                 </span>
                 <span
-                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                 >
                   No
                 </span>
+                <span
+                  aria-hidden="true"
+                  class="MuiFormControlLabel-asterisk css-1zt0w8-MuiFormControlLabel-asterisk"
+                >
+                   *
+                </span>
               </label>
               <label
-                class="MuiFormControlLabel-root"
+                class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-required css-j204z7-MuiFormControlLabel-root"
               >
                 <span
-                  aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-5 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                 >
+                  <input
+                    class="PrivateSwitchBase-input css-1m9pwf3"
+                    name="proprietor.survey_data_proprietary"
+                    required=""
+                    type="radio"
+                    value="true"
+                  />
                   <span
-                    class="MuiIconButton-label"
+                    class="css-hyxlzm"
                   >
-                    <input
-                      class="PrivateSwitchBase-input-8"
-                      name="proprietor.survey_data_proprietary"
-                      required=""
-                      type="radio"
-                      value="true"
-                    />
-                    <div
-                      class="PrivateRadioButtonIcon-root-9"
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                      data-testid="RadioButtonUncheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                        />
-                      </svg>
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-10"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                        />
-                      </svg>
-                    </div>
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hhw7if-MuiSvgIcon-root"
+                      data-testid="RadioButtonCheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
                   </span>
                 </span>
                 <span
-                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                 >
                   Yes
                 </span>
+                <span
+                  aria-hidden="true"
+                  class="MuiFormControlLabel-asterisk css-1zt0w8-MuiFormControlLabel-asterisk"
+                >
+                   *
+                </span>
               </label>
               <p
-                class="MuiFormHelperText-root"
+                class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained css-1fdv3wc-MuiFormHelperText-root"
               />
             </div>
           </div>
@@ -158,179 +160,179 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <fieldset
-          class="MuiFormControl-root"
+          class="MuiFormControl-root css-1nrlq1o-MuiFormControl-root"
         >
           <p
-            class="MuiTypography-root makeStyles-alignCenter-12 MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-alignCenter-4 css-ewuypk-MuiTypography-root"
           >
             <span>
               Is the data captured in this survey proprietary?
             </span>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-13 MuiButton-textPrimary MuiButton-disableElevation"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation makeStyles-learnMoreBtn-5 css-9swv2b-MuiButtonBase-root-MuiButton-root"
               data-testid="prop-dialog-btn"
               tabindex="0"
               type="button"
             >
               <span
-                class="MuiButton-label"
+                class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
               >
-                <span
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  Learn more
-                </span>
+                Learn more
               </span>
             </button>
           </p>
           <div
-            class="MuiBox-root MuiBox-root-15"
+            class="MuiBox-root css-164r41r"
           >
             <div
               aria-label="Survey Data Proprietary"
-              class="MuiFormGroup-root"
+              class="MuiFormGroup-root css-dmmspl-MuiFormGroup-root"
               role="radiogroup"
             >
               <label
-                class="MuiFormControlLabel-root"
+                class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-required css-j204z7-MuiFormControlLabel-root"
               >
                 <span
-                  aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                 >
+                  <input
+                    class="PrivateSwitchBase-input css-1m9pwf3"
+                    name="proprietor.survey_data_proprietary"
+                    required=""
+                    type="radio"
+                    value="false"
+                  />
                   <span
-                    class="MuiIconButton-label"
+                    class="css-hyxlzm"
                   >
-                    <input
-                      class="PrivateSwitchBase-input-19"
-                      name="proprietor.survey_data_proprietary"
-                      required=""
-                      type="radio"
-                      value="false"
-                    />
-                    <div
-                      class="PrivateRadioButtonIcon-root-20"
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                      data-testid="RadioButtonUncheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                        />
-                      </svg>
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                        />
-                      </svg>
-                    </div>
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hhw7if-MuiSvgIcon-root"
+                      data-testid="RadioButtonCheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
                   </span>
                 </span>
                 <span
-                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                 >
                   No
                 </span>
+                <span
+                  aria-hidden="true"
+                  class="MuiFormControlLabel-asterisk css-1zt0w8-MuiFormControlLabel-asterisk"
+                >
+                   *
+                </span>
               </label>
               <label
-                class="MuiFormControlLabel-root"
+                class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-required css-j204z7-MuiFormControlLabel-root"
               >
                 <span
-                  aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-17 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary Mui-checked MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                 >
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input css-1m9pwf3"
+                    name="proprietor.survey_data_proprietary"
+                    required=""
+                    type="radio"
+                    value="true"
+                  />
                   <span
-                    class="MuiIconButton-label"
+                    class="css-hyxlzm"
                   >
-                    <input
-                      checked=""
-                      class="PrivateSwitchBase-input-19"
-                      name="proprietor.survey_data_proprietary"
-                      required=""
-                      type="radio"
-                      value="true"
-                    />
-                    <div
-                      class="PrivateRadioButtonIcon-root-20 PrivateRadioButtonIcon-checked-22"
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                      data-testid="RadioButtonUncheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                        />
-                      </svg>
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                        />
-                      </svg>
-                    </div>
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-11zohuh-MuiSvgIcon-root"
+                      data-testid="RadioButtonCheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
                   </span>
                 </span>
                 <span
-                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                 >
                   Yes
                 </span>
+                <span
+                  aria-hidden="true"
+                  class="MuiFormControlLabel-asterisk css-1zt0w8-MuiFormControlLabel-asterisk"
+                >
+                   *
+                </span>
               </label>
               <p
-                class="MuiFormHelperText-root"
+                class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained css-1fdv3wc-MuiFormHelperText-root"
               />
             </div>
           </div>
         </fieldset>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <fieldset
-          class="MuiBox-root MuiBox-root-23"
+          class="MuiBox-root css-0"
         >
           <legend
-            class="MuiTypography-root MuiTypography-h5"
+            class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
           >
             Proprietary Information
           </legend>
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
             >
               <div
-                aria-expanded="false"
-                class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+                class="MuiAutocomplete-root MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
                 data-testid="proprietary_data_category"
-                role="combobox"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                  class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                 >
                   <label
-                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
                     data-shrink="false"
                     for="proprietary_data_category"
                     id="proprietary_data_category-label"
@@ -338,83 +340,60 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                     Proprietary Data Category
                     <span
                       aria-hidden="true"
-                      class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                     >
                        *
                     </span>
                   </label>
                   <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-5l6dvj-MuiInputBase-root-MuiOutlinedInput-root"
                   >
                     <input
                       aria-autocomplete="list"
+                      aria-expanded="false"
                       aria-invalid="false"
                       autocapitalize="none"
                       autocomplete="off"
-                      class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
                       id="proprietary_data_category"
                       required=""
+                      role="combobox"
                       spellcheck="false"
                       type="text"
                       value=""
                     />
                     <div
-                      class="MuiAutocomplete-endAdornment"
+                      class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
                     >
                       <button
-                        aria-label="Clear"
-                        class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                        tabindex="-1"
-                        title="Clear"
-                        type="button"
-                      >
-                        <span
-                          class="MuiIconButton-label"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                            />
-                          </svg>
-                        </span>
-                      </button>
-                      <button
                         aria-label="Open"
-                        class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
                         tabindex="-1"
                         title="Open"
                         type="button"
                       >
-                        <span
-                          class="MuiIconButton-label"
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                          data-testid="ArrowDropDownIcon"
+                          focusable="false"
+                          viewBox="0 0 24 24"
                         >
-                          <svg
-                            aria-hidden="true"
-                            class="MuiSvgIcon-root"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M7 10l5 5 5-5z"
-                            />
-                          </svg>
-                        </span>
+                          <path
+                            d="M7 10l5 5 5-5z"
+                          />
+                        </svg>
                       </button>
                     </div>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+                      class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-26"
+                        class="css-yjsfm1"
                       >
                         <span>
-                          Proprietary Data Category *
+                          Proprietary Data Category *
                         </span>
                       </legend>
                     </fieldset>
@@ -423,13 +402,13 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               </div>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
             >
               <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
               >
                 <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                   data-shrink="true"
                   for="proprietor.proprietor_name"
                   id="proprietor.proprietor_name-label"
@@ -437,17 +416,17 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                   Proprietor Name
                   <span
                     aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                   >
                      *
                   </span>
                 </label>
                 <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                 >
                   <input
                     aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input"
+                    class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                     data-testid="proprietor.proprietor_name"
                     id="proprietor.proprietor_name"
                     name="proprietor.proprietor_name"
@@ -457,13 +436,13 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                   />
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+                    class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-26 PrivateNotchedOutline-legendNotched-27"
+                      class="css-14lo706"
                     >
                       <span>
-                        Proprietor Name *
+                        Proprietor Name *
                       </span>
                     </legend>
                   </fieldset>
@@ -471,13 +450,13 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               </div>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
             >
               <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
               >
                 <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                   data-shrink="true"
                   for="proprietor.category_rationale"
                   id="proprietor.category_rationale-label"
@@ -485,34 +464,42 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                   Category Rationale
                   <span
                     aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                   >
                      *
                   </span>
                 </label>
                 <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline css-1s30bse-MuiInputBase-root-MuiOutlinedInput-root"
                 >
                   <textarea
                     aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline css-1sqnrkk-MuiInputBase-input-MuiOutlinedInput-input"
                     data-testid="proprietor.category_rationale"
                     id="proprietor.category_rationale"
                     name="proprietor.category_rationale"
                     required=""
                     rows="4"
+                    style="height: 0px; overflow: hidden;"
                   >
                     rationale is cause it is true
                   </textarea>
+                  <textarea
+                    aria-hidden="true"
+                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline css-1sqnrkk-MuiInputBase-input-MuiOutlinedInput-input"
+                    readonly=""
+                    style="visibility: hidden; position: absolute; overflow: hidden; height: 0px; top: 0px; left: 0px; transform: translateZ(0); padding-top: 0px; padding-bottom: 0px; width: 100%;"
+                    tabindex="-1"
+                  />
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+                    class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-26 PrivateNotchedOutline-legendNotched-27"
+                      class="css-14lo706"
                     >
                       <span>
-                        Category Rationale *
+                        Category Rationale *
                       </span>
                     </legend>
                   </fieldset>
@@ -522,130 +509,136 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
           </div>
         </fieldset>
         <div
-          class="MuiBox-root MuiBox-root-28"
+          class="MuiBox-root css-y1gt6f"
         >
           <fieldset
-            class="MuiFormControl-root"
+            class="MuiFormControl-root css-1nrlq1o-MuiFormControl-root"
           >
             <legend
-              class="MuiTypography-root MuiTypography-h5"
+              class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
             >
               Data and Information Sharing Agreement (DISA)
             </legend>
             <p
-              class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+              class="MuiTypography-root MuiTypography-body1 css-1jwtxlz-MuiTypography-root"
             >
               Do you require a data and information sharing agreement?
             </p>
             <div
-              class="MuiBox-root MuiBox-root-29"
+              class="MuiBox-root css-1yuhvjn"
             >
               <div
                 aria-label="Data and Information Sharing Agreement"
-                class="MuiFormGroup-root"
+                class="MuiFormGroup-root css-dmmspl-MuiFormGroup-root"
                 role="radiogroup"
               >
                 <label
-                  class="MuiFormControlLabel-root"
+                  class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-required css-j204z7-MuiFormControlLabel-root"
                 >
                   <span
-                    aria-disabled="false"
-                    class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                    class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                   >
+                    <input
+                      class="PrivateSwitchBase-input css-1m9pwf3"
+                      name="proprietor.disa_required"
+                      required=""
+                      type="radio"
+                      value="false"
+                    />
                     <span
-                      class="MuiIconButton-label"
+                      class="css-hyxlzm"
                     >
-                      <input
-                        class="PrivateSwitchBase-input-19"
-                        name="proprietor.disa_required"
-                        required=""
-                        type="radio"
-                        value="false"
-                      />
-                      <div
-                        class="PrivateRadioButtonIcon-root-20"
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                        data-testid="RadioButtonUncheckedIcon"
+                        focusable="false"
+                        viewBox="0 0 24 24"
                       >
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                          />
-                        </svg>
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                          />
-                        </svg>
-                      </div>
+                        <path
+                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                        />
+                      </svg>
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hhw7if-MuiSvgIcon-root"
+                        data-testid="RadioButtonCheckedIcon"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                        />
+                      </svg>
                     </span>
                   </span>
                   <span
-                    class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                    class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                   >
                     No
                   </span>
+                  <span
+                    aria-hidden="true"
+                    class="MuiFormControlLabel-asterisk css-1zt0w8-MuiFormControlLabel-asterisk"
+                  >
+                     *
+                  </span>
                 </label>
                 <label
-                  class="MuiFormControlLabel-root"
+                  class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-required css-j204z7-MuiFormControlLabel-root"
                 >
                   <span
-                    aria-disabled="false"
-                    class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-17 Mui-checked MuiIconButton-colorPrimary"
+                    class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary Mui-checked MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                   >
+                    <input
+                      checked=""
+                      class="PrivateSwitchBase-input css-1m9pwf3"
+                      name="proprietor.disa_required"
+                      required=""
+                      type="radio"
+                      value="true"
+                    />
                     <span
-                      class="MuiIconButton-label"
+                      class="css-hyxlzm"
                     >
-                      <input
-                        checked=""
-                        class="PrivateSwitchBase-input-19"
-                        name="proprietor.disa_required"
-                        required=""
-                        type="radio"
-                        value="true"
-                      />
-                      <div
-                        class="PrivateRadioButtonIcon-root-20 PrivateRadioButtonIcon-checked-22"
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                        data-testid="RadioButtonUncheckedIcon"
+                        focusable="false"
+                        viewBox="0 0 24 24"
                       >
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                          />
-                        </svg>
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                          />
-                        </svg>
-                      </div>
+                        <path
+                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                        />
+                      </svg>
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-11zohuh-MuiSvgIcon-root"
+                        data-testid="RadioButtonCheckedIcon"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                        />
+                      </svg>
                     </span>
                   </span>
                   <span
-                    class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                    class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                   >
                     Yes
                   </span>
+                  <span
+                    aria-hidden="true"
+                    class="MuiFormControlLabel-asterisk css-1zt0w8-MuiFormControlLabel-asterisk"
+                  >
+                     *
+                  </span>
                 </label>
                 <p
-                  class="MuiFormHelperText-root Mui-required"
+                  class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
                 />
               </div>
             </div>
@@ -661,146 +654,148 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <fieldset
-          class="MuiFormControl-root"
+          class="MuiFormControl-root css-1nrlq1o-MuiFormControl-root"
         >
           <p
-            class="MuiTypography-root makeStyles-alignCenter-48 MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-alignCenter-10 css-ewuypk-MuiTypography-root"
           >
             <span>
               Is the data captured in this survey proprietary?
             </span>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-49 MuiButton-textPrimary MuiButton-disableElevation"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation makeStyles-learnMoreBtn-11 css-9swv2b-MuiButtonBase-root-MuiButton-root"
               data-testid="prop-dialog-btn"
               tabindex="0"
               type="button"
             >
               <span
-                class="MuiButton-label"
+                class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
               >
-                <span
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  Learn more
-                </span>
+                Learn more
               </span>
             </button>
           </p>
           <div
-            class="MuiBox-root MuiBox-root-51"
+            class="MuiBox-root css-164r41r"
           >
             <div
               aria-label="Survey Data Proprietary"
-              class="MuiFormGroup-root"
+              class="MuiFormGroup-root Mui-error css-dmmspl-MuiFormGroup-root"
               role="radiogroup"
             >
               <label
-                class="MuiFormControlLabel-root"
+                class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-error Mui-required css-j204z7-MuiFormControlLabel-root"
               >
                 <span
-                  aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-52 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                 >
+                  <input
+                    class="PrivateSwitchBase-input css-1m9pwf3"
+                    name="proprietor.survey_data_proprietary"
+                    required=""
+                    type="radio"
+                    value="false"
+                  />
                   <span
-                    class="MuiIconButton-label"
+                    class="css-hyxlzm"
                   >
-                    <input
-                      class="PrivateSwitchBase-input-55"
-                      name="proprietor.survey_data_proprietary"
-                      required=""
-                      type="radio"
-                      value="false"
-                    />
-                    <div
-                      class="PrivateRadioButtonIcon-root-56"
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                      data-testid="RadioButtonUncheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                        />
-                      </svg>
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-57"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                        />
-                      </svg>
-                    </div>
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hhw7if-MuiSvgIcon-root"
+                      data-testid="RadioButtonCheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
                   </span>
                 </span>
                 <span
-                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                 >
                   No
                 </span>
+                <span
+                  aria-hidden="true"
+                  class="MuiFormControlLabel-asterisk Mui-error css-1zt0w8-MuiFormControlLabel-asterisk"
+                >
+                   *
+                </span>
               </label>
               <label
-                class="MuiFormControlLabel-root"
+                class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-error Mui-required css-j204z7-MuiFormControlLabel-root"
               >
                 <span
-                  aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-52 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-53 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary Mui-checked MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                 >
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input css-1m9pwf3"
+                    name="proprietor.survey_data_proprietary"
+                    required=""
+                    type="radio"
+                    value="true"
+                  />
                   <span
-                    class="MuiIconButton-label"
+                    class="css-hyxlzm"
                   >
-                    <input
-                      checked=""
-                      class="PrivateSwitchBase-input-55"
-                      name="proprietor.survey_data_proprietary"
-                      required=""
-                      type="radio"
-                      value="true"
-                    />
-                    <div
-                      class="PrivateRadioButtonIcon-root-56 PrivateRadioButtonIcon-checked-58"
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                      data-testid="RadioButtonUncheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                        />
-                      </svg>
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-57"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                        />
-                      </svg>
-                    </div>
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-11zohuh-MuiSvgIcon-root"
+                      data-testid="RadioButtonCheckedIcon"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
                   </span>
                 </span>
                 <span
-                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                 >
                   Yes
                 </span>
+                <span
+                  aria-hidden="true"
+                  class="MuiFormControlLabel-asterisk Mui-error css-1zt0w8-MuiFormControlLabel-asterisk"
+                >
+                   *
+                </span>
               </label>
               <p
-                class="MuiFormHelperText-root Mui-error"
+                class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained css-1fdv3wc-MuiFormHelperText-root"
               >
                 error on survey data proprietary field
               </p>
@@ -809,33 +804,31 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
         </fieldset>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <fieldset
-          class="MuiBox-root MuiBox-root-59"
+          class="MuiBox-root css-0"
         >
           <legend
-            class="MuiTypography-root MuiTypography-h5"
+            class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
           >
             Proprietary Information
           </legend>
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
             >
               <div
-                aria-expanded="false"
-                class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+                class="MuiAutocomplete-root MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
                 data-testid="proprietary_data_category"
-                role="combobox"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                  class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                 >
                   <label
-                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
                     data-shrink="false"
                     for="proprietary_data_category"
                     id="proprietary_data_category-label"
@@ -843,90 +836,67 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                     Proprietary Data Category
                     <span
                       aria-hidden="true"
-                      class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+                      class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error css-uyis09-MuiFormLabel-asterisk"
                     >
                        *
                     </span>
                   </label>
                   <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-5l6dvj-MuiInputBase-root-MuiOutlinedInput-root"
                   >
                     <input
                       aria-autocomplete="list"
                       aria-describedby="proprietary_data_category-helper-text"
+                      aria-expanded="false"
                       aria-invalid="true"
                       autocapitalize="none"
                       autocomplete="off"
-                      class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
                       id="proprietary_data_category"
                       required=""
+                      role="combobox"
                       spellcheck="false"
                       type="text"
                       value=""
                     />
                     <div
-                      class="MuiAutocomplete-endAdornment"
+                      class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
                     >
                       <button
-                        aria-label="Clear"
-                        class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                        tabindex="-1"
-                        title="Clear"
-                        type="button"
-                      >
-                        <span
-                          class="MuiIconButton-label"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                            />
-                          </svg>
-                        </span>
-                      </button>
-                      <button
                         aria-label="Open"
-                        class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
                         tabindex="-1"
                         title="Open"
                         type="button"
                       >
-                        <span
-                          class="MuiIconButton-label"
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                          data-testid="ArrowDropDownIcon"
+                          focusable="false"
+                          viewBox="0 0 24 24"
                         >
-                          <svg
-                            aria-hidden="true"
-                            class="MuiSvgIcon-root"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M7 10l5 5 5-5z"
-                            />
-                          </svg>
-                        </span>
+                          <path
+                            d="M7 10l5 5 5-5z"
+                          />
+                        </svg>
                       </button>
                     </div>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-60 MuiOutlinedInput-notchedOutline"
+                      class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-62"
+                        class="css-yjsfm1"
                       >
                         <span>
-                          Proprietary Data Category *
+                          Proprietary Data Category *
                         </span>
                       </legend>
                     </fieldset>
                   </div>
                   <p
-                    class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error Mui-required"
+                    class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
                     id="proprietary_data_category-helper-text"
                   >
                     error on proprietary data category field
@@ -935,13 +905,13 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               </div>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
             >
               <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
               >
                 <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                   data-shrink="true"
                   for="proprietor.proprietor_name"
                   id="proprietor.proprietor_name-label"
@@ -949,18 +919,18 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                   Proprietor Name
                   <span
                     aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error css-uyis09-MuiFormLabel-asterisk"
                   >
                      *
                   </span>
                 </label>
                 <div
-                  class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                 >
                   <input
                     aria-describedby="proprietor.proprietor_name-helper-text"
                     aria-invalid="true"
-                    class="MuiInputBase-input MuiOutlinedInput-input"
+                    class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                     data-testid="proprietor.proprietor_name"
                     id="proprietor.proprietor_name"
                     name="proprietor.proprietor_name"
@@ -970,19 +940,19 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                   />
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-60 MuiOutlinedInput-notchedOutline"
+                    class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-62 PrivateNotchedOutline-legendNotched-63"
+                      class="css-14lo706"
                     >
                       <span>
-                        Proprietor Name *
+                        Proprietor Name *
                       </span>
                     </legend>
                   </fieldset>
                 </div>
                 <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+                  class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                   id="proprietor.proprietor_name-helper-text"
                 >
                   error on proprietor name field
@@ -990,13 +960,13 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               </div>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
             >
               <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
               >
                 <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                   data-shrink="true"
                   for="proprietor.category_rationale"
                   id="proprietor.category_rationale-label"
@@ -1004,41 +974,49 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                   Category Rationale
                   <span
                     aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error css-uyis09-MuiFormLabel-asterisk"
                   >
                      *
                   </span>
                 </label>
                 <div
-                  class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline css-1s30bse-MuiInputBase-root-MuiOutlinedInput-root"
                 >
                   <textarea
                     aria-describedby="proprietor.category_rationale-helper-text"
                     aria-invalid="true"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline css-1sqnrkk-MuiInputBase-input-MuiOutlinedInput-input"
                     data-testid="proprietor.category_rationale"
                     id="proprietor.category_rationale"
                     name="proprietor.category_rationale"
                     required=""
                     rows="4"
+                    style="height: 0px; overflow: hidden;"
                   >
                     rationale is cause it is true
                   </textarea>
+                  <textarea
+                    aria-hidden="true"
+                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline css-1sqnrkk-MuiInputBase-input-MuiOutlinedInput-input"
+                    readonly=""
+                    style="visibility: hidden; position: absolute; overflow: hidden; height: 0px; top: 0px; left: 0px; transform: translateZ(0); padding-top: 0px; padding-bottom: 0px; width: 100%;"
+                    tabindex="-1"
+                  />
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-60 MuiOutlinedInput-notchedOutline"
+                    class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-62 PrivateNotchedOutline-legendNotched-63"
+                      class="css-14lo706"
                     >
                       <span>
-                        Category Rationale *
+                        Category Rationale *
                       </span>
                     </legend>
                   </fieldset>
                 </div>
                 <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+                  class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                   id="proprietor.category_rationale-helper-text"
                 >
                   error on category rationale field
@@ -1048,130 +1026,136 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
           </div>
         </fieldset>
         <div
-          class="MuiBox-root MuiBox-root-64"
+          class="MuiBox-root css-y1gt6f"
         >
           <fieldset
-            class="MuiFormControl-root"
+            class="MuiFormControl-root css-1nrlq1o-MuiFormControl-root"
           >
             <legend
-              class="MuiTypography-root MuiTypography-h5"
+              class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
             >
               Data and Information Sharing Agreement (DISA)
             </legend>
             <p
-              class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+              class="MuiTypography-root MuiTypography-body1 css-1jwtxlz-MuiTypography-root"
             >
               Do you require a data and information sharing agreement?
             </p>
             <div
-              class="MuiBox-root MuiBox-root-65"
+              class="MuiBox-root css-1yuhvjn"
             >
               <div
                 aria-label="Data and Information Sharing Agreement"
-                class="MuiFormGroup-root"
+                class="MuiFormGroup-root Mui-error css-dmmspl-MuiFormGroup-root"
                 role="radiogroup"
               >
                 <label
-                  class="MuiFormControlLabel-root"
+                  class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-error Mui-required css-j204z7-MuiFormControlLabel-root"
                 >
                   <span
-                    aria-disabled="false"
-                    class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-52 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                    class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                   >
+                    <input
+                      class="PrivateSwitchBase-input css-1m9pwf3"
+                      name="proprietor.disa_required"
+                      required=""
+                      type="radio"
+                      value="false"
+                    />
                     <span
-                      class="MuiIconButton-label"
+                      class="css-hyxlzm"
                     >
-                      <input
-                        class="PrivateSwitchBase-input-55"
-                        name="proprietor.disa_required"
-                        required=""
-                        type="radio"
-                        value="false"
-                      />
-                      <div
-                        class="PrivateRadioButtonIcon-root-56"
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                        data-testid="RadioButtonUncheckedIcon"
+                        focusable="false"
+                        viewBox="0 0 24 24"
                       >
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                          />
-                        </svg>
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-57"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                          />
-                        </svg>
-                      </div>
+                        <path
+                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                        />
+                      </svg>
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hhw7if-MuiSvgIcon-root"
+                        data-testid="RadioButtonCheckedIcon"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                        />
+                      </svg>
                     </span>
                   </span>
                   <span
-                    class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                    class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                   >
                     No
                   </span>
+                  <span
+                    aria-hidden="true"
+                    class="MuiFormControlLabel-asterisk Mui-error css-1zt0w8-MuiFormControlLabel-asterisk"
+                  >
+                     *
+                  </span>
                 </label>
                 <label
-                  class="MuiFormControlLabel-root"
+                  class="MuiFormControlLabel-root MuiFormControlLabel-labelPlacementEnd Mui-error Mui-required css-j204z7-MuiFormControlLabel-root"
                 >
                   <span
-                    aria-disabled="false"
-                    class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-52 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-53 Mui-checked MuiIconButton-colorPrimary"
+                    class="MuiButtonBase-root MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-root MuiRadio-root MuiRadio-colorPrimary Mui-checked MuiRadio-root MuiRadio-colorPrimary css-j5ictx-MuiButtonBase-root-MuiRadio-root"
                   >
+                    <input
+                      checked=""
+                      class="PrivateSwitchBase-input css-1m9pwf3"
+                      name="proprietor.disa_required"
+                      required=""
+                      type="radio"
+                      value="true"
+                    />
                     <span
-                      class="MuiIconButton-label"
+                      class="css-hyxlzm"
                     >
-                      <input
-                        checked=""
-                        class="PrivateSwitchBase-input-55"
-                        name="proprietor.disa_required"
-                        required=""
-                        type="radio"
-                        value="true"
-                      />
-                      <div
-                        class="PrivateRadioButtonIcon-root-56 PrivateRadioButtonIcon-checked-58"
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1hbvpl3-MuiSvgIcon-root"
+                        data-testid="RadioButtonUncheckedIcon"
+                        focusable="false"
+                        viewBox="0 0 24 24"
                       >
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                          />
-                        </svg>
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-57"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                          />
-                        </svg>
-                      </div>
+                        <path
+                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                        />
+                      </svg>
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-11zohuh-MuiSvgIcon-root"
+                        data-testid="RadioButtonCheckedIcon"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                        />
+                      </svg>
                     </span>
                   </span>
                   <span
-                    class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                    class="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label css-ewuypk-MuiTypography-root"
                   >
                     Yes
                   </span>
+                  <span
+                    aria-hidden="true"
+                    class="MuiFormControlLabel-asterisk Mui-error css-1zt0w8-MuiFormControlLabel-asterisk"
+                  >
+                     *
+                  </span>
                 </label>
                 <p
-                  class="MuiFormHelperText-root Mui-error Mui-required"
+                  class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
                 >
                   error on data sharing agreement required field
                 </p>

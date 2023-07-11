@@ -3,16 +3,16 @@
 exports[`General Information Form renders correctly the empty component correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
     >
       <div
-        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
           data-shrink="false"
           for="survey_details.survey_name"
           id="survey_details.survey_name-label"
@@ -20,17 +20,17 @@ exports[`General Information Form renders correctly the empty component correctl
           Survey Name
           <span
             aria-hidden="true"
-            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+            class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
           >
              *
           </span>
         </label>
         <div
-          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
         >
           <input
             aria-invalid="false"
-            class="MuiInputBase-input MuiOutlinedInput-input"
+            class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
             data-testid="survey_details.survey_name"
             id="survey_details.survey_name"
             name="survey_details.survey_name"
@@ -40,13 +40,13 @@ exports[`General Information Form renders correctly the empty component correctl
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-3"
+              class="css-yjsfm1"
             >
               <span>
-                Survey Name *
+                Survey Name *
               </span>
             </legend>
           </fieldset>
@@ -54,19 +54,19 @@ exports[`General Information Form renders correctly the empty component correctl
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
+        class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-3 css-3e39lh-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="true"
               for="start_date"
               id="start_date-label"
@@ -74,18 +74,18 @@ exports[`General Information Form renders correctly the empty component correctl
               Start Date
               <span
                 aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
               >
                  *
               </span>
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-describedby="start_date-helper-text"
                 aria-invalid="false"
-                class="MuiInputBase-input MuiOutlinedInput-input"
+                class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                 data-testid="start-date"
                 id="start_date"
                 max="2100-12-31"
@@ -97,19 +97,19 @@ exports[`General Information Form renders correctly the empty component correctl
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                  class="css-14lo706"
                 >
                   <span>
-                    Start Date *
+                    Start Date *
                   </span>
                 </legend>
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
               id="start_date-helper-text"
             >
               Start Date cannot precede Oct 10, 1998
@@ -117,13 +117,13 @@ exports[`General Information Form renders correctly the empty component correctl
           </div>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="true"
               for="end_date"
               id="end_date-label"
@@ -131,12 +131,12 @@ exports[`General Information Form renders correctly the empty component correctl
               End Date
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-describedby="end_date-helper-text"
                 aria-invalid="false"
-                class="MuiInputBase-input MuiOutlinedInput-input"
+                class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                 data-testid="end-date"
                 id="end_date"
                 max="2100-12-31"
@@ -147,10 +147,10 @@ exports[`General Information Form renders correctly the empty component correctl
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                  class="css-14lo706"
                 >
                   <span>
                     End Date
@@ -159,7 +159,7 @@ exports[`General Information Form renders correctly the empty component correctl
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained css-1fdv3wc-MuiFormHelperText-root"
               id="end_date-helper-text"
             >
               End Date cannot come after the Project End Date Feb 26, 2021
@@ -170,30 +170,28 @@ exports[`General Information Form renders correctly the empty component correctl
     </div>
   </div>
   <fieldset
-    class="MuiBox-root MuiBox-root-5"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Species
     </legend>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
           data-testid="species.focal_species"
-          role="combobox"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="false"
               for="species.focal_species"
               id="species.focal_species-label"
@@ -201,84 +199,61 @@ exports[`General Information Form renders correctly the empty component correctl
               Focal Species
               <span
                 aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
               >
                  *
               </span>
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-5l6dvj-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-autocomplete="list"
+                aria-expanded="false"
                 aria-invalid="false"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
                 id="species.focal_species"
                 name="species.focal_species"
                 required=""
+                role="combobox"
                 spellcheck="false"
                 type="text"
                 value=""
               />
               <div
-                class="MuiAutocomplete-endAdornment"
+                class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
               >
                 <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <button
                   aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
                   tabindex="-1"
                   title="Open"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="ArrowDropDownIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
                 </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-3"
+                  class="css-yjsfm1"
                 >
                   <span>
-                    Focal Species *
+                    Focal Species *
                   </span>
                 </legend>
               </fieldset>
@@ -287,19 +262,17 @@ exports[`General Information Form renders correctly the empty component correctl
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
           data-testid="species.ancillary_species"
-          role="combobox"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="false"
               for="species.ancillary_species"
               id="species.ancillary_species-label"
@@ -307,74 +280,51 @@ exports[`General Information Form renders correctly the empty component correctl
               Ancillary Species
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-5l6dvj-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-autocomplete="list"
+                aria-expanded="false"
                 aria-invalid="false"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
                 id="species.ancillary_species"
                 name="species.ancillary_species"
+                role="combobox"
                 spellcheck="false"
                 type="text"
                 value=""
               />
               <div
-                class="MuiAutocomplete-endAdornment"
+                class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
               >
                 <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <button
                   aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
                   tabindex="-1"
                   title="Open"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="ArrowDropDownIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
                 </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-3"
+                  class="css-yjsfm1"
                 >
                   <span>
                     Ancillary Species
@@ -388,24 +338,24 @@ exports[`General Information Form renders correctly the empty component correctl
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-7"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Lead Biologist
     </legend>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
       >
         <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="false"
             for="survey_details.biologist_first_name"
             id="survey_details.biologist_first_name-label"
@@ -413,17 +363,17 @@ exports[`General Information Form renders correctly the empty component correctl
             First Name
             <span
               aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
             >
                *
             </span>
           </label>
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
           >
             <input
               aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input"
+              class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
               data-testid="survey_details.biologist_first_name"
               id="survey_details.biologist_first_name"
               name="survey_details.biologist_first_name"
@@ -433,13 +383,13 @@ exports[`General Information Form renders correctly the empty component correctl
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
+                class="css-yjsfm1"
               >
                 <span>
-                  First Name *
+                  First Name *
                 </span>
               </legend>
             </fieldset>
@@ -447,13 +397,13 @@ exports[`General Information Form renders correctly the empty component correctl
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
       >
         <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="false"
             for="survey_details.biologist_last_name"
             id="survey_details.biologist_last_name-label"
@@ -461,17 +411,17 @@ exports[`General Information Form renders correctly the empty component correctl
             Last Name
             <span
               aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
             >
                *
             </span>
           </label>
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
           >
             <input
               aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input"
+              class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
               data-testid="survey_details.biologist_last_name"
               id="survey_details.biologist_last_name"
               name="survey_details.biologist_last_name"
@@ -481,13 +431,13 @@ exports[`General Information Form renders correctly the empty component correctl
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
+                class="css-yjsfm1"
               >
                 <span>
-                  Last Name *
+                  Last Name *
                 </span>
               </legend>
             </fieldset>
@@ -497,70 +447,64 @@ exports[`General Information Form renders correctly the empty component correctl
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-8"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Permits
     </legend>
     <div
-      class="MuiBox-root MuiBox-root-9"
+      class="MuiBox-root css-0"
     >
       <ul
-        class="MuiList-root makeStyles-permitList-10 MuiList-dense"
+        class="MuiList-root MuiList-dense makeStyles-permitList-2 css-1mk9mw3-MuiList-root"
       />
       <div
-        class="MuiBox-root MuiBox-root-11"
+        class="MuiBox-root css-164r41r"
       >
         <button
           aria-label="add permit"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-1oiu1qi-MuiButtonBase-root-MuiButton-root"
           tabindex="0"
           type="button"
         >
           <span
-            class="MuiButton-label"
+            class="MuiButton-startIcon MuiButton-iconSizeMedium css-19goimj-MuiButton-startIcon"
           >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
             >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            Add New Permit
+              <path
+                d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
           </span>
+          Add New Permit
         </button>
       </div>
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-12"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Funding Sources
     </legend>
     <div
-      aria-expanded="false"
-      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+      class="MuiAutocomplete-root MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
       data-testid="funding.funding_sources"
-      role="combobox"
     >
       <div
-        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
           data-shrink="false"
           for="funding.funding_sources"
           id="funding.funding_sources-label"
@@ -568,74 +512,51 @@ exports[`General Information Form renders correctly the empty component correctl
           Select Funding Sources
         </label>
         <div
-          class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-5l6dvj-MuiInputBase-root-MuiOutlinedInput-root"
         >
           <input
             aria-autocomplete="list"
+            aria-expanded="false"
             aria-invalid="false"
             autocapitalize="none"
             autocomplete="off"
-            class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+            class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
             id="funding.funding_sources"
             name="funding.funding_sources"
+            role="combobox"
             spellcheck="false"
             type="text"
             value=""
           />
           <div
-            class="MuiAutocomplete-endAdornment"
+            class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
           >
             <button
-              aria-label="Clear"
-              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-              tabindex="-1"
-              title="Clear"
-              type="button"
-            >
-              <span
-                class="MuiIconButton-label"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                  />
-                </svg>
-              </span>
-            </button>
-            <button
               aria-label="Open"
-              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
               tabindex="-1"
               title="Open"
               type="button"
             >
-              <span
-                class="MuiIconButton-label"
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                data-testid="ArrowDropDownIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-              </span>
+                <path
+                  d="M7 10l5 5 5-5z"
+                />
+              </svg>
             </button>
           </div>
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-3"
+              class="css-yjsfm1"
             >
               <span>
                 Select Funding Sources
@@ -652,16 +573,16 @@ exports[`General Information Form renders correctly the empty component correctl
 exports[`General Information Form renders correctly the filled component correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
     >
       <div
-        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
           data-shrink="true"
           for="survey_details.survey_name"
           id="survey_details.survey_name-label"
@@ -669,17 +590,17 @@ exports[`General Information Form renders correctly the filled component correct
           Survey Name
           <span
             aria-hidden="true"
-            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+            class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
           >
              *
           </span>
         </label>
         <div
-          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
         >
           <input
             aria-invalid="false"
-            class="MuiInputBase-input MuiOutlinedInput-input"
+            class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
             data-testid="survey_details.survey_name"
             id="survey_details.survey_name"
             name="survey_details.survey_name"
@@ -689,13 +610,13 @@ exports[`General Information Form renders correctly the filled component correct
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+              class="css-14lo706"
             >
               <span>
-                Survey Name *
+                Survey Name *
               </span>
             </legend>
           </fieldset>
@@ -703,19 +624,19 @@ exports[`General Information Form renders correctly the filled component correct
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
+        class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-3 css-3e39lh-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="true"
               for="start_date"
               id="start_date-label"
@@ -723,18 +644,18 @@ exports[`General Information Form renders correctly the filled component correct
               Start Date
               <span
                 aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
               >
                  *
               </span>
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-describedby="start_date-helper-text"
                 aria-invalid="false"
-                class="MuiInputBase-input MuiOutlinedInput-input"
+                class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                 data-testid="start-date"
                 id="start_date"
                 max="2100-12-31"
@@ -746,19 +667,19 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                  class="css-14lo706"
                 >
                   <span>
-                    Start Date *
+                    Start Date *
                   </span>
                 </legend>
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
               id="start_date-helper-text"
             >
               Start Date cannot precede Oct 10, 1998
@@ -766,13 +687,13 @@ exports[`General Information Form renders correctly the filled component correct
           </div>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="true"
               for="end_date"
               id="end_date-label"
@@ -780,12 +701,12 @@ exports[`General Information Form renders correctly the filled component correct
               End Date
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-describedby="end_date-helper-text"
                 aria-invalid="false"
-                class="MuiInputBase-input MuiOutlinedInput-input"
+                class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                 data-testid="end-date"
                 id="end_date"
                 max="2100-12-31"
@@ -796,10 +717,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                  class="css-14lo706"
                 >
                   <span>
                     End Date
@@ -808,7 +729,7 @@ exports[`General Information Form renders correctly the filled component correct
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled css-1fdv3wc-MuiFormHelperText-root"
               id="end_date-helper-text"
             >
               End Date cannot come after the Project End Date Feb 26, 2021
@@ -819,30 +740,28 @@ exports[`General Information Form renders correctly the filled component correct
     </div>
   </div>
   <fieldset
-    class="MuiBox-root MuiBox-root-17"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Species
     </legend>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
           data-testid="species.focal_species"
-          role="combobox"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="false"
               for="species.focal_species"
               id="species.focal_species-label"
@@ -850,84 +769,61 @@ exports[`General Information Form renders correctly the filled component correct
               Focal Species
               <span
                 aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
               >
                  *
               </span>
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-5l6dvj-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-autocomplete="list"
+                aria-expanded="false"
                 aria-invalid="false"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
                 id="species.focal_species"
                 name="species.focal_species"
                 required=""
+                role="combobox"
                 spellcheck="false"
                 type="text"
                 value=""
               />
               <div
-                class="MuiAutocomplete-endAdornment"
+                class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
               >
                 <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <button
                   aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
                   tabindex="-1"
                   title="Open"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="ArrowDropDownIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
                 </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15"
+                  class="css-yjsfm1"
                 >
                   <span>
-                    Focal Species *
+                    Focal Species *
                   </span>
                 </legend>
               </fieldset>
@@ -936,19 +832,17 @@ exports[`General Information Form renders correctly the filled component correct
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
           data-testid="species.ancillary_species"
-          role="combobox"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="false"
               for="species.ancillary_species"
               id="species.ancillary_species-label"
@@ -956,74 +850,51 @@ exports[`General Information Form renders correctly the filled component correct
               Ancillary Species
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-5l6dvj-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-autocomplete="list"
+                aria-expanded="false"
                 aria-invalid="false"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
                 id="species.ancillary_species"
                 name="species.ancillary_species"
+                role="combobox"
                 spellcheck="false"
                 type="text"
                 value=""
               />
               <div
-                class="MuiAutocomplete-endAdornment"
+                class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
               >
                 <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <button
                   aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
                   tabindex="-1"
                   title="Open"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="ArrowDropDownIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
                 </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15"
+                  class="css-yjsfm1"
                 >
                   <span>
                     Ancillary Species
@@ -1037,24 +908,24 @@ exports[`General Information Form renders correctly the filled component correct
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-19"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Lead Biologist
     </legend>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
       >
         <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
             for="survey_details.biologist_first_name"
             id="survey_details.biologist_first_name-label"
@@ -1062,17 +933,17 @@ exports[`General Information Form renders correctly the filled component correct
             First Name
             <span
               aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
             >
                *
             </span>
           </label>
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
           >
             <input
               aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input"
+              class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
               data-testid="survey_details.biologist_first_name"
               id="survey_details.biologist_first_name"
               name="survey_details.biologist_first_name"
@@ -1082,13 +953,13 @@ exports[`General Information Form renders correctly the filled component correct
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                class="css-14lo706"
               >
                 <span>
-                  First Name *
+                  First Name *
                 </span>
               </legend>
             </fieldset>
@@ -1096,13 +967,13 @@ exports[`General Information Form renders correctly the filled component correct
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
       >
         <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
             for="survey_details.biologist_last_name"
             id="survey_details.biologist_last_name-label"
@@ -1110,17 +981,17 @@ exports[`General Information Form renders correctly the filled component correct
             Last Name
             <span
               aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
             >
                *
             </span>
           </label>
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
           >
             <input
               aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input"
+              class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
               data-testid="survey_details.biologist_last_name"
               id="survey_details.biologist_last_name"
               name="survey_details.biologist_last_name"
@@ -1130,13 +1001,13 @@ exports[`General Information Form renders correctly the filled component correct
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                class="css-14lo706"
               >
                 <span>
-                  Last Name *
+                  Last Name *
                 </span>
               </legend>
             </fieldset>
@@ -1146,45 +1017,45 @@ exports[`General Information Form renders correctly the filled component correct
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-20"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Permits
     </legend>
     <div
-      class="MuiBox-root MuiBox-root-21"
+      class="MuiBox-root css-0"
     >
       <ul
-        class="MuiList-root makeStyles-permitList-22 MuiList-dense"
+        class="MuiList-root MuiList-dense makeStyles-permitList-4 css-1mk9mw3-MuiList-root"
       >
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-padding MuiListItem-secondaryAction css-hw573y-MuiListItem-root"
           >
             <div
-              class="MuiListItemText-root MuiListItemText-dense"
+              class="MuiListItemText-root MuiListItemText-dense css-tlelie-MuiListItemText-root"
             >
               <span
-                class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+                class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-23"
+                  class="MuiBox-root css-3cyd2n"
                 >
                   <div
-                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
                   >
                     <div
-                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                     >
                       <div
-                        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                        class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                       >
                         <label
-                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                           data-shrink="true"
                           for="permit.permits.[0].permit_number"
                           id="permit.permits.[0].permit_number-label"
@@ -1192,17 +1063,17 @@ exports[`General Information Form renders correctly the filled component correct
                           Permit Number
                           <span
                             aria-hidden="true"
-                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                           >
                              *
                           </span>
                         </label>
                         <div
-                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                         >
                           <input
                             aria-invalid="false"
-                            class="MuiInputBase-input MuiOutlinedInput-input"
+                            class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                             data-testid="permit.permits.[0].permit_number"
                             id="permit.permits.[0].permit_number"
                             name="permit.permits.[0].permit_number"
@@ -1212,13 +1083,13 @@ exports[`General Information Form renders correctly the filled component correct
                           />
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                              class="css-14lo706"
                             >
                               <span>
-                                Permit Number *
+                                Permit Number *
                               </span>
                             </legend>
                           </fieldset>
@@ -1226,32 +1097,33 @@ exports[`General Information Form renders correctly the filled component correct
                       </div>
                     </div>
                     <div
-                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                     >
                       <div
-                        class="MuiFormControl-root MuiFormControl-fullWidth"
+                        class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
                       >
                         <label
-                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                           data-shrink="true"
                           id="permit_type"
                         >
                           Permit Type
                           <span
                             aria-hidden="true"
-                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                           >
                              *
                           </span>
                         </label>
                         <div
-                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                         >
                           <div
+                            aria-expanded="false"
                             aria-haspopup="listbox"
                             aria-label="Permit Type"
                             aria-labelledby="permit_type permit.permits.[0].permit_type"
-                            class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                            class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                             id="permit.permits.[0].permit_type"
                             role="button"
                             tabindex="0"
@@ -1260,7 +1132,8 @@ exports[`General Information Form renders correctly the filled component correct
                           </div>
                           <input
                             aria-hidden="true"
-                            class="MuiSelect-nativeInput"
+                            aria-invalid="false"
+                            class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                             name="permit.permits.[0].permit_type"
                             required=""
                             tabindex="-1"
@@ -1268,7 +1141,8 @@ exports[`General Information Form renders correctly the filled component correct
                           />
                           <svg
                             aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                            data-testid="ArrowDropDownIcon"
                             focusable="false"
                             viewBox="0 0 24 24"
                           >
@@ -1278,19 +1152,19 @@ exports[`General Information Form renders correctly the filled component correct
                           </svg>
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                              class="css-14lo706"
                             >
                               <span>
-                                Permit Type
+                                Permit Type *
                               </span>
                             </legend>
                           </fieldset>
                         </div>
                         <p
-                          class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                          class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                         />
                       </div>
                     </div>
@@ -1300,47 +1174,14 @@ exports[`General Information Form renders correctly the filled component correct
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root MuiListItemSecondaryAction-disableGutters css-14f9zar-MuiListItemSecondaryAction-root"
           >
             <button
               aria-label="remove permit"
-              class="MuiButtonBase-root MuiIconButton-root"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hpj6o1-MuiButtonBase-root-MuiIconButton-root"
               data-testid="delete-icon"
               tabindex="0"
               type="button"
-            >
-              <span
-                class="MuiIconButton-label"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-            </button>
-          </div>
-        </li>
-      </ul>
-      <div
-        class="MuiBox-root MuiBox-root-24"
-      >
-        <button
-          aria-label="add permit"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
-          tabindex="0"
-          type="button"
-        >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
               <svg
                 role="presentation"
@@ -1348,36 +1189,59 @@ exports[`General Information Form renders correctly the filled component correct
                 viewBox="0 0 24 24"
               >
                 <path
-                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
                   style="fill: currentColor;"
                 />
               </svg>
-            </span>
-            Add New Permit
+            </button>
+          </div>
+        </li>
+      </ul>
+      <div
+        class="MuiBox-root css-164r41r"
+      >
+        <button
+          aria-label="add permit"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-1oiu1qi-MuiButtonBase-root-MuiButton-root"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium css-19goimj-MuiButton-startIcon"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
           </span>
+          Add New Permit
         </button>
       </div>
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-25"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Funding Sources
     </legend>
     <div
-      aria-expanded="false"
-      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
       data-testid="funding.funding_sources"
-      role="combobox"
     >
       <div
-        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
           data-shrink="true"
           for="funding.funding_sources"
           id="funding.funding_sources-label"
@@ -1385,22 +1249,23 @@ exports[`General Information Form renders correctly the filled component correct
           Select Funding Sources
         </label>
         <div
-          class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-1hnkxp-MuiInputBase-root-MuiOutlinedInput-root"
         >
           <div
-            class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
+            class="MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault MuiAutocomplete-tag MuiAutocomplete-tagSizeMedium css-1k9anul-MuiButtonBase-root-MuiChip-root"
             data-tag-index="0"
             role="button"
             tabindex="-1"
           >
             <span
-              class="MuiChip-label"
+              class="MuiChip-label MuiChip-labelMedium css-1dybbl5-MuiChip-label"
             >
               agency | $ 100 | 2000/04/09 - 2000/05/10
             </span>
             <svg
               aria-hidden="true"
-              class="MuiSvgIcon-root MuiChip-deleteIcon"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiChip-deleteIcon MuiChip-deleteIconMedium MuiChip-deleteIconColorDefault MuiChip-deleteIconFilledColorDefault css-i4bv87-MuiSvgIcon-root"
+              data-testid="CancelIcon"
               focusable="false"
               viewBox="0 0 24 24"
             >
@@ -1411,70 +1276,66 @@ exports[`General Information Form renders correctly the filled component correct
           </div>
           <input
             aria-autocomplete="list"
+            aria-expanded="false"
             aria-invalid="false"
             autocapitalize="none"
             autocomplete="off"
-            class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+            class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-152mnda-MuiInputBase-input-MuiOutlinedInput-input"
             id="funding.funding_sources"
             name="funding.funding_sources"
+            role="combobox"
             spellcheck="false"
             type="text"
             value=""
           />
           <div
-            class="MuiAutocomplete-endAdornment"
+            class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
           >
             <button
               aria-label="Clear"
-              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-clearIndicator css-11hfmu2-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-clearIndicator"
               tabindex="-1"
               title="Clear"
               type="button"
             >
-              <span
-                class="MuiIconButton-label"
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                data-testid="CloseIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                  />
-                </svg>
-              </span>
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                />
+              </svg>
             </button>
             <button
               aria-label="Open"
-              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
               tabindex="-1"
               title="Open"
               type="button"
             >
-              <span
-                class="MuiIconButton-label"
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                data-testid="ArrowDropDownIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-              </span>
+                <path
+                  d="M7 10l5 5 5-5z"
+                />
+              </svg>
             </button>
           </div>
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+              class="css-14lo706"
             >
               <span>
                 Select Funding Sources
@@ -1491,16 +1352,16 @@ exports[`General Information Form renders correctly the filled component correct
 exports[`General Information Form renders correctly when errors exist 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
     >
       <div
-        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
           data-shrink="true"
           for="survey_details.survey_name"
           id="survey_details.survey_name-label"
@@ -1508,18 +1369,18 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           Survey Name
           <span
             aria-hidden="true"
-            class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+            class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error css-uyis09-MuiFormLabel-asterisk"
           >
              *
           </span>
         </label>
         <div
-          class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
         >
           <input
             aria-describedby="survey_details.survey_name-helper-text"
             aria-invalid="true"
-            class="MuiInputBase-input MuiOutlinedInput-input"
+            class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
             data-testid="survey_details.survey_name"
             id="survey_details.survey_name"
             name="survey_details.survey_name"
@@ -1529,19 +1390,19 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+              class="css-14lo706"
             >
               <span>
-                Survey Name *
+                Survey Name *
               </span>
             </legend>
           </fieldset>
         </div>
         <p
-          class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+          class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
           id="survey_details.survey_name-helper-text"
         >
           error on survey name field
@@ -1549,19 +1410,19 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
+        class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-3 css-3e39lh-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="true"
               for="start_date"
               id="start_date-label"
@@ -1569,18 +1430,18 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               Start Date
               <span
                 aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error css-uyis09-MuiFormLabel-asterisk"
               >
                  *
               </span>
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-describedby="start_date-helper-text"
                 aria-invalid="true"
-                class="MuiInputBase-input MuiOutlinedInput-input"
+                class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                 data-testid="start-date"
                 id="start_date"
                 max="2100-12-31"
@@ -1592,19 +1453,19 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                  class="css-14lo706"
                 >
                   <span>
-                    Start Date *
+                    Start Date *
                   </span>
                 </legend>
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
               id="start_date-helper-text"
             >
               error on start date field
@@ -1612,13 +1473,13 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           </div>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="true"
               for="end_date"
               id="end_date-label"
@@ -1626,12 +1487,12 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               End Date
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-describedby="end_date-helper-text"
                 aria-invalid="true"
-                class="MuiInputBase-input MuiOutlinedInput-input"
+                class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                 data-testid="end-date"
                 id="end_date"
                 max="2100-12-31"
@@ -1642,10 +1503,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                  class="css-14lo706"
                 >
                   <span>
                     End Date
@@ -1654,7 +1515,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled"
+              class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled css-1fdv3wc-MuiFormHelperText-root"
               id="end_date-helper-text"
             >
               error on end date field
@@ -1665,30 +1526,28 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     </div>
   </div>
   <fieldset
-    class="MuiBox-root MuiBox-root-30"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Species
     </legend>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
           data-testid="species.focal_species"
-          role="combobox"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="false"
               for="species.focal_species"
               id="species.focal_species-label"
@@ -1696,91 +1555,68 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               Focal Species
               <span
                 aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error css-uyis09-MuiFormLabel-asterisk"
               >
                  *
               </span>
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-5l6dvj-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-autocomplete="list"
                 aria-describedby="species.focal_species-helper-text"
+                aria-expanded="false"
                 aria-invalid="true"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
                 id="species.focal_species"
                 name="species.focal_species"
                 required=""
+                role="combobox"
                 spellcheck="false"
                 type="text"
                 value=""
               />
               <div
-                class="MuiAutocomplete-endAdornment"
+                class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
               >
                 <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <button
                   aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
                   tabindex="-1"
                   title="Open"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="ArrowDropDownIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
                 </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-28"
+                  class="css-yjsfm1"
                 >
                   <span>
-                    Focal Species *
+                    Focal Species *
                   </span>
                 </legend>
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error Mui-required"
+              class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
               id="species.focal_species-helper-text"
             >
               error on species field
@@ -1789,19 +1625,17 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
       >
         <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
           data-testid="species.ancillary_species"
-          role="combobox"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
               data-shrink="false"
               for="species.ancillary_species"
               id="species.ancillary_species-label"
@@ -1809,74 +1643,51 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               Ancillary Species
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-5l6dvj-MuiInputBase-root-MuiOutlinedInput-root"
             >
               <input
                 aria-autocomplete="list"
+                aria-expanded="false"
                 aria-invalid="false"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-nxo287-MuiInputBase-input-MuiOutlinedInput-input"
                 id="species.ancillary_species"
                 name="species.ancillary_species"
+                role="combobox"
                 spellcheck="false"
                 type="text"
                 value=""
               />
               <div
-                class="MuiAutocomplete-endAdornment"
+                class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
               >
                 <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                </button>
-                <button
                   aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
                   tabindex="-1"
                   title="Open"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="ArrowDropDownIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
                 </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-28"
+                  class="css-yjsfm1"
                 >
                   <span>
                     Ancillary Species
@@ -1890,24 +1701,24 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-32"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Lead Biologist
     </legend>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
       >
         <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
             for="survey_details.biologist_first_name"
             id="survey_details.biologist_first_name-label"
@@ -1915,18 +1726,18 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             First Name
             <span
               aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error css-uyis09-MuiFormLabel-asterisk"
             >
                *
             </span>
           </label>
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
           >
             <input
               aria-describedby="survey_details.biologist_first_name-helper-text"
               aria-invalid="true"
-              class="MuiInputBase-input MuiOutlinedInput-input"
+              class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
               data-testid="survey_details.biologist_first_name"
               id="survey_details.biologist_first_name"
               name="survey_details.biologist_first_name"
@@ -1936,19 +1747,19 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                class="css-14lo706"
               >
                 <span>
-                  First Name *
+                  First Name *
                 </span>
               </legend>
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
             id="survey_details.biologist_first_name-helper-text"
           >
             error on biologist first name field
@@ -1956,13 +1767,13 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1y7d9bn-MuiGrid-root"
       >
         <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-error MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
             data-shrink="true"
             for="survey_details.biologist_last_name"
             id="survey_details.biologist_last_name-label"
@@ -1970,18 +1781,18 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             Last Name
             <span
               aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error css-uyis09-MuiFormLabel-asterisk"
             >
                *
             </span>
           </label>
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-error MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
           >
             <input
               aria-describedby="survey_details.biologist_last_name-helper-text"
               aria-invalid="true"
-              class="MuiInputBase-input MuiOutlinedInput-input"
+              class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
               data-testid="survey_details.biologist_last_name"
               id="survey_details.biologist_last_name"
               name="survey_details.biologist_last_name"
@@ -1991,19 +1802,19 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                class="css-14lo706"
               >
                 <span>
-                  Last Name *
+                  Last Name *
                 </span>
               </legend>
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
             id="survey_details.biologist_last_name-helper-text"
           >
             error on biologist last name field
@@ -2013,45 +1824,45 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-33"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Permits
     </legend>
     <div
-      class="MuiBox-root MuiBox-root-34"
+      class="MuiBox-root css-0"
     >
       <ul
-        class="MuiList-root makeStyles-permitList-35 MuiList-dense"
+        class="MuiList-root MuiList-dense makeStyles-permitList-6 css-1mk9mw3-MuiList-root"
       >
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-padding MuiListItem-secondaryAction css-hw573y-MuiListItem-root"
           >
             <div
-              class="MuiListItemText-root MuiListItemText-dense"
+              class="MuiListItemText-root MuiListItemText-dense css-tlelie-MuiListItemText-root"
             >
               <span
-                class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+                class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-36"
+                  class="MuiBox-root css-3cyd2n"
                 >
                   <div
-                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
                   >
                     <div
-                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                     >
                       <div
-                        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                        class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                       >
                         <label
-                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                           data-shrink="true"
                           for="permit.permits.[0].permit_number"
                           id="permit.permits.[0].permit_number-label"
@@ -2059,17 +1870,17 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                           Permit Number
                           <span
                             aria-hidden="true"
-                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                           >
                              *
                           </span>
                         </label>
                         <div
-                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                         >
                           <input
                             aria-invalid="false"
-                            class="MuiInputBase-input MuiOutlinedInput-input"
+                            class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                             data-testid="permit.permits.[0].permit_number"
                             id="permit.permits.[0].permit_number"
                             name="permit.permits.[0].permit_number"
@@ -2079,13 +1890,13 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                           />
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                              class="css-14lo706"
                             >
                               <span>
-                                Permit Number *
+                                Permit Number *
                               </span>
                             </legend>
                           </fieldset>
@@ -2093,32 +1904,33 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                       </div>
                     </div>
                     <div
-                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                     >
                       <div
-                        class="MuiFormControl-root MuiFormControl-fullWidth"
+                        class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
                       >
                         <label
-                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                           data-shrink="true"
                           id="permit_type"
                         >
                           Permit Type
                           <span
                             aria-hidden="true"
-                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                           >
                              *
                           </span>
                         </label>
                         <div
-                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                         >
                           <div
+                            aria-expanded="false"
                             aria-haspopup="listbox"
                             aria-label="Permit Type"
                             aria-labelledby="permit_type permit.permits.[0].permit_type"
-                            class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                            class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                             id="permit.permits.[0].permit_type"
                             role="button"
                             tabindex="0"
@@ -2127,7 +1939,8 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                           </div>
                           <input
                             aria-hidden="true"
-                            class="MuiSelect-nativeInput"
+                            aria-invalid="false"
+                            class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                             name="permit.permits.[0].permit_type"
                             required=""
                             tabindex="-1"
@@ -2135,7 +1948,8 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                           />
                           <svg
                             aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                            data-testid="ArrowDropDownIcon"
                             focusable="false"
                             viewBox="0 0 24 24"
                           >
@@ -2145,19 +1959,19 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                           </svg>
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                              class="css-14lo706"
                             >
                               <span>
-                                Permit Type
+                                Permit Type *
                               </span>
                             </legend>
                           </fieldset>
                         </div>
                         <p
-                          class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                          class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                         />
                       </div>
                     </div>
@@ -2167,47 +1981,14 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root MuiListItemSecondaryAction-disableGutters css-14f9zar-MuiListItemSecondaryAction-root"
           >
             <button
               aria-label="remove permit"
-              class="MuiButtonBase-root MuiIconButton-root"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hpj6o1-MuiButtonBase-root-MuiIconButton-root"
               data-testid="delete-icon"
               tabindex="0"
               type="button"
-            >
-              <span
-                class="MuiIconButton-label"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-            </button>
-          </div>
-        </li>
-      </ul>
-      <div
-        class="MuiBox-root MuiBox-root-37"
-      >
-        <button
-          aria-label="add permit"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
-          tabindex="0"
-          type="button"
-        >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
               <svg
                 role="presentation"
@@ -2215,36 +1996,59 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                 viewBox="0 0 24 24"
               >
                 <path
-                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
                   style="fill: currentColor;"
                 />
               </svg>
-            </span>
-            Add New Permit
+            </button>
+          </div>
+        </li>
+      </ul>
+      <div
+        class="MuiBox-root css-164r41r"
+      >
+        <button
+          aria-label="add permit"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-1oiu1qi-MuiButtonBase-root-MuiButton-root"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium css-19goimj-MuiButton-startIcon"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
           </span>
+          Add New Permit
         </button>
       </div>
     </div>
   </fieldset>
   <fieldset
-    class="MuiBox-root MuiBox-root-38"
+    class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5"
+      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
     >
       Funding Sources
     </legend>
     <div
-      aria-expanded="false"
-      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon css-1u4mn5s-MuiAutocomplete-root"
       data-testid="funding.funding_sources"
-      role="combobox"
     >
       <div
-        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
           data-shrink="true"
           for="funding.funding_sources"
           id="funding.funding_sources-label"
@@ -2252,22 +2056,23 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           Select Funding Sources
         </label>
         <div
-          class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-1hnkxp-MuiInputBase-root-MuiOutlinedInput-root"
         >
           <div
-            class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
+            class="MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault MuiAutocomplete-tag MuiAutocomplete-tagSizeMedium css-1k9anul-MuiButtonBase-root-MuiChip-root"
             data-tag-index="0"
             role="button"
             tabindex="-1"
           >
             <span
-              class="MuiChip-label"
+              class="MuiChip-label MuiChip-labelMedium css-1dybbl5-MuiChip-label"
             >
               agency | $ 100 | 2000/04/09 - 2000/05/10
             </span>
             <svg
               aria-hidden="true"
-              class="MuiSvgIcon-root MuiChip-deleteIcon"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiChip-deleteIcon MuiChip-deleteIconMedium MuiChip-deleteIconColorDefault MuiChip-deleteIconFilledColorDefault css-i4bv87-MuiSvgIcon-root"
+              data-testid="CancelIcon"
               focusable="false"
               viewBox="0 0 24 24"
             >
@@ -2278,70 +2083,66 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           </div>
           <input
             aria-autocomplete="list"
+            aria-expanded="false"
             aria-invalid="false"
             autocapitalize="none"
             autocomplete="off"
-            class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+            class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-152mnda-MuiInputBase-input-MuiOutlinedInput-input"
             id="funding.funding_sources"
             name="funding.funding_sources"
+            role="combobox"
             spellcheck="false"
             type="text"
             value=""
           />
           <div
-            class="MuiAutocomplete-endAdornment"
+            class="MuiAutocomplete-endAdornment css-1q60rmi-MuiAutocomplete-endAdornment"
           >
             <button
               aria-label="Clear"
-              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-clearIndicator css-11hfmu2-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-clearIndicator"
               tabindex="-1"
               title="Clear"
               type="button"
             >
-              <span
-                class="MuiIconButton-label"
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                data-testid="CloseIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                  />
-                </svg>
-              </span>
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                />
+              </svg>
             </button>
             <button
               aria-label="Open"
-              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium MuiAutocomplete-popupIndicator css-16mr8k3-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator"
               tabindex="-1"
               title="Open"
               type="button"
             >
-              <span
-                class="MuiIconButton-label"
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                data-testid="ArrowDropDownIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-              </span>
+                <path
+                  d="M7 10l5 5 5-5z"
+                />
+              </svg>
             </button>
           </div>
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+            class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+              class="css-14lo706"
             >
               <span>
                 Select Funding Sources

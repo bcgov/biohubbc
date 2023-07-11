@@ -3,85 +3,89 @@
 exports[`AccessRequestPage renders correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root-2 MuiBox-root-3"
+    class="MuiBox-root css-1wcaknn"
   >
     <div
-      class="MuiContainer-root-4 MuiContainer-maxWidthMd-9"
+      class="MuiContainer-root MuiContainer-maxWidthMd css-f99uwf-MuiContainer-root"
     >
       <div
-        class="MuiPaper-root-13 MuiBox-root-2 MuiBox-root-12 MuiPaper-elevation1-17 MuiPaper-rounded-14"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiBox-root css-merg59-MuiPaper-root"
       >
         <h1
-          class="MuiTypography-root-41 MuiTypography-h1-46"
+          class="MuiTypography-root MuiTypography-h1 css-9t9z3h-MuiTypography-root"
         >
           Request Access
         </h1>
         <div
-          class="MuiBox-root-2 MuiBox-root-71"
+          class="MuiBox-root css-178yklu"
         >
           <p
-            class="MuiTypography-root-41 MuiTypography-body1-43 MuiTypography-colorTextSecondary-67"
+            class="MuiTypography-root MuiTypography-body1 css-1jwtxlz-MuiTypography-root"
           >
             You will need to provide some additional details before accessing this application.
           </p>
         </div>
         <div
-          class="MuiBox-root-2 MuiBox-root-72"
+          class="MuiBox-root css-h5fkc8"
         >
           <form>
             <div
-              class="MuiBox-root-2 MuiBox-root-73"
+              class="MuiBox-root css-0"
             >
               <div
-                class="MuiGrid-root-74 MuiGrid-container-75 MuiGrid-spacing-xs-3-99"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 css-zow5z4-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root-74 MuiGrid-item-76 MuiGrid-grid-xs-12-120"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-q6rttv-MuiGrid-root"
                 >
                   <h3
-                    class="MuiTypography-root-41 MuiTypography-h3-48"
+                    class="MuiTypography-root MuiTypography-h3 css-18usbqj-MuiTypography-root"
                   >
                     What role do you want to be assigned?
                   </h3>
                   <div
-                    class="MuiBox-root-2 MuiBox-root-177"
+                    class="MuiBox-root css-1yuhvjn"
                   >
                     <div
-                      class="MuiFormControl-root-178 MuiFormControl-fullWidth-181"
+                      class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
                       style="width: 100%;"
                     >
                       <label
-                        class="MuiFormLabel-root-190 MuiInputLabel-root-182 MuiInputLabel-formControl-184 MuiInputLabel-animated-187 MuiInputLabel-outlined-189 Mui-required Mui-required"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
                         data-shrink="false"
                         id="role-label"
                       >
                         Role
                         <span
                           aria-hidden="true"
-                          class="MuiFormLabel-asterisk-193 MuiInputLabel-asterisk-183"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                         >
                            *
                         </span>
                       </label>
                       <div
-                        class="MuiInputBase-root-216 MuiOutlinedInput-root-204 MuiInputBase-formControl-217"
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                       >
                         <div
+                          aria-expanded="false"
                           aria-haspopup="listbox"
                           aria-label="Role"
                           aria-labelledby="role-label role"
-                          class="MuiSelect-root-194 MuiSelect-select-195 MuiSelect-selectMenu-198 MuiSelect-outlined-197 MuiInputBase-input-224 MuiOutlinedInput-input-211"
+                          class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                           id="role"
                           role="button"
                           tabindex="0"
                         >
-                          <span>
+                          <span
+                            class="notranslate"
+                          >
                             ​
                           </span>
                         </div>
                         <input
                           aria-hidden="true"
-                          class="MuiSelect-nativeInput-203"
+                          aria-invalid="false"
+                          class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                           name="role"
                           required=""
                           tabindex="-1"
@@ -89,7 +93,8 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         />
                         <svg
                           aria-hidden="true"
-                          class="MuiSvgIcon-root-231 MuiSelect-icon-199 MuiSelect-iconOutlined-202"
+                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                          data-testid="ArrowDropDownIcon"
                           focusable="false"
                           viewBox="0 0 24 24"
                         >
@@ -99,40 +104,40 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-244 MuiOutlinedInput-notchedOutline-210"
+                          class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-246"
+                            class="css-yjsfm1"
                           >
                             <span>
-                              Role
+                              Role *
                             </span>
                           </legend>
                         </fieldset>
                       </div>
                       <p
-                        class="MuiFormHelperText-root-248 MuiFormHelperText-contained-250 Mui-required"
+                        class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
                       />
                     </div>
                   </div>
                 </div>
               </div>
               <div
-                class="MuiBox-root-2 MuiBox-root-252"
+                class="MuiBox-root css-178yklu"
               >
                 <h3
-                  class="MuiTypography-root-41 MuiTypography-h3-48"
+                  class="MuiTypography-root MuiTypography-h3 css-18usbqj-MuiTypography-root"
                 >
                   Why are you requesting access to Species Inventory Management System (SIMS)?
                 </h3>
                 <div
-                  class="MuiBox-root-2 MuiBox-root-253"
+                  class="MuiBox-root css-1yuhvjn"
                 >
                   <div
-                    class="MuiFormControl-root-178 MuiTextField-root-254 MuiFormControl-fullWidth-181"
+                    class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                   >
                     <label
-                      class="MuiFormLabel-root-190 MuiInputLabel-root-182 MuiInputLabel-formControl-184 MuiInputLabel-animated-187 MuiInputLabel-outlined-189"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="false"
                       for="reason"
                       id="reason-label"
@@ -140,22 +145,30 @@ exports[`AccessRequestPage renders correctly 1`] = `
                       Reason
                     </label>
                     <div
-                      class="MuiInputBase-root-216 MuiOutlinedInput-root-204 MuiInputBase-fullWidth-223 MuiInputBase-formControl-217 MuiInputBase-multiline-221 MuiOutlinedInput-multiline-209"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline css-1s30bse-MuiInputBase-root-MuiOutlinedInput-root"
                     >
                       <textarea
                         aria-invalid="false"
-                        class="MuiInputBase-input-224 MuiOutlinedInput-input-211 MuiInputBase-inputMultiline-226 MuiOutlinedInput-inputMultiline-213"
+                        class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline css-1sqnrkk-MuiInputBase-input-MuiOutlinedInput-input"
                         data-testid="reason"
                         id="reason"
                         name="reason"
                         rows="4"
+                        style="height: 0px; overflow: hidden;"
+                      />
+                      <textarea
+                        aria-hidden="true"
+                        class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline css-1sqnrkk-MuiInputBase-input-MuiOutlinedInput-input"
+                        readonly=""
+                        style="visibility: hidden; position: absolute; overflow: hidden; height: 0px; top: 0px; left: 0px; transform: translateZ(0); padding-top: 0px; padding-bottom: 0px; width: 100%;"
+                        tabindex="-1"
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-244 MuiOutlinedInput-notchedOutline-210"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-246"
+                          class="css-yjsfm1"
                         >
                           <span>
                             Reason
@@ -168,38 +181,28 @@ exports[`AccessRequestPage renders correctly 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root-2 MuiBox-root-255"
+              class="MuiBox-root css-1vfa8p7"
             >
               <div
-                class="MuiBox-root-2 MuiBox-root-258 makeStyles-wrapper-256"
+                class="makeStyles-wrapper-2 MuiBox-root css-0"
               >
                 <button
-                  class="MuiButtonBase-root-286 MuiButton-root-259 MuiButton-contained-267 makeStyles-actionButton-1 MuiButton-containedPrimary-268 MuiButton-disableElevation-270"
+                  class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-19tg9yb-MuiButtonBase-root-MuiButton-root"
                   tabindex="0"
                   type="submit"
                 >
-                  <span
-                    class="MuiButton-label-260"
-                  >
-                    <strong>
-                      Submit Request
-                    </strong>
-                  </span>
+                  <strong>
+                    Submit Request
+                  </strong>
                 </button>
               </div>
               <a
-                aria-disabled="false"
-                class="MuiButtonBase-root-286 MuiButton-root-259 MuiButton-outlined-264 makeStyles-actionButton-1 MuiButton-outlinedPrimary-265 MuiButton-disableElevation-270"
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-1oiu1qi-MuiButtonBase-root-MuiButton-root"
                 data-testid="logout-button"
                 href="/logout"
-                role="button"
                 tabindex="0"
               >
-                <span
-                  class="MuiButton-label-260"
-                >
-                  Log out
-                </span>
+                Log out
               </a>
             </div>
           </form>
