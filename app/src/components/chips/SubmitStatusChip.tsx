@@ -6,8 +6,6 @@ import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   chip: {
-    minWidth: '7rem',
-    fontSize: '11px',
     textTransform: 'uppercase'
   },
   chipUnSubmitted: {
@@ -19,7 +17,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: '#DFF0D8'
   },
   chipNoData: {
-    backgroundColor: theme.palette.grey[300]
   }
 }));
 
@@ -47,7 +44,6 @@ export const SubmitStatusChip: React.FC<{ status: PublishStatus; chipProps?: Par
   return (
     <Chip
       title={chipTitle}
-      variant="outlined"
       className={clsx(classes.chip, chipStatusClass)}
       label={chipLabel}
       {...props.chipProps}

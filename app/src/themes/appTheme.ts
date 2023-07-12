@@ -153,7 +153,8 @@ const appTheme = createMuiTheme({
     },
     MuiChip: {
       root: {
-        minWidth: '6rem',
+        minWidth: '7rem',
+        fontSize: '12px',
         fontWeight: 700
       }
     },
