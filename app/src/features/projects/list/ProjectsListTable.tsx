@@ -77,9 +77,10 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <Link
+        <Link style={{ overflow: 'hidden', textOverflow: 'ellipsis'}}
           data-testid={params.row.name}
           underline="always"
+          title={params.row.name}
           component={RouterLink}
           to={
             params.row.isDraft ? `/admin/projects/create?draftId=${params.row.id}` : `/admin/projects/${params.row.id}`
@@ -91,7 +92,8 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     {
       field: 'type',
       headerName: 'Type',
-      flex: 1
+      flex: 1,
+      resizable: true
     },
     {
       field: 'regions',

@@ -134,7 +134,7 @@ const ProjectsListPage: React.FC = () => {
           <Paper elevation={0}>
             <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
               <Typography variant="h4" component="h2">
-                Projects found{' '}
+                Records Found{' '}
                 <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
                   ({projectsDataLoader.data?.length || 0})
                 </Typography>
