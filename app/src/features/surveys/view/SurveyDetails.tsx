@@ -1,10 +1,10 @@
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';

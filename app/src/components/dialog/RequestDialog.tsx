@@ -1,11 +1,11 @@
+import { mdiCheck, mdiWindowClose } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { mdiCheck, mdiWindowClose } from '@mdi/js';
-import Icon from '@mdi/react';
 import { Formik } from 'formik';
 import React from 'react';
 

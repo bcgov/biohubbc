@@ -1,10 +1,10 @@
+import { mdiFileOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
-import { Theme } from '@mui/material';
-import { mdiFileOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { PublishStatus } from 'constants/attachments';
 

@@ -1,9 +1,9 @@
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
 import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';

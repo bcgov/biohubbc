@@ -49,7 +49,7 @@ const FundingSourceAutocomplete: React.FC<IFundingSourceAutocompleteProps<string
       options={props.options}
       required={props.required}
       filterLimit={props.filterLimit}
-      optionFilter='label'
+      optionFilter="label"
       onChange={(event, option: any) => {
         if (option?.type === FundingSourceType.FIRST_NATIONS) {
           setName('first_nations_name');

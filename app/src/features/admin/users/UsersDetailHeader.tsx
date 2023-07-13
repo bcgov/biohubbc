@@ -1,12 +1,12 @@
+import { mdiArrowLeft, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
-import { mdiArrowLeft, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
+import { makeStyles } from '@mui/styles';
 import React, { useCallback, useContext } from 'react';
 import { useHistory } from 'react-router';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';

@@ -1,10 +1,10 @@
+import CloseIcon from '@mui/icons-material/Close';
+import { Color } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
-import CloseIcon from '@mui/icons-material/Close';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import React, { createContext, ReactNode, useState } from 'react';
-import { Color } from '@mui/material';
 
 export interface IDialogContext {
   /**

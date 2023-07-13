@@ -1,9 +1,9 @@
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { mdiArrowRight, mdiDoorClosedLock, mdiDoorOpen } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import { makeStyles } from '@mui/styles';
 import { ConfigContext } from 'contexts/configContext';
 import { useContext, useEffect } from 'react';
 import { getLogOutUrl } from 'utils/Utils';

@@ -1,11 +1,11 @@
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditProjectI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';

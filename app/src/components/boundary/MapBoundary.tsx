@@ -1,3 +1,6 @@
+import { mdiRefresh, mdiTrayArrowUp } from '@mdi/js';
+import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -7,11 +10,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
-import { makeStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
-import { mdiRefresh, mdiTrayArrowUp } from '@mdi/js';
-import Icon from '@mdi/react';
+import { makeStyles } from '@mui/styles';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
@@ -31,7 +31,6 @@ import {
 } from 'utils/mapBoundaryUploadHelpers';
 
 const useStyles = makeStyles(() => ({
-
   zoomToBoundaryExtentBtn: {
     padding: '3px',
     borderRadius: '4px',

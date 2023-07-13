@@ -1,3 +1,5 @@
+import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -7,8 +9,6 @@ import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import CustomTextField from 'components/fields/CustomTextField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';

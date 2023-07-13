@@ -1,7 +1,7 @@
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button, { ButtonProps } from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme: Theme) => ({

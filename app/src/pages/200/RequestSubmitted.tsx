@@ -1,10 +1,10 @@
+import { mdiCheck } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { mdiCheck } from '@mdi/js';
-import Icon from '@mdi/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useContext } from 'react';
 import { Redirect } from 'react-router';

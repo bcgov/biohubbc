@@ -1,7 +1,7 @@
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import { Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import ProjectAdvancedFilters, {

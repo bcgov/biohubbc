@@ -1,3 +1,5 @@
+import { mdiArrowRight, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -7,8 +9,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import { mdiArrowRight, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React from 'react';

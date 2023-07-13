@@ -1,11 +1,11 @@
+import { mdiFileOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
-import { mdiFileOutline } from '@mdi/js';
-import Icon from '@mdi/react';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import BorderLinearProgress from './BorderLinearProgress';

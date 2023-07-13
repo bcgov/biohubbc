@@ -1,13 +1,3 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import Typography from '@mui/material/Typography';
 import {
   mdiAccountMultipleOutline,
   mdiCalendarRangeOutline,
@@ -18,6 +8,16 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PublishProjectDialog from 'components/publish/PublishProjectDialog';

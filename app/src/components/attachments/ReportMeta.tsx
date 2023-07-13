@@ -1,10 +1,10 @@
-import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React from 'react';

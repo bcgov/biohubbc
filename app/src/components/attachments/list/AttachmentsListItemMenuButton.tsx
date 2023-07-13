@@ -1,10 +1,10 @@
+import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
-import Icon from '@mdi/react';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { AttachmentType, PublishStatus } from 'constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';

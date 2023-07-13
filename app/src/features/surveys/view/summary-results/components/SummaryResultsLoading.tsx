@@ -1,10 +1,10 @@
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import { makeStyles } from '@mui/styles';
-import { Theme } from '@mui/material';
-import Typography from '@mui/material/Typography';
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import BorderLinearProgress from '../../survey-observations/components/BorderLinearProgress';
 

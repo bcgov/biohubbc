@@ -1,8 +1,8 @@
-import Avatar from '@mui/material/Avatar';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { mdiAlert, mdiCheck, mdiExclamation, mdiFileCheckOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => ({

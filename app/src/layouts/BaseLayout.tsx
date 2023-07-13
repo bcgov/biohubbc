@@ -1,8 +1,8 @@
+import { Theme } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Theme } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import Alert from '@mui/material/Alert';
 import clsx from 'clsx';
 import Footer from 'components/layout/Footer';
 import Header from 'components/layout/Header';

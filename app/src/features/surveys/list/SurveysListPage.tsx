@@ -1,9 +1,9 @@
+import { mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import { mdiPlus } from '@mdi/js';
-import Icon from '@mdi/react';
 import assert from 'assert';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import SurveysList from 'components/surveys/SurveysList';

@@ -1,9 +1,9 @@
+import { mdiAlertCircleOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { mdiAlertCircleOutline } from '@mdi/js';
-import Icon from '@mdi/react';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useContext } from 'react';
 import { Redirect, useHistory } from 'react-router';

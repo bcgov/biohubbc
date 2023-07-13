@@ -1,5 +1,5 @@
-import Chip, { ChipProps } from '@mui/material/Chip';
 import { Theme } from '@mui/material';
+import Chip, { ChipProps } from '@mui/material/Chip';
 import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { AdministrativeActivityStatusType } from 'constants/misc';

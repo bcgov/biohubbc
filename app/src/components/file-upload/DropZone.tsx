@@ -1,10 +1,10 @@
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import Typography from '@mui/material/Typography';
 import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
 import Dropzone, { FileRejection } from 'react-dropzone';

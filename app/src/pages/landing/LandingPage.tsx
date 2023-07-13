@@ -1,8 +1,8 @@
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import BaseLayout from 'layouts/BaseLayout';
 import LandingActions from './LandingActions';
 

@@ -1,10 +1,10 @@
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
-import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
 import { ProjectContext } from 'contexts/projectContext';

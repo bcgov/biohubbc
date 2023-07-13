@@ -1,6 +1,6 @@
-import Typography from '@mui/material/Typography';
 import { mdiChevronDown } from '@mdi/js';
 import Icon from '@mdi/react';
+import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N } from 'constants/i18n';
