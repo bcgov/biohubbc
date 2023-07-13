@@ -66,7 +66,7 @@ const updatedSelect = createTheme({
 
 const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
   const { values, touched, errors, handleChange } = useFormikContext<ISelectWithSubtextFieldOption>();
-  const [menuAnchorEl, setMenuAnchorEl] = useState<any | null>(null);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<(EventTarget & Element) | null>(null);
 
   return (
     <ThemeProvider theme={updatedSelect}>
