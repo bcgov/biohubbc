@@ -1,6 +1,6 @@
-import 'styles.scss';
 import { grey } from '@mui/material/colors';
 import { createTheme } from '@mui/material/styles';
+import 'styles.scss';
 
 const appTheme = createTheme({
   breakpoints: {
@@ -32,7 +32,7 @@ const appTheme = createTheme({
     },
     error: {
       main: '#A12622'
-    },
+    }
   },
   typography: {
     fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(','),

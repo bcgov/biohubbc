@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: '#fcba19',
     fontWeight: 700,
     '&:hover': {
-      backgroundColor: '#fcba19',
+      backgroundColor: '#fcba19'
     }
   },
   heroLink: {

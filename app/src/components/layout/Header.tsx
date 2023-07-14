@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       padding: theme.spacing(2),
       color: 'inherit',
       fontSize: '1rem',
-      textDecoration: 'none',
+      textDecoration: 'none'
     },
     '& a:hover': {
       textDecoration: 'underline'
@@ -104,21 +104,24 @@ const Header: React.FC = () => {
       .join('/');
 
     return (
-      <Box display="flex" alignItems="center"
+      <Box
+        display="flex"
+        alignItems="center"
         sx={{
-          fontSize: '16px',
-        }}
-      >
-        <Box display="flex" alignItems="center"
+          fontSize: '16px'
+        }}>
+        <Box
+          display="flex"
+          alignItems="center"
           sx={{
             padding: '6px 14px',
             lineHeight: '1.75'
-          }}
-        >
+          }}>
           <Icon path={mdiAccountCircle} size={1} />
           <Box ml={1}>{formattedUsername}</Box>
         </Box>
-        <Divider orientation="vertical"
+        <Divider
+          orientation="vertical"
           sx={{
             marginRight: '4px',
             marginLeft: '4px',
@@ -135,8 +138,7 @@ const Header: React.FC = () => {
           sx={{
             fontSize: '16px',
             fontWeight: '400'
-          }}
-        >
+          }}>
           Log Out
         </Button>
       </Box>
@@ -179,11 +181,12 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <AppBar position="relative" elevation={0}
+      <AppBar
+        position="relative"
+        elevation={0}
         sx={{
           backgroundColor: '#003366'
-        }}
-      >
+        }}>
         <Toolbar disableGutters className={classes.govHeaderToolbar}>
           <Container maxWidth="xl">
             <Box display="flex" justifyContent="space-between" width="100%">
@@ -195,15 +198,15 @@ const Header: React.FC = () => {
                 </picture>
                 <span>
                   Species Inventory Management System
-                  <Box component="sup"
+                  <Box
+                    component="sup"
                     sx={{
                       marginLeft: '4px',
                       color: '#fcba19',
                       fontSize: '0.75rem',
                       fontWeight: 400,
-                      textTransform: 'uppercase',
-                    }}
-                  >
+                      textTransform: 'uppercase'
+                    }}>
                     <BetaLabel />
                   </Box>
                 </span>
@@ -233,8 +236,7 @@ const Header: React.FC = () => {
         <Box
           sx={{
             backgroundColor: '#38598a'
-          }}
-        >
+          }}>
           <Container maxWidth="xl">
             <Toolbar
               variant="dense"
