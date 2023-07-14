@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   govHeaderToolbar: {
     height: '80px',
     '& button': {
-      padding: '6px 14px',
+      padding: '6px 12px',
+      fontSize: '16px',
       fontWeight: '400'
     },
     '& a:focus': {
@@ -105,7 +106,7 @@ const Header: React.FC = () => {
     return (
       <Box display="flex" alignItems="center"
         sx={{
-          fontSize: '14px',
+          fontSize: '16px',
         }}
       >
         <Box display="flex" alignItems="center"
@@ -132,6 +133,7 @@ const Header: React.FC = () => {
           href="/logout"
           data-testid="menu_log_out"
           sx={{
+            fontSize: '16px',
             fontWeight: '400'
           }}
         >
@@ -153,6 +155,7 @@ const Header: React.FC = () => {
         startIcon={<Icon path={mdiLoginVariant} size={1} />}
         data-testid="login"
         sx={{
+          fontSize: '16px',
           fontWeight: '400'
         }}>
         Log In
