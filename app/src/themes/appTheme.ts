@@ -1,6 +1,6 @@
+import 'styles.scss';
 import { grey } from '@mui/material/colors';
 import { createTheme } from '@mui/material/styles';
-import 'styles.scss';
 
 const appTheme = createTheme({
   breakpoints: {
@@ -32,7 +32,7 @@ const appTheme = createTheme({
     },
     error: {
       main: '#A12622'
-    }
+    },
   },
   typography: {
     fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(','),
@@ -134,8 +134,6 @@ const appTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: '5px',
-          fontSize: '0.9rem',
           '&:focus': {
             outline: '3px solid #3B99FC',
             outlineOffset: '-1px'
