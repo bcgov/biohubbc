@@ -17,6 +17,10 @@ export class RegionService extends DBService {
     await this.regionRepository.addRegionsToASurvey(surveyId, regions);
   }
   async getAllRegions(): Promise<IRegion[]> {
-    return [];
+    return await this.regionRepository.getAllRegions();
+  }
+
+  async searchRegionsWithGeography(): Promise<IRegion[]> {
+    return await this.regionRepository.searchRegionsWithGeography();
   }
 }

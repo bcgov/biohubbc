@@ -17,6 +17,7 @@ export class PostProjectObject {
   iucn: PostIUCNData;
   funding: PostFundingData;
   partnerships: PostPartnershipsData;
+  regions: PostRegionData;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
@@ -28,6 +29,7 @@ export class PostProjectObject {
     this.funding = (obj?.funding && new PostFundingData(obj.funding)) || null;
     this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
+    this.regions = (obj?.regions as PostRegionData) || [];
   }
 }
 
@@ -233,4 +235,8 @@ export class PostDraftData {
     this.name = obj?.name || null;
     this.data = (obj?.data && obj.data) || {};
   }
+}
+
+export interface PostRegionData {
+  region_ids: number[];
 }

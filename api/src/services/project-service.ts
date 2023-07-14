@@ -3,7 +3,7 @@ import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
-import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
+import { IPostIUCN, PostFundingSource, PostProjectObject, PostRegionData } from '../models/project-create';
 import {
   IPutIUCN,
   PutCoordinatorData,
@@ -31,6 +31,7 @@ import { ProjectUserObject } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectRepository } from '../repositories/project-repository';
+import { RegionRepository } from '../repositories/region-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -383,6 +384,9 @@ export class ProjectService extends DBService {
       )
     );
 
+    // Handle project regions
+    promises.push(this.insertRegion(projectId, postProjectData.regions));
+
     await Promise.all(promises);
 
     // The user that creates a project is automatically assigned a project lead role, for this project
@@ -417,6 +421,11 @@ export class ProjectService extends DBService {
 
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
     return this.projectParticipationService.insertParticipantRole(projectId, projectParticipantRole);
+  }
+
+  async insertRegion(projectId: number, regions: PostRegionData): Promise<void> {
+    const regionRepo = new RegionRepository(this.connection);
+    return await regionRepo.addRegionsToAProject(projectId, regions.region_ids);
   }
 
   /**

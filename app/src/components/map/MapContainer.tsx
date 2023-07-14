@@ -139,7 +139,7 @@ const MapContainer = (props: IMapContainerProps) => {
 
       const getFeatureDetails = createGetFeatureDetails(biohubApi.external.post);
       const inferredLayers: IWFSFeatureDetails = await getFeatureDetails(typeNames, mapGeometries, wfsParams);
-
+      console.log(inferredLayers);
       if (setInferredLayersInfo) {
         setInferredLayersInfo(inferredLayers);
       }
