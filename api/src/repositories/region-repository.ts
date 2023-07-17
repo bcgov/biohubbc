@@ -73,9 +73,23 @@ export class RegionRepository extends BaseRepository {
     await this.connection.sql(sql);
   }
 
+  async deleteRegionsFromAProject(projectId: number): Promise<void> {
+    const sql = SQL`
+    DELETE FROM project_regions WHERE project_id=${projectId};
+  `;
+    await this.connection.sql(sql);
+  }
+
+  async deleteRegionsFromASurvey(surveyId: number): Promise<void> {
+    const sql = SQL`
+    DELETE FROM survey_regions WHERE survey_id=${surveyId};
+  `;
+    await this.connection.sql(sql);
+  }
+
   async getAllRegions(): Promise<IRegion[]> {
     const sql = SQL`
-    SELECT * FROM region_lookup;
+      SELECT * FROM region_lookup;
     `;
     const response = await this.connection.sql(sql, IRegion);
     return response.rows;

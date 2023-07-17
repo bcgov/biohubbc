@@ -119,23 +119,13 @@ export function getRegions(): RequestHandler {
 
       await connection.open();
 
-      for (const feature of features) {
-        const result = await bcgwLayerService.getRegionsForFeature(feature, connection);
-        regionsDetails = regionsDetails.concat(result);
-      }
+      regionsDetails = await bcgwLayerService.getUniqueRegionsForFeatures(features, connection);
 
       await connection.commit();
 
-      // Convert array first into JSON, then into Set, then back to array in order to
-      // remove duplicate region information.
-      const regionDetailsJson = regionsDetails.map((value) => JSON.stringify(value));
-      const response = {
-        regions: Array.from(new Set<string>(regionDetailsJson)).map(
-          (value: string) => JSON.parse(value) as RegionDetails
-        )
-      };
-
-      return res.status(200).json(response);
+      return res.status(200).json({
+        regions: regionsDetails
+      });
     } catch (error) {
       defaultLog.error({ label: 'getRegions', message: 'error', error });
       await connection.rollback();
