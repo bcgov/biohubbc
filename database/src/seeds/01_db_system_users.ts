@@ -78,12 +78,6 @@ const systemUsers = [
     user_guid: 'E3A279530D164485BF43C6FE7A49E175'
   },
   {
-    identifier: 'achirico',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
-    user_guid: 'E3A279530D164485BF43C6FE7A49E175'
-  },
-  {
     identifier: 'mdeluca',
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
