@@ -1,6 +1,7 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
@@ -20,8 +21,10 @@ const mockUseApi = {
     updateProject: jest.fn()
   },
   external: {
-    get: jest.fn(),
-    post: jest.fn()
+    get: jest.fn()
+  },
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
@@ -33,20 +36,20 @@ describe.skip('LocationBoundary', () => {
     mockUseApi.project.getProjectForUpdate.mockClear();
     mockUseApi.project.updateProject.mockClear();
     mockUseApi.external.get.mockClear();
-    mockUseApi.external.post.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.external.get.mockResolvedValue({
+      features: []
+    });
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
     cleanup();
-  });
-
-  mockUseApi.external.get.mockResolvedValue({
-    features: []
-  });
-  mockUseApi.external.post.mockResolvedValue({
-    features: []
   });
 
   it('matches the snapshot when there is no location description', async () => {

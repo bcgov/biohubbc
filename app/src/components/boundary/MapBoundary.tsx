@@ -59,7 +59,12 @@ export interface IMapBoundaryProps {
 }
 
 /**
- * Shared component for map boundary component
+ * Common map component.
+ *
+ * Includes support/controls for importing a boundary from a file, selecting a boundary from a layer, or drawing a
+ * boundary.
+ *
+ * Includes a section to display inferred boundary information (ex: what regions the boundary intersects, etc).
  *
  * @param {IMapBoundaryProps} props
  * @return {*}

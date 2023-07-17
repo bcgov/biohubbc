@@ -2,6 +2,7 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -40,16 +41,8 @@ const mockUseApi = {
     searchSpecies: jest.fn().mockResolvedValue({ searchResponse: [] }),
     getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
   },
-  external: {
-    post: jest.fn().mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    })
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
@@ -91,6 +84,11 @@ describe.skip('CreateSurveyPage', () => {
     mockUseApi.survey.createSurvey.mockClear();
     mockUseApi.taxonomy.getSpeciesFromIds.mockClear();
     mockUseApi.taxonomy.searchSpecies.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });

@@ -661,6 +661,7 @@ export class PlatformService extends DBService {
     const { artifact_id } = await this._submitArtifactToBioHub(observationArtifact);
 
     //Insert publish history record
+    // TODO: this table isn't meant to track the input template (we don't have a spot for tracking it currently, if needed)
     await this.historyPublishService.insertOccurrenceSubmissionPublishRecord({
       occurrence_submission_id: occurrenceSubmissionData.occurrence_submission_id,
       queue_id: artifact_id
