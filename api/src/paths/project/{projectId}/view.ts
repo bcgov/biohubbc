@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
+import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
@@ -164,7 +164,7 @@ GET.apiDoc = {
                       geometry: {
                         type: 'array',
                         items: {
-                          ...(geoJsonFeature as object)
+                          ...(GeoJSONFeature as object)
                         }
                       }
                     }

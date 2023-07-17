@@ -11,6 +11,7 @@ import useProjectApi from './api/useProjectApi';
 import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
 import useSearchApi from './api/useSearchApi';
+import useSpatialApi from './api/useSpatialApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
@@ -48,6 +49,8 @@ export const useBiohubApi = () => {
 
   const publish = usePublishApi(apiAxios);
 
+  const spatial = useSpatialApi(apiAxios);
+
   return {
     project,
     search,
@@ -60,6 +63,7 @@ export const useBiohubApi = () => {
     user,
     admin,
     external,
-    publish
+    publish,
+    spatial
   };
 };
