@@ -1,3 +1,4 @@
+import { Feature } from 'geojson';
 import moment from 'moment';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
@@ -31,7 +32,7 @@ import { ProjectUserObject } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectRepository } from '../repositories/project-repository';
-import { RegionRepository } from '../repositories/region-repository';
+import { IRegion, RegionRepository } from '../repositories/region-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -339,6 +340,8 @@ export class ProjectService extends DBService {
 
     const promises: Promise<any>[] = [];
 
+    postProjectData.location.geometry;
+
     // Handle funding sources
     promises.push(
       Promise.all(
@@ -426,6 +429,11 @@ export class ProjectService extends DBService {
   async insertRegion(projectId: number, regions: PostRegionData): Promise<void> {
     const regionRepo = new RegionRepository(this.connection);
     return await regionRepo.addRegionsToAProject(projectId, regions.region_ids);
+  }
+
+  async searchForRegions(geoJSON: Feature[]): Promise<IRegion[]> {
+    const regionRepo = new RegionRepository(this.connection);
+    return await regionRepo.searchRegionsWithGeography(geoJSON);
   }
 
   /**

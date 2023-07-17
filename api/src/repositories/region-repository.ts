@@ -1,3 +1,4 @@
+import { Feature } from 'geojson';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { BaseRepository } from './base-repository';
@@ -25,6 +26,10 @@ export type IRegion = z.infer<typeof IRegion>;
  */
 export class RegionRepository extends BaseRepository {
   async addRegionsToAProject(projectId: number, regions: number[]): Promise<void> {
+    if (regions.length < 1) {
+      return;
+    }
+
     const sql = SQL`
       INSERT INTO project_region (
         project_id, 
@@ -45,6 +50,10 @@ export class RegionRepository extends BaseRepository {
   }
 
   async addRegionsToASurvey(surveyId: number, regions: number[]): Promise<void> {
+    if (regions.length < 1) {
+      return;
+    }
+
     const sql = SQL`
       INSERT INTO survey_region (
         survey_id, 
@@ -72,7 +81,7 @@ export class RegionRepository extends BaseRepository {
     return response.rows;
   }
 
-  async searchRegionsWithGeography(): Promise<IRegion[]> {
+  async searchRegionsWithGeography(geoJSON: Feature[]): Promise<IRegion[]> {
     return [];
   }
 }

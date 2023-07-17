@@ -188,19 +188,6 @@ export const projectCreatePostRequestObject = {
           }
         }
       }
-    },
-    regions: {
-      title: 'Project regions',
-      type: 'object',
-      properties: {
-        region_ids: {
-          type: 'array',
-          items: {
-            type: 'number'
-          },
-          minItems: 1
-        }
-      }
     }
   }
 };
