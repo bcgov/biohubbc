@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, RenderOptions } from '@testing-library/react';
 import { PropsWithChildren, ReactElement } from 'react';
 import appTheme from 'themes/appTheme';

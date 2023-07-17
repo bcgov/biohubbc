@@ -1,8 +1,8 @@
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {

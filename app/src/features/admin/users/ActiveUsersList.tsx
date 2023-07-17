@@ -1,20 +1,20 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { mdiChevronDown, mdiDotsVertical, mdiInformationOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import EditDialog from 'components/dialog/EditDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { AddSystemUserI18N, DeleteSystemUserI18N, UpdateSystemUserI18N } from 'constants/i18n';
@@ -303,7 +303,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                           <CustomMenuButton
                             buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
                             buttonTitle={'Change User Permissions'}
-                            buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
+                            buttonProps={{ variant: 'outlined', size: 'small' }}
                             menuItems={codes.system_roles
                               .sort((item1, item2) => {
                                 return item1.name.localeCompare(item2.name);
@@ -349,13 +349,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           </TableContainer>
           {activeUsers?.length > 0 && (
             <TablePagination
+              component={'div'}
               rowsPerPageOptions={[5, 10, 15, 20]}
-              component="div"
               count={activeUsers.length}
               rowsPerPage={rowsPerPage}
               page={page}
-              onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-              onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
+              onPageChange={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
+              onRowsPerPageChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 handleChangeRowsPerPage(event, setPage, setRowsPerPage)
               }
             />

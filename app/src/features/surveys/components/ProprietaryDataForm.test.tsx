@@ -82,7 +82,7 @@ describe('Proprietary Data Form', () => {
   });
 
   it('shows the first nations dropdown when data category is selected as First Nations and clears the proprietor name field when category goes from first nations to something else', async () => {
-    const { getByText, getAllByRole, getByRole } = render(
+    const { getByText, getByRole, getByTestId } = render(
       <Formik
         initialValues={proprietaryDataFilledValues}
         validationSchema={ProprietaryDataYupSchema}
@@ -112,22 +112,53 @@ describe('Proprietary Data Form', () => {
       expect(getByText('Proprietary Information')).toBeInTheDocument();
     });
 
-    fireEvent.mouseDown(getAllByRole('textbox')[0]);
-    const dataCategoryListbox1 = within(getByRole('listbox'));
-    fireEvent.click(dataCategoryListbox1.getByText(/First Nations Land/i));
+    /*
+    find proprietor category
+    select first nations
 
-    fireEvent.mouseDown(getAllByRole('textbox')[1]);
-    const proprietorNameListbox = within(getByRole('listbox'));
-    fireEvent.click(proprietorNameListbox.getByText(/First nations code/i));
+    find proprietor name
+    select first nations code
+
+    should be displayed
+
+    find proprietor category
+    select non first nations
+
+    find proprietor name
+    should be blank
+    */
+
+    const autocomplete = getByTestId('proprietary_data_category');
+    const acInput = within(autocomplete).getByRole('combobox');
+
+    // open autocomplete listbox
+    fireEvent.mouseDown(acInput);
+
+    // items in autocomplete dropdown
+    let acListBox = within(getByRole('listbox'));
+    // select first nations
+    fireEvent.click(acListBox.getByText(/First Nations Land/i));
+
+    // select first nations code
+    const firstNationsAutocomplete = getByTestId('first_nations_id');
+    const firstNationsACInput = within(firstNationsAutocomplete).getByRole('combobox');
+    fireEvent.mouseDown(firstNationsACInput);
+    // items in autocomplete dropdown
+    const firstNationsListBox = within(getByRole('listbox'));
+    // select first nations
+    fireEvent.click(firstNationsListBox.getByText(/First nations code/i));
 
     await waitFor(() => {
       expect(screen.getByDisplayValue('First nations code')).toBeInTheDocument();
     });
 
-    fireEvent.mouseDown(getAllByRole('textbox')[0]);
-    const dataCategoryListbox2 = within(getByRole('listbox'));
-    fireEvent.click(dataCategoryListbox2.getByText(/Proprietor code 1/i));
+    // open autocomplete listbox
+    fireEvent.mouseDown(acInput);
 
+    // refetch listbox because it would have rendered a new instance of the listbox
+    acListBox = within(getByRole('listbox'));
+
+    fireEvent.click(acListBox.getByText(/Proprietor code 1/i));
     await waitFor(() => {
       expect(screen.queryByDisplayValue('First nations code')).toBeNull();
     });

@@ -1,8 +1,8 @@
-import { Typography, TypographyProps } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography, { TypographyProps } from '@mui/material/Typography';
 import React, { useState } from 'react';
 
 export interface IReadMoreFieldProps {

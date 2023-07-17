@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiClose, mdiInformationOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';

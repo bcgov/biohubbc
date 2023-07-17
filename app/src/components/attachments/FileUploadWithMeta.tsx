@@ -1,5 +1,5 @@
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import ReportMetaForm, { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUpload, { IReplaceHandler } from 'components/file-upload/FileUpload';
 import {
