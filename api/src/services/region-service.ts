@@ -1,5 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { IRegion, RegionRepository } from '../repositories/region-repository';
+import { RegionDetails } from './bcgw-layer-service';
 import { DBService } from './db-service';
 
 export class RegionService extends DBService {
@@ -10,8 +11,9 @@ export class RegionService extends DBService {
 
     this.regionRepository = new RegionRepository(connection);
   }
-  async addRegionsToProject(projectId: number, regions: number[]): Promise<void> {
-    await this.regionRepository.addRegionsToAProject(projectId, regions);
+  async addRegionsToProject(projectId: number, regions: IRegion[]): Promise<void> {
+    const regionIds = regions.map((item) => item.region_id);
+    await this.regionRepository.addRegionsToAProject(projectId, regionIds);
   }
   async addRegionsToSurvey(surveyId: number, regions: number[]): Promise<void> {
     await this.regionRepository.addRegionsToASurvey(surveyId, regions);
@@ -20,7 +22,7 @@ export class RegionService extends DBService {
     return await this.regionRepository.getAllRegions();
   }
 
-  async searchRegionsWithGeography(): Promise<IRegion[]> {
-    return await this.regionRepository.searchRegionsWithGeography();
+  async searchRegionWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
+    return await this.regionRepository.searchRegionsWithDetails(details);
   }
 }

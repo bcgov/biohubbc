@@ -1,6 +1,7 @@
-import { Feature } from 'geojson';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
+import { RegionDetails } from '../services/bcgw-layer-service';
 import { BaseRepository } from './base-repository';
 
 export const IRegion = z.object({
@@ -95,7 +96,19 @@ export class RegionRepository extends BaseRepository {
     return response.rows;
   }
 
-  async searchRegionsWithGeography(geoJSON: Feature[]): Promise<IRegion[]> {
-    return [];
+  async searchRegionsWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
+    const knex = getKnex();
+    const qb = knex.queryBuilder().select().from('region_lookup');
+
+    for (const detail of details) {
+      qb.orWhere((qb1) => {
+        qb1.andWhereRaw("geojson::json->'properties'->>'REGION_NAME' = ?", detail.regionName);
+        qb1.andWhereRaw("geojson::json->'properties'->>'fme_feature_type' = ?", detail.sourceLayer);
+      });
+    }
+
+    const response = await this.connection.knex<IRegion>(qb);
+
+    return response.rows;
   }
 }

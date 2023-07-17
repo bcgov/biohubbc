@@ -4,7 +4,7 @@ import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
-import { IPostIUCN, PostFundingSource, PostProjectObject, PostRegionData } from '../models/project-create';
+import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
   IPutIUCN,
   PutCoordinatorData,
@@ -32,14 +32,16 @@ import { ProjectUserObject } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectRepository } from '../repositories/project-repository';
-import { IRegion, RegionRepository } from '../repositories/region-repository';
+import { IRegion } from '../repositories/region-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
+import { BcgwLayerService } from './bcgw-layer-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
+import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
 
 const defaultLog = getLogger('services/project-service');
@@ -340,8 +342,6 @@ export class ProjectService extends DBService {
 
     const promises: Promise<any>[] = [];
 
-    postProjectData.location.geometry;
-
     // Handle funding sources
     promises.push(
       Promise.all(
@@ -388,7 +388,7 @@ export class ProjectService extends DBService {
     );
 
     // Handle project regions
-    promises.push(this.insertRegion(projectId, postProjectData.regions));
+    promises.push(this.insertRegion(projectId, postProjectData.location.geometry));
 
     await Promise.all(promises);
 
@@ -426,14 +426,15 @@ export class ProjectService extends DBService {
     return this.projectParticipationService.insertParticipantRole(projectId, projectParticipantRole);
   }
 
-  async insertRegion(projectId: number, regions: PostRegionData): Promise<void> {
-    const regionRepo = new RegionRepository(this.connection);
-    return await regionRepo.addRegionsToAProject(projectId, regions.region_ids);
-  }
+  async insertRegion(projectId: number, feature: Feature[]): Promise<void> {
+    const regionService = new RegionService(this.connection);
+    const bcgwService = new BcgwLayerService();
+    const regionDetails = await bcgwService.getUniqueRegionsForFeatures(feature, this.connection);
+    console.log(regionDetails);
+    // get details for the region
 
-  async searchForRegions(geoJSON: Feature[]): Promise<IRegion[]> {
-    const regionRepo = new RegionRepository(this.connection);
-    return await regionRepo.searchRegionsWithGeography(geoJSON);
+    const regions: IRegion[] = await regionService.searchRegionWithDetails(regionDetails);
+    await regionService.addRegionsToProject(projectId, regions);
   }
 
   /**
