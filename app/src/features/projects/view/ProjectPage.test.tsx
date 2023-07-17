@@ -1,7 +1,7 @@
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -28,8 +28,8 @@ const mockUseApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
-  external: {
-    post: jest.fn<Promise<{ features?: Feature[] }>, []>()
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
@@ -41,7 +41,11 @@ describe.skip('ProjectPage', () => {
     mockUseApi.survey.getSurveysList.mockClear();
     mockUseApi.codes.getAllCodeSets.mockClear();
     mockUseApi.project.publishProject.mockClear();
-    mockUseApi.external.post.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -67,15 +71,6 @@ describe.skip('ProjectPage', () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const { asFragment, findByText } = render(
       <DialogContextProvider>
@@ -104,15 +99,6 @@ describe.skip('ProjectPage', () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const { asFragment, findByText } = render(
       <DialogContextProvider>
@@ -136,15 +122,6 @@ describe.skip('ProjectPage', () => {
     } as any);
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.project.deleteProject.mockResolvedValue(true);
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -182,15 +159,6 @@ describe.skip('ProjectPage', () => {
     } as any);
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.project.deleteProject.mockResolvedValue(null);
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -236,15 +204,6 @@ describe.skip('ProjectPage', () => {
     } as any);
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.project.deleteProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -290,15 +249,6 @@ describe.skip('ProjectPage', () => {
     } as any);
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.project.deleteProject.mockResolvedValue(true);
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -323,15 +273,6 @@ describe.skip('ProjectPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const authState = getMockAuthState({ base: SystemUserAuthState });
 
@@ -365,15 +306,6 @@ describe.skip('ProjectPage', () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const { asFragment, findByText } = render(
       <Router history={history}>

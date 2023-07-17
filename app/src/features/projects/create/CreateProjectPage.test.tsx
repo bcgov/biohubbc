@@ -7,8 +7,8 @@ import { ProjectLocationFormInitialValues } from 'features/projects/components/P
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
-import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IDraftResponse } from 'interfaces/useDraftApi.interface';
@@ -35,8 +35,8 @@ const mockUseApi = {
     deleteDraft: jest.fn(),
     getDraft: jest.fn()
   },
-  external: {
-    post: jest.fn<Promise<{ features?: Feature[] }>, []>()
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
@@ -65,6 +65,11 @@ describe('CreateProjectPage', () => {
     mockUseApi.draft.createDraft.mockClear();
     mockUseApi.draft.updateDraft.mockClear();
     mockUseApi.draft.getDraft.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -74,16 +79,6 @@ describe('CreateProjectPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
-
     const { getByText } = renderContainer();
 
     await waitFor(() => {

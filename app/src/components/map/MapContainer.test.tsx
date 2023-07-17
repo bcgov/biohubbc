@@ -1,6 +1,7 @@
 import bbox from '@turf/bbox';
 import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { LatLngBoundsExpression } from 'leaflet';
 import { Router } from 'react-router-dom';
@@ -13,8 +14,10 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   external: {
-    get: jest.fn(),
-    post: jest.fn()
+    get: jest.fn()
+  },
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
@@ -26,11 +29,14 @@ describe('MapContainer', () => {
 
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.external.get.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
     mockUseApi.external.get.mockResolvedValue({
       features: []
     });
-    mockUseApi.external.post.mockResolvedValue({
-      features: []
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
     });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
