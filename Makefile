@@ -57,9 +57,10 @@ clean: ## Closes and cleans (removes) all project containers
 prune: ## Deletes ALL docker artifacts (even those not associated to this project)
 	@echo -n "Delete ALL docker artifacts? [y/n] " && read ans && [ $${ans:-n} = y ]
 	@echo "==============================================="
-	@echo "Make: prune - deleting all docker artifacts
+	@echo "Make: prune - deleting all docker artifacts"
 	@echo "==============================================="
-	@docker system prune --all --volumes
+	@docker system prune --all --volumes -f
+	@docker volume prune --all -f
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Postgres DB Commands

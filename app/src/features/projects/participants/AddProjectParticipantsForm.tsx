@@ -1,15 +1,15 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import CustomTextField from 'components/fields/CustomTextField';
-import { FieldArray, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -55,7 +55,7 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
     <form onSubmit={handleSubmit}>
       <FieldArray
         name="participants"
-        render={(arrayHelpers) => (
+        render={(arrayHelpers: FieldArrayRenderProps) => (
           <>
             <Box>
               {values.participants?.map((participant, index) => {
@@ -94,7 +94,6 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                               labelId="login_method"
                               label="Login Method"
                               value={participant.identitySource}
-                              labelWidth={300}
                               onChange={handleChange}
                               displayEmpty
                               inputProps={{ 'aria-label': 'Login Method' }}>
@@ -130,7 +129,6 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                               labelId="project_role"
                               label="Project Role"
                               value={participant.roleId}
-                              labelWidth={300}
                               onChange={handleChange}
                               displayEmpty
                               inputProps={{ 'aria-label': 'Project Role' }}>

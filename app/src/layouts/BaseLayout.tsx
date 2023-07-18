@@ -1,7 +1,8 @@
-import Box from '@material-ui/core/Box';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import { Theme } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import Footer from 'components/layout/Footer';
 import Header from 'components/layout/Header';

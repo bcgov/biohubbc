@@ -1,6 +1,6 @@
-import Typography from '@material-ui/core/Typography';
 import { mdiChevronDown } from '@mdi/js';
 import Icon from '@mdi/react';
+import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N } from 'constants/i18n';
@@ -110,7 +110,7 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     <CustomMenuButton
       buttonLabel={currentProjectRoleName}
       buttonTitle={'Change Project Role'}
-      buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
+      buttonProps={{ variant: 'outlined', size: 'small' }}
       menuItems={projectRoleCodes.map((roleCode) => {
         return {
           menuLabel: roleCode.name,

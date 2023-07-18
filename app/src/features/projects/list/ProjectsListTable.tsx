@@ -1,8 +1,9 @@
-import { makeStyles, Theme } from '@material-ui/core';
-import Chip from '@material-ui/core/Chip';
-import { grey } from '@material-ui/core/colors';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
+import { Theme } from '@mui/material';
+import Chip from '@mui/material/Chip';
+import { grey } from '@mui/material/colors';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';

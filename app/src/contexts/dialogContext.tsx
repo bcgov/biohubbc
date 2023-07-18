@@ -1,7 +1,7 @@
-import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
-import CloseIcon from '@material-ui/icons/Close';
-import { Color } from '@material-ui/lab/Alert';
+import CloseIcon from '@mui/icons-material/Close';
+import { Color } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import React, { createContext, ReactNode, useState } from 'react';

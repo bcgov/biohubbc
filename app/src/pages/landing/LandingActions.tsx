@@ -1,10 +1,12 @@
-import { makeStyles, Theme, Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiInformationOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -31,7 +33,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '0.75em 1.5em',
     color: theme.palette.primary.main,
     backgroundColor: '#fcba19',
-    fontWeight: 700
+    fontWeight: 700,
+    '&:hover': {
+      backgroundColor: '#fcba19'
+    }
   },
   heroLink: {
     color: '#fcba19',

@@ -1,7 +1,8 @@
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { ThemeProvider } from '@material-ui/core/styles';
+import CircularProgress from '@mui/material/CircularProgress';
+import { ThemeProvider } from '@mui/material/styles';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
-import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
+// TODO safe to remove this?
+// import type {} from '@mui/material/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import AppRouter from 'AppRouter';
 import { AuthStateContextProvider } from 'contexts/authStateContext';

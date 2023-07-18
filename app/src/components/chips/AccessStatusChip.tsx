@@ -1,5 +1,6 @@
-import Chip, { ChipProps } from '@material-ui/core/Chip';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
+import Chip, { ChipProps } from '@mui/material/Chip';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { AdministrativeActivityStatusType } from 'constants/misc';
 import React from 'react';
