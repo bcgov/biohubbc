@@ -190,7 +190,7 @@ export class ProjectRepository extends BaseRepository {
         p.end_date,
         p.coordinator_agency_name as coordinator_agency,
         pt.name as project_type,
-        array_remove(array_agg(rl.region_name), null) as regions
+        array_remove(array_agg(DISTINCT rl.region_name), null) as regions
       from
         project as p
       left outer join project_type as pt
@@ -283,6 +283,7 @@ export class ProjectRepository extends BaseRepository {
         pt.name;
     `);
 
+    console.log(sqlStatement.text)
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     if (!response.rows) {
