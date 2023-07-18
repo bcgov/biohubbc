@@ -15,6 +15,7 @@ import useSpatialApi from './api/useSpatialApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
+import useCritterbaseApi from './api/useCritterbaseApi';
 
 /**
  * Returns a set of supported api methods.
@@ -51,6 +52,8 @@ export const useBiohubApi = () => {
 
   const spatial = useSpatialApi(apiAxios);
 
+  const critterbase = useCritterbaseApi(apiAxios);
+
   return {
     project,
     search,
@@ -64,6 +67,7 @@ export const useBiohubApi = () => {
     admin,
     external,
     publish,
-    spatial
+    spatial,
+    critterbase
   };
 };
