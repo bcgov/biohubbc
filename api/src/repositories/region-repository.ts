@@ -108,7 +108,7 @@ export class RegionRepository extends BaseRepository {
    */
   async deleteRegionsFromAProject(projectId: number): Promise<void> {
     const sql = SQL`
-      DELETE FROM project_regions WHERE project_id=${projectId};
+      DELETE FROM project_region WHERE project_id=${projectId};
     `;
     try {
       await this.connection.sql(sql);
