@@ -1,11 +1,11 @@
-import { Box, Button, Divider, Paper } from '@material-ui/core';
+import { Box, Button, Divider } from '@material-ui/core';
 import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import React from 'react';
-import NoSummarySectionData from '../components/NoSummarySectionData';
+import NoSurveySectionData from '../components/NoSurveySectionData';
 
 const SurveyAnimals: React.FC = () => {
   const handleUploadReportClick = () => {
@@ -45,9 +45,7 @@ const SurveyAnimals: React.FC = () => {
       />
       <Divider></Divider>
       <Box p={3}>
-        <Paper variant="outlined">
-          <NoSummarySectionData text={'No Individual Animals'} />
-        </Paper>
+        <NoSurveySectionData text={'No Individual Animals'} paperVariant={'outlined'} />
       </Box>
     </Box>
   );

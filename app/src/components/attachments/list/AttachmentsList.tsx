@@ -14,7 +14,7 @@ import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
-import NoSummarySectionData from 'features/surveys/components/NoSummarySectionData';
+import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
@@ -69,7 +69,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
   const [page] = useState(0);
 
   if (!attachments.length) {
-    return <NoSummarySectionData text={'No Documents'} />;
+    return <NoSurveySectionData text={'No Documents'} />;
   }
 
   return (
