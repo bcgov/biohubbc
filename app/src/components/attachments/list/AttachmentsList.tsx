@@ -2,6 +2,7 @@ import { mdiFileOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { grey } from '@mui/material/colors';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
@@ -43,12 +44,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '66px',
     color: theme.palette.text.secondary,
     fontWeight: 700
-  },
-  importFile: {
-    display: 'flex',
-    minHeight: '66px',
-    fontWeight: 700,
-    color: theme.palette.text.secondary
   }
 }));
 
@@ -138,16 +133,15 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
 };
 
 const NoAttachments = () => {
-  const classes = useStyles();
   return (
-    <Box
-      display="flex"
-      flex="1 1 auto"
-      alignItems="center"
-      justifyContent="center"
-      p={2}
-      className={classes.importFile}>
-      <span data-testid="observations-nodata">No Documents</span>
+    <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2} minHeight={66}>
+      <Typography
+        component="span"
+        variant="body2" 
+        color="textSecondary"
+        data-testid="observations-nodata">
+        No Documents
+      </Typography>
     </Box>
   );
 };

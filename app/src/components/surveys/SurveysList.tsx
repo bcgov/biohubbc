@@ -1,4 +1,3 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
@@ -8,7 +7,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -18,23 +16,9 @@ import { ProjectContext } from 'contexts/projectContext';
 import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  surveyTable: {
-    tableLayout: 'fixed'
-  },
-  importFile: {
-    display: 'flex',
-    minHeight: '66px',
-    fontWeight: 700,
-    color: theme.palette.text.secondary
-  }
-}));
-
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const SurveysList: React.FC = () => {
-  const classes = useStyles();
-
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
@@ -54,7 +38,14 @@ const SurveysList: React.FC = () => {
   return (
     <>
       <TableContainer>
-        <Table aria-label="surveys-list-table" className={classes.surveyTable}>
+        <Table aria-label="surveys-list-table"
+          sx={{
+            tableLayout: 'fixed',
+            '& td': {
+              verticalAlign: 'top'
+            }
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -110,16 +101,15 @@ const SurveysList: React.FC = () => {
 };
 
 function NoSurveys() {
-  const classes = useStyles();
   return (
-    <Box
-      display="flex"
-      flex="1 1 auto"
-      alignItems="center"
-      justifyContent="center"
-      p={2}
-      className={classes.importFile}>
-      <span data-testid="observations-nodata">No Surveys</span>
+    <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2} minHeight={66}>
+      <Typography
+        component="span"
+        variant="body2" 
+        color="textSecondary" 
+        data-testid="observations-nodata">
+          No Surveys
+        </Typography>
     </Box>
   );
 }
