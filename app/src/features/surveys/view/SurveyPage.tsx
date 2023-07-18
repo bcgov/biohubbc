@@ -13,6 +13,7 @@ import React, { useContext } from 'react';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyObservations from './survey-observations/SurveyObservations';
+import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 
@@ -61,6 +62,11 @@ const SurveyPage: React.FC = () => {
               <Box mb={3}>
                 <Paper elevation={0}>
                   <SurveyAttachments />
+                </Paper>
+              </Box>
+              <Box mb={3}>
+                <Paper elevation={0}>
+                  <SurveyAnimals />
                 </Paper>
               </Box>
               <Box mb={3}>
