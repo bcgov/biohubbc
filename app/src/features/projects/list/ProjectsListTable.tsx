@@ -103,7 +103,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       field: 'regions',
       headerName: 'Regions',
       flex: 1,
-      valueFormatter: ({ value }) => value.join(', ')
+      valueFormatter: ({ value }) => (value ? value.join(', ') : '')
     },
     {
       field: 'startDate',
