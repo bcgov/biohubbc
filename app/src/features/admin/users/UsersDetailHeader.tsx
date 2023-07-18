@@ -144,8 +144,8 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
                     dialogTitle: SystemUserI18N.removeSystemUserTitle,
                     dialogContent: (
                       <Typography variant="body1" color="textSecondary">
-                        Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to
-                        all projects. Are you sure you want to proceed?
+                        Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to all
+                        projects. Are you sure you want to proceed?
                       </Typography>
                     ),
                     yesButtonProps: { color: 'error' },

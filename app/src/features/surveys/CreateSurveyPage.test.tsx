@@ -228,7 +228,9 @@ describe.skip('CreateSurveyPage', () => {
       fireEvent.click(getByText('Cancel'));
       await waitFor(() => {
         expect(getByText('Discard changes and exit?')).toBeInTheDocument();
-        expect(getByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false })).toBeInTheDocument();
+        expect(
+          getByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false })
+        ).toBeInTheDocument();
       });
       fireEvent.click(getByTestId('yes-button'));
       await waitFor(() => {
@@ -280,7 +282,9 @@ describe.skip('CreateSurveyPage', () => {
       fireEvent.click(getByText('Cancel'));
       await waitFor(() => {
         expect(getByText('Discard changes and exit?')).toBeInTheDocument();
-        expect(getByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false })).toBeInTheDocument();
+        expect(
+          getByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false })
+        ).toBeInTheDocument();
       });
       fireEvent.click(getByTestId('no-button'));
       await waitFor(() => {
@@ -289,7 +293,9 @@ describe.skip('CreateSurveyPage', () => {
       fireEvent.click(getByText('Cancel'));
       await waitFor(() => {
         expect(getByText('Discard changes and exit')).toBeInTheDocument();
-        expect(getByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false })).toBeInTheDocument();
+        expect(
+          getByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false })
+        ).toBeInTheDocument();
       });
       // Get the backdrop, then get the firstChild because this is where the event listener is attached
       //@ts-ignore

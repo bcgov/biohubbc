@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiDotsVertical, mdiAccountDetailsOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiAccountDetailsOutline, mdiChevronDown, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -233,11 +233,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h4" component="h2">
             Active Users{' '}
-            <Typography component="span" variant="inherit" color="textSecondary"
+            <Typography
+              component="span"
+              variant="inherit"
+              color="textSecondary"
               sx={{
                 fontWeight: 400
-              }}
-            >
+              }}>
               ({activeUsers?.length || 0})
             </Typography>
           </Typography>
@@ -257,14 +259,12 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             <Table
               sx={{
                 tableLayout: 'fixed'
-              }}
-            >
+              }}>
               <TableHead>
                 <TableRow>
                   <TableCell>Username</TableCell>
                   <TableCell>Role</TableCell>
-                  <TableCell width={80} align="right">
-                  </TableCell>
+                  <TableCell width={80} align="right"></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody data-testid="active-users-table">
@@ -279,10 +279,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                   activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                     <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
                       <TableCell>
-                        <Link
-                          underline="always"
-                          to={`/admin/users/${row.id}`}
-                          component={RouterLink}>
+                        <Link underline="always" to={`/admin/users/${row.id}`} component={RouterLink}>
                           {row.user_identifier || 'No identifier'}
                         </Link>
                       </TableCell>

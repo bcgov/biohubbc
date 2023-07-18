@@ -149,7 +149,7 @@ const CreateProjectPage: React.FC = () => {
       dialogText: CreateProjectI18N.createErrorText,
       ...defaultErrorDialogProps,
       ...textDialogProps,
-      open: true,
+      open: true
     });
   };
 
@@ -296,9 +296,9 @@ const CreateProjectPage: React.FC = () => {
         dialogTitle="Delete Draft Project?"
         dialogText="Are you sure you want to permanently delete this draft project? This action cannot be undone."
         open={openDeleteDraftDialog}
-        yesButtonLabel='Delete Draft'
-        yesButtonProps={{color: 'error'}}
-        noButtonLabel='Cancel'
+        yesButtonLabel="Delete Draft"
+        yesButtonProps={{ color: 'error' }}
+        noButtonLabel="Cancel"
         onClose={() => setOpenDeleteDraftDialog(false)}
         onNo={() => setOpenDeleteDraftDialog(false)}
         onYes={() => handleDeleteDraft()}

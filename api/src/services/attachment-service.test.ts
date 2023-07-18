@@ -28,7 +28,7 @@ import { PlatformService } from './platform-service';
 chai.use(sinonChai);
 
 describe('AttachmentService', () => {
-  let sinonSandbox = sinon.createSandbox();
+  const sinonSandbox = sinon.createSandbox();
 
   beforeEach(() => {
     sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value('some/s3/prefix');

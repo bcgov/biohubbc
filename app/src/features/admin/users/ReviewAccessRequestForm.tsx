@@ -45,7 +45,9 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
   return (
     <Box>
       <Box>
-        <Typography component="h3" variant="h5">User Details</Typography>
+        <Typography component="h3" variant="h5">
+          User Details
+        </Typography>
         <dl>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
@@ -101,20 +103,16 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
         </dl>
       </Box>
       <Box mt={5}>
-        <Typography component="h3" variant="h5"
+        <Typography
+          component="h3"
+          variant="h5"
           sx={{
             marginBottom: '18px'
-          }}
-        >
+          }}>
           Requested System Role
         </Typography>
         <form onSubmit={handleSubmit}>
-          <AutocompleteField
-            id="system_role"
-            name="system_role"
-            label={'System Role'}
-            options={props.system_roles}
-          />
+          <AutocompleteField id="system_role" name="system_role" label={'System Role'} options={props.system_roles} />
         </form>
       </Box>
     </Box>

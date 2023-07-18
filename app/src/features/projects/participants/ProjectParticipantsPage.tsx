@@ -82,8 +82,8 @@ const ProjectParticipantsPage: React.FC = () => {
       dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
-          Removing user <strong>{participant.user_identifier}</strong> will revoke their access to this project. Are you sure
-          you want to proceed?
+          Removing user <strong>{participant.user_identifier}</strong> will revoke their access to this project. Are you
+          sure you want to proceed?
         </Typography>
       ),
       yesButtonProps: { color: 'error' },
@@ -160,8 +160,7 @@ const ProjectParticipantsPage: React.FC = () => {
                     <TableCell>Username</TableCell>
                     <TableCell>Type</TableCell>
                     <TableCell>Project Role</TableCell>
-                    <TableCell width="80px" align="right">
-                    </TableCell>
+                    <TableCell width="80px" align="right"></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

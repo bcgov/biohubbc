@@ -111,7 +111,9 @@ describe('CreateProjectPage', () => {
 
       fireEvent.click(BackToProjectsButton[0]);
       const AreYouSureTitle = await findByText('Discard changes and exit?');
-      const AreYouSureText = await findByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false });
+      const AreYouSureText = await findByText('Any changes you have made will not be saved. Do you want to proceed?', {
+        exact: false
+      });
       const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
 
       expect(AreYouSureTitle).toBeVisible();
@@ -224,7 +226,11 @@ describe('CreateProjectPage', () => {
         fireEvent.click(deleteButton[0]);
 
         await waitFor(() => {
-          expect(getByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.', { exact: false })).toBeInTheDocument();
+          expect(
+            getByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.', {
+              exact: false
+            })
+          ).toBeInTheDocument();
         });
       });
 
@@ -262,14 +268,18 @@ describe('CreateProjectPage', () => {
         fireEvent.click(deleteButton[0]);
 
         await waitFor(() => {
-          expect(getByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.')).toBeInTheDocument();
+          expect(
+            getByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.')
+          ).toBeInTheDocument();
         });
 
         const NoButton = await getByTestId('no-button');
         fireEvent.click(NoButton);
 
         await waitFor(() => {
-          expect(queryByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.')).not.toBeInTheDocument();
+          expect(
+            queryByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.')
+          ).not.toBeInTheDocument();
         });
       });
 
@@ -307,7 +317,9 @@ describe('CreateProjectPage', () => {
         fireEvent.click(deleteButton[0]);
 
         await waitFor(() => {
-          expect(getByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.')).toBeInTheDocument();
+          expect(
+            getByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.')
+          ).toBeInTheDocument();
         });
 
         const YesButton = await getByTestId('yes-button');

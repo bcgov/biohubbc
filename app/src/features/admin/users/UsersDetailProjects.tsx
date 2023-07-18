@@ -187,8 +187,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
             <TableRow>
               <TableCell>Project Name</TableCell>
               <TableCell>Project Role</TableCell>
-              <TableCell width={80} align="center">
-              </TableCell>
+              <TableCell width={80} align="center"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody data-testid="resources-table">
@@ -196,10 +195,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
               assignedProjects?.map((row) => (
                 <TableRow key={row.project_id}>
                   <TableCell scope="row">
-                    <Link
-                      component={RouterLink}
-                      to={`/admin/projects/${row.project_id}/details`}
-                      aria-current="page">
+                    <Link component={RouterLink} to={`/admin/projects/${row.project_id}/details`} aria-current="page">
                       {row.name}
                     </Link>
                   </TableCell>
@@ -224,8 +220,8 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                             dialogTitle: SystemUserI18N.removeUserFromProject,
                             dialogContent: (
                               <Typography variant="body1" color="textSecondary">
-                                Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access
-                                to this project. Are you sure you want to proceed?
+                                Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to
+                                this project. Are you sure you want to proceed?
                               </Typography>
                             ),
                             yesButtonProps: { color: 'error' },

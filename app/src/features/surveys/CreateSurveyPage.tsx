@@ -380,7 +380,7 @@ const CreateSurveyPage = () => {
                   title="Agreements"
                   summary=""
                   component={<AgreementsForm />}></HorizontalSplitFormComponent>
-                
+
                 <Divider className={classes.sectionDivider} />
 
                 <Box display="flex" justifyContent="flex-end">

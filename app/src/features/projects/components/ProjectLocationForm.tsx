@@ -47,11 +47,12 @@ const ProjectLocationForm = () => {
         formikProps={formikProps}
       />
       <Box mt={5}>
-        <Typography variant="h5" component="h3"
+        <Typography
+          variant="h5"
+          component="h3"
           sx={{
             marginBottom: '20px'
-          }}
-        >
+          }}>
           Describe the location of this project
         </Typography>
         <CustomTextField

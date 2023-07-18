@@ -41,12 +41,6 @@ export const SubmitStatusChip: React.FC<{ status: PublishStatus; chipProps?: Par
   }
 
   return (
-    <Chip
-      title={chipTitle}
-      variant="filled"
-      className={clsx(chipStatusClass)}
-      label={chipLabel}
-      {...props.chipProps}
-    />
+    <Chip title={chipTitle} variant="filled" className={clsx(chipStatusClass)} label={chipLabel} {...props.chipProps} />
   );
 };

@@ -31,7 +31,7 @@ describe('getS3SignedURL', () => {
 });
 
 describe('generateS3FileKey', () => {
-  let sinonSandbox = sinon.createSandbox();
+  const sinonSandbox = sinon.createSandbox();
 
   afterEach(() => {
     sinonSandbox.restore();
@@ -97,7 +97,7 @@ describe('generateS3FileKey', () => {
 });
 
 describe('getS3HostUrl', () => {
-  let sinonSandbox = sinon.createSandbox();
+  const sinonSandbox = sinon.createSandbox();
 
   afterEach(() => {
     sinonSandbox.restore();
@@ -131,7 +131,7 @@ describe('getS3HostUrl', () => {
 });
 
 describe('_getS3Client', () => {
-  let sinonSandbox = sinon.createSandbox();
+  const sinonSandbox = sinon.createSandbox();
 
   afterEach(() => {
     sinonSandbox.restore();
@@ -147,7 +147,7 @@ describe('_getS3Client', () => {
 });
 
 describe('_getClamAvScanner', () => {
-  let sinonSandbox = sinon.createSandbox();
+  const sinonSandbox = sinon.createSandbox();
 
   afterEach(() => {
     sinonSandbox.restore();
@@ -191,7 +191,7 @@ describe('_getClamAvScanner', () => {
 });
 
 describe('_getObjectStoreBucketName', () => {
-  let sinonSandbox = sinon.createSandbox();
+  const sinonSandbox = sinon.createSandbox();
 
   afterEach(() => {
     sinonSandbox.restore();
@@ -213,7 +213,7 @@ describe('_getObjectStoreBucketName', () => {
 });
 
 describe('_getObjectStoreUrl', () => {
-  let sinonSandbox = sinon.createSandbox();
+  const sinonSandbox = sinon.createSandbox();
 
   afterEach(() => {
     sinonSandbox.restore();
@@ -235,7 +235,7 @@ describe('_getObjectStoreUrl', () => {
 });
 
 describe('_getS3KeyPrefix', () => {
-  let sinonSandbox = sinon.createSandbox();
+  const sinonSandbox = sinon.createSandbox();
 
   afterEach(() => {
     sinonSandbox.restore();

@@ -74,9 +74,7 @@ const RequestDialog: React.FC<IRequestDialog> = (props) => {
         {(formikProps) => (
           <Dialog open={props.open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
             <DialogTitle id="access-request-dialog-title">{props.dialogTitle}</DialogTitle>
-            <DialogContent>
-              {props.component.element}
-            </DialogContent>
+            <DialogContent>{props.component.element}</DialogContent>
             <DialogActions>
               <Button
                 color="primary"
@@ -86,11 +84,7 @@ const RequestDialog: React.FC<IRequestDialog> = (props) => {
                 autoFocus>
                 Approve
               </Button>
-              <Button
-                color="primary"
-                variant="contained"
-                data-testid="request_deny_button"
-                onClick={props.onDeny}>
+              <Button color="primary" variant="contained" data-testid="request_deny_button" onClick={props.onDeny}>
                 Deny
               </Button>
               <Button onClick={props.onClose} color="primary" variant="outlined">

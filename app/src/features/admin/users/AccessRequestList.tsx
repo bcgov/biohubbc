@@ -209,11 +209,13 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
         <Toolbar>
           <Typography variant="h4" component="h2">
             Access Requests{' '}
-            <Typography component="span" variant="inherit" color="textSecondary"
+            <Typography
+              component="span"
+              variant="inherit"
+              color="textSecondary"
               sx={{
                 fontWeight: 400
-              }}
-            >
+              }}>
               ({accessRequests?.length || 0})
             </Typography>
           </Typography>
@@ -224,15 +226,13 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
             <Table
               sx={{
                 tableLayout: 'fixed'
-              }}
-            >
+              }}>
               <TableHead>
                 <TableRow>
                   <TableCell>Username</TableCell>
                   <TableCell>Date of Request</TableCell>
                   <TableCell width={170}>Status</TableCell>
-                  <TableCell align="right">
-                  </TableCell>
+                  <TableCell align="right"></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody data-testid="access-request-table">
