@@ -96,6 +96,18 @@ export class RegionRepository extends BaseRepository {
     return response.rows;
   }
 
+  async getRegionsForProjectId(projectId: number): Promise<IRegion[]> {
+    const sql = SQL`
+      SELECT rl.*
+      FROM project p 
+      LEFT JOIN project_region pr ON p.project_id = pr.project_id
+      LEFT JOIN region_lookup rl ON pr.region_id =rl.region_id 
+      WHERE p.project_id = ${projectId};
+  `;
+    const response = await this.connection.sql(sql, IRegion);
+    return response.rows;
+  }
+
   async searchRegionsWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
     const knex = getKnex();
     const qb = knex.queryBuilder().select().from('region_lookup');

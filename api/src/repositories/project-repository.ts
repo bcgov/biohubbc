@@ -189,7 +189,8 @@ export class ProjectRepository extends BaseRepository {
         p.start_date,
         p.end_date,
         p.coordinator_agency_name as coordinator_agency,
-        pt.name as project_type
+        pt.name as project_type,
+        array_remove(array_agg(rl.region_name), null) as regions
       from
         project as p
       left outer join project_type as pt
@@ -204,6 +205,10 @@ export class ProjectRepository extends BaseRepository {
         on s.project_id = p.project_id
       left outer join study_species as sp
         on sp.survey_id = s.survey_id
+      left join project_region pr 
+        on p.project_id = pr.project_id
+      left join region_lookup rl 
+        on pr.region_id = rl.region_id
       where 1 = 1
     `;
 

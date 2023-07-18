@@ -22,6 +22,10 @@ export class RegionService extends DBService {
     return await this.regionRepository.getAllRegions();
   }
 
+  async getRegionsForProject(projectId: number): Promise<IRegion[]> {
+    return await this.regionRepository.getRegionsForProjectId(projectId);
+  }
+
   async searchRegionWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
     return await this.regionRepository.searchRegionsWithDetails(details);
   }

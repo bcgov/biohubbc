@@ -37,9 +37,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       fontWeight: 700,
       color: grey[600]
     },
-    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within': {
-      outline: 'none !important'
-    },
+    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
+      {
+        outline: 'none !important'
+      },
     '& .MuiDataGrid-row:hover': {
       backgroundColor: 'transparent !important'
     }
@@ -63,7 +64,9 @@ interface IProjectsListTableEntry {
 
 const NoRowsOverlay = (props: { className: string }) => (
   <GridOverlay>
-    <Typography className={props.className} color="textSecondary">No projects found</Typography>
+    <Typography className={props.className} color="textSecondary">
+      No projects found
+    </Typography>
   </GridOverlay>
 );
 
@@ -77,7 +80,8 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <Link style={{ overflow: 'hidden', textOverflow: 'ellipsis'}}
+        <Link
+          style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
           data-testid={params.row.name}
           underline="always"
           title={params.row.name}
@@ -98,7 +102,8 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     {
       field: 'regions',
       headerName: 'Regions',
-      flex: 1
+      flex: 1,
+      valueFormatter: ({ value }) => value.join(', ')
     },
     {
       field: 'startDate',
@@ -134,7 +139,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           </SystemRoleGuard>
         );
       }
-    },
+    }
   ];
 
   const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
@@ -156,7 +161,8 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           type: project.projectData.project_type,
           startDate: project.projectData.start_date,
           endDate: project.projectData.end_date,
-          isDraft: false
+          isDraft: false,
+          regions: project.projectData.regions
         }))
       ]}
       getRowId={(row) => (row.isDraft ? `draft-${row.id}` : `project-${row.id}`)}
