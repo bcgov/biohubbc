@@ -14,9 +14,10 @@ import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
+import NoSummarySectionData from 'features/surveys/components/NoSummarySectionData';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
@@ -68,7 +69,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
   const [page] = useState(0);
 
   if (!attachments.length) {
-    return <NoAttachments />;
+    return <NoSummarySectionData text={'No Documents'} />;
   }
 
   return (
@@ -133,21 +134,6 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
         </TableBody>
       </Table>
     </TableContainer>
-  );
-};
-
-const NoAttachments = () => {
-  const classes = useStyles();
-  return (
-    <Box
-      display="flex"
-      flex="1 1 auto"
-      alignItems="center"
-      justifyContent="center"
-      p={2}
-      className={classes.importFile}>
-      <span data-testid="observations-nodata">No Documents</span>
-    </Box>
   );
 };
 
