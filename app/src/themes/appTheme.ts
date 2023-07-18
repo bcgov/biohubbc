@@ -153,6 +153,13 @@ const appTheme = createTheme({
         disableRipple: true
       }
     },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          minWidth: '6rem;'
+        }
+      }
+    },
     MuiContainer: {
       styleOverrides: {
         root: {
