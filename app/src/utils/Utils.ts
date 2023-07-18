@@ -264,6 +264,9 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
     case SYSTEM_IDENTITY_SOURCE.IDIR:
       return 'IDIR';
 
+    case SYSTEM_IDENTITY_SOURCE.DATABASE:
+      return 'System';
+
     default:
       return null;
   }
