@@ -1,21 +1,20 @@
 import { Theme } from '@mui/material';
 import Chip, { ChipProps } from '@mui/material/Chip';
 import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
 import { AdministrativeActivityStatusType } from 'constants/misc';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  chip: {
-    color: 'white'
-  },
   chipPending: {
-    backgroundColor: theme.palette.warning.main
+    color: '#fff',
+    backgroundColor: theme.palette.error.main
   },
   chipActioned: {
+    color: '#fff',
     backgroundColor: theme.palette.success.main
   },
   chipRejected: {
+    color: '#fff',
     backgroundColor: theme.palette.error.main
   }
 }));
@@ -37,5 +36,5 @@ export const AccessStatusChip: React.FC<{ status: string; chipProps?: Partial<Ch
     chipStatusClass = classes.chipPending;
   }
 
-  return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} {...props.chipProps} />;
+  return <Chip variant="filled" className={chipStatusClass} label={chipLabel} {...props.chipProps} />;
 };

@@ -228,7 +228,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                                 to this project. Are you sure you want to proceed?
                               </Typography>
                             ),
-                            yesButtonProps: { color: 'warning' },
+                            yesButtonProps: { color: 'error' },
                             yesButtonLabel: 'Remove',
                             noButtonLabel: 'Cancel',
                             onYes: () => {

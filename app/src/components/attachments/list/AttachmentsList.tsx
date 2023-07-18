@@ -80,7 +80,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
             <TableCell>Name</TableCell>
             <TableCell width="130">Type</TableCell>
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-              <TableCell width="130">Status</TableCell>
+              <TableCell width="150">Status</TableCell>
             </SystemRoleGuard>
             <TableCell width="75"></TableCell>
           </TableRow>

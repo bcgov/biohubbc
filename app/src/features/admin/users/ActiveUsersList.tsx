@@ -70,7 +70,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       ),
       yesButtonLabel: 'Remove',
       noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'warning' },
+      yesButtonProps: { color: 'error' },
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });
       },

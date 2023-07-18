@@ -23,15 +23,9 @@ const appTheme = createTheme({
       dark: '#001949',
       contrastText: '#ffffff'
     },
-    secondary: {
-      main: '#D8292F'
-    },
     text: {
       primary: '#313132',
       secondary: '#757575'
-    },
-    error: {
-      main: '#A12622'
     }
   },
   typography: {
@@ -159,16 +153,6 @@ const appTheme = createTheme({
         disableRipple: true
       }
     },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          minWidth: '6rem',
-          fontSize: '11px',
-          fontWeight: 700,
-          textTransform: 'uppercase'
-        }
-      }
-    },
     MuiContainer: {
       styleOverrides: {
         root: {
@@ -187,8 +171,14 @@ const appTheme = createTheme({
     MuiDialogTitle: {
       styleOverrides: {
         root: {
-          paddingTop: '24px',
-          paddingBottom: '24px'
+          paddingTop: '24px'
+        }
+      }
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          paddingTop: '8px !important' /* Any form fields inside this component get clipped if we don't add this */
         }
       }
     },

@@ -52,7 +52,7 @@ exports[`Agreements Form renders correctly the empty component correctly 1`] = `
             </span>
           </label>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
+            class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-11rtmns-MuiFormHelperText-root"
           />
         </fieldset>
       </div>
@@ -106,7 +106,7 @@ exports[`Agreements Form renders correctly the empty component correctly 1`] = `
             </span>
           </label>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
+            class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-11rtmns-MuiFormHelperText-root"
           />
         </fieldset>
       </div>
@@ -168,7 +168,7 @@ exports[`Agreements Form renders correctly the filled component correctly 1`] = 
             </span>
           </label>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
+            class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-11rtmns-MuiFormHelperText-root"
           />
         </fieldset>
       </div>
@@ -223,7 +223,7 @@ exports[`Agreements Form renders correctly the filled component correctly 1`] = 
             </span>
           </label>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
+            class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-11rtmns-MuiFormHelperText-root"
           />
         </fieldset>
       </div>
@@ -285,7 +285,7 @@ exports[`Agreements Form renders correctly when errors exist 1`] = `
             </span>
           </label>
           <p
-            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
+            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-11rtmns-MuiFormHelperText-root"
           >
             error on sedis field
           </p>
@@ -342,7 +342,7 @@ exports[`Agreements Form renders correctly when errors exist 1`] = `
             </span>
           </label>
           <p
-            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
+            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-11rtmns-MuiFormHelperText-root"
           >
             error on foippa field
           </p>

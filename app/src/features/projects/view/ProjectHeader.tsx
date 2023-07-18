@@ -121,7 +121,7 @@ const ProjectHeader = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: DeleteProjectI18N.deleteTitle,
       dialogText: DeleteProjectI18N.deleteText,
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary', variant: 'outlined' },
       noButtonLabel: 'Cancel',
@@ -215,8 +215,10 @@ const ProjectHeader = () => {
                     color="primary"
                     variant="contained"
                     onClick={() => setPublishProjectDialogOpen(true)}
-                    style={{ minWidth: '8rem' }}>
-                    <strong>Submit</strong>
+                    sx={{
+                      minWidth: '7rem'
+                    }}>
+                    Submit
                   </Button>
                 </SystemRoleGuard>
                 <ProjectRoleGuard

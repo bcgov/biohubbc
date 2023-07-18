@@ -82,11 +82,13 @@ const ProjectParticipantsPage: React.FC = () => {
       dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
-          Removing user <strong>{participant.user_identifier}</strong> will revoke their access to project. Are you sure
+          Removing user <strong>{participant.user_identifier}</strong> will revoke their access to this project. Are you sure
           you want to proceed?
         </Typography>
       ),
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
+      yesButtonLabel: 'Remove',
+      noButtonLabel: 'Cancel',
       open: true,
       onYes: async () => {
         await handleRemoveProjectParticipant(participant.project_participation_id);
@@ -158,8 +160,7 @@ const ProjectParticipantsPage: React.FC = () => {
                     <TableCell>Username</TableCell>
                     <TableCell>Type</TableCell>
                     <TableCell>Project Role</TableCell>
-                    <TableCell width="150px" align="center">
-                      Actions
+                    <TableCell width="80px" align="right">
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -181,7 +182,7 @@ const ProjectParticipantsPage: React.FC = () => {
                           </Box>
                         </TableCell>
 
-                        <TableCell align="center">
+                        <TableCell align="right">
                           <Box my={-1}>
                             <IconButton
                               title="Remove Team Member"

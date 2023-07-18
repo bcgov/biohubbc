@@ -39,7 +39,7 @@ const SurveySubmissionAlertBar = () => {
 
   const hasUnsubmittedData = submissionStatuses.some((status) => status === 'UNSUBMITTED');
 
-  const alertSeverity = hasUnsubmittedData ? 'info' : 'success';
+  const alertSeverity = hasUnsubmittedData ? 'error' : 'success';
   const alertTitle = hasUnsubmittedData
     ? 'This survey contains unsubmitted information'
     : 'All survey information submitted';
@@ -51,12 +51,12 @@ const SurveySubmissionAlertBar = () => {
   return (
     <Box mb={3}>
       <Alert
-        variant="outlined"
+        variant="filled"
         severity={alertSeverity}
         icon={<Icon path={mdiInformationOutline} size={1} />}
         onClose={() => setForceAlertClose(true)}
         action={
-          <IconButton color="primary" onClick={() => setForceAlertClose(true)}>
+          <IconButton color="inherit" onClick={() => setForceAlertClose(true)}>
             <Icon path={mdiClose} size={1} />
           </IconButton>
         }>
