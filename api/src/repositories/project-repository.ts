@@ -283,7 +283,6 @@ export class ProjectRepository extends BaseRepository {
         pt.name;
     `);
 
-    console.log(sqlStatement.text)
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     if (!response.rows) {

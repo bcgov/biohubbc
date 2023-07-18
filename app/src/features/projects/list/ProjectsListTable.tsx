@@ -103,8 +103,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     {
       field: 'regions',
       headerName: 'Regions',
-      flex: 1,
-      valueFormatter: ({ value }) => (value ? value.join(', ') : '')
+      flex: 1
     },
     {
       field: 'startDate',
@@ -163,7 +162,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           startDate: project.projectData.start_date,
           endDate: project.projectData.end_date,
           isDraft: false,
-          regions: project.projectData.regions
+          regions: project.projectData.regions?.join(', ')
         }))
       ]}
       getRowId={(row) => (row.isDraft ? `draft-${row.id}` : `project-${row.id}`)}
