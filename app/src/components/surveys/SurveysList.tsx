@@ -38,14 +38,14 @@ const SurveysList: React.FC = () => {
   return (
     <>
       <TableContainer>
-        <Table aria-label="surveys-list-table"
+        <Table
+          aria-label="surveys-list-table"
           sx={{
             tableLayout: 'fixed',
             '& td': {
               verticalAlign: 'top'
             }
-          }}
-        >
+          }}>
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -103,13 +103,9 @@ const SurveysList: React.FC = () => {
 function NoSurveys() {
   return (
     <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2} minHeight={66}>
-      <Typography
-        component="span"
-        variant="body2" 
-        color="textSecondary" 
-        data-testid="observations-nodata">
-          No Surveys
-        </Typography>
+      <Typography component="span" variant="body2" color="textSecondary" data-testid="observations-nodata">
+        No Surveys
+      </Typography>
     </Box>
   );
 }

@@ -187,7 +187,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 class="makeStyles-wrapper-2 MuiBox-root css-0"
               >
                 <button
-                  class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-10uyjde-MuiButtonBase-root-MuiButton-root"
+                  class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-1e8o90c-MuiButtonBase-root-MuiButton-root"
                   tabindex="0"
                   type="submit"
                 >
@@ -197,7 +197,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 </button>
               </div>
               <a
-                class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-13hk64i-MuiButtonBase-root-MuiButton-root"
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-ok5xf-MuiButtonBase-root-MuiButton-root"
                 data-testid="logout-button"
                 href="/logout"
                 tabindex="0"

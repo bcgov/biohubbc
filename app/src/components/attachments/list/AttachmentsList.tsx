@@ -2,7 +2,6 @@ import { mdiFileOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import { grey } from '@mui/material/colors';
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
@@ -11,6 +10,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -135,11 +135,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
 const NoAttachments = () => {
   return (
     <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2} minHeight={66}>
-      <Typography
-        component="span"
-        variant="body2" 
-        color="textSecondary"
-        data-testid="observations-nodata">
+      <Typography component="span" variant="body2" color="textSecondary" data-testid="observations-nodata">
         No Documents
       </Typography>
     </Box>

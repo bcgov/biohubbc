@@ -19,7 +19,7 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
               Is the data captured in this survey proprietary?
             </span>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation makeStyles-learnMoreBtn-2 css-1kba945-MuiButtonBase-root-MuiButton-root"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation makeStyles-learnMoreBtn-2 css-u9d4ox-MuiButtonBase-root-MuiButton-root"
               data-testid="prop-dialog-btn"
               tabindex="0"
               type="button"
@@ -175,7 +175,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               Is the data captured in this survey proprietary?
             </span>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation makeStyles-learnMoreBtn-5 css-1kba945-MuiButtonBase-root-MuiButton-root"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation makeStyles-learnMoreBtn-5 css-u9d4ox-MuiButtonBase-root-MuiButton-root"
               data-testid="prop-dialog-btn"
               tabindex="0"
               type="button"
@@ -669,7 +669,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               Is the data captured in this survey proprietary?
             </span>
             <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation makeStyles-learnMoreBtn-11 css-1kba945-MuiButtonBase-root-MuiButton-root"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation makeStyles-learnMoreBtn-11 css-u9d4ox-MuiButtonBase-root-MuiButton-root"
               data-testid="prop-dialog-btn"
               tabindex="0"
               type="button"

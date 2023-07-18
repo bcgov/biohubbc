@@ -461,11 +461,11 @@ exports[`General Information Form renders correctly the empty component correctl
         class="MuiList-root MuiList-dense makeStyles-permitList-2 css-1mk9mw3-MuiList-root"
       />
       <div
-        class="MuiBox-root css-164r41r"
+        class="MuiBox-root css-0"
       >
         <button
           aria-label="add permit"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-ok5xf-MuiButtonBase-root-MuiButton-root"
           tabindex="0"
           type="button"
         >
@@ -1043,7 +1043,7 @@ exports[`General Information Form renders correctly the filled component correct
                 class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
               >
                 <div
-                  class="MuiBox-root css-3cyd2n"
+                  class="MuiBox-root css-0"
                 >
                   <div
                     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
@@ -1198,11 +1198,11 @@ exports[`General Information Form renders correctly the filled component correct
         </li>
       </ul>
       <div
-        class="MuiBox-root css-164r41r"
+        class="MuiBox-root css-0"
       >
         <button
           aria-label="add permit"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-ok5xf-MuiButtonBase-root-MuiButton-root"
           tabindex="0"
           type="button"
         >
@@ -1252,13 +1252,13 @@ exports[`General Information Form renders correctly the filled component correct
           class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-149sb1i-MuiInputBase-root-MuiOutlinedInput-root"
         >
           <div
-            class="MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault MuiAutocomplete-tag MuiAutocomplete-tagSizeMedium css-t3eem9-MuiButtonBase-root-MuiChip-root"
+            class="MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault MuiAutocomplete-tag MuiAutocomplete-tagSizeMedium css-pz6fmh-MuiButtonBase-root-MuiChip-root"
             data-tag-index="0"
             role="button"
             tabindex="-1"
           >
             <span
-              class="MuiChip-label MuiChip-labelMedium css-6od3lo-MuiChip-label"
+              class="MuiChip-label MuiChip-labelMedium css-1dybbl5-MuiChip-label"
             >
               agency | $ 100 | 2000/04/09 - 2000/05/10
             </span>
@@ -1850,7 +1850,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                 class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
               >
                 <div
-                  class="MuiBox-root css-3cyd2n"
+                  class="MuiBox-root css-0"
                 >
                   <div
                     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
@@ -2005,11 +2005,11 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
         </li>
       </ul>
       <div
-        class="MuiBox-root css-164r41r"
+        class="MuiBox-root css-0"
       >
         <button
           aria-label="add permit"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-ok5xf-MuiButtonBase-root-MuiButton-root"
           tabindex="0"
           type="button"
         >
@@ -2059,13 +2059,13 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiInputBase-adornedEnd MuiAutocomplete-inputRoot css-149sb1i-MuiInputBase-root-MuiOutlinedInput-root"
         >
           <div
-            class="MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault MuiAutocomplete-tag MuiAutocomplete-tagSizeMedium css-t3eem9-MuiButtonBase-root-MuiChip-root"
+            class="MuiButtonBase-root MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-filledDefault MuiAutocomplete-tag MuiAutocomplete-tagSizeMedium css-pz6fmh-MuiButtonBase-root-MuiChip-root"
             data-tag-index="0"
             role="button"
             tabindex="-1"
           >
             <span
-              class="MuiChip-label MuiChip-labelMedium css-6od3lo-MuiChip-label"
+              class="MuiChip-label MuiChip-labelMedium css-1dybbl5-MuiChip-label"
             >
               agency | $ 100 | 2000/04/09 - 2000/05/10
             </span>

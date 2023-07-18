@@ -6,11 +6,11 @@ exports[`SurveyPermitForm renders correctly with default empty values 1`] = `
     class="MuiList-root MuiList-dense makeStyles-permitList-1 css-1mk9mw3-MuiList-root"
   />
   <div
-    class="MuiBox-root css-164r41r"
+    class="MuiBox-root css-0"
   >
     <button
       aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-ok5xf-MuiButtonBase-root-MuiButton-root"
       tabindex="0"
       type="button"
     >
@@ -52,7 +52,7 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
             class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root css-3cyd2n"
+              class="MuiBox-root css-0"
             >
               <div
                 class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
@@ -218,7 +218,7 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
             class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root css-3cyd2n"
+              class="MuiBox-root css-0"
             >
               <div
                 class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
@@ -373,11 +373,11 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
     </li>
   </ul>
   <div
-    class="MuiBox-root css-164r41r"
+    class="MuiBox-root css-0"
   >
     <button
       aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-ok5xf-MuiButtonBase-root-MuiButton-root"
       tabindex="0"
       type="button"
     >
@@ -419,7 +419,7 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
             class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root css-3cyd2n"
+              class="MuiBox-root css-0"
             >
               <div
                 class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
@@ -585,7 +585,7 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
             class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root css-3cyd2n"
+              class="MuiBox-root css-0"
             >
               <div
                 class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
@@ -740,11 +740,11 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
     </li>
   </ul>
   <div
-    class="MuiBox-root css-164r41r"
+    class="MuiBox-root css-0"
   >
     <button
       aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-ok5xf-MuiButtonBase-root-MuiButton-root"
       tabindex="0"
       type="button"
     >
@@ -786,7 +786,7 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
             class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root css-3cyd2n"
+              class="MuiBox-root css-0"
             >
               <div
                 class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
@@ -952,7 +952,7 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
             class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root css-3cyd2n"
+              class="MuiBox-root css-0"
             >
               <div
                 class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
@@ -1107,11 +1107,11 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
     </li>
   </ul>
   <div
-    class="MuiBox-root css-164r41r"
+    class="MuiBox-root css-0"
   >
     <button
       aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-ok5xf-MuiButtonBase-root-MuiButton-root"
       tabindex="0"
       type="button"
     >
