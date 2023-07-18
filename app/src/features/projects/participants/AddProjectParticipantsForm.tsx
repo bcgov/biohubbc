@@ -65,7 +65,7 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                 const roleIdMeta = getFieldMeta(`participants.[${index}].roleId`);
 
                 return (
-                  <Grid item xs={12} key={index}>
+                  <Grid item xs={12}>
                     <Box>
                       <Box display="flex" overflow="visible">
                         <Box display="flex" flex="1 1 auto">
