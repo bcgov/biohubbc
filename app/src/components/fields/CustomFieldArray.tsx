@@ -1,13 +1,13 @@
-import { grey } from '@material-ui/core/colors';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { FieldArray, useFormikContext } from 'formik';
+import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import { makeStyles } from '@mui/styles';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { get } from 'lodash-es';
 
 const useStyles = makeStyles({
@@ -80,7 +80,7 @@ const CustomFieldArray = <ValueType extends Record<string, any>>(props: CustomFi
   return (
     <FieldArray
       name={props.name}
-      render={(arrayHelpers) => (
+      render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
           <List disablePadding className={classes.list}>
             {values.map((value: ValueType, index: number) => {

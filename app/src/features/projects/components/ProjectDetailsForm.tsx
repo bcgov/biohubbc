@@ -1,9 +1,9 @@
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
@@ -83,7 +83,6 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               labelId="project_type-label"
               label="Project Type"
               value={values.project.project_type || ''}
-              labelWidth={300}
               onChange={handleChange}
               displayEmpty
               inputProps={{ 'aria-label': 'Project Type' }}>

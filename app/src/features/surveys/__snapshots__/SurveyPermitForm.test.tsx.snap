@@ -3,36 +3,32 @@
 exports[`SurveyPermitForm renders correctly with default empty values 1`] = `
 <DocumentFragment>
   <ul
-    class="MuiList-root makeStyles-permitList-1 MuiList-dense"
+    class="MuiList-root MuiList-dense makeStyles-permitList-1 css-1mk9mw3-MuiList-root"
   />
   <div
-    class="MuiBox-root MuiBox-root-2"
+    class="MuiBox-root css-164r41r"
   >
     <button
       aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
       tabindex="0"
       type="button"
     >
       <span
-        class="MuiButton-label"
+        class="MuiButton-startIcon MuiButton-iconSizeMedium css-19goimj-MuiButton-startIcon"
       >
-        <span
-          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+        <svg
+          role="presentation"
+          style="width: 1.5rem; height: 1.5rem;"
+          viewBox="0 0 24 24"
         >
-          <svg
-            role="presentation"
-            style="width: 1.5rem; height: 1.5rem;"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-              style="fill: currentColor;"
-            />
-          </svg>
-        </span>
-        Add New Permit
+          <path
+            d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+            style="fill: currentColor;"
+          />
+        </svg>
       </span>
+      Add New Permit
     </button>
   </div>
 </DocumentFragment>
@@ -41,34 +37,34 @@ exports[`SurveyPermitForm renders correctly with default empty values 1`] = `
 exports[`SurveyPermitForm renders correctly with error on the permits field due to duplicates 1`] = `
 <DocumentFragment>
   <ul
-    class="MuiList-root makeStyles-permitList-19 MuiList-dense"
+    class="MuiList-root MuiList-dense makeStyles-permitList-4 css-1mk9mw3-MuiList-root"
   >
     <li
-      class="MuiListItem-container"
+      class="MuiListItem-container css-oyakqy-MuiListItem-container"
     >
       <div
-        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+        class="MuiListItem-root MuiListItem-dense MuiListItem-padding MuiListItem-secondaryAction css-hw573y-MuiListItem-root"
       >
         <div
-          class="MuiListItemText-root MuiListItemText-dense"
+          class="MuiListItemText-root MuiListItemText-dense css-tlelie-MuiListItemText-root"
         >
           <span
-            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+            class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root MuiBox-root-20"
+              class="MuiBox-root css-3cyd2n"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       for="permit.permits.[0].permit_number"
                       id="permit.permits.[0].permit_number-label"
@@ -76,17 +72,17 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       Permit Number
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                     >
                       <input
                         aria-invalid="false"
-                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                         data-testid="permit.permits.[0].permit_number"
                         id="permit.permits.[0].permit_number"
                         name="permit.permits.[0].permit_number"
@@ -96,13 +92,13 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Number *
+                            Permit Number *
                           </span>
                         </legend>
                       </fieldset>
@@ -110,32 +106,33 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       id="permit_type"
                     >
                       Permit Type
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                     >
                       <div
+                        aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-label="Permit Type"
                         aria-labelledby="permit_type permit.permits.[0].permit_type"
-                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                         id="permit.permits.[0].permit_type"
                         role="button"
                         tabindex="0"
@@ -144,7 +141,8 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       </div>
                       <input
                         aria-hidden="true"
-                        class="MuiSelect-nativeInput"
+                        aria-invalid="false"
+                        class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                         name="permit.permits.[0].permit_type"
                         required=""
                         tabindex="-1"
@@ -152,7 +150,8 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       />
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                        data-testid="ArrowDropDownIcon"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -162,19 +161,19 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       </svg>
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Type
+                            Permit Type *
                           </span>
                         </legend>
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -184,58 +183,54 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
         </div>
       </div>
       <div
-        class="MuiListItemSecondaryAction-root"
+        class="MuiListItemSecondaryAction-root MuiListItemSecondaryAction-disableGutters css-14f9zar-MuiListItemSecondaryAction-root"
       >
         <button
           aria-label="remove permit"
-          class="MuiButtonBase-root MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hpj6o1-MuiButtonBase-root-MuiIconButton-root"
           data-testid="delete-icon"
           tabindex="0"
           type="button"
         >
-          <span
-            class="MuiIconButton-label"
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
           >
-            <svg
-              role="presentation"
-              style="width: 1.5rem; height: 1.5rem;"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                style="fill: currentColor;"
-              />
-            </svg>
-          </span>
+            <path
+              d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
         </button>
       </div>
     </li>
     <li
-      class="MuiListItem-container"
+      class="MuiListItem-container css-oyakqy-MuiListItem-container"
     >
       <div
-        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+        class="MuiListItem-root MuiListItem-dense MuiListItem-padding MuiListItem-secondaryAction css-hw573y-MuiListItem-root"
       >
         <div
-          class="MuiListItemText-root MuiListItemText-dense"
+          class="MuiListItemText-root MuiListItemText-dense css-tlelie-MuiListItemText-root"
         >
           <span
-            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+            class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root MuiBox-root-25"
+              class="MuiBox-root css-3cyd2n"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       for="permit.permits.[1].permit_number"
                       id="permit.permits.[1].permit_number-label"
@@ -243,17 +238,17 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       Permit Number
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                     >
                       <input
                         aria-invalid="false"
-                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                         data-testid="permit.permits.[1].permit_number"
                         id="permit.permits.[1].permit_number"
                         name="permit.permits.[1].permit_number"
@@ -263,13 +258,13 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Number *
+                            Permit Number *
                           </span>
                         </legend>
                       </fieldset>
@@ -277,32 +272,33 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       id="permit_type"
                     >
                       Permit Type
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                     >
                       <div
+                        aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-label="Permit Type"
                         aria-labelledby="permit_type permit.permits.[1].permit_type"
-                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                         id="permit.permits.[1].permit_type"
                         role="button"
                         tabindex="0"
@@ -311,7 +307,8 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       </div>
                       <input
                         aria-hidden="true"
-                        class="MuiSelect-nativeInput"
+                        aria-invalid="false"
+                        class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                         name="permit.permits.[1].permit_type"
                         required=""
                         tabindex="-1"
@@ -319,7 +316,8 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       />
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                        data-testid="ArrowDropDownIcon"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -329,19 +327,19 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       </svg>
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Type
+                            Permit Type *
                           </span>
                         </legend>
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -351,47 +349,14 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
         </div>
       </div>
       <div
-        class="MuiListItemSecondaryAction-root"
+        class="MuiListItemSecondaryAction-root MuiListItemSecondaryAction-disableGutters css-14f9zar-MuiListItemSecondaryAction-root"
       >
         <button
           aria-label="remove permit"
-          class="MuiButtonBase-root MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hpj6o1-MuiButtonBase-root-MuiIconButton-root"
           data-testid="delete-icon"
           tabindex="0"
           type="button"
-        >
-          <span
-            class="MuiIconButton-label"
-          >
-            <svg
-              role="presentation"
-              style="width: 1.5rem; height: 1.5rem;"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                style="fill: currentColor;"
-              />
-            </svg>
-          </span>
-        </button>
-      </div>
-    </li>
-  </ul>
-  <div
-    class="MuiBox-root MuiBox-root-26"
-  >
-    <button
-      aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
-      tabindex="0"
-      type="button"
-    >
-      <span
-        class="MuiButton-label"
-      >
-        <span
-          class="MuiButton-startIcon MuiButton-iconSizeMedium"
         >
           <svg
             role="presentation"
@@ -399,13 +364,38 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
             viewBox="0 0 24 24"
           >
             <path
-              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
               style="fill: currentColor;"
             />
           </svg>
-        </span>
-        Add New Permit
+        </button>
+      </div>
+    </li>
+  </ul>
+  <div
+    class="MuiBox-root css-164r41r"
+  >
+    <button
+      aria-label="add permit"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="MuiButton-startIcon MuiButton-iconSizeMedium css-19goimj-MuiButton-startIcon"
+      >
+        <svg
+          role="presentation"
+          style="width: 1.5rem; height: 1.5rem;"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+            style="fill: currentColor;"
+          />
+        </svg>
       </span>
+      Add New Permit
     </button>
   </div>
 </DocumentFragment>
@@ -414,34 +404,34 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
 exports[`SurveyPermitForm renders correctly with errors on the permit_number and permit_type fields 1`] = `
 <DocumentFragment>
   <ul
-    class="MuiList-root makeStyles-permitList-11 MuiList-dense"
+    class="MuiList-root MuiList-dense makeStyles-permitList-3 css-1mk9mw3-MuiList-root"
   >
     <li
-      class="MuiListItem-container"
+      class="MuiListItem-container css-oyakqy-MuiListItem-container"
     >
       <div
-        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+        class="MuiListItem-root MuiListItem-dense MuiListItem-padding MuiListItem-secondaryAction css-hw573y-MuiListItem-root"
       >
         <div
-          class="MuiListItemText-root MuiListItemText-dense"
+          class="MuiListItemText-root MuiListItemText-dense css-tlelie-MuiListItemText-root"
         >
           <span
-            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+            class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root MuiBox-root-12"
+              class="MuiBox-root css-3cyd2n"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       for="permit.permits.[0].permit_number"
                       id="permit.permits.[0].permit_number-label"
@@ -449,17 +439,17 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       Permit Number
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                     >
                       <input
                         aria-invalid="false"
-                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                         data-testid="permit.permits.[0].permit_number"
                         id="permit.permits.[0].permit_number"
                         name="permit.permits.[0].permit_number"
@@ -469,13 +459,13 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Number *
+                            Permit Number *
                           </span>
                         </legend>
                       </fieldset>
@@ -483,32 +473,33 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       id="permit_type"
                     >
                       Permit Type
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                     >
                       <div
+                        aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-label="Permit Type"
                         aria-labelledby="permit_type permit.permits.[0].permit_type"
-                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                         id="permit.permits.[0].permit_type"
                         role="button"
                         tabindex="0"
@@ -517,7 +508,8 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       </div>
                       <input
                         aria-hidden="true"
-                        class="MuiSelect-nativeInput"
+                        aria-invalid="false"
+                        class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                         name="permit.permits.[0].permit_type"
                         required=""
                         tabindex="-1"
@@ -525,7 +517,8 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       />
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                        data-testid="ArrowDropDownIcon"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -535,19 +528,19 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       </svg>
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Type
+                            Permit Type *
                           </span>
                         </legend>
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -557,58 +550,54 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
         </div>
       </div>
       <div
-        class="MuiListItemSecondaryAction-root"
+        class="MuiListItemSecondaryAction-root MuiListItemSecondaryAction-disableGutters css-14f9zar-MuiListItemSecondaryAction-root"
       >
         <button
           aria-label="remove permit"
-          class="MuiButtonBase-root MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hpj6o1-MuiButtonBase-root-MuiIconButton-root"
           data-testid="delete-icon"
           tabindex="0"
           type="button"
         >
-          <span
-            class="MuiIconButton-label"
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
           >
-            <svg
-              role="presentation"
-              style="width: 1.5rem; height: 1.5rem;"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                style="fill: currentColor;"
-              />
-            </svg>
-          </span>
+            <path
+              d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
         </button>
       </div>
     </li>
     <li
-      class="MuiListItem-container"
+      class="MuiListItem-container css-oyakqy-MuiListItem-container"
     >
       <div
-        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+        class="MuiListItem-root MuiListItem-dense MuiListItem-padding MuiListItem-secondaryAction css-hw573y-MuiListItem-root"
       >
         <div
-          class="MuiListItemText-root MuiListItemText-dense"
+          class="MuiListItemText-root MuiListItemText-dense css-tlelie-MuiListItemText-root"
         >
           <span
-            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+            class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root MuiBox-root-17"
+              class="MuiBox-root css-3cyd2n"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       for="permit.permits.[1].permit_number"
                       id="permit.permits.[1].permit_number-label"
@@ -616,17 +605,17 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       Permit Number
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                     >
                       <input
                         aria-invalid="false"
-                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                         data-testid="permit.permits.[1].permit_number"
                         id="permit.permits.[1].permit_number"
                         name="permit.permits.[1].permit_number"
@@ -636,13 +625,13 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Number *
+                            Permit Number *
                           </span>
                         </legend>
                       </fieldset>
@@ -650,32 +639,33 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       id="permit_type"
                     >
                       Permit Type
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                     >
                       <div
+                        aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-label="Permit Type"
                         aria-labelledby="permit_type permit.permits.[1].permit_type"
-                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                         id="permit.permits.[1].permit_type"
                         role="button"
                         tabindex="0"
@@ -684,7 +674,8 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       </div>
                       <input
                         aria-hidden="true"
-                        class="MuiSelect-nativeInput"
+                        aria-invalid="false"
+                        class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                         name="permit.permits.[1].permit_type"
                         required=""
                         tabindex="-1"
@@ -692,7 +683,8 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       />
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                        data-testid="ArrowDropDownIcon"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -702,19 +694,19 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       </svg>
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Type
+                            Permit Type *
                           </span>
                         </legend>
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -724,47 +716,14 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
         </div>
       </div>
       <div
-        class="MuiListItemSecondaryAction-root"
+        class="MuiListItemSecondaryAction-root MuiListItemSecondaryAction-disableGutters css-14f9zar-MuiListItemSecondaryAction-root"
       >
         <button
           aria-label="remove permit"
-          class="MuiButtonBase-root MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hpj6o1-MuiButtonBase-root-MuiIconButton-root"
           data-testid="delete-icon"
           tabindex="0"
           type="button"
-        >
-          <span
-            class="MuiIconButton-label"
-          >
-            <svg
-              role="presentation"
-              style="width: 1.5rem; height: 1.5rem;"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                style="fill: currentColor;"
-              />
-            </svg>
-          </span>
-        </button>
-      </div>
-    </li>
-  </ul>
-  <div
-    class="MuiBox-root MuiBox-root-18"
-  >
-    <button
-      aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
-      tabindex="0"
-      type="button"
-    >
-      <span
-        class="MuiButton-label"
-      >
-        <span
-          class="MuiButton-startIcon MuiButton-iconSizeMedium"
         >
           <svg
             role="presentation"
@@ -772,13 +731,38 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
             viewBox="0 0 24 24"
           >
             <path
-              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
               style="fill: currentColor;"
             />
           </svg>
-        </span>
-        Add New Permit
+        </button>
+      </div>
+    </li>
+  </ul>
+  <div
+    class="MuiBox-root css-164r41r"
+  >
+    <button
+      aria-label="add permit"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="MuiButton-startIcon MuiButton-iconSizeMedium css-19goimj-MuiButton-startIcon"
+      >
+        <svg
+          role="presentation"
+          style="width: 1.5rem; height: 1.5rem;"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+            style="fill: currentColor;"
+          />
+        </svg>
       </span>
+      Add New Permit
     </button>
   </div>
 </DocumentFragment>
@@ -787,34 +771,34 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
 exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
 <DocumentFragment>
   <ul
-    class="MuiList-root makeStyles-permitList-3 MuiList-dense"
+    class="MuiList-root MuiList-dense makeStyles-permitList-2 css-1mk9mw3-MuiList-root"
   >
     <li
-      class="MuiListItem-container"
+      class="MuiListItem-container css-oyakqy-MuiListItem-container"
     >
       <div
-        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+        class="MuiListItem-root MuiListItem-dense MuiListItem-padding MuiListItem-secondaryAction css-hw573y-MuiListItem-root"
       >
         <div
-          class="MuiListItemText-root MuiListItemText-dense"
+          class="MuiListItemText-root MuiListItemText-dense css-tlelie-MuiListItemText-root"
         >
           <span
-            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+            class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root MuiBox-root-4"
+              class="MuiBox-root css-3cyd2n"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       for="permit.permits.[0].permit_number"
                       id="permit.permits.[0].permit_number-label"
@@ -822,17 +806,17 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       Permit Number
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                     >
                       <input
                         aria-invalid="false"
-                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                         data-testid="permit.permits.[0].permit_number"
                         id="permit.permits.[0].permit_number"
                         name="permit.permits.[0].permit_number"
@@ -842,13 +826,13 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Number *
+                            Permit Number *
                           </span>
                         </legend>
                       </fieldset>
@@ -856,32 +840,33 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       id="permit_type"
                     >
                       Permit Type
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                     >
                       <div
+                        aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-label="Permit Type"
                         aria-labelledby="permit_type permit.permits.[0].permit_type"
-                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                         id="permit.permits.[0].permit_type"
                         role="button"
                         tabindex="0"
@@ -890,7 +875,8 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       </div>
                       <input
                         aria-hidden="true"
-                        class="MuiSelect-nativeInput"
+                        aria-invalid="false"
+                        class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                         name="permit.permits.[0].permit_type"
                         required=""
                         tabindex="-1"
@@ -898,7 +884,8 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       />
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                        data-testid="ArrowDropDownIcon"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -908,19 +895,19 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       </svg>
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Type
+                            Permit Type *
                           </span>
                         </legend>
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -930,58 +917,54 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
         </div>
       </div>
       <div
-        class="MuiListItemSecondaryAction-root"
+        class="MuiListItemSecondaryAction-root MuiListItemSecondaryAction-disableGutters css-14f9zar-MuiListItemSecondaryAction-root"
       >
         <button
           aria-label="remove permit"
-          class="MuiButtonBase-root MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hpj6o1-MuiButtonBase-root-MuiIconButton-root"
           data-testid="delete-icon"
           tabindex="0"
           type="button"
         >
-          <span
-            class="MuiIconButton-label"
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
           >
-            <svg
-              role="presentation"
-              style="width: 1.5rem; height: 1.5rem;"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                style="fill: currentColor;"
-              />
-            </svg>
-          </span>
+            <path
+              d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
         </button>
       </div>
     </li>
     <li
-      class="MuiListItem-container"
+      class="MuiListItem-container css-oyakqy-MuiListItem-container"
     >
       <div
-        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
+        class="MuiListItem-root MuiListItem-dense MuiListItem-padding MuiListItem-secondaryAction css-hw573y-MuiListItem-root"
       >
         <div
-          class="MuiListItemText-root MuiListItemText-dense"
+          class="MuiListItemText-root MuiListItemText-dense css-tlelie-MuiListItemText-root"
         >
           <span
-            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
+            class="MuiTypography-root MuiTypography-body2 MuiListItemText-primary css-1wh0g1q-MuiTypography-root"
           >
             <div
-              class="MuiBox-root MuiBox-root-9"
+              class="MuiBox-root css-3cyd2n"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       for="permit.permits.[1].permit_number"
                       id="permit.permits.[1].permit_number-label"
@@ -989,17 +972,17 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       Permit Number
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl css-s07kjc-MuiInputBase-root-MuiOutlinedInput-root"
                     >
                       <input
                         aria-invalid="false"
-                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiInputBase-input MuiOutlinedInput-input css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input"
                         data-testid="permit.permits.[1].permit_number"
                         id="permit.permits.[1].permit_number"
                         name="permit.permits.[1].permit_number"
@@ -1009,13 +992,13 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Number *
+                            Permit Number *
                           </span>
                         </legend>
                       </fieldset>
@@ -1023,32 +1006,33 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
                 >
                   <div
-                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                    class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined css-1vgrt5y-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="true"
                       id="permit_type"
                     >
                       Permit Type
                       <span
                         aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
                       >
                          *
                       </span>
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                     >
                       <div
+                        aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-label="Permit Type"
                         aria-labelledby="permit_type permit.permits.[1].permit_type"
-                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        class="MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input"
                         id="permit.permits.[1].permit_type"
                         role="button"
                         tabindex="0"
@@ -1057,7 +1041,8 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       </div>
                       <input
                         aria-hidden="true"
-                        class="MuiSelect-nativeInput"
+                        aria-invalid="false"
+                        class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                         name="permit.permits.[1].permit_type"
                         required=""
                         tabindex="-1"
@@ -1065,7 +1050,8 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       />
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-hfutr2-MuiSvgIcon-root-MuiSelect-icon"
+                        data-testid="ArrowDropDownIcon"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -1075,19 +1061,19 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       </svg>
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                        class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                          class="css-14lo706"
                         >
                           <span>
-                            Permit Type
+                            Permit Type *
                           </span>
                         </legend>
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -1097,47 +1083,14 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
         </div>
       </div>
       <div
-        class="MuiListItemSecondaryAction-root"
+        class="MuiListItemSecondaryAction-root MuiListItemSecondaryAction-disableGutters css-14f9zar-MuiListItemSecondaryAction-root"
       >
         <button
           aria-label="remove permit"
-          class="MuiButtonBase-root MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hpj6o1-MuiButtonBase-root-MuiIconButton-root"
           data-testid="delete-icon"
           tabindex="0"
           type="button"
-        >
-          <span
-            class="MuiIconButton-label"
-          >
-            <svg
-              role="presentation"
-              style="width: 1.5rem; height: 1.5rem;"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                style="fill: currentColor;"
-              />
-            </svg>
-          </span>
-        </button>
-      </div>
-    </li>
-  </ul>
-  <div
-    class="MuiBox-root MuiBox-root-10"
-  >
-    <button
-      aria-label="add permit"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-disableElevation"
-      tabindex="0"
-      type="button"
-    >
-      <span
-        class="MuiButton-label"
-      >
-        <span
-          class="MuiButton-startIcon MuiButton-iconSizeMedium"
         >
           <svg
             role="presentation"
@@ -1145,13 +1098,38 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
             viewBox="0 0 24 24"
           >
             <path
-              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
               style="fill: currentColor;"
             />
           </svg>
-        </span>
-        Add New Permit
+        </button>
+      </div>
+    </li>
+  </ul>
+  <div
+    class="MuiBox-root css-164r41r"
+  >
+    <button
+      aria-label="add permit"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="MuiButton-startIcon MuiButton-iconSizeMedium css-19goimj-MuiButton-startIcon"
+      >
+        <svg
+          role="presentation"
+          style="width: 1.5rem; height: 1.5rem;"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+            style="fill: currentColor;"
+          />
+        </svg>
       </span>
+      Add New Permit
     </button>
   </div>
 </DocumentFragment>

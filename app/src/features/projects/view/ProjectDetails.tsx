@@ -1,10 +1,10 @@
-import Box from '@material-ui/core/Box';
-import { grey } from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
 import { ProjectContext } from 'contexts/projectContext';

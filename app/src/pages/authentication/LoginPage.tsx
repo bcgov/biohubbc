@@ -1,4 +1,4 @@
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import { AuthStateContext } from 'contexts/authStateContext';
 import useRedirect from 'hooks/useRedirect';
 import { useContext, useEffect } from 'react';

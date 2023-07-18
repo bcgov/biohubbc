@@ -3,49 +3,49 @@
 exports[`ProjectDetails renders correctly with activity data 1`] = `
 <DocumentFragment>
   <dl
-    class="MuiBox-root MuiBox-root-3"
+    class="MuiBox-root css-1mgrf5c"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 css-a5rdam-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
       >
         <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
           Type
         </dt>
         <dd
-          class="MuiTypography-root MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
           Project type
         </dd>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
       >
         <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
           Timeline
         </dt>
         <dd
-          class="MuiTypography-root MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
           Oct 10, 1998 - Feb 26, 2021
         </dd>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12 css-1wcgocn-MuiGrid-root"
       >
         <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
           Activities
         </dt>
         <dd
-          class="MuiTypography-root MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
           Activity code
         </dd>
@@ -58,49 +58,49 @@ exports[`ProjectDetails renders correctly with activity data 1`] = `
 exports[`ProjectDetails renders correctly with no activity data 1`] = `
 <DocumentFragment>
   <dl
-    class="MuiBox-root MuiBox-root-2"
+    class="MuiBox-root css-1mgrf5c"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 css-a5rdam-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
       >
         <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
           Type
         </dt>
         <dd
-          class="MuiTypography-root MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
           Project type
         </dd>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
       >
         <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
           Timeline
         </dt>
         <dd
-          class="MuiTypography-root MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
           Oct 10, 1998 - Feb 26, 2021
         </dd>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12 css-1wcgocn-MuiGrid-root"
       >
         <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
           Activities
         </dt>
         <dd
-          class="MuiTypography-root MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
           No Activities
         </dd>
@@ -113,35 +113,35 @@ exports[`ProjectDetails renders correctly with no activity data 1`] = `
 exports[`ProjectDetails renders correctly with no end date (only start date) 1`] = `
 <DocumentFragment>
   <dl
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiBox-root css-1mgrf5c"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 css-a5rdam-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
       >
         <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
           Type
         </dt>
         <dd
-          class="MuiTypography-root MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
           Project type
         </dd>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 css-1wyczmb-MuiGrid-root"
       >
         <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
           Timeline
         </dt>
         <dd
-          class="MuiTypography-root MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
           <span>
             Start Date:
@@ -150,15 +150,15 @@ exports[`ProjectDetails renders correctly with no end date (only start date) 1`]
         </dd>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12 css-1wcgocn-MuiGrid-root"
       >
         <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
           Activities
         </dt>
         <dd
-          class="MuiTypography-root MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
           Activity code
         </dd>

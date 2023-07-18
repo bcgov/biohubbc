@@ -2,17 +2,17 @@
 
 exports[`RequestSubmitted renders a spinner when \`hasLoadedAllUserInfo\` is false 1`] = `
 <DocumentFragment>
-  <div
-    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+  <span
+    class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorPrimary pageProgress css-1sgvys3-MuiCircularProgress-root"
     role="progressbar"
     style="width: 40px; height: 40px;"
   >
     <svg
-      class="MuiCircularProgress-svg"
+      class="MuiCircularProgress-svg css-1idz92c-MuiCircularProgress-svg"
       viewBox="22 22 44 44"
     >
       <circle
-        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate css-176wh8e-MuiCircularProgress-circle"
         cx="44"
         cy="44"
         fill="none"
@@ -20,17 +20,17 @@ exports[`RequestSubmitted renders a spinner when \`hasLoadedAllUserInfo\` is fal
         stroke-width="3.6"
       />
     </svg>
-  </div>
+  </span>
 </DocumentFragment>
 `;
 
 exports[`RequestSubmitted renders correctly when user has no role but has a pending access requests 1`] = `
 <DocumentFragment>
   <div
-    class="MuiContainer-root MuiContainer-maxWidthLg"
+    class="MuiContainer-root MuiContainer-maxWidthLg css-s6i9wm-MuiContainer-root"
   >
     <div
-      class="MuiBox-root MuiBox-root-1"
+      class="MuiBox-root css-gxcw53"
     >
       <svg
         role="presentation"
@@ -46,26 +46,21 @@ exports[`RequestSubmitted renders correctly when user has no role but has a pend
         Access Request Submitted
       </h1>
       <p
-        class="MuiTypography-root MuiTypography-body1"
+        class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
       >
         Your request is currently pending a review by an administrator.
       </p>
       <div
-        class="MuiBox-root MuiBox-root-2"
+        class="MuiBox-root css-xuhmcu"
       >
         <a
-          aria-disabled="false"
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge MuiButton-disableElevation"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-disableElevation css-zaixig-MuiButtonBase-root-MuiButton-root"
           data-testid="logout-button"
           href="/logout"
-          role="button"
           tabindex="0"
+          type="submit"
         >
-          <span
-            class="MuiButton-label"
-          >
-            Log Out
-          </span>
+          Log Out
         </a>
       </div>
     </div>

@@ -1,5 +1,5 @@
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import MapBoundary from 'components/boundary/MapBoundary';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';

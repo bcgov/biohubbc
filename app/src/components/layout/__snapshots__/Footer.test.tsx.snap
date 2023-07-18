@@ -6,11 +6,11 @@ exports[`Footer renders correctly 1`] = `
     class="makeStyles-appFooter-1"
   >
     <div
-      class="MuiContainer-root MuiContainer-maxWidthXl"
+      class="MuiContainer-root MuiContainer-maxWidthXl css-r1qme6-MuiContainer-root"
     >
       <div
         aria-label="Footer"
-        class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-2"
+        class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-2 css-r6ewbb-MuiToolbar-root"
         role="navigation"
       >
         <ul>
