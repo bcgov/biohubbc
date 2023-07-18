@@ -7,24 +7,24 @@ export const CreateProjectI18N = {
 };
 
 export const EditProjectI18N = {
-  cancelTitle: 'Cancel Edit Project',
-  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Editing Project',
   createErrorText:
     'An error has occurred while attempting to edit your project, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const CreateSurveyI18N = {
-  cancelTitle: 'Cancel Survey Creation',
-  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Creating Survey',
   createErrorText:
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditSurveyI18N = {
-  cancelTitle: 'Cancel Survey Edit',
-  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Editing Survey',
   createErrorText:
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
