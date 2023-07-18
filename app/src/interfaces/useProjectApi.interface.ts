@@ -393,6 +393,7 @@ export interface IGetProjectParticipantsResponseArrayItem {
   project_role_name: string;
   user_identifier: string;
   user_identity_source_id: number;
+  user_identity_source_name: string;
 }
 
 export interface IGetProjectParticipantsResponse {

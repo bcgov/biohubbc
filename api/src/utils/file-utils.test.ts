@@ -1,6 +1,7 @@
 import AWS from 'aws-sdk';
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import sinon from 'sinon';
 import {
   deleteFileFromS3,
   generateS3FileKey,
@@ -30,31 +31,47 @@ describe('getS3SignedURL', () => {
 });
 
 describe('generateS3FileKey', () => {
+  let sinonSandbox = sinon.createSandbox();
+
+  afterEach(() => {
+    sinonSandbox.restore();
+  });
+
   it('returns project file path', async () => {
+    sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value('some/s3/prefix');
+
     const result = generateS3FileKey({ projectId: 1, fileName: 'testFileName' });
 
-    expect(result).to.equal('sims/projects/1/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/testFileName');
   });
 
   it('returns survey file path', async () => {
+    sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value('some/s3/prefix');
+
     const result = generateS3FileKey({ projectId: 1, surveyId: 2, fileName: 'testFileName' });
 
-    expect(result).to.equal('sims/projects/1/surveys/2/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/testFileName');
   });
 
   it('returns project folder file path', async () => {
+    sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value('some/s3/prefix');
+
     const result = generateS3FileKey({ projectId: 1, folder: 'folder', fileName: 'testFileName' });
 
-    expect(result).to.equal('sims/projects/1/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/folder/testFileName');
   });
 
   it('returns survey folder file path', async () => {
+    sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value('some/s3/prefix');
+
     const result = generateS3FileKey({ projectId: 1, surveyId: 2, folder: 'folder', fileName: 'testFileName' });
 
-    expect(result).to.equal('sims/projects/1/surveys/2/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/folder/testFileName');
   });
 
   it('returns survey occurrence folder file path', async () => {
+    sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value('some/s3/prefix');
+
     const result = generateS3FileKey({
       projectId: 1,
       surveyId: 2,
@@ -62,10 +79,12 @@ describe('generateS3FileKey', () => {
       fileName: 'testFileName'
     });
 
-    expect(result).to.equal('sims/projects/1/surveys/2/submissions/3/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/submissions/3/testFileName');
   });
 
   it('returns survey summaryresults folder file path', async () => {
+    sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value('some/s3/prefix');
+
     const result = generateS3FileKey({
       projectId: 1,
       surveyId: 2,
@@ -73,32 +92,38 @@ describe('generateS3FileKey', () => {
       fileName: 'testFileName'
     });
 
-    expect(result).to.equal('sims/projects/1/surveys/2/summaryresults/3/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/summaryresults/3/testFileName');
   });
 });
 
 describe('getS3HostUrl', () => {
-  beforeEach(() => {
-    process.env.OBJECT_STORE_URL = 's3.host.example.com';
-    process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket-name';
+  let sinonSandbox = sinon.createSandbox();
+
+  afterEach(() => {
+    sinonSandbox.restore();
   });
 
   it('should yield a default S3 host url', () => {
-    delete process.env.OBJECT_STORE_URL;
-    delete process.env.OBJECT_STORE_BUCKET_NAME;
-
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_URL').value(undefined);
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_BUCKET_NAME').value(undefined);
     const result = getS3HostUrl();
 
     expect(result).to.equal('nrs.objectstore.gov.bc.ca');
   });
 
   it('should successfully produce an S3 host url', () => {
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_URL').value('s3.host.example.com');
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_BUCKET_NAME').value('test-bucket-name');
+
     const result = getS3HostUrl();
 
     expect(result).to.equal('s3.host.example.com/test-bucket-name');
   });
 
   it('should successfully append a key to an S3 host url', () => {
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_URL').value('s3.host.example.com');
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_BUCKET_NAME').value('test-bucket-name');
+
     const result = getS3HostUrl('my-test-file.txt');
 
     expect(result).to.equal('s3.host.example.com/test-bucket-name/my-test-file.txt');
@@ -106,9 +131,15 @@ describe('getS3HostUrl', () => {
 });
 
 describe('_getS3Client', () => {
+  let sinonSandbox = sinon.createSandbox();
+
+  afterEach(() => {
+    sinonSandbox.restore();
+  });
+
   it('should return an S3 client', () => {
-    process.env.OBJECT_STORE_ACCESS_KEY_ID = 'aaaa';
-    process.env.OBJECT_STORE_SECRET_KEY_ID = 'bbbb';
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_ACCESS_KEY_ID').value('aaaa');
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_SECRET_KEY_ID').value('bbbb');
 
     const result = _getS3Client();
     expect(result).to.be.instanceOf(AWS.S3);
@@ -116,37 +147,43 @@ describe('_getS3Client', () => {
 });
 
 describe('_getClamAvScanner', () => {
+  let sinonSandbox = sinon.createSandbox();
+
+  afterEach(() => {
+    sinonSandbox.restore();
+  });
+
   it('should return a clamAv scanner client', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
-    process.env.CLAMAV_HOST = 'host';
-    process.env.CLAMAV_PORT = '1111';
+    sinonSandbox.stub(process.env, 'ENABLE_FILE_VIRUS_SCAN').value('true');
+    sinonSandbox.stub(process.env, 'CLAMAV_HOST').value('host');
+    sinonSandbox.stub(process.env, 'CLAMAV_PORT').value('1111');
 
     const result = _getClamAvScanner();
     expect(result).to.not.be.null;
   });
 
   it('should return null if enable file virus scan is not set to true', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'false';
-    process.env.CLAMAV_HOST = 'host';
-    process.env.CLAMAV_PORT = '1111';
+    sinonSandbox.stub(process.env, 'ENABLE_FILE_VIRUS_SCAN').value('false');
+    sinonSandbox.stub(process.env, 'CLAMAV_HOST').value('host');
+    sinonSandbox.stub(process.env, 'CLAMAV_PORT').value('1111');
 
     const result = _getClamAvScanner();
     expect(result).to.be.null;
   });
 
   it('should return null if CLAMAV_HOST is not set', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
-    delete process.env.CLAMAV_HOST;
-    process.env.CLAMAV_PORT = '1111';
+    sinonSandbox.stub(process.env, 'ENABLE_FILE_VIRUS_SCAN').value('true');
+    sinonSandbox.stub(process.env, 'CLAMAV_HOST').value(undefined);
+    sinonSandbox.stub(process.env, 'CLAMAV_PORT').value('1111');
 
     const result = _getClamAvScanner();
     expect(result).to.be.null;
   });
 
   it('should return null if CLAMAV_PORT is not set', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
-    process.env.CLAMAV_HOST = 'host';
-    delete process.env.CLAMAV_PORT;
+    sinonSandbox.stub(process.env, 'ENABLE_FILE_VIRUS_SCAN').value('true');
+    sinonSandbox.stub(process.env, 'CLAMAV_HOST').value('host');
+    sinonSandbox.stub(process.env, 'CLAMAV_PORT').value(undefined);
 
     const result = _getClamAvScanner();
     expect(result).to.be.null;
@@ -154,15 +191,21 @@ describe('_getClamAvScanner', () => {
 });
 
 describe('_getObjectStoreBucketName', () => {
+  let sinonSandbox = sinon.createSandbox();
+
+  afterEach(() => {
+    sinonSandbox.restore();
+  });
+
   it('should return an object store bucket name', () => {
-    process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket1';
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_BUCKET_NAME').value('test-bucket1');
 
     const result = _getObjectStoreBucketName();
     expect(result).to.equal('test-bucket1');
   });
 
   it('should return its default value', () => {
-    delete process.env.OBJECT_STORE_BUCKET_NAME;
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_BUCKET_NAME').value(undefined);
 
     const result = _getObjectStoreBucketName();
     expect(result).to.equal('');
@@ -170,15 +213,21 @@ describe('_getObjectStoreBucketName', () => {
 });
 
 describe('_getObjectStoreUrl', () => {
+  let sinonSandbox = sinon.createSandbox();
+
+  afterEach(() => {
+    sinonSandbox.restore();
+  });
+
   it('should return an object store bucket name', () => {
-    process.env.OBJECT_STORE_URL = 'test-url1';
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_URL').value('test-url1');
 
     const result = _getObjectStoreUrl();
     expect(result).to.equal('test-url1');
   });
 
   it('should return its default value', () => {
-    delete process.env.OBJECT_STORE_URL;
+    sinonSandbox.stub(process.env, 'OBJECT_STORE_URL').value(undefined);
 
     const result = _getObjectStoreUrl();
     expect(result).to.equal('nrs.objectstore.gov.bc.ca');
@@ -186,15 +235,21 @@ describe('_getObjectStoreUrl', () => {
 });
 
 describe('_getS3KeyPrefix', () => {
+  let sinonSandbox = sinon.createSandbox();
+
+  afterEach(() => {
+    sinonSandbox.restore();
+  });
+
   it('should return an s3 key prefix', () => {
-    process.env.S3_KEY_PREFIX = 'test-sims';
+    sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value('test-sims');
 
     const result = _getS3KeyPrefix();
     expect(result).to.equal('test-sims');
   });
 
   it('should return its default value', () => {
-    delete process.env.S3_KEY_PREFIX;
+    sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value(undefined);
 
     const result = _getS3KeyPrefix();
     expect(result).to.equal('sims');
