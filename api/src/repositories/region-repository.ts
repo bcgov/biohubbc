@@ -1,6 +1,7 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { RegionDetails } from '../services/bcgw-layer-service';
 import { BaseRepository } from './base-repository';
 
@@ -54,7 +55,13 @@ export class RegionRepository extends BaseRepository {
 
     sql.append(';');
 
-    await this.connection.sql(sql);
+    try {
+      await this.connection.sql(sql);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to execute insert SQL for project_region', [
+        'RegionRepository->addRegionsToAProject'
+      ]);
+    }
   }
 
   /**
@@ -85,7 +92,13 @@ export class RegionRepository extends BaseRepository {
 
     sql.append(';');
 
-    await this.connection.sql(sql);
+    try {
+      await this.connection.sql(sql);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to execute insert SQL for survey_region', [
+        'RegionRepository->addRegionsToASurvey'
+      ]);
+    }
   }
 
   /**
@@ -95,9 +108,15 @@ export class RegionRepository extends BaseRepository {
    */
   async deleteRegionsFromAProject(projectId: number): Promise<void> {
     const sql = SQL`
-      DELETE FROM project_region WHERE project_id=${projectId};
+      DELETE FROM project_regions WHERE project_id=${projectId};
     `;
-    await this.connection.sql(sql);
+    try {
+      await this.connection.sql(sql);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to execute delete SQL for project_regions', [
+        'RegionRepository->deleteRegionsFromAProject'
+      ]);
+    }
   }
 
   /**
@@ -109,7 +128,13 @@ export class RegionRepository extends BaseRepository {
     const sql = SQL`
       DELETE FROM survey_region WHERE survey_id=${surveyId};
     `;
-    await this.connection.sql(sql);
+    try {
+      await this.connection.sql(sql);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to execute delete SQL for survey_regions', [
+        'RegionRepository->deleteRegionsFromASurvey'
+      ]);
+    }
   }
 
   /**
@@ -129,8 +154,14 @@ export class RegionRepository extends BaseRepository {
       });
     }
 
-    const response = await this.connection.knex<IRegion>(qb);
+    try {
+      const response = await this.connection.knex<IRegion>(qb);
 
-    return response.rows;
+      return response.rows;
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to execute search region SQL', [
+        'RegionRepository->searchRegionsWithDetails'
+      ]);
+    }
   }
 }
