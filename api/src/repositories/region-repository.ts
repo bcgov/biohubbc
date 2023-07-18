@@ -26,6 +26,13 @@ export type IRegion = z.infer<typeof IRegion>;
  * @extends {BaseRepository}
  */
 export class RegionRepository extends BaseRepository {
+  /**
+   *  Links given project to a list of given regions
+   *
+   * @param {number} projectId
+   * @param {number[]} regions
+   * @returns {*} {Promise<void>}
+   */
   async addRegionsToAProject(projectId: number, regions: number[]): Promise<void> {
     if (regions.length < 1) {
       return;
@@ -50,6 +57,13 @@ export class RegionRepository extends BaseRepository {
     await this.connection.sql(sql);
   }
 
+  /**
+   * Links a survey to a list of given regions
+   *
+   * @param {number} surveyId
+   * @param {number[]} regions
+   * @returns  {*} {Promise<void>}
+   */
   async addRegionsToASurvey(surveyId: number, regions: number[]): Promise<void> {
     if (regions.length < 1) {
       return;
@@ -74,6 +88,11 @@ export class RegionRepository extends BaseRepository {
     await this.connection.sql(sql);
   }
 
+  /**
+   * Removes any regions associated to a given project
+   *
+   * @param {number} projectId
+   */
   async deleteRegionsFromAProject(projectId: number): Promise<void> {
     const sql = SQL`
       DELETE FROM project_region WHERE project_id=${projectId};
@@ -81,6 +100,11 @@ export class RegionRepository extends BaseRepository {
     await this.connection.sql(sql);
   }
 
+  /**
+   * Removes any regions associated to a given survey
+   *
+   * @param surveyId
+   */
   async deleteRegionsFromASurvey(surveyId: number): Promise<void> {
     const sql = SQL`
       DELETE FROM survey_region WHERE survey_id=${surveyId};
@@ -88,26 +112,12 @@ export class RegionRepository extends BaseRepository {
     await this.connection.sql(sql);
   }
 
-  async getAllRegions(): Promise<IRegion[]> {
-    const sql = SQL`
-      SELECT * FROM region_lookup;
-    `;
-    const response = await this.connection.sql(sql, IRegion);
-    return response.rows;
-  }
-
-  async getRegionsForProjectId(projectId: number): Promise<IRegion[]> {
-    const sql = SQL`
-      SELECT rl.*
-      FROM project p 
-      LEFT JOIN project_region pr ON p.project_id = pr.project_id
-      LEFT JOIN region_lookup rl ON pr.region_id =rl.region_id 
-      WHERE p.project_id = ${projectId};
-  `;
-    const response = await this.connection.sql(sql, IRegion);
-    return response.rows;
-  }
-
+  /**
+   * Filters the region lookup table based on region name and source layer (fme_feature_type)
+   *
+   * @param {RegionDetails[]} details
+   * @returns {*} {Promise<IRegion[]>}
+   */
   async searchRegionsWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
     const knex = getKnex();
     const qb = knex.queryBuilder().select().from('region_lookup');
