@@ -116,7 +116,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         </fieldset>
                       </div>
                       <p
-                        class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                        class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
                       />
                     </div>
                   </div>

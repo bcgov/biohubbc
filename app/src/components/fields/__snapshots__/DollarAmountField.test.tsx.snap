@@ -48,7 +48,7 @@ exports[`DollarAmountField matches the snapshot with error 1`] = `
       </fieldset>
     </div>
     <p
-      class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+      class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
       id="amount-helper-text"
     >
       error is here

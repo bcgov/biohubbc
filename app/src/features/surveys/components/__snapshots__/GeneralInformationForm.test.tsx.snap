@@ -109,7 +109,7 @@ exports[`General Information Form renders correctly the empty component correctl
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
               id="start_date-helper-text"
             >
               Start Date cannot precede Oct 10, 1998
@@ -159,7 +159,7 @@ exports[`General Information Form renders correctly the empty component correctl
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained css-ylkwpb-MuiFormHelperText-root"
               id="end_date-helper-text"
             >
               End Date cannot come after the Project End Date Feb 26, 2021
@@ -173,7 +173,7 @@ exports[`General Information Form renders correctly the empty component correctl
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Species
     </legend>
@@ -341,7 +341,7 @@ exports[`General Information Form renders correctly the empty component correctl
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Lead Biologist
     </legend>
@@ -450,7 +450,7 @@ exports[`General Information Form renders correctly the empty component correctl
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Permits
     </legend>
@@ -492,7 +492,7 @@ exports[`General Information Form renders correctly the empty component correctl
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Funding Sources
     </legend>
@@ -679,7 +679,7 @@ exports[`General Information Form renders correctly the filled component correct
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
               id="start_date-helper-text"
             >
               Start Date cannot precede Oct 10, 1998
@@ -729,7 +729,7 @@ exports[`General Information Form renders correctly the filled component correct
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled css-ylkwpb-MuiFormHelperText-root"
               id="end_date-helper-text"
             >
               End Date cannot come after the Project End Date Feb 26, 2021
@@ -743,7 +743,7 @@ exports[`General Information Form renders correctly the filled component correct
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Species
     </legend>
@@ -911,7 +911,7 @@ exports[`General Information Form renders correctly the filled component correct
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Lead Biologist
     </legend>
@@ -1020,7 +1020,7 @@ exports[`General Information Form renders correctly the filled component correct
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Permits
     </legend>
@@ -1164,7 +1164,7 @@ exports[`General Information Form renders correctly the filled component correct
                           </fieldset>
                         </div>
                         <p
-                          class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                          class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
                         />
                       </div>
                     </div>
@@ -1229,7 +1229,7 @@ exports[`General Information Form renders correctly the filled component correct
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Funding Sources
     </legend>
@@ -1402,7 +1402,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           </fieldset>
         </div>
         <p
-          class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+          class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
           id="survey_details.survey_name-helper-text"
         >
           error on survey name field
@@ -1465,7 +1465,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
               id="start_date-helper-text"
             >
               error on start date field
@@ -1515,7 +1515,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled css-ylkwpb-MuiFormHelperText-root"
               id="end_date-helper-text"
             >
               error on end date field
@@ -1529,7 +1529,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Species
     </legend>
@@ -1616,7 +1616,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
               id="species.focal_species-helper-text"
             >
               error on species field
@@ -1704,7 +1704,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Lead Biologist
     </legend>
@@ -1759,7 +1759,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
             id="survey_details.biologist_first_name-helper-text"
           >
             error on biologist first name field
@@ -1814,7 +1814,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+            class="MuiFormHelperText-root Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
             id="survey_details.biologist_last_name-helper-text"
           >
             error on biologist last name field
@@ -1827,7 +1827,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Permits
     </legend>
@@ -1971,7 +1971,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                           </fieldset>
                         </div>
                         <p
-                          class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                          class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
                         />
                       </div>
                     </div>
@@ -2036,7 +2036,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
     class="MuiBox-root css-y1gt6f"
   >
     <legend
-      class="MuiTypography-root MuiTypography-h5 css-qjr3jq-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-h5 css-1hhv3uj-MuiTypography-root"
     >
       Funding Sources
     </legend>

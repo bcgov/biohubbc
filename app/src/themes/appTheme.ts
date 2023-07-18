@@ -53,7 +53,7 @@ const appTheme = createTheme({
       fontWeight: 700
     },
     h5: {
-      fontSize: '1.125rem',
+      fontSize: '1rem',
       fontWeight: 700
     },
     h6: {
@@ -202,13 +202,6 @@ const appTheme = createTheme({
           '& button': {
             minWidth: '6rem'
           }
-        }
-      }
-    },
-    MuiFormHelperText: {
-      styleOverrides: {
-        root: {
-          fontSize: '0.875rem'
         }
       }
     },

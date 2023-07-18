@@ -173,7 +173,7 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -339,7 +339,7 @@ exports[`SurveyPermitForm renders correctly with error on the permits field due 
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -540,7 +540,7 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -706,7 +706,7 @@ exports[`SurveyPermitForm renders correctly with errors on the permit_number and
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -907,7 +907,7 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
                     />
                   </div>
                 </div>
@@ -1073,7 +1073,7 @@ exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                      class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
                     />
                   </div>
                 </div>

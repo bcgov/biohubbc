@@ -1,13 +1,9 @@
-import { mdiChevronRight } from '@mdi/js';
-import Icon from '@mdi/react';
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
@@ -28,7 +24,6 @@ import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
-import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
@@ -52,14 +47,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& + button': {
       marginLeft: '0.5rem'
     }
-  },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
   },
   sectionDivider: {
     height: '1px',
@@ -274,28 +261,10 @@ const CreateSurveyPage = () => {
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
-            <Box mb={2}>
-              <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-                <Link color="primary" component={RouterLink} to={'/admin/projects'} aria-current="page">
-                  <Typography variant="body1" component="span">
-                    Projects
-                  </Typography>
-                </Link>
-                <Link color="primary" onClick={handleCancel} aria-current="page">
-                  <Typography variant="body1" component="span">
-                    {projectData.project.project_name}
-                  </Typography>
-                </Link>
-                <Typography variant="body1" component="span">
-                  Create Survey
-                </Typography>
-              </Breadcrumbs>
-            </Box>
-
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
-                  Create Survey
+                  Create New Survey
                 </Typography>
               </Box>
               <Box flex="0 0 auto" className={classes.pageTitleActions}>
@@ -411,9 +380,10 @@ const CreateSurveyPage = () => {
                   title="Agreements"
                   summary=""
                   component={<AgreementsForm />}></HorizontalSplitFormComponent>
+                
                 <Divider className={classes.sectionDivider} />
 
-                <Box p={3} display="flex" justifyContent="flex-end">
+                <Box display="flex" justifyContent="flex-end">
                   <Button
                     type="submit"
                     variant="contained"

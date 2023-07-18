@@ -98,7 +98,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
               </div>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
             />
           </div>
         </div>
@@ -420,7 +420,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
               </div>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
             />
           </div>
         </div>
@@ -742,7 +742,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
               </div>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
             />
           </div>
         </div>
@@ -816,7 +816,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
             />
           </div>
         </div>
@@ -1138,7 +1138,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
               </div>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
             />
           </div>
         </div>
@@ -1212,7 +1212,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained MuiFormHelperText-filled Mui-required css-ylkwpb-MuiFormHelperText-root"
             />
           </div>
         </div>
@@ -1534,7 +1534,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
               </div>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
             />
           </div>
         </div>
@@ -1856,7 +1856,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
               </div>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+              class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-ylkwpb-MuiFormHelperText-root"
             />
           </div>
         </div>
