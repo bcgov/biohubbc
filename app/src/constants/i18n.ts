@@ -1,6 +1,6 @@
 export const CreateProjectI18N = {
-  cancelTitle: 'Cancel Project Creation',
-  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Creating Project',
   createErrorText:
     'An error has occurred while attempting to create your project, please try again. If the error persists, please contact your system administrator.'

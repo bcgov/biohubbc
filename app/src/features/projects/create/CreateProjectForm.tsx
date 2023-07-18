@@ -117,7 +117,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   }) || []
                 }
               />
-              <Box mt={2}>
+              <Box mt={3}>
                 <ProjectObjectivesForm />
               </Box>
               <Box component="fieldset" mt={5}>

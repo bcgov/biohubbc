@@ -92,7 +92,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                     }) || []
                   }
                 />
-                <Box mt={2}>
+                <Box mt={3}>
                   <ProjectObjectivesForm />
                 </Box>
                 <Box component="fieldset" mt={5}>

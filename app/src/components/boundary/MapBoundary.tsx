@@ -122,10 +122,18 @@ const MapBoundary = (props: IMapBoundaryProps) => {
         </Box>
       </ComponentDialog>
       <Grid item xs={12}>
-        <Typography variant="h5" component="h3">
+        <Typography variant="h5" component="h3"
+          sx={{
+            marginBottom: '14px'
+          }}
+        >
           {title}
         </Typography>
-        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
+        <Typography variant="body1" color="textSecondary"
+          sx={{
+            maxWidth: '90ch'
+          }}
+        >
           Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below
           and click a boundary on the map.
         </Typography>
