@@ -83,7 +83,7 @@ const SurveySummaryResults = () => {
         dialogTitle: 'Delete Summary Results Data?',
         dialogText:
           'Are you sure you want to delete the summary results data for this survey? This action cannot be undone.',
-        yesButtonProps: { color: 'secondary' },
+        yesButtonProps: { color: 'error' },
         yesButtonLabel: 'Delete',
         noButtonProps: { color: 'primary' },
         noButtonLabel: 'Cancel',

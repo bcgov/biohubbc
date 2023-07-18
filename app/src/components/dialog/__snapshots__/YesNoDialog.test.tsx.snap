@@ -38,13 +38,13 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
         role="dialog"
       >
         <h2
-          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-cs3to5-MuiTypography-root-MuiDialogTitle-root"
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-1bnp99m-MuiTypography-root-MuiDialogTitle-root"
           id="alert-dialog-title"
         >
           this is a test
         </h2>
         <div
-          class="MuiDialogContent-root css-ypiqx9-MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <p
             class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-1jaqsfq-MuiTypography-root-MuiDialogContentText-root"
@@ -131,13 +131,13 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
         role="dialog"
       >
         <h2
-          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-cs3to5-MuiTypography-root-MuiDialogTitle-root"
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-1bnp99m-MuiTypography-root-MuiDialogTitle-root"
           id="alert-dialog-title"
         >
           this is a test
         </h2>
         <div
-          class="MuiDialogContent-root css-ypiqx9-MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <p
             class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-1jaqsfq-MuiTypography-root-MuiDialogContentText-root"

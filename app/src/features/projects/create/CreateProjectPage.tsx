@@ -297,7 +297,7 @@ const CreateProjectPage: React.FC = () => {
         dialogText="Are you sure you want to permanently delete this draft project? This action cannot be undone."
         open={openDeleteDraftDialog}
         yesButtonLabel='Delete Draft'
-        yesButtonProps={{color: 'warning'}}
+        yesButtonProps={{color: 'error'}}
         noButtonLabel='Cancel'
         onClose={() => setOpenDeleteDraftDialog(false)}
         onNo={() => setOpenDeleteDraftDialog(false)}
@@ -361,8 +361,8 @@ const CreateProjectPage: React.FC = () => {
                 </Button>
 
                 <Button
-                  color="warning"
-                  variant="contained"
+                  color="primary"
+                  variant="outlined"
                   onClick={() => setOpenDeleteDraftDialog(true)}
                   className={classes.actionButton}
                   data-testid="delete-draft-button">

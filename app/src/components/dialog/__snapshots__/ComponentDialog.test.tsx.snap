@@ -37,13 +37,13 @@ exports[`ComponentDialog matches snapshot when open 1`] = `
         role="dialog"
       >
         <h2
-          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-cs3to5-MuiTypography-root-MuiDialogTitle-root"
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-1bnp99m-MuiTypography-root-MuiDialogTitle-root"
           id="component-dialog-title"
         >
           this is a test
         </h2>
         <div
-          class="MuiDialogContent-root css-ypiqx9-MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <div
             class="MuiBox-root css-0"

@@ -70,7 +70,9 @@ const ProjectAttachmentsList = () => {
       open: true,
       dialogTitle: 'Delete Document?',
       dialogText: 'Are you sure you want to permanently delete this document? This action cannot be undone.',
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
+      yesButtonLabel: 'Delete',
+      noButtonLabel: 'Cancel',
       onYes: async () => {
         try {
           // Delete attachment

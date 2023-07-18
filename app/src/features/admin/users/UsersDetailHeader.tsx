@@ -148,7 +148,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
                         all projects. Are you sure you want to proceed?
                       </Typography>
                     ),
-                    yesButtonProps: { color: 'warning' },
+                    yesButtonProps: { color: 'error' },
                     yesButtonLabel: 'Remove',
                     noButtonLabel: 'Cancel',
                     onYes: () => {

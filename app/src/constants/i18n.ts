@@ -251,7 +251,7 @@ export const ProjectParticipantsI18N = {
   addParticipantsErrorTitle: 'Error Adding Project Team Members',
   addParticipantsErrorText:
     'An error has occurred while attempting to add project team members, please try again. If the error persists, please contact your system administrator.',
-  removeParticipantTitle: 'Remove Team Member?',
+  removeParticipantTitle: 'Remove team member?',
   removeParticipantErrorTitle: 'Error Removing Project Team Member',
   removeParticipantErrorText:
     'An error has occurred while attempting to remove the project team member, please try again. If the error persists, please contact your system administrator.',

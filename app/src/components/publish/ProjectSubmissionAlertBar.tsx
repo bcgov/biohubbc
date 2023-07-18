@@ -36,7 +36,7 @@ const ProjectSubmissionAlertBar = () => {
 
   const hasUnsubmittedData = submissionStatuses.some((status) => status === 'UNSUBMITTED');
 
-  const alertSeverity = hasUnsubmittedData ? 'info' : 'success';
+  const alertSeverity = hasUnsubmittedData ? 'error' : 'success';
   const alertTitle = hasUnsubmittedData
     ? 'This project contains unsubmitted information'
     : 'All project information submitted';
@@ -48,7 +48,7 @@ const ProjectSubmissionAlertBar = () => {
   return (
     <Box mb={3}>
       <Alert
-        variant="outlined"
+        variant="filled"
         severity={alertSeverity}
         onClose={() => setForceAlertClose(true)}
         action={
