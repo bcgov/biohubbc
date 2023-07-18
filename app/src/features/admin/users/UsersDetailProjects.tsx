@@ -1,6 +1,5 @@
 import { mdiChevronDown, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
@@ -29,7 +28,7 @@ import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesAp
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   actionButton: {
     minWidth: '6rem',
     '& + button': {
