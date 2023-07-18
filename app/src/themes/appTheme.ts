@@ -127,7 +127,7 @@ const appTheme = createTheme({
       },
       styleOverrides: {
         root: {
-          textTransform: 'none',
+          letterSpacing: '0.02rem',
           '&:focus': {
             outline: '3px solid #3B99FC',
             outlineOffset: '-1px'
@@ -139,12 +139,8 @@ const appTheme = createTheme({
         sizeLarge: {
           fontSize: '1rem'
         },
-        outlinedPrimary: {
-          backgroundColor: '#ffffff',
-          borderColor: '#003366',
-          '&:hover': {
-            backgroundColor: '#ffffff'
-          }
+        containedPrimary: {
+          fontWeight: 700
         }
       }
     },
