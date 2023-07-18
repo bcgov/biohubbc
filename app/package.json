@@ -73,6 +73,7 @@
     "yup": "~0.32.9"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-typescript": "~7.12.7",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.5",
@@ -106,10 +107,10 @@
     "https-browserify": "^1.0.0",
     "jest": "^29.5.0",
     "jest-sonar-reporter": "~2.0.0",
+    "nwsapi": "2.2.5",
     "prettier": "~2.8.8",
     "prettier-plugin-organize-imports": "~3.2.2",
-    "react-scripts": "^5.0.1",
-    "nwsapi": "2.2.5"
+    "react-scripts": "^5.0.1"
   },
   "overrides": {
     "nwsapi": "$nwsapi"
