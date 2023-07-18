@@ -145,12 +145,6 @@ const appTheme = createTheme({
         sizeLarge: {
           fontSize: '1rem'
         },
-        containedPrimary: {
-          fontWeight: 700
-        },
-        containedSecondary: {
-          fontWeight: 700
-        },
         outlinedPrimary: {
           backgroundColor: '#ffffff',
           borderColor: '#003366',
@@ -169,7 +163,9 @@ const appTheme = createTheme({
       styleOverrides: {
         root: {
           minWidth: '6rem',
-          fontWeight: 700
+          fontSize: '11px',
+          fontWeight: 700,
+          textTransform: 'uppercase'
         }
       }
     },
@@ -191,7 +187,8 @@ const appTheme = createTheme({
     MuiDialogTitle: {
       styleOverrides: {
         root: {
-          paddingTop: '24px'
+          paddingTop: '24px',
+          paddingBottom: '24px'
         }
       }
     },

@@ -57,7 +57,7 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
       <FieldArray
         name="systemUsers"
         render={(arrayHelpers: FieldArrayRenderProps) => (
-          <Box>
+          <Box pt={1}>
             <Grid container direction="row" spacing={2}>
               {values.systemUsers?.map((systemUser: IAddSystemUsersFormArrayItem, index: number) => {
                 const userIdentifierMeta = getFieldMeta(`systemUsers.[${index}].userIdentifier`);
@@ -67,80 +67,84 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                 return (
                   <Grid item xs={12} key={index}>
                     <Box display="flex">
-                      <Box flexBasis="35%">
-                        <CustomTextField
-                          name={`systemUsers.[${index}].userIdentifier`}
-                          label="Username"
-                          other={{
-                            required: true,
-                            value: systemUser.userIdentifier,
-                            error: userIdentifierMeta.touched && Boolean(userIdentifierMeta.error),
-                            helperText: userIdentifierMeta.touched && userIdentifierMeta.error
-                          }}
-                        />
-                      </Box>
-                      <Box flexBasis="25%" pl={1}>
-                        <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="loginMethod" required={false}>
-                            Login Method
-                          </InputLabel>
-                          <Select
-                            id={`systemUsers.[${index}].identitySource`}
-                            name={`systemUsers.[${index}].identitySource`}
-                            labelId="login_method"
-                            label="Login Method"
-                            value={systemUser.identitySource}
-                            onChange={handleChange}
-                            error={identitySourceMeta.touched && Boolean(identitySourceMeta.error)}
-                            displayEmpty
-                            inputProps={{ 'aria-label': 'Login Method' }}>
-                            <MenuItem key={SYSTEM_IDENTITY_SOURCE.IDIR} value={SYSTEM_IDENTITY_SOURCE.IDIR}>
-                              IDIR
-                            </MenuItem>
-                            <MenuItem
-                              key={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC}
-                              value={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC}>
-                              BCeID Basic
-                            </MenuItem>
-                            <MenuItem
-                              key={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS}
-                              value={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS}>
-                              BCeID Business
-                            </MenuItem>
-                          </Select>
-                          <FormHelperText>{identitySourceMeta.touched && identitySourceMeta.error}</FormHelperText>
-                        </FormControl>
-                      </Box>
-                      <Box flexBasis="35%" pl={1}>
-                        <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="Id" required={false}>
-                            System Role
-                          </InputLabel>
-                          <Select
-                            id={`systemUsers.[${index}].systemRole`}
-                            name={`systemUsers.[${index}].systemRole`}
-                            labelId="systemRole"
-                            label="System Role"
-                            value={systemUser.systemRole}
-                            onChange={handleChange}
-                            error={systemRoleMeta.touched && Boolean(systemRoleMeta.error)}
-                            displayEmpty
-                            inputProps={{ 'aria-label': 'System Role' }}>
-                            {props?.systemRoles?.map((item) => (
-                              <MenuItem key={item.value} value={item.value}>
-                                {item.label}
+                      <Box display="flex" flex="1 1 auto" alignItems="stretch">
+                        <Box flex="1 1 auto">
+                          <CustomTextField
+                            name={`systemUsers.[${index}].userIdentifier`}
+                            label="Username"
+                            other={{
+                              required: true,
+                              value: systemUser.userIdentifier,
+                              error: userIdentifierMeta.touched && Boolean(userIdentifierMeta.error),
+                              helperText: userIdentifierMeta.touched && userIdentifierMeta.error
+                            }}
+                          />
+                        </Box>
+                        <Box pl={1} width={220}>
+                          <FormControl fullWidth variant="outlined" required={true}>
+                            <InputLabel id="loginMethod" required={false}>
+                              Login Method
+                            </InputLabel>
+                            <Select
+                              id={`systemUsers.[${index}].identitySource`}
+                              name={`systemUsers.[${index}].identitySource`}
+                              labelId="login_method"
+                              label="Login Method"
+                              value={systemUser.identitySource}
+                              onChange={handleChange}
+                              error={identitySourceMeta.touched && Boolean(identitySourceMeta.error)}
+                              displayEmpty
+                              inputProps={{ 'aria-label': 'Login Method' }}>
+                              <MenuItem key={SYSTEM_IDENTITY_SOURCE.IDIR} value={SYSTEM_IDENTITY_SOURCE.IDIR}>
+                                IDIR
                               </MenuItem>
-                            ))}
-                          </Select>
-                          <FormHelperText>{systemRoleMeta.touched && systemRoleMeta.error}</FormHelperText>
-                        </FormControl>
+                              <MenuItem
+                                key={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC}
+                                value={SYSTEM_IDENTITY_SOURCE.BCEID_BASIC}>
+                                BCeID Basic
+                              </MenuItem>
+                              <MenuItem
+                                key={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS}
+                                value={SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS}>
+                                BCeID Business
+                              </MenuItem>
+                            </Select>
+                            <FormHelperText>{identitySourceMeta.touched && identitySourceMeta.error}</FormHelperText>
+                          </FormControl>
+                        </Box>
+                        <Box pl={1} width={220}>
+                          <FormControl fullWidth variant="outlined" required={true}>
+                            <InputLabel id="Id" required={false}>
+                              System Role
+                            </InputLabel>
+                            <Select
+                              id={`systemUsers.[${index}].systemRole`}
+                              name={`systemUsers.[${index}].systemRole`}
+                              labelId="systemRole"
+                              label="System Role"
+                              value={systemUser.systemRole}
+                              onChange={handleChange}
+                              error={systemRoleMeta.touched && Boolean(systemRoleMeta.error)}
+                              displayEmpty
+                              inputProps={{ 'aria-label': 'System Role' }}>
+                              {props?.systemRoles?.map((item) => (
+                                <MenuItem key={item.value} value={item.value}>
+                                  {item.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            <FormHelperText>{systemRoleMeta.touched && systemRoleMeta.error}</FormHelperText>
+                          </FormControl>
+                        </Box>
                       </Box>
-                      <Box pt={0.5} pl={1}>
+                      <Box flex="0 0 auto" pl={1}>
                         <IconButton
-                          color="primary"
                           data-testid="delete-icon"
                           aria-label="remove participant"
-                          onClick={() => arrayHelpers.remove(index)}>
+                          onClick={() => arrayHelpers.remove(index)}
+                          sx={{
+                            marginTop: '8px'
+                          }}>
                           <Icon path={mdiTrashCanOutline} size={1} />
                         </IconButton>
                       </Box>
@@ -151,14 +155,12 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
             </Grid>
             <Box pt={2}>
               <Button
-                type="button"
-                variant="text"
                 color="primary"
-                aria-label="add participant"
+                variant="outlined"
                 data-testid="add-participant-button"
                 startIcon={<Icon path={mdiPlus} size={1} />}
                 onClick={() => arrayHelpers.push(AddSystemUsersFormArrayItemInitialValues)}>
-                <strong>Add New</strong>
+                Add New User
               </Button>
             </Box>
           </Box>

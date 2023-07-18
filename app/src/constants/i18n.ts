@@ -267,8 +267,8 @@ export const SystemUserI18N = {
   updateProjectLeadRoleErrorTitle: 'Error Updating Project Lead Role',
   updateProjectLeadRoleErrorText:
     "An error has occurred while attempting to update the user's project lead role, please assign a different project lead before changing. Please try again, if the error persists please contact your system administrator.",
-  removeSystemUserTitle: 'Remove System User ',
-  removeUserFromProject: 'Remove User From Project',
+  removeSystemUserTitle: 'Remove system user?',
+  removeUserFromProject: 'Remove user from project?',
   removeUserErrorTitle: 'Error Removing User From Team',
   removeUserErrorText:
     'An error has occurred while attempting to remove the user from the team, please try again. If the error persists, please contact your system administrator.'

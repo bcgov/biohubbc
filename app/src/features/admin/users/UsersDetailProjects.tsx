@@ -181,14 +181,13 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
         </Typography>
       </Toolbar>
       <Divider></Divider>
-      <Box px={1}>
+      <Box p={1}>
         <Table className={classes.projectMembersTable}>
           <TableHead>
             <TableRow>
               <TableCell>Project Name</TableCell>
               <TableCell>Project Role</TableCell>
-              <TableCell width="150px" align="center">
-                Actions
+              <TableCell width={80} align="center">
               </TableCell>
             </TableRow>
           </TableHead>
@@ -198,13 +197,10 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                 <TableRow key={row.project_id}>
                   <TableCell scope="row">
                     <Link
-                      color="primary"
                       component={RouterLink}
                       to={`/admin/projects/${row.project_id}/details`}
                       aria-current="page">
-                      <Typography variant="body2">
-                        <strong>{row.name}</strong>
-                      </Typography>
+                      {row.name}
                     </Link>
                   </TableCell>
 
@@ -221,23 +217,20 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                   <TableCell align="center">
                     <Box my={-1}>
                       <IconButton
-                        title="Remove User from Project"
+                        title="Remove user from project"
                         data-testid={'remove-project-participant-button'}
                         onClick={() =>
                           openYesNoDialog({
                             dialogTitle: SystemUserI18N.removeUserFromProject,
                             dialogContent: (
-                              <>
-                                <Typography variant="body1" color="textPrimary">
-                                  Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access
-                                  to the project.
-                                </Typography>
-                                <Typography variant="body1" color="textPrimary">
-                                  Are you sure you want to proceed?
-                                </Typography>
-                              </>
+                              <Typography variant="body1" color="textSecondary">
+                                Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access
+                                to this project. Are you sure you want to proceed?
+                              </Typography>
                             ),
-                            yesButtonProps: { color: 'secondary' },
+                            yesButtonProps: { color: 'warning' },
+                            yesButtonLabel: 'Remove',
+                            noButtonLabel: 'Cancel',
                             onYes: () => {
                               handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
                               dialogContext.setYesNoDialog({ open: false });
@@ -299,7 +292,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
 
   const handleChangeUserPermissionsClick = (item: IGetUserProjectsListResponse, newRole: string, newRoleId: number) => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Change Project Role?',
+      dialogTitle: 'Change project role?',
       dialogContent: (
         <>
           <Typography color="textPrimary">

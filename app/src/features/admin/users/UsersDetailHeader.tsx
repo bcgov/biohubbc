@@ -137,23 +137,20 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
               <Button
                 title="Remove User"
                 variant="outlined"
-                startIcon={<Icon path={mdiTrashCanOutline} size={0.8} />}
+                startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
                 data-testid={'remove-user-button'}
                 onClick={() =>
                   openYesNoDialog({
                     dialogTitle: SystemUserI18N.removeSystemUserTitle,
                     dialogContent: (
-                      <>
-                        <Typography variant="body1" color="textPrimary">
-                          Removing this user <strong>{userDetails.user_identifier}</strong> will revoke their access to
-                          all projects.
-                        </Typography>
-                        <Typography variant="body1" color="textPrimary">
-                          Are you sure you want to proceed?
-                        </Typography>
-                      </>
+                      <Typography variant="body1" color="textSecondary">
+                        Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to
+                        all projects. Are you sure you want to proceed?
+                      </Typography>
                     ),
-                    yesButtonProps: { color: 'secondary' },
+                    yesButtonProps: { color: 'warning' },
+                    yesButtonLabel: 'Remove',
+                    noButtonLabel: 'Cancel',
                     onYes: () => {
                       deActivateSystemUser(userDetails);
                       dialogContext.setYesNoDialog({ open: false });

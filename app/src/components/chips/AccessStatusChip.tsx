@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: 'white'
   },
   chipPending: {
-    backgroundColor: theme.palette.error.main
+    backgroundColor: theme.palette.warning.main
   },
   chipActioned: {
     backgroundColor: theme.palette.success.main
@@ -37,5 +37,5 @@ export const AccessStatusChip: React.FC<{ status: string; chipProps?: Partial<Ch
     chipStatusClass = classes.chipPending;
   }
 
-  return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} {...props.chipProps} />;
+  return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} {...props.chipProps} />;
 };
