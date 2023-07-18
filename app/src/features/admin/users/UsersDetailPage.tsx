@@ -13,7 +13,7 @@ import UsersDetailProjects from './UsersDetailProjects';
  *
  * @return {*}
  */
-const UsersDetailPage: React.FC = (props) => {
+const UsersDetailPage: React.FC = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const biohubApi = useBiohubApi();
 

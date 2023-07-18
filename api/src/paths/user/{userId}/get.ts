@@ -62,7 +62,8 @@ GET.apiDoc = {
               },
               user_guid: {
                 type: 'string',
-                description: 'The GUID for the user.'
+                description: 'The GUID for the user.',
+                nullable: true
               },
               record_end_date: {
                 oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
