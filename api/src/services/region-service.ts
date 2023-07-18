@@ -12,6 +12,9 @@ export class RegionService extends DBService {
     this.regionRepository = new RegionRepository(connection);
   }
   async addRegionsToProject(projectId: number, regions: IRegion[]): Promise<void> {
+    // remove existing regions from project
+    this.regionRepository.deleteRegionsFromAProject(projectId);
+
     const regionIds = regions.map((item) => item.region_id);
     await this.regionRepository.addRegionsToAProject(projectId, regionIds);
   }

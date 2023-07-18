@@ -427,14 +427,13 @@ export class ProjectService extends DBService {
     return this.projectParticipationService.insertParticipantRole(projectId, projectParticipantRole);
   }
 
-  async insertRegion(projectId: number, feature: Feature[]): Promise<void> {
+  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
     const regionService = new RegionService(this.connection);
     const bcgwService = new BcgwLayerService();
-    const regionDetails = await bcgwService.getUniqueRegionsForFeatures(feature, this.connection);
-    console.log(regionDetails);
-    // get details for the region
 
+    const regionDetails = await bcgwService.getUniqueRegionsForFeatures(features, this.connection);
     const regions: IRegion[] = await regionService.searchRegionWithDetails(regionDetails);
+
     await regionService.addRegionsToProject(projectId, regions);
   }
 
@@ -489,6 +488,10 @@ export class ProjectService extends DBService {
 
     if (entities?.funding) {
       promises.push(this.updateFundingData(projectId, entities));
+    }
+
+    if (entities?.location) {
+      promises.push(this.insertRegion(projectId, entities.location.geometry));
     }
 
     await Promise.all(promises);
