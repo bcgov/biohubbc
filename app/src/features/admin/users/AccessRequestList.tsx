@@ -10,7 +10,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { AccessStatusChip } from 'components/chips/AccessStatusChip';
 import RequestDialog from 'components/dialog/RequestDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -29,18 +28,6 @@ import ReviewAccessRequestForm, {
   ReviewAccessRequestFormYupSchema
 } from './ReviewAccessRequestForm';
 
-const useStyles = makeStyles(() => ({
-  table: {
-    tableLayout: 'fixed',
-    '& td': {
-      verticalAlign: 'middle'
-    }
-  },
-  toolbarCount: {
-    fontWeight: 400
-  }
-}));
-
 export interface IAccessRequestListProps {
   accessRequests: IGetAccessRequestsListResponse[];
   codes: IGetAllCodeSetsResponse;
@@ -56,7 +43,6 @@ export interface IAccessRequestListProps {
 const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   const { accessRequests, codes, refresh } = props;
 
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const [activeReviewDialog, setActiveReviewDialog] = useState<{
@@ -223,22 +209,29 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
         <Toolbar>
           <Typography variant="h4" component="h2">
             Access Requests{' '}
-            <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+            <Typography component="span" variant="inherit" color="textSecondary"
+              sx={{
+                fontWeight: 400
+              }}
+            >
               ({accessRequests?.length || 0})
             </Typography>
           </Typography>
         </Toolbar>
         <Divider></Divider>
-        <Box px={1}>
+        <Box p={1}>
           <TableContainer>
-            <Table className={classes.table}>
+            <Table
+              sx={{
+                tableLayout: 'fixed'
+              }}
+            >
               <TableHead>
                 <TableRow>
                   <TableCell>Username</TableCell>
                   <TableCell>Date of Request</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell width="150px" align="center">
-                    Actions
+                  <TableCell width={170}>Status</TableCell>
+                  <TableCell align="right">
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -259,13 +252,13 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                         <AccessStatusChip status={row.status_name} />
                       </TableCell>
 
-                      <TableCell align="center">
+                      <TableCell align="right">
                         {row.status_name === AdministrativeActivityStatusType.PENDING && (
                           <Button
                             color="primary"
-                            variant="outlined"
+                            variant="contained"
                             onClick={() => setActiveReviewDialog({ open: true, request: row })}>
-                            Review
+                            Review Request
                           </Button>
                         )}
                       </TableCell>

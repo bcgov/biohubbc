@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiDotsVertical, mdiInformationOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiAccountDetailsOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -14,7 +14,6 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import EditDialog from 'components/dialog/EditDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { AddSystemUserI18N, DeleteSystemUserI18N, UpdateSystemUserI18N } from 'constants/i18n';
@@ -33,22 +32,6 @@ import AddSystemUsersForm, {
   IAddSystemUsersForm
 } from './AddSystemUsersForm';
 
-const useStyles = makeStyles(() => ({
-  table: {
-    tableLayout: 'fixed',
-    '& td': {
-      verticalAlign: 'middle'
-    }
-  },
-  toolbarCount: {
-    fontWeight: 400
-  },
-  linkButton: {
-    textAlign: 'left',
-    fontWeight: 700
-  }
-}));
-
 export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
   codes: IGetAllCodeSetsResponse;
@@ -62,7 +45,6 @@ export interface IActiveUsersListProps {
  * @return {*}
  */
 const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
   const { activeUsers, codes } = props;
   const history = useHistory();
@@ -88,7 +70,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       ),
       yesButtonLabel: 'Remove',
       noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'warning' },
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });
       },
@@ -251,7 +233,11 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h4" component="h2">
             Active Users{' '}
-            <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+            <Typography component="span" variant="inherit" color="textSecondary"
+              sx={{
+                fontWeight: 400
+              }}
+            >
               ({activeUsers?.length || 0})
             </Typography>
           </Typography>
@@ -260,21 +246,24 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             variant="contained"
             data-testid="invite-system-users-button"
             aria-label={'Add Users'}
-            startIcon={<Icon path={mdiPlus} size={0.8} />}
+            startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => setOpenAddUserDialog(true)}>
-            <strong>Add Users</strong>
+            Add Users
           </Button>
         </Toolbar>
         <Divider></Divider>
-        <Box px={1}>
+        <Box p={1}>
           <TableContainer>
-            <Table className={classes.table}>
+            <Table
+              sx={{
+                tableLayout: 'fixed'
+              }}
+            >
               <TableHead>
                 <TableRow>
                   <TableCell>Username</TableCell>
                   <TableCell>Role</TableCell>
-                  <TableCell width={150} align="center">
-                    Actions
+                  <TableCell width={80} align="right">
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -291,7 +280,6 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                     <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
                       <TableCell>
                         <Link
-                          className={classes.linkButton}
                           underline="always"
                           to={`/admin/users/${row.id}`}
                           component={RouterLink}>
@@ -314,18 +302,18 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                                   menuOnClick: () => handleChangeUserPermissionsClick(row, item.name, item.id)
                                 };
                               })}
-                            buttonEndIcon={<Icon path={mdiChevronDown} size={0.8} />}
+                            buttonEndIcon={<Icon path={mdiChevronDown} size={1} />}
                           />
                         </Box>
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell align="right">
                         <Box my={-1}>
                           <CustomMenuIconButton
                             buttonTitle="Actions"
                             buttonIcon={<Icon path={mdiDotsVertical} size={1} />}
                             menuItems={[
                               {
-                                menuIcon: <Icon path={mdiInformationOutline} size={0.8} />,
+                                menuIcon: <Icon path={mdiAccountDetailsOutline} size={1} />,
                                 menuLabel: 'View Users Details',
                                 menuOnClick: () =>
                                   history.push({
@@ -334,7 +322,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                                   })
                               },
                               {
-                                menuIcon: <Icon path={mdiTrashCanOutline} size={0.8} />,
+                                menuIcon: <Icon path={mdiTrashCanOutline} size={1} />,
                                 menuLabel: 'Remove User',
                                 menuOnClick: () => handleRemoveUserClick(row)
                               }

@@ -37,7 +37,7 @@ exports[`ComponentDialog matches snapshot when open 1`] = `
         role="dialog"
       >
         <h2
-          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-1bnp99m-MuiTypography-root-MuiDialogTitle-root"
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-cs3to5-MuiTypography-root-MuiDialogTitle-root"
           id="component-dialog-title"
         >
           this is a test
@@ -59,7 +59,7 @@ exports[`ComponentDialog matches snapshot when open 1`] = `
           class="MuiDialogActions-root MuiDialogActions-spacing css-ry7a0o-MuiDialogActions-root"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation Mui-focusVisible MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-13xwpf-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation Mui-focusVisible MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-10uyjde-MuiButtonBase-root-MuiButton-root"
             tabindex="0"
             type="button"
           >

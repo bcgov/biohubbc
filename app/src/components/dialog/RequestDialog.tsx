@@ -1,5 +1,3 @@
-import { mdiCheck, mdiWindowClose } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -77,31 +75,27 @@ const RequestDialog: React.FC<IRequestDialog> = (props) => {
           <Dialog open={props.open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
             <DialogTitle id="access-request-dialog-title">{props.dialogTitle}</DialogTitle>
             <DialogContent>
-              <Box py={2}>{props.component.element}</Box>
+              {props.component.element}
             </DialogContent>
             <DialogActions>
               <Button
-                data-testid="request_approve_button"
-                startIcon={<Icon path={mdiCheck} size={1} />}
-                onClick={formikProps.submitForm}
                 color="primary"
                 variant="contained"
+                data-testid="request_approve_button"
+                onClick={formikProps.submitForm}
                 autoFocus>
                 Approve
               </Button>
               <Button
-                data-testid="request_deny_button"
-                startIcon={<Icon path={mdiWindowClose} size={1} />}
-                onClick={props.onDeny}
                 color="primary"
-                variant="outlined">
+                variant="contained"
+                data-testid="request_deny_button"
+                onClick={props.onDeny}>
                 Deny
               </Button>
-              <Box pl={3}>
-                <Button onClick={props.onClose} color="primary" variant="outlined">
-                  Cancel
-                </Button>
-              </Box>
+              <Button onClick={props.onClose} color="primary" variant="outlined">
+                Cancel
+              </Button>
             </DialogActions>
           </Dialog>
         )}

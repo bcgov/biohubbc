@@ -38,7 +38,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
         role="dialog"
       >
         <h2
-          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-1bnp99m-MuiTypography-root-MuiDialogTitle-root"
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-cs3to5-MuiTypography-root-MuiDialogTitle-root"
           id="alert-dialog-title"
         >
           this is a test
@@ -57,7 +57,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
           class="MuiDialogActions-root MuiDialogActions-spacing css-ry7a0o-MuiDialogActions-root"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-13xwpf-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-10uyjde-MuiButtonBase-root-MuiButton-root"
             data-testid="yes-button"
             tabindex="0"
             type="button"
@@ -131,7 +131,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
         role="dialog"
       >
         <h2
-          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-1bnp99m-MuiTypography-root-MuiDialogTitle-root"
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-cs3to5-MuiTypography-root-MuiDialogTitle-root"
           id="alert-dialog-title"
         >
           this is a test
@@ -150,7 +150,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
           class="MuiDialogActions-root MuiDialogActions-spacing css-ry7a0o-MuiDialogActions-root"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-13xwpf-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-10uyjde-MuiButtonBase-root-MuiButton-root"
             data-testid="yes-button"
             tabindex="0"
             type="button"
