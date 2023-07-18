@@ -76,6 +76,12 @@ const systemUsers = [
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
     user_guid: 'E3A279530D164485BF43C6FE7A49E175'
+  },
+  {
+    identifier: 'gstewart',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: '83245BCDC21F43A29CEDA78AE67DF223'
   }
 ];
 
