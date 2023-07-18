@@ -32,11 +32,9 @@ import { ProjectUserObject } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectRepository } from '../repositories/project-repository';
-import { IRegion } from '../repositories/region-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
-import { BcgwLayerService } from './bcgw-layer-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
@@ -429,12 +427,7 @@ export class ProjectService extends DBService {
 
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {
     const regionService = new RegionService(this.connection);
-    const bcgwService = new BcgwLayerService();
-
-    const regionDetails = await bcgwService.getUniqueRegionsForFeatures(features, this.connection);
-    const regions: IRegion[] = await regionService.searchRegionWithDetails(regionDetails);
-
-    await regionService.addRegionsToProject(projectId, regions);
+    return regionService.addRegionsToProjectFromFeatures(projectId, features);
   }
 
   /**
