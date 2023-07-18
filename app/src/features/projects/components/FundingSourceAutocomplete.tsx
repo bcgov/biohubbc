@@ -56,7 +56,6 @@ const FundingSourceAutocomplete: React.FC<IFundingSourceAutocompleteProps<string
         } else {
           setName('agency_name');
         }
-        // @TODO
         props.onChange(event as unknown as ChangeEvent<Record<string, unknown>>, option);
       }}
     />

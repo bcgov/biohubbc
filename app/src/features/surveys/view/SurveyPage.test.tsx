@@ -1,6 +1,7 @@
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -30,8 +31,8 @@ const mockUseApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
-  external: {
-    post: jest.fn().mockResolvedValue([])
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
@@ -42,7 +43,11 @@ describe.skip('SurveyPage', () => {
     mockUseApi.survey.getSurveyForView.mockClear();
     mockUseApi.observation.getObservationSubmission.mockClear();
     mockUseApi.codes.getAllCodeSets.mockClear();
-    mockUseApi.external.post.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });

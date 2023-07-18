@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * Study area content for a survey.
+ * View survey - Study area section
  *
  * @return {*}
  */

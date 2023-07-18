@@ -33,7 +33,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '0.75em 1.5em',
     color: theme.palette.primary.main,
     backgroundColor: '#fcba19',
-    fontWeight: 700
+    fontWeight: 700,
+    '&:hover': {
+      backgroundColor: '#fcba19'
+    }
   },
   heroLink: {
     color: '#fcba19',

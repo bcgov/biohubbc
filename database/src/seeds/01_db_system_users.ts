@@ -76,6 +76,24 @@ const systemUsers = [
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
     user_guid: 'E3A279530D164485BF43C6FE7A49E175'
+  },
+  {
+    identifier: 'mdeluca',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: '0054CF4823A744309BE399C34B6B0F43'
+  },
+  {
+    identifier: 'gstewart',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: '83245BCDC21F43A29CEDA78AE67DF223'
+  },
+  {
+    identifier: 'jkissack',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: 'A82FE250A5BC40E68ABC54A1D0618D75'
   }
 ];
 

@@ -24,11 +24,13 @@ import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  govHeader: {
-    backgroundColor: '#003366'
-  },
   govHeaderToolbar: {
     height: '80px',
+    '& button': {
+      padding: '6px 12px',
+      fontSize: '16px',
+      fontWeight: '400'
+    },
     '& a:focus': {
       outline: '3px solid #3B99FC'
     }
@@ -65,48 +67,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       '& span': {
         marginTop: '-4px'
       }
-    },
-    wrapText: {
-      display: 'block'
     }
-  },
-  appPhaseTag: {
-    marginLeft: theme.spacing(0.75),
-    color: '#fcba19',
-    textTransform: 'uppercase',
-    fontSize: '0.75rem',
-    fontWeight: 400
-  },
-  userProfile: {
-    color: theme.palette.primary.contrastText,
-    '& hr': {
-      backgroundColor: '#ffffff',
-      height: '1.25rem'
-    },
-    '& a': {
-      padding: '8px',
-      color: 'inherit',
-      textDecoration: 'none',
-      borderRadius: '6px'
-    },
-    '& a:hover': {
-      textDecoration: 'underline'
-    },
-    '& a:focus': {
-      outlineOffset: '-1px'
-    }
-  },
-  loginButton: {
-    '&:hover': {
-      textDecoration: 'none !important'
-    }
-  },
-  supportButton: {
-    color: '#ffffff',
-    fontSize: '14px'
-  },
-  mainNav: {
-    backgroundColor: '#38598a'
   },
   mainNavToolbar: {
     '& a': {
@@ -114,8 +75,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       padding: theme.spacing(2),
       color: 'inherit',
       fontSize: '1rem',
-      textDecoration: 'none',
-      borderRadius: '4px'
+      textDecoration: 'none'
     },
     '& a:hover': {
       textDecoration: 'underline'
@@ -125,7 +85,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       outlineOffset: '-3px'
     },
     '& a:first-child': {
-      marginLeft: theme.spacing(-2)
+      marginLeft: '-16px'
     }
   }
 }));
@@ -144,22 +104,43 @@ const Header: React.FC = () => {
       .join('/');
 
     return (
-      <Box display="flex" alignItems="center">
-        <Button aria-label="need help" className={classes.supportButton} onClick={showSupportDialog}>
-          Contact Support
-        </Button>
-        <Box display="flex" alignItems="center" my="auto" ml={2} className={classes.userProfile}>
-          <Box className={classes.userProfile} display="flex" alignItems="center">
-            <Icon path={mdiAccountCircle} size={1.12} />
-            <Box ml={1}>{formattedUsername}</Box>
-          </Box>
-          <Box pl={1.5} pr={0.5}>
-            <Divider orientation="vertical" />
-          </Box>
-          <RouterLink to="/logout" data-testid="menu_log_out">
-            Log Out
-          </RouterLink>
+      <Box
+        display="flex"
+        alignItems="center"
+        sx={{
+          fontSize: '16px'
+        }}>
+        <Box
+          display="flex"
+          alignItems="center"
+          sx={{
+            padding: '6px 14px',
+            lineHeight: '1.75'
+          }}>
+          <Icon path={mdiAccountCircle} size={1} />
+          <Box ml={1}>{formattedUsername}</Box>
         </Box>
+        <Divider
+          orientation="vertical"
+          sx={{
+            marginRight: '4px',
+            marginLeft: '4px',
+            height: '20px',
+            borderColor: '#fff'
+          }}
+        />
+        <Button
+          component="a"
+          color="primary"
+          variant="contained"
+          href="/logout"
+          data-testid="menu_log_out"
+          sx={{
+            fontSize: '16px',
+            fontWeight: '400'
+          }}>
+          Log Out
+        </Button>
       </Box>
     );
   };
@@ -167,25 +148,20 @@ const Header: React.FC = () => {
   // Unauthenticated public view
   const PublicViewUser = () => {
     return (
-      <Box display="flex" className={classes.userProfile} alignItems="center" my="auto">
-        <Button className={classes.supportButton} onClick={showSupportDialog}>
-          Contact Support
-        </Button>
-        <Box pl={1.5}>
-          <Button
-            component="a"
-            href={loginUrl}
-            className={classes.loginButton}
-            type="submit"
-            variant="contained"
-            color="primary"
-            disableElevation
-            startIcon={<Icon path={mdiLoginVariant} size={1.12} />}
-            data-testid="login">
-            Log In
-          </Button>
-        </Box>
-      </Box>
+      <Button
+        component="a"
+        color="primary"
+        variant="contained"
+        href={loginUrl}
+        disableElevation
+        startIcon={<Icon path={mdiLoginVariant} size={1} />}
+        data-testid="login"
+        sx={{
+          fontSize: '16px',
+          fontWeight: '400'
+        }}>
+        Log In
+      </Button>
     );
   };
 
@@ -205,7 +181,12 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <AppBar position="relative" elevation={0} className={classes.govHeader}>
+      <AppBar
+        position="relative"
+        elevation={0}
+        sx={{
+          backgroundColor: '#003366'
+        }}>
         <Toolbar disableGutters className={classes.govHeaderToolbar}>
           <Container maxWidth="xl">
             <Box display="flex" justifyContent="space-between" width="100%">
@@ -217,22 +198,45 @@ const Header: React.FC = () => {
                 </picture>
                 <span>
                   Species Inventory Management System
-                  <sup className={classes.appPhaseTag}>
+                  <Box
+                    component="sup"
+                    sx={{
+                      marginLeft: '4px',
+                      color: '#fcba19',
+                      fontSize: '0.75rem',
+                      fontWeight: 400,
+                      textTransform: 'uppercase'
+                    }}>
                     <BetaLabel />
-                  </sup>
+                  </Box>
                 </span>
               </RouterLink>
-              <UnAuthGuard>
-                <PublicViewUser />
-              </UnAuthGuard>
-              <AuthGuard>
-                <LoggedInUser />
-              </AuthGuard>
+              <Box display="flex" alignItems="center">
+                <Button
+                  color="primary"
+                  variant="contained"
+                  disableElevation
+                  onClick={showSupportDialog}
+                  sx={{
+                    marginRight: '8px'
+                  }}>
+                  Contact Support
+                </Button>
+                <UnAuthGuard>
+                  <PublicViewUser />
+                </UnAuthGuard>
+                <AuthGuard>
+                  <LoggedInUser />
+                </AuthGuard>
+              </Box>
             </Box>
           </Container>
         </Toolbar>
 
-        <Box className={classes.mainNav}>
+        <Box
+          sx={{
+            backgroundColor: '#38598a'
+          }}>
           <Container maxWidth="xl">
             <Toolbar
               variant="dense"

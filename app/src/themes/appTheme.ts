@@ -134,8 +134,6 @@ const appTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: '5px',
-          fontSize: '0.9rem',
           '&:focus': {
             outline: '3px solid #3B99FC',
             outlineOffset: '-1px'

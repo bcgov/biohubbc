@@ -1,5 +1,6 @@
 import MapContainer from 'components/map/MapContainer';
 import { createMemoryHistory } from 'history';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSearchResultsResponse } from 'interfaces/useSearchApi.interface';
 import { Router } from 'react-router-dom';
@@ -20,8 +21,8 @@ const mockUseApi = {
   search: {
     getSearchResults: jest.fn()
   },
-  external: {
-    post: jest.fn()
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
@@ -29,6 +30,11 @@ describe('SearchPage', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
     mockMapContainer.mockImplementation(() => <div />);
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
   });
 
   afterEach(() => {
