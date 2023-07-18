@@ -28,14 +28,16 @@ import { PlatformService } from './platform-service';
 chai.use(sinonChai);
 
 describe('AttachmentService', () => {
-  let sinonSandbox = sinon.createSandbox();
+  const S3_KEY_PREFIX = process.env.S3_KEY_PREFIX;
 
   beforeEach(() => {
-    sinonSandbox.stub(process.env, 'S3_KEY_PREFIX').value('some/s3/prefix');
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
   });
 
   afterEach(() => {
-    sinonSandbox.restore();
+    process.env.S3_KEY_PREFIX = S3_KEY_PREFIX;
+
+    sinon.restore();
   });
 
   describe('Project', () => {
@@ -47,7 +49,7 @@ describe('AttachmentService', () => {
 
           const data = [({ id: 1 } as unknown) as IProjectAttachment];
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'getProjectAttachments').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachments').resolves(data);
 
           const response = await service.getProjectAttachments(1);
 
@@ -68,11 +70,11 @@ describe('AttachmentService', () => {
 
           const supplementaryData = ({ project_attachment_publish_id: 1 } as unknown) as ProjectAttachmentPublish;
 
-          const attachmentRepoStub = sinonSandbox
+          const attachmentRepoStub = sinon
             .stub(AttachmentRepository.prototype, 'getProjectAttachments')
             .resolves(attachmentData);
 
-          const supplementaryDataStub = sinonSandbox
+          const supplementaryDataStub = sinon
             .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
             .resolves(supplementaryData);
 
@@ -95,11 +97,11 @@ describe('AttachmentService', () => {
 
           const supplementaryData = ({ project_report_publish_id: 1 } as unknown) as ProjectReportPublish;
 
-          const attachmentRepoStub = sinonSandbox
+          const attachmentRepoStub = sinon
             .stub(AttachmentRepository.prototype, 'getProjectReportAttachments')
             .resolves(attachmentData);
 
-          const supplementaryDataStub = sinonSandbox
+          const supplementaryDataStub = sinon
             .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
             .resolves(supplementaryData);
 
@@ -124,11 +126,11 @@ describe('AttachmentService', () => {
 
           const supplementaryData = ({ survey_attachment_publish_id: 1 } as unknown) as SurveyAttachmentPublish;
 
-          const attachmentRepoStub = sinonSandbox
+          const attachmentRepoStub = sinon
             .stub(AttachmentRepository.prototype, 'getSurveyAttachments')
             .resolves(attachmentData);
 
-          const supplementaryDataStub = sinonSandbox
+          const supplementaryDataStub = sinon
             .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
             .resolves(supplementaryData);
 
@@ -151,11 +153,11 @@ describe('AttachmentService', () => {
 
           const supplementaryData = ({ survey_report_publish_id: 1 } as unknown) as SurveyReportPublish;
 
-          const attachmentRepoStub = sinonSandbox
+          const attachmentRepoStub = sinon
             .stub(AttachmentRepository.prototype, 'getSurveyReportAttachments')
             .resolves(attachmentData);
 
-          const supplementaryDataStub = sinonSandbox
+          const supplementaryDataStub = sinon
             .stub(HistoryPublishService.prototype, 'getSurveyReportPublishRecord')
             .resolves(supplementaryData);
 
@@ -175,7 +177,7 @@ describe('AttachmentService', () => {
 
           const data = ({ id: 1 } as unknown) as IProjectAttachment;
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'getProjectAttachmentById').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachmentById').resolves(data);
 
           const response = await service.getProjectAttachmentById(1, 1);
 
@@ -191,9 +193,7 @@ describe('AttachmentService', () => {
 
           const data = ([{ id: 1 }, { id: 2 }] as unknown) as IProjectAttachment[];
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getProjectAttachmentsByIds')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachmentsByIds').resolves(data);
 
           const response = await service.getProjectAttachmentsByIds(1, [1, 2]);
 
@@ -209,7 +209,7 @@ describe('AttachmentService', () => {
 
           const data = { project_attachment_id: 1, revision_count: 1 };
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'insertProjectAttachment').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertProjectAttachment').resolves(data);
 
           const response = await service.insertProjectAttachment(
             ({} as unknown) as Express.Multer.File,
@@ -230,7 +230,7 @@ describe('AttachmentService', () => {
 
           const data = { project_attachment_id: 1, revision_count: 1 };
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'updateProjectAttachment').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateProjectAttachment').resolves(data);
 
           const response = await service.updateProjectAttachment('string', 1, 'string');
 
@@ -246,9 +246,7 @@ describe('AttachmentService', () => {
 
           const data = ({ id: 1 } as unknown) as QueryResult;
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getProjectAttachmentByFileName')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachmentByFileName').resolves(data);
 
           const response = await service.getProjectAttachmentByFileName('string', 1);
 
@@ -262,11 +260,11 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const serviceStub1 = sinonSandbox
+          const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectAttachmentByFileName')
             .resolves(({ rowCount: 1 } as unknown) as QueryResult);
 
-          const serviceStub2 = sinonSandbox
+          const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateProjectAttachment')
             .resolves({ project_attachment_id: 1, revision_count: 1 });
 
@@ -289,11 +287,11 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const serviceStub1 = sinonSandbox
+          const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectAttachmentByFileName')
             .resolves(({ rowCount: 0 } as unknown) as QueryResult);
 
-          const serviceStub2 = sinonSandbox
+          const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertProjectAttachment')
             .resolves({ project_attachment_id: 1, revision_count: 1 });
 
@@ -320,9 +318,7 @@ describe('AttachmentService', () => {
 
           const data = 'key';
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getProjectAttachmentS3Key')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectAttachmentS3Key').resolves(data);
 
           const response = await service.getProjectAttachmentS3Key(1, 1);
 
@@ -338,7 +334,7 @@ describe('AttachmentService', () => {
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'deleteProjectAttachment').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteProjectAttachment').resolves(data);
 
           const response = await service.deleteProjectAttachment(1);
 
@@ -353,50 +349,48 @@ describe('AttachmentService', () => {
             const dbConnection = getMockDBConnection();
             const service = new AttachmentService(dbConnection);
 
-            const getProjectReportStub = sinonSandbox
+            const getProjectReportStub = sinon
               .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
               .resolves(({
                 key: 'key',
                 uuid: 'uuid',
                 project_report_attachment_id: 1
               } as unknown) as IProjectReportAttachment);
-            const deleteProjectReportAuthorsStub = sinonSandbox
+            const deleteProjectReportAuthorsStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
               .resolves();
-            const deleteProjectReportAttachmentStub = sinonSandbox
+            const deleteProjectReportAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachment')
               .resolves();
-            const getProjectAttachmentStub = sinonSandbox
+            const getProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getProjectAttachmentById')
               .resolves();
-            const deleteProjectAttachmentStub = sinonSandbox
+            const deleteProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectAttachment')
               .resolves();
 
-            const getProjectReportPublishStub = sinonSandbox
+            const getProjectReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
               .resolves(({
                 survey_report_publish_id: 1
               } as unknown) as ProjectReportPublish);
-            const getProjectPublishStub = sinonSandbox
+            const getProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
               .resolves(({
                 survey_report_publish_id: 1
               } as unknown) as ProjectAttachmentPublish);
-            const deleteProjectPublishStub = sinonSandbox
+            const deleteProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
               .resolves();
-            const deleteProjectReportPublishStub = sinonSandbox
+            const deleteProjectReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectReportAttachmentPublishRecord')
               .resolves();
 
-            const deleteFromBioHubStub = sinonSandbox
-              .stub(PlatformService.prototype, 'deleteAttachmentFromBiohub')
-              .resolves();
+            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
 
             const mockS3Client = new AWS.S3();
-            sinonSandbox.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinonSandbox.stub(mockS3Client, 'deleteObject').returns({
+            sinon.stub(AWS, 'S3').returns(mockS3Client);
+            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
               promise: () =>
                 Promise.resolve({
                   DeleteMarker: true
@@ -423,48 +417,46 @@ describe('AttachmentService', () => {
             const dbConnection = getMockDBConnection();
             const service = new AttachmentService(dbConnection);
 
-            const getProjectReportStub = sinonSandbox
+            const getProjectReportStub = sinon
               .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
               .resolves(({
                 key: 'key',
                 uuid: 'uuid',
                 project_report_attachment_id: 1
               } as unknown) as IProjectReportAttachment);
-            const deleteProjectReportAuthorsStub = sinonSandbox
+            const deleteProjectReportAuthorsStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
               .resolves();
-            const deleteProjectReportAttachmentStub = sinonSandbox
+            const deleteProjectReportAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachment')
               .resolves();
-            const getProjectAttachmentStub = sinonSandbox
+            const getProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getProjectAttachmentById')
               .resolves();
-            const deleteProjectAttachmentStub = sinonSandbox
+            const deleteProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectAttachment')
               .resolves();
 
-            const getProjectReportPublishStub = sinonSandbox
+            const getProjectReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
               .resolves(null);
-            const getProjectPublishStub = sinonSandbox
+            const getProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
               .resolves(({
                 project_report_publish_id: 1
               } as unknown) as ProjectAttachmentPublish);
-            const deleteProjectPublishStub = sinonSandbox
+            const deleteProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
               .resolves();
-            const deleteProjectReportPublishStub = sinonSandbox
+            const deleteProjectReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectReportAttachmentPublishRecord')
               .resolves();
 
-            const deleteFromBioHubStub = sinonSandbox
-              .stub(PlatformService.prototype, 'deleteAttachmentFromBiohub')
-              .resolves();
+            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
 
             const mockS3Client = new AWS.S3();
-            sinonSandbox.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinonSandbox.stub(mockS3Client, 'deleteObject').returns({
+            sinon.stub(AWS, 'S3').returns(mockS3Client);
+            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
               promise: () =>
                 Promise.resolve({
                   DeleteMarker: true
@@ -493,54 +485,52 @@ describe('AttachmentService', () => {
             const dbConnection = getMockDBConnection();
             const service = new AttachmentService(dbConnection);
 
-            const getProjectReportStub = sinonSandbox
+            const getProjectReportStub = sinon
               .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
               .resolves(({
                 key: 'key',
                 uuid: 'uuid',
                 project_report_attachment_id: 1
               } as unknown) as IProjectReportAttachment);
-            const deleteProjectReportAuthorsStub = sinonSandbox
+            const deleteProjectReportAuthorsStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
               .resolves();
-            const deleteProjectReportAttachmentStub = sinonSandbox
+            const deleteProjectReportAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachment')
               .resolves();
-            const getProjectAttachmentStub = sinonSandbox
+            const getProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getProjectAttachmentById')
               .resolves(({
                 key: 'key',
                 uuid: 'uuid',
                 project_attachment_id: 1
               } as unknown) as IProjectAttachment);
-            const deleteProjectAttachmentStub = sinonSandbox
+            const deleteProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectAttachment')
               .resolves();
 
-            const getProjectReportPublishStub = sinonSandbox
+            const getProjectReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
               .resolves(({
                 survey_report_publish_id: 1
               } as unknown) as ProjectReportPublish);
-            const getProjectPublishStub = sinonSandbox
+            const getProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
               .resolves(({
                 survey_report_publish_id: 1
               } as unknown) as ProjectAttachmentPublish);
-            const deleteProjectPublishStub = sinonSandbox
+            const deleteProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
               .resolves();
-            const deleteProjectReportPublishStub = sinonSandbox
+            const deleteProjectReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectReportAttachmentPublishRecord')
               .resolves();
 
-            const deleteFromBioHubStub = sinonSandbox
-              .stub(PlatformService.prototype, 'deleteAttachmentFromBiohub')
-              .resolves();
+            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
 
             const mockS3Client = new AWS.S3();
-            sinonSandbox.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinonSandbox.stub(mockS3Client, 'deleteObject').returns({
+            sinon.stub(AWS, 'S3').returns(mockS3Client);
+            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
               promise: () =>
                 Promise.resolve({
                   DeleteMarker: true
@@ -567,50 +557,48 @@ describe('AttachmentService', () => {
             const dbConnection = getMockDBConnection();
             const service = new AttachmentService(dbConnection);
 
-            const getProjectReportStub = sinonSandbox
+            const getProjectReportStub = sinon
               .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
               .resolves(({
                 key: 'key',
                 uuid: 'uuid',
                 project_report_attachment_id: 1
               } as unknown) as IProjectReportAttachment);
-            const deleteProjectReportAuthorsStub = sinonSandbox
+            const deleteProjectReportAuthorsStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
               .resolves();
-            const deleteProjectReportAttachmentStub = sinonSandbox
+            const deleteProjectReportAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectReportAttachment')
               .resolves();
-            const getProjectAttachmentStub = sinonSandbox
+            const getProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getProjectAttachmentById')
               .resolves(({
                 key: 'key',
                 uuid: 'uuid',
                 project_attachment_id: 1
               } as unknown) as IProjectAttachment);
-            const deleteProjectAttachmentStub = sinonSandbox
+            const deleteProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'deleteProjectAttachment')
               .resolves();
 
-            const getProjectReportPublishStub = sinonSandbox
+            const getProjectReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'getProjectReportPublishRecord')
               .resolves(null);
-            const getProjectPublishStub = sinonSandbox
+            const getProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'getProjectAttachmentPublishRecord')
               .resolves(null);
-            const deleteProjectPublishStub = sinonSandbox
+            const deleteProjectPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectAttachmentPublishRecord')
               .resolves();
-            const deleteProjectReportPublishStub = sinonSandbox
+            const deleteProjectReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteProjectReportAttachmentPublishRecord')
               .resolves();
 
-            const deleteFromBioHubStub = sinonSandbox
-              .stub(PlatformService.prototype, 'deleteAttachmentFromBiohub')
-              .resolves();
+            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
 
             const mockS3Client = new AWS.S3();
-            sinonSandbox.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinonSandbox.stub(mockS3Client, 'deleteObject').returns({
+            sinon.stub(AWS, 'S3').returns(mockS3Client);
+            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
               promise: () =>
                 Promise.resolve({
                   DeleteMarker: true
@@ -644,9 +632,7 @@ describe('AttachmentService', () => {
 
           const data = [({ id: 1 } as unknown) as IProjectReportAttachment];
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getProjectReportAttachments')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectReportAttachments').resolves(data);
 
           const response = await service.getProjectReportAttachments(1);
 
@@ -662,9 +648,7 @@ describe('AttachmentService', () => {
 
           const data = ({ id: 1 } as unknown) as IProjectReportAttachment;
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentById')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectReportAttachmentById').resolves(data);
 
           const response = await service.getProjectReportAttachmentById(1, 1);
 
@@ -680,7 +664,7 @@ describe('AttachmentService', () => {
 
           const data = ([{ id: 1 }, { id: 2 }] as unknown) as IProjectReportAttachment[];
 
-          const repoStub = sinonSandbox
+          const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentsByIds')
             .resolves(data);
 
@@ -698,7 +682,7 @@ describe('AttachmentService', () => {
 
           const data = [({ id: 1 } as unknown) as IReportAttachmentAuthor];
 
-          const repoStub = sinonSandbox
+          const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentAuthors')
             .resolves(data);
 
@@ -716,9 +700,7 @@ describe('AttachmentService', () => {
 
           const data = { project_report_attachment_id: 1, revision_count: 1 };
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'insertProjectReportAttachment')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertProjectReportAttachment').resolves(data);
 
           const response = await service.insertProjectReportAttachment(
             'string',
@@ -740,9 +722,7 @@ describe('AttachmentService', () => {
 
           const data = { project_report_attachment_id: 1, revision_count: 1 };
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'updateProjectReportAttachment')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateProjectReportAttachment').resolves(data);
 
           const response = await service.updateProjectReportAttachment('string', 1, ({
             title: 'string'
@@ -760,7 +740,7 @@ describe('AttachmentService', () => {
 
           const data = ({ id: 1 } as unknown) as QueryResult;
 
-          const repoStub = sinonSandbox
+          const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'deleteProjectReportAttachmentAuthors')
             .resolves(data);
 
@@ -776,9 +756,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'insertProjectReportAttachmentAuthor')
-            .resolves();
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertProjectReportAttachmentAuthor').resolves();
 
           const response = await service.insertProjectReportAttachmentAuthor(1, {
             first_name: 'first',
@@ -797,7 +775,7 @@ describe('AttachmentService', () => {
 
           const data = ({ id: 1 } as unknown) as QueryResult;
 
-          const repoStub = sinonSandbox
+          const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentByFileName')
             .resolves(data);
 
@@ -813,19 +791,19 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const serviceStub1 = sinonSandbox
+          const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectReportAttachmentByFileName')
             .resolves(({ rowCount: 1 } as unknown) as QueryResult);
 
-          const serviceStub2 = sinonSandbox
+          const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateProjectReportAttachment')
             .resolves({ project_report_attachment_id: 1, revision_count: 1 });
 
-          const serviceStub3 = sinonSandbox
+          const serviceStub3 = sinon
             .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
             .resolves();
 
-          const serviceStub4 = sinonSandbox
+          const serviceStub4 = sinon
             .stub(AttachmentService.prototype, 'insertProjectReportAttachmentAuthor')
             .resolves();
 
@@ -853,19 +831,19 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const serviceStub1 = sinonSandbox
+          const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getProjectReportAttachmentByFileName')
             .resolves(({ rowCount: 0 } as unknown) as QueryResult);
 
-          const serviceStub2 = sinonSandbox
+          const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertProjectReportAttachment')
             .resolves({ project_report_attachment_id: 1, revision_count: 1 });
 
-          const serviceStub3 = sinonSandbox
+          const serviceStub3 = sinon
             .stub(AttachmentService.prototype, 'deleteProjectReportAttachmentAuthors')
             .resolves();
 
-          const serviceStub4 = sinonSandbox
+          const serviceStub4 = sinon
             .stub(AttachmentService.prototype, 'insertProjectReportAttachmentAuthor')
             .resolves();
 
@@ -897,9 +875,7 @@ describe('AttachmentService', () => {
 
           const data = 'key';
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getProjectReportAttachmentS3Key')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getProjectReportAttachmentS3Key').resolves(data);
 
           const response = await service.getProjectReportAttachmentS3Key(1, 1);
 
@@ -913,7 +889,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const repoStub = sinonSandbox
+          const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'updateProjectReportAttachmentMetadata')
             .resolves();
 
@@ -933,9 +909,7 @@ describe('AttachmentService', () => {
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'deleteProjectReportAttachment')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteProjectReportAttachment').resolves(data);
 
           const response = await service.deleteProjectReportAttachment(1);
 
@@ -955,7 +929,7 @@ describe('AttachmentService', () => {
 
           const data = [({ id: 1 } as unknown) as ISurveyAttachment];
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'getSurveyAttachments').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyAttachments').resolves(data);
 
           const response = await service.getSurveyAttachments(1);
 
@@ -971,9 +945,7 @@ describe('AttachmentService', () => {
 
           const data = ([{ id: 1 }, { id: 2 }] as unknown) as ISurveyAttachment[];
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getSurveyAttachmentsByIds')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyAttachmentsByIds').resolves(data);
 
           const response = await service.getSurveyAttachmentsByIds(1, [1, 2]);
 
@@ -989,7 +961,7 @@ describe('AttachmentService', () => {
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'deleteSurveyAttachment').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteSurveyAttachment').resolves(data);
 
           const response = await service.deleteSurveyAttachment(1);
 
@@ -1004,7 +976,7 @@ describe('AttachmentService', () => {
             const dbConnection = getMockDBConnection();
             const service = new AttachmentService(dbConnection);
 
-            const getSurveyAttachmentStub = sinonSandbox
+            const getSurveyAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyAttachmentById')
               .resolves(({
                 survey_report_attachment_id: 1,
@@ -1012,34 +984,34 @@ describe('AttachmentService', () => {
                 uuid: 'uuid',
                 key: 's3/key'
               } as unknown) as ISurveyAttachment);
-            const reportPublishStatusStub = sinonSandbox
+            const reportPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyReportPublishRecord')
               .resolves(({
                 survey_report_publish_id: 1
               } as unknown) as SurveyReportPublish);
-            const attachmentPublishStatusStub = sinonSandbox
+            const attachmentPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
               .resolves(({
                 survey_attachment_publish_id: 1
               } as unknown) as SurveyAttachmentPublish);
-            const deleteSurveyReportPublishStub = sinonSandbox
+            const deleteSurveyReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyReportAttachmentPublishRecord')
               .resolves();
-            const attachmentPublishDeleteStub = sinonSandbox
+            const attachmentPublishDeleteStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyAttachmentPublishRecord')
               .resolves();
-            const deleteSurveyReportAuthorsStub = sinonSandbox
+            const deleteSurveyReportAuthorsStub = sinon
               .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
               .resolves();
-            const deleteSurveyReportStub = sinonSandbox
+            const deleteSurveyReportStub = sinon
               .stub(AttachmentService.prototype, 'deleteSurveyReportAttachment')
               .resolves();
 
-            const deleteSurveyAttachmentStub = sinonSandbox
+            const deleteSurveyAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'deleteSurveyAttachment')
               .resolves();
 
-            const getSurveyReportStub = sinonSandbox
+            const getSurveyReportStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyReportAttachmentById')
               .resolves(({
                 survey_report_attachment_id: 1,
@@ -1048,13 +1020,11 @@ describe('AttachmentService', () => {
                 key: 's3/key'
               } as unknown) as ISurveyReportAttachment);
 
-            const deleteFromBioHubStub = sinonSandbox
-              .stub(PlatformService.prototype, 'deleteAttachmentFromBiohub')
-              .resolves();
+            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
 
             const mockS3Client = new AWS.S3();
-            sinonSandbox.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinonSandbox.stub(mockS3Client, 'deleteObject').returns({
+            sinon.stub(AWS, 'S3').returns(mockS3Client);
+            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
               promise: () =>
                 Promise.resolve({
                   DeleteMarker: true
@@ -1083,7 +1053,7 @@ describe('AttachmentService', () => {
             const dbConnection = getMockDBConnection();
             const service = new AttachmentService(dbConnection);
 
-            const getSurveyAttachmentStub = sinonSandbox
+            const getSurveyAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyAttachmentById')
               .resolves(({
                 survey_report_attachment_id: 1,
@@ -1091,30 +1061,30 @@ describe('AttachmentService', () => {
                 uuid: 'uuid',
                 key: 's3/key'
               } as unknown) as ISurveyAttachment);
-            const reportPublishStatusStub = sinonSandbox
+            const reportPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyReportPublishRecord')
               .resolves(({
                 survey_report_publish_id: 1
               } as unknown) as SurveyReportPublish);
-            const attachmentPublishStatusStub = sinonSandbox
+            const attachmentPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
               .resolves(({
                 survey_attachment_publish_id: 1
               } as unknown) as SurveyAttachmentPublish);
-            const deleteSurveyReportPublishStub = sinonSandbox
+            const deleteSurveyReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyReportAttachmentPublishRecord')
               .resolves();
-            const attachmentPublishDeleteStub = sinonSandbox
+            const attachmentPublishDeleteStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyAttachmentPublishRecord')
               .resolves();
-            const deleteSurveyReportAuthorsStub = sinonSandbox
+            const deleteSurveyReportAuthorsStub = sinon
               .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
               .resolves();
-            const deleteSurveyReportStub = sinonSandbox
+            const deleteSurveyReportStub = sinon
               .stub(AttachmentService.prototype, 'deleteSurveyReportAttachment')
               .resolves();
 
-            const getSurveyReportStub = sinonSandbox
+            const getSurveyReportStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyReportAttachmentById')
               .resolves(({
                 survey_report_attachment_id: 1,
@@ -1123,13 +1093,11 @@ describe('AttachmentService', () => {
                 key: 's3/key'
               } as unknown) as ISurveyReportAttachment);
 
-            const deleteFromBioHubStub = sinonSandbox
-              .stub(PlatformService.prototype, 'deleteAttachmentFromBiohub')
-              .resolves();
+            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
 
             const mockS3Client = new AWS.S3();
-            sinonSandbox.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinonSandbox.stub(mockS3Client, 'deleteObject').returns({
+            sinon.stub(AWS, 'S3').returns(mockS3Client);
+            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
               promise: () =>
                 Promise.resolve({
                   DeleteMarker: true
@@ -1155,7 +1123,7 @@ describe('AttachmentService', () => {
             const dbConnection = getMockDBConnection();
             const service = new AttachmentService(dbConnection);
 
-            const getSurveyAttachmentStub = sinonSandbox
+            const getSurveyAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyAttachmentById')
               .resolves(({
                 survey_report_attachment_id: 1,
@@ -1163,28 +1131,28 @@ describe('AttachmentService', () => {
                 uuid: 'uuid',
                 key: 's3/key'
               } as unknown) as ISurveyAttachment);
-            const reportPublishStatusStub = sinonSandbox
+            const reportPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyReportPublishRecord')
               .resolves(null);
-            const attachmentPublishStatusStub = sinonSandbox
+            const attachmentPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
               .resolves(({
                 survey_attachment_publish_id: 1
               } as unknown) as SurveyAttachmentPublish);
-            const deleteSurveyReportPublishStub = sinonSandbox
+            const deleteSurveyReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyReportAttachmentPublishRecord')
               .resolves();
-            const attachmentPublishDeleteStub = sinonSandbox
+            const attachmentPublishDeleteStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyAttachmentPublishRecord')
               .resolves();
-            const deleteSurveyReportAuthorsStub = sinonSandbox
+            const deleteSurveyReportAuthorsStub = sinon
               .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
               .resolves();
-            const deleteSurveyReportStub = sinonSandbox
+            const deleteSurveyReportStub = sinon
               .stub(AttachmentService.prototype, 'deleteSurveyReportAttachment')
               .resolves();
 
-            const getSurveyReportStub = sinonSandbox
+            const getSurveyReportStub = sinon
               .stub(AttachmentService.prototype, 'getSurveyReportAttachmentById')
               .resolves(({
                 survey_report_attachment_id: 1,
@@ -1193,13 +1161,11 @@ describe('AttachmentService', () => {
                 key: 's3/key'
               } as unknown) as ISurveyReportAttachment);
 
-            const deleteFromBioHubStub = sinonSandbox
-              .stub(PlatformService.prototype, 'deleteAttachmentFromBiohub')
-              .resolves();
+            const deleteFromBioHubStub = sinon.stub(PlatformService.prototype, 'deleteAttachmentFromBiohub').resolves();
 
             const mockS3Client = new AWS.S3();
-            sinonSandbox.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinonSandbox.stub(mockS3Client, 'deleteObject').returns({
+            sinon.stub(AWS, 'S3').returns(mockS3Client);
+            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
               promise: () =>
                 Promise.resolve({
                   DeleteMarker: true
@@ -1230,7 +1196,7 @@ describe('AttachmentService', () => {
 
           const data = 'key';
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'getSurveyAttachmentS3Key').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyAttachmentS3Key').resolves(data);
 
           const response = await service.getSurveyAttachmentS3Key(1, 1);
 
@@ -1246,7 +1212,7 @@ describe('AttachmentService', () => {
 
           const data = { survey_attachment_id: 1, revision_count: 1 };
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'updateSurveyAttachment').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateSurveyAttachment').resolves(data);
 
           const response = await service.updateSurveyAttachment(1, 'string', 'string');
 
@@ -1262,7 +1228,7 @@ describe('AttachmentService', () => {
 
           const data = { survey_attachment_id: 1, revision_count: 1 };
 
-          const repoStub = sinonSandbox.stub(AttachmentRepository.prototype, 'insertSurveyAttachment').resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertSurveyAttachment').resolves(data);
 
           const response = await service.insertSurveyAttachment('string', 1, 'string', 1, 'string');
 
@@ -1278,9 +1244,7 @@ describe('AttachmentService', () => {
 
           const data = ({ id: 1 } as unknown) as QueryResult;
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getSurveyAttachmentByFileName')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyAttachmentByFileName').resolves(data);
 
           const response = await service.getSurveyAttachmentByFileName('string', 1);
 
@@ -1294,11 +1258,11 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const serviceStub1 = sinonSandbox
+          const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
             .resolves(({ rowCount: 1 } as unknown) as QueryResult);
 
-          const serviceStub2 = sinonSandbox
+          const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateSurveyAttachment')
             .resolves({ survey_attachment_id: 1, revision_count: 1 });
 
@@ -1322,11 +1286,11 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const serviceStub1 = sinonSandbox
+          const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
             .resolves(({ rowCount: 0 } as unknown) as QueryResult);
 
-          const serviceStub2 = sinonSandbox
+          const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertSurveyAttachment')
             .resolves({ survey_attachment_id: 1, revision_count: 1 });
 
@@ -1356,9 +1320,7 @@ describe('AttachmentService', () => {
 
           const data = [({ id: 1 } as unknown) as ISurveyReportAttachment];
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getSurveyReportAttachments')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyReportAttachments').resolves(data);
 
           const response = await service.getSurveyReportAttachments(1);
 
@@ -1374,9 +1336,7 @@ describe('AttachmentService', () => {
 
           const data = ({ id: 1 } as unknown) as ISurveyReportAttachment;
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentById')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentById').resolves(data);
 
           const response = await service.getSurveyReportAttachmentById(1, 1);
 
@@ -1392,9 +1352,7 @@ describe('AttachmentService', () => {
 
           const data = ([{ id: 1 }, { id: 2 }] as unknown) as ISurveyReportAttachment[];
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentsByIds')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentsByIds').resolves(data);
 
           const response = await service.getSurveyReportAttachmentsByIds(1, [1, 2]);
 
@@ -1410,7 +1368,7 @@ describe('AttachmentService', () => {
 
           const data = [({ id: 1 } as unknown) as IReportAttachmentAuthor];
 
-          const repoStub = sinonSandbox
+          const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentAuthors')
             .resolves(data);
 
@@ -1428,9 +1386,7 @@ describe('AttachmentService', () => {
 
           const data = { survey_report_attachment_id: 1, revision_count: 1 };
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'insertSurveyReportAttachment')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertSurveyReportAttachment').resolves(data);
 
           const response = await service.insertSurveyReportAttachment(
             'string',
@@ -1452,9 +1408,7 @@ describe('AttachmentService', () => {
 
           const data = { survey_report_attachment_id: 1, revision_count: 1 };
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'updateSurveyReportAttachment')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'updateSurveyReportAttachment').resolves(data);
 
           const response = await service.updateSurveyReportAttachment('string', 1, ({
             title: 'string'
@@ -1470,9 +1424,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'deleteSurveyReportAttachmentAuthors')
-            .resolves();
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteSurveyReportAttachmentAuthors').resolves();
 
           const response = await service.deleteSurveyReportAttachmentAuthors(1);
 
@@ -1486,9 +1438,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'insertSurveyReportAttachmentAuthor')
-            .resolves();
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'insertSurveyReportAttachmentAuthor').resolves();
 
           const response = await service.insertSurveyReportAttachmentAuthor(1, {
             first_name: 'first',
@@ -1507,7 +1457,7 @@ describe('AttachmentService', () => {
 
           const data = ({ id: 1 } as unknown) as QueryResult;
 
-          const repoStub = sinonSandbox
+          const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentByFileName')
             .resolves(data);
 
@@ -1523,21 +1473,19 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const serviceStub1 = sinonSandbox
+          const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
             .resolves(({ rowCount: 1 } as unknown) as QueryResult);
 
-          const serviceStub2 = sinonSandbox
+          const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'updateSurveyReportAttachment')
             .resolves({ survey_report_attachment_id: 1, revision_count: 1 });
 
-          const serviceStub3 = sinonSandbox
+          const serviceStub3 = sinon
             .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
             .resolves();
 
-          const serviceStub4 = sinonSandbox
-            .stub(AttachmentService.prototype, 'insertSurveyReportAttachmentAuthor')
-            .resolves();
+          const serviceStub4 = sinon.stub(AttachmentService.prototype, 'insertSurveyReportAttachmentAuthor').resolves();
 
           const response = await service.upsertSurveyReportAttachment(
             ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
@@ -1564,21 +1512,19 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const serviceStub1 = sinonSandbox
+          const serviceStub1 = sinon
             .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
             .resolves(({ rowCount: 0 } as unknown) as QueryResult);
 
-          const serviceStub2 = sinonSandbox
+          const serviceStub2 = sinon
             .stub(AttachmentService.prototype, 'insertSurveyReportAttachment')
             .resolves({ survey_report_attachment_id: 1, revision_count: 1 });
 
-          const serviceStub3 = sinonSandbox
+          const serviceStub3 = sinon
             .stub(AttachmentService.prototype, 'deleteSurveyReportAttachmentAuthors')
             .resolves();
 
-          const serviceStub4 = sinonSandbox
-            .stub(AttachmentService.prototype, 'insertSurveyReportAttachmentAuthor')
-            .resolves();
+          const serviceStub4 = sinon.stub(AttachmentService.prototype, 'insertSurveyReportAttachmentAuthor').resolves();
 
           const response = await service.upsertSurveyReportAttachment(
             ({ originalname: 'file.test' } as unknown) as Express.Multer.File,
@@ -1609,9 +1555,7 @@ describe('AttachmentService', () => {
 
           const data = { key: 'string', uuid: 'string' };
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'deleteSurveyReportAttachment')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'deleteSurveyReportAttachment').resolves(data);
 
           const response = await service.deleteSurveyReportAttachment(1);
 
@@ -1627,9 +1571,7 @@ describe('AttachmentService', () => {
 
           const data = 'key';
 
-          const repoStub = sinonSandbox
-            .stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentS3Key')
-            .resolves(data);
+          const repoStub = sinon.stub(AttachmentRepository.prototype, 'getSurveyReportAttachmentS3Key').resolves(data);
 
           const response = await service.getSurveyReportAttachmentS3Key(1, 1);
 
@@ -1643,7 +1585,7 @@ describe('AttachmentService', () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
-          const repoStub = sinonSandbox
+          const repoStub = sinon
             .stub(AttachmentRepository.prototype, 'updateSurveyReportAttachmentMetadata')
             .resolves();
 
