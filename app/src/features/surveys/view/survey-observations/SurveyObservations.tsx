@@ -118,7 +118,7 @@ const SurveyObservations: React.FC = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Observations?',
       dialogText: 'Are you sure you want to delete observation data from this survey? This action cannot be undone.',
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary' },
       noButtonLabel: 'Cancel',

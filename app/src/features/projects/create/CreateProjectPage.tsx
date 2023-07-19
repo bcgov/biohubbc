@@ -293,9 +293,12 @@ const CreateProjectPage: React.FC = () => {
       />
 
       <YesNoDialog
-        dialogTitle="Delete Draft"
-        dialogText="Are you sure you want to delete this draft?"
+        dialogTitle="Delete Draft Project?"
+        dialogText="Are you sure you want to permanently delete this draft project? This action cannot be undone."
         open={openDeleteDraftDialog}
+        yesButtonLabel="Delete Draft"
+        yesButtonProps={{ color: 'error' }}
+        noButtonLabel="Cancel"
         onClose={() => setOpenDeleteDraftDialog(false)}
         onNo={() => setOpenDeleteDraftDialog(false)}
         onYes={() => handleDeleteDraft()}
@@ -307,13 +310,8 @@ const CreateProjectPage: React.FC = () => {
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
-                  Create Project
+                  Create New Project
                 </Typography>
-                <Box mt={0.75} mb={0.5} display="flex" alignItems="center">
-                  <Typography component="span" variant="subtitle1" color="textSecondary">
-                    Configure and submit a new species inventory project
-                  </Typography>
-                </Box>
               </Box>
             </Box>
             <Box flex="0 0 auto" className={classes.pageTitleActions}>
@@ -363,7 +361,7 @@ const CreateProjectPage: React.FC = () => {
                 </Button>
 
                 <Button
-                  color="secondary"
+                  color="primary"
                   variant="outlined"
                   onClick={() => setOpenDeleteDraftDialog(true)}
                   className={classes.actionButton}

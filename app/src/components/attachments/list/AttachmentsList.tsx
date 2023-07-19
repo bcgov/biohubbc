@@ -10,6 +10,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -43,12 +44,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '66px',
     color: theme.palette.text.secondary,
     fontWeight: 700
-  },
-  importFile: {
-    display: 'flex',
-    minHeight: '66px',
-    fontWeight: 700,
-    color: theme.palette.text.secondary
   }
 }));
 
@@ -80,7 +75,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
             <TableCell>Name</TableCell>
             <TableCell width="130">Type</TableCell>
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-              <TableCell width="130">Status</TableCell>
+              <TableCell width="150">Status</TableCell>
             </SystemRoleGuard>
             <TableCell width="75"></TableCell>
           </TableRow>
@@ -138,16 +133,11 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
 };
 
 const NoAttachments = () => {
-  const classes = useStyles();
   return (
-    <Box
-      display="flex"
-      flex="1 1 auto"
-      alignItems="center"
-      justifyContent="center"
-      p={2}
-      className={classes.importFile}>
-      <span data-testid="observations-nodata">No Documents</span>
+    <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2} minHeight={66}>
+      <Typography component="span" variant="body2" color="textSecondary" data-testid="observations-nodata">
+        No Documents
+      </Typography>
     </Box>
   );
 };

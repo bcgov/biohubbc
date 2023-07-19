@@ -23,9 +23,10 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetProjectParticipantsResponseArrayItem } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect } from 'react';
-import { alphabetizeObjects } from 'utils/Utils';
+import { alphabetizeObjects, getFormattedIdentitySource } from 'utils/Utils';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
 import ProjectParticipantsRoleMenu from './ProjectParticipantsRoleMenu';
 
@@ -81,11 +82,13 @@ const ProjectParticipantsPage: React.FC = () => {
       dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
-          Removing user <strong>{participant.user_identifier}</strong> will revoke their access to project. Are you sure
-          you want to proceed?
+          Removing user <strong>{participant.user_identifier}</strong> will revoke their access to this project. Are you
+          sure you want to proceed?
         </Typography>
       ),
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
+      yesButtonLabel: 'Remove',
+      noButtonLabel: 'Cancel',
       open: true,
       onYes: async () => {
         await handleRemoveProjectParticipant(participant.project_participation_id);
@@ -157,9 +160,7 @@ const ProjectParticipantsPage: React.FC = () => {
                     <TableCell>Username</TableCell>
                     <TableCell>Type</TableCell>
                     <TableCell>Project Role</TableCell>
-                    <TableCell width="150px" align="center">
-                      Actions
-                    </TableCell>
+                    <TableCell width="80px" align="right"></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -167,7 +168,9 @@ const ProjectParticipantsPage: React.FC = () => {
                     (participant) => (
                       <TableRow key={participant.project_participation_id}>
                         <TableCell scope="row">{participant.user_identifier}</TableCell>
-                        <TableCell scope="row">{participant.user_identity_source_id}</TableCell>
+                        <TableCell scope="row">
+                          {getFormattedIdentitySource(participant.user_identity_source_name as SYSTEM_IDENTITY_SOURCE)}
+                        </TableCell>
                         <TableCell>
                           <Box my={-1}>
                             <ProjectParticipantsRoleMenu
@@ -178,7 +181,7 @@ const ProjectParticipantsPage: React.FC = () => {
                           </Box>
                         </TableCell>
 
-                        <TableCell align="center">
+                        <TableCell align="right">
                           <Box my={-1}>
                             <IconButton
                               title="Remove Team Member"

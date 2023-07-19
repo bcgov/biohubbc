@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
@@ -40,12 +39,6 @@ const useStyles = makeStyles(() => ({
     backgroundClip: 'padding-box',
     '&:hover': {
       backgroundColor: '#eeeeee'
-    }
-  },
-  mapLayerControl: {
-    width: '300px',
-    '& .MuiInputBase-root': {
-      height: '44px'
     }
   }
 }));
@@ -122,36 +115,49 @@ const MapBoundary = (props: IMapBoundaryProps) => {
         </Box>
       </ComponentDialog>
       <Grid item xs={12}>
-        <Typography variant="h5" component="h3">
+        <Typography
+          variant="h5"
+          component="h3"
+          sx={{
+            marginBottom: '14px'
+          }}>
           {title}
         </Typography>
-        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
+        <Typography
+          variant="body1"
+          color="textSecondary"
+          sx={{
+            maxWidth: '90ch'
+          }}>
           Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below
           and click a boundary on the map.
         </Typography>
         <Box mb={3}>
           <Box mt={4} display="flex" alignItems="flex-start">
             <Button
-              size="large"
               color="primary"
-              data-testid="boundary_file-upload"
               variant="outlined"
+              data-testid="boundary_file-upload"
               startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
               onClick={() => setOpenUploadBoundary(true)}>
               Import Boundary
             </Button>
             <Box ml={2}>
-              <FormControl variant="outlined" size="small" className={classes.mapLayerControl}>
-                <InputLabel id="layer">Map Layers</InputLabel>
+              <FormControl variant="outlined" size="small">
                 <Select
+                  size="small"
                   id="layer"
                   name="layer"
-                  labelId="layer"
-                  label="Map Layers"
                   value={selectedLayer}
                   onChange={(event) => setSelectedLayer(event.target.value as string)}
                   displayEmpty
-                  inputProps={{ 'aria-label': 'Layer' }}>
+                  inputProps={{ 'aria-label': 'Choose Map Layer' }}
+                  sx={{
+                    fontSize: '14px'
+                  }}>
+                  <MenuItem disabled value="">
+                    View Layer
+                  </MenuItem>
                   <MenuItem key={1} value="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW">
                     Wildlife Management Units
                   </MenuItem>
@@ -166,7 +172,7 @@ const MapBoundary = (props: IMapBoundaryProps) => {
             </Box>
             <Box ml={1}>
               {selectedLayer && (
-                <Button size="large" variant="outlined" onClick={() => setSelectedLayer('')}>
+                <Button variant="outlined" onClick={() => setSelectedLayer('')}>
                   Hide Layer
                 </Button>
               )}

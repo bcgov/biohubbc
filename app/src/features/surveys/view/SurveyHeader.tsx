@@ -100,7 +100,7 @@ const SurveyHeader = () => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary', variant: 'outlined' },
       noButtonLabel: 'Cancel',
@@ -197,8 +197,10 @@ const SurveyHeader = () => {
                     color="primary"
                     variant="contained"
                     onClick={() => setPublishSurveyDialogOpen(true)}
-                    style={{ minWidth: '8rem' }}>
-                    <strong>Submit</strong>
+                    sx={{
+                      minWidth: '7rem'
+                    }}>
+                    Submit
                   </Button>
                 </SystemRoleGuard>
                 <ProjectRoleGuard

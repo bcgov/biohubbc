@@ -13,9 +13,6 @@ import React, { ReactNode, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionBarButton: {
-    fontSize: '12px',
-    fontWeight: 700,
-    textTransform: 'uppercase',
     letterSpacing: '0.02rem'
   }
 }));

@@ -137,7 +137,8 @@ const Header: React.FC = () => {
           data-testid="menu_log_out"
           sx={{
             fontSize: '16px',
-            fontWeight: '400'
+            fontWeight: '400',
+            textTransform: 'none'
           }}>
           Log Out
         </Button>
@@ -158,7 +159,8 @@ const Header: React.FC = () => {
         data-testid="login"
         sx={{
           fontSize: '16px',
-          fontWeight: '400'
+          fontWeight: '400',
+          textTransform: 'none'
         }}>
         Log In
       </Button>
@@ -218,7 +220,8 @@ const Header: React.FC = () => {
                   disableElevation
                   onClick={showSupportDialog}
                   sx={{
-                    marginRight: '8px'
+                    marginRight: '8px',
+                    textTransform: 'none'
                   }}>
                   Contact Support
                 </Button>
