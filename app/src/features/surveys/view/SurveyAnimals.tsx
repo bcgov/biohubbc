@@ -1,47 +1,34 @@
-import { Box, Button, Divider } from '@material-ui/core';
-import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
+/* eslint-disable prettier/prettier */
+import { Box, Divider } from '@material-ui/core';
+import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ProjectRoleGuard } from 'components/security/Guards';
-import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import React from 'react';
+import ComponentDialog from 'components/dialog/ComponentDialog';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import React, { useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
+import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 
 const SurveyAnimals: React.FC = () => {
-  const handleUploadReportClick = () => {
-    //;
-  };
-  const handleUploadAttachmentClick = () => {
-    //;
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const toggleDialog = () => {
+    setOpenDialog((d) => !d);
   };
 
   return (
     <Box>
-      <H2MenuToolbar
+      <ComponentDialog
+        open={openDialog}
+        dialogTitle="Individual Animals" onClose={toggleDialog}>
+        <IndividualAnimalForm />
+      </ComponentDialog>
+      <H2ButtonToolbar
         label="Individual Animals"
-        buttonLabel="Upload"
-        buttonTitle="Upload Animals"
-        buttonProps={{ variant: 'contained', disableElevation: true }}
-        buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-        menuItems={[
-          {
-            menuLabel: 'Upload Individual',
-            menuIcon: <Icon path={mdiFilePdfBox} size={1} />,
-            menuOnClick: handleUploadReportClick
-          },
-          {
-            menuLabel: 'Upload Bulk',
-            menuIcon: <Icon path={mdiAttachment} size={1} />,
-            menuOnClick: handleUploadAttachmentClick
-          }
-        ]}
-        renderButton={(buttonProps) => (
-          <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button {...buttonProps} />
-          </ProjectRoleGuard>
-        )}
+        buttonLabel="Import"
+        buttonTitle="Import Animals"
+        buttonProps={{ variant: 'contained', color: 'primary' }}
+        buttonStartIcon={<Icon path={mdiImport} size={1} />}
+        buttonOnClick={toggleDialog}
       />
       <Divider></Divider>
       <Box p={3}>
