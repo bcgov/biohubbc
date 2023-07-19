@@ -44,7 +44,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
           this is a test
         </h2>
         <div
-          class="MuiDialogContent-root css-ypiqx9-MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <p
             class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-1jaqsfq-MuiTypography-root-MuiDialogContentText-root"
@@ -57,7 +57,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
           class="MuiDialogActions-root MuiDialogActions-spacing css-ry7a0o-MuiDialogActions-root"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-13xwpf-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-1e8o90c-MuiButtonBase-root-MuiButton-root"
             data-testid="yes-button"
             tabindex="0"
             type="button"
@@ -65,7 +65,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
             Yes
           </button>
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-ok5xf-MuiButtonBase-root-MuiButton-root"
             data-testid="no-button"
             tabindex="0"
             type="button"
@@ -137,7 +137,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
           this is a test
         </h2>
         <div
-          class="MuiDialogContent-root css-ypiqx9-MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <p
             class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-1jaqsfq-MuiTypography-root-MuiDialogContentText-root"
@@ -150,7 +150,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
           class="MuiDialogActions-root MuiDialogActions-spacing css-ry7a0o-MuiDialogActions-root"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-13xwpf-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-1e8o90c-MuiButtonBase-root-MuiButton-root"
             data-testid="yes-button"
             tabindex="0"
             type="button"
@@ -158,7 +158,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
             Yes
           </button>
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-13hk64i-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation css-ok5xf-MuiButtonBase-root-MuiButton-root"
             data-testid="no-button"
             tabindex="0"
             type="button"

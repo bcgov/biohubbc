@@ -28,7 +28,15 @@ import { PlatformService } from './platform-service';
 chai.use(sinonChai);
 
 describe('AttachmentService', () => {
+  const S3_KEY_PREFIX = process.env.S3_KEY_PREFIX;
+
+  beforeEach(() => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+  });
+
   afterEach(() => {
+    process.env.S3_KEY_PREFIX = S3_KEY_PREFIX;
+
     sinon.restore();
   });
 
@@ -271,7 +279,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             project_attachment_id: 1,
             revision_count: 1,
-            key: 'sims/projects/1/file.test'
+            key: 'some/s3/prefix/projects/1/file.test'
           });
         });
 
@@ -298,7 +306,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             project_attachment_id: 1,
             revision_count: 1,
-            key: 'sims/projects/1/file.test'
+            key: 'some/s3/prefix/projects/1/file.test'
           });
         });
       });
@@ -815,7 +823,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             project_report_attachment_id: 1,
             revision_count: 1,
-            key: 'sims/projects/1/reports/file.test'
+            key: 'some/s3/prefix/projects/1/reports/file.test'
           });
         });
 
@@ -855,7 +863,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             project_report_attachment_id: 1,
             revision_count: 1,
-            key: 'sims/projects/1/reports/file.test'
+            key: 'some/s3/prefix/projects/1/reports/file.test'
           });
         });
       });
@@ -1270,7 +1278,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             survey_attachment_id: 1,
             revision_count: 1,
-            key: 'sims/projects/1/surveys/1/file.test'
+            key: 'some/s3/prefix/projects/1/surveys/1/file.test'
           });
         });
 
@@ -1298,7 +1306,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             survey_attachment_id: 1,
             revision_count: 1,
-            key: 'sims/projects/1/surveys/1/file.test'
+            key: 'some/s3/prefix/projects/1/surveys/1/file.test'
           });
         });
       });
@@ -1496,7 +1504,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             survey_report_attachment_id: 1,
             revision_count: 1,
-            key: 'sims/projects/1/surveys/1/reports/file.test'
+            key: 'some/s3/prefix/projects/1/surveys/1/reports/file.test'
           });
         });
 
@@ -1535,7 +1543,7 @@ describe('AttachmentService', () => {
           expect(response).to.eql({
             survey_report_attachment_id: 1,
             revision_count: 1,
-            key: 'sims/projects/1/surveys/1/reports/file.test'
+            key: 'some/s3/prefix/projects/1/surveys/1/reports/file.test'
           });
         });
       });

@@ -85,6 +85,9 @@ GET.apiDoc = {
                     },
                     user_identity_source_id: {
                       type: 'number'
+                    },
+                    user_identity_source_name: {
+                      type: 'string'
                     }
                   }
                 }

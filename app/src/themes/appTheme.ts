@@ -23,15 +23,9 @@ const appTheme = createTheme({
       dark: '#001949',
       contrastText: '#ffffff'
     },
-    secondary: {
-      main: '#D8292F'
-    },
     text: {
       primary: '#313132',
       secondary: '#757575'
-    },
-    error: {
-      main: '#A12622'
     }
   },
   typography: {
@@ -53,7 +47,7 @@ const appTheme = createTheme({
       fontWeight: 700
     },
     h5: {
-      fontSize: '1.125rem',
+      fontSize: '1rem',
       fontWeight: 700
     },
     h6: {
@@ -133,7 +127,6 @@ const appTheme = createTheme({
       },
       styleOverrides: {
         root: {
-          textTransform: 'none',
           '&:focus': {
             outline: '3px solid #3B99FC',
             outlineOffset: '-1px'
@@ -146,17 +139,8 @@ const appTheme = createTheme({
           fontSize: '1rem'
         },
         containedPrimary: {
-          fontWeight: 700
-        },
-        containedSecondary: {
-          fontWeight: 700
-        },
-        outlinedPrimary: {
-          backgroundColor: '#ffffff',
-          borderColor: '#003366',
-          '&:hover': {
-            backgroundColor: '#ffffff'
-          }
+          fontWeight: 700,
+          letterSpacing: '0.02rem'
         }
       }
     },
@@ -168,8 +152,7 @@ const appTheme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          minWidth: '6rem',
-          fontWeight: 700
+          minWidth: '6rem;'
         }
       }
     },
@@ -195,6 +178,13 @@ const appTheme = createTheme({
         }
       }
     },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          paddingTop: '8px !important' /* Any form fields inside this component get clipped if we don't add this */
+        }
+      }
+    },
     MuiDialogActions: {
       styleOverrides: {
         root: {
@@ -202,13 +192,6 @@ const appTheme = createTheme({
           '& button': {
             minWidth: '6rem'
           }
-        }
-      }
-    },
-    MuiFormHelperText: {
-      styleOverrides: {
-        root: {
-          fontSize: '0.875rem'
         }
       }
     },

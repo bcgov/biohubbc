@@ -229,7 +229,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             component={<AgreementsForm />}></HorizontalSplitFormComponent>
           <Divider className={classes.sectionDivider} />
 
-          <Box p={3} display="flex" justifyContent="flex-end">
+          <Box display="flex" justifyContent="flex-end">
             <Button
               type="submit"
               variant="contained"

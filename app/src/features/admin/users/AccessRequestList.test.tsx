@@ -74,8 +74,8 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('Apr 20, 2020')).toBeVisible();
-      expect(getByText('Review')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review');
+      expect(getByText('Review Request')).toBeVisible();
+      expect(getByRole('button')).toHaveTextContent('Review Request');
     });
   });
 
@@ -172,7 +172,7 @@ describe('AccessRequestList', () => {
 
     await waitFor(() => {
       expect(getByText('Apr 20, 2020')).toBeVisible();
-      expect(getByText('Review')).toBeVisible();
+      expect(getByText('Review Request')).toBeVisible();
     });
   });
 

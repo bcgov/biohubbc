@@ -9,10 +9,9 @@ import UsersDetailPage from './users/UsersDetailPage';
 /**
  * Router for all `/admin/users/*` pages.
  *
- * @param {*} props
  * @return {*}
  */
-const AdminUsersRouter: React.FC = (props) => {
+const AdminUsersRouter: React.FC = () => {
   return (
     <Switch>
       <RouteWithTitle exact path="/admin/users" title={getTitle('Manage Users')}>

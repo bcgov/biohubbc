@@ -5,7 +5,6 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
-import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
@@ -21,8 +20,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectsTable: {
     tableLayout: 'fixed'
   },
-  chip: {
-    textTransform: 'uppercase'
+  linkButton: {
+    textAlign: 'left',
+    fontWeight: 700
   },
   noDataText: {
     fontFamily: 'inherit !important',
@@ -125,7 +125,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       minWidth: 150,
       renderCell: (params) => {
         if (params.row.isDraft) {
-          return <Chip className={clsx(classes.chip)} label={'Draft'} />;
+          return <Chip label={'Draft'} />;
         }
 
         if (!params.row.status) {

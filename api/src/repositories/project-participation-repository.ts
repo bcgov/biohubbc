@@ -80,13 +80,18 @@ export class ProjectParticipationRepository extends BaseRepository {
         pr.name project_role_name,
         su.user_identifier,
         su.user_guid,
-        su.user_identity_source_id
+        su.user_identity_source_id,
+        uis.name user_identity_source_name
       FROM
         project_participation pp
       LEFT JOIN
         system_user su
       ON
         pp.system_user_id = su.system_user_id
+      LEFT JOIN
+        user_identity_source uis
+      ON 
+        su.user_identity_source_id = uis.user_identity_source_id
       LEFT JOIN
         project_role pr
       ON

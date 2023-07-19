@@ -30,31 +30,47 @@ describe('getS3SignedURL', () => {
 });
 
 describe('generateS3FileKey', () => {
+  const S3_KEY_PREFIX = process.env.S3_KEY_PREFIX;
+
+  afterEach(() => {
+    process.env.S3_KEY_PREFIX = S3_KEY_PREFIX;
+  });
+
   it('returns project file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
     const result = generateS3FileKey({ projectId: 1, fileName: 'testFileName' });
 
-    expect(result).to.equal('sims/projects/1/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/testFileName');
   });
 
   it('returns survey file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
     const result = generateS3FileKey({ projectId: 1, surveyId: 2, fileName: 'testFileName' });
 
-    expect(result).to.equal('sims/projects/1/surveys/2/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/testFileName');
   });
 
   it('returns project folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
     const result = generateS3FileKey({ projectId: 1, folder: 'folder', fileName: 'testFileName' });
 
-    expect(result).to.equal('sims/projects/1/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/folder/testFileName');
   });
 
   it('returns survey folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
     const result = generateS3FileKey({ projectId: 1, surveyId: 2, folder: 'folder', fileName: 'testFileName' });
 
-    expect(result).to.equal('sims/projects/1/surveys/2/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/folder/testFileName');
   });
 
   it('returns survey occurrence folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
     const result = generateS3FileKey({
       projectId: 1,
       surveyId: 2,
@@ -62,10 +78,12 @@ describe('generateS3FileKey', () => {
       fileName: 'testFileName'
     });
 
-    expect(result).to.equal('sims/projects/1/surveys/2/submissions/3/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/submissions/3/testFileName');
   });
 
   it('returns survey summaryresults folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
     const result = generateS3FileKey({
       projectId: 1,
       surveyId: 2,
@@ -73,14 +91,17 @@ describe('generateS3FileKey', () => {
       fileName: 'testFileName'
     });
 
-    expect(result).to.equal('sims/projects/1/surveys/2/summaryresults/3/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/summaryresults/3/testFileName');
   });
 });
 
 describe('getS3HostUrl', () => {
-  beforeEach(() => {
-    process.env.OBJECT_STORE_URL = 's3.host.example.com';
-    process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket-name';
+  const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL;
+  const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
+
+  afterEach(() => {
+    process.env.OBJECT_STORE_URL = OBJECT_STORE_URL;
+    process.env.OBJECT_STORE_BUCKET_NAME = OBJECT_STORE_BUCKET_NAME;
   });
 
   it('should yield a default S3 host url', () => {
@@ -93,12 +114,18 @@ describe('getS3HostUrl', () => {
   });
 
   it('should successfully produce an S3 host url', () => {
+    process.env.OBJECT_STORE_URL = 's3.host.example.com';
+    process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket-name';
+
     const result = getS3HostUrl();
 
     expect(result).to.equal('s3.host.example.com/test-bucket-name');
   });
 
   it('should successfully append a key to an S3 host url', () => {
+    process.env.OBJECT_STORE_URL = 's3.host.example.com';
+    process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket-name';
+
     const result = getS3HostUrl('my-test-file.txt');
 
     expect(result).to.equal('s3.host.example.com/test-bucket-name/my-test-file.txt');
@@ -106,6 +133,12 @@ describe('getS3HostUrl', () => {
 });
 
 describe('_getS3Client', () => {
+  const OBJECT_STORE_ACCESS_KEY_ID = process.env.OBJECT_STORE_ACCESS_KEY_ID;
+
+  afterEach(() => {
+    process.env.OBJECT_STORE_ACCESS_KEY_ID = OBJECT_STORE_ACCESS_KEY_ID;
+  });
+
   it('should return an S3 client', () => {
     process.env.OBJECT_STORE_ACCESS_KEY_ID = 'aaaa';
     process.env.OBJECT_STORE_SECRET_KEY_ID = 'bbbb';
@@ -116,6 +149,16 @@ describe('_getS3Client', () => {
 });
 
 describe('_getClamAvScanner', () => {
+  const ENABLE_FILE_VIRUS_SCAN = process.env.ENABLE_FILE_VIRUS_SCAN;
+  const CLAMAV_HOST = process.env.CLAMAV_HOST;
+  const CLAMAV_PORT = process.env.CLAMAV_PORT;
+
+  afterEach(() => {
+    process.env.ENABLE_FILE_VIRUS_SCAN = ENABLE_FILE_VIRUS_SCAN;
+    process.env.CLAMAV_HOST = CLAMAV_HOST;
+    process.env.CLAMAV_PORT = CLAMAV_PORT;
+  });
+
   it('should return a clamAv scanner client', () => {
     process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
     process.env.CLAMAV_HOST = 'host';
@@ -154,6 +197,12 @@ describe('_getClamAvScanner', () => {
 });
 
 describe('_getObjectStoreBucketName', () => {
+  const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
+
+  afterEach(() => {
+    process.env.OBJECT_STORE_BUCKET_NAME = OBJECT_STORE_BUCKET_NAME;
+  });
+
   it('should return an object store bucket name', () => {
     process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket1';
 
@@ -170,6 +219,12 @@ describe('_getObjectStoreBucketName', () => {
 });
 
 describe('_getObjectStoreUrl', () => {
+  const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL;
+
+  afterEach(() => {
+    process.env.OBJECT_STORE_URL = OBJECT_STORE_URL;
+  });
+
   it('should return an object store bucket name', () => {
     process.env.OBJECT_STORE_URL = 'test-url1';
 
@@ -186,6 +241,12 @@ describe('_getObjectStoreUrl', () => {
 });
 
 describe('_getS3KeyPrefix', () => {
+  const OLD_S3_KEY_PREFIX = process.env.S3_KEY_PREFIX;
+
+  afterEach(() => {
+    process.env.S3_KEY_PREFIX = OLD_S3_KEY_PREFIX;
+  });
+
   it('should return an s3 key prefix', () => {
     process.env.S3_KEY_PREFIX = 'test-sims';
 

@@ -64,11 +64,11 @@ describe('UsersDetailHeader', () => {
       fireEvent.click(getByText('Remove User'));
 
       await waitFor(() => {
-        expect(getAllByText('Remove System User').length).toEqual(1);
+        expect(getAllByText('Remove system user?').length).toEqual(1);
       });
     });
 
-    it('does nothing if the user clicks `No` or away from the dialog', async () => {
+    it('does nothing if the user clicks `Cancel` or away from the dialog', async () => {
       history.push('/admin/users/1');
 
       const { getAllByText, getByText } = render(
@@ -82,10 +82,10 @@ describe('UsersDetailHeader', () => {
       fireEvent.click(getByText('Remove User'));
 
       await waitFor(() => {
-        expect(getAllByText('Remove System User').length).toEqual(1);
+        expect(getAllByText('Remove system user?').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('No'));
+      fireEvent.click(getByText('Cancel'));
 
       await waitFor(() => {
         expect(history.location.pathname).toEqual('/admin/users/1');
@@ -110,10 +110,10 @@ describe('UsersDetailHeader', () => {
       fireEvent.click(getByText('Remove User'));
 
       await waitFor(() => {
-        expect(getAllByText('Remove System User').length).toEqual(1);
+        expect(getAllByText('Remove system user?').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Yes'));
+      fireEvent.click(getByText('Remove'));
 
       await waitFor(() => {
         expect(history.location.pathname).toEqual('/admin/users');

@@ -51,20 +51,20 @@ exports[`AccessRequestPage renders correctly 1`] = `
                       style="width: 100%;"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-1sl0zyp-MuiFormLabel-root-MuiInputLabel-root"
                         data-shrink="false"
                         id="role-label"
                       >
                         Role
                         <span
                           aria-hidden="true"
-                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-uyis09-MuiFormLabel-asterisk"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-wgai2y-MuiFormLabel-asterisk"
                         >
                            *
                         </span>
                       </label>
                       <div
-                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-11vue2s-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl  css-10ds2k7-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root"
                       >
                         <div
                           aria-expanded="false"
@@ -116,7 +116,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         </fieldset>
                       </div>
                       <p
-                        class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-1fdv3wc-MuiFormHelperText-root"
+                        class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained Mui-required css-11rtmns-MuiFormHelperText-root"
                       />
                     </div>
                   </div>
@@ -137,7 +137,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                     class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-wb57ya-MuiFormControl-root-MuiTextField-root"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-hnwytk-MuiFormLabel-root-MuiInputLabel-root"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined MuiFormLabel-colorPrimary MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined css-1sl0zyp-MuiFormLabel-root-MuiInputLabel-root"
                       data-shrink="false"
                       for="reason"
                       id="reason-label"
@@ -145,7 +145,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                       Reason
                     </label>
                     <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline css-1s30bse-MuiInputBase-root-MuiOutlinedInput-root"
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline css-4c10ax-MuiInputBase-root-MuiOutlinedInput-root"
                     >
                       <textarea
                         aria-invalid="false"
@@ -187,7 +187,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 class="makeStyles-wrapper-2 MuiBox-root css-0"
               >
                 <button
-                  class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-13xwpf-MuiButtonBase-root-MuiButton-root"
+                  class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-1e8o90c-MuiButtonBase-root-MuiButton-root"
                   tabindex="0"
                   type="submit"
                 >
@@ -197,7 +197,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 </button>
               </div>
               <a
-                class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-13hk64i-MuiButtonBase-root-MuiButton-root"
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-ok5xf-MuiButtonBase-root-MuiButton-root"
                 data-testid="logout-button"
                 href="/logout"
                 tabindex="0"

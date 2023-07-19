@@ -93,7 +93,7 @@ const SurveyPermitForm: React.FC = () => {
               return (
                 <ListItem disableGutters key={index}>
                   <ListItemText>
-                    <Box mr={3}>
+                    <Box>
                       <Grid container spacing={2}>
                         <Grid item sm={6}>
                           <CustomTextField
@@ -156,7 +156,7 @@ const SurveyPermitForm: React.FC = () => {
               <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.permit.permits}</Typography>
             </Box>
           )}
-          <Box mt={1}>
+          <Box>
             <Button
               type="button"
               variant="outlined"
