@@ -32,7 +32,7 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
       headers: {
         Authorization: `Bearer ${keycloak.token}`
       },
-      baseURL: baseUrl && ensureProtocol(baseUrl)
+      baseURL: baseUrl && ensureProtocol(baseUrl),
     });
 
     instance.interceptors.response.use(

@@ -44,7 +44,9 @@ const AppRouter: React.FC = () => {
 
       <RouteWithTitle path="/playground" title={'Playground'}>
         <BaseLayout>
-          <Playground />
+          <AuthenticatedRouteGuard>
+            <Playground />
+          </AuthenticatedRouteGuard>
         </BaseLayout>
       </RouteWithTitle>
 

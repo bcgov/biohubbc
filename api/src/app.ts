@@ -29,7 +29,10 @@ const app: express.Express = express();
 app.use(function (req: Request, res: Response, next: NextFunction) {
   defaultLog.info({ label: 'req', message: `${req.method} ${req.url}` });
 
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With, Content-Type, Authorization, responseType, api-key, keycloak-uuid, user-id'
+  );
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 'no-store');
