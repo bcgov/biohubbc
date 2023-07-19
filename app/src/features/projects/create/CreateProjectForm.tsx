@@ -26,8 +26,7 @@ import { FundingSourceType } from '../components/ProjectFundingItemForm';
 import ProjectIUCNForm, { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from '../components/ProjectIUCNForm';
 import ProjectLocationForm, {
   ProjectLocationFormInitialValues,
-  ProjectLocationFormYupSchema,
-  ProjectRegionFormInitialValues
+  ProjectLocationFormYupSchema
 } from '../components/ProjectLocationForm';
 import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
@@ -60,8 +59,7 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
   ...ProjectFundingFormInitialValues,
-  ...ProjectPartnershipsFormInitialValues,
-  ...ProjectRegionFormInitialValues
+  ...ProjectPartnershipsFormInitialValues
 };
 
 export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)

@@ -13,27 +13,10 @@ export interface IProjectLocationForm {
   };
 }
 
-export interface IProjectRegionsForm {
-  regions: { region_ids: number[] };
-}
-
-export const ProjectRegionFormYupSchema = yup.object().shape({
-  regions: yup.object().shape({
-    region_ids: yup.array().of(yup.number())
-  })
-});
-
 export const ProjectLocationFormInitialValues: IProjectLocationForm = {
   location: {
     location_description: '',
     geometry: []
-  }
-};
-
-// ProjectPartnershipsFormInitialValues
-export const ProjectRegionFormInitialValues: IProjectRegionsForm = {
-  regions: {
-    region_ids: []
   }
 };
 

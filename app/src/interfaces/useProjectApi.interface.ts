@@ -4,7 +4,7 @@ import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoo
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
-import { IProjectLocationForm, IProjectRegionsForm } from 'features/projects/components/ProjectLocationForm';
+import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { Feature } from 'geojson';
@@ -129,8 +129,7 @@ export interface ICreateProjectRequest
     IProjectLocationForm,
     IProjectIUCNForm,
     IProjectFundingForm,
-    IProjectPartnershipsForm,
-    IProjectRegionsForm {}
+    IProjectPartnershipsForm {}
 
 /**
  * Create project response object.
