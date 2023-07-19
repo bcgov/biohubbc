@@ -52,8 +52,8 @@ describe('RegionRepository', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new RegionService(mockDBConnection);
-      const deleteStub = sinon.stub(RegionRepository.prototype, 'deleteRegionsFromASurvey').resolves();
-      const addStub = sinon.stub(RegionRepository.prototype, 'addRegionsToASurvey').resolves();
+      const deleteStub = sinon.stub(RegionRepository.prototype, 'deleteRegionsForSurvey').resolves();
+      const addStub = sinon.stub(RegionRepository.prototype, 'addRegionsToSurvey').resolves();
 
       await service.addRegionsToSurvey(1, []);
       expect(deleteStub).to.be.called;
@@ -85,8 +85,8 @@ describe('RegionRepository', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new RegionService(mockDBConnection);
-      const deleteStub = sinon.stub(RegionRepository.prototype, 'deleteRegionsFromAProject').resolves();
-      const addStub = sinon.stub(RegionRepository.prototype, 'addRegionsToAProject').resolves();
+      const deleteStub = sinon.stub(RegionRepository.prototype, 'deleteRegionsForProject').resolves();
+      const addStub = sinon.stub(RegionRepository.prototype, 'addRegionsToProject').resolves();
 
       await service.addRegionsToProject(1, []);
       expect(deleteStub).to.be.called;
