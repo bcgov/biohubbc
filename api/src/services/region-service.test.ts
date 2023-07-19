@@ -9,7 +9,7 @@ import { RegionService } from './region-service';
 
 chai.use(sinonChai);
 
-describe.only('RegionRepository', () => {
+describe('RegionRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
