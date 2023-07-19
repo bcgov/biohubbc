@@ -52,10 +52,10 @@ export class RegionService extends DBService {
    */
   async addRegionsToProject(projectId: number, regions: IRegion[]): Promise<void> {
     // remove existing regions from a project
-    this.regionRepository.deleteRegionsFromAProject(projectId);
+    this.regionRepository.deleteRegionsForProject(projectId);
 
     const regionIds = regions.map((item) => item.region_id);
-    await this.regionRepository.addRegionsToAProject(projectId, regionIds);
+    await this.regionRepository.addRegionsToProject(projectId, regionIds);
   }
 
   /**
@@ -66,7 +66,7 @@ export class RegionService extends DBService {
    */
   async getUniqueRegionsForFeatures(features: Feature[]): Promise<RegionDetails[]> {
     const bcgwService = new BcgwLayerService();
-    return await bcgwService.getUniqueRegionsForFeatures(features, this.connection);
+    return bcgwService.getUniqueRegionsForFeatures(features, this.connection);
   }
 
   /**
@@ -78,10 +78,10 @@ export class RegionService extends DBService {
    */
   async addRegionsToSurvey(surveyId: number, regions: IRegion[]): Promise<void> {
     // remove existing regions from a survey
-    this.regionRepository.deleteRegionsFromASurvey(surveyId);
+    this.regionRepository.deleteRegionsForSurvey(surveyId);
 
     const regionIds = regions.map((item) => item.region_id);
-    await this.regionRepository.addRegionsToASurvey(surveyId, regionIds);
+    await this.regionRepository.addRegionsToSurvey(surveyId, regionIds);
   }
 
   /**

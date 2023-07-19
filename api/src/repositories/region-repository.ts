@@ -34,7 +34,7 @@ export class RegionRepository extends BaseRepository {
    * @param {number[]} regions
    * @returns {*} {Promise<void>}
    */
-  async addRegionsToAProject(projectId: number, regions: number[]): Promise<void> {
+  async addRegionsToProject(projectId: number, regions: number[]): Promise<void> {
     if (regions.length < 1) {
       return;
     }
@@ -71,7 +71,7 @@ export class RegionRepository extends BaseRepository {
    * @param {number[]} regions
    * @returns  {*} {Promise<void>}
    */
-  async addRegionsToASurvey(surveyId: number, regions: number[]): Promise<void> {
+  async addRegionsToSurvey(surveyId: number, regions: number[]): Promise<void> {
     if (regions.length < 1) {
       return;
     }
@@ -106,7 +106,7 @@ export class RegionRepository extends BaseRepository {
    *
    * @param {number} projectId
    */
-  async deleteRegionsFromAProject(projectId: number): Promise<void> {
+  async deleteRegionsForProject(projectId: number): Promise<void> {
     const sql = SQL`
       DELETE FROM project_region WHERE project_id=${projectId};
     `;
@@ -124,7 +124,7 @@ export class RegionRepository extends BaseRepository {
    *
    * @param surveyId
    */
-  async deleteRegionsFromASurvey(surveyId: number): Promise<void> {
+  async deleteRegionsForSurvey(surveyId: number): Promise<void> {
     const sql = SQL`
       DELETE FROM survey_region WHERE survey_id=${surveyId};
     `;
