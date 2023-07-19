@@ -433,7 +433,7 @@ export interface IUpdateProject {
   coordinator: object | null;
   project: object | null;
   objectives: object | null;
-  location: { geometry: Feature[] } | null;
+  location: { geometry: Feature[]; location_description: string } | null;
   iucn: object | null;
   funding: object | null;
   partnerships: object | null;

@@ -59,7 +59,7 @@ export class RegionRepository extends BaseRepository {
       await this.connection.sql(sql);
     } catch (error) {
       throw new ApiExecuteSQLError('Failed to execute insert SQL for project_region', [
-        'RegionRepository->addRegionsToAProject'
+        'RegionRepository->addRegionsToProject'
       ]);
     }
   }
@@ -96,7 +96,7 @@ export class RegionRepository extends BaseRepository {
       await this.connection.sql(sql);
     } catch (error) {
       throw new ApiExecuteSQLError('Failed to execute insert SQL for survey_region', [
-        'RegionRepository->addRegionsToASurvey'
+        'RegionRepository->addRegionsToSurvey'
       ]);
     }
   }
@@ -114,7 +114,7 @@ export class RegionRepository extends BaseRepository {
       await this.connection.sql(sql);
     } catch (error) {
       throw new ApiExecuteSQLError('Failed to execute delete SQL for project_regions', [
-        'RegionRepository->deleteRegionsFromAProject'
+        'RegionRepository->deleteRegionsForProject'
       ]);
     }
   }
@@ -132,7 +132,7 @@ export class RegionRepository extends BaseRepository {
       await this.connection.sql(sql);
     } catch (error) {
       throw new ApiExecuteSQLError('Failed to execute delete SQL for survey_regions', [
-        'RegionRepository->deleteRegionsFromASurvey'
+        'RegionRepository->deleteRegionsForSurvey'
       ]);
     }
   }
