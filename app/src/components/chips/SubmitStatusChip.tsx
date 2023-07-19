@@ -17,8 +17,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: '#2D4821',
     backgroundColor: '#DFF0D8'
   },
-  chipNoData: {
-  }
+  chipNoData: {}
 }));
 
 export const SubmitStatusChip: React.FC<{ status: PublishStatus; chipProps?: Partial<ChipProps> }> = (props) => {
@@ -43,11 +42,6 @@ export const SubmitStatusChip: React.FC<{ status: PublishStatus; chipProps?: Par
   }
 
   return (
-    <Chip
-      title={chipTitle}
-      className={clsx(classes.chip, chipStatusClass)}
-      label={chipLabel}
-      {...props.chipProps}
-    />
+    <Chip title={chipTitle} className={clsx(classes.chip, chipStatusClass)} label={chipLabel} {...props.chipProps} />
   );
 };

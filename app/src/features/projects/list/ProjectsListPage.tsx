@@ -132,7 +132,7 @@ const ProjectsListPage: React.FC = () => {
             <ProjectsSubmissionAlertBar projects={projectsDataLoader.data} />
           </SystemRoleGuard>
           <Paper elevation={0}>
-            <Toolbar style={{display: 'flex', justifyContent: 'space-between'}}>
+            <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2">
                 Records Found{' '}
                 <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
