@@ -1,35 +1,46 @@
-import { Box, Button, Grid, Typography } from '@material-ui/core';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { useState } from 'react';
+import React, { useState, useReducer } from 'react';
+
+enum eSection {
+  general = 'General',
+  captures = 'Capture History',
+  markings = 'Markings',
+  measurements = 'Measurements',
+  mortality = 'Mortality',
+  family = 'Family Relationship',
+  images = 'Images',
+  telemetry = 'Telemetry'
+}
 
 interface ISection {
-  title: string;
+  title: eSection;
   comp: JSX.Element;
   bTitle?: string;
 }
 
 const sections: ISection[] = [
-  { title: 'General', comp: <></> },
-  { title: 'Capture History', comp: <></>, bTitle: 'Add Capture Event' },
-  { title: 'Markings', comp: <></>, bTitle: 'Add Marking' },
-  { title: 'Measurements', comp: <></>, bTitle: 'Add Measurement' },
-  { title: 'Mortality', comp: <></>, bTitle: 'Add Mortalty' },
-  { title: 'Family Relationships', comp: <></>, bTitle: 'Add Family Relationship' },
-  { title: 'Images', comp: <></>, bTitle: 'Upload Image' },
-  { title: 'Telemetry Device', comp: <></>, bTitle: 'Add Telemetry Device' }
+  { title: eSection.general, comp: <>g</> },
+  { title: eSection.captures, comp: <>c</>, bTitle: 'Add Capture Event' },
+  { title: eSection.markings, comp: <>m</>, bTitle: 'Add Marking' },
+  { title: eSection.measurements, comp: <>d</>, bTitle: 'Add Measurement' },
+  { title: eSection.mortality, comp: <>m</>, bTitle: 'Add Mortalty' },
+  { title: eSection.family, comp: <>f</>, bTitle: 'Add Family Relationship' },
+  { title: eSection.images, comp: <>i</>, bTitle: 'Upload Image' },
+  { title: eSection.telemetry, comp: <>t</>, bTitle: 'Add Telemetry Device' }
 ];
 
-//type ISectionTitle = (typeof sections)[number]['title'];
+type ISelectedSection = Partial<Record<eSection, boolean>>;
 
 const IndividualAnimalForm = () => {
-  //const [selectedSections, setSelectedSections] = useState<ISectionTitle>({});
+  const [selectedSections, addSelectedSection] = useState<ISelectedSection>({ [eSection.general]: true });
   const handleSubmit = () => {
     console.log('submit');
   };
 
-  const handleAddSection = (idx: number) => {
-    //setSelectedSections([...selectedSections, idx]);
+  const handleAddSection = (section: eSection) => {
+    addSelectedSection((s) => ({ ...s, [section]: true }));
   };
 
   return (
@@ -42,9 +53,11 @@ const IndividualAnimalForm = () => {
                 <Typography id={`${s.title}`} component="legend">
                   {s.title}
                 </Typography>
-                {s.bTitle && (
+                {selectedSections && selectedSections[s.title] ? (
+                  s.comp
+                ) : (
                   <Button
-                    onClick={() => handleAddSection(i)}
+                    onClick={() => handleAddSection(s.title)}
                     startIcon={<Icon path={mdiPlus} size={1} />}
                     variant="outlined"
                     color="primary">
