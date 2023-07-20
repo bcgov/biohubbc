@@ -14,9 +14,8 @@ const useCritterbaseApi = (axios: AxiosInstance) => {
   const getHeaders = (): AxiosRequestConfig => {
     return {
       headers: {
-        //'api-key': cbApiKey,
         'keycloak-uuid': keycloakWrapper?.getUserGuid(),
-        'user-id': keycloakWrapper?.getUserIdentifier()
+        'user-id': keycloakWrapper?.critterbaseUuid()
       }
     };
   };
@@ -27,16 +26,27 @@ const useCritterbaseApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetAllCodeSetsResponse>}
    */
   const getAllMarkings = async (): Promise<any> => {
-    const { data } = await axios.get('/api/cb/markings', getHeaders());
-    return data;
+    try {//
+      const headers = getHeaders();
+      console.log('Headers feeding to markings' + JSON.stringify(headers));
+      const { data } = await axios.get('/api/critterbase/markings', headers);
+      return data;
+    } catch (e) {
+      console.log(e);
+    }
+    return [];
   };
 
-  const signUp = async (keycloak_guid: string, system_user_id: string): Promise<any> => {
-    return axios.post('api/cb/signup', {
+  interface ICbSignup {
+    user_id: string;
+  }
+  const signUp = async (keycloak_guid: string, system_user_id: string): Promise<ICbSignup> => {
+    const { data } = await axios.post('/api/critterbase/signup', {
       keycloak_uuid: keycloak_guid,
       system_user_id: system_user_id,
       system_name: 'SIMS'
     });
+    return data;
   };
 
   return {

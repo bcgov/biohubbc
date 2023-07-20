@@ -8,7 +8,7 @@ import { ensureHTTPError, HTTPErrorType } from './errors/http-error';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
-import { critterbaseRouter } from './routers/critterbaseRouter';
+//import { critterbaseRouter } from './routers/critterbaseRouter';
 
 const defaultLog = getLogger('app');
 
@@ -108,7 +108,7 @@ const openAPIFramework = initialize({
 
 // Path to view beautified openapi spec
 app.use('/api-docs', swaggerUIExperss.serve, swaggerUIExperss.setup(openAPIFramework.apiDoc));
-app.use('/api/cb/', critterbaseRouter);
+//app.use('/api/cb/', critterbaseRouter);
 // Start api
 try {
   initDBPool(defaultPoolConfig);
@@ -132,7 +132,7 @@ try {
  * @param {NextFunction} next
  */
 function validateAllResponses(req: Request, res: Response, next: NextFunction) {
-  const isStrictValidation = !!req['apiDoc']['x-express-openapi-validation-strict'] || false;
+  const isStrictValidation = !!req['apiDoc']?.['x-express-openapi-validation-strict'] || false;
 
   if (typeof res['validateResponse'] === 'function') {
     const json = res.json;

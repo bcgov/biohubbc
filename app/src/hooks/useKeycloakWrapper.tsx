@@ -127,6 +127,8 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   getLoginUrl: (redirectUri?: string) => string;
+
+  critterbaseUuid: () => string | undefined;
 }
 
 /**
@@ -150,6 +152,12 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const userDataLoader = useDataLoader(() => biohubApi.user.getUser());
 
+  const critterbaseSignupLoader = useDataLoader(async () => {
+    if (userDataLoader?.data?.user_identifier && userDataLoader?.data?.user_guid) {
+      return biohubApi.critterbase.signUp(userDataLoader?.data?.user_guid, userDataLoader?.data?.user_identifier);
+    }
+  });
+
   const administrativeActivityStandingDataLoader = useDataLoader(biohubApi.admin.getAdministrativeActivityStanding);
 
   if (keycloak) {
@@ -160,6 +168,19 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   if (keycloak.authenticated) {
     // keycloak user is authenticated, load system user info
     userDataLoader.load();
+
+    if (userDataLoader.isReady) {
+      critterbaseSignupLoader.load();
+      // (async () => {if (userDataLoader?.data?.user_identifier && userDataLoader?.data?.user_guid) {
+      //     console.log(`With ${userDataLoader?.data?.user_identifier} ${userDataLoader?.data?.user_guid}`);
+      //     const a = await biohubApi.critterbase.signUp(
+      //       userDataLoader?.data?.user_identifier,
+      //       userDataLoader?.data?.user_guid
+      //     );
+      //     console.log('Response from async' + JSON.stringify(a));
+      // }
+      // })();
+    }
 
     if (
       userDataLoader.isReady &&
@@ -285,6 +306,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     return keycloak?.createLoginUrl({ redirectUri: buildUrl(window.location.origin, redirectUri) }) || '/login';
   };
 
+  const critterbaseUuid = useCallback(() => {
+    return critterbaseSignupLoader.data?.user_id;
+  }, [critterbaseSignupLoader.data?.user_id]);
+
   return {
     keycloak,
     hasLoadedAllUserInfo: userDataLoader.isReady || !!administrativeActivityStandingDataLoader.data,
@@ -300,7 +325,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     email: email(),
     displayName: displayName(),
     refresh,
-    getLoginUrl
+    getLoginUrl,
+    critterbaseUuid
   };
 }
 
