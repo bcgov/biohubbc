@@ -37,6 +37,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertProjectFundingDataFirstNations()}
       ${insertSurveyProprietorData()}
       ${insertSurveyVantageData()}
+      ${insertProjectProgramData()}
     `);
   }
 }
@@ -46,6 +47,21 @@ const checkAnyProjectExists = () => `
     project_id
   FROM
     project;
+`;
+
+/**
+ * SQL to insert Project Program data
+ *
+ */
+const insertProjectProgramData = () => `
+  INSERT into project_program
+    (
+      project_id, 
+      program_id
+    )
+  VALUES (
+    1, 3
+  );
 `;
 
 /**
@@ -302,7 +318,6 @@ const insertProjectStakeholderData = () => `
 const insertProjectData = () => `
   INSERT into project
     (
-      project_type_id,
       name,
       objectives,
       location_description,
@@ -317,7 +332,6 @@ const insertProjectData = () => `
       geojson
     )
   VALUES (
-    3,
     'Default Project',
     'Objectives',
     'Location Description',
