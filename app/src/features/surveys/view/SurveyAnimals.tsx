@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider } from '@mui/material';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -17,9 +17,7 @@ const SurveyAnimals: React.FC = () => {
 
   return (
     <Box>
-      <ComponentDialog
-        open={openDialog}
-        dialogTitle="Individual Animals" onClose={toggleDialog}>
+      <ComponentDialog open={openDialog} dialogTitle="Individual Animals" onClose={toggleDialog}>
         <IndividualAnimalForm />
       </ComponentDialog>
       <H2ButtonToolbar

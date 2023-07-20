@@ -1,3 +1,4 @@
+import { Feature } from 'geojson';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
@@ -31,6 +32,7 @@ import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
+import { RegionService } from './region-service';
 import { TaxonomyService } from './taxonomy-service';
 
 const defaultLog = getLogger('services/survey-service');
@@ -396,9 +398,19 @@ export class SurveyService extends DBService {
       )
     );
 
+    // Handle regions associated to a survey
+    if (postSurveyData.location) {
+      promises.push(this.insertRegion(surveyId, postSurveyData.location.geometry));
+    }
+
     await Promise.all(promises);
 
     return surveyId;
+  }
+
+  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
+    const regionService = new RegionService(this.connection);
+    return regionService.addRegionsToSurveyFromFeatures(projectId, features);
   }
 
   /**
@@ -582,6 +594,10 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.proprietor) {
       promises.push(this.updateSurveyProprietorData(surveyId, putSurveyData));
+    }
+
+    if (putSurveyData?.location) {
+      promises.push(this.insertRegion(surveyId, putSurveyData?.location.geometry));
     }
 
     await Promise.all(promises);

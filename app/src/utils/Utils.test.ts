@@ -288,6 +288,12 @@ describe('getFormattedIdentitySource', () => {
     expect(result).toEqual('IDIR');
   });
 
+  it('returns IDIR', () => {
+    const result = getFormattedIdentitySource(SYSTEM_IDENTITY_SOURCE.DATABASE);
+
+    expect(result).toEqual('System');
+  });
+
   it('returns null for unknown identity source', () => {
     const result = getFormattedIdentitySource('__default_test_string' as SYSTEM_IDENTITY_SOURCE);
 

@@ -3,13 +3,13 @@
 exports[`IUCNClassification renders correctly with classification details 1`] = `
 <DocumentFragment>
   <ul
-    class="MuiList-root"
+    class="MuiList-root css-1mk9mw3-MuiList-root"
   >
     <li
-      class="MuiListItem-root MuiListItem-divider"
+      class="MuiListItem-root MuiListItem-padding MuiListItem-divider css-2056f8-MuiListItem-root"
     >
       <p
-        class="MuiTypography-root MuiTypography-body1"
+        class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
       >
         IUCN class 1 
         <span>
@@ -23,10 +23,10 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
       </p>
     </li>
     <li
-      class="MuiListItem-root MuiListItem-divider"
+      class="MuiListItem-root MuiListItem-padding MuiListItem-divider css-2056f8-MuiListItem-root"
     >
       <p
-        class="MuiTypography-root MuiTypography-body1"
+        class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
       >
         undefined 
         <span>
@@ -46,13 +46,13 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
 exports[`IUCNClassification renders correctly with no classification details 1`] = `
 <DocumentFragment>
   <ul
-    class="MuiBox-root MuiBox-root-1 listNoBullets"
+    class="listNoBullets MuiBox-root css-0"
   >
     <li
-      class="MuiBox-root MuiBox-root-2"
+      class="MuiBox-root css-0"
     >
       <dd
-        class="MuiTypography-root MuiTypography-body1"
+        class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
       >
         No IUCN Classifications
       </dd>

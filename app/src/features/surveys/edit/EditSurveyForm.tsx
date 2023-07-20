@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
@@ -229,7 +229,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             component={<AgreementsForm />}></HorizontalSplitFormComponent>
           <Divider className={classes.sectionDivider} />
 
-          <Box p={3} display="flex" justifyContent="flex-end">
+          <Box display="flex" justifyContent="flex-end">
             <Button
               type="submit"
               variant="contained"

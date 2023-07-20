@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
 import assert from 'assert';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import SurveysList from 'components/surveys/SurveysList';

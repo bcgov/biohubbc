@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
 import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';

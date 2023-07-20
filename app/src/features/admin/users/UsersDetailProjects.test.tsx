@@ -191,7 +191,7 @@ describe('UsersDetailProjects', () => {
   });
 
   describe('Are you sure? Dialog', () => {
-    it('does nothing if the user clicks `No` or away from the dialog', async () => {
+    it('does nothing if the user clicks `Cancel` or away from the dialog', async () => {
       history.push('/admin/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
@@ -224,17 +224,17 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getByTestId('remove-project-participant-button'));
 
       await waitFor(() => {
-        expect(getAllByText('Remove User From Project').length).toEqual(1);
+        expect(getAllByText('Remove user from project?').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('No'));
+      fireEvent.click(getByText('Cancel'));
 
       await waitFor(() => {
         expect(history.location.pathname).toEqual('/admin/users/1');
       });
     });
 
-    it('deletes User from project if the user clicks on `Yes` ', async () => {
+    it('deletes User from project if the user clicks on `Remove` ', async () => {
       history.push('/admin/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
@@ -289,10 +289,10 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getAllByTestId('remove-project-participant-button')[0]);
 
       await waitFor(() => {
-        expect(getAllByText('Remove User From Project').length).toEqual(1);
+        expect(getAllByText('Remove user from project?').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Yes'));
+      fireEvent.click(getByText('Remove'));
 
       await waitFor(() => {
         expect(getAllByText('Assigned Projects').length).toEqual(1);
@@ -393,7 +393,7 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getByText('Editor'));
 
       await waitFor(() => {
-        expect(getAllByText('Change Project Role?').length).toEqual(1);
+        expect(getAllByText('Change project role?').length).toEqual(1);
       });
 
       fireEvent.click(getByText('Cancel'));
@@ -452,7 +452,7 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getByText('Editor'));
 
       await waitFor(() => {
-        expect(getAllByText('Change Project Role?').length).toEqual(1);
+        expect(getAllByText('Change project role?').length).toEqual(1);
       });
 
       fireEvent.click(getByText('Change Role'));

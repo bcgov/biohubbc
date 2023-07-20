@@ -1,4 +1,4 @@
-import { DialogContentText } from '@material-ui/core';
+import DialogContentText from '@mui/material/DialogContentText';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import React from 'react';
 

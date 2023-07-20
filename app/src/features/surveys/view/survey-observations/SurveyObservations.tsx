@@ -1,8 +1,8 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -118,7 +118,7 @@ const SurveyObservations: React.FC = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Observations?',
       dialogText: 'Are you sure you want to delete observation data from this survey? This action cannot be undone.',
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary' },
       noButtonLabel: 'Cancel',

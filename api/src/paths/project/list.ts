@@ -100,7 +100,7 @@ GET.apiDoc = {
               properties: {
                 projectData: {
                   type: 'object',
-                  required: ['id', 'name', 'project_type', 'start_date', 'end_date', 'completion_status'],
+                  required: ['id', 'name', 'project_type', 'start_date', 'end_date', 'completion_status', 'regions'],
                   properties: {
                     id: {
                       type: 'number'
@@ -122,6 +122,12 @@ GET.apiDoc = {
                     },
                     completion_status: {
                       type: 'string'
+                    },
+                    regions: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
                     }
                   }
                 },

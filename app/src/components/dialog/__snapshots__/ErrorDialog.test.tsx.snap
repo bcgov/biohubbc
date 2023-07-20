@@ -2,7 +2,7 @@
 
 exports[`ErrorDialog renders correctly with a detailed error message 1`] = `
 <body
-  style="padding-right: 0px; overflow: hidden;"
+  style="padding-right: 1024px; overflow: hidden;"
 >
   <div
     aria-hidden="true"
@@ -11,85 +11,76 @@ exports[`ErrorDialog renders correctly with a detailed error message 1`] = `
       id="root"
     >
       <div
-        class="MuiBox-root MuiBox-root-3"
+        class="MuiBox-root css-0"
       />
     </div>
   </div>
   <div
-    class="MuiDialog-root"
+    class="MuiDialog-root MuiModal-root css-zw3mfo-MuiModal-root-MuiDialog-root"
     role="presentation"
-    style="position: fixed; z-index: 1300; right: 0px; bottom: 0px; top: 0px; left: 0px;"
   >
     <div
       aria-hidden="true"
-      class="MuiBackdrop-root"
+      class="MuiBackdrop-root MuiModal-backdrop css-yiavyu-MuiBackdrop-root-MuiDialog-backdrop"
       style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
     />
     <div
-      data-test="sentinelStart"
+      data-testid="sentinelStart"
       tabindex="0"
     />
     <div
-      class="MuiDialog-container MuiDialog-scrollPaper"
-      role="none presentation"
+      class="MuiDialog-container MuiDialog-scrollPaper css-1sep8xo-MuiDialog-container"
+      role="presentation"
       style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
       tabindex="-1"
     >
       <div
         aria-describedby="alert-dialog-description"
         aria-labelledby="alert-dialog-title"
-        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation24 MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm css-yao5wc-MuiPaper-root-MuiDialog-paper"
         role="dialog"
       >
-        <div
-          class="MuiDialogTitle-root"
+        <h2
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-1bnp99m-MuiTypography-root-MuiDialogTitle-root"
           id="alert-dialog-title"
         >
-          <h2
-            class="MuiTypography-root MuiTypography-h6"
-          >
-            This is dialog title
-          </h2>
-        </div>
+          This is dialog title
+        </h2>
         <div
-          class="MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-1jaqsfq-MuiTypography-root-MuiDialogContentText-root"
             id="alert-dialog-description"
           >
             This is dialog text
           </p>
         </div>
         <div
-          class="MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-1jaqsfq-MuiTypography-root-MuiDialogContentText-root"
             id="alert-dialog-description"
           >
             This is dialog error
           </p>
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-disableElevation"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-disableElevation css-u9d4ox-MuiButtonBase-root-MuiButton-root"
             tabindex="0"
             type="button"
           >
-            <span
-              class="MuiButton-label"
-            >
-              Hide detailed error message
-            </span>
+            Hide detailed error message
           </button>
           <div
-            class="MuiCollapse-container"
+            class="MuiCollapse-root MuiCollapse-vertical css-1fkrdiv-MuiCollapse-root"
             style="min-height: 0px; height: 0px; transition-duration: 300ms;"
           >
             <div
-              class="MuiCollapse-wrapper"
+              class="MuiCollapse-wrapper MuiCollapse-vertical css-smkl36-MuiCollapse-wrapper"
             >
               <div
-                class="MuiCollapse-wrapperInner"
+                class="MuiCollapse-wrapperInner MuiCollapse-vertical css-9l5vo-MuiCollapse-wrapperInner"
               >
                 <ul>
                   <li>
@@ -104,24 +95,20 @@ exports[`ErrorDialog renders correctly with a detailed error message 1`] = `
           </div>
         </div>
         <div
-          class="MuiDialogActions-root MuiDialogActions-spacing"
+          class="MuiDialogActions-root MuiDialogActions-spacing css-ry7a0o-MuiDialogActions-root"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-disableElevation Mui-focusVisible Mui-focusVisible"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation Mui-focusVisible MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-1e8o90c-MuiButtonBase-root-MuiButton-root"
             tabindex="0"
             type="button"
           >
-            <span
-              class="MuiButton-label"
-            >
-              Ok
-            </span>
+            Ok
           </button>
         </div>
       </div>
     </div>
     <div
-      data-test="sentinelEnd"
+      data-testid="sentinelEnd"
       tabindex="0"
     />
   </div>
@@ -130,7 +117,7 @@ exports[`ErrorDialog renders correctly with a detailed error message 1`] = `
 
 exports[`ErrorDialog renders correctly with a non-detailed error message 1`] = `
 <body
-  style="padding-right: 0px; overflow: hidden;"
+  style="padding-right: 1024px; overflow: hidden;"
 >
   <div
     aria-hidden="true"
@@ -139,85 +126,76 @@ exports[`ErrorDialog renders correctly with a non-detailed error message 1`] = `
       id="root"
     >
       <div
-        class="MuiBox-root MuiBox-root-2"
+        class="MuiBox-root css-0"
       />
     </div>
   </div>
   <div
-    class="MuiDialog-root"
+    class="MuiDialog-root MuiModal-root css-zw3mfo-MuiModal-root-MuiDialog-root"
     role="presentation"
-    style="position: fixed; z-index: 1300; right: 0px; bottom: 0px; top: 0px; left: 0px;"
   >
     <div
       aria-hidden="true"
-      class="MuiBackdrop-root"
+      class="MuiBackdrop-root MuiModal-backdrop css-yiavyu-MuiBackdrop-root-MuiDialog-backdrop"
       style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
     />
     <div
-      data-test="sentinelStart"
+      data-testid="sentinelStart"
       tabindex="0"
     />
     <div
-      class="MuiDialog-container MuiDialog-scrollPaper"
-      role="none presentation"
+      class="MuiDialog-container MuiDialog-scrollPaper css-1sep8xo-MuiDialog-container"
+      role="presentation"
       style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
       tabindex="-1"
     >
       <div
         aria-describedby="alert-dialog-description"
         aria-labelledby="alert-dialog-title"
-        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation24 MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm css-yao5wc-MuiPaper-root-MuiDialog-paper"
         role="dialog"
       >
-        <div
-          class="MuiDialogTitle-root"
+        <h2
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-1bnp99m-MuiTypography-root-MuiDialogTitle-root"
           id="alert-dialog-title"
         >
-          <h2
-            class="MuiTypography-root MuiTypography-h6"
-          >
-            This is dialog title
-          </h2>
-        </div>
+          This is dialog title
+        </h2>
         <div
-          class="MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-1jaqsfq-MuiTypography-root-MuiDialogContentText-root"
             id="alert-dialog-description"
           >
             This is dialog text
           </p>
         </div>
         <div
-          class="MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-1jaqsfq-MuiTypography-root-MuiDialogContentText-root"
             id="alert-dialog-description"
           >
             This is dialog error
           </p>
         </div>
         <div
-          class="MuiDialogActions-root MuiDialogActions-spacing"
+          class="MuiDialogActions-root MuiDialogActions-spacing css-ry7a0o-MuiDialogActions-root"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-disableElevation Mui-focusVisible Mui-focusVisible"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation Mui-focusVisible MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-1e8o90c-MuiButtonBase-root-MuiButton-root"
             tabindex="0"
             type="button"
           >
-            <span
-              class="MuiButton-label"
-            >
-              Ok
-            </span>
+            Ok
           </button>
         </div>
       </div>
     </div>
     <div
-      data-test="sentinelEnd"
+      data-testid="sentinelEnd"
       tabindex="0"
     />
   </div>
@@ -226,7 +204,7 @@ exports[`ErrorDialog renders correctly with a non-detailed error message 1`] = `
 
 exports[`ErrorDialog renders correctly with no error message 1`] = `
 <body
-  style="padding-right: 0px; overflow: hidden;"
+  style="padding-right: 1024px; overflow: hidden;"
 >
   <div
     aria-hidden="true"
@@ -235,75 +213,66 @@ exports[`ErrorDialog renders correctly with no error message 1`] = `
       id="root"
     >
       <div
-        class="MuiBox-root MuiBox-root-1"
+        class="MuiBox-root css-0"
       />
     </div>
   </div>
   <div
-    class="MuiDialog-root"
+    class="MuiDialog-root MuiModal-root css-zw3mfo-MuiModal-root-MuiDialog-root"
     role="presentation"
-    style="position: fixed; z-index: 1300; right: 0px; bottom: 0px; top: 0px; left: 0px;"
   >
     <div
       aria-hidden="true"
-      class="MuiBackdrop-root"
+      class="MuiBackdrop-root MuiModal-backdrop css-yiavyu-MuiBackdrop-root-MuiDialog-backdrop"
       style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
     />
     <div
-      data-test="sentinelStart"
+      data-testid="sentinelStart"
       tabindex="0"
     />
     <div
-      class="MuiDialog-container MuiDialog-scrollPaper"
-      role="none presentation"
+      class="MuiDialog-container MuiDialog-scrollPaper css-1sep8xo-MuiDialog-container"
+      role="presentation"
       style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
       tabindex="-1"
     >
       <div
         aria-describedby="alert-dialog-description"
         aria-labelledby="alert-dialog-title"
-        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation24 MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm css-yao5wc-MuiPaper-root-MuiDialog-paper"
         role="dialog"
       >
-        <div
-          class="MuiDialogTitle-root"
+        <h2
+          class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-1bnp99m-MuiTypography-root-MuiDialogTitle-root"
           id="alert-dialog-title"
         >
-          <h2
-            class="MuiTypography-root MuiTypography-h6"
-          >
-            This is dialog title
-          </h2>
-        </div>
+          This is dialog title
+        </h2>
         <div
-          class="MuiDialogContent-root"
+          class="MuiDialogContent-root css-16u860z-MuiDialogContent-root"
         >
           <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-1jaqsfq-MuiTypography-root-MuiDialogContentText-root"
             id="alert-dialog-description"
           >
             This is dialog text
           </p>
         </div>
         <div
-          class="MuiDialogActions-root MuiDialogActions-spacing"
+          class="MuiDialogActions-root MuiDialogActions-spacing css-ry7a0o-MuiDialogActions-root"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-disableElevation Mui-focusVisible Mui-focusVisible"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation Mui-focusVisible MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation css-1e8o90c-MuiButtonBase-root-MuiButton-root"
             tabindex="0"
             type="button"
           >
-            <span
-              class="MuiButton-label"
-            >
-              Ok
-            </span>
+            Ok
           </button>
         </div>
       </div>
     </div>
     <div
-      data-test="sentinelEnd"
+      data-testid="sentinelEnd"
       tabindex="0"
     />
   </div>

@@ -113,6 +113,7 @@ export interface IProjectsListData {
   coordinator_agency: string;
   project_type: string;
   completion_status: string;
+  regions: string[];
 }
 
 /**
@@ -393,6 +394,7 @@ export interface IGetProjectParticipantsResponseArrayItem {
   project_role_name: string;
   user_identifier: string;
   user_identity_source_id: number;
+  user_identity_source_name: string;
 }
 
 export interface IGetProjectParticipantsResponse {

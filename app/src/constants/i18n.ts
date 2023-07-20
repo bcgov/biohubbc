@@ -1,30 +1,30 @@
 export const CreateProjectI18N = {
-  cancelTitle: 'Cancel Project Creation',
-  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Creating Project',
   createErrorText:
     'An error has occurred while attempting to create your project, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditProjectI18N = {
-  cancelTitle: 'Cancel Edit Project',
-  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Editing Project',
   createErrorText:
     'An error has occurred while attempting to edit your project, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const CreateSurveyI18N = {
-  cancelTitle: 'Cancel Survey Creation',
-  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Creating Survey',
   createErrorText:
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditSurveyI18N = {
-  cancelTitle: 'Cancel Survey Edit',
-  cancelText: 'Are you sure you want to cancel? Changes you have made will not be saved.',
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Editing Survey',
   createErrorText:
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
@@ -251,7 +251,7 @@ export const ProjectParticipantsI18N = {
   addParticipantsErrorTitle: 'Error Adding Project Team Members',
   addParticipantsErrorText:
     'An error has occurred while attempting to add project team members, please try again. If the error persists, please contact your system administrator.',
-  removeParticipantTitle: 'Remove Team Member?',
+  removeParticipantTitle: 'Remove team member?',
   removeParticipantErrorTitle: 'Error Removing Project Team Member',
   removeParticipantErrorText:
     'An error has occurred while attempting to remove the project team member, please try again. If the error persists, please contact your system administrator.',
@@ -267,8 +267,8 @@ export const SystemUserI18N = {
   updateProjectLeadRoleErrorTitle: 'Error Updating Project Lead Role',
   updateProjectLeadRoleErrorText:
     "An error has occurred while attempting to update the user's project lead role, please assign a different project lead before changing. Please try again, if the error persists please contact your system administrator.",
-  removeSystemUserTitle: 'Remove System User ',
-  removeUserFromProject: 'Remove User From Project',
+  removeSystemUserTitle: 'Remove system user?',
+  removeUserFromProject: 'Remove user from project?',
   removeUserErrorTitle: 'Error Removing User From Team',
   removeUserErrorText:
     'An error has occurred while attempting to remove the user from the team, please try again. If the error persists, please contact your system administrator.'

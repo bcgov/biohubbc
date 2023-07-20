@@ -1,6 +1,8 @@
-import { Box, Divider, Typography } from '@material-ui/core';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { Formik, FormikProps } from 'formik';
@@ -115,7 +117,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   }) || []
                 }
               />
-              <Box mt={2}>
+              <Box mt={3}>
                 <ProjectObjectivesForm />
               </Box>
               <Box component="fieldset" mt={5}>

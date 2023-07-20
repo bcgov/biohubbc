@@ -1,6 +1,7 @@
-import Box from '@material-ui/core/Box';
-import Paper, { PaperProps } from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import Paper, { PaperProps } from '@mui/material/Paper';
+import { makeStyles } from '@mui/styles';
+import { Theme } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {

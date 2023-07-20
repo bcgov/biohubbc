@@ -1,12 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
 import { mdiArrowLeft, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import React, { useCallback, useContext } from 'react';
 import { useHistory } from 'react-router';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
@@ -137,23 +137,20 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
               <Button
                 title="Remove User"
                 variant="outlined"
-                startIcon={<Icon path={mdiTrashCanOutline} size={0.8} />}
+                startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
                 data-testid={'remove-user-button'}
                 onClick={() =>
                   openYesNoDialog({
                     dialogTitle: SystemUserI18N.removeSystemUserTitle,
                     dialogContent: (
-                      <>
-                        <Typography variant="body1" color="textPrimary">
-                          Removing this user <strong>{userDetails.user_identifier}</strong> will revoke their access to
-                          all projects.
-                        </Typography>
-                        <Typography variant="body1" color="textPrimary">
-                          Are you sure you want to proceed?
-                        </Typography>
-                      </>
+                      <Typography variant="body1" color="textSecondary">
+                        Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to all
+                        projects. Are you sure you want to proceed?
+                      </Typography>
                     ),
-                    yesButtonProps: { color: 'secondary' },
+                    yesButtonProps: { color: 'error' },
+                    yesButtonLabel: 'Remove',
+                    noButtonLabel: 'Cancel',
                     onYes: () => {
                       deActivateSystemUser(userDetails);
                       dialogContext.setYesNoDialog({ open: false });

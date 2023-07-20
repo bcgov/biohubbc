@@ -1,26 +1,20 @@
-import Chip, { ChipProps } from '@material-ui/core/Chip';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { Theme } from '@mui/material';
+import Chip, { ChipProps } from '@mui/material/Chip';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { PublishStatus } from 'constants/attachments';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  chip: {
-    minWidth: '7rem',
-    fontSize: '11px',
-    textTransform: 'uppercase'
-  },
   chipUnSubmitted: {
-    borderColor: '#afd3ee',
-    backgroundColor: 'rgb(232, 244, 253)'
+    color: '#fff',
+    backgroundColor: theme.palette.error.main
   },
   chipSubmitted: {
-    color: '#2D4821',
-    backgroundColor: '#DFF0D8'
+    color: '#fff',
+    backgroundColor: theme.palette.success.main
   },
-  chipNoData: {
-    backgroundColor: theme.palette.grey[300]
-  }
+  chipNoData: {}
 }));
 
 export const SubmitStatusChip: React.FC<{ status: PublishStatus; chipProps?: Partial<ChipProps> }> = (props) => {
@@ -45,12 +39,6 @@ export const SubmitStatusChip: React.FC<{ status: PublishStatus; chipProps?: Par
   }
 
   return (
-    <Chip
-      title={chipTitle}
-      variant="outlined"
-      className={clsx(classes.chip, chipStatusClass)}
-      label={chipLabel}
-      {...props.chipProps}
-    />
+    <Chip title={chipTitle} variant="filled" className={clsx(chipStatusClass)} label={chipLabel} {...props.chipProps} />
   );
 };

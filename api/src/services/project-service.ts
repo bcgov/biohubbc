@@ -1,3 +1,4 @@
+import { Feature } from 'geojson';
 import moment from 'moment';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
@@ -38,6 +39,7 @@ import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
+import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
 
 const defaultLog = getLogger('services/project-service');
@@ -138,7 +140,8 @@ export class ProjectService extends DBService {
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
-      project_type: row.project_type
+      project_type: row.project_type,
+      regions: row.regions
     }));
   }
 
@@ -383,6 +386,9 @@ export class ProjectService extends DBService {
       )
     );
 
+    // Handle project regions
+    promises.push(this.insertRegion(projectId, postProjectData.location.geometry));
+
     await Promise.all(promises);
 
     // The user that creates a project is automatically assigned a project lead role, for this project
@@ -417,6 +423,11 @@ export class ProjectService extends DBService {
 
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
     return this.projectParticipationService.insertParticipantRole(projectId, projectParticipantRole);
+  }
+
+  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
+    const regionService = new RegionService(this.connection);
+    return regionService.addRegionsToProjectFromFeatures(projectId, features);
   }
 
   /**
@@ -470,6 +481,10 @@ export class ProjectService extends DBService {
 
     if (entities?.funding) {
       promises.push(this.updateFundingData(projectId, entities));
+    }
+
+    if (entities?.location) {
+      promises.push(this.insertRegion(projectId, entities.location.geometry));
     }
 
     await Promise.all(promises);

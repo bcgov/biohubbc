@@ -1,13 +1,13 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { grey } from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
@@ -36,30 +36,28 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    zoomToBoundaryExtentBtn: {
-      padding: '3px',
-      borderRadius: '4px',
-      background: '#ffffff',
-      color: '#000000',
-      border: '2px solid rgba(0,0,0,0.2)',
-      backgroundClip: 'padding-box',
-      '&:hover': {
-        backgroundColor: '#eeeeee'
-      }
-    },
-    metaSectionHeader: {
-      color: grey[600],
-      fontWeight: 700,
-      textTransform: 'uppercase',
-      '& + hr': {
-        marginTop: theme.spacing(0.75),
-        marginBottom: theme.spacing(0.75)
-      }
+const useStyles = makeStyles((theme: Theme) => ({
+  zoomToBoundaryExtentBtn: {
+    padding: '3px',
+    borderRadius: '4px',
+    background: '#ffffff',
+    color: '#000000',
+    border: '2px solid rgba(0,0,0,0.2)',
+    backgroundClip: 'padding-box',
+    '&:hover': {
+      backgroundColor: '#eeeeee'
     }
-  })
-);
+  },
+  metaSectionHeader: {
+    color: grey[600],
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    '& + hr': {
+      marginTop: theme.spacing(0.75),
+      marginBottom: theme.spacing(0.75)
+    }
+  }
+}));
 
 /**
  * View survey - Study area section
