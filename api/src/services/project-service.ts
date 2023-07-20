@@ -140,7 +140,7 @@ export class ProjectService extends DBService {
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
-      project_type: row.project_type,
+      project_program: row.program,
       regions: row.regions
     }));
   }

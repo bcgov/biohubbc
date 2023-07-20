@@ -13,6 +13,18 @@ export interface IGetProject {
   partnerships: GetPartnershipsData;
 }
 
+export interface ProjectData {
+  id: number;
+  uuid: string;
+  project_name: string;
+  project_program: { id: number; name: string }[];
+  project_activities: number[];
+  start_date: string;
+  end_date: string;
+  comments: string;
+  completion_status: string;
+  revision_count: number;
+}
 /**
  * Pre-processes GET /projects/{id} project data
  *
@@ -23,7 +35,7 @@ export class GetProjectData {
   id: number;
   uuid: string;
   project_name: string;
-  project_type: number;
+  project_program: number[];
   project_activities: number[];
   start_date: string;
   end_date: string;
@@ -35,7 +47,7 @@ export class GetProjectData {
     this.id = projectData?.project_id || null;
     this.uuid = projectData?.uuid || '';
     this.project_name = projectData?.name || '';
-    this.project_type = projectData?.pt_id || -1;
+    this.project_program = projectData?.project_program || [];
     this.project_activities = (activityData?.length && activityData.map((item) => item.activity_id)) || [];
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';

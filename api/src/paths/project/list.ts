@@ -39,8 +39,11 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            project_type: {
-              type: 'string',
+            project_program: {
+              type: 'array',
+              items: {
+                type: 'number'
+              },
               nullable: true
             },
             start_date: {
@@ -100,7 +103,7 @@ GET.apiDoc = {
               properties: {
                 projectData: {
                   type: 'object',
-                  required: ['id', 'name', 'project_type', 'start_date', 'end_date', 'completion_status', 'regions'],
+                  required: ['id', 'name', 'project_program', 'start_date', 'end_date', 'completion_status', 'regions'],
                   properties: {
                     id: {
                       type: 'number'
@@ -108,8 +111,11 @@ GET.apiDoc = {
                     name: {
                       type: 'string'
                     },
-                    project_type: {
-                      type: 'string'
+                    project_program: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
                     },
                     start_date: {
                       oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],

@@ -106,8 +106,11 @@ export const projectCreatePostRequestObject = {
         project_name: {
           type: 'string'
         },
-        project_type: {
-          type: 'number'
+        project_program: {
+          type: 'array',
+          items: {
+            type: 'number'
+          }
         },
         project_activities: {
           type: 'array',

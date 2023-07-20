@@ -552,12 +552,14 @@ export class EmlService extends DBService {
     const additionalMetadata: AdditionalMetadata[] = [];
     const codes = await this.codes();
 
-    if (projectData.project.project_type) {
+    if (projectData.project.project_program) {
       additionalMetadata.push({
         describes: projectData.project.uuid,
         metadata: {
-          projectTypes: {
-            projectType: codes.project_type.find((code) => projectData.project.project_type === code.id)?.name
+          projectPrograms: {
+            projectProgram: projectData.project.project_program.map(
+              (item) => codes.program.find((code) => code.id === item)?.name
+            )
           }
         }
       });

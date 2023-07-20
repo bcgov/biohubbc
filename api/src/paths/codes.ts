@@ -93,7 +93,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              project_type: {
+              project_program: {
                 type: 'array',
                 items: {
                   type: 'object',

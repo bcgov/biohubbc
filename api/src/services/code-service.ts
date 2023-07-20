@@ -27,7 +27,7 @@ export interface IAllCodeSets {
   funding_source: CodeSet;
   investment_action_category: CodeSet<{ id: number; fs_id: number; name: string }>;
   activity: CodeSet;
-  project_type: CodeSet;
+  program: CodeSet;
   coordinator_agency: CodeSet;
   region: CodeSet;
   proprietor_type: CodeSet<{ id: number; name: string; is_first_nation: boolean }>;
@@ -64,7 +64,7 @@ export class CodeService extends DBService {
       iucn_conservation_action_level_2_subclassification,
       iucn_conservation_action_level_3_subclassification,
       proprietor_type,
-      project_type,
+      program,
       system_roles,
       project_roles,
       administrative_activity_status_type,
@@ -82,7 +82,7 @@ export class CodeService extends DBService {
       await this.connection.query(queries.codes.getIUCNConservationActionLevel2SubclassificationSQL().text),
       await this.connection.query(queries.codes.getIUCNConservationActionLevel3SubclassificationSQL().text),
       await this.connection.query(queries.codes.getProprietorTypeSQL().text),
-      await this.connection.query(queries.codes.getProjectTypeSQL().text),
+      await this.connection.query(queries.codes.getProgramSQL().text),
       await this.connection.query(queries.codes.getSystemRolesSQL().text),
       await this.connection.query(queries.codes.getProjectRolesSQL().text),
       await this.connection.query(queries.codes.getAdministrativeActivityStatusTypeSQL().text),
@@ -109,7 +109,7 @@ export class CodeService extends DBService {
           iucn_conservation_action_level_3_subclassification.rows) ||
         [],
       proprietor_type: (proprietor_type && proprietor_type.rows) || [],
-      project_type: (project_type && project_type.rows) || [],
+      program: (program && program.rows) || [],
       system_roles: (system_roles && system_roles.rows) || [],
       project_roles: (project_roles && project_roles.rows) || [],
       administrative_activity_status_type:
