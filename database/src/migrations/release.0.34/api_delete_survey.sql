@@ -35,6 +35,7 @@ begin
   delete from survey_report_author where survey_report_attachment_id in (select survey_report_attachment_id from survey_report_attachment where survey_id = p_survey_id);
   delete from survey_report_attachment where survey_id = p_survey_id;
   delete from study_species where survey_id = p_survey_id;
+  delete from survey_region where survey_id = p_survey_id;
   delete from survey_funding_source where survey_id = p_survey_id;
 
   update permit set survey_id = null where survey_id = p_survey_id;

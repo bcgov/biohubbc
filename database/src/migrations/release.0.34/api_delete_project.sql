@@ -38,6 +38,8 @@ declare
     delete from project_report_attachment where project_id = p_project_id;
     delete from project_first_nation where project_id = p_project_id;
     delete from project_participation where project_id = p_project_id;
+    delete from project_program where project_id = p_project_id;
+    delete from project_region where project_id = p_project_id;
     delete from project where project_id = p_project_id;
 
 exception
