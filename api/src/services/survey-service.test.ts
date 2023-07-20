@@ -142,6 +142,7 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
+      const updateSurveyRegionStub = sinon.stub(SurveyService.prototype, 'insertRegion').resolves();
 
       const surveyService = new SurveyService(dbConnectionObj);
 
@@ -164,6 +165,7 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
       expect(updateSurveyFundingDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
+      expect(updateSurveyRegionStub).to.have.been.calledOnce;
     });
   });
 

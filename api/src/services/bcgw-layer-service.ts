@@ -395,6 +395,22 @@ export class BcgwLayerService {
     return response;
   }
 
+  async getUniqueRegionsForFeatures(features: Feature[], connection: IDBConnection): Promise<RegionDetails[]> {
+    let regionDetails: RegionDetails[] = [];
+    for (const feature of features) {
+      const result = await this.getRegionsForFeature(feature, connection);
+      regionDetails = regionDetails.concat(result);
+    }
+
+    // Convert array first into JSON, then into Set, then back to array in order to
+    // remove duplicate region information.
+    const detailsJSON = regionDetails.map((value) => JSON.stringify(value));
+    const uniqueRegionDetails = Array.from(new Set<string>(detailsJSON)).map(
+      (value: string) => JSON.parse(value) as RegionDetails
+    );
+    return uniqueRegionDetails;
+  }
+
   /**
    * Given a geometry WKT string and array of layers to process, return an array of all matching region details for the
    * specified layers.

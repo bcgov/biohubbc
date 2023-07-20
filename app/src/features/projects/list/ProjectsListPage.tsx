@@ -134,7 +134,7 @@ const ProjectsListPage: React.FC = () => {
           <Paper elevation={0}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2">
-                Projects found{' '}
+                Records Found &zwnj;
                 <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
                   ({projectsDataLoader.data?.length || 0})
                 </Typography>
@@ -149,7 +149,7 @@ const ProjectsListPage: React.FC = () => {
             </Toolbar>
             <Divider></Divider>
             {isFiltersOpen && <ProjectsListFilterForm handleSubmit={handleSubmit} handleReset={handleReset} />}
-            <Box px={1}>
+            <Box py={1} pb={2} px={3}>
               <ProjectsListTable projects={projectsDataLoader.data} drafts={draftsDataLoader.data} />
             </Box>
           </Paper>
