@@ -1,7 +1,9 @@
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { useState, useReducer } from 'react';
+import React, { useState } from 'react';
+import AnimalGeneralSection from './form-sections/AnimalGeneralSection';
+import { AnimalFormProvider, useAnimalFormData } from './useAnimalFormData';
 
 enum eSection {
   general = 'General',
@@ -21,7 +23,7 @@ interface ISection {
 }
 
 const sections: ISection[] = [
-  { title: eSection.general, comp: <>g</> },
+  { title: eSection.general, comp: <AnimalGeneralSection /> },
   { title: eSection.captures, comp: <>c</>, bTitle: 'Add Capture Event' },
   { title: eSection.markings, comp: <>m</>, bTitle: 'Add Marking' },
   { title: eSection.measurements, comp: <>d</>, bTitle: 'Add Measurement' },
@@ -33,7 +35,9 @@ const sections: ISection[] = [
 
 type ISelectedSection = Partial<Record<eSection, boolean>>;
 
-const IndividualAnimalForm = () => {
+const AnimalForm = () => {
+  const { data, updateData } = useAnimalFormData();
+  console.log(data, updateData);
   const [selectedSections, addSelectedSection] = useState<ISelectedSection>({ [eSection.general]: true });
   const handleSubmit = () => {
     console.log('submit');
@@ -73,4 +77,9 @@ const IndividualAnimalForm = () => {
   );
 };
 
+const IndividualAnimalForm = () => (
+  <AnimalFormProvider>
+    <AnimalForm />
+  </AnimalFormProvider>
+);
 export default IndividualAnimalForm;
