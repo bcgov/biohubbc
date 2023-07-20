@@ -76,12 +76,12 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             variant="outlined"
             required={true}
             error={touched.project?.project_type && Boolean(errors.project?.project_type)}>
-            <InputLabel id="project_type-label">Project Type</InputLabel>
+            <InputLabel id="project_type-label">Project Program</InputLabel>
             <Select
               id="project_type"
               name="project.project_type"
               labelId="project_type-label"
-              label="Project Type"
+              label="Project Program"
               value={values.project.project_type || ''}
               onChange={handleChange}
               displayEmpty
