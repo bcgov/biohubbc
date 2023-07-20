@@ -4,6 +4,7 @@ import Icon from '@mdi/react';
 import React, { useState } from 'react';
 import AnimalGeneralSection from './form-sections/AnimalGeneralSection';
 import { AnimalFormProvider, useAnimalFormData } from './useAnimalFormData';
+import { Formik } from 'formik';
 
 enum eSection {
   general = 'General',
@@ -48,7 +49,7 @@ const AnimalForm = () => {
   };
 
   return (
-    <form data-testid="individual-animal-form" onSubmit={handleSubmit}>
+    <Formik onSubmit={handleSubmit} initialValues={{}}>
       <Box component="fieldset">
         <Grid container spacing={3}>
           {sections.map((s, i) => {
@@ -58,7 +59,9 @@ const AnimalForm = () => {
                   {s.title}
                 </Typography>
                 {selectedSections && selectedSections[s.title] ? (
-                  s.comp
+                  <Grid container spacing={2}>
+                    {s.comp}
+                  </Grid>
                 ) : (
                   <Button
                     onClick={() => handleAddSection(s.title)}
@@ -73,7 +76,7 @@ const AnimalForm = () => {
           })}
         </Grid>
       </Box>
-    </form>
+    </Formik>
   );
 };
 
