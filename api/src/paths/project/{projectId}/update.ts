@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { Feature } from 'geojson';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
@@ -432,7 +433,7 @@ export interface IUpdateProject {
   coordinator: object | null;
   project: object | null;
   objectives: object | null;
-  location: object | null;
+  location: { geometry: Feature[]; location_description: string } | null;
   iucn: object | null;
   funding: object | null;
   partnerships: object | null;

@@ -14,9 +14,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: '#fff',
     backgroundColor: theme.palette.success.main
   },
-  chipNoData: {
-    backgroundColor: theme.palette.grey[300]
-  }
+  chipNoData: {}
 }));
 
 export const SubmitStatusChip: React.FC<{ status: PublishStatus; chipProps?: Partial<ChipProps> }> = (props) => {
