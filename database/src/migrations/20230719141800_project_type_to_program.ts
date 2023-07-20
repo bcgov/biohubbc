@@ -51,11 +51,11 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE project_program ADD CONSTRAINT project_program_fk001 FOREIGN KEY (project_id) REFERENCES project (project_id);
     ALTER TABLE project_program ADD CONSTRAINT project_program_fk002 FOREIGN KEY (program_id) REFERENCES program (program_id);
 
-    create trigger audit_submission_spatial_component before insert or update or delete on program for each row execute procedure tr_audit_trigger();
-    create trigger audit_spatial_transform before insert or update or delete on project_program for each row execute procedure tr_audit_trigger();
+    create trigger audit_program before insert or update or delete on program for each row execute procedure tr_audit_trigger();
+    create trigger audit_project_program before insert or update or delete on project_program for each row execute procedure tr_audit_trigger();
 
-    create trigger journal_submission_spatial_component after insert or update or delete on program for each row execute procedure tr_journal_trigger();
-    create trigger journal_spatial_transform after insert or update or delete on project_program for each row execute procedure tr_journal_trigger();
+    create trigger journal_program after insert or update or delete on program for each row execute procedure tr_journal_trigger();
+    create trigger journal_project_program after insert or update or delete on project_program for each row execute procedure tr_journal_trigger();
 
     set search_path= biohub_dapi_v1;
 
