@@ -1,4 +1,4 @@
-import { coordinator_agency, region, regional_offices } from '../constants/codes';
+import { region, regional_offices } from '../constants/codes';
 import { queries } from '../queries/queries';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
@@ -118,9 +118,9 @@ export class CodeService extends DBService {
       ecological_seasons: (ecological_seasons && ecological_seasons.rows) || [],
       intended_outcomes: (intended_outcomes && intended_outcomes.rows) || [],
       vantage_codes: (vantage_codes && vantage_codes.rows) || [],
+      coordinator_agency: (funding_source && funding_source.rows) || [],
 
       // TODO Temporarily hard coded list of code values below
-      coordinator_agency,
       region,
       regional_offices
     };
