@@ -295,7 +295,7 @@ export class ProjectRepository extends BaseRepository {
   async getProjectData(projectId: number): Promise<ProjectData> {
     const getProjectSqlStatement = SQL`
       SELECT
-        p.project_id as project_id,
+        p.project_id,
         p.uuid,
         p.name as project_name,
         p.objectives,
@@ -315,12 +315,12 @@ export class ProjectRepository extends BaseRepository {
         p.update_date,
         p.update_user,
         p.revision_count,
-        pp.project_program,
+        pp.project_programs,
         pa.project_activities
       FROM
         project p 
       LEFT JOIN (
-        SELECT json_agg(json_build_object('name', p."name", 'id', p.program_id)) as project_program, pp.project_id 
+        SELECT json_agg(json_build_object('name', p."name", 'id', p.program_id)) as project_programs, pp.project_id 
         FROM "program" p, project_program pp 
         WHERE p.program_id = pp.program_id 
         GROUP BY pp.project_id

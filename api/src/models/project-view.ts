@@ -15,7 +15,7 @@ export interface IGetProject {
 }
 
 export const ProjectData = z.object({
-  id: z.number(),
+  project_id: z.number(),
   uuid: z.string(),
   project_name: z.string(),
   project_program: z.array(
@@ -27,8 +27,7 @@ export const ProjectData = z.object({
   project_activities: z.array(z.number()),
   start_date: z.date(),
   end_date: z.date().nullable(),
-  comments: z.string().default(''),
-  completion_status: z.string().default(''),
+  comments: z.string().nullable(),
   revision_count: z.number()
 });
 

@@ -126,9 +126,6 @@ GET.apiDoc = {
                       nullable: true,
                       description: 'ISO 8601 date string for the funding end_date'
                     },
-                    completion_status: {
-                      type: 'string'
-                    },
                     regions: {
                       type: 'array',
                       items: {

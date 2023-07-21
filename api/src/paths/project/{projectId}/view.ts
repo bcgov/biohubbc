@@ -67,12 +67,11 @@ GET.apiDoc = {
                     required: [
                       'project_id',
                       'project_name',
-                      'project_program',
+                      'project_programs',
                       'project_activities',
                       'start_date',
                       'end_date',
-                      'comments',
-                      'completion_status'
+                      'comments'
                     ],
                     properties: {
                       project_id: {
@@ -82,7 +81,7 @@ GET.apiDoc = {
                       project_name: {
                         type: 'string'
                       },
-                      project_program: {
+                      project_programs: {
                         type: 'array',
                         items: {
                           type: 'object',
@@ -114,11 +113,8 @@ GET.apiDoc = {
                       },
                       comments: {
                         type: 'string',
+                        nullable: true,
                         description: 'Comments'
-                      },
-                      completion_status: {
-                        description: 'Status of the project being active/completed',
-                        type: 'string'
                       }
                     }
                   },
