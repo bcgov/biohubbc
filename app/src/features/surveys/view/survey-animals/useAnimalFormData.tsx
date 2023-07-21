@@ -1,30 +1,108 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from 'react';
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useReducer, useState } from 'react';
 
-const AnimalFormContext = createContext<
-  { data: IAnimalFormData; updateData: Dispatch<SetStateAction<IAnimalFormData>> } | undefined
->(undefined);
-
-interface IAnimalMarkings {
+interface IAnimalMarking {
   id: string;
 }
 
-interface IAnimalMeasurements {
+interface IAnimalMeasurement {
   id: string;
 }
 
-type IAnimalFormData = Partial<{
-  markings: IAnimalMarkings[];
-  measurements: IAnimalMeasurements[];
-}>;
+interface IAnimalCapture {
+  id: string;
+}
+
+interface IAnimalMortality {
+  id: string;
+}
+
+interface IAnimalRelationship {
+  id: string;
+}
+
+interface IAnimalImage {
+  id: string;
+}
+
+interface IAnimalTelemetryDevice {
+  id: string;
+}
+
+interface IAnimal {
+  capture: IAnimalCapture[];
+  marking: IAnimalMarking[];
+  measurement: IAnimalMeasurement[];
+  mortality: IAnimalMortality;
+  family: IAnimalRelationship[];
+  image: IAnimalImage[];
+  device: IAnimalTelemetryDevice;
+}
+
+type IAnimalFormData = Partial<IAnimal>;
+
+enum eAnimalAction {
+  CAPTURE,
+  MARKING,
+  MEASUREMENT,
+  MORTALITY,
+  FAMILY,
+  IMAGE,
+  DEVICE
+}
+
+interface IAnimalAction {
+  type: eAnimalAction;
+  payload:
+    | IAnimalMarking
+    | IAnimalMeasurement
+    | IAnimalCapture
+    | IAnimalMortality
+    | IAnimalRelationship
+    | IAnimalTelemetryDevice
+    | IAnimalImage;
+  operation: 'ADD' | 'REMOVE';
+  removeIndex?: number;
+}
+
+const animalReducer = (state: IAnimalFormData, action: IAnimalAction): IAnimalFormData => {
+  const { type, payload, operation } = action;
+  const isRemove = operation === 'REMOVE';
+  switch (type) {
+    case eAnimalAction.CAPTURE:
+      return isRemove ? { ...state, capture: [payload] } : { ...state, capture: [payload] };
+    default:
+      return state;
+  }
+};
+
+const AnimalFormContext = createContext<{ data: IAnimalFormData; updateAnimal: Dispatch<IAnimalAction> } | undefined>(
+  undefined
+);
 
 interface AnimalFormProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Provides the animal data state to the children form elements.
+ * params {AnimalFormProviderProps}
+ *
+ * returns {*}
+ */
+
 const AnimalFormProvider = ({ children }: AnimalFormProviderProps) => {
-  const [data, updateData] = useState<IAnimalFormData>({});
-  return <AnimalFormContext.Provider value={{ data, updateData }}>{children}</AnimalFormContext.Provider>;
+  const [state, dispatch] = useReducer(animalReducer, {});
+  return (
+    <AnimalFormContext.Provider value={{ data: state, updateAnimal: dispatch }}>{children}</AnimalFormContext.Provider>
+  );
 };
+
+/**
+ * custom hook to mutate animal form data.
+ * Component must wrap with AnimalFormProvider to use this hook.
+ *
+ * returns animal data context
+ */
 
 const useAnimalFormData = () => {
   const context = useContext(AnimalFormContext);
