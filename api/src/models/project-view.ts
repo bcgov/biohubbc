@@ -1,11 +1,12 @@
 import { Feature } from 'geojson';
 import moment from 'moment';
+import { z } from 'zod';
 import { COMPLETION_STATUS } from '../constants/status';
 import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 
 export interface IGetProject {
   coordinator: GetCoordinatorData;
-  project: GetProjectData;
+  project: ProjectData;
   objectives: GetObjectivesData;
   location: GetLocationData;
   iucn: GetIUCNClassificationData;
@@ -13,18 +14,26 @@ export interface IGetProject {
   partnerships: GetPartnershipsData;
 }
 
-export interface ProjectData {
-  id: number;
-  uuid: string;
-  project_name: string;
-  project_program: { id: number; name: string }[];
-  project_activities: number[];
-  start_date: string;
-  end_date: string;
-  comments: string;
-  completion_status: string;
-  revision_count: number;
-}
+export const ProjectData = z.object({
+  id: z.number(),
+  uuid: z.string(),
+  project_name: z.string(),
+  project_program: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string()
+    })
+  ),
+  project_activities: z.array(z.number()),
+  start_date: z.date(),
+  end_date: z.date().nullable(),
+  comments: z.string(),
+  completion_status: z.string(),
+  revision_count: z.number()
+});
+
+export type ProjectData = z.infer<typeof ProjectData>;
+
 /**
  * Pre-processes GET /projects/{id} project data
  *

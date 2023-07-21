@@ -95,6 +95,7 @@ export function createProject(): RequestHandler {
 
       const projectService = new ProjectService(connection);
 
+      // TODO: handle new project program fields
       const projectId = await projectService.createProjectAndUploadMetadataToBioHub(sanitizedProjectPostData);
 
       await connection.commit();

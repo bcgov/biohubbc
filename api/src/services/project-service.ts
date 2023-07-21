@@ -23,9 +23,9 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData,
   GetReportAttachmentsData,
   IGetProject,
+  ProjectData,
   ProjectSupplementaryData
 } from '../models/project-view';
 import { ProjectUserObject } from '../models/user';
@@ -261,7 +261,7 @@ export class ProjectService extends DBService {
     return results;
   }
 
-  async getProjectData(projectId: number): Promise<GetProjectData> {
+  async getProjectData(projectId: number): Promise<ProjectData> {
     return this.projectRepository.getProjectData(projectId);
   }
 
