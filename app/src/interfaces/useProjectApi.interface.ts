@@ -111,9 +111,9 @@ export interface IProjectsListData {
   start_date: string;
   end_date: string;
   coordinator_agency: string;
-  project_type: string;
   completion_status: string;
   regions: string[];
+  project_program: string[];
 }
 
 /**

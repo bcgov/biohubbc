@@ -158,7 +158,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           id: project.projectData.id,
           name: project.projectData.name,
           status: project.projectSupplementaryData.publishStatus,
-          type: project.projectData.project_type,
+          type: project.projectData.project_program?.join(', '),
           startDate: project.projectData.start_date,
           endDate: project.projectData.end_date,
           isDraft: false,
