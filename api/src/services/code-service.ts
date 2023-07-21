@@ -92,31 +92,25 @@ export class CodeService extends DBService {
     ]);
 
     return {
-      management_action_type: (management_action_type && management_action_type.rows) || [],
-      first_nations: (first_nations && first_nations.rows) || [],
-      agency: (agency && agency.rows) || [],
-      investment_action_category: (investment_action_category && investment_action_category.rows) || [],
-      activity: (activity && activity.rows) || [],
-      iucn_conservation_action_level_1_classification:
-        (iucn_conservation_action_level_1_classification && iucn_conservation_action_level_1_classification.rows) || [],
+      management_action_type: management_action_type?.rows || [],
+      first_nations: first_nations?.rows || [],
+      agency: agency?.rows || [],
+      investment_action_category: investment_action_category?.rows || [],
+      activity: activity?.rows || [],
+      iucn_conservation_action_level_1_classification: iucn_conservation_action_level_1_classification?.rows || [],
       iucn_conservation_action_level_2_subclassification:
-        (iucn_conservation_action_level_2_subclassification &&
-          iucn_conservation_action_level_2_subclassification.rows) ||
-        [],
+        iucn_conservation_action_level_2_subclassification?.rows || [],
       iucn_conservation_action_level_3_subclassification:
-        (iucn_conservation_action_level_3_subclassification &&
-          iucn_conservation_action_level_3_subclassification.rows) ||
-        [],
-      proprietor_type: (proprietor_type && proprietor_type.rows) || [],
-      project_type: (project_type && project_type.rows) || [],
-      system_roles: (system_roles && system_roles.rows) || [],
-      project_roles: (project_roles && project_roles.rows) || [],
-      administrative_activity_status_type:
-        (administrative_activity_status_type && administrative_activity_status_type.rows) || [],
-      field_methods: (field_methods && field_methods.rows) || [],
-      ecological_seasons: (ecological_seasons && ecological_seasons.rows) || [],
-      intended_outcomes: (intended_outcomes && intended_outcomes.rows) || [],
-      vantage_codes: (vantage_codes && vantage_codes.rows) || [],
+        iucn_conservation_action_level_3_subclassification?.rows || [],
+      proprietor_type: proprietor_type?.rows || [],
+      project_type: project_type?.rows || [],
+      system_roles: system_roles?.rows || [],
+      project_roles: project_roles?.rows || [],
+      administrative_activity_status_type: administrative_activity_status_type?.rows || [],
+      field_methods: field_methods?.rows || [],
+      ecological_seasons: ecological_seasons?.rows || [],
+      intended_outcomes: intended_outcomes?.rows || [],
+      vantage_codes: vantage_codes?.rows || [],
 
       // TODO Temporarily hard coded list of code values below
       region,
