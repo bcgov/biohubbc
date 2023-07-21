@@ -27,8 +27,8 @@ export const ProjectData = z.object({
   project_activities: z.array(z.number()),
   start_date: z.date(),
   end_date: z.date().nullable(),
-  comments: z.string(),
-  completion_status: z.string(),
+  comments: z.string().default(''),
+  completion_status: z.string().default(''),
   revision_count: z.number()
 });
 

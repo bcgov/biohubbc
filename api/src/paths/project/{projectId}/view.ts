@@ -65,9 +65,9 @@ GET.apiDoc = {
                     description: 'Basic project metadata',
                     type: 'object',
                     required: [
-                      'id',
+                      'project_id',
                       'project_name',
-                      'project_region',
+                      'project_program',
                       'project_activities',
                       'start_date',
                       'end_date',
@@ -75,17 +75,25 @@ GET.apiDoc = {
                       'completion_status'
                     ],
                     properties: {
-                      id: {
+                      project_id: {
                         type: 'integer',
                         minimum: 1
                       },
                       project_name: {
                         type: 'string'
                       },
-                      project_region: {
+                      project_program: {
                         type: 'array',
                         items: {
-                          type: 'number'
+                          type: 'object',
+                          properties: {
+                            id: {
+                              type: 'number'
+                            },
+                            name: {
+                              type: 'string'
+                            }
+                          }
                         }
                       },
                       project_activities: {
@@ -390,6 +398,11 @@ export function viewProject(): RequestHandler {
 
       await connection.commit();
 
+      console.log('__');
+      console.log('__');
+      console.log(projectData.project);
+      console.log('__');
+      console.log('__');
       return res.status(200).json({ projectData: projectData, projectSupplementaryData: projectSupplementaryData });
     } catch (error) {
       defaultLog.error({ label: 'getProjectForView', message: 'error', error });

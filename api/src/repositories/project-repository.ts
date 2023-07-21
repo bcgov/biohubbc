@@ -295,39 +295,43 @@ export class ProjectRepository extends BaseRepository {
   async getProjectData(projectId: number): Promise<ProjectData> {
     const getProjectSqlStatement = SQL`
       SELECT
-        project.project_id,
-        project.uuid,
-        project.name,
-        project.objectives,
-        project.location_description,
-        project.start_date,
-        project.end_date,
-        project.caveats,
-        project.comments,
-        project.coordinator_first_name,
-        project.coordinator_last_name,
-        project.coordinator_email_address,
-        project.coordinator_agency_name,
-        project.coordinator_public,
-        project.geojson as geometry,
-        project.create_date,
-        project.create_user,
-        project.update_date,
-        project.update_user,
-        project.revision_count,
-        json_agg(json_build_object('name', p2."name", 'id', p2.program_id)) as project_programs,
-        array_agg(pa.project_activity_id) as project_activities 
+        p.project_id as project_id,
+        p.uuid,
+        p.name as project_name,
+        p.objectives,
+        p.location_description,
+        p.start_date,
+        p.end_date,
+        p.caveats,
+        p.comments,
+        p.coordinator_first_name,
+        p.coordinator_last_name,
+        p.coordinator_email_address,
+        p.coordinator_agency_name,
+        p.coordinator_public,
+        p.geojson as geometry,
+        p.create_date,
+        p.create_user,
+        p.update_date,
+        p.update_user,
+        p.revision_count,
+        pp.project_program,
+        pa.project_activities
       FROM
-        project 
-      LEFT JOIN project_program pp 
-        ON project.project_id = pp.project_id 
-      LEFT JOIN "program" p2 
-        ON p2.program_id = pp.program_id 
-      LEFT JOIN project_activity pa 
-        ON pa.project_id = project.project_id 
+        project p 
+      LEFT JOIN (
+        SELECT json_agg(json_build_object('name', p."name", 'id', p.program_id)) as project_program, pp.project_id 
+        FROM "program" p, project_program pp 
+        WHERE p.program_id = pp.program_id 
+        GROUP BY pp.project_id
+      ) as pp on pp.project_id = p.project_id
+      LEFT JOIN (
+        SELECT array_agg(pa.project_activity_id) as project_activities, pa.project_id 
+        FROM project_activity pa
+        GROUP BY pa.project_id
+      ) as pa on pa.project_id = p.project_id 
       WHERE
-        project.project_id = ${projectId}
-      GROUP BY project.project_id;
+        p.project_id = ${projectId};
     `;
 
     const response = await this.connection.sql<ProjectData>(getProjectSqlStatement);
