@@ -324,19 +324,17 @@ export function getSurveyForUpdate(): RequestHandler {
         };
       }
 
-      const funding: any = [];
+      let fundingSources: number[] = [];
 
-      if (surveyObject.funding && surveyObject.funding.funding_sources) {
-        surveyObject.funding.funding_sources.forEach((fund) => {
-          funding.push(fund.pfs_id);
-        });
+      if (surveyObject?.funding?.funding_sources) {
+        fundingSources = surveyObject.funding.funding_sources.map((item) => item.project_funding_source_id);
       }
 
       const surveyData = {
         ...surveyObject,
         proprietor: proprietor,
         funding: {
-          funding_sources: funding
+          funding_sources: fundingSources
         },
         agreements: {
           sedis_procedures_accepted: 'true',

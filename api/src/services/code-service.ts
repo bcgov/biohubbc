@@ -24,11 +24,10 @@ export type CodeSet<T extends ICode = ICode> = T[];
 export interface IAllCodeSets {
   management_action_type: CodeSet;
   first_nations: CodeSet;
-  funding_source: CodeSet;
-  investment_action_category: CodeSet<{ id: number; fs_id: number; name: string }>;
+  agency: CodeSet;
+  investment_action_category: CodeSet<{ id: number; agency_id: number; name: string }>;
   activity: CodeSet;
   project_type: CodeSet;
-  coordinator_agency: CodeSet;
   region: CodeSet;
   proprietor_type: CodeSet<{ id: number; name: string; is_first_nation: boolean }>;
   iucn_conservation_action_level_1_classification: CodeSet;
@@ -57,7 +56,7 @@ export class CodeService extends DBService {
     const [
       management_action_type,
       first_nations,
-      funding_source,
+      agency,
       investment_action_category,
       activity,
       iucn_conservation_action_level_1_classification,
@@ -75,7 +74,7 @@ export class CodeService extends DBService {
     ] = await Promise.all([
       await this.connection.query(queries.codes.getManagementActionTypeSQL().text),
       await this.connection.query(queries.codes.getFirstNationsSQL().text),
-      await this.connection.query(queries.codes.getFundingSourceSQL().text),
+      await this.connection.query(queries.codes.getAgencySQL().text),
       await this.connection.query(queries.codes.getInvestmentActionCategorySQL().text),
       await this.connection.query(queries.codes.getActivitySQL().text),
       await this.connection.query(queries.codes.getIUCNConservationActionLevel1ClassificationSQL().text),
@@ -95,7 +94,7 @@ export class CodeService extends DBService {
     return {
       management_action_type: (management_action_type && management_action_type.rows) || [],
       first_nations: (first_nations && first_nations.rows) || [],
-      funding_source: (funding_source && funding_source.rows) || [],
+      agency: (agency && agency.rows) || [],
       investment_action_category: (investment_action_category && investment_action_category.rows) || [],
       activity: (activity && activity.rows) || [],
       iucn_conservation_action_level_1_classification:
@@ -118,7 +117,6 @@ export class CodeService extends DBService {
       ecological_seasons: (ecological_seasons && ecological_seasons.rows) || [],
       intended_outcomes: (intended_outcomes && intended_outcomes.rows) || [],
       vantage_codes: (vantage_codes && vantage_codes.rows) || [],
-      coordinator_agency: (funding_source && funding_source.rows) || [],
 
       // TODO Temporarily hard coded list of code values below
       region,
