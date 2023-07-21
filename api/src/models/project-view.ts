@@ -1,7 +1,5 @@
 import { Feature } from 'geojson';
-import moment from 'moment';
 import { z } from 'zod';
-import { COMPLETION_STATUS } from '../constants/status';
 import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 
 export interface IGetProject {
@@ -32,42 +30,6 @@ export const ProjectData = z.object({
 });
 
 export type ProjectData = z.infer<typeof ProjectData>;
-
-/**
- * Pre-processes GET /projects/{id} project data
- *
- * @export
- * @class GetProjectData
- */
-export class GetProjectData {
-  id: number;
-  uuid: string;
-  project_name: string;
-  project_program: number[];
-  project_activities: number[];
-  start_date: string;
-  end_date: string;
-  comments: string;
-  completion_status: string;
-  revision_count: number;
-
-  constructor(projectData?: any, activityData?: any[]) {
-    this.id = projectData?.project_id || null;
-    this.uuid = projectData?.uuid || '';
-    this.project_name = projectData?.name || '';
-    this.project_program = projectData?.project_program || [];
-    this.project_activities = (activityData?.length && activityData.map((item) => item.activity_id)) || [];
-    this.start_date = projectData?.start_date || '';
-    this.end_date = projectData?.end_date || '';
-    this.comments = projectData?.comments || '';
-    this.completion_status =
-      (projectData?.end_date &&
-        moment(projectData.end_date).endOf('day').isBefore(moment()) &&
-        COMPLETION_STATUS.COMPLETED) ||
-      COMPLETION_STATUS.ACTIVE;
-    this.revision_count = projectData?.revision_count ?? null;
-  }
-}
 
 /**
  * Pre-processes GET /projects/{id} objectives data

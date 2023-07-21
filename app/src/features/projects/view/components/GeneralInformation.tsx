@@ -36,10 +36,10 @@ const GeneralInformation = () => {
       <Grid container spacing={1}>
         <Grid item sm={6}>
           <Typography component="dt" color="textSecondary" variant="subtitle2">
-            Type
+            Program
           </Typography>
           <Typography component="dd">
-            {codes.project_type.find((item: any) => item.id === projectData.project.project_type)?.name}
+            {projectData.project.project_programs?.map((item) => item.name).join(', ')}
           </Typography>
         </Grid>
         <Grid item sm={6}>

@@ -394,11 +394,6 @@ export function viewProject(): RequestHandler {
 
       await connection.commit();
 
-      console.log('__');
-      console.log('__');
-      console.log(projectData.project);
-      console.log('__');
-      console.log('__');
       return res.status(200).json({ projectData: projectData, projectSupplementaryData: projectSupplementaryData });
     } catch (error) {
       defaultLog.error({ label: 'getProjectForView', message: 'error', error });
