@@ -1,4 +1,4 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useReducer, useState } from 'react';
+import { createContext, Dispatch, ReactNode, useContext, useReducer } from 'react';
 
 interface IAnimalMarking {
   id: string;
@@ -28,7 +28,8 @@ interface IAnimalTelemetryDevice {
   id: string;
 }
 
-interface IAnimal {
+export interface IAnimal {
+  general: string;
   capture: IAnimalCapture[];
   marking: IAnimalMarking[];
   measurement: IAnimalMeasurement[];
@@ -38,20 +39,12 @@ interface IAnimal {
   device: IAnimalTelemetryDevice;
 }
 
+export type IAnimalKey = keyof IAnimal;
+
 type IAnimalFormData = Partial<IAnimal>;
 
-enum eAnimalAction {
-  CAPTURE,
-  MARKING,
-  MEASUREMENT,
-  MORTALITY,
-  FAMILY,
-  IMAGE,
-  DEVICE
-}
-
-interface IAnimalAction {
-  type: eAnimalAction;
+type IAnimalAction = {
+  type: keyof IAnimal;
   payload:
     | IAnimalMarking
     | IAnimalMeasurement
@@ -60,24 +53,27 @@ interface IAnimalAction {
     | IAnimalRelationship
     | IAnimalTelemetryDevice
     | IAnimalImage;
-  operation: 'ADD' | 'REMOVE';
-  removeIndex?: number;
-}
+} & (
+  | {
+      operation: 'ADD';
+    }
+  | { operation: 'REMOVE'; idx: number }
+);
 
 const animalReducer = (state: IAnimalFormData, action: IAnimalAction): IAnimalFormData => {
   const { type, payload, operation } = action;
   const isRemove = operation === 'REMOVE';
   switch (type) {
-    case eAnimalAction.CAPTURE:
+    case 'capture':
       return isRemove ? { ...state, capture: [payload] } : { ...state, capture: [payload] };
     default:
       return state;
   }
 };
 
-const AnimalFormContext = createContext<{ data: IAnimalFormData; updateAnimal: Dispatch<IAnimalAction> } | undefined>(
-  undefined
-);
+const AnimalFormContext = createContext<
+  { animalData: IAnimalFormData; updateAnimal: Dispatch<IAnimalAction> } | undefined
+>(undefined);
 
 interface AnimalFormProviderProps {
   children: ReactNode;
@@ -93,7 +89,9 @@ interface AnimalFormProviderProps {
 const AnimalFormProvider = ({ children }: AnimalFormProviderProps) => {
   const [state, dispatch] = useReducer(animalReducer, {});
   return (
-    <AnimalFormContext.Provider value={{ data: state, updateAnimal: dispatch }}>{children}</AnimalFormContext.Provider>
+    <AnimalFormContext.Provider value={{ animalData: state, updateAnimal: dispatch }}>
+      {children}
+    </AnimalFormContext.Provider>
   );
 };
 

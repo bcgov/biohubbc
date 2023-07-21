@@ -1,76 +1,98 @@
 import { Box, Button, Grid, Typography } from '@mui/material';
-import { mdiPlus } from '@mdi/js';
-import Icon from '@mdi/react';
 import React, { useState } from 'react';
 import AnimalGeneralSection from './form-sections/AnimalGeneralSection';
-import { AnimalFormProvider, useAnimalFormData } from './useAnimalFormData';
+import { AnimalFormProvider, IAnimalKey } from './useAnimalFormData';
 import { Formik } from 'formik';
-
-enum eSection {
-  general = 'General',
-  captures = 'Capture History',
-  markings = 'Markings',
-  measurements = 'Measurements',
-  mortality = 'Mortality',
-  family = 'Family Relationship',
-  images = 'Images',
-  telemetry = 'Telemetry'
-}
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import { mdiPlus } from '@mdi/js';
+import { Icon } from '@mdi/react';
 
 interface ISection {
-  title: eSection;
+  title: string;
   comp: JSX.Element;
   bTitle?: string;
 }
 
-const sections: ISection[] = [
-  { title: eSection.general, comp: <AnimalGeneralSection /> },
-  { title: eSection.captures, comp: <>c</>, bTitle: 'Add Capture Event' },
-  { title: eSection.markings, comp: <>m</>, bTitle: 'Add Marking' },
-  { title: eSection.measurements, comp: <>d</>, bTitle: 'Add Measurement' },
-  { title: eSection.mortality, comp: <>m</>, bTitle: 'Add Mortalty' },
-  { title: eSection.family, comp: <>f</>, bTitle: 'Add Family Relationship' },
-  { title: eSection.images, comp: <>i</>, bTitle: 'Upload Image' },
-  { title: eSection.telemetry, comp: <>t</>, bTitle: 'Add Telemetry Device' }
-];
+type IAnimalFormSections = Record<IAnimalKey, ISection>;
 
-type ISelectedSection = Partial<Record<eSection, boolean>>;
+type IFormSectionState = Record<IAnimalKey, JSX.Element[]>;
 
+/**
+ * The rendered sections to display in component.
+ * Reducing duplicated code / styling in component return.
+ */
+
+const SECTIONS: IAnimalFormSections = {
+  general: { title: 'General', comp: <AnimalGeneralSection /> },
+  capture: { title: 'Capture Information', comp: <>c</>, bTitle: 'Add Capture Event' },
+  marking: { title: 'Markings', comp: <>m</>, bTitle: 'Add Marking' },
+  measurement: { title: 'Measurements', comp: <>d</>, bTitle: 'Add Measurement' },
+  mortality: { title: 'Mortality', comp: <>m</>, bTitle: 'Add Mortalty' },
+  family: { title: 'Family Relationships', comp: <>f</>, bTitle: 'Add Family Relationship' },
+  image: { title: 'Images', comp: <>i</>, bTitle: 'Upload Image' },
+  device: { title: 'Telemetry Device', comp: <>t</>, bTitle: 'Add Telemetry Device' }
+};
+
+/**
+ * Renders The 'Individual Animals' Form displayed in Survey view
+ * Note: Data handled by useAnimalFormData hook.
+ * Lots of conditionally rendered sections.
+ *
+ * returns {*}
+ */
 const AnimalForm = () => {
-  const { data, updateData } = useAnimalFormData();
-  console.log(data, updateData);
-  const [selectedSections, addSelectedSection] = useState<ISelectedSection>({ [eSection.general]: true });
+  //Dynamically add sections to this piece of state
+  const [formSections, addFormSection] = useState<IFormSectionState>({
+    general: [SECTIONS.general.comp],
+    capture: [],
+    marking: [],
+    measurement: [],
+    mortality: [],
+    family: [],
+    image: [],
+    device: []
+  });
+
   const handleSubmit = () => {
     console.log('submit');
   };
 
-  const handleAddSection = (section: eSection) => {
-    addSelectedSection((s) => ({ ...s, [section]: true }));
+  const handleAddSection = (key: IAnimalKey) => {
+    const componentToAdd = SECTIONS[key].comp;
+    formSections[key].push(componentToAdd);
+    addFormSection({ ...formSections });
   };
+
+  //const tmp = () => {
+  //  updateAnimal({ type: 'capture', payload: { id: 'test' }, operation: 'ADD' });
+  //};
 
   return (
     <Formik onSubmit={handleSubmit} initialValues={{}}>
       <Box component="fieldset">
         <Grid container spacing={3}>
-          {sections.map((s, i) => {
+          {Object.keys(SECTIONS).map((k, i) => {
+            const key = k as IAnimalKey;
+            const section = SECTIONS[key];
             return (
-              <Grid item xs={12} key={`${i}-${s.title}`}>
-                <Typography id={`${s.title}`} component="legend">
-                  {s.title}
+              <Grid item xs={12} key={`${i}-${section.title}`}>
+                <Typography id={`${section.title}`} component="legend">
+                  <HelpButtonTooltip content={section.title}>{section.title}</HelpButtonTooltip>
                 </Typography>
-                {selectedSections && selectedSections[s.title] ? (
-                  <Grid container spacing={2}>
-                    {s.comp}
-                  </Grid>
-                ) : (
-                  <Button
-                    onClick={() => handleAddSection(s.title)}
-                    startIcon={<Icon path={mdiPlus} size={1} />}
-                    variant="outlined"
-                    color="primary">
-                    {s.title}
-                  </Button>
-                )}
+                <Grid container spacing={2} direction="column">
+                  {formSections[key] && <Grid item>{formSections[key]}</Grid>}
+                  {section.bTitle && (
+                    <Grid item>
+                      <Button
+                        onClick={() => handleAddSection(key)}
+                        startIcon={<Icon path={mdiPlus} size={1} />}
+                        variant="outlined"
+                        color="primary">
+                        {section.bTitle}
+                      </Button>
+                    </Grid>
+                  )}
+                </Grid>
               </Grid>
             );
           })}
