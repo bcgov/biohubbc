@@ -74,7 +74,7 @@ export const projectFundingSourceAgency = {
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
-  required: ['coordinator', 'project', 'location', 'iucn', 'funding', 'regions'],
+  required: ['coordinator', 'project', 'location', 'iucn', 'funding'],
   properties: {
     coordinator: {
       title: 'Project coordinator',
