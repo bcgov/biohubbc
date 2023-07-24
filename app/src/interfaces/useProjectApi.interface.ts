@@ -268,7 +268,7 @@ export interface ProjectViewObject {
 export interface IGetProjectForViewResponseDetails {
   project_id: number;
   project_name: string;
-  project_programs: { id: number; name: string }[];
+  project_programs: number[];
   project_activities: number[];
   start_date: string;
   end_date: string;

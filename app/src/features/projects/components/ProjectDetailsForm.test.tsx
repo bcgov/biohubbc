@@ -46,7 +46,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm project_type={project_type} activity={activity} />}
+        {() => <ProjectDetailsForm program={project_type} activity={activity} />}
       </Formik>
     );
 
@@ -59,7 +59,7 @@ describe('ProjectDetailsForm', () => {
     const existingFormValues: IProjectDetailsForm = {
       project: {
         project_name: 'name 1',
-        project_type: 2,
+        project_programs: [2],
         project_activities: [2, 3],
         start_date: '2021-03-14',
         end_date: '2021-04-14'
@@ -73,7 +73,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm project_type={project_type} activity={activity} />}
+        {() => <ProjectDetailsForm program={project_type} activity={activity} />}
       </Formik>
     );
 

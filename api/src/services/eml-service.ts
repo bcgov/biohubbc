@@ -558,7 +558,7 @@ export class EmlService extends DBService {
         metadata: {
           projectPrograms: {
             projectProgram: projectData.project.project_program.map(
-              (item) => codes.program.find((code) => code.id === item.id)?.name
+              (item) => codes.program.find((code) => code.id === item)?.name
             )
           }
         }

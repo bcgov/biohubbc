@@ -17,7 +17,7 @@ import yup from 'utils/YupSchema';
 export interface IProjectDetailsForm {
   project: {
     project_name: string;
-    project_type: number;
+    project_programs: number[];
     project_activities: number[];
     start_date: string;
     end_date: string;
@@ -27,7 +27,7 @@ export interface IProjectDetailsForm {
 export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
   project: {
     project_name: '',
-    project_type: '' as unknown as number,
+    project_programs: [],
     project_activities: [],
     start_date: '',
     end_date: ''
@@ -44,7 +44,7 @@ export const ProjectDetailsFormYupSchema = yup.object().shape({
 });
 
 export interface IProjectDetailsFormProps {
-  project_type: IMultiAutocompleteFieldOption[];
+  program: IMultiAutocompleteFieldOption[];
   activity: IMultiAutocompleteFieldOption[];
 }
 
@@ -75,26 +75,33 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             fullWidth
             variant="outlined"
             required={true}
-            error={touched.project?.project_type && Boolean(errors.project?.project_type)}>
+            error={touched.project?.project_programs && Boolean(errors.project?.project_programs)}>
             <InputLabel id="project_type-label">Project Program</InputLabel>
             <Select
               id="project_type"
               name="project.project_type"
               labelId="project_type-label"
               label="Project Program"
-              value={values.project.project_type || ''}
+              value={values.project.project_programs || ''}
               onChange={handleChange}
               displayEmpty
               inputProps={{ 'aria-label': 'Project Type' }}>
-              {props.project_type.map((item) => (
+              {props.program.map((item) => (
                 <MenuItem key={item.value} value={item.value}>
                   {item.label}
                 </MenuItem>
               ))}
             </Select>
-            {errors.project?.project_type && (
-              <FormHelperText>{touched.project?.project_type && errors.project?.project_type}</FormHelperText>
+            {errors.project?.project_programs && (
+              <FormHelperText>{touched.project?.project_programs && errors.project?.project_programs}</FormHelperText>
             )}
+
+            <MultiAutocompleteFieldVariableSize
+              id={'project.project_programs'}
+              label={'Project Programs'}
+              options={props.program}
+              required
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12}>

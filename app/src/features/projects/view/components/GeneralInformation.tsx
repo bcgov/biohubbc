@@ -30,6 +30,11 @@ const GeneralInformation = () => {
       .filter((code) => projectData.project.project_activities.includes(code.id))
       .map((code) => code.name)
       .join(', ') || '';
+  const projectPrograms =
+    codes.program
+      .filter((code) => projectData.project.project_programs.includes(code.id))
+      .map((code) => code.name)
+      .join(', ') || '';
 
   return (
     <Box component="dl" my={0}>
@@ -38,9 +43,7 @@ const GeneralInformation = () => {
           <Typography component="dt" color="textSecondary" variant="subtitle2">
             Program
           </Typography>
-          <Typography component="dd">
-            {projectData.project.project_programs?.map((item) => item.name).join(', ')}
-          </Typography>
+          <Typography component="dd">{projectPrograms ? <>{projectPrograms}</> : 'No Programs'}</Typography>
         </Grid>
         <Grid item sm={6}>
           <Typography component="dt" color="textSecondary" variant="subtitle2">

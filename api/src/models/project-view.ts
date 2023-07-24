@@ -16,12 +16,7 @@ export const ProjectData = z.object({
   project_id: z.number(),
   uuid: z.string(),
   project_name: z.string(),
-  project_program: z.array(
-    z.object({
-      id: z.number(),
-      name: z.string()
-    })
-  ),
+  project_program: z.array(z.number()),
   project_activities: z.array(z.number()),
   start_date: z.date(),
   end_date: z.date().nullable(),

@@ -86,7 +86,7 @@ GET.apiDoc = {
                 type: 'object',
                 required: [
                   'project_name',
-                  'project_region',
+                  'project_programs',
                   'project_activities',
                   'start_date',
                   'end_date',
@@ -97,7 +97,7 @@ GET.apiDoc = {
                   project_name: {
                     type: 'string'
                   },
-                  project_region: {
+                  project_programs: {
                     type: 'array',
                     items: {
                       type: 'number'
@@ -345,7 +345,6 @@ export function getProjectForUpdate(): RequestHandler {
 
       const projectService = new ProjectService(connection);
 
-      // TODO: handle new project program fields properly
       const results = await projectService.getProjectEntitiesById(projectId, entities);
       await connection.commit();
 

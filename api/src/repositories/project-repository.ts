@@ -320,7 +320,7 @@ export class ProjectRepository extends BaseRepository {
       FROM
         project p 
       LEFT JOIN (
-        SELECT json_agg(json_build_object('name', p."name", 'id', p.program_id)) as project_programs, pp.project_id 
+        SELECT array_agg(p.program_id) as project_programs, pp.project_id 
         FROM "program" p, project_program pp 
         WHERE p.program_id = pp.program_id 
         GROUP BY pp.project_id
