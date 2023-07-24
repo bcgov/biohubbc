@@ -106,8 +106,9 @@ export const projectCreatePostRequestObject = {
         project_name: {
           type: 'string'
         },
-        project_program: {
+        project_programs: {
           type: 'array',
+          minItems: 1,
           items: {
             type: 'number'
           }

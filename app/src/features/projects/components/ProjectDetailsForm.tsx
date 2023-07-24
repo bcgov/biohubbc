@@ -33,7 +33,10 @@ export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
 export const ProjectDetailsFormYupSchema = yup.object().shape({
   project: yup.object().shape({
     project_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Project Name is Required'),
-    project_programs: yup.array(yup.number()).required('Project Program is Required'),
+    project_programs: yup
+      .array(yup.number())
+      .min(1, 'At least 1 Project Program is Required')
+      .required('Project Program is Required'),
     start_date: yup.string().isValidDateString().required('Start Date is Required'),
     end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
   })
