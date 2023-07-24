@@ -430,6 +430,11 @@ export class ProjectService extends DBService {
     return regionService.addRegionsToProjectFromFeatures(projectId, features);
   }
 
+  async insertPrograms(projectId: number, projectPrograms: number[]): Promise<void> {
+    await this.projectRepository.deletePrograms(projectId);
+    await this.projectRepository.insertProgram(projectId, projectPrograms);
+  }
+
   /**
    * Updates the project and uploads affected metadata to BioHub
    *
@@ -485,6 +490,10 @@ export class ProjectService extends DBService {
 
     if (entities?.location) {
       promises.push(this.insertRegion(projectId, entities.location.geometry));
+    }
+
+    if (entities?.project?.project_programs) {
+      promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
     }
 
     await Promise.all(promises);
@@ -587,7 +596,7 @@ export class ProjectService extends DBService {
     const existingFundingSourcesToDelete = existingProjectFundingSources.filter((existingFunding) => {
       // Find all existing funding (by project_funding_source_id) that have no matching incoming project_funding_source_id
       return !putFundingData.fundingSources.find(
-        (incomingFunding) => incomingFunding.id === existingFunding.project_funding_source_id
+        (incomingFunding: any) => incomingFunding.id === existingFunding.project_funding_source_id
       );
     });
 
@@ -610,7 +619,7 @@ export class ProjectService extends DBService {
     // The remaining funding are either new, and can be created, or updates to existing funding
     const promises: Promise<any>[] = [];
 
-    putFundingData.fundingSources.forEach((funding) => {
+    putFundingData.fundingSources.forEach((funding: any) => {
       if (funding.id) {
         // Has a project_funding_source_id, indicating this is an update to an existing funding
         promises.push(projectRepository.updateProjectFundingSource(funding, projectId));

@@ -1,9 +1,5 @@
 import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
@@ -37,7 +33,7 @@ export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
 export const ProjectDetailsFormYupSchema = yup.object().shape({
   project: yup.object().shape({
     project_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Project Name is Required'),
-    project_type: yup.number().required('Project Type is Required'),
+    project_programs: yup.array(yup.number()).required('Project Program is Required'),
     start_date: yup.string().isValidDateString().required('Start Date is Required'),
     end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
   })
@@ -56,7 +52,7 @@ export interface IProjectDetailsFormProps {
 const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
   const formikProps = useFormikContext<ICreateProjectRequest>();
 
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { touched, errors, handleSubmit } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -76,26 +72,6 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             variant="outlined"
             required={true}
             error={touched.project?.project_programs && Boolean(errors.project?.project_programs)}>
-            <InputLabel id="project_type-label">Project Program</InputLabel>
-            <Select
-              id="project_type"
-              name="project.project_type"
-              labelId="project_type-label"
-              label="Project Program"
-              value={values.project.project_programs || ''}
-              onChange={handleChange}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Project Type' }}>
-              {props.program.map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-            {errors.project?.project_programs && (
-              <FormHelperText>{touched.project?.project_programs && errors.project?.project_programs}</FormHelperText>
-            )}
-
             <MultiAutocompleteFieldVariableSize
               id={'project.project_programs'}
               label={'Project Programs'}

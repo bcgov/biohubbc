@@ -433,13 +433,13 @@ PUT.apiDoc = {
 };
 
 export interface IUpdateProject {
-  coordinator: object | null;
-  project: object | null;
-  objectives: object | null;
+  coordinator: any | null;
+  project: any | null;
+  objectives: any | null;
   location: { geometry: Feature[]; location_description: string } | null;
-  iucn: object | null;
-  funding: object | null;
-  partnerships: object | null;
+  iucn: any | null;
+  funding: any | null;
+  partnerships: any | null;
 }
 
 /**

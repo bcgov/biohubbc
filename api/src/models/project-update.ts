@@ -5,7 +5,7 @@ const defaultLog = getLogger('models/project-update');
 
 export class PutProjectData {
   name: string;
-  program: number;
+  project_programs: number[];
   project_activities: number[];
   start_date: string;
   end_date: string;
@@ -15,7 +15,7 @@ export class PutProjectData {
     defaultLog.debug({ label: 'PutProjectData', message: 'params', obj });
 
     this.name = obj?.project_name || null;
-    this.program = obj?.program || [];
+    this.project_programs = obj?.project_programs || [];
     this.project_activities = (obj?.project_activities?.length && obj.project_activities) || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
