@@ -389,6 +389,9 @@ export class ProjectService extends DBService {
     // Handle project regions
     promises.push(this.insertRegion(projectId, postProjectData.location.geometry));
 
+    // Handle project programs
+    promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
+
     await Promise.all(promises);
 
     // The user that creates a project is automatically assigned a project lead role, for this project

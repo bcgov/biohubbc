@@ -320,15 +320,17 @@ export class ProjectRepository extends BaseRepository {
       FROM
         project p 
       LEFT JOIN (
-        SELECT array_agg(p.program_id) as project_programs, pp.project_id 
+        SELECT array_remove(array_agg(p.program_id), NULL) as project_programs, pp.project_id 
         FROM "program" p, project_program pp 
         WHERE p.program_id = pp.program_id 
         GROUP BY pp.project_id
       ) as pp on pp.project_id = p.project_id
       LEFT JOIN (
-        SELECT array_agg(pa.project_activity_id) as project_activities, pa.project_id 
-        FROM project_activity pa
-        GROUP BY pa.project_id
+        SELECT array_remove(array_agg(pa.project_activity_id), NULL) as project_activities, p.project_id
+        FROM project p 
+        LEFT JOIN project_activity pa on p.project_id = pa.project_id
+        AND p.project_id = 2
+        GROUP BY p.project_id
       ) as pa on pa.project_id = p.project_id 
       WHERE
         p.project_id = ${projectId};
@@ -342,7 +344,9 @@ export class ProjectRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
-
+    console.log('__________');
+    console.log(response.rows[0]);
+    console.log('__________');
     return response.rows[0];
   }
 
