@@ -195,9 +195,6 @@ export function getProjectList(): RequestHandler {
       const projectListWithStatus = await Promise.all(
         projects.map(async (project: any) => {
           const status = await projectService.projectPublishStatus(project.id);
-          console.log('________');
-          console.log('________');
-          console.log(project);
           return {
             projectData: project,
             projectSupplementaryData: { publishStatus: status }

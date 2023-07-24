@@ -141,10 +141,6 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
 
   const selectedValues = get(values, props.id);
 
-  console.log('___________');
-  console.log('___________');
-  console.log('___________');
-  console.log(errors);
   // For api-search type, options are not provided by parent
   // These helpers will help manipulate options using API
   const apiSearchTypeHelpers =
