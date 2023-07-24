@@ -39,13 +39,6 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            project_program: {
-              type: 'array',
-              items: {
-                type: 'number'
-              },
-              nullable: true
-            },
             start_date: {
               type: 'string',
               nullable: true
@@ -103,7 +96,15 @@ GET.apiDoc = {
               properties: {
                 projectData: {
                   type: 'object',
-                  required: ['id', 'name', 'project_program', 'start_date', 'end_date', 'completion_status', 'regions'],
+                  required: [
+                    'id',
+                    'name',
+                    'project_programs',
+                    'start_date',
+                    'end_date',
+                    'completion_status',
+                    'regions'
+                  ],
                   properties: {
                     id: {
                       type: 'number'
@@ -111,10 +112,10 @@ GET.apiDoc = {
                     name: {
                       type: 'string'
                     },
-                    project_program: {
+                    project_programs: {
                       type: 'array',
                       items: {
-                        type: 'string'
+                        type: 'number'
                       }
                     },
                     start_date: {
@@ -194,7 +195,9 @@ export function getProjectList(): RequestHandler {
       const projectListWithStatus = await Promise.all(
         projects.map(async (project: any) => {
           const status = await projectService.projectPublishStatus(project.id);
-
+          console.log('________');
+          console.log('________');
+          console.log(project);
           return {
             projectData: project,
             projectSupplementaryData: { publishStatus: status }

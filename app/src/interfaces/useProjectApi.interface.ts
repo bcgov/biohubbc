@@ -113,7 +113,7 @@ export interface IProjectsListData {
   coordinator_agency: string;
   completion_status: string;
   regions: string[];
-  project_program: string[];
+  project_programs: number[];
 }
 
 /**

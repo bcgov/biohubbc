@@ -10,6 +10,7 @@ import { SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import { useCallback } from 'react';
@@ -51,6 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IProjectsListTableProps {
   projects: IGetProjectsListResponse[];
   drafts: IGetDraftsListResponse[];
+  codes: IGetAllCodeSetsResponse;
 }
 
 interface IProjectsListTableEntry {
@@ -95,8 +97,8 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       )
     },
     {
-      field: 'type',
-      headerName: 'Type',
+      field: 'program',
+      headerName: 'Programs',
       flex: 1,
       resizable: true
     },
@@ -144,6 +146,14 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
 
   const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
 
+  const getProjectPrograms = (project: IGetProjectsListResponse) => {
+    return (
+      props.codes.program
+        .filter((code) => project.projectData.project_programs.includes(code.id))
+        .map((code) => code.name)
+        .join(', ') || ''
+    );
+  };
   return (
     <DataGrid
       className={classes.dataGrid}
@@ -158,7 +168,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           id: project.projectData.id,
           name: project.projectData.name,
           status: project.projectSupplementaryData.publishStatus,
-          type: project.projectData.project_program?.join(', '),
+          program: getProjectPrograms(project),
           startDate: project.projectData.start_date,
           endDate: project.projectData.end_date,
           isDraft: false,

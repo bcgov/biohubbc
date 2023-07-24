@@ -190,7 +190,7 @@ export class ProjectRepository extends BaseRepository {
         p.end_date,
         p.coordinator_agency_name as coordinator_agency,
         array_remove(array_agg(DISTINCT rl.region_name), null) as regions,
-        array_agg(distinct p2."name") as program
+        array_agg(distinct p2.program_id) as project_programs
       FROM
         project as p
       LEFT JOIN project_program pp 

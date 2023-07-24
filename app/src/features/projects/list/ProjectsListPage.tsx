@@ -150,7 +150,11 @@ const ProjectsListPage: React.FC = () => {
             <Divider></Divider>
             {isFiltersOpen && <ProjectsListFilterForm handleSubmit={handleSubmit} handleReset={handleReset} />}
             <Box py={1} pb={2} px={3}>
-              <ProjectsListTable projects={projectsDataLoader.data} drafts={draftsDataLoader.data} />
+              <ProjectsListTable
+                projects={projectsDataLoader.data}
+                drafts={draftsDataLoader.data}
+                codes={codesContext.codesDataLoader.data}
+              />
             </Box>
           </Paper>
         </Box>
