@@ -315,7 +315,7 @@ describe('ProjectRepository', () => {
         coordinator_agency: 'string',
         start_date: null,
         end_date: 'end',
-        project_type: 'string',
+        project_programs: [1],
         project_name: 'string',
         agency_project_id: 1,
         agency_id: 1,

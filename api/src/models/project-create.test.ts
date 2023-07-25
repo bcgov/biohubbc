@@ -62,7 +62,7 @@ describe('PostProjectObject', () => {
       },
       project: {
         project_name: 'name_test_data',
-        project_type: 'test_type',
+        project_programs: [1],
         project_activities: [1, 2],
         start_date: 'start_date_test_data',
         end_date: 'end_date_test_data',

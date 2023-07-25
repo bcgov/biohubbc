@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { IProjectAdvancedFilters } from '../../models/project-view';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
@@ -45,6 +46,13 @@ GET.apiDoc = {
             },
             end_date: {
               type: 'string',
+              nullable: true
+            },
+            project_programs: {
+              type: 'array',
+              items: {
+                type: 'number'
+              },
               nullable: true
             },
             keyword: {
@@ -186,7 +194,7 @@ export function getProjectList(): RequestHandler {
         req['system_user']['role_names']
       );
       const systemUserId = connection.systemUserId();
-      const filterFields = req.query || {};
+      const filterFields: IProjectAdvancedFilters = req.query || {};
 
       const projectService = new ProjectService(connection);
 

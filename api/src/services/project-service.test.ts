@@ -189,16 +189,14 @@ describe('ProjectService', () => {
           name: 'Project 1',
           start_date: '1900-01-01',
           end_date: '2200-10-10',
-          coordinator_agency: 'Agency 1',
-          project_type: 'Aquatic Habitat'
+          coordinator_agency: 'Agency 1'
         },
         {
           id: 456,
           name: 'Project 2',
           start_date: '1900-01-01',
           end_date: '2000-12-31',
-          coordinator_agency: 'Agency 2',
-          project_type: 'Terrestrial Habitat'
+          coordinator_agency: 'Agency 2'
         }
       ];
 

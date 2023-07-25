@@ -7,7 +7,7 @@ import ProjectDetailsForm, {
   ProjectDetailsFormYupSchema
 } from './ProjectDetailsForm';
 
-const project_type: IMultiAutocompleteFieldOption[] = [
+const project_programs: IMultiAutocompleteFieldOption[] = [
   {
     value: 1,
     label: 'type 1'
@@ -46,7 +46,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm program={project_type} activity={activity} />}
+        {() => <ProjectDetailsForm program={project_programs} activity={activity} />}
       </Formik>
     );
 
@@ -73,7 +73,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm program={project_type} activity={activity} />}
+        {() => <ProjectDetailsForm program={project_programs} activity={activity} />}
       </Formik>
     );
 

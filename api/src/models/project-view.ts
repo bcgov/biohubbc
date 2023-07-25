@@ -2,6 +2,18 @@ import { Feature } from 'geojson';
 import { z } from 'zod';
 import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 
+export interface IProjectAdvancedFilters {
+  coordinator_agency?: string;
+  permit_number?: string;
+  project_programs?: number[];
+  start_date?: string;
+  end_date?: string;
+  keyword?: string;
+  project_name?: string;
+  agency_id?: number;
+  agency_project_id?: string;
+  species?: number[];
+}
 export interface IGetProject {
   coordinator: GetCoordinatorData;
   project: ProjectData;

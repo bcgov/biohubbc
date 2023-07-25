@@ -50,7 +50,8 @@ export interface IProjectSupplementaryReportAttachmentData {
  */
 export interface IProjectAdvancedFilterRequest {
   coordinator_agency: string;
-  project_type: string;
+  permit_number: string;
+  project_programs: number[];
   start_date: string;
   end_date: string;
   keyword: string;
@@ -169,7 +170,7 @@ export interface IGetProjectForUpdateResponse {
 
 export interface IGetProjectForUpdateResponseDetails {
   project_name: string;
-  project_type: number;
+  project_programs: number[];
   project_activities: number[];
   start_date: string;
   end_date: string;

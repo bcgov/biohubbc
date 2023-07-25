@@ -1,4 +1,5 @@
 import { NumberOfAutoScalingGroups } from 'aws-sdk/clients/autoscaling';
+import { isArray } from 'lodash';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostFundingSource, PostProjectObject } from '../models/project-create';
@@ -17,6 +18,7 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetReportAttachmentsData,
+  IProjectAdvancedFilters,
   ProjectData
 } from '../models/project-view';
 import { queries } from '../queries/queries';
@@ -181,7 +183,11 @@ export class ProjectRepository extends BaseRepository {
     return result;
   }
 
-  async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any[]> {
+  async getProjectList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
+  ): Promise<any[]> {
     const sqlStatement = SQL`
       SELECT
         p.project_id as id,
@@ -246,8 +252,16 @@ export class ProjectRepository extends BaseRepository {
         );
       }
 
-      if (filterFields.project_program) {
-        sqlStatement.append(SQL` AND p2.name = ${filterFields.project_program}`);
+      if (filterFields.project_programs) {
+        let programs = filterFields.project_programs;
+        if (!isArray(filterFields.project_programs)) {
+          programs = [filterFields.project_programs];
+        }
+
+        // programs.forEach((id) => {
+        //   sqlStatement.append(SQL` AND p2.program_id = ${id}`);
+        // });
+        sqlStatement.append(SQL` AND p2.program_id IN (${programs.map((id) => `'${id}'`)})`);
       }
 
       if (filterFields.project_name) {
@@ -262,7 +276,7 @@ export class ProjectRepository extends BaseRepository {
         sqlStatement.append(SQL` AND fs.funding_source_id = ${filterFields.agency_id}`);
       }
 
-      if (filterFields?.species?.length > 0) {
+      if (filterFields?.species && filterFields?.species?.length > 0) {
         sqlStatement.append(SQL` AND sp.wldtaxonomic_units_id =${filterFields.species[0]}`);
       }
 
@@ -284,11 +298,12 @@ export class ProjectRepository extends BaseRepository {
         p.coordinator_agency_name;
     `);
 
+    console.log(sqlStatement.sql, sqlStatement.values);
     const response = await this.connection.sql<ProjectData>(sqlStatement);
     if (!response.rows) {
       return [];
     }
-
+    console.log(response.rowCount);
     return response.rows;
   }
 

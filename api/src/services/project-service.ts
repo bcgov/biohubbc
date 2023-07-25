@@ -25,6 +25,7 @@ import {
   GetPartnershipsData,
   GetReportAttachmentsData,
   IGetProject,
+  IProjectAdvancedFilters,
   ProjectData,
   ProjectSupplementaryData
 } from '../models/project-view';
@@ -128,7 +129,11 @@ export class ProjectService extends DBService {
     return this.projectParticipationService.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
   }
 
-  async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any> {
+  async getProjectList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
+  ): Promise<any> {
     const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields);
 
     return response.map((row) => ({

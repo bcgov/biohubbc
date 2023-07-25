@@ -3,21 +3,23 @@ import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import assert from 'assert';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
+import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext } from 'react';
 
 export interface IProjectAdvancedFilters {
   coordinator_agency: string;
   permit_number: string;
-  project_type: string;
+  project_programs: number[];
   start_date: string;
   end_date: string;
   keyword: string;
@@ -30,7 +32,7 @@ export interface IProjectAdvancedFilters {
 export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
   coordinator_agency: '',
   permit_number: '',
-  project_type: '',
+  project_programs: [],
   start_date: '',
   end_date: '',
   keyword: '',
@@ -56,6 +58,9 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
   const biohubApi = useBiohubApi();
 
   const { handleSubmit, handleChange, values } = formikProps;
+
+  const codesContext = useContext(CodesContext);
+  assert(codesContext.codesDataLoader.data);
 
   const convertOptions = (value: any): IMultiAutocompleteFieldOption[] =>
     value.map((item: any) => {
@@ -98,29 +103,37 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
         </Grid>
         <Grid item xs={12} md={3}>
           <FormControl fullWidth variant="outlined" required={false}>
-            <InputLabel id="project_type">Project Type</InputLabel>
-            <Select
-              id="project_type"
-              name="project_type"
-              labelId="project_type"
-              label="Project Type"
-              value={values.project_type}
+            <MultiAutocompleteFieldVariableSize
+              id={'project_programs'}
+              label={'Project Programs'}
+              options={
+                codesContext.codesDataLoader.data.program.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+            />
+            {/* <Select
+              id="project_programs"
+              name="project_programs"
+              labelId="project_programs"
+              label="Project Programs"
+              value={values.project_programs}
               onChange={handleChange}
               displayEmpty
               inputProps={{ 'aria-label': 'Project Type' }}>
-              <MenuItem key={1} value="Fisheries">
+              <MenuItem key={1} value={1}>
                 Fisheries
               </MenuItem>
-              <MenuItem key={2} value="Wildlife">
+              <MenuItem key={2} value={2}>
                 Wildlife
               </MenuItem>
-              <MenuItem key={3} value="Aquatic Habitat">
+              <MenuItem key={3} value={3}>
                 Aquatic Habitat
               </MenuItem>
-              <MenuItem key={4} value="Terrestrial Habitat">
+              <MenuItem key={4} value={4}>
                 Terrestrial Habitat
               </MenuItem>
-            </Select>
+            </Select> */}
           </FormControl>
         </Grid>
         <Grid item xs={12} md={6}>
