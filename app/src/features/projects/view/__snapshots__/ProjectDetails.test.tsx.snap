@@ -60,12 +60,12 @@ exports[`ProjectDetails renders correctly 1`] = `
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
               >
-                Type
+                Program
               </dt>
               <dd
                 class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
               >
-                Project type
+                No Programs
               </dd>
             </div>
             <div

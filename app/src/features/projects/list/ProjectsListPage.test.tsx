@@ -5,6 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import ProjectsListPage from './ProjectsListPage';
 
@@ -133,7 +134,9 @@ describe('ProjectsListPage', () => {
           start_date: null,
           end_date: null,
           coordinator_agency: 'contact agency',
-          project_type: 'project type',
+          project_programs: [1],
+          project_activities: [],
+          regions: ['region'],
           permits_list: '1, 2, 3',
           completion_status: 'Completed'
         },
@@ -145,7 +148,7 @@ describe('ProjectsListPage', () => {
 
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
-        data: [],
+        data: codes,
         load: jest.fn(),
         refresh: jest.fn()
       } as unknown as DataLoader<any, any, any>,
