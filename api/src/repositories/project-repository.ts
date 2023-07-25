@@ -306,12 +306,11 @@ export class ProjectRepository extends BaseRepository {
         p.coordinator_agency_name;
     `);
 
-    console.log(sqlStatement.sql, sqlStatement.values);
     const response = await this.connection.sql<ProjectData>(sqlStatement);
     if (!response.rows) {
       return [];
     }
-    console.log(response.rowCount);
+
     return response.rows;
   }
 
