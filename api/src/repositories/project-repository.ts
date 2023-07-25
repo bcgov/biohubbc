@@ -258,10 +258,18 @@ export class ProjectRepository extends BaseRepository {
           programs = [filterFields.project_programs];
         }
 
-        // programs.forEach((id) => {
-        //   sqlStatement.append(SQL` AND p2.program_id = ${id}`);
-        // });
-        sqlStatement.append(SQL` AND p2.program_id IN (${programs.map((id) => `'${id}'`)})`);
+        sqlStatement.append(SQL` AND p2.program_id IN (`);
+        programs.forEach((id, index) => {
+          // add the element
+          sqlStatement.append(id);
+
+          if (index !== programs.length - 1) {
+            // add a comma unless it is the last element in the array
+            sqlStatement.append(',');
+          }
+        });
+        sqlStatement.append(SQL`)`);
+        // sqlStatement.append(SQL` AND p2.program_id IN (${programs.map((id) => `'${id}'`)})`);
       }
 
       if (filterFields.project_name) {
