@@ -13,7 +13,6 @@ import {
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
-  GetProjectData,
   GetReportAttachmentsData
 } from '../models/project-view';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -359,7 +358,8 @@ describe('ProjectRepository', () => {
       const response = await repository.getProjectData(1);
 
       expect(response).to.not.be.null;
-      expect(response).to.eql(new GetProjectData({ project_id: 1 }, [{ project_id: 1 }]));
+
+      expect(response).to.eql({ project_id: 1 });
     });
 
     it('should throw an error', async () => {

@@ -10,7 +10,7 @@ import {
   getIUCNConservationActionLevel2SubclassificationSQL,
   getIUCNConservationActionLevel3SubclassificationSQL,
   getManagementActionTypeSQL,
-  getProjectTypeSQL,
+  getProgramSQL,
   getProprietorTypeSQL,
   getSystemRolesSQL
 } from './code-queries';
@@ -50,9 +50,9 @@ describe('getActivitySQL', () => {
   });
 });
 
-describe('getProjectTypeSQL', () => {
+describe('getProgramSQL', () => {
   it('returns valid sql statement', () => {
-    const response = getProjectTypeSQL();
+    const response = getProgramSQL();
     expect(response).to.not.be.null;
   });
 });

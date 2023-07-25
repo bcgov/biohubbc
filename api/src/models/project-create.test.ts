@@ -142,7 +142,7 @@ describe('PostProjectData', () => {
     });
 
     it('sets type', function () {
-      expect(projectPostData.type).to.equal(null);
+      expect(projectPostData.project_programs).to.have.length(0);
     });
 
     it('sets activities', function () {
@@ -167,7 +167,7 @@ describe('PostProjectData', () => {
 
     const obj = {
       project_name: 'name_test_data',
-      project_type: 'test_type',
+      project_programs: [1],
       project_activities: [1, 2],
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
@@ -183,7 +183,7 @@ describe('PostProjectData', () => {
     });
 
     it('sets type', function () {
-      expect(projectPostData.type).to.equal('test_type');
+      expect(projectPostData.project_programs).to.eql([1]);
     });
 
     it('sets activities', function () {

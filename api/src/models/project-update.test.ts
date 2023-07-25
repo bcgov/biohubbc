@@ -23,7 +23,7 @@ describe('PutProjectData', () => {
     });
 
     it('sets type', () => {
-      expect(data.type).to.equal(null);
+      expect(data.project_programs).to.eql([]);
     });
 
     it('sets project_activities', () => {
@@ -46,7 +46,7 @@ describe('PutProjectData', () => {
   describe('all values provided', () => {
     const obj = {
       project_name: 'project name',
-      project_type: 4,
+      project_programs: [1],
       project_activities: [1, 2],
       start_date: '2020-04-20T07:00:00.000Z',
       end_date: '2020-05-20T07:00:00.000Z',
@@ -64,7 +64,7 @@ describe('PutProjectData', () => {
     });
 
     it('sets type', () => {
-      expect(data.type).to.equal(4);
+      expect(data.project_programs).to.equal([1]);
     });
 
     it('sets project_activities', () => {

@@ -1127,7 +1127,7 @@ describe('EmlService', () => {
       funding_source: [],
       investment_action_category: [],
       activity: [],
-      project_type: [],
+      program: [],
       coordinator_agency: [],
       region: [],
       proprietor_type: [],

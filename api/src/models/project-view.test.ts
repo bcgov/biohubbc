@@ -9,28 +9,39 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData,
-  GetReportAttachmentsData
+  GetReportAttachmentsData,
+  ProjectData
 } from './project-view';
 
 describe('GetProjectData', () => {
   describe('No values provided', () => {
-    let data: GetProjectData;
+    let data: ProjectData;
 
     before(() => {
-      data = new GetProjectData();
+      data = {
+        project_id: 1,
+        uuid: 'uuid',
+        project_name: '',
+        project_programs: [],
+        project_activities: [],
+        start_date: new Date(),
+        end_date: new Date(),
+        comments: '',
+        revision_count: 1,
+        completion_status: COMPLETION_STATUS.ACTIVE
+      };
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal(null);
+      expect(data.project_id).to.equal(1);
     });
 
     it('sets name', () => {
       expect(data.project_name).to.equal('');
     });
 
-    it('sets type', () => {
-      expect(data.project_type).to.equal(-1);
+    it('sets programs', () => {
+      expect(data.project_programs).to.eql([]);
     });
 
     it('sets project_activities', () => {
@@ -38,11 +49,11 @@ describe('GetProjectData', () => {
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal('');
+      expect(data.start_date).to.equal(new Date());
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal('');
+      expect(data.end_date).to.equal(new Date());
     });
 
     it('sets completion_status', () => {
@@ -60,16 +71,25 @@ describe('GetProjectData', () => {
       revision_count: 1
     };
 
-    const activityData = [{ activity_id: 1 }, { activity_id: 2 }];
-
-    let data: GetProjectData;
+    let data: ProjectData;
 
     before(() => {
-      data = new GetProjectData(projectData, activityData);
+      data = {
+        project_id: 1,
+        uuid: 'uuid',
+        project_name: 'project name',
+        project_programs: [],
+        project_activities: [],
+        start_date: new Date('2020-04-20T07:00:00.000Z'),
+        end_date: new Date('2020-05-20T07:00:00.000Z'),
+        comments: '',
+        revision_count: 1,
+        completion_status: COMPLETION_STATUS.ACTIVE
+      };
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal(projectData.project_id);
+      expect(data.project_id).to.equal(projectData.project_id);
     });
 
     it('sets name', () => {
@@ -77,7 +97,7 @@ describe('GetProjectData', () => {
     });
 
     it('sets type', () => {
-      expect(data.project_type).to.equal(projectData.pt_id);
+      expect(data.project_programs).to.eql([]);
     });
 
     it('sets project_activities', () => {

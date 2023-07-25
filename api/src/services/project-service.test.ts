@@ -10,7 +10,7 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData
+  ProjectData
 } from '../models/project-view';
 import { ProjectUserObject } from '../models/user';
 import { IUpdateProject } from '../paths/project/{projectId}/update';
@@ -263,7 +263,7 @@ describe('getProjectData', () => {
     const dbConnection = getMockDBConnection();
     const service = new ProjectService(dbConnection);
 
-    const data = new GetProjectData({ project_id: 1 });
+    const data = ({ project_id: 1 } as unknown) as ProjectData;
 
     const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectData').resolves(data);
 
