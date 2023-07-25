@@ -45,30 +45,31 @@ type IAnimalFormData = Partial<IAnimal>;
 
 type IAnimalAction = {
   type: keyof IAnimal;
-  payload:
-    | IAnimalMarking
-    | IAnimalMeasurement
-    | IAnimalCapture
-    | IAnimalMortality
-    | IAnimalRelationship
-    | IAnimalTelemetryDevice
-    | IAnimalImage;
 } & (
-  | {
+    | {
       operation: 'ADD';
+      payload:
+      | IAnimalMarking
+      | IAnimalMeasurement
+      | IAnimalCapture
+      | IAnimalMortality
+      | IAnimalRelationship
+      | IAnimalTelemetryDevice
+      | IAnimalImage;
     }
-  | { operation: 'REMOVE'; idx: number }
-);
+    | { operation: 'REMOVE'; payload: number }
+  );
 
 const animalReducer = (state: IAnimalFormData, action: IAnimalAction): IAnimalFormData => {
-  const { type, payload, operation } = action;
-  const isRemove = operation === 'REMOVE';
-  switch (type) {
-    case 'capture':
-      return isRemove ? { ...state, capture: [payload] } : { ...state, capture: [payload] };
-    default:
-      return state;
-  }
+  //const { type, operation } = action;
+  //const isRemove = operation === 'REMOVE';
+  //switch (type) {
+  //  case 'capture':
+  //    return isRemove ? { ...state } : { ...state, capture: [action.payload] };
+  //  default:
+  //    return state;
+  //}
+  return state;
 };
 
 const AnimalFormContext = createContext<

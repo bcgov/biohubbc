@@ -1,7 +1,7 @@
 import { Box, Button, Grid, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import AnimalGeneralSection from './form-sections/AnimalGeneralSection';
-import { AnimalFormProvider, IAnimalKey } from './useAnimalFormData';
+import { AnimalFormProvider, IAnimalKey, useAnimalFormData } from './useAnimalFormData';
 import { Formik } from 'formik';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { mdiPlus } from '@mdi/js';
@@ -41,8 +41,8 @@ const SECTIONS: IAnimalFormSections = {
  * returns {*}
  */
 const AnimalForm = () => {
-  //Dynamically add sections to this piece of state
-  const [formSections, addFormSection] = useState<IFormSectionState>({
+  const { updateAnimal } = useAnimalFormData();
+  const [formSections, setFormSection] = useState<IFormSectionState>({
     general: [SECTIONS.general.comp],
     capture: [],
     marking: [],
@@ -57,15 +57,17 @@ const AnimalForm = () => {
     console.log('submit');
   };
 
+  const handleRemoveSection = (key: IAnimalKey, idx: number) => {
+    updateAnimal({ type: key, operation: 'REMOVE', payload: idx });
+    formSections[key].splice(idx, 1);
+    setFormSection({ ...formSections });
+  };
+
   const handleAddSection = (key: IAnimalKey) => {
     const componentToAdd = SECTIONS[key].comp;
     formSections[key].push(componentToAdd);
-    addFormSection({ ...formSections });
+    setFormSection({ ...formSections });
   };
-
-  //const tmp = () => {
-  //  updateAnimal({ type: 'capture', payload: { id: 'test' }, operation: 'ADD' });
-  //};
 
   return (
     <Formik onSubmit={handleSubmit} initialValues={{}}>
@@ -74,14 +76,24 @@ const AnimalForm = () => {
           {Object.keys(SECTIONS).map((k, i) => {
             const key = k as IAnimalKey;
             const section = SECTIONS[key];
+            const isGeneralSection = section.title === 'General';
             return (
               <Grid item xs={12} key={`${i}-${section.title}`}>
                 <Typography id={`${section.title}`} component="legend">
                   <HelpButtonTooltip content={section.title}>{section.title}</HelpButtonTooltip>
                 </Typography>
                 <Grid container spacing={2} direction="column">
-                  {formSections[key] && <Grid item>{formSections[key]}</Grid>}
-                  {section.bTitle && (
+                  {formSections[key] && (
+                    <Grid item>
+                      {formSections[key].map((inputs, fsIdx) => (
+                        <>
+                          {!isGeneralSection && <button onClick={() => handleRemoveSection(key, fsIdx)}>delete</button>}
+                          {inputs}
+                        </>
+                      ))}
+                    </Grid>
+                  )}
+                  {!isGeneralSection && (
                     <Grid item>
                       <Button
                         onClick={() => handleAddSection(key)}
