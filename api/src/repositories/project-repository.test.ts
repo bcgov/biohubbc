@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiError } from '../errors/api-error';
+import { ApiError, ApiExecuteSQLError } from '../errors/api-error';
 import { PostFundingSource, PostProjectObject } from '../models/project-create';
 import { PutFundingSource } from '../models/project-update';
 import {
@@ -284,7 +284,7 @@ describe('ProjectRepository', () => {
   describe('getProjectList', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
 
@@ -292,7 +292,6 @@ describe('ProjectRepository', () => {
         coordinator_agency: 'string',
         start_date: 'start',
         end_date: null,
-        project_type: 'string',
         project_name: 'string',
         agency_project_id: 1,
         agency_id: 1,
@@ -308,7 +307,7 @@ describe('ProjectRepository', () => {
 
     it('should return result with different filter fields', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
 
@@ -332,7 +331,7 @@ describe('ProjectRepository', () => {
 
     it('should return result with both data fields', async () => {
       const mockResponse = ({ rows: null, rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
 
@@ -351,7 +350,7 @@ describe('ProjectRepository', () => {
   describe('getProjectData', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ project_id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
 
@@ -364,7 +363,7 @@ describe('ProjectRepository', () => {
 
     it('should throw an error', async () => {
       const mockResponse = ({ rows: null, rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
 
@@ -951,6 +950,66 @@ describe('ProjectRepository', () => {
       const response = await repository.deleteProject(1);
 
       expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('insertProgram', () => {
+    it('should return early', async () => {
+      const dbConnection = getMockDBConnection();
+      const mockSql = sinon.stub(dbConnection, 'sql').resolves();
+      const repository = new ProjectRepository(dbConnection);
+
+      await repository.insertProgram(1, []);
+
+      expect(mockSql).to.not.be.called;
+    });
+
+    it('should run properly', async () => {
+      const dbConnection = getMockDBConnection();
+      const mockSql = sinon.stub(dbConnection, 'sql').resolves();
+      const repository = new ProjectRepository(dbConnection);
+
+      await repository.insertProgram(1, [1]);
+
+      expect(mockSql).to.be.called;
+    });
+
+    it('should throw an SQL error', async () => {
+      const dbConnection = getMockDBConnection();
+      sinon.stub(dbConnection, 'sql').rejects();
+      const repository = new ProjectRepository(dbConnection);
+
+      try {
+        await repository.insertProgram(1, [1]);
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.equal('Failed to execute insert SQL for project_program');
+      }
+    });
+  });
+
+  describe('deletePrograms', () => {
+    it('should run without issue', async () => {
+      const dbConnection = getMockDBConnection();
+      const mockSql = sinon.stub(dbConnection, 'sql').resolves();
+      const repository = new ProjectRepository(dbConnection);
+
+      await repository.deletePrograms(1);
+
+      expect(mockSql).to.be.called;
+    });
+
+    it('should throw an SQL error', async () => {
+      const dbConnection = getMockDBConnection();
+      sinon.stub(dbConnection, 'sql').rejects();
+      const repository = new ProjectRepository(dbConnection);
+
+      try {
+        await repository.deletePrograms(1);
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.equal('Failed to execute delete SQL for project_program');
+      }
     });
   });
 });

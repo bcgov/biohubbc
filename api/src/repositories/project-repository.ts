@@ -613,28 +613,28 @@ export class ProjectRepository extends BaseRepository {
   async getReportAttachmentsData(projectId: number): Promise<GetReportAttachmentsData> {
     const sqlStatement = SQL`
       SELECT
-        pra.project_report_attachment_id
-        , pra.project_id
-        , pra.file_name
-        , pra.title
-        , pra.description
-        , pra.year
-        , pra."key"
-        , pra.file_size
-        , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
+        pra.project_report_attachment_id,
+        pra.project_id,
+        pra.file_name,
+        pra.title,
+        pra.description,
+        pra.year,
+        pra."key",
+        pra.file_size,
+        array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
       FROM
         project_report_attachment pra
       LEFT JOIN project_report_author pra2 ON pra2.project_report_attachment_id = pra.project_report_attachment_id
       WHERE pra.project_id = ${projectId}
       GROUP BY
-        pra.project_report_attachment_id
-        , pra.project_id
-        , pra.file_name
-        , pra.title
-        , pra.description
-        , pra.year
-        , pra."key"
-        , pra.file_size;
+        pra.project_report_attachment_id,
+        pra.project_id,
+        pra.file_name,
+        pra.title,
+        pra.description,
+        pra.year,
+        pra."key",
+        pra.file_size;
     `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
@@ -861,14 +861,6 @@ export class ProjectRepository extends BaseRepository {
   }
 
   /**
-   *  Links given project to a list of given regions
-   *
-   * @param {number} projectId
-   * @param {number[]} regions
-   * @returns {*} {Promise<void>}
-   */
-
-  /**
    * Links a given project with a list of given programs.
    * This insert assumes previous records for a project have been removed first
    *
@@ -904,11 +896,23 @@ export class ProjectRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Removes program links for a given project.
+   *
+   * @param {number} projectId Project id to remove programs from
+   * @returns {*} {Promise<void>}
+   */
   async deletePrograms(projectId: number): Promise<void> {
     const sql = SQL`
       DELETE FROM project_program WHERE project_id = ${projectId};
     `;
-    await this.connection.sql(sql);
+    try {
+      await this.connection.sql(sql);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to execute delete SQL for project_program', [
+        'ProjectRepository->deletePrograms'
+      ]);
+    }
   }
 
   async deleteIUCNData(projectId: number): Promise<void> {

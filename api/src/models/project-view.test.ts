@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { COMPLETION_STATUS } from '../constants/status';
 import {
   GetAttachmentsData,
   GetCoordinatorData,
@@ -13,7 +12,7 @@ import {
   ProjectData
 } from './project-view';
 
-describe('GetProjectData', () => {
+describe('ProjectData', () => {
   describe('No values provided', () => {
     let data: ProjectData;
 
@@ -24,11 +23,10 @@ describe('GetProjectData', () => {
         project_name: '',
         project_programs: [],
         project_activities: [],
-        start_date: new Date(),
-        end_date: new Date(),
+        start_date: new Date('2005-01-01'),
+        end_date: new Date('2006-01-01'),
         comments: '',
-        revision_count: 1,
-        completion_status: COMPLETION_STATUS.ACTIVE
+        revision_count: 1
       };
     });
 
@@ -49,15 +47,11 @@ describe('GetProjectData', () => {
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal(new Date());
+      expect(data.start_date).to.eql(new Date('2005-01-01'));
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal(new Date());
-    });
-
-    it('sets completion_status', () => {
-      expect(data.completion_status).to.equal(COMPLETION_STATUS.ACTIVE);
+      expect(data.end_date).to.eql(new Date('2006-01-01'));
     });
   });
 
@@ -66,8 +60,8 @@ describe('GetProjectData', () => {
       project_id: 1,
       name: 'project name',
       pt_id: 4,
-      start_date: '2020-04-20T07:00:00.000Z',
-      end_date: '2020-05-20T07:00:00.000Z',
+      start_date: new Date('2020-04-20T07:00:00.000Z'),
+      end_date: new Date('2020-05-20T07:00:00.000Z'),
       revision_count: 1
     };
 
@@ -78,13 +72,12 @@ describe('GetProjectData', () => {
         project_id: 1,
         uuid: 'uuid',
         project_name: 'project name',
-        project_programs: [],
-        project_activities: [],
+        project_programs: [1],
+        project_activities: [1, 2],
         start_date: new Date('2020-04-20T07:00:00.000Z'),
         end_date: new Date('2020-05-20T07:00:00.000Z'),
         comments: '',
-        revision_count: 1,
-        completion_status: COMPLETION_STATUS.ACTIVE
+        revision_count: 1
       };
     });
 
@@ -97,7 +90,7 @@ describe('GetProjectData', () => {
     });
 
     it('sets type', () => {
-      expect(data.project_programs).to.eql([]);
+      expect(data.project_programs).to.eql([1]);
     });
 
     it('sets project_activities', () => {
@@ -105,16 +98,16 @@ describe('GetProjectData', () => {
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal('2020-04-20T07:00:00.000Z');
+      expect(data.start_date).to.eql(new Date('2020-04-20T07:00:00.000Z'));
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal('2020-05-20T07:00:00.000Z');
+      expect(data.end_date).to.eql(new Date('2020-05-20T07:00:00.000Z'));
     });
 
-    it('sets completion_status', () => {
-      expect(data.completion_status).to.equal(COMPLETION_STATUS.COMPLETED);
-    });
+    // it('sets completion_status', () => {
+    //   expect(data.completion_status).to.equal(COMPLETION_STATUS.COMPLETED);
+    // });
   });
 });
 

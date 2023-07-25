@@ -63,8 +63,8 @@ describe('PutProjectData', () => {
       expect(data.name).to.equal('project name');
     });
 
-    it('sets type', () => {
-      expect(data.project_programs).to.equal([1]);
+    it('sets programs', () => {
+      expect(data.project_programs).to.eql([1]);
     });
 
     it('sets project_activities', () => {
@@ -72,7 +72,7 @@ describe('PutProjectData', () => {
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal('2020-04-20T07:00:00.000Z');
+      expect(data.start_date).to.eql('2020-04-20T07:00:00.000Z');
     });
 
     it('sets end_date', () => {

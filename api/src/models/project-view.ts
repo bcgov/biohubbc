@@ -21,8 +21,7 @@ export const ProjectData = z.object({
   start_date: z.date(),
   end_date: z.date().nullable(),
   comments: z.string().nullable(),
-  revision_count: z.number(),
-  completion_status: z.string().nullable()
+  revision_count: z.number()
 });
 
 export type ProjectData = z.infer<typeof ProjectData>;
