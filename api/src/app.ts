@@ -8,7 +8,6 @@ import { ensureHTTPError, HTTPErrorType } from './errors/http-error';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
-//import { critterbaseRouter } from './routers/critterbaseRouter';
 
 const defaultLog = getLogger('app');
 
@@ -29,10 +28,7 @@ const app: express.Express = express();
 app.use(function (req: Request, res: Response, next: NextFunction) {
   defaultLog.info({ label: 'req', message: `${req.method} ${req.url}` });
 
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-Requested-With, Content-Type, Authorization, responseType, api-key, keycloak-uuid, user-id'
-  );
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 'no-store');
@@ -108,7 +104,7 @@ const openAPIFramework = initialize({
 
 // Path to view beautified openapi spec
 app.use('/api-docs', swaggerUIExperss.serve, swaggerUIExperss.setup(openAPIFramework.apiDoc));
-//app.use('/api/cb/', critterbaseRouter);
+
 // Start api
 try {
   initDBPool(defaultPoolConfig);

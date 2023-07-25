@@ -3,6 +3,7 @@ import Keycloak from 'keycloak-js';
 import { useCallback } from 'react';
 import { buildUrl } from 'utils/Utils';
 import { useBiohubApi } from './useBioHubApi';
+import { useCritterbaseApi } from './useCritterbaseApi';
 import useDataLoader from './useDataLoader';
 
 export enum SYSTEM_IDENTITY_SOURCE {
@@ -141,6 +142,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const { keycloak } = useKeycloak();
 
   const biohubApi = useBiohubApi();
+  const cbApi = useCritterbaseApi();
 
   const keycloakUserDataLoader = useDataLoader(async () => {
     return (
@@ -153,8 +155,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const userDataLoader = useDataLoader(() => biohubApi.user.getUser());
 
   const critterbaseSignupLoader = useDataLoader(async () => {
-    if (userDataLoader?.data?.user_identifier && userDataLoader?.data?.user_guid) {
-      return biohubApi.critterbase.signUp(userDataLoader?.data?.user_guid, userDataLoader?.data?.user_identifier);
+    if (userDataLoader?.data?.id) {
+      return cbApi.authentication.signUp();
     }
   });
 
@@ -169,17 +171,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     // keycloak user is authenticated, load system user info
     userDataLoader.load();
 
-    if (userDataLoader.isReady) {
+    if (userDataLoader.isReady && !critterbaseSignupLoader.data) {
       critterbaseSignupLoader.load();
-      // (async () => {if (userDataLoader?.data?.user_identifier && userDataLoader?.data?.user_guid) {
-      //     console.log(`With ${userDataLoader?.data?.user_identifier} ${userDataLoader?.data?.user_guid}`);
-      //     const a = await biohubApi.critterbase.signUp(
-      //       userDataLoader?.data?.user_identifier,
-      //       userDataLoader?.data?.user_guid
-      //     );
-      //     console.log('Response from async' + JSON.stringify(a));
-      // }
-      // })();
     }
 
     if (
