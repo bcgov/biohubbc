@@ -111,8 +111,8 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                     return { value: item.id, label: item.name };
                   }) || []
                 }
-                activity={
-                  codes?.activity?.map((item) => {
+                type={
+                  codes?.type?.map((item) => {
                     return { value: item.id, label: item.name };
                   }) || []
                 }

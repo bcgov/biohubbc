@@ -16,7 +16,7 @@ export class PutProjectData {
 
     this.name = obj?.project_name || null;
     this.project_programs = obj?.project_programs || [];
-    this.project_types = (obj?.project_activities?.length && obj.project_activities) || [];
+    this.project_types = obj?.project_types || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.revision_count = obj?.revision_count ?? null;

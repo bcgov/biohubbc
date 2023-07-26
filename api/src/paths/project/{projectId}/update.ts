@@ -467,7 +467,7 @@ export function updateProject(): RequestHandler {
       await connection.open();
 
       const projectService = new ProjectService(connection);
-
+      console.log('WE GETTING AN UPDATE SON');
       await projectService.updateProjectAndUploadMetadataToBioHub(projectId, entities);
 
       await connection.commit();

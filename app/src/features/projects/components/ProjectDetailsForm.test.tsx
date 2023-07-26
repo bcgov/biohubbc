@@ -22,7 +22,7 @@ const project_programs: IMultiAutocompleteFieldOption[] = [
   }
 ];
 
-const activity: IMultiAutocompleteFieldOption[] = [
+const options: IMultiAutocompleteFieldOption[] = [
   {
     value: 1,
     label: 'activity 1'
@@ -46,7 +46,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm program={project_programs} activity={activity} />}
+        {() => <ProjectDetailsForm program={project_programs} type={options} />}
       </Formik>
     );
 
@@ -60,7 +60,7 @@ describe('ProjectDetailsForm', () => {
       project: {
         project_name: 'name 1',
         project_programs: [2],
-        project_activities: [2, 3],
+        project_types: [2, 3],
         start_date: '2021-03-14',
         end_date: '2021-04-14'
       }
@@ -73,7 +73,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm program={project_programs} activity={activity} />}
+        {() => <ProjectDetailsForm program={project_programs} type={options} />}
       </Formik>
     );
 

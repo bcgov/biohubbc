@@ -19,11 +19,11 @@ export async function up(knex: Knex): Promise<void> {
     DROP VIEW project_activity;
 
     -- drop old triggers 
-    DROP TRIGGER IF EXISTS audit_activity ON activity;
-    DROP TRIGGER IF EXISTS journal_activity ON activity;
+    DROP TRIGGER audit_activity ON activity;
+    DROP TRIGGER journal_activity ON activity;
 
-    DROP TRIGGER IF EXISTS audit_project_activity ON project_activity;
-    DROP TRIGGER IF EXISTS journal_project_activity ON project_activity;
+    DROP TRIGGER audit_project_activity ON project_activity;
+    DROP TRIGGER journal_project_activity ON project_activity;
 
     set search_path= biohub, public;
     -- rename columns  

@@ -384,9 +384,7 @@ export class ProjectService extends DBService {
 
     // Handle project activities
     promises.push(
-      Promise.all(
-        postProjectData.project.project_activities.map((typeId: number) => this.insertType(typeId, projectId))
-      )
+      Promise.all(postProjectData.project.project_types.map((typeId: number) => this.insertType(typeId, projectId)))
     );
 
     // Handle project regions
@@ -542,7 +540,13 @@ export class ProjectService extends DBService {
     const putLocationData = (entities?.location && new PutLocationData(entities.location)) || null;
     const putObjectivesData = (entities?.objectives && new PutObjectivesData(entities.objectives)) || null;
     const putCoordinatorData = (entities?.coordinator && new PutCoordinatorData(entities.coordinator)) || null;
-
+    console.log('______________________________');
+    console.log('______________________________');
+    console.log('______________________________');
+    console.log('______________________________');
+    console.log('______________________________');
+    console.log('______________________________');
+    console.log('______________________________');
     // Update project table
     const revision_count =
       putProjectData?.revision_count ??
@@ -563,7 +567,7 @@ export class ProjectService extends DBService {
       putCoordinatorData,
       revision_count
     );
-
+    console.log(`WE GOT ONE: ${putProjectData?.project_types}`);
     if (putProjectData?.project_types) {
       await this.updateTypeData(projectId, putProjectData);
     }
@@ -571,7 +575,7 @@ export class ProjectService extends DBService {
 
   async updateTypeData(projectId: number, projectData: PutProjectData) {
     await this.projectRepository.deleteTypeData(projectId);
-
+    console.log(projectData?.project_types.length);
     const insertTypePromises =
       projectData?.project_types?.map((typeId: number) => this.insertType(typeId, projectId)) || [];
 

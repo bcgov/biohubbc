@@ -8,7 +8,7 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
       project_programs: [],
       start_date: '1998-10-10',
       end_date: '2021-02-26',
-      project_activities: [1],
+      project_types: [1],
       completion_status: 'Active'
     },
     location: {

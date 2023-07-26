@@ -206,8 +206,6 @@ export class ProjectRepository extends BaseRepository {
         ON pfs.project_id = p.project_id
       LEFT OUTER JOIN investment_action_category as iac
         ON pfs.investment_action_category_id = iac.investment_action_category_id
-      LEFT OUTER JOIN funding_source as fs
-        ON iac.funding_source_id = fs.funding_source_id
       LEFT OUTER JOIN survey as s
         ON s.project_id = p.project_id
       LEFT OUTER JOIN study_species as sp
@@ -1069,6 +1067,7 @@ export class ProjectRepository extends BaseRepository {
   }
 
   async deleteTypeData(projectId: number): Promise<void> {
+    console.log(`Project ID TO DELETE TYPES FROM: ${projectId}`);
     const sqlDeleteStatement = SQL`
       DELETE FROM
         project_type

@@ -5,7 +5,7 @@ export const codes: IGetAllCodeSetsResponse = {
   first_nations: [{ id: 1, name: 'First nations code' }],
   agency: [{ id: 1, name: 'Funding source code' }],
   investment_action_category: [{ id: 1, agency_id: 1, name: 'Investment action category' }],
-  activity: [{ id: 1, name: 'Activity code' }],
+  type: [{ id: 1, name: 'Type code' }],
   region: [{ id: 1, name: 'Region code' }],
   program: [{ id: 1, name: 'Program' }],
   proprietor_type: [

@@ -113,7 +113,7 @@ export const projectCreatePostRequestObject = {
             type: 'number'
           }
         },
-        project_activities: {
+        project_types: {
           type: 'array',
           items: {
             type: 'number'
