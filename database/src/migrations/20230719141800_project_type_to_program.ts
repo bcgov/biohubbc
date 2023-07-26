@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
 /**
- * // add new table for region lookup and connection table to project and survey
+ * Added new program and project_program for tracking programs (used to be project type)
  *
  * @export
  * @param {Knex} knex
@@ -9,8 +9,10 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
-	set search_path= biohub, public;
-
+    -- __________________________________________________________________________________________________________________
+    -- ------------------------------------------- Project Program setup ------------------------------------------------
+    -- __________________________________________________________________________________________________________________
+	  set search_path= biohub, public;
 
     CREATE TABLE program (
       program_id              integer                 GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
@@ -26,16 +28,31 @@ export async function up(knex: Knex): Promise<void> {
       CONSTRAINT program_pk PRIMARY KEY (program_id)
     );
 
+    -- Add unique end-date key constraint (handles deletions as soft deletes by setting the record_end_date column)
+    CREATE UNIQUE INDEX program_nuk1 ON program(name, (record_end_date is NULL)) where record_end_date is null;
+
+    COMMENT ON COLUMN program.program_id IS 'System generated primary key identifier.';
+    COMMENT ON COLUMN program.name IS 'Name of the program.';
+    COMMENT ON COLUMN program.description IS 'A description of the program.';
+    COMMENT ON COLUMN program.record_effective_date IS 'Record level effective date.';
+    COMMENT ON COLUMN program.record_end_date IS 'Record level end date.';
+    COMMENT ON COLUMN program.create_date IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN program.create_user IS 'The id of the user who create the record.';
+    COMMENT ON COLUMN program.update_date IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN program.update_user IS 'The id of the user who updated the record.';
+    COMMENT ON COLUMN program.revision_count IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE program IS 'A table for programs and projects.';
+
     CREATE TABLE project_program (
-        project_program_id  integer                 GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-        project_id          integer                 NOT NULL,
-        program_id          integer                 NOT NULL,
-        create_date         timestamptz(6)          DEFAULT now() NOT NULL,
-        create_user         integer                 NOT NULL,
-        update_date         timestamptz(6),
-        update_user         integer,
-        revision_count      integer                 DEFAULT 0 NOT NULL,
-        CONSTRAINT project_program_pk PRIMARY KEY (project_program_id)
+      project_program_id  integer                 GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      project_id          integer                 NOT NULL,
+      program_id          integer                 NOT NULL,
+      create_date         timestamptz(6)          DEFAULT now() NOT NULL,
+      create_user         integer                 NOT NULL,
+      update_date         timestamptz(6),
+      update_user         integer,
+      revision_count      integer                 DEFAULT 0 NOT NULL,
+      CONSTRAINT project_program_pk PRIMARY KEY (project_program_id)
     );
 
     COMMENT ON COLUMN project_program.project_program_id IS 'System generated surrogate primary key identifier.';
@@ -61,6 +78,36 @@ export async function up(knex: Knex): Promise<void> {
 
     create or replace view program as select * from biohub.program;
     create or replace view project_program as select * from biohub.project_program;
+
+    -- __________________________________________________________________________________________________________________
+    -- ------------------------------------- Turning Types -> Programs --------------------------------------------------
+    -- __________________________________________________________________________________________________________________
+
+    set search_path= biohub, public;
+    
+    -- Get existing types and insert them into programs
+    INSERT INTO "program" (name, record_effective_date, description, record_end_date)
+    SELECT name, record_effective_date, description, record_end_date
+    FROM project_type;
+    
+    -- find existing types by name, cross reference programs, insert into join table with project ID and program ID on name.
+    -- then take all the existing projects and they're types and insert into new join table
+    INSERT INTO project_program (project_id, program_id)
+    SELECT project_id, project_type_id FROM project;
+    
+    set search_path= biohub_dapi_v1;
+    -- drop old views
+    DROP VIEW project;
+    DROP VIEW project_type;
+
+    set search_path= biohub, public;
+    -- drop old column and table
+    ALTER TABLE project DROP COLUMN project_type_id;
+    DROP TABLE project_type;
+    
+    set search_path= biohub_dapi_v1;
+    CREATE OR REPLACE VIEW project as select * from biohub.project;
+    CREATE OR REPLACE VIEW project_program as select * from biohub.project_program;
   `);
 }
 
