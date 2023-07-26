@@ -94,6 +94,13 @@ export async function up(knex: Knex): Promise<void> {
     -- then take all the existing projects and they're types and insert into new join table
     INSERT INTO project_program (project_id, program_id)
     SELECT project_id, project_type_id FROM project;
+
+    INSERT INTO project_program (project_id, program_id)
+    SELECT p.project_id, p2.program_id 
+    FROM project_type pt, project p, "program" p2
+    WHERE p.project_type_id = pt.project_type_id
+    AND p2.name = pt."name"
+    AND p2.record_end_date is null;
     
     set search_path= biohub_dapi_v1;
     -- drop old views
