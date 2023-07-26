@@ -6,7 +6,7 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import React, { useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
+import { AnimalForm2 } from './survey-animals/IndividualAnimalForm';
 
 const SurveyAnimals: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -18,7 +18,7 @@ const SurveyAnimals: React.FC = () => {
   return (
     <Box>
       <ComponentDialog open={openDialog} dialogTitle="Individual Animals" onClose={toggleDialog}>
-        <IndividualAnimalForm />
+        <AnimalForm2 />
       </ComponentDialog>
       <H2ButtonToolbar
         label="Individual Animals"
