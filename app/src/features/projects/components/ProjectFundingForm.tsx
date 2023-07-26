@@ -43,7 +43,7 @@ export const ProjectFundingFormInitialValues: IProjectFundingForm = {
 export const ProjectFundingFormYupSchema = yup.object().shape({});
 
 export interface IInvestmentActionCategoryOption extends IMultiAutocompleteFieldOption {
-  fs_id: number;
+  agency_id: number;
 }
 
 export interface IProjectFundingFormProps {

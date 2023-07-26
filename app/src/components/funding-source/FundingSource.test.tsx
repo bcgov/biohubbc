@@ -11,9 +11,7 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   project: {
-    updateProject: jest.fn(),
-    addFundingSource: jest.fn(),
-    deleteFundingSource: jest.fn()
+    updateProject: jest.fn()
   }
 };
 
@@ -40,8 +38,6 @@ describe('FundingSource', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
     mockUseApi.project.updateProject.mockClear();
-    mockUseApi.project.addFundingSource.mockClear();
-    mockUseApi.project.deleteFundingSource.mockClear();
   });
 
   afterEach(() => {

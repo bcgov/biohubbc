@@ -133,7 +133,7 @@ describe('getSurveyForUpdate', () => {
     const getSurveyByIdStub = sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({
       id: 1,
       proprietor: { proprietor_type_id: 1, first_nations_id: 1, disa_required: true },
-      funding: { funding_sources: [{ pfs_id: 1 }] }
+      funding: { funding_sources: [{ project_funding_source_id: 1 }] }
     } as unknown) as SurveyObject);
 
     const expectedResponse = {

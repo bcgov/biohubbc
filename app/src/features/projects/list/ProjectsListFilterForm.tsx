@@ -41,12 +41,12 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
           <>
             <ProjectAdvancedFilters
               coordinator_agency={
-                codesContext.codesDataLoader.data.coordinator_agency?.map((item) => {
+                codesContext.codesDataLoader.data.agency?.map((item) => {
                   return item.name;
                 }) || []
               }
               funding_sources={
-                codesContext.codesDataLoader.data.funding_source?.map((item) => {
+                codesContext.codesDataLoader.data.agency?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }

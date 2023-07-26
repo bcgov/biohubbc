@@ -47,17 +47,17 @@ const first_nations: IFundingSourceAutocompleteField[] = [
 const investment_action_category: IInvestmentActionCategoryOption[] = [
   {
     value: 1,
-    fs_id: 1,
+    agency_id: 1,
     label: 'action 1'
   },
   {
     value: 2,
-    fs_id: 2,
+    agency_id: 2,
     label: 'category 1'
   },
   {
     value: 3,
-    fs_id: 3,
+    agency_id: 3,
     label: 'not applicable'
   }
 ];

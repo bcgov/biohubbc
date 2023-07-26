@@ -97,8 +97,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     {
       field: 'type',
       headerName: 'Type',
-      flex: 1,
-      resizable: true
+      flex: 1
     },
     {
       field: 'regions',
