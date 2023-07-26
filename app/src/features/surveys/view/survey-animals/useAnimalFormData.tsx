@@ -1,4 +1,8 @@
 import { createContext, Dispatch, ReactNode, useContext, useReducer } from 'react';
+interface IAnimalGeneral {
+  taxon_id: string;
+  taxon_label: string;
+}
 
 interface IAnimalMarking {
   id: string;
@@ -9,7 +13,8 @@ interface IAnimalMeasurement {
 }
 
 interface IAnimalCapture {
-  id: string;
+  capture_longitude?: number;
+  capture_latitude?: number;
 }
 
 interface IAnimalMortality {
@@ -29,7 +34,7 @@ interface IAnimalTelemetryDevice {
 }
 
 export interface IAnimal {
-  general: string;
+  general: IAnimalGeneral;
   capture: IAnimalCapture[];
   marking: IAnimalMarking[];
   measurement: IAnimalMeasurement[];
@@ -46,19 +51,19 @@ type IAnimalFormData = Partial<IAnimal>;
 type IAnimalAction = {
   type: keyof IAnimal;
 } & (
-    | {
+  | {
       operation: 'ADD';
       payload:
-      | IAnimalMarking
-      | IAnimalMeasurement
-      | IAnimalCapture
-      | IAnimalMortality
-      | IAnimalRelationship
-      | IAnimalTelemetryDevice
-      | IAnimalImage;
+        | IAnimalMarking
+        | IAnimalMeasurement
+        | IAnimalCapture
+        | IAnimalMortality
+        | IAnimalRelationship
+        | IAnimalTelemetryDevice
+        | IAnimalImage;
     }
-    | { operation: 'REMOVE'; payload: number }
-  );
+  | { operation: 'REMOVE'; payload: number }
+);
 
 const animalReducer = (state: IAnimalFormData, action: IAnimalAction): IAnimalFormData => {
   //const { type, operation } = action;
