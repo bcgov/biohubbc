@@ -304,7 +304,6 @@ export class ProjectRepository extends BaseRepository {
         project.location_description,
         project.start_date,
         project.end_date,
-        project.caveats,
         project.comments,
         project.coordinator_first_name,
         project.coordinator_last_name,
@@ -356,7 +355,6 @@ export class ProjectRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         objectives,
-        caveats,
         revision_count
       FROM
         project
@@ -658,7 +656,6 @@ export class ProjectRepository extends BaseRepository {
         location_description,
         start_date,
         end_date,
-        caveats,
         comments,
         coordinator_first_name,
         coordinator_last_name,
@@ -674,7 +671,6 @@ export class ProjectRepository extends BaseRepository {
         ${postProjectData.location.location_description},
         ${postProjectData.project.start_date},
         ${postProjectData.project.end_date},
-        ${postProjectData.objectives.caveats},
         ${postProjectData.project.comments},
         ${postProjectData.coordinator.first_name},
         ${postProjectData.coordinator.last_name},
@@ -956,7 +952,6 @@ export class ProjectRepository extends BaseRepository {
 
     if (objectives) {
       sqlSetStatements.push(SQL`objectives = ${objectives.objectives}`);
-      sqlSetStatements.push(SQL`caveats = ${objectives.caveats}`);
     }
 
     if (coordinator) {

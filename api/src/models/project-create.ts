@@ -89,13 +89,11 @@ export class PostProjectData {
  */
 export class PostObjectivesData {
   objectives: string;
-  caveats: string;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || '';
   }
 }
 

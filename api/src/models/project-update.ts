@@ -25,14 +25,12 @@ export class PutProjectData {
 
 export class PutObjectivesData {
   objectives: string;
-  caveats: string;
   revision_count: number;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PutObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || '';
     this.revision_count = obj?.revision_count ?? null;
   }
 }

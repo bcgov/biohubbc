@@ -500,10 +500,7 @@ export class EmlService extends DBService {
       title: projectData.project.project_name,
       personnel: this._getProjectPersonnel(projectData),
       abstract: {
-        section: [
-          { title: 'Objectives', para: projectData.objectives.objectives },
-          { title: 'Caveats', para: projectData.objectives.caveats || NOT_SUPPLIED }
-        ]
+        section: [{ title: 'Objectives', para: projectData.objectives.objectives }]
       },
       ...this._getProjectFundingSources(projectData),
       studyAreaDescription: {
