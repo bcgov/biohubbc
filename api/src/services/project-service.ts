@@ -566,7 +566,7 @@ export class ProjectService extends DBService {
       revision_count
     );
 
-    if (putProjectData?.project_activities.length) {
+    if (putProjectData?.project_activities) {
       await this.updateActivityData(projectId, putProjectData);
     }
   }
