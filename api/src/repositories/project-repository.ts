@@ -1,4 +1,3 @@
-import { NumberOfAutoScalingGroups } from 'aws-sdk/clients/autoscaling';
 import { isArray } from 'lodash';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -347,7 +346,7 @@ export class ProjectRepository extends BaseRepository {
         p.update_user,
         p.revision_count,
         pp.project_programs,
-        pa.project_activities
+        pa.project_types
       FROM
         project p 
       LEFT JOIN (
@@ -357,9 +356,9 @@ export class ProjectRepository extends BaseRepository {
         GROUP BY pp.project_id
       ) as pp on pp.project_id = p.project_id
       LEFT JOIN (
-        SELECT array_remove(array_agg(pa.activity_id), NULL) as project_activities, p.project_id
+        SELECT array_remove(array_agg(pt.type_id), NULL) as project_types, p.project_id
         FROM project p 
-        LEFT JOIN project_activity pa on p.project_id = pa.project_id
+        LEFT JOIN project_type pt on p.project_id = pt.project_id
         GROUP BY p.project_id
       ) as pa on pa.project_id = p.project_id 
       WHERE
@@ -864,17 +863,17 @@ export class ProjectRepository extends BaseRepository {
     return result.id;
   }
 
-  async insertActivity(activityId: number, projectId: number): Promise<number> {
+  async insertType(typeId: number, projectId: number): Promise<number> {
     const sqlStatement = SQL`
-      INSERT INTO project_activity (
-        activity_id,
+      INSERT INTO project_type (
+        type_id,
         project_id
       ) VALUES (
-        ${activityId},
+        ${typeId},
         ${projectId}
       )
       RETURNING
-        project_activity_id as id;
+        project_type_id as id;
     `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
@@ -882,8 +881,8 @@ export class ProjectRepository extends BaseRepository {
     const result = response?.rows?.[0];
 
     if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert project activity data', [
-        'ProjectRepository->insertClassificationDetail',
+      throw new ApiExecuteSQLError('Failed to insert project type data', [
+        'ProjectRepository->insertType',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -1069,10 +1068,10 @@ export class ProjectRepository extends BaseRepository {
     }
   }
 
-  async deleteActivityData(projectId: NumberOfAutoScalingGroups): Promise<void> {
+  async deleteTypeData(projectId: number): Promise<void> {
     const sqlDeleteStatement = SQL`
       DELETE FROM
-        project_activity
+        project_type
       WHERE
         project_id = ${projectId};
     `;

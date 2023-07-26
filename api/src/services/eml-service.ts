@@ -565,9 +565,9 @@ export class EmlService extends DBService {
       });
     }
 
-    if (projectData.project.project_activities.length) {
-      const names = codes.activity
-        .filter((code) => projectData.project.project_activities.includes(code.id))
+    if (projectData.project.project_types.length) {
+      const names = codes.type
+        .filter((code) => projectData.project.project_types.includes(code.id))
         .map((code) => code.name);
 
       additionalMetadata.push({

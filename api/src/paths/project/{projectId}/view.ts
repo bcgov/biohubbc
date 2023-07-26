@@ -68,7 +68,7 @@ GET.apiDoc = {
                       'project_id',
                       'project_name',
                       'project_programs',
-                      'project_activities',
+                      'project_types',
                       'start_date',
                       'end_date',
                       'comments'
@@ -87,7 +87,7 @@ GET.apiDoc = {
                           type: 'number'
                         }
                       },
-                      project_activities: {
+                      project_types: {
                         type: 'array',
                         items: {
                           type: 'number'

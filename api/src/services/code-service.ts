@@ -26,7 +26,7 @@ export interface IAllCodeSets {
   first_nations: CodeSet;
   agency: CodeSet;
   investment_action_category: CodeSet<{ id: number; agency_id: number; name: string }>;
-  activity: CodeSet;
+  type: CodeSet;
   program: CodeSet;
   region: CodeSet;
   proprietor_type: CodeSet<{ id: number; name: string; is_first_nation: boolean }>;
@@ -58,7 +58,7 @@ export class CodeService extends DBService {
       first_nations,
       agency,
       investment_action_category,
-      activity,
+      type,
       iucn_conservation_action_level_1_classification,
       iucn_conservation_action_level_2_subclassification,
       iucn_conservation_action_level_3_subclassification,
@@ -76,7 +76,7 @@ export class CodeService extends DBService {
       await this.connection.query(queries.codes.getFirstNationsSQL().text),
       await this.connection.query(queries.codes.getAgencySQL().text),
       await this.connection.query(queries.codes.getInvestmentActionCategorySQL().text),
-      await this.connection.query(queries.codes.getActivitySQL().text),
+      await this.connection.query(queries.codes.getTypeSQL().text),
       await this.connection.query(queries.codes.getIUCNConservationActionLevel1ClassificationSQL().text),
       await this.connection.query(queries.codes.getIUCNConservationActionLevel2SubclassificationSQL().text),
       await this.connection.query(queries.codes.getIUCNConservationActionLevel3SubclassificationSQL().text),
@@ -96,7 +96,7 @@ export class CodeService extends DBService {
       first_nations: first_nations?.rows || [],
       agency: agency?.rows || [],
       investment_action_category: investment_action_category?.rows || [],
-      activity: activity?.rows || [],
+      type: type?.rows || [],
       iucn_conservation_action_level_1_classification: iucn_conservation_action_level_1_classification?.rows || [],
       iucn_conservation_action_level_2_subclassification:
         iucn_conservation_action_level_2_subclassification?.rows || [],

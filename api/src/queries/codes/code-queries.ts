@@ -37,8 +37,7 @@ export const getProprietorTypeSQL = (): SQLStatement =>
  *
  * @returns {SQLStatement} sql query object
  */
-export const getActivitySQL = (): SQLStatement =>
-  SQL`SELECT activity_id as id, name from activity where record_end_date is null;`;
+export const getTypeSQL = (): SQLStatement => SQL`SELECT type_id as id, name from type where record_end_date is null;`;
 
 /**
  * SQL query to fetch field method codes.

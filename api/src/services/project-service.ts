@@ -385,9 +385,7 @@ export class ProjectService extends DBService {
     // Handle project activities
     promises.push(
       Promise.all(
-        postProjectData.project.project_activities.map((activityId: number) =>
-          this.insertActivity(activityId, projectId)
-        )
+        postProjectData.project.project_activities.map((typeId: number) => this.insertType(typeId, projectId))
       )
     );
 
@@ -425,8 +423,8 @@ export class ProjectService extends DBService {
     return this.projectRepository.insertClassificationDetail(iucn3_id, project_id);
   }
 
-  async insertActivity(activityId: number, projectId: number): Promise<number> {
-    return this.projectRepository.insertActivity(activityId, projectId);
+  async insertType(typeId: number, projectId: number): Promise<number> {
+    return this.projectRepository.insertType(typeId, projectId);
   }
 
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
@@ -566,18 +564,18 @@ export class ProjectService extends DBService {
       revision_count
     );
 
-    if (putProjectData?.project_activities) {
-      await this.updateActivityData(projectId, putProjectData);
+    if (putProjectData?.project_types) {
+      await this.updateTypeData(projectId, putProjectData);
     }
   }
 
-  async updateActivityData(projectId: number, projectData: PutProjectData) {
-    await this.projectRepository.deleteActivityData(projectId);
+  async updateTypeData(projectId: number, projectData: PutProjectData) {
+    await this.projectRepository.deleteTypeData(projectId);
 
-    const insertActivityPromises =
-      projectData?.project_activities?.map((activityId: number) => this.insertActivity(activityId, projectId)) || [];
+    const insertTypePromises =
+      projectData?.project_types?.map((typeId: number) => this.insertType(typeId, projectId)) || [];
 
-    await Promise.all([...insertActivityPromises]);
+    await Promise.all([...insertTypePromises]);
   }
 
   /**
