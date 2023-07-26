@@ -252,26 +252,6 @@ export class ProjectRepository extends BaseRepository {
         );
       }
 
-      if (filterFields.project_programs) {
-        let programs = filterFields.project_programs;
-        if (!isArray(filterFields.project_programs)) {
-          programs = [filterFields.project_programs];
-        }
-
-        sqlStatement.append(SQL` AND p2.program_id IN (`);
-        programs.forEach((id, index) => {
-          // add the element
-          sqlStatement.append(id);
-
-          if (index !== programs.length - 1) {
-            // add a comma unless it is the last element in the array
-            sqlStatement.append(',');
-          }
-        });
-        sqlStatement.append(SQL`)`);
-        // sqlStatement.append(SQL` AND p2.program_id IN (${programs.map((id) => `'${id}'`)})`);
-      }
-
       if (filterFields.project_name) {
         sqlStatement.append(SQL` AND p.name = ${filterFields.project_name}`);
       }
@@ -303,8 +283,34 @@ export class ProjectRepository extends BaseRepository {
         p.name,
         p.start_date,
         p.end_date,
-        p.coordinator_agency_name;
+        p.coordinator_agency_name
     `);
+
+    /* 
+      this is placed after the `group by` to take advantage of the `HAVING` clause
+      by filtering placing the filter in the HAVING clause we are able to properly search 
+      on program ids while still returning the full list that is associated to the project
+    */
+    if (filterFields.project_programs) {
+      let programs = filterFields.project_programs;
+      if (!isArray(filterFields.project_programs)) {
+        programs = [filterFields.project_programs];
+      }
+
+      sqlStatement.append(SQL` HAVING array_agg(distinct p2.program_id) && '{`);
+      programs.forEach((id, index) => {
+        // add the element
+        sqlStatement.append(id);
+
+        if (index !== programs.length - 1) {
+          // add a comma unless it is the last element in the array
+          sqlStatement.append(',');
+        }
+      });
+      sqlStatement.append(SQL`}'`);
+    }
+
+    sqlStatement.append(';');
 
     const response = await this.connection.sql<ProjectData>(sqlStatement);
     if (!response.rows) {
