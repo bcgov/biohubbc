@@ -90,10 +90,6 @@ export async function up(knex: Knex): Promise<void> {
     INSERT INTO "program" (name, record_effective_date, description, record_end_date)
     SELECT name, record_effective_date, description, record_end_date
     FROM project_type;
-    
-    -- take all existing types and move them into programs
-    INSERT INTO project_program (project_id, program_id)
-    SELECT project_id, project_type_id FROM project;
 
     -- with existing projects, find the type then program via name and insert them for the program
     -- ids may not be consistent with a simple insert
