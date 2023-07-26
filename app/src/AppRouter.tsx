@@ -42,13 +42,15 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle path="/playground" title={'Playground'}>
-        <BaseLayout>
-          <AuthenticatedRouteGuard>
-            <Playground />
-          </AuthenticatedRouteGuard>
-        </BaseLayout>
-      </RouteWithTitle>
+      {process.env.NODE_ENV === 'development' && (
+        <RouteWithTitle path="/playground" title={'Playground'}>
+          <BaseLayout>
+            <AuthenticatedRouteGuard>
+              <Playground />
+            </AuthenticatedRouteGuard>
+          </BaseLayout>
+        </RouteWithTitle>
+      )}
 
       <RouteWithTitle path="/access-request" title={getTitle('Access Request')}>
         <BaseLayout>
