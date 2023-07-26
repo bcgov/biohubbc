@@ -102,7 +102,7 @@ export class CodeService extends DBService {
         iucn_conservation_action_level_2_subclassification?.rows || [],
       iucn_conservation_action_level_3_subclassification:
         iucn_conservation_action_level_3_subclassification?.rows || [],
-      program: (program && program.rows) || [],
+      program: program?.rows || [],
       proprietor_type: proprietor_type?.rows || [],
       system_roles: system_roles?.rows || [],
       project_roles: project_roles?.rows || [],
