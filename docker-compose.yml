@@ -84,10 +84,6 @@ services:
       - BACKBONE_INTAKE_PATH=${BACKBONE_INTAKE_PATH}
       - BACKBONE_ARTIFACT_INTAKE_PATH=${BACKBONE_ARTIFACT_INTAKE_PATH}
       - BACKBONE_INTAKE_ENABLED=${BACKBONE_INTAKE_ENABLED}
-      - CRITTERBASE_API=${CRITTERBASE_API}
-      - CRITTERBASE_API_KEY=${CRITTERBASE_API_KEY}
-      - CRITTERBASE_DEV_KEYCLOAK_UUID=${CRITTERBASE_DEV_KEYCLOAK_UUID}
-      - CRITTERBASE_DEV_USER_ID=${CRITTERBASE_DEV_USER_ID}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
