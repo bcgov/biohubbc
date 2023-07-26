@@ -1,18 +1,14 @@
-import { mdiPlus } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Button, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import React from 'react';
 
 interface FormSectionWrapperProps {
   title: string;
   titleHelp: string;
-  btnText: string;
-  handleBtnClick: () => void;
   //Input elements to render in section
   children: JSX.Element[];
 }
-const FormSectionWrapper = ({ title, titleHelp, children, handleBtnClick, btnText }: FormSectionWrapperProps) => (
+const FormSectionWrapper = ({ title, titleHelp, children }: FormSectionWrapperProps) => (
   <>
     <Typography component="legend">
       <HelpButtonTooltip content={titleHelp}>{title}</HelpButtonTooltip>
@@ -25,16 +21,6 @@ const FormSectionWrapper = ({ title, titleHelp, children, handleBtnClick, btnTex
           </Grid>
         );
       })}
-      <Grid item>
-        <Button
-          onClick={handleBtnClick}
-          startIcon={<Icon path={mdiPlus} size={1} />}
-          variant="outlined"
-          size="small"
-          color="primary">
-          {btnText}
-        </Button>
-      </Grid>
     </Grid>
   </>
 );

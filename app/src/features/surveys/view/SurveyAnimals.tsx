@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Box, Divider } from '@mui/material';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -6,7 +5,7 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import React, { useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import { AnimalForm2 } from './survey-animals/IndividualAnimalForm';
+import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 
 const SurveyAnimals: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -18,7 +17,7 @@ const SurveyAnimals: React.FC = () => {
   return (
     <Box>
       <ComponentDialog open={openDialog} dialogTitle="Individual Animals" onClose={toggleDialog}>
-        <AnimalForm2 />
+        <IndividualAnimalForm />
       </ComponentDialog>
       <H2ButtonToolbar
         label="Individual Animals"

@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import CustomTextField from 'components/fields/CustomTextField';
 import React, { useEffect } from 'react';
-import { IAnimal } from '../useAnimalFormData';
+import { IAnimal } from '../animal';
 import { useFormikContext } from 'formik';
 
 const GeneralAnimalForm = () => {
