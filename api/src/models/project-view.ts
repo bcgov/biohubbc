@@ -11,7 +11,7 @@ export interface IProjectAdvancedFilters {
   keyword?: string;
   project_name?: string;
   agency_id?: number;
-  agency_project_id?: string;
+  agency_project_id?: number;
   species?: number[];
 }
 export interface IGetProject {

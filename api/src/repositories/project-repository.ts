@@ -288,7 +288,7 @@ export class ProjectRepository extends BaseRepository {
 
     /* 
       this is placed after the `group by` to take advantage of the `HAVING` clause
-      by filtering placing the filter in the HAVING clause we are able to properly search 
+      by placing the filter in the HAVING clause we are able to properly search 
       on program ids while still returning the full list that is associated to the project
     */
     if (filterFields.project_programs) {
@@ -297,6 +297,7 @@ export class ProjectRepository extends BaseRepository {
         programs = [filterFields.project_programs];
       }
 
+      // postgres arrays literals start and end with {}
       sqlStatement.append(SQL` HAVING array_agg(distinct p2.program_id) && '{`);
       programs.forEach((id, index) => {
         // add the element

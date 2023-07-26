@@ -291,11 +291,11 @@ describe('ProjectRepository', () => {
       const input = {
         coordinator_agency: 'string',
         start_date: 'start',
-        end_date: null,
+        end_date: undefined,
         project_name: 'string',
         agency_project_id: 1,
         agency_id: 1,
-        species: [{ id: 1 }],
+        species: [1],
         keyword: 'string'
       };
 
@@ -313,13 +313,13 @@ describe('ProjectRepository', () => {
 
       const input = {
         coordinator_agency: 'string',
-        start_date: null,
+        start_date: undefined,
         end_date: 'end',
         project_programs: [1],
         project_name: 'string',
         agency_project_id: 1,
         agency_id: 1,
-        species: [{ id: 1 }],
+        species: [1],
         keyword: 'string'
       };
 

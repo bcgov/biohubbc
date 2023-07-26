@@ -202,7 +202,7 @@ describe('ProjectService', () => {
 
       const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectList').resolves(data);
 
-      const response = await service.getProjectList(true, 1, 1);
+      const response = await service.getProjectList(true, 1, {});
 
       expect(repoStub).to.be.calledOnce;
       expect(response[0].id).to.equal(123);
