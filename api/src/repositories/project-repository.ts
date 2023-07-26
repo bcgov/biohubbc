@@ -217,6 +217,8 @@ export class ProjectRepository extends BaseRepository {
         ON p.project_id = pr.project_id
       LEFT JOIN region_lookup rl 
         ON pr.region_id = rl.region_id
+      LEFT OUTER JOIN agency as a
+        ON iac.agency_id = a.agency_id
       WHERE 1 = 1
     `;
 
@@ -261,7 +263,7 @@ export class ProjectRepository extends BaseRepository {
       }
 
       if (filterFields.agency_id) {
-        sqlStatement.append(SQL` AND fs.funding_source_id = ${filterFields.agency_id}`);
+        sqlStatement.append(SQL` AND a.agency_id = ${filterFields.agency_id}`);
       }
 
       if (filterFields?.species && filterFields?.species?.length > 0) {
@@ -272,7 +274,7 @@ export class ProjectRepository extends BaseRepository {
         const keyword_string = '%'.concat(filterFields.keyword).concat('%');
         sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
         sqlStatement.append(SQL` OR p.coordinator_agency_name ilike ${keyword_string}`);
-        sqlStatement.append(SQL` OR fs.name ilike ${keyword_string}`);
+        sqlStatement.append(SQL` OR a.name ilike ${keyword_string}`);
         sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
       }
     }
@@ -505,13 +507,13 @@ export class ProjectRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         pfs.project_funding_source_id as id,
-        fs.funding_source_id as agency_id,
+        a.agency_id,
         pfs.funding_amount::numeric::int,
         pfs.funding_start_date as start_date,
         pfs.funding_end_date as end_date,
         iac.investment_action_category_id as investment_action_category,
         iac.name as investment_action_category_name,
-        fs.name as agency_name,
+        a.name as agency_name,
         pfs.funding_source_project_id as agency_project_id,
         pfs.revision_count as revision_count,
         pfs.first_nations_id,
@@ -523,9 +525,9 @@ export class ProjectRepository extends BaseRepository {
       ON
         pfs.investment_action_category_id = iac.investment_action_category_id
       LEFT OUTER JOIN
-        funding_source as fs
+        agency as a
       ON
-        iac.funding_source_id = fs.funding_source_id
+        iac.agency_id = a.agency_id
       LEFT OUTER JOIN 
         first_nations as fn
       ON
@@ -534,14 +536,14 @@ export class ProjectRepository extends BaseRepository {
         pfs.project_id = ${projectId}
       GROUP BY
         pfs.project_funding_source_id,
-        fs.funding_source_id,
+        a.agency_id,
         pfs.funding_source_project_id,
         pfs.funding_amount,
         pfs.funding_start_date,
         pfs.funding_end_date,
         iac.investment_action_category_id,
         iac.name,
-        fs.name,
+        a.name,
         pfs.revision_count,
         pfs.first_nations_id,
         fn.name

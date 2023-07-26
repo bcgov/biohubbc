@@ -1,4 +1,4 @@
-import { coordinator_agency, region, regional_offices } from '../constants/codes';
+import { region, regional_offices } from '../constants/codes';
 import { queries } from '../queries/queries';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
@@ -24,11 +24,10 @@ export type CodeSet<T extends ICode = ICode> = T[];
 export interface IAllCodeSets {
   management_action_type: CodeSet;
   first_nations: CodeSet;
-  funding_source: CodeSet;
-  investment_action_category: CodeSet<{ id: number; fs_id: number; name: string }>;
+  agency: CodeSet;
+  investment_action_category: CodeSet<{ id: number; agency_id: number; name: string }>;
   activity: CodeSet;
   program: CodeSet;
-  coordinator_agency: CodeSet;
   region: CodeSet;
   proprietor_type: CodeSet<{ id: number; name: string; is_first_nation: boolean }>;
   iucn_conservation_action_level_1_classification: CodeSet;
@@ -57,7 +56,7 @@ export class CodeService extends DBService {
     const [
       management_action_type,
       first_nations,
-      funding_source,
+      agency,
       investment_action_category,
       activity,
       iucn_conservation_action_level_1_classification,
@@ -75,7 +74,7 @@ export class CodeService extends DBService {
     ] = await Promise.all([
       await this.connection.query(queries.codes.getManagementActionTypeSQL().text),
       await this.connection.query(queries.codes.getFirstNationsSQL().text),
-      await this.connection.query(queries.codes.getFundingSourceSQL().text),
+      await this.connection.query(queries.codes.getAgencySQL().text),
       await this.connection.query(queries.codes.getInvestmentActionCategorySQL().text),
       await this.connection.query(queries.codes.getActivitySQL().text),
       await this.connection.query(queries.codes.getIUCNConservationActionLevel1ClassificationSQL().text),
@@ -93,34 +92,27 @@ export class CodeService extends DBService {
     ]);
 
     return {
-      management_action_type: (management_action_type && management_action_type.rows) || [],
-      first_nations: (first_nations && first_nations.rows) || [],
-      funding_source: (funding_source && funding_source.rows) || [],
-      investment_action_category: (investment_action_category && investment_action_category.rows) || [],
-      activity: (activity && activity.rows) || [],
-      iucn_conservation_action_level_1_classification:
-        (iucn_conservation_action_level_1_classification && iucn_conservation_action_level_1_classification.rows) || [],
+      management_action_type: management_action_type?.rows || [],
+      first_nations: first_nations?.rows || [],
+      agency: agency?.rows || [],
+      investment_action_category: investment_action_category?.rows || [],
+      activity: activity?.rows || [],
+      iucn_conservation_action_level_1_classification: iucn_conservation_action_level_1_classification?.rows || [],
       iucn_conservation_action_level_2_subclassification:
-        (iucn_conservation_action_level_2_subclassification &&
-          iucn_conservation_action_level_2_subclassification.rows) ||
-        [],
+        iucn_conservation_action_level_2_subclassification?.rows || [],
       iucn_conservation_action_level_3_subclassification:
-        (iucn_conservation_action_level_3_subclassification &&
-          iucn_conservation_action_level_3_subclassification.rows) ||
-        [],
-      proprietor_type: (proprietor_type && proprietor_type.rows) || [],
+        iucn_conservation_action_level_3_subclassification?.rows || [],
       program: (program && program.rows) || [],
-      system_roles: (system_roles && system_roles.rows) || [],
-      project_roles: (project_roles && project_roles.rows) || [],
-      administrative_activity_status_type:
-        (administrative_activity_status_type && administrative_activity_status_type.rows) || [],
-      field_methods: (field_methods && field_methods.rows) || [],
-      ecological_seasons: (ecological_seasons && ecological_seasons.rows) || [],
-      intended_outcomes: (intended_outcomes && intended_outcomes.rows) || [],
-      vantage_codes: (vantage_codes && vantage_codes.rows) || [],
+      proprietor_type: proprietor_type?.rows || [],
+      system_roles: system_roles?.rows || [],
+      project_roles: project_roles?.rows || [],
+      administrative_activity_status_type: administrative_activity_status_type?.rows || [],
+      field_methods: field_methods?.rows || [],
+      ecological_seasons: ecological_seasons?.rows || [],
+      intended_outcomes: intended_outcomes?.rows || [],
+      vantage_codes: vantage_codes?.rows || [],
 
       // TODO Temporarily hard coded list of code values below
-      coordinator_agency,
       region,
       regional_offices
     };

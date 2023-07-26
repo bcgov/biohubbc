@@ -17,12 +17,12 @@ export const getFirstNationsSQL = (): SQLStatement =>
   SQL`SELECT first_nations_id as id, name from first_nations where record_end_date is null ORDER BY name ASC;`;
 
 /**
- * SQL query to fetch funding source codes.
+ * SQL query to fetch agency codes.
  *
  * @returns {SQLStatement} sql query object
  */
-export const getFundingSourceSQL = (): SQLStatement =>
-  SQL`SELECT funding_source_id as id, name from funding_source where record_end_date is null ORDER BY name ASC;`;
+export const getAgencySQL = (): SQLStatement =>
+  SQL`SELECT agency_id as id, name from agency where record_end_date is null ORDER BY name ASC;`;
 
 /**
  * SQL query to fetch proprietor type codes.
@@ -86,7 +86,7 @@ export const getProgramSQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getInvestmentActionCategorySQL = (): SQLStatement =>
-  SQL`SELECT investment_action_category_id as id, funding_source_id as fs_id, name from investment_action_category where record_end_date is null ORDER BY name ASC;`;
+  SQL`SELECT investment_action_category_id as id, agency_id, name from investment_action_category where record_end_date is null ORDER BY name ASC;`;
 
 /**
  * SQL query to fetch IUCN conservation action level 1 classification codes.

@@ -52,7 +52,7 @@ export class RegionService extends DBService {
    */
   async addRegionsToProject(projectId: number, regions: IRegion[]): Promise<void> {
     // remove existing regions from a project
-    this.regionRepository.deleteRegionsForProject(projectId);
+    await this.regionRepository.deleteRegionsForProject(projectId);
 
     const regionIds = regions.map((item) => item.region_id);
     await this.regionRepository.addRegionsToProject(projectId, regionIds);
@@ -78,7 +78,7 @@ export class RegionService extends DBService {
    */
   async addRegionsToSurvey(surveyId: number, regions: IRegion[]): Promise<void> {
     // remove existing regions from a survey
-    this.regionRepository.deleteRegionsForSurvey(surveyId);
+    await this.regionRepository.deleteRegionsForSurvey(surveyId);
 
     const regionIds = regions.map((item) => item.region_id);
     await this.regionRepository.addRegionsToSurvey(surveyId, regionIds);
@@ -91,6 +91,6 @@ export class RegionService extends DBService {
    * @returns {*} {Promise<IRegion[]>}
    */
   async searchRegionWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
-    return await this.regionRepository.searchRegionsWithDetails(details);
+    return this.regionRepository.searchRegionsWithDetails(details);
   }
 }

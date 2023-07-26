@@ -179,14 +179,14 @@ GET.apiDoc = {
                         items: {
                           type: 'object',
                           required: [
-                            'pfs_id',
+                            'project_funding_source_id',
                             'agency_name',
                             'funding_amount',
                             'funding_start_date',
                             'funding_end_date'
                           ],
                           properties: {
-                            pfs_id: {
+                            project_funding_source_id: {
                               type: 'number',
                               nullable: true
                             },

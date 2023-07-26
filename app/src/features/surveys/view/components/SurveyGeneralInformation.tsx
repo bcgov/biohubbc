@@ -125,7 +125,7 @@ const SurveyGeneralInformation = () => {
         <FundingSource
           funding_sources={funding.funding_sources.map((item) => {
             return {
-              id: item.pfs_id,
+              id: item.project_funding_source_id,
               agency_name: item.agency_name,
               investment_action_category_name: item.investment_action_category_name,
               funding_amount: item.funding_amount,

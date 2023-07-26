@@ -28,11 +28,11 @@ describe('CodeService', () => {
       expect(response).to.have.all.keys(
         'management_action_type',
         'first_nations',
-        'funding_source',
+        'agency',
         'investment_action_category',
         'activity',
         'program',
-        'coordinator_agency',
+        'project_type',
         'region',
         'proprietor_type',
         'iucn_conservation_action_level_1_classification',

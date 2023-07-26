@@ -238,20 +238,20 @@ export class SurveyRepository extends BaseRepository {
 
       SELECT
           sfs.project_funding_source_id,
-          fs2.funding_source_id,
+          a.agency_id,
           pfs.funding_source_project_id,
           pfs.funding_amount::numeric::int,
           pfs.funding_start_date,
           pfs.funding_end_date,
           iac.investment_action_category_id,
           iac.name as investment_action_category_name,
-          fs2.name as agency_name,
+          a.name as agency_name,
           pfs.first_nations_id as first_nations_id,
           fn."name" as first_nations_name
       FROM survey_funding_source sfs
       LEFT JOIN project_funding_source pfs ON sfs.project_funding_source_id = pfs.project_funding_source_id
       LEFT JOIN investment_action_category iac ON pfs.investment_action_category_id = iac.investment_action_category_id
-      LEFT JOIN funding_source fs2 ON iac.funding_source_id = fs2.funding_source_id
+      LEFT JOIN agency a ON iac.agency_id = a.agency_id
       LEFT JOIN first_nations fn ON pfs.first_nations_id = fn.first_nations_id
       WHERE sfs.survey_id = ${surveyId}
       ORDER BY pfs.funding_start_date ;
@@ -901,19 +901,19 @@ export class SurveyRepository extends BaseRepository {
   /**
    * Links a Survey and a Funding source together
    *
-   * @param {number} funding_source_id
+   * @param {number} project_funding_source_id
    * @param {number} surveyId
    * @returns {*} Promise<void>
    * @memberof SurveyRepository
    */
-  async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
+  async insertSurveyFundingSource(project_funding_source_id: number, surveyId: number) {
     const sqlStatement = SQL`
       INSERT INTO survey_funding_source (
         survey_id,
         project_funding_source_id
       ) VALUES (
         ${surveyId},
-        ${funding_source_id}
+        ${project_funding_source_id}
       );
     `;
     await this.connection.query(sqlStatement.text, sqlStatement.values);
