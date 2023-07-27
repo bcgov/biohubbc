@@ -13,7 +13,10 @@ export interface ICbSelectField {
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const api = useCritterbaseApi();
   const cbLookupLoader = useDataLoader(async () => api.lookup.getSelectOptions(props.route));
-  cbLookupLoader.load();
+
+  if(!cbLookupLoader.data) {
+    cbLookupLoader.load();
+  }
 
   return (
     <SelectWithSubtextField
