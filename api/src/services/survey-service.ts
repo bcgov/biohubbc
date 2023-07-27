@@ -382,7 +382,9 @@ export class SurveyService extends DBService {
     // Handle inserting any funding sources associated to this survey
     promises.push(
       Promise.all(
-        postSurveyData.funding.funding_sources.map((fsId: number) => this.insertSurveyFundingSource(fsId, surveyId))
+        postSurveyData.funding.funding_sources.map((project_funding_source_id: number) =>
+          this.insertSurveyFundingSource(project_funding_source_id, surveyId)
+        )
       )
     );
 
@@ -523,13 +525,13 @@ export class SurveyService extends DBService {
   /**
    * Inserts new record and associates funding source to a survey
    *
-   * @param {number} funding_source_id
+   * @param {number} project_funding_source_id
    * @param {number} surveyID
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
-    return this.surveyRepository.insertSurveyFundingSource(funding_source_id, surveyId);
+  async insertSurveyFundingSource(project_funding_source_id: number, surveyId: number) {
+    return this.surveyRepository.insertSurveyFundingSource(project_funding_source_id, surveyId);
   }
 
   /**
@@ -723,8 +725,8 @@ export class SurveyService extends DBService {
 
     const promises: Promise<any>[] = [];
 
-    surveyData.funding.funding_sources.forEach((fsId: number) =>
-      promises.push(this.insertSurveyFundingSource(fsId, surveyId))
+    surveyData.funding.funding_sources.forEach((project_funding_source_id: number) =>
+      promises.push(this.insertSurveyFundingSource(project_funding_source_id, surveyId))
     );
 
     return Promise.all(promises);

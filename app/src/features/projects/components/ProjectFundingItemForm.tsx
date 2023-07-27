@@ -210,7 +210,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                       if (event.target.value !== 1 && event.target.value !== 2) {
                         setFieldValue(
                           'investment_action_category',
-                          props.investment_action_category.find((item) => item.fs_id === options?.value)?.value
+                          props.investment_action_category.find((item) => item.agency_id === options?.value)?.value
                         );
                       }
                     }
@@ -238,8 +238,8 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                     'data-testid': 'investment_action_category'
                   }}>
                   {props.investment_action_category
-                    // Only show the investment action categories whose fs_id matches the agency_id id
-                    .filter((item) => item.fs_id === values.agency_id)
+                    // Only show the investment action categories whose agency_id matches the agency_id id
+                    .filter((item) => item.agency_id === values.agency_id)
                     .map((item) => (
                       <MenuItem key={item.value} value={item.value}>
                         {item.label}

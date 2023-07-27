@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import {
   getActivitySQL,
   getAdministrativeActivityStatusTypeSQL,
+  getAgencySQL,
   getFirstNationsSQL,
-  getFundingSourceSQL,
   getInvestmentActionCategorySQL,
   getIUCNConservationActionLevel1ClassificationSQL,
   getIUCNConservationActionLevel2SubclassificationSQL,
@@ -29,9 +29,9 @@ describe('getFirstNationsSQL', () => {
   });
 });
 
-describe('getFundingSourceSQL', () => {
+describe('getAgencySQL', () => {
   it('returns valid sql statement', () => {
-    const response = getFundingSourceSQL();
+    const response = getAgencySQL();
     expect(response).to.not.be.null;
   });
 });

@@ -71,7 +71,7 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
 
 //Function to get the list of coordinator agencies from the code set
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
-  const options = [...(codes?.coordinator_agency || []), ...(codes?.first_nations || [])];
+  const options = [...(codes?.agency || []), ...(codes?.first_nations || [])];
   return alphabetizeObjects(options, 'name').map((item) => item.name);
 };
 
@@ -179,13 +179,13 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                 <Box mt={3}>
                   <ProjectFundingForm
                     funding_sources={
-                      codes?.funding_source?.map((item) => {
+                      codes?.agency?.map((item) => {
                         return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
                       }) || []
                     }
                     investment_action_category={
                       codes?.investment_action_category?.map((item) => {
-                        return { value: item.id, fs_id: item.fs_id, label: item.name };
+                        return { value: item.id, agency_id: item.agency_id, label: item.name };
                       }) || []
                     }
                     first_nations={
@@ -211,7 +211,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                       }) || []
                     }
                     stakeholder_partnerships={
-                      codes?.funding_source?.map((item) => {
+                      codes?.agency?.map((item) => {
                         return { value: item.name, label: item.name };
                       }) || []
                     }

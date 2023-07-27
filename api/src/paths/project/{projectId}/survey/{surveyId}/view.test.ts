@@ -41,7 +41,7 @@ describe('survey/{surveyId}/view', () => {
             funding: {
               funding_sources: [
                 {
-                  pfs_id: 1,
+                  project_funding_source_id: 1,
                   agency_name: 'name',
                   funding_amount: 100,
                   funding_start_date: '2020-04-04',
@@ -116,7 +116,7 @@ describe('survey/{surveyId}/view', () => {
             funding: {
               funding_sources: [
                 {
-                  pfs_id: null,
+                  project_funding_source_id: null,
                   agency_name: null,
                   funding_amount: null,
                   funding_start_date: null,
