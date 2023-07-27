@@ -17,9 +17,9 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     SET search_path = ${DB_SCHEMA_DAPI_V1};
     DROP VIEW project;
+    DROP VIEW survey;
     DROP VIEW climate_change_initiative;
     DROP VIEW project_climate_initiative;
-    DROP VIEW survey;
 
     -------------------------------------------------------------------------
     -- Remove Climate initiative tables
@@ -32,7 +32,15 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- Add comments column to survey
     -------------------------------------------------------------------------
-    ALTER TABLE survey ADD COLUMN 
+    ALTER TABLE survey ADD COLUMN comment varchar(3000);
+    COMMENT ON COLUMN survey.comment IS 'Comments about the Survey.';
+
+
+    -------------------------------------------------------------------------
+    -- Move caveats to survey comments
+    -------------------------------------------------------------------------
+
+
     -------------------------------------------------------------------------
     -- Remove caveats table
     -------------------------------------------------------------------------
@@ -40,6 +48,7 @@ export async function up(knex: Knex): Promise<void> {
 
     SET search_path = ${DB_SCHEMA_DAPI_V1};
     CREATE OR REPLACE VIEW project as select * from ${DB_SCHEMA}.project;
+    CREATE OR REPLACE VIEW survey as select * from ${DB_SCHEMA}.survey;
   `);
 }
 
