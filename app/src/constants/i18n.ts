@@ -296,3 +296,17 @@ export const SubmitSurveyBiohubI18N = {
   submitSurveyBiohubNoSubmissionDataDialogTitle: 'No survey data to submit',
   submitSurveyBiohubNoSubmissionDataDialogText: 'No new data or information has been added to this survey to submit.'
 };
+
+export const SurveyAnimalsI18N = {
+  animalDialogTitle: 'Invidividual Animals',
+  animalDialogAddNew: 'Add New Individual',
+  animalGeneralTitle: 'General',
+  animalGeneralHelp: 'General help placeholder',
+  animalCaptureTitle: 'Capture',
+  animalCaptureHelp: 'Capture help placeholder',
+  animalCaptureAddBtn: 'Add Capture Event',
+
+  // Input help strings
+  taxonHelp: 'Taxon help placeholder',
+  taxonLabelHelp: 'Taxon label help placeholder'
+};
