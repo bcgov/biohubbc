@@ -64,16 +64,22 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- Rename triggers and sequence
     -------------------------------------------------------------------------    
-    -- Rename sequence
     ALTER SEQUENCE project_activity_project_activity_id_seq RENAME TO project_type_project_type_id_seq;
 
-    -- rename triggers
+
     ALTER TRIGGER audit_activity ON type RENAME TO audit_type;
     ALTER TRIGGER journal_activity ON type RENAME TO journal_type;
     
     ALTER TRIGGER audit_project_activity ON project_type RENAME TO audit_project_type;
     ALTER TRIGGER journal_project_activity ON project_type RENAME TO journal_project_type;
     
+    -------------------------------------------------------------------------
+    -- Update table comments
+    -------------------------------------------------------------------------    
+    COMMENT ON TABLE type IS 'A list of project types.';
+    COMMENT ON COLUMN type.name IS 'Name of the type.';
+    COMMENT ON TABLE project_type IS 'A associative entity that joins projects and project types.';
+
     -------------------------------------------------------------------------
     -- Recreate views
     -------------------------------------------------------------------------
