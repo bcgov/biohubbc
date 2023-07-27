@@ -11,9 +11,15 @@ interface IAnimalMeasurement {
   id: string;
 }
 
-interface IAnimalCapture {
-  capture_longitude?: number;
-  capture_latitude?: number;
+export interface IAnimalCapture {
+  capture_longitude: number;
+  capture_latitude: number;
+  capture_timestamp: Date;
+  capture_comment?: string;
+  release_longitude?: number;
+  release_latitude?: number;
+  release_timestamp?: Date;
+  release_comment?: string;
 }
 
 interface IAnimalMortality {
@@ -28,11 +34,11 @@ interface IAnimalImage {
   id: string;
 }
 
-interface IAnimalTelemetryDevice {
+export interface IAnimalTelemetryDevice {
   id: string;
 }
 
-interface IAnimal {
+export interface IAnimal {
   general: IAnimalGeneral;
   capture: IAnimalCapture[];
   marking: IAnimalMarking[];
@@ -43,8 +49,6 @@ interface IAnimal {
   device: IAnimalTelemetryDevice;
 }
 
-type IAnimalKey = keyof IAnimal;
+export type IAnimalAttribute = IAnimal[IAnimalKey];
 
-type IAnimalFormData = Partial<IAnimal>;
-
-export type { IAnimal, IAnimalKey, IAnimalFormData };
+export type IAnimalKey = keyof IAnimal;

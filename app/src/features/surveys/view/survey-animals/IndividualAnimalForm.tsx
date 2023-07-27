@@ -12,15 +12,15 @@ import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
  *
  * returns {*}
  */
-export const AnimalFormValues: IAnimal = {
+export const AnimalFormValues: Partial<IAnimal> = {
   general: { taxon_id: '', taxon_label: '' },
   capture: [],
   marking: [],
-  mortality: { id: '' },
+  mortality: undefined,
   measurement: [],
   family: [],
   image: [],
-  device: { id: '' }
+  device: undefined
 };
 
 const IndividualAnimalForm = () => {
