@@ -29,8 +29,8 @@ export async function up(knex: Knex): Promise<void> {
     );
   
     COMMENT ON COLUMN project_group.project_group_id       IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN project_group.name                   IS 'The name of the project project_group record.';
-    COMMENT ON COLUMN project_group.description            IS 'The description of the project project_group.';
+    COMMENT ON COLUMN project_group.name                   IS 'The name of the project group record.';
+    COMMENT ON COLUMN project_group.description            IS 'The description of the project group.';
     COMMENT ON COLUMN project_group.record_effective_date  IS 'Record level effective date.';
     COMMENT ON COLUMN project_group.record_end_date        IS 'Record level end date.';
     COMMENT ON COLUMN project_group.create_date            IS 'The datetime the record was created.';
@@ -38,7 +38,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN project_group.update_date            IS 'The datetime the record was updated.';
     COMMENT ON COLUMN project_group.update_user            IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN project_group.revision_count         IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  project_group                        IS 'A project_group of related users and other record types.';
+    COMMENT ON TABLE  project_group                        IS 'A group of related projects.';
     
     ----------------------------------------------------------------------------------------
 
@@ -64,7 +64,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN project_group_participation.update_date                          IS 'The datetime the record was updated.';
     COMMENT ON COLUMN project_group_participation.update_user                          IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN project_group_participation.revision_count                       IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  project_group_participation                                      IS 'A associative entity that joins project_group, system users, and  project_group roles.';
+    COMMENT ON TABLE  project_group_participation                                      IS 'A associative entity that joins project group, system users, and project group roles.';
 
     ----------------------------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN project_group_participation_role.update_date                          IS 'The datetime the record was updated.';
     COMMENT ON COLUMN project_group_participation_role.update_user                          IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN project_group_participation_role.revision_count                       IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  project_group_participation_role                                      IS 'A associative entity that joins project_group participation and project_group role types.';
+    COMMENT ON TABLE  project_group_participation_role                                      IS 'A associative entity that joins project group participation and project group role types.';
 
     ----------------------------------------------------------------------------------------
 
@@ -108,8 +108,8 @@ export async function up(knex: Knex): Promise<void> {
     );
 
     COMMENT ON COLUMN project_group_role.project_group_role_id    IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN project_group_role.name                     IS 'The name of the project project_group role.';
-    COMMENT ON COLUMN project_group_role.description              IS 'The description of the project project_group role.';
+    COMMENT ON COLUMN project_group_role.name                     IS 'The name of the project group role.';
+    COMMENT ON COLUMN project_group_role.description              IS 'The description of the project group role.';
     COMMENT ON COLUMN project_group_role.notes                    IS 'Notes associated with the record.';
     COMMENT ON COLUMN project_group_role.record_effective_date    IS 'Record level effective date.';
     COMMENT ON COLUMN project_group_role.record_end_date          IS 'Record level end date.';
@@ -142,7 +142,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN project_group_role_permission.update_date                       IS 'The datetime the record was updated.';
     COMMENT ON COLUMN project_group_role_permission.update_user                       IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN project_group_role_permission.revision_count                    IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  project_group_role_permission                                   IS 'A associative entity that joins project_group roles and project_group permissions.';
+    COMMENT ON TABLE  project_group_role_permission                                   IS 'A associative entity that joins project group roles and project group permissions.';
 
     ----------------------------------------------------------------------------------------
 
@@ -162,8 +162,8 @@ export async function up(knex: Knex): Promise<void> {
     );
   
     COMMENT ON COLUMN project_group_permission.project_group_permission_id   IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN project_group_permission.name                          IS 'The name of the project project_group role.';
-    COMMENT ON COLUMN project_group_permission.description                   IS 'The description of the project project_group role.';
+    COMMENT ON COLUMN project_group_permission.name                          IS 'The name of the project group role.';
+    COMMENT ON COLUMN project_group_permission.description                   IS 'The description of the project group role.';
     COMMENT ON COLUMN project_group_permission.notes                         IS 'Notes associated with the record.';
     COMMENT ON COLUMN project_group_permission.record_effective_date         IS 'Record level effective date.';
     COMMENT ON COLUMN project_group_permission.record_end_date               IS 'Record level end date.';
@@ -196,7 +196,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN project_group_project.update_date                IS 'The datetime the record was updated.';
     COMMENT ON COLUMN project_group_project.update_user                IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN project_group_project.revision_count             IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  project_group_project                            IS 'A associative entity that joins project_group and project.';
+    COMMENT ON TABLE  project_group_project                            IS 'A associative entity that joins project group and project.';
 
     ----------------------------------------------------------------------------------------
     -- Create Indexes and Constraints for table: project_group
