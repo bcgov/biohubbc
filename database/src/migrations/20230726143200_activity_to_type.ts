@@ -12,52 +12,72 @@ export async function up(knex: Knex): Promise<void> {
     ------------------------------------------------------------------------------------------------------------------
     ------------------------------------- Turning Activities -> Types ------------------------------------------------
     ------------------------------------------------------------------------------------------------------------------
-    set search_path= biohub_dapi_v1;
+    SET SEARCH_PATH=biohub_dapi_v1;
 
     -- drop old views
     DROP VIEW activity;
     DROP VIEW project_activity;
 
-    -- drop old triggers 
-    set search_path= biohub, public;
-    DROP TRIGGER audit_activity ON activity;
-    DROP TRIGGER journal_activity ON activity;
+    -------------------------------------------------------------------------
+    -- Remove old indexes and constraints 
+    -------------------------------------------------------------------------
+    SET SEARCH_PATH=biohub, public;
+    
+    -- drop foreign key constraints
+    ALTER TABLE project_activity DROP CONSTRAINT "Refproject127";
+    ALTER TABLE project_activity DROP CONSTRAINT "Refactivity128";
 
-    DROP TRIGGER audit_project_activity ON project_activity;
-    DROP TRIGGER journal_project_activity ON project_activity;
+    -- drop primary key constraints
+    ALTER TABLE activity DROP CONSTRAINT activity_pk;
+    DROP INDEX activity_nuk1;
 
-    -- remove foreign key constraints
-    ALTER TABLE project_activity DROP CONSTRAINT Refproject127;
-    ALTER TABLE project_activity DROP CONSTRAINT Refactivity128;
+    ALTER TABLE project_activity DROP CONSTRAINT project_activity_pk;
+    DROP INDEX project_activity_uk1;
+    
+    -- drop indexes
+    DROP INDEX "Ref136128";
+    DROP INDEX "Ref45127";
 
-    -- rename columns  
+    -------------------------------------------------------------------------
+    -- Rename table and columns
+    -------------------------------------------------------------------------
+    -- rename columns
     ALTER TABLE activity RENAME COLUMN activity_id to type_id;
     ALTER TABLE project_activity RENAME COLUMN activity_id TO type_id;
     ALTER TABLE project_activity RENAME COLUMN project_activity_id TO project_type_id;
-
-    -- rename constraints and index (primary keys, end date constraint)
-    ALTER TABLE activity RENAME CONSTRAINT activity_pk TO type_pk;
-    ALTER INDEX activity_nuk1 RENAME TO type_nuk1;
-    ALTER INDEX project_activity_pk RENAME TO project_type_pk;
-    ALTER INDEX project_activity_uk1 RENAME TO project_type_nuk1;
 
     -- rename tables
     ALTER TABLE activity RENAME TO type;
     ALTER TABLE project_activity RENAME TO project_type;
 
+    -------------------------------------------------------------------------
+    -- Add primary and foreign keys
+    -------------------------------------------------------------------------    
+    -- add primary keys
+    ALTER TABLE type ADD CONSTRAINT  type_pk PRIMARY KEY (type_id);
+    ALTER TABLE project_type ADD CONSTRAINT  project_type_pk PRIMARY KEY (project_type_id);
+
     -- add foreign key constraints
-    -- ALTER TABLE project_type ADD CONSTRAINT project_type_fk1 FOREIGN KEY (type_id) REFERENCES type(type_id);
-    -- ALTER TABLE project_type ADD CONSTRAINT project_type_fk2 FOREIGN KEY (project_id) REFERENCES project(project_id);
+    ALTER TABLE project_type ADD CONSTRAINT project_type_fk1 FOREIGN KEY (type_id) REFERENCES type(type_id);
+    ALTER TABLE project_type ADD CONSTRAINT project_type_fk2 FOREIGN KEY (project_id) REFERENCES project(project_id);
 
-    -- add triggers to type table
-    CREATE TRIGGER audit_type BEFORE INSERT OR UPDATE OR DELETE ON type FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_type BEFORE INSERT OR UPDATE OR DELETE ON type FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+    -------------------------------------------------------------------------
+    -- Rename triggers and sequence
+    -------------------------------------------------------------------------    
+    -- Rename sequence
+    ALTER SEQUENCE project_activity_project_activity_id_seq RENAME TO project_type_project_type_id_seq;
+
+    -- rename triggers
+    ALTER TRIGGER audit_activity ON type RENAME TO audit_type;
+    ALTER TRIGGER journal_activity ON type RENAME TO journal_type;
     
-    -- add triggers to project_type table
-    CREATE TRIGGER audit_project_type BEFORE INSERT OR UPDATE OR DELETE ON project_type FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_project_type BEFORE INSERT OR UPDATE OR DELETE ON project_type FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    set search_path= biohub_dapi_v1;
+    ALTER TRIGGER audit_project_activity ON project_type RENAME TO audit_project_type;
+    ALTER TRIGGER journal_project_activity ON project_type RENAME TO journal_project_type;
+    
+    -------------------------------------------------------------------------
+    -- Recreate views
+    -------------------------------------------------------------------------
+    SET SEARCH_PATH=biohub_dapi_v1;
     CREATE OR REPLACE VIEW type as select * from biohub.type;
     CREATE OR REPLACE VIEW project_type as select * from biohub.project_type;
   `);
