@@ -98,12 +98,6 @@ describe('keycloakUtils', () => {
 
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
     });
-
-    it('returns non null response when valid keycloakToken provided with system source', () => {
-      const response = getUserIdentitySource({ preferred_username: 'username@system' });
-
-      expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.SYSTEM);
-    });
   });
 
   describe('coerceUserIdentitySource', () => {
@@ -135,11 +129,6 @@ describe('keycloakUtils', () => {
     it('should coerce database user identity to DATABASE', () => {
       const response = coerceUserIdentitySource('database');
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.DATABASE);
-    });
-
-    it('should coerce system user identity to SYSTEM', () => {
-      const response = coerceUserIdentitySource('system');
-      expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.SYSTEM);
     });
   });
 });

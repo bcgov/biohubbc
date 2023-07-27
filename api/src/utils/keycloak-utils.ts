@@ -58,9 +58,6 @@ export const coerceUserIdentitySource = (userIdentitySource: string | null): SYS
     case SYSTEM_IDENTITY_SOURCE.IDIR:
       return SYSTEM_IDENTITY_SOURCE.IDIR;
 
-    case SYSTEM_IDENTITY_SOURCE.SYSTEM:
-      return SYSTEM_IDENTITY_SOURCE.SYSTEM;
-
     case SYSTEM_IDENTITY_SOURCE.DATABASE:
       return SYSTEM_IDENTITY_SOURCE.DATABASE;
 

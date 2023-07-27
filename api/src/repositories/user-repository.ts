@@ -281,7 +281,7 @@ export class UserRepository extends BaseRepository {
     ON
     	su.user_identity_source_id = uis.user_identity_source_id
     WHERE
-      su.record_end_date IS NULL AND uis.name not in (${SYSTEM_IDENTITY_SOURCE.DATABASE}, ${SYSTEM_IDENTITY_SOURCE.SYSTEM})
+      su.record_end_date IS NULL AND uis.name not in (${SYSTEM_IDENTITY_SOURCE.DATABASE})
     GROUP BY
       su.system_user_id,
       su.user_guid,
