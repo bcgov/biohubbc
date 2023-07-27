@@ -32,14 +32,20 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- Add comments column to survey
     -------------------------------------------------------------------------
-    ALTER TABLE survey ADD COLUMN comment varchar(3000);
+    ALTER TABLE survey ADD COLUMN comments varchar(3000);
     COMMENT ON COLUMN survey.comment IS 'Comments about the Survey.';
 
 
     -------------------------------------------------------------------------
     -- Move caveats to survey comments
     -------------------------------------------------------------------------
-
+    -- only 1 project currently in production has a caveat and it only has 1 survey so this is safe move like this
+    UPDATE survey s 
+    SET comments = concat(s.comments,' ', (
+      SELECT caveats  
+      FROM project p
+      WHERE s.project_id = p.project_id 
+    ));
 
     -------------------------------------------------------------------------
     -- Remove caveats table
