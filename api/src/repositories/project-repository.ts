@@ -1067,7 +1067,6 @@ export class ProjectRepository extends BaseRepository {
   }
 
   async deleteTypeData(projectId: number): Promise<void> {
-    console.log(`Project ID TO DELETE TYPES FROM: ${projectId}`);
     const sqlDeleteStatement = SQL`
       DELETE FROM
         project_type
