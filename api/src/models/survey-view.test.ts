@@ -234,7 +234,7 @@ describe('GetSurveyFundingSources', () => {
       {
         project_funding_source_id: 1,
         funding_amount: 2,
-        funding_source_id: 3,
+        agency_id: 3,
         funding_start_date: '2020/04/04',
         funding_end_date: '2020/04/05',
         investment_action_category_id: 4,
@@ -247,7 +247,7 @@ describe('GetSurveyFundingSources', () => {
       {
         project_funding_source_id: 6,
         funding_amount: 7,
-        funding_source_id: 8,
+        agency_id: 8,
         funding_start_date: '2020/04/06',
         funding_end_date: '2020/04/07',
         investment_action_category_id: 9,
@@ -266,9 +266,9 @@ describe('GetSurveyFundingSources', () => {
     it('sets funding_sources', () => {
       expect(data.funding_sources).to.eql([
         {
-          pfs_id: 1,
+          project_funding_source_id: 1,
           funding_amount: 2,
-          funding_source_id: 3,
+          agency_id: 3,
           funding_start_date: '2020/04/04',
           funding_end_date: '2020/04/05',
           investment_action_category_id: 4,
@@ -279,9 +279,9 @@ describe('GetSurveyFundingSources', () => {
           first_nations_name: null
         },
         {
-          pfs_id: 6,
+          project_funding_source_id: 6,
           funding_amount: 7,
-          funding_source_id: 8,
+          agency_id: 8,
           funding_start_date: '2020/04/06',
           funding_end_date: '2020/04/07',
           investment_action_category_id: 9,

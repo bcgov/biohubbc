@@ -154,13 +154,13 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                   <Box mt={3}>
                     <ProjectFundingForm
                       funding_sources={
-                        codes?.funding_source?.map((item) => {
+                        codes?.agency?.map((item) => {
                           return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
                         }) || []
                       }
                       investment_action_category={
                         codes?.investment_action_category?.map((item) => {
-                          return { value: item.id, fs_id: item.fs_id, label: item.name };
+                          return { value: item.id, agency_id: item.agency_id, label: item.name };
                         }) || []
                       }
                       first_nations={
@@ -186,7 +186,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                         }) || []
                       }
                       stakeholder_partnerships={
-                        codes?.funding_source?.map((item) => {
+                        codes?.agency?.map((item) => {
                           return { value: item.name, label: item.name };
                         }) || []
                       }

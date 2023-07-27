@@ -1,11 +1,10 @@
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export const codes: IGetAllCodeSetsResponse = {
-  coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }],
   management_action_type: [{ id: 1, name: 'Management action' }],
   first_nations: [{ id: 1, name: 'First nations code' }],
-  funding_source: [{ id: 1, name: 'Funding source code' }],
-  investment_action_category: [{ id: 1, fs_id: 1, name: 'Investment action category' }],
+  agency: [{ id: 1, name: 'Funding source code' }],
+  investment_action_category: [{ id: 1, agency_id: 1, name: 'Investment action category' }],
   activity: [{ id: 1, name: 'Activity code' }],
   project_type: [{ id: 1, name: 'Project type' }],
   region: [{ id: 1, name: 'Region code' }],
