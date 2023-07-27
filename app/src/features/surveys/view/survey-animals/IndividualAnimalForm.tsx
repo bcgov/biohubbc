@@ -1,7 +1,7 @@
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React from 'react';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import { IAnimal } from './animal';
+import { AnimalSchema, IAnimal } from './animal';
 import { Form, Formik } from 'formik';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 
@@ -27,10 +27,12 @@ const IndividualAnimalForm = () => {
   return (
     <Formik
       initialValues={AnimalFormValues}
+      validationSchema={AnimalSchema}
       onSubmit={async (values) => {
         console.log(values);
       }}>
       <Form>
+        <Typography variant="h5">Add New Individual</Typography>
         <Box component="fieldset">
           <GeneralAnimalForm />
           <CaptureAnimalForm />

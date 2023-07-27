@@ -1,10 +1,10 @@
 import { Box, Divider } from '@mui/material';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
-import ComponentDialog from 'components/dialog/ComponentDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import React, { useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 
 const SurveyAnimals: React.FC = () => {
@@ -16,6 +16,20 @@ const SurveyAnimals: React.FC = () => {
 
   return (
     <Box>
+      {/*<SubmitBiohubDialog<IAnimal>
+        dialogTitle={'Individual Animals'}
+        submissionSuccessDialogTitle={'Success'}
+        submissionSuccessDialogText={'Success Text'}
+        noSubmissionDataDialogTitle={'No submission dialog title'}
+        noSubmissionDataDialogText={'No submission Text'}
+        hasSubmissionData={true}
+        open={openDialog}
+        onClose={toggleDialog}
+        onSubmit={async () => console.log('submit')}
+        formikProps={{ initialValues: AnimalFormValues, validationSchema: AnimalSchema }}>
+        <IndividualAnimalForm />
+      </SubmitBiohubDialog>
+      */}
       <ComponentDialog open={openDialog} dialogTitle="Individual Animals" onClose={toggleDialog}>
         <IndividualAnimalForm />
       </ComponentDialog>

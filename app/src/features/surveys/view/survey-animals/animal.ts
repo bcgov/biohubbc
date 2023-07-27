@@ -1,53 +1,69 @@
-interface IAnimalGeneral {
-  taxon_id: string;
-  taxon_label: string;
-}
+import yup from 'utils/YupSchema';
+import { InferType } from 'yup';
 
-interface IAnimalMarking {
-  id: string;
-}
+const req = 'Required';
+const mustBeNum = 'Must be a number';
+const glt = (num: number, greater = true) => `Must be ${greater ? 'greater' : 'less'} than or equal to ${num}`;
 
-interface IAnimalMeasurement {
-  id: string;
-}
+const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
+const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
 
-export interface IAnimalCapture {
-  capture_longitude: number;
-  capture_latitude: number;
-  capture_timestamp: Date;
-  capture_comment?: string;
-  release_longitude?: number;
-  release_latitude?: number;
-  release_timestamp?: Date;
-  release_comment?: string;
-}
+const AnimalGeneralSchema = yup.object({}).shape({
+  taxon_id: yup.string().required(req),
+  taxon_label: yup.string()
+});
 
-interface IAnimalMortality {
-  id: string;
-}
+const AnimalCaptureSchema = yup.object({}).shape({
+  capture_longitude: lonSchema.required(req),
+  capture_latitude: latSchema.required(req),
+  capture_timestamp: yup.date().required(req),
+  capture_comment: yup.string(),
+  release_longitude: lonSchema,
+  release_latitude: latSchema,
+  release_timestamp: yup.date(),
+  release_comment: yup.string()
+});
 
-interface IAnimalRelationship {
-  id: string;
-}
+const AnimalMarkingSchema = yup.object({}).shape({});
 
-interface IAnimalImage {
-  id: string;
-}
+const AnimalMeasurementSchema = yup.object({}).shape({});
 
-export interface IAnimalTelemetryDevice {
-  id: string;
-}
+const AnimalMortalitySchema = yup.object({}).shape({});
 
-export interface IAnimal {
-  general: IAnimalGeneral;
-  capture: IAnimalCapture[];
-  marking: IAnimalMarking[];
-  measurement: IAnimalMeasurement[];
-  mortality: IAnimalMortality;
-  family: IAnimalRelationship[];
-  image: IAnimalImage[];
-  device: IAnimalTelemetryDevice;
-}
+const AnimalRelationshipSchema = yup.object({}).shape({});
+
+const AnimalTelemetryDeviceSchema = yup.object({}).shape({});
+
+const AnimalImageSchema = yup.object({}).shape({});
+
+export type IAnimalGeneral = InferType<typeof AnimalGeneralSchema>;
+
+export type IAnimalCapture = InferType<typeof AnimalCaptureSchema>;
+
+export type IAnimalMarking = InferType<typeof AnimalMarkingSchema>;
+
+export type IAnimalMeasurement = InferType<typeof AnimalMeasurementSchema>;
+
+export type IAnimalMortality = InferType<typeof AnimalMortalitySchema>;
+
+export type IAnimalRelationship = InferType<typeof AnimalRelationshipSchema>;
+
+export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
+
+export type IAnimalImage = InferType<typeof AnimalImageSchema>;
+
+export const AnimalSchema = yup.object({}).shape({
+  general: AnimalGeneralSchema.required(),
+  capture: yup.array().of(AnimalCaptureSchema).required(),
+  marking: yup.array().of(AnimalMarkingSchema).required(),
+  measurement: yup.array().of(AnimalMeasurementSchema),
+  mortality: AnimalMortalitySchema,
+  family: yup.array().of(AnimalRelationshipSchema).required(),
+  image: yup.array().of(AnimalImageSchema).required(),
+  device: AnimalTelemetryDeviceSchema
+});
+
+export type IAnimal = InferType<typeof AnimalSchema>;
 
 export type IAnimalAttribute = IAnimal[IAnimalKey];
 
