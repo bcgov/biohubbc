@@ -26,6 +26,10 @@ export async function up(knex: Knex): Promise<void> {
     DROP TRIGGER audit_project_activity ON project_activity;
     DROP TRIGGER journal_project_activity ON project_activity;
 
+    -- remove foreign key constraints
+    ALTER TABLE project_activity DROP CONSTRAINT Refproject127;
+    ALTER TABLE project_activity DROP CONSTRAINT Refactivity128;
+
     -- rename columns  
     ALTER TABLE activity RENAME COLUMN activity_id to type_id;
     ALTER TABLE project_activity RENAME COLUMN activity_id TO type_id;
@@ -33,21 +37,17 @@ export async function up(knex: Knex): Promise<void> {
 
     -- rename constraints and index (primary keys, end date constraint)
     ALTER TABLE activity RENAME CONSTRAINT activity_pk TO type_pk;
-    ALTER INDEX IF EXISTS activity_nuk1 RENAME TO type_nuk1;
-    ALTER INDEX IF EXISTS project_activity_pk RENAME TO project_type_pk;
-    ALTER INDEX IF EXISTS project_activity_uk1 RENAME TO project_type_nuk1;
-
-    -- remove foreign key constraints
-    ALTER TABLE project_activity DROP CONSTRAINT Refproject127;
-    ALTER TABLE project_activity DROP CONSTRAINT Refactivity128;
+    ALTER INDEX activity_nuk1 RENAME TO type_nuk1;
+    ALTER INDEX project_activity_pk RENAME TO project_type_pk;
+    ALTER INDEX project_activity_uk1 RENAME TO project_type_nuk1;
 
     -- rename tables
     ALTER TABLE activity RENAME TO type;
     ALTER TABLE project_activity RENAME TO project_type;
 
     -- add foreign key constraints
-    ALTER TABLE project_type ADD CONSTRAINT project_type_fk1 FOREIGN KEY (type_id) REFERENCES type(type_id);
-    ALTER TABLE project_type ADD CONSTRAINT project_type_fk2 FOREIGN KEY (project_id) REFERENCES project(project_id);
+    -- ALTER TABLE project_type ADD CONSTRAINT project_type_fk1 FOREIGN KEY (type_id) REFERENCES type(type_id);
+    -- ALTER TABLE project_type ADD CONSTRAINT project_type_fk2 FOREIGN KEY (project_id) REFERENCES project(project_id);
 
     -- add triggers to type table
     CREATE TRIGGER audit_type BEFORE INSERT OR UPDATE OR DELETE ON type FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();

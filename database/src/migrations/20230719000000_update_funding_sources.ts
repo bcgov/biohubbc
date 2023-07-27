@@ -24,7 +24,7 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- Drop existing indexes/constraints
     -------------------------------------------------------------------------
-	SET SEARCH_PATH=biohub;
+	  SET SEARCH_PATH=biohub;
 
     -- Drop investment_action_category table constraints/indexes
     ALTER TABLE investment_action_category DROP CONSTRAINT "Reffunding_source136";
