@@ -42,12 +42,12 @@ exports[`ProjectDetails renders correctly with activity data 1`] = `
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
-          Activities
+          Types
         </dt>
         <dd
           class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
-          Activity code
+          Type code
         </dd>
       </div>
     </div>
@@ -97,12 +97,12 @@ exports[`ProjectDetails renders correctly with no activity data 1`] = `
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
-          Activities
+          Types
         </dt>
         <dd
           class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
-          No Activities
+          No Types
         </dd>
       </div>
     </div>
@@ -155,12 +155,12 @@ exports[`ProjectDetails renders correctly with no end date (only start date) 1`]
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 css-h3wl1a-MuiTypography-root"
         >
-          Activities
+          Types
         </dt>
         <dd
           class="MuiTypography-root MuiTypography-body1 css-ewuypk-MuiTypography-root"
         >
-          Activity code
+          Type code
         </dd>
       </div>
     </div>

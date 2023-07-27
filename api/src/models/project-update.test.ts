@@ -26,8 +26,8 @@ describe('PutProjectData', () => {
       expect(data.project_programs).to.eql([]);
     });
 
-    it('sets project_activities', () => {
-      expect(data.project_activities).to.eql([]);
+    it('sets project_types', () => {
+      expect(data.project_types).to.eql([]);
     });
 
     it('sets start_date', () => {
@@ -47,7 +47,7 @@ describe('PutProjectData', () => {
     const obj = {
       project_name: 'project name',
       project_programs: [1],
-      project_activities: [1, 2],
+      project_types: [1, 2],
       start_date: '2020-04-20T07:00:00.000Z',
       end_date: '2020-05-20T07:00:00.000Z',
       revision_count: 1
@@ -67,8 +67,8 @@ describe('PutProjectData', () => {
       expect(data.project_programs).to.eql([1]);
     });
 
-    it('sets project_activities', () => {
-      expect(data.project_activities).to.eql([1, 2]);
+    it('sets project_types', () => {
+      expect(data.project_types).to.eql([1, 2]);
     });
 
     it('sets start_date', () => {

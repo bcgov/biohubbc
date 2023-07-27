@@ -1126,7 +1126,7 @@ describe('EmlService', () => {
       first_nations: [],
       agency: [],
       investment_action_category: [],
-      activity: [],
+      type: [],
       program: [],
       region: [],
       proprietor_type: [],

@@ -528,7 +528,7 @@ describe('CreateProjectPage', () => {
           project: {
             project_name: '',
             project_programs: [],
-            project_activities: [],
+            project_types: [],
             start_date: '',
             end_date: ''
           },
@@ -606,7 +606,7 @@ describe('CreateProjectPage', () => {
           project: {
             project_name: '',
             project_programs: [],
-            project_activities: [],
+            project_types: [],
             start_date: '',
             end_date: ''
           },

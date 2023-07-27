@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  getActivitySQL,
   getAdministrativeActivityStatusTypeSQL,
   getAgencySQL,
   getFirstNationsSQL,
@@ -12,7 +11,8 @@ import {
   getManagementActionTypeSQL,
   getProgramSQL,
   getProprietorTypeSQL,
-  getSystemRolesSQL
+  getSystemRolesSQL,
+  getTypeSQL
 } from './code-queries';
 
 describe('getManagementActionTypeSQL', () => {
@@ -45,7 +45,7 @@ describe('getProprietorTypeSQL', () => {
 
 describe('getActivitySQL', () => {
   it('returns valid sql statement', () => {
-    const response = getActivitySQL();
+    const response = getTypeSQL();
     expect(response).to.not.be.null;
   });
 });
