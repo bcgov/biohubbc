@@ -88,7 +88,7 @@ export async function up(knex: Knex): Promise<void> {
     set search_path= biohub, public;
     
     -- Get existing types and insert them into programs
-    INSERT INTO "program" (name, record_effective_date, description, record_end_date)
+    INSERT INTO program (name, record_effective_date, description, record_end_date)
     SELECT name, record_effective_date, description, record_end_date
     FROM project_type;
 
@@ -97,7 +97,7 @@ export async function up(knex: Knex): Promise<void> {
     -- an existing type maybe have been deleted so the increment may be off
     INSERT INTO project_program (project_id, program_id)
     SELECT p.project_id, p2.program_id 
-    FROM project_type pt, project p, "program" p2
+    FROM project_type pt, project p, program p2
     WHERE p.project_type_id = pt.project_type_id
     AND p2.name = pt."name"
     AND p2.record_end_date is null;

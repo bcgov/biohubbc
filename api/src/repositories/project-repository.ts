@@ -200,7 +200,7 @@ export class ProjectRepository extends BaseRepository {
         project as p
       LEFT JOIN project_program pp 
         ON p.project_id = pp.project_id 
-      LEFT JOIN "program" p2 
+      LEFT JOIN program p2 
         ON p2.program_id = pp.program_id 
       LEFT OUTER JOIN project_funding_source as pfs
         ON pfs.project_id = p.project_id
@@ -349,7 +349,7 @@ export class ProjectRepository extends BaseRepository {
         project p 
       LEFT JOIN (
         SELECT array_remove(array_agg(p.program_id), NULL) as project_programs, pp.project_id 
-        FROM "program" p, project_program pp 
+        FROM program p, project_program pp 
         WHERE p.program_id = pp.program_id 
         GROUP BY pp.project_id
       ) as pp on pp.project_id = p.project_id
