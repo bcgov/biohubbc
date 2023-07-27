@@ -8,7 +8,7 @@ export interface ICustomTextField {
 }
 
 const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
-  const { touched, errors, values, handleChange } = useFormikContext<any>();
+  const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
 
   const { name, label, other } = props;
 
@@ -19,6 +19,7 @@ const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (pr
       id={name}
       inputProps={{ 'data-testid': name }} // targets the internal input rather than the react component
       onChange={handleChange}
+      onBlur={handleBlur}
       variant="outlined"
       value={get(values, name)}
       fullWidth={true}
