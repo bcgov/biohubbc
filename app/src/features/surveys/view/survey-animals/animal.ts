@@ -1,6 +1,15 @@
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
 
+/**
+ * Provides an acceptable amount of type security with formik field names for animal forms
+ * Returns formatted field name in regular or array format
+ */
+
+export const getAnimalFieldName = <T>(animalKey: keyof IAnimal, fieldKey: keyof T, idx?: number) => {
+  return idx === undefined ? `${animalKey}.${fieldKey}` : `${animalKey}.${idx}.${fieldKey}`;
+};
+
 const req = 'Required';
 const mustBeNum = 'Must be a number';
 const glt = (num: number, greater = true) => `Must be ${greater ? 'greater' : 'less'} than or equal to ${num}`;
@@ -10,7 +19,7 @@ const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).ty
 
 const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
-  taxon_label: yup.string()
+  animal_id: yup.string() //nickname
 });
 
 const AnimalCaptureSchema = yup.object({}).shape({
@@ -32,7 +41,13 @@ const AnimalMortalitySchema = yup.object({}).shape({});
 
 const AnimalRelationshipSchema = yup.object({}).shape({});
 
-const AnimalTelemetryDeviceSchema = yup.object({}).shape({});
+const AnimalTelemetryDeviceSchema = yup.object({}).shape({
+  device_id: yup.string().required(req),
+  manufacturer: yup.string().required(req),
+  //I think this needs an additional field for hz
+  device_frequency: yup.number().required(req),
+  model: yup.string().required(req)
+});
 
 const AnimalImageSchema = yup.object({}).shape({});
 

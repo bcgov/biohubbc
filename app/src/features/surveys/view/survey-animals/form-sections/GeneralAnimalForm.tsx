@@ -1,13 +1,13 @@
 import Grid from '@mui/material/Grid';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
-import CustomTextField from 'components/fields/CustomTextField';
-import React, { useEffect } from 'react';
-import FormSectionWrapper from './FormSectionWrapper';
 import { Box } from '@mui/system';
-import { useFormikContext } from 'formik';
-import { IAnimal } from '../animal';
-import { SurveyAnimalsI18N } from 'constants/i18n';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import CbSelectField from 'components/fields/CbSelectField';
+import CustomTextField from 'components/fields/CustomTextField';
+import { SurveyAnimalsI18N } from 'constants/i18n';
+import { useFormikContext } from 'formik';
+import React, { useEffect } from 'react';
+import { getAnimalFieldName, IAnimal, IAnimalGeneral } from '../animal';
+import FormSectionWrapper from './FormSectionWrapper';
 
 /**
  * Renders the General section for the Individual Animal form
@@ -17,6 +17,7 @@ import CbSelectField from 'components/fields/CbSelectField';
 
 const GeneralAnimalForm = () => {
   const { values } = useFormikContext<IAnimal>();
+  const name: keyof IAnimal = 'general';
   useEffect(() => {
     console.log(values);
   }, [JSON.stringify(values)]);
@@ -25,11 +26,20 @@ const GeneralAnimalForm = () => {
       <Grid item xs={6}>
         <Box mb={2}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
-            <CbSelectField name={'taxon'} label={'Taxon'} id={'taxon'} route={'taxons'} />
+            <CbSelectField
+              name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
+              label={'Taxon'}
+              id={'taxon'}
+              route={'taxons'}
+            />
           </HelpButtonTooltip>
         </Box>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
-          <CustomTextField other={{ size: 'small' }} label="Individual's Label" name="general.taxon_label" />
+          <CustomTextField
+            other={{ size: 'small' }}
+            label="Individual's Label"
+            name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
+          />
         </HelpButtonTooltip>
       </Grid>
     </FormSectionWrapper>

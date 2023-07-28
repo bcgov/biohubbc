@@ -1,13 +1,11 @@
-import { Box, Grid, Tab, Tabs } from '@mui/material';
+import { Checkbox, FormControlLabel, Grid, Tab, Tabs } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React, { Fragment, useState } from 'react';
-import { IAnimal, IAnimalCapture } from '../animal';
+import { useState } from 'react';
+import { getAnimalFieldName, IAnimal, IAnimalCapture } from '../animal';
+import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
-
-type CaptureTabState = 'form' | 'map';
-
 /**
  * Renders the Capture section for the Individual Animal form
  *
@@ -21,8 +19,11 @@ type CaptureTabState = 'form' | 'map';
  * Returns {*}
  */
 
+//type CaptureTabState = 'form' | 'map';
+
 const CaptureAnimalForm = () => {
   const { values } = useFormikContext<IAnimal>();
+
   const name: keyof IAnimal = 'capture';
   const newCapture: IAnimalCapture = {
     capture_latitude: '' as unknown as number,
@@ -35,15 +36,6 @@ const CaptureAnimalForm = () => {
     release_timestamp: '' as unknown as Date
   };
 
-  const [tabState, setTabState] = useState<CaptureTabState[]>([]);
-  const handleAdd = (pushfunc: (a: any) => void) => {
-    pushfunc(newCapture);
-    setTabState([...tabState, 'form']);
-  };
-  const handleRemove = (a: number, removeFunc: (a: number) => void) => {
-    removeFunc(a);
-    setTabState([...tabState.slice(0, a), ...tabState.slice(a + 1)]);
-  };
   return (
     <FieldArray name={name}>
       {({ remove, push }: FieldArrayRenderProps) => (
@@ -52,61 +44,111 @@ const CaptureAnimalForm = () => {
             title={SurveyAnimalsI18N.animalCaptureTitle}
             titleHelp={SurveyAnimalsI18N.animalCaptureHelp}
             btnLabel={SurveyAnimalsI18N.animalCaptureAddBtn}
-            handleAddSection={() => handleAdd(push)}
-            handleRemoveSection={(a) => handleRemove(a, remove)}>
+            handleAddSection={() => push(newCapture)}
+            handleRemoveSection={remove}>
             {values.capture.map((_cap, index) => (
-              <Fragment key={`${name}-${index}-inputs`}>
-                <Box>
-                  <Tabs
-                    value={tabState[index] === 'form' ? 0 : 1}
-                    onChange={(e, newVal) => {
-                      console.log(newVal);
-                      setTabState([
-                        ...tabState.slice(0, index),
-                        newVal === 0 ? 'form' : 'map',
-                        ...tabState.slice(index + 1)
-                      ]);
-                    }}>
-                    <Tab label="Forms" />
-                    <Tab label="Map" />
-                  </Tabs>
-                </Box>
-                {tabState[index] === 'form' && (
-                  <>
-                    <Grid item xs={6}>
-                      <CustomTextField
-                        other={{ required: true, size: 'small' }}
-                        label="Latitude"
-                        name={`${name}.${index}.capture_latitude`}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <CustomTextField
-                        other={{ required: true, size: 'small' }}
-                        label="Longitude"
-                        name={`${name}.${index}.capture_longitude`}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <CustomTextField
-                        other={{ required: true, size: 'small' }}
-                        label="Temp Capture Timestamp"
-                        name={`${name}.${index}.capture_timestamp`}
-                      />
-                    </Grid>
-                  </>
-                )}
-                {tabState[index] === 'map' && (
-                  <Box>
-                    <p>Map placeholder</p>
-                  </Box>
-                )}
-              </Fragment>
+              <CaptureAnimalFormContent key={`${name}-${index}-inputs`} name={name} index={index} />
             ))}
           </FormSectionWrapper>
         </>
       )}
     </FieldArray>
+  );
+};
+
+interface CaptureAnimalFormContentProps {
+  name: keyof IAnimal;
+  index: number;
+}
+
+const CaptureAnimalFormContent = ({ name, index }: CaptureAnimalFormContentProps) => {
+  const [showRelease, setShowRelease] = useState(false);
+  const [tabState, setTabState] = useState(0);
+  return (
+    <>
+      <Grid item xs={12}>
+        <Tabs
+          value={tabState}
+          onChange={(e, newVal) => {
+            setTabState(newVal);
+          }}>
+          <Tab label="Forms" />
+          <Tab label="Map" />
+        </Tabs>
+      </Grid>
+      <Grid item xs={6}>
+        <CustomTextField
+          other={{ required: true, size: 'small' }}
+          label="Capture Latitude"
+          name={getAnimalFieldName<IAnimalCapture>(name, 'capture_latitude', index)}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <CustomTextField
+          other={{ required: true, size: 'small' }}
+          label="Capture Longitude"
+          name={getAnimalFieldName<IAnimalCapture>(name, 'capture_longitude', index)}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <CustomTextField
+          other={{ required: true, size: 'small' }}
+          label="Temp Capture Timestamp"
+          name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
+        />
+      </Grid>
+      <Grid item />
+      <Grid item xs={6}>
+        <TextInputToggle label="Add comment about this Capture">
+          <CustomTextField
+            other={{ required: true, size: 'small' }}
+            label="Capture Comment"
+            name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
+          />
+        </TextInputToggle>
+      </Grid>
+      <Grid item xs={12}>
+        <FormControlLabel
+          control={<Checkbox checked={showRelease} onChange={() => setShowRelease((s) => !s)} />}
+          label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
+        />
+      </Grid>
+      {showRelease ? (
+        <>
+          <Grid item xs={6}>
+            <CustomTextField
+              other={{ required: true, size: 'small' }}
+              label="Release Latitude"
+              name={getAnimalFieldName<IAnimalCapture>(name, 'release_latitude', index)}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <CustomTextField
+              other={{ required: true, size: 'small' }}
+              label="Release Longitude"
+              name={getAnimalFieldName<IAnimalCapture>(name, 'release_longitude', index)}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <CustomTextField
+              other={{ required: true, size: 'small' }}
+              label="Temp Release Timestamp"
+              name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
+            />
+          </Grid>
+          <Grid item />
+          <Grid item xs={6}>
+            <TextInputToggle label="Add comment about this Release">
+              <CustomTextField
+                other={{ required: true, size: 'small' }}
+                label="Release Comment"
+                name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
+              />
+            </TextInputToggle>
+          </Grid>
+        </>
+      ) : null}
+    </>
   );
 };
 
