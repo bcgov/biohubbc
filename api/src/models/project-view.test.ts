@@ -109,10 +109,6 @@ describe('GetObjectivesData', () => {
     it('sets objectives', function () {
       expect(projectObjectivesData.objectives).to.equal('');
     });
-
-    it('sets caveats', function () {
-      expect(projectObjectivesData.caveats).to.equal('');
-    });
   });
 
   describe('All values provided', () => {
@@ -130,10 +126,6 @@ describe('GetObjectivesData', () => {
 
     it('sets objectives', function () {
       expect(projectObjectivesData.objectives).to.equal(obj.objectives);
-    });
-
-    it('sets caveats', function () {
-      expect(projectObjectivesData.caveats).to.equal(obj.caveats);
     });
 
     it('sets revision_count', function () {

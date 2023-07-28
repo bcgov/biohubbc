@@ -97,10 +97,6 @@ describe('PutObjectivesData', () => {
       expect(data.objectives).to.equal('');
     });
 
-    it('sets caveats', () => {
-      expect(data.caveats).to.equal('');
-    });
-
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(null);
     });
@@ -121,10 +117,6 @@ describe('PutObjectivesData', () => {
 
     it('sets objectives', () => {
       expect(data.objectives).to.equal(obj.objectives);
-    });
-
-    it('sets caveats', () => {
-      expect(data.caveats).to.equal(obj.caveats);
     });
 
     it('sets revision_count', () => {
