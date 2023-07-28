@@ -17,6 +17,7 @@ import AccessRequestPage from 'pages/access/AccessRequestPage';
 import LoginPage from 'pages/authentication/LoginPage';
 import LogOutPage from 'pages/authentication/LogOutPage';
 import { LandingPage } from 'pages/landing/LandingPage';
+import { Playground } from 'pages/Playground';
 import React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
@@ -40,6 +41,16 @@ const AppRouter: React.FC = () => {
           <AccessDenied />
         </BaseLayout>
       </RouteWithTitle>
+
+      {process.env.NODE_ENV === 'development' && (
+        <RouteWithTitle path="/playground" title={'Playground'}>
+          <BaseLayout>
+            <AuthenticatedRouteGuard>
+              <Playground />
+            </AuthenticatedRouteGuard>
+          </BaseLayout>
+        </RouteWithTitle>
+      )}
 
       <RouteWithTitle path="/access-request" title={getTitle('Access Request')}>
         <BaseLayout>
