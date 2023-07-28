@@ -123,7 +123,7 @@ const CreateSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectData?.project.id}/surveys`);
+      history.push(`/admin/projects/${projectData?.project.project_id}/surveys`);
     }
   };
 
@@ -178,7 +178,7 @@ const CreateSurveyPage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectData?.project.id}/surveys`);
+    history.push(`/admin/projects/${projectData?.project.project_id}/surveys`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -203,7 +203,7 @@ const CreateSurveyPage = () => {
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
     try {
-      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.id), values);
+      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), values);
 
       if (!response?.id) {
         showCreateErrorDialog({
@@ -214,7 +214,7 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/admin/projects/${projectData?.project.id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

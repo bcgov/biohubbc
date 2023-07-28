@@ -50,7 +50,8 @@ export interface IProjectSupplementaryReportAttachmentData {
  */
 export interface IProjectAdvancedFilterRequest {
   coordinator_agency: string;
-  project_type: string;
+  permit_number: string;
+  project_programs: number[];
   start_date: string;
   end_date: string;
   keyword: string;
@@ -111,9 +112,9 @@ export interface IProjectsListData {
   start_date: string;
   end_date: string;
   coordinator_agency: string;
-  project_type: string;
   completion_status: string;
   regions: string[];
+  project_programs: number[];
 }
 
 /**
@@ -169,8 +170,8 @@ export interface IGetProjectForUpdateResponse {
 
 export interface IGetProjectForUpdateResponseDetails {
   project_name: string;
-  project_type: number;
-  project_activities: number[];
+  project_programs: number[];
+  project_types: number[];
   start_date: string;
   end_date: string;
   revision_count: number;
@@ -266,10 +267,10 @@ export interface ProjectViewObject {
 }
 
 export interface IGetProjectForViewResponseDetails {
-  id: number;
+  project_id: number;
   project_name: string;
-  project_type: number;
-  project_activities: number[];
+  project_programs: number[];
+  project_types: number[];
   start_date: string;
   end_date: string;
   completion_status: string;

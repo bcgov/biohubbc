@@ -56,7 +56,7 @@ describe('ProjectDetails', () => {
           ...getProjectForViewResponse,
           projectData: {
             ...getProjectForViewResponse.projectData,
-            project: { ...getProjectForViewResponse.projectData.project, project_activities: [] }
+            project: { ...getProjectForViewResponse.projectData.project, project_types: [] }
           }
         }
       } as DataLoader<any, any, any>,

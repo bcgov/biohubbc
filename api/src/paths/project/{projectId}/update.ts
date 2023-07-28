@@ -86,8 +86,8 @@ GET.apiDoc = {
                 type: 'object',
                 required: [
                   'project_name',
-                  'project_type',
-                  'project_activities',
+                  'project_programs',
+                  'project_types',
                   'start_date',
                   'end_date',
                   'revision_count'
@@ -97,10 +97,13 @@ GET.apiDoc = {
                   project_name: {
                     type: 'string'
                   },
-                  project_type: {
-                    type: 'number'
+                  project_programs: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
                   },
-                  project_activities: {
+                  project_types: {
                     type: 'array',
                     items: {
                       type: 'number'
@@ -430,13 +433,13 @@ PUT.apiDoc = {
 };
 
 export interface IUpdateProject {
-  coordinator: object | null;
-  project: object | null;
-  objectives: object | null;
+  coordinator: any | null;
+  project: any | null;
+  objectives: any | null;
   location: { geometry: Feature[]; location_description: string } | null;
-  iucn: object | null;
-  funding: object | null;
-  partnerships: object | null;
+  iucn: any | null;
+  funding: any | null;
+  partnerships: any | null;
 }
 
 /**
@@ -464,7 +467,6 @@ export function updateProject(): RequestHandler {
       await connection.open();
 
       const projectService = new ProjectService(connection);
-
       await projectService.updateProjectAndUploadMetadataToBioHub(projectId, entities);
 
       await connection.commit();

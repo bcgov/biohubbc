@@ -10,7 +10,7 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData
+  ProjectData
 } from '../models/project-view';
 import { ProjectUserObject } from '../models/user';
 import { IUpdateProject } from '../paths/project/{projectId}/update';
@@ -189,22 +189,20 @@ describe('ProjectService', () => {
           name: 'Project 1',
           start_date: '1900-01-01',
           end_date: '2200-10-10',
-          coordinator_agency: 'Agency 1',
-          project_type: 'Aquatic Habitat'
+          coordinator_agency: 'Agency 1'
         },
         {
           id: 456,
           name: 'Project 2',
           start_date: '1900-01-01',
           end_date: '2000-12-31',
-          coordinator_agency: 'Agency 2',
-          project_type: 'Terrestrial Habitat'
+          coordinator_agency: 'Agency 2'
         }
       ];
 
       const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectList').resolves(data);
 
-      const response = await service.getProjectList(true, 1, 1);
+      const response = await service.getProjectList(true, 1, {});
 
       expect(repoStub).to.be.calledOnce;
       expect(response[0].id).to.equal(123);
@@ -263,7 +261,7 @@ describe('getProjectData', () => {
     const dbConnection = getMockDBConnection();
     const service = new ProjectService(dbConnection);
 
-    const data = new GetProjectData({ project_id: 1 });
+    const data = ({ project_id: 1 } as unknown) as ProjectData;
 
     const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectData').resolves(data);
 

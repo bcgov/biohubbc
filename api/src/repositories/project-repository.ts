@@ -1,4 +1,4 @@
-import { NumberOfAutoScalingGroups } from 'aws-sdk/clients/autoscaling';
+import { isArray } from 'lodash';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostFundingSource, PostProjectObject } from '../models/project-create';
@@ -16,8 +16,9 @@ import {
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
-  GetProjectData,
-  GetReportAttachmentsData
+  GetReportAttachmentsData,
+  IProjectAdvancedFilters,
+  ProjectData
 } from '../models/project-view';
 import { queries } from '../queries/queries';
 import { BaseRepository } from './base-repository';
@@ -181,7 +182,11 @@ export class ProjectRepository extends BaseRepository {
     return result;
   }
 
-  async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any[]> {
+  async getProjectList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
+  ): Promise<any[]> {
     const sqlStatement = SQL`
       SELECT
         p.project_id as id,
@@ -189,27 +194,29 @@ export class ProjectRepository extends BaseRepository {
         p.start_date,
         p.end_date,
         p.coordinator_agency_name as coordinator_agency,
-        pt.name as project_type,
-        array_remove(array_agg(DISTINCT rl.region_name), null) as regions
-      from
+        array_remove(array_agg(DISTINCT rl.region_name), null) as regions,
+        array_agg(distinct p2.program_id) as project_programs
+      FROM
         project as p
-      left outer join project_type as pt
-        on p.project_type_id = pt.project_type_id
-      left outer join project_funding_source as pfs
-        on pfs.project_id = p.project_id
-      left outer join investment_action_category as iac
-        on pfs.investment_action_category_id = iac.investment_action_category_id
-      left outer join agency as a
-        on iac.agency_id = a.agency_id
-      left outer join survey as s
-        on s.project_id = p.project_id
-      left outer join study_species as sp
-        on sp.survey_id = s.survey_id
-      left join project_region pr 
-        on p.project_id = pr.project_id
-      left join region_lookup rl 
-        on pr.region_id = rl.region_id
-      where 1 = 1
+      LEFT JOIN project_program pp 
+        ON p.project_id = pp.project_id 
+      LEFT JOIN program p2 
+        ON p2.program_id = pp.program_id 
+      LEFT OUTER JOIN project_funding_source as pfs
+        ON pfs.project_id = p.project_id
+      LEFT OUTER JOIN investment_action_category as iac
+        ON pfs.investment_action_category_id = iac.investment_action_category_id
+      LEFT OUTER JOIN survey as s
+        ON s.project_id = p.project_id
+      LEFT OUTER JOIN study_species as sp
+        ON sp.survey_id = s.survey_id
+      LEFT JOIN project_region pr 
+        ON p.project_id = pr.project_id
+      LEFT JOIN region_lookup rl 
+        ON pr.region_id = rl.region_id
+      LEFT OUTER JOIN agency as a
+        ON iac.agency_id = a.agency_id
+      WHERE 1 = 1
     `;
 
     if (!isUserAdmin) {
@@ -244,10 +251,6 @@ export class ProjectRepository extends BaseRepository {
         );
       }
 
-      if (filterFields.project_type) {
-        sqlStatement.append(SQL` AND pt.name = ${filterFields.project_type}`);
-      }
-
       if (filterFields.project_name) {
         sqlStatement.append(SQL` AND p.name = ${filterFields.project_name}`);
       }
@@ -260,7 +263,7 @@ export class ProjectRepository extends BaseRepository {
         sqlStatement.append(SQL` AND a.agency_id = ${filterFields.agency_id}`);
       }
 
-      if (filterFields?.species?.length > 0) {
+      if (filterFields?.species && filterFields?.species?.length > 0) {
         sqlStatement.append(SQL` AND sp.wldtaxonomic_units_id =${filterFields.species[0]}`);
       }
 
@@ -279,12 +282,37 @@ export class ProjectRepository extends BaseRepository {
         p.name,
         p.start_date,
         p.end_date,
-        p.coordinator_agency_name,
-        pt.name;
+        p.coordinator_agency_name
     `);
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    /* 
+      this is placed after the `group by` to take advantage of the `HAVING` clause
+      by placing the filter in the HAVING clause we are able to properly search 
+      on program ids while still returning the full list that is associated to the project
+    */
+    if (filterFields.project_programs) {
+      let programs = filterFields.project_programs;
+      if (!isArray(filterFields.project_programs)) {
+        programs = [filterFields.project_programs];
+      }
 
+      // postgres arrays literals start and end with {}
+      sqlStatement.append(SQL` HAVING array_agg(distinct p2.program_id) && '{`);
+      programs.forEach((id, index) => {
+        // add the element
+        sqlStatement.append(id);
+
+        if (index !== programs.length - 1) {
+          // add a comma unless it is the last element in the array
+          sqlStatement.append(',');
+        }
+      });
+      sqlStatement.append(SQL`}'`);
+    }
+
+    sqlStatement.append(';');
+
+    const response = await this.connection.sql<ProjectData>(sqlStatement);
     if (!response.rows) {
       return [];
     }
@@ -292,64 +320,59 @@ export class ProjectRepository extends BaseRepository {
     return response.rows;
   }
 
-  async getProjectData(projectId: number): Promise<GetProjectData> {
+  async getProjectData(projectId: number): Promise<ProjectData> {
     const getProjectSqlStatement = SQL`
       SELECT
-        project.project_id,
-        project.uuid,
-        project.project_type_id as pt_id,
-        project_type.name as type,
-        project.name,
-        project.objectives,
-        project.location_description,
-        project.start_date,
-        project.end_date,
-        project.caveats,
-        project.comments,
-        project.coordinator_first_name,
-        project.coordinator_last_name,
-        project.coordinator_email_address,
-        project.coordinator_agency_name,
-        project.coordinator_public,
-        project.geojson as geometry,
-        project.create_date,
-        project.create_user,
-        project.update_date,
-        project.update_user,
-        project.revision_count
-      from
-        project
-      left outer join
-        project_type
-          on project.project_type_id = project_type.project_type_id
-      where
-        project.project_id = ${projectId};
+        p.project_id,
+        p.uuid,
+        p.name as project_name,
+        p.objectives,
+        p.location_description,
+        p.start_date,
+        p.end_date,
+        p.caveats,
+        p.comments,
+        p.coordinator_first_name,
+        p.coordinator_last_name,
+        p.coordinator_email_address,
+        p.coordinator_agency_name,
+        p.coordinator_public,
+        p.geojson as geometry,
+        p.create_date,
+        p.create_user,
+        p.update_date,
+        p.update_user,
+        p.revision_count,
+        pp.project_programs,
+        pa.project_types
+      FROM
+        project p 
+      LEFT JOIN (
+        SELECT array_remove(array_agg(p.program_id), NULL) as project_programs, pp.project_id 
+        FROM program p, project_program pp 
+        WHERE p.program_id = pp.program_id 
+        GROUP BY pp.project_id
+      ) as pp on pp.project_id = p.project_id
+      LEFT JOIN (
+        SELECT array_remove(array_agg(pt.type_id), NULL) as project_types, p.project_id
+        FROM project p 
+        LEFT JOIN project_type pt on p.project_id = pt.project_id
+        GROUP BY p.project_id
+      ) as pa on pa.project_id = p.project_id 
+      WHERE
+        p.project_id = ${projectId};
     `;
 
-    const getProjectActivitiesSQLStatement = SQL`
-      SELECT
-        activity_id
-      from
-        project_activity
-      where project_id = ${projectId};
-    `;
+    const response = await this.connection.sql<ProjectData>(getProjectSqlStatement);
 
-    const [project, activity] = await Promise.all([
-      this.connection.query(getProjectSqlStatement.text, getProjectSqlStatement.values),
-      this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values)
-    ]);
-
-    const projectResult = project?.rows?.[0];
-    const activityResult = activity?.rows;
-
-    if (!projectResult || !activityResult) {
+    if (response?.rowCount < 1) {
       throw new ApiExecuteSQLError('Failed to get project data', [
         'ProjectRepository->getProjectData',
         'rows was null or undefined, expected rows != null'
       ]);
     }
 
-    return new GetProjectData(projectResult, activityResult);
+    return response.rows[0];
   }
 
   async getObjectivesData(projectId: number): Promise<GetObjectivesData> {
@@ -618,28 +641,28 @@ export class ProjectRepository extends BaseRepository {
   async getReportAttachmentsData(projectId: number): Promise<GetReportAttachmentsData> {
     const sqlStatement = SQL`
       SELECT
-        pra.project_report_attachment_id
-        , pra.project_id
-        , pra.file_name
-        , pra.title
-        , pra.description
-        , pra.year
-        , pra."key"
-        , pra.file_size
-        , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
+        pra.project_report_attachment_id,
+        pra.project_id,
+        pra.file_name,
+        pra.title,
+        pra.description,
+        pra.year,
+        pra."key",
+        pra.file_size,
+        array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
       FROM
         project_report_attachment pra
       LEFT JOIN project_report_author pra2 ON pra2.project_report_attachment_id = pra.project_report_attachment_id
       WHERE pra.project_id = ${projectId}
       GROUP BY
-        pra.project_report_attachment_id
-        , pra.project_id
-        , pra.file_name
-        , pra.title
-        , pra.description
-        , pra.year
-        , pra."key"
-        , pra.file_size;
+        pra.project_report_attachment_id,
+        pra.project_id,
+        pra.file_name,
+        pra.title,
+        pra.description,
+        pra.year,
+        pra."key",
+        pra.file_size;
     `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
@@ -652,7 +675,6 @@ export class ProjectRepository extends BaseRepository {
   async insertProject(postProjectData: PostProjectObject): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO project (
-        project_type_id,
         name,
         objectives,
         location_description,
@@ -668,7 +690,6 @@ export class ProjectRepository extends BaseRepository {
         geojson,
         geography
       ) VALUES (
-        ${postProjectData.project.type},
         ${postProjectData.project.name},
         ${postProjectData.objectives.objectives},
         ${postProjectData.location.location_description},
@@ -840,17 +861,17 @@ export class ProjectRepository extends BaseRepository {
     return result.id;
   }
 
-  async insertActivity(activityId: number, projectId: number): Promise<number> {
+  async insertType(typeId: number, projectId: number): Promise<number> {
     const sqlStatement = SQL`
-      INSERT INTO project_activity (
-        activity_id,
+      INSERT INTO project_type (
+        type_id,
         project_id
       ) VALUES (
-        ${activityId},
+        ${typeId},
         ${projectId}
       )
       RETURNING
-        project_activity_id as id;
+        project_type_id as id;
     `;
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
@@ -858,13 +879,68 @@ export class ProjectRepository extends BaseRepository {
     const result = response?.rows?.[0];
 
     if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert project activity data', [
-        'ProjectRepository->insertClassificationDetail',
+      throw new ApiExecuteSQLError('Failed to insert project type data', [
+        'ProjectRepository->insertType',
         'rows was null or undefined, expected rows != null'
       ]);
     }
 
     return result.id;
+  }
+
+  /**
+   * Links a given project with a list of given programs.
+   * This insert assumes previous records for a project have been removed first
+   *
+   * @param {number} projectId Project to add programs to
+   * @param {number[]} programs Programs to be added to a project
+   * @returns {*} {Promise<void>}
+   */
+  async insertProgram(projectId: number, programs: number[]): Promise<void> {
+    if (programs.length < 1) {
+      return;
+    }
+
+    const sql = SQL`
+      INSERT INTO project_program (project_id, program_id)
+      VALUES `;
+
+    programs.forEach((programId, index) => {
+      sql.append(`(${projectId}, ${programId})`);
+
+      if (index !== programs.length - 1) {
+        sql.append(',');
+      }
+    });
+
+    sql.append(';');
+
+    try {
+      await this.connection.sql(sql);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to execute insert SQL for project_program', [
+        'ProjectRepository->insertProgram'
+      ]);
+    }
+  }
+
+  /**
+   * Removes program links for a given project.
+   *
+   * @param {number} projectId Project id to remove programs from
+   * @returns {*} {Promise<void>}
+   */
+  async deletePrograms(projectId: number): Promise<void> {
+    const sql = SQL`
+      DELETE FROM project_program WHERE project_id = ${projectId};
+    `;
+    try {
+      await this.connection.sql(sql);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to execute delete SQL for project_program', [
+        'ProjectRepository->deletePrograms'
+      ]);
+    }
   }
 
   async deleteIUCNData(projectId: number): Promise<void> {
@@ -921,7 +997,6 @@ export class ProjectRepository extends BaseRepository {
     const sqlSetStatements: SQLStatement[] = [];
 
     if (project) {
-      sqlSetStatements.push(SQL`project_type_id = ${project.type}`);
       sqlSetStatements.push(SQL`name = ${project.name}`);
       sqlSetStatements.push(SQL`start_date = ${project.start_date}`);
       sqlSetStatements.push(SQL`end_date = ${project.end_date}`);
@@ -991,10 +1066,10 @@ export class ProjectRepository extends BaseRepository {
     }
   }
 
-  async deleteActivityData(projectId: NumberOfAutoScalingGroups): Promise<void> {
+  async deleteTypeData(projectId: number): Promise<void> {
     const sqlDeleteStatement = SQL`
       DELETE FROM
-        project_activity
+        project_type
       WHERE
         project_id = ${projectId};
     `;
