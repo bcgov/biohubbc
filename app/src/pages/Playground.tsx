@@ -1,7 +1,7 @@
 import { Box, Button } from '@material-ui/core';
 import CbSelectField from 'components/fields/CbSelectField';
 import FloatingPointField from 'components/fields/FloatingPointField';
-import { ClickMarker } from 'components/map/components/ClickMarker';
+import { MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
 import MapContainer, { INonEditableGeometries } from 'components/map/MapContainer';
 import { Formik, FormikHelpers, FormikValues } from 'formik';
 import { LatLng } from 'leaflet';
@@ -86,20 +86,7 @@ export const Playground = () => {
                   formikProps.values.longitude ?? 0
                 )}
                 additionalLayers={[
-                  // <>
-                  //   {!isNaN(formikProps.values.longitude) && !isNaN(formikProps.values.latitude) && (
-                  //     <ResizableCircle
-                  //       // radius={
-                  //       //   isNaN(formikProps.values.coordinate_uncertainty)
-                  //       //     ? 0
-                  //       //     : formikProps.values.coordinate_uncertainty
-                  //       // }
-                  //       center={
-                  //         new LatLng(formikProps.values.latitude ?? 0, formikProps.values.longitude ?? 0)
-                  //       }></ResizableCircle>
-                  //   )}
-                  // </>,
-                  <ClickMarker
+                  <MarkerWithResizableRadius
                     radius={coerceZero(formikProps.values.coordinate_uncertainty)}
                     position={
                       new LatLng(coerceZero(formikProps.values.latitude), coerceZero(formikProps.values.longitude))
