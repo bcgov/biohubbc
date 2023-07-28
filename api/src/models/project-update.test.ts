@@ -105,7 +105,6 @@ describe('PutObjectivesData', () => {
   describe('all values provided', () => {
     const obj = {
       objectives: 'objectives',
-      caveats: 'caveats',
       revision_count: 1
     };
 

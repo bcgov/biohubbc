@@ -116,7 +116,6 @@ describe('GetObjectivesData', () => {
 
     const obj = {
       objectives: 'these are the project objectives',
-      caveats: 'these are some interesting caveats',
       revision_count: 'revision'
     };
 

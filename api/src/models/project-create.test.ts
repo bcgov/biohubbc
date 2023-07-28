@@ -69,8 +69,7 @@ describe('PostProjectObject', () => {
         comments: 'comments_test_data'
       },
       objectives: {
-        objectives: 'these are the project objectives',
-        caveats: 'these are some interesting caveats'
+        objectives: 'these are the project objectives'
       },
       location: {
         location_description: 'a location description',
@@ -221,8 +220,7 @@ describe('PostObjectivesData', () => {
     let projectObjectivesData: PostObjectivesData;
 
     const obj = {
-      objectives: 'these are the project objectives',
-      caveats: 'these are some interesting caveats'
+      objectives: 'these are the project objectives'
     };
 
     before(() => {
