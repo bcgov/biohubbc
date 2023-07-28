@@ -36,7 +36,7 @@ const GeneralAnimalForm = () => {
           <CustomTextField
             other={{ size: 'small' }}
             label="Individual's Label"
-            name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_label')}
+            name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
           />
         </HelpButtonTooltip>
       </Grid>

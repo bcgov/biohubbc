@@ -19,7 +19,7 @@ const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).ty
 
 const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
-  taxon_label: yup.string()
+  animal_id: yup.string() //nickname
 });
 
 const AnimalCaptureSchema = yup.object({}).shape({
@@ -27,7 +27,6 @@ const AnimalCaptureSchema = yup.object({}).shape({
   capture_latitude: latSchema.required(req),
   capture_timestamp: yup.date().required(req),
   capture_comment: yup.string(),
-  contains_release: yup.boolean(),
   release_longitude: lonSchema,
   release_latitude: latSchema,
   release_timestamp: yup.date(),
