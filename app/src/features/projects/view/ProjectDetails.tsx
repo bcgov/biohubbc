@@ -8,12 +8,12 @@ import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
 import { ProjectContext } from 'contexts/projectContext';
-import GeneralInformation from 'features/projects/view/components/GeneralInformation';
-import IUCNClassification from 'features/projects/view/components/IUCNClassification';
-import Partnerships from 'features/projects/view/components/Partnerships';
-import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
-import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
 import { useContext } from 'react';
+import GeneralInformation from './components/GeneralInformation';
+import IUCNClassification from './components/IUCNClassification';
+import Partnerships from './components/Partnerships';
+import ProjectCoordinator from './components/ProjectCoordinator';
+import ProjectObjectives from './components/ProjectObjectives';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectMetadata: {

@@ -25,9 +25,14 @@ const GeneralInformation = () => {
   const codes = codesContext.codesDataLoader.data;
   const projectData = projectContext.projectDataLoader.data.projectData;
 
-  const projectActivities =
-    codes.activity
-      .filter((code) => projectData.project.project_activities.includes(code.id))
+  const projectTypes =
+    codes.type
+      .filter((code) => projectData.project.project_types.includes(code.id))
+      .map((code) => code.name)
+      .join(', ') || '';
+  const projectPrograms =
+    codes.program
+      .filter((code) => projectData.project.project_programs.includes(code.id))
       .map((code) => code.name)
       .join(', ') || '';
 
@@ -36,11 +41,9 @@ const GeneralInformation = () => {
       <Grid container spacing={1}>
         <Grid item sm={6}>
           <Typography component="dt" color="textSecondary" variant="subtitle2">
-            Type
+            Program
           </Typography>
-          <Typography component="dd">
-            {codes.project_type.find((item: any) => item.id === projectData.project.project_type)?.name}
-          </Typography>
+          <Typography component="dd">{projectPrograms ? <>{projectPrograms}</> : 'No Programs'}</Typography>
         </Grid>
         <Grid item sm={6}>
           <Typography component="dt" color="textSecondary" variant="subtitle2">
@@ -65,9 +68,9 @@ const GeneralInformation = () => {
         </Grid>
         <Grid item sm={12}>
           <Typography component="dt" color="textSecondary" variant="subtitle2">
-            Activities
+            Types
           </Typography>
-          <Typography component="dd">{projectActivities ? <>{projectActivities}</> : 'No Activities'}</Typography>
+          <Typography component="dd">{projectTypes ? <>{projectTypes}</> : 'No Types'}</Typography>
         </Grid>
       </Grid>
     </Box>

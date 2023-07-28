@@ -28,6 +28,7 @@ interface IFundingSourceProps {
  */
 const FundingSource = (props: IFundingSourceProps) => {
   const hasFundingSources = props.funding_sources.length > 0;
+
   return (
     <>
       <List disablePadding>

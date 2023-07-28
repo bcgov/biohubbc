@@ -81,13 +81,13 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
             component={
               <>
                 <ProjectDetailsForm
-                  project_type={
-                    codes?.project_type?.map((item) => {
+                  program={
+                    codes?.program?.map((item) => {
                       return { value: item.id, label: item.name };
                     }) || []
                   }
-                  activity={
-                    codes?.activity?.map((item) => {
+                  type={
+                    codes?.type?.map((item) => {
                       return { value: item.id, label: item.name };
                     }) || []
                   }
