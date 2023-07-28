@@ -7,6 +7,7 @@ import { Box } from '@mui/system';
 import { useFormikContext } from 'formik';
 import { IAnimal } from '../animal';
 import { SurveyAnimalsI18N } from 'constants/i18n';
+import CbSelectField from 'components/fields/CbSelectField';
 
 /**
  * Renders the General section for the Individual Animal form
@@ -24,7 +25,7 @@ const GeneralAnimalForm = () => {
       <Grid item xs={6}>
         <Box mb={2}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
-            <CustomTextField other={{ size: 'small' }} label="Taxon Select Placeholher" name="general.taxon_id" />
+            <CbSelectField name={'taxon'} label={'Taxon'} id={'taxon'} route={'taxons'} />
           </HelpButtonTooltip>
         </Box>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>

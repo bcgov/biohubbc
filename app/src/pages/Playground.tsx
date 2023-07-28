@@ -1,4 +1,4 @@
-import { Box, Button } from '@material-ui/core';
+import { Box, Button } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import FloatingPointField from 'components/fields/FloatingPointField';
 import { MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
