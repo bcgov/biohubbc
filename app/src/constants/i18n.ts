@@ -305,6 +305,7 @@ export const SurveyAnimalsI18N = {
   animalCaptureTitle: 'Capture',
   animalCaptureHelp: 'Capture help placeholder',
   animalCaptureAddBtn: 'Add Capture Event',
+  animalCaptureReleaseRadio: 'This individual was released at a different location than where it was captured',
 
   // Input help strings
   taxonHelp: 'Taxon help placeholder',

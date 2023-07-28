@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import FormSectionWrapper from './FormSectionWrapper';
 import { Box } from '@mui/system';
 import { useFormikContext } from 'formik';
-import { IAnimal } from '../animal';
+import { getAnimalFieldName, IAnimal, IAnimalGeneral } from '../animal';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 
 /**
@@ -16,6 +16,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 
 const GeneralAnimalForm = () => {
   const { values } = useFormikContext<IAnimal>();
+  const name: keyof IAnimal = 'general';
   useEffect(() => {
     console.log(values);
   }, [JSON.stringify(values)]);
@@ -24,11 +25,19 @@ const GeneralAnimalForm = () => {
       <Grid item xs={6}>
         <Box mb={2}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
-            <CustomTextField other={{ size: 'small' }} label="Taxon Select Placeholher" name="general.taxon_id" />
+            <CustomTextField
+              other={{ size: 'small', required: true }}
+              label="Taxon Select Placeholher"
+              name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
+            />
           </HelpButtonTooltip>
         </Box>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
-          <CustomTextField other={{ size: 'small' }} label="Individual's Label" name="general.taxon_label" />
+          <CustomTextField
+            other={{ size: 'small' }}
+            label="Individual's Label"
+            name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_label')}
+          />
         </HelpButtonTooltip>
       </Grid>
     </FormSectionWrapper>
