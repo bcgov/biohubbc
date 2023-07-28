@@ -51,7 +51,7 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE project_activity RENAME TO project_type;
 
     -------------------------------------------------------------------------
-    -- Add primary and foreign keys
+    -- Add constraints and indexes
     -------------------------------------------------------------------------    
     -- add primary keys
     ALTER TABLE type ADD CONSTRAINT  type_pk PRIMARY KEY (type_id);
@@ -60,6 +60,12 @@ export async function up(knex: Knex): Promise<void> {
     -- add foreign key constraints
     ALTER TABLE project_type ADD CONSTRAINT project_type_fk1 FOREIGN KEY (type_id) REFERENCES type(type_id);
     ALTER TABLE project_type ADD CONSTRAINT project_type_fk2 FOREIGN KEY (project_id) REFERENCES project(project_id);
+
+    CREATE INDEX type_id_idx1 ON project_type(type_id);
+    CREATE INDEX project_id_idx1 ON project_type(project_id);
+
+    -- Add unique end-date index
+    CREATE UNIQUE INDEX type_nuk1 ON type(name, (record_end_date is NULL)) where record_end_date is null;
 
     -------------------------------------------------------------------------
     -- Rename triggers and sequence
