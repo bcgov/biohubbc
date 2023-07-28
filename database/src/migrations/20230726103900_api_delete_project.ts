@@ -30,7 +30,7 @@ export async function up(knex: Knex): Promise<void> {
  -- charlie.garrettjones@quartech.com
  --                  2023-03-14  1.7.0 model changes
  -- alfred.rosenthal@quartech.com
- --                  2023-07-26 removing climate associations, delete project regions, programs
+ --                  2023-07-26 removing climate associations, delete project regions, programs, grouping
  -- *******************************************************************
  declare
      _survey_id survey.survey_id%type;
@@ -55,6 +55,7 @@ export async function up(knex: Knex): Promise<void> {
      delete from project_metadata_publish where project_id = p_project_id;
      delete from project_region where project_id = p_project_id;
      delete from project_program where project_id = p_project_id;
+     delete from grouping_project where project_id = p_project_id;
      delete from project where project_id = p_project_id;
  
  exception
