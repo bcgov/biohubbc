@@ -33,6 +33,69 @@ export async function up(knex: Knex): Promise<void> {
     -- permission enum
 
     -------------------------------------------------------------------------
+    -- Create project permissions table
+    -------------------------------------------------------------------------
+    CREATE TABLE project_permission(
+      project_permission_id   integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      name                     varchar(50)       NOT NULL,
+      description              varchar(250)      NOT NULL,
+      notes                    varchar(3000),
+      record_effective_date    date              NOT NULL,
+      record_end_date          date,
+      create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+      create_user              integer           NOT NULL,
+      update_date              timestamptz(6),
+      update_user              integer,
+      revision_count           integer           DEFAULT 0 NOT NULL,
+      CONSTRAINT project_permission_pk PRIMARY KEY (project_permission_id)
+    );
+  
+    COMMENT ON COLUMN project_permission.project_permission_id    IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN project_permission.name                     IS 'The name of the project permission.';
+    COMMENT ON COLUMN project_permission.description              IS 'The description of the project permission.';
+    COMMENT ON COLUMN project_permission.notes                    IS 'Notes associated with the record.';
+    COMMENT ON COLUMN project_permission.record_effective_date    IS 'Record level effective date.';
+    COMMENT ON COLUMN project_permission.record_end_date          IS 'Record level end date.';
+    COMMENT ON COLUMN project_permission.create_date              IS 'The datetime the record was created.';
+    COMMENT ON COLUMN project_permission.create_user              IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN project_permission.update_date              IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN project_permission.update_user              IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN project_permission.revision_count           IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  project_permission                          IS 'Project permissions.';
+
+
+    CREATE TABLE project_role_project_permission(
+      project_role_project_permission_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      project_permission_id                 integer           NOT NULL,
+      project_role_id                       integer           NOT NULL,
+      create_date                           timestamptz(6)    DEFAULT now() NOT NULL,
+      create_user                           integer           NOT NULL,
+      update_date                           timestamptz(6),
+      update_user                           integer,
+      revision_count                        integer           DEFAULT 0 NOT NULL,
+      CONSTRAINT project_role_project_permission_pk PRIMARY KEY (project_role_project_permission_id)
+    );
+
+    COMMENT ON COLUMN project_role_project_permission.project_role_project_permission_id  IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN project_role_project_permission.project_permission_id               IS 'The name of the project permission.';
+    COMMENT ON COLUMN project_role_project_permission.project_role_id                     IS 'The description of the project permission.';
+    COMMENT ON COLUMN project_role_project_permission.create_date                         IS 'Notes associated with the record.';
+    COMMENT ON COLUMN project_role_project_permission.create_user                         IS 'Record level effective date.';
+    COMMENT ON COLUMN project_role_project_permission.update_date                         IS 'Record level end date.';
+    COMMENT ON COLUMN project_role_project_permission.update_user                         IS 'The datetime the record was created.';
+    COMMENT ON COLUMN project_role_project_permission.revision_count                      IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON TABLE  project_role_project_permission                                     IS 'Project permissions.';
+
+    -- Add foreign key constraints
+    ALTER TABLE project_role_project_permission ADD CONSTRAINT project_role_project_permission_fk1 
+      FOREIGN KEY (project_permission_id)
+      REFERENCES project_permission(project_permission_id);
+
+    ALTER TABLE project_role_project_permission ADD CONSTRAINT project_role_project_permission_fk2
+      FOREIGN KEY (project_role_id)
+      REFERENCES project_role(project_role_id);
+
+    -------------------------------------------------------------------------
     -- End date old roles
     -------------------------------------------------------------------------
     UPDATE project_roles SET record_end_date = NOW();
@@ -49,7 +112,6 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- Update existing project_participation with new project roles
     -------------------------------------------------------------------------
-
     -- process for each of these:
     -- select the role id for the old role
     -- select the role id for the new role
