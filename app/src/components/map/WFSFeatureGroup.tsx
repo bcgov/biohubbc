@@ -66,18 +66,13 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
   const [features, setFeatures] = useState<Feature[]>();
   const [bounds, setBounds] = useState<any>(null);
 
-  const throttledSetBounds = useCallback(
-    throttle((newBounds) => {
-      if (!isMounted) {
-        return;
-      }
+  const throttledSetBounds = throttle((newBounds) => {
+    if (!isMounted) {
+      return;
+    }
 
-      setBounds(newBounds);
-    }, 300),
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+    setBounds(newBounds);
+  }, 300);
 
   useMapEvents({
     moveend: () => {
@@ -96,16 +91,13 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
     }
   });
 
-  const throttledGetFeatures = useCallback(
-    throttle(async (typeName: string, bbox: string, wfsParams?: IWFSParams) => {
-      const url = buildWFSURLByBoundingBox(typeName, bbox, wfsParams);
+  const throttledGetFeatures = throttle(async (typeName: string, bbox: string, wfsParams?: IWFSParams) => {
+    const url = buildWFSURLByBoundingBox(typeName, bbox, wfsParams);
 
-      const data = await biohubApi.external.get(url).catch(/* catch and ignore errors */);
+    const data = await biohubApi.external.get(url).catch(/* catch and ignore errors */);
 
-      return data.features;
-    }, 300),
-    []
-  );
+    return data.features;
+  }, 300);
 
   const updateFeatures = useCallback(async () => {
     if (!isMounted()) {

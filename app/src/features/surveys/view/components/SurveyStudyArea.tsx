@@ -32,7 +32,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { LatLngBoundsExpression } from 'leaflet';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 
@@ -80,7 +80,7 @@ const SurveyStudyArea = () => {
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
   const survey_details = surveyContext.surveyDataLoader.data?.surveyData?.survey_details;
-  const surveyGeometry = survey_details?.geometry || [];
+  const surveyGeometry = useMemo(() => survey_details?.geometry || [], [survey_details]);
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
