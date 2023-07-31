@@ -128,6 +128,15 @@ export async function up(knex: Knex): Promise<void> {
       ('Observer', NOW(), 'Read only permissions for a project.');
 
     -------------------------------------------------------------------------
+    -- Add new permissions 
+    -------------------------------------------------------------------------
+    INSERT INTO project_permission (name, record_effective_date, description)
+    VALUES 
+      ('Coordinator', NOW(), 'The administrative lead of the project.'),
+      ('Collaborator', NOW(), 'A participant team member of the project.'),
+      ('Observer', NOW(), 'Read only permissions for a project.');
+
+    -------------------------------------------------------------------------
     -- Update existing project_participation with new project roles
     -------------------------------------------------------------------------
     -- process for each update:
@@ -176,12 +185,13 @@ export async function up(knex: Knex): Promise<void> {
       ('Collaborator', NOW(), 'A participant team member of the project.'),
       ('Observer', NOW(), 'Read only permissions for a project.');
 
+    -------------------------------------------------------------------------
+    -- Link Permissions and Roles based on name
+    -------------------------------------------------------------------------
     INSERT INTO project_role_permission (project_role_id, project_permission_id)
-    VALUES (
-      SELECT pr.project_role_id, pp.project_permission_id 
-      FROM project_permission pp, project_role pr 
-      WHERE pp.name = pr."name"
-    );
+    SELECT pr.project_role_id, pp.project_permission_id 
+    FROM project_permission pp, project_role pr 
+    WHERE pp.name = pr."name";
 
     -------------------------------------------------------------------------
     -- Create views
