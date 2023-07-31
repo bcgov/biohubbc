@@ -140,14 +140,11 @@ GET.apiDoc = {
                     }
                   },
                   objectives: {
-                    description: 'The project objectives and caveats',
+                    description: 'The project objectives',
                     type: 'object',
-                    required: ['objectives', 'caveats'],
+                    required: ['objectives'],
                     properties: {
                       objectives: {
-                        type: 'string'
-                      },
-                      caveats: {
                         type: 'string'
                       }
                     }
