@@ -15,8 +15,6 @@ export async function up(knex: Knex): Promise<void> {
     SET SEARCH_PATH=biohub_dapi_v1;
 
     -- drop old views
-    DROP VIEW activity;
-    DROP VIEW project_activity;
 
     -- Project Lead ---> Coordinator
     -- All read/write permissions
