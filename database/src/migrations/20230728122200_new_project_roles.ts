@@ -31,7 +31,7 @@ export async function up(knex: Knex): Promise<void> {
     -- permission enum
 
     -------------------------------------------------------------------------
-    -- Create project permissions table
+    -- Create project permission and join table
     -------------------------------------------------------------------------
     SET SEARCH_PATH=biohub, public;
 
@@ -63,7 +63,6 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN project_permission.revision_count           IS 'Revision count used for concurrency control.';
     COMMENT ON TABLE  project_permission                          IS 'Project permissions.';
 
-
     CREATE TABLE project_role_project_permission(
       project_role_project_permission_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       project_permission_id                 integer           NOT NULL,
@@ -86,7 +85,19 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN project_role_project_permission.revision_count                      IS 'Revision count used for concurrency control.';
     COMMENT ON TABLE  project_role_project_permission                                     IS 'A join table for project roles and their permissions.';
 
-    -- Add foreign key constraints
+    -------------------------------------------------------------------------
+    -- Create audit and journal triggers for new tables
+    -------------------------------------------------------------------------
+    CREATE TRIGGER audit_project_permission BEFORE INSERT OR UPDATE OR DELETE ON project_permission for each ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_project_permission AFTER INSERT OR UPDATE OR DELETE ON project_permission for each ROW EXECUTE PROCEDURE tr_journal_trigger();
+    
+    CREATE TRIGGER audit_project_role_project_permission BEFORE INSERT OR UPDATE OR DELETE ON project_role_project_permission for each ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_project_role_project_permission AFTER INSERT OR UPDATE OR DELETE ON project_role_project_permission for each ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    ----------------------------------------------------------------------------------------
+    -- Create Indexes and Constraints for new tables
+    ----------------------------------------------------------------------------------------
+
     ALTER TABLE project_role_project_permission ADD CONSTRAINT project_role_project_permission_fk1 
       FOREIGN KEY (project_permission_id)
       REFERENCES project_permission(project_permission_id);
@@ -94,6 +105,13 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE project_role_project_permission ADD CONSTRAINT project_role_project_permission_fk2
       FOREIGN KEY (project_role_id)
       REFERENCES project_role(project_role_id);
+
+    -- Add unique end-date key constraint (don't allow 2 entities with the same name and a NULL record_end_date)
+    CREATE UNIQUE INDEX project_permission_nuk1 ON project_permission(name, (record_end_date is NULL)) where record_end_date is null;
+
+    -- Add indexes on foreign key columns
+    CREATE UNIQUE INDEX project_role_project_permission_idx1 ON project_role_project_permission(project_permission_id);
+    CREATE UNIQUE INDEX project_role_project_permission_idx2 ON project_role_project_permission(project_role_id);
 
     -------------------------------------------------------------------------
     -- End date old roles
@@ -155,17 +173,14 @@ export async function up(knex: Knex): Promise<void> {
       WHERE pp.project_role_id = pr.project_role_id
     );
 
+    -------------------------------------------------------------------------
+    -- Create views
+    -------------------------------------------------------------------------
+    SET SEARCH_PATH=biohub_dapi_v1;
+    
+    CREATE OR REPLACE VIEW project_permission AS SELECT * FROM biohub.project_permission;
+    CREATE OR REPLACE VIEW project_role_project_permission AS SELECT * FROM biohub.project_role_project_permission;
 
-
-    -------------------------------------------------------------------------
-    -- Remove old indexes and constraints 
-    -------------------------------------------------------------------------
-    -- SET SEARCH_PATH=biohub, public;
-
-    -------------------------------------------------------------------------
-    -- Recreate views
-    -------------------------------------------------------------------------
-    -- SET SEARCH_PATH=biohub_dapi_v1;
   `);
 }
 
