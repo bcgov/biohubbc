@@ -5,6 +5,7 @@ import { AnimalSchema, IAnimal } from './animal';
 import { Form, Formik } from 'formik';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
+import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 
 /**
  * Renders The 'Individual Animals' Form displayed in Survey view
@@ -38,6 +39,7 @@ const IndividualAnimalForm = () => {
           <GeneralAnimalForm />
           <CaptureAnimalForm />
           <MarkingAnimalForm />
+          <MeasurementAnimalForm />
         </Box>
       </Form>
     </Formik>

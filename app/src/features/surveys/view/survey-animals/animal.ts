@@ -41,7 +41,12 @@ export const AnimalMarkingSchema = yup.object({}).shape({
   marking_comment: yup.string()
 });
 
-const AnimalMeasurementSchema = yup.object({}).shape({});
+const AnimalMeasurementSchema = yup.object({}).shape({
+  measurement_type_id: yup.string().required(req),
+  measurement_value: yup.string().required(req), //Can be string or number
+  measurement_unit_id: yup.string().required(req),
+  measurement_comment: yup.string()
+});
 
 const AnimalMortalitySchema = yup.object({}).shape({});
 
@@ -77,7 +82,7 @@ export const AnimalSchema = yup.object({}).shape({
   general: AnimalGeneralSchema.required(),
   capture: yup.array().of(AnimalCaptureSchema).required(),
   marking: yup.array().of(AnimalMarkingSchema).required(),
-  measurement: yup.array().of(AnimalMeasurementSchema),
+  measurement: yup.array().of(AnimalMeasurementSchema).required(),
   mortality: AnimalMortalitySchema,
   family: yup.array().of(AnimalRelationshipSchema).required(),
   image: yup.array().of(AnimalImageSchema).required(),
@@ -85,7 +90,5 @@ export const AnimalSchema = yup.object({}).shape({
 });
 
 export type IAnimal = InferType<typeof AnimalSchema>;
-
-export type IAnimalAttribute = IAnimal[IAnimalKey];
 
 export type IAnimalKey = keyof IAnimal;

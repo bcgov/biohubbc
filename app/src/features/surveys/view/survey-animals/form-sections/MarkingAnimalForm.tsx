@@ -69,7 +69,7 @@ const MarkingAnimalForm = () => {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextInputToggle label="Add comment about this Marking">
+                  <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Marking')}>
                     <CustomTextField
                       other={{ size: 'small' }}
                       label="Marking Comment"
