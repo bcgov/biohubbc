@@ -146,15 +146,42 @@ export async function up(knex: Knex): Promise<void> {
 
     set search_path=biohub;
 
-    INSERT INTO user_identity_source (name, description, notes, record_effective_date) VALUES ('UNVERIFIED', 'UNVERIFIED user source system', 'A user with no verified IDIR or BCeID information.', now());
+    -- Populate new identity source
+    INSERT INTO user_identity_source (name, description, notes, record_effective_date) VALUES ('UNVERIFIED', 'UNVERIFIED user source system.', 'A user with no verified IDIR or BCeID information.', now());
+
+    -- Update existing identity source notes
     UPDATE user_identity_source SET notes = 'A internal user. Used only by the Database and API to make certain privileged queries.' where name = 'DATABASE';
     UPDATE user_identity_source SET notes = 'A IDIR user.' where name = 'IDIR';
     UPDATE user_identity_source SET notes = 'A Basic BCeID User.' where name = 'BCEIDBASIC';
     UPDATE user_identity_source SET notes = 'A Business BCeID user.' where name = 'BCEIDBUSINESS';
 
-    INSERT INTO system_permission (name, description, notes, record_effective_date) VALUES ('SYSTEM_ADMINISTRATOR', 'Grants root administrative capabilities.', 'A temporary permission while migrating from roles to permissions.', now());
-    INSERT INTO system_permission (name, description, notes, record_effective_date) VALUES ('DATA ADMINISTRATOR', 'Grants all data administrative capabilities.', 'A temporary permission while migrating from roles to permissions.', now());
-    INSERT INTO system_permission (name, description, notes, record_effective_date) VALUES ('CREATOR', 'Grants the create project capability.', 'A temporary permission while migrating from roles to permissions.', now());
+    -- Populate system permissions
+    INSERT INTO system_permission (name, description, notes, record_effective_date) VALUES ('System Administrator', 'Grants root administrative capabilities.', 'A temporary permission while migrating from roles to permissions.', now());
+    INSERT INTO system_permission (name, description, notes, record_effective_date) VALUES ('Data Administrator', 'Grants all data administrative capabilities.', 'A temporary permission while migrating from roles to permissions.', now());
+    INSERT INTO system_permission (name, description, notes, record_effective_date) VALUES ('Creator', 'Grants the create project capability.', 'A temporary permission while migrating from roles to permissions.', now());
+
+    -- Populate join table, linking system roles to their corresponding system permissions
+    INSERT INTO system_role_permission (
+      system_role_id, 
+      system_permission_id
+    ) VALUES (
+      (select system_role_id from system_role where name = 'System Administrator'), 
+      (select system_permission_id from system_permission where name = 'System Administrator')
+    );
+    INSERT INTO system_role_permission (
+      system_role_id, 
+      system_permission_id
+    ) VALUES (
+      (select system_role_id from system_role where name = 'Data Administrator'), 
+      (select system_permission_id from system_permission where name = 'Data Administrator')
+    );
+    INSERT INTO system_role_permission (
+      system_role_id, 
+      system_permission_id
+    ) VALUES (
+      (select system_role_id from system_role where name = 'Creator'), 
+      (select system_permission_id from system_permission where name = 'Creator')
+    );
 
     ----------------------------------------------------------------------------------------
     -- CLeanup Temporary Defaults
