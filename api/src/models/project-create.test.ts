@@ -69,8 +69,7 @@ describe('PostProjectObject', () => {
         comments: 'comments_test_data'
       },
       objectives: {
-        objectives: 'these are the project objectives',
-        caveats: 'these are some interesting caveats'
+        objectives: 'these are the project objectives'
       },
       location: {
         location_description: 'a location description',
@@ -215,18 +214,13 @@ describe('PostObjectivesData', () => {
     it('sets objectives', function () {
       expect(projectObjectivesData.objectives).to.equal('');
     });
-
-    it('sets caveats', function () {
-      expect(projectObjectivesData.caveats).to.equal('');
-    });
   });
 
   describe('All values provided', () => {
     let projectObjectivesData: PostObjectivesData;
 
     const obj = {
-      objectives: 'these are the project objectives',
-      caveats: 'these are some interesting caveats'
+      objectives: 'these are the project objectives'
     };
 
     before(() => {
@@ -235,10 +229,6 @@ describe('PostObjectivesData', () => {
 
     it('sets objectives', function () {
       expect(projectObjectivesData.objectives).to.equal(obj.objectives);
-    });
-
-    it('sets caveats', function () {
-      expect(projectObjectivesData.caveats).to.equal(obj.caveats);
     });
   });
 });
