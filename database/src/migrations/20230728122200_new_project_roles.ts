@@ -33,6 +33,8 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- Create project permissions table
     -------------------------------------------------------------------------
+    SET SEARCH_PATH=biohub, public;
+
     CREATE TABLE project_permission(
       project_permission_id   integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                     varchar(50)       NOT NULL,
@@ -96,7 +98,7 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- End date old roles
     -------------------------------------------------------------------------
-    UPDATE project_roles SET record_end_date = NOW();
+    UPDATE project_role SET record_end_date = NOW();
 
     -------------------------------------------------------------------------
     -- Add new roles to project_role table
@@ -158,12 +160,12 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- Remove old indexes and constraints 
     -------------------------------------------------------------------------
-    SET SEARCH_PATH=biohub, public;
+    -- SET SEARCH_PATH=biohub, public;
 
     -------------------------------------------------------------------------
     -- Recreate views
     -------------------------------------------------------------------------
-    SET SEARCH_PATH=biohub_dapi_v1;
+    -- SET SEARCH_PATH=biohub_dapi_v1;
   `);
 }
 
