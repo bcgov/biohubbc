@@ -330,7 +330,6 @@ export class ProjectRepository extends BaseRepository {
         p.location_description,
         p.start_date,
         p.end_date,
-        p.caveats,
         p.comments,
         p.coordinator_first_name,
         p.coordinator_last_name,
