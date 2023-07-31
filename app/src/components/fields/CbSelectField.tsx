@@ -1,4 +1,4 @@
-import { FormControl, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, FormControlProps, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { ICbRouteKey } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -11,6 +11,7 @@ export interface ICbSelectField {
   label: string;
   id: string;
   route: ICbRouteKey;
+  controlProps?: FormControlProps;
 }
 
 interface ICbSelectOption {
@@ -21,14 +22,16 @@ interface ICbSelectOption {
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const api = useCritterbaseApi();
   const cbLookupLoader = useDataLoader(async () => api.lookup.getSelectOptions(props.route));
-  const { values, touched, errors, handleChange } = useFormikContext<ICbSelectOption>();
+  const { values, touched, errors, handleChange, handleBlur } = useFormikContext<ICbSelectOption>();
+
+  const err = get(touched, props.name) && get(errors, props.name);
 
   if (!cbLookupLoader.data) {
     cbLookupLoader.load();
   }
 
   return (
-    <FormControl variant="outlined" fullWidth required={true}>
+    <FormControl variant="outlined" fullWidth {...props.controlProps} error={!!err}>
       <InputLabel id={`${props.name}-label`}>{props.label}</InputLabel>
       <Select
         name={props.name}
@@ -36,6 +39,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
         label={props.label}
         value={get(values, props.name) ?? ''}
         onChange={handleChange}
+        onBlur={handleBlur}
         displayEmpty
         inputProps={{ 'aria-label': 'Permit Type' }}>
         {cbLookupLoader.data?.map((a) => {
@@ -48,7 +52,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
           );
         })}
       </Select>
-      <FormHelperText>{get(touched, props.name) && get(errors, props.name)}</FormHelperText>
+      <FormHelperText>{err}</FormHelperText>
     </FormControl>
   );
 };

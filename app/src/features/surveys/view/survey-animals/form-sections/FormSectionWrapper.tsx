@@ -38,17 +38,17 @@ const FormSectionWrapper = ({
           {childs.length > 1 ? `${title} (${titleIndex + 1})` : `${title}`}
         </HelpButtonTooltip>
       </Typography>
-      {handleRemoveSection && (
+      {handleRemoveSection && childs.length >= 1 ? (
         <IconButton sx={{ ml: 'auto', height: 40, width: 40 }} onClick={() => handleRemoveSection(titleIndex)}>
           <Icon path={mdiClose} size={1} />
         </IconButton>
-      )}
+      ) : null}
     </Box>
   );
 
   return (
-    <>
-      {childs.length < 2 && getTitle(0)}
+    <Box mb={2}>
+      {childs.length < 2 ? getTitle(0) : null}
       {childs.map((child, idx) => (
         <div key={`fs-section-wrapper-${idx}`}>
           {childs.length >= 2 && getTitle(idx)}
@@ -57,7 +57,7 @@ const FormSectionWrapper = ({
           </Grid>
         </div>
       ))}
-      {btnLabel && handleAddSection && (
+      {btnLabel && handleAddSection ? (
         <Button
           onClick={handleAddSection}
           startIcon={<Icon path={mdiPlus} size={1} />}
@@ -66,8 +66,8 @@ const FormSectionWrapper = ({
           color="primary">
           {btnLabel}
         </Button>
-      )}
-    </>
+      ) : null}
+    </Box>
   );
 };
 

@@ -300,12 +300,22 @@ export const SubmitSurveyBiohubI18N = {
 export const SurveyAnimalsI18N = {
   animalDialogTitle: 'Invidividual Animals',
   animalDialogAddNew: 'Add New Individual',
+  animalSectionComment: (section: string) => `Add comment about this ${section}`,
   animalGeneralTitle: 'General',
   animalGeneralHelp: 'General help placeholder',
-  animalCaptureTitle: 'Capture',
-  animalCaptureHelp: 'Capture help placeholder',
+  animalCaptureTitle: 'Capture Information',
+  animalCaptureHelp:
+    'Capture Events are when animals have been deliberately handled or immobilized. All capture events should be reported by adding a Capture Event to a new or existing individual.',
   animalCaptureAddBtn: 'Add Capture Event',
   animalCaptureReleaseRadio: 'This individual was released at a different location than where it was captured',
+  animalMarkingTitle: 'Markings',
+  animalMarkingHelp:
+    'Markings are physical, chemical, or electronic tags or characteristics that uniquely identify individuals.',
+  animalMarkingAddBtn: 'Add Marking',
+  animalMeasurementTitle: 'Measurements',
+  animalMeasurementHelp:
+    'Measurements are quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
+  animalMeasurementAddBtn: 'Add Measrurement',
 
   // Input help strings
   taxonHelp: 'Taxon help placeholder',
