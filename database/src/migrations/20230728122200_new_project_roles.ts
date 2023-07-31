@@ -139,13 +139,11 @@ export async function up(knex: Knex): Promise<void> {
       FROM project_role pr1
       WHERE pr1.name = 'Coordinator') 
     WHERE pp.project_participation_id IN (
-      SELECT project_participation_id  
-      FROM project_participation pp 
-      WHERE pp.project_role_id = (
-        SELECT pr2.project_role_id 
-        FROM project_role pr2
-        WHERE pr2.name = 'Editor'
-      )
+      SELECT pp.project_participation_id
+      FROM project_participation pp2 
+      LEFT JOIN project_role pr 
+        ON pp.project_role_id = pr.project_role_id
+      WHERE pr."name" = 'Project Lead'
     );
 
 
