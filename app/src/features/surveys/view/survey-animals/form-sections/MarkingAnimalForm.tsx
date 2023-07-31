@@ -1,6 +1,7 @@
 import { Grid } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment } from 'react';
 import { getAnimalFieldName, IAnimal, IAnimalMarking } from '../animal';
@@ -24,9 +25,9 @@ const MarkingAnimalForm = () => {
       {({ remove, push }: FieldArrayRenderProps) => (
         <>
           <FormSectionWrapper
-            title={'Marking'}
-            titleHelp={'help'}
-            btnLabel={'Add Marking'}
+            title={SurveyAnimalsI18N.animalMarkingTitle}
+            titleHelp={SurveyAnimalsI18N.animalMarkingHelp}
+            btnLabel={SurveyAnimalsI18N.animalMarkingAddBtn}
             handleAddSection={() => push(newMarking)}
             handleRemoveSection={remove}>
             {values.marking.map((_cap, index) => (

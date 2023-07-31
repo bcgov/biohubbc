@@ -33,7 +33,7 @@ const AnimalCaptureSchema = yup.object({}).shape({
   release_comment: yup.string()
 });
 
-const AnimalMarkingSchema = yup.object({}).shape({
+export const AnimalMarkingSchema = yup.object({}).shape({
   marking_type_id: yup.string().required(req),
   marking_body_location_id: yup.string().required(req),
   primary_colour_id: yup.string(),
