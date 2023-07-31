@@ -33,7 +33,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Add comments column to survey
     -------------------------------------------------------------------------
     ALTER TABLE survey ADD COLUMN comments varchar(3000);
-    COMMENT ON COLUMN survey.comment IS 'Comments about the Survey.';
+    COMMENT ON COLUMN survey.comments IS 'Comments about the Survey.';
 
 
     -------------------------------------------------------------------------
