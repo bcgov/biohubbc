@@ -24,7 +24,7 @@ export async function seed(knex: Knex): Promise<void> {
   if (!response?.rows?.[0]) {
     await knex.raw(`
       ${insertProjectData()}
-      ${insertProjectActivityData()}
+      ${insertProjectTypeData()}
       ${insertProjectFirstNationData()}
       ${insertProjectFundingData()}
       ${insertProjectIUCNData()}
@@ -37,6 +37,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertProjectFundingDataFirstNations()}
       ${insertSurveyProprietorData()}
       ${insertSurveyVantageData()}
+      ${insertProjectProgramData()}
     `);
   }
 }
@@ -46,6 +47,21 @@ const checkAnyProjectExists = () => `
     project_id
   FROM
     project;
+`;
+
+/**
+ * SQL to insert Project Program data
+ *
+ */
+const insertProjectProgramData = () => `
+  INSERT into project_program
+    (
+      project_id, 
+      program_id
+    )
+  VALUES (
+    1, 3
+  );
 `;
 
 /**
@@ -260,12 +276,12 @@ const insertProjectFundingDataFirstNations = () => `
 `;
 
 /**
- * SQL to insert Project Activity data
+ * SQL to insert Project Type data
  *
  */
-const insertProjectActivityData = () => `
-  INSERT into project_activity
-    ( project_id, activity_id )
+const insertProjectTypeData = () => `
+  INSERT into project_type
+    ( project_id, type_id )
   VALUES
     ( 1, 5 )
   ;
@@ -302,7 +318,6 @@ const insertProjectStakeholderData = () => `
 const insertProjectData = () => `
   INSERT into project
     (
-      project_type_id,
       name,
       objectives,
       location_description,
@@ -317,7 +332,6 @@ const insertProjectData = () => `
       geojson
     )
   VALUES (
-    3,
     'Default Project',
     'Objectives',
     'Location Description',

@@ -24,18 +24,6 @@ const systemUsers = [
     user_guid: 'DFE2CC5E345E4B1E813EC1DC10852064'
   },
   {
-    identifier: 'aagahche',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
-    user_guid: 'DF86C48FAD244498B0881AF8DBB7645F'
-  },
-  {
-    identifier: 'cgarrett',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
-    user_guid: '067361FFF3514B5E80AAAAD795E6741D'
-  },
-  {
     identifier: 'cupshall',
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
@@ -58,12 +46,6 @@ const systemUsers = [
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
     user_guid: '813B096BC1BC4AAAB2E39DDE58F432E2'
-  },
-  {
-    identifier: 'robmunro',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
-    user_guid: '72013F74B95A4FBEB53BDB4B494E5550'
   },
   {
     identifier: 'zochampi',
@@ -94,6 +76,12 @@ const systemUsers = [
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
     user_guid: 'A82FE250A5BC40E68ABC54A1D0618D75'
+  },
+  {
+    identifier: 'mauberti-bc',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    roleId: SYSTEM_USER_ROLE_ID.SYSTEM_ADMINISTRATOR,
+    user_guid: '62EC624E50844486A046DC9709854F8D'
   }
 ];
 

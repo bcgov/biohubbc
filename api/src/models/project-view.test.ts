@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { COMPLETION_STATUS } from '../constants/status';
 import {
   GetAttachmentsData,
   GetCoordinatorData,
@@ -9,44 +8,50 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData,
-  GetReportAttachmentsData
+  GetReportAttachmentsData,
+  ProjectData
 } from './project-view';
 
-describe('GetProjectData', () => {
+describe('ProjectData', () => {
   describe('No values provided', () => {
-    let data: GetProjectData;
+    let data: ProjectData;
 
     before(() => {
-      data = new GetProjectData();
+      data = {
+        project_id: 1,
+        uuid: 'uuid',
+        project_name: '',
+        project_programs: [],
+        project_types: [],
+        start_date: new Date('2005-01-01'),
+        end_date: new Date('2006-01-01'),
+        comments: '',
+        revision_count: 1
+      };
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal(null);
+      expect(data.project_id).to.equal(1);
     });
 
     it('sets name', () => {
       expect(data.project_name).to.equal('');
     });
 
-    it('sets type', () => {
-      expect(data.project_type).to.equal(-1);
+    it('sets programs', () => {
+      expect(data.project_programs).to.eql([]);
     });
 
-    it('sets project_activities', () => {
-      expect(data.project_activities).to.eql([]);
+    it('sets project_types', () => {
+      expect(data.project_types).to.eql([]);
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal('');
+      expect(data.start_date).to.eql(new Date('2005-01-01'));
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal('');
-    });
-
-    it('sets completion_status', () => {
-      expect(data.completion_status).to.equal(COMPLETION_STATUS.ACTIVE);
+      expect(data.end_date).to.eql(new Date('2006-01-01'));
     });
   });
 
@@ -55,21 +60,29 @@ describe('GetProjectData', () => {
       project_id: 1,
       name: 'project name',
       pt_id: 4,
-      start_date: '2020-04-20T07:00:00.000Z',
-      end_date: '2020-05-20T07:00:00.000Z',
+      start_date: new Date('2020-04-20T07:00:00.000Z'),
+      end_date: new Date('2020-05-20T07:00:00.000Z'),
       revision_count: 1
     };
 
-    const activityData = [{ activity_id: 1 }, { activity_id: 2 }];
-
-    let data: GetProjectData;
+    let data: ProjectData;
 
     before(() => {
-      data = new GetProjectData(projectData, activityData);
+      data = {
+        project_id: 1,
+        uuid: 'uuid',
+        project_name: 'project name',
+        project_programs: [1],
+        project_types: [1, 2],
+        start_date: new Date('2020-04-20T07:00:00.000Z'),
+        end_date: new Date('2020-05-20T07:00:00.000Z'),
+        comments: '',
+        revision_count: 1
+      };
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal(projectData.project_id);
+      expect(data.project_id).to.equal(projectData.project_id);
     });
 
     it('sets name', () => {
@@ -77,24 +90,24 @@ describe('GetProjectData', () => {
     });
 
     it('sets type', () => {
-      expect(data.project_type).to.equal(projectData.pt_id);
+      expect(data.project_programs).to.eql([1]);
     });
 
-    it('sets project_activities', () => {
-      expect(data.project_activities).to.eql([1, 2]);
+    it('sets project_types', () => {
+      expect(data.project_types).to.eql([1, 2]);
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal('2020-04-20T07:00:00.000Z');
+      expect(data.start_date).to.eql(new Date('2020-04-20T07:00:00.000Z'));
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal('2020-05-20T07:00:00.000Z');
+      expect(data.end_date).to.eql(new Date('2020-05-20T07:00:00.000Z'));
     });
 
-    it('sets completion_status', () => {
-      expect(data.completion_status).to.equal(COMPLETION_STATUS.COMPLETED);
-    });
+    // it('sets completion_status', () => {
+    //   expect(data.completion_status).to.equal(COMPLETION_STATUS.COMPLETED);
+    // });
   });
 });
 
