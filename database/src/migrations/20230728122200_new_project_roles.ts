@@ -170,7 +170,18 @@ export async function up(knex: Knex): Promise<void> {
       WHERE pr."name" = 'Viewer'
     );
 
+    INSERT INTO project_permission (name, record_effective_date, description)
+    VALUES 
+      ('Coordinator', NOW(), 'The administrative lead of the project.'),
+      ('Collaborator', NOW(), 'A participant team member of the project.'),
+      ('Observer', NOW(), 'Read only permissions for a project.');
 
+    INSERT INTO project_role_permission (project_role_id, project_permission_id)
+    VALUES (
+      SELECT pr.project_role_id, pp.project_permission_id 
+      FROM project_permission pp, project_role pr 
+      WHERE pp.name = pr."name"
+    );
 
     -------------------------------------------------------------------------
     -- Create views
