@@ -46,12 +46,10 @@ export type ProjectData = z.infer<typeof ProjectData>;
  */
 export class GetObjectivesData {
   objectives: string;
-  caveats: string;
   revision_count: number;
 
   constructor(objectivesData?: any) {
     this.objectives = objectivesData?.objectives || '';
-    this.caveats = objectivesData?.caveats || '';
     this.revision_count = objectivesData?.revision_count ?? null;
   }
 }

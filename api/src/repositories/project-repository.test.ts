@@ -650,7 +650,7 @@ describe('ProjectRepository', () => {
           end_date: 'end_date',
           comments: 'comments'
         },
-        objectives: { objectives: '', caveats: '' },
+        objectives: { objectives: '' },
         location: { location_description: '', geometry: [{ id: 1 }] },
         coordinator: {
           first_name: 'first_name',
@@ -681,7 +681,7 @@ describe('ProjectRepository', () => {
           end_date: 'end_date',
           comments: 'comments'
         },
-        objectives: { objectives: '', caveats: '' },
+        objectives: { objectives: '' },
         location: { location_description: '', geometry: [] },
         coordinator: {
           first_name: 'first_name',
@@ -712,7 +712,7 @@ describe('ProjectRepository', () => {
           end_date: 'end_date',
           comments: 'comments'
         },
-        objectives: { objectives: '', caveats: '' },
+        objectives: { objectives: '' },
         location: { location_description: '', geometry: [] },
         coordinator: {
           first_name: 'first_name',
