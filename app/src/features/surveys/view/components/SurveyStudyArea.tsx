@@ -19,7 +19,7 @@ import MapContainer from 'components/map/MapContainer';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import StudyAreaForm, {
   IStudyAreaForm,
@@ -248,7 +248,8 @@ const SurveyStudyArea = () => {
         buttonProps={{ variant: 'text' }}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validProjectRoles={[]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button {...buttonProps} />
           </ProjectRoleGuard>

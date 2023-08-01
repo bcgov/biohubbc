@@ -9,7 +9,7 @@ import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWi
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
@@ -88,7 +88,8 @@ const SurveyAttachments: React.FC = () => {
           ]}
           renderButton={(buttonProps) => (
             <ProjectRoleGuard
-              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+              validProjectRoles={[]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Button {...buttonProps} />
             </ProjectRoleGuard>

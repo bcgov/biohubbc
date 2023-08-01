@@ -9,7 +9,7 @@ import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWi
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
@@ -101,7 +101,8 @@ const ProjectAttachments = () => {
         ]}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validProjectRoles={[]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button {...buttonProps} />
           </ProjectRoleGuard>

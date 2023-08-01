@@ -22,7 +22,7 @@ import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useState } from 'react';
@@ -192,7 +192,9 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
                 )}
                 {status === PublishStatus.SUBMITTED && (
                   <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                    <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                    <ProjectRoleGuard
+                      validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                      validProjectRoles={[]}>
                       <MenuItem
                         onClick={() => {
                           setOpenRemoveOrResubmitDialog(true);

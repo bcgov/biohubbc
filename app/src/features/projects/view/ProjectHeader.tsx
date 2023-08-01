@@ -24,7 +24,7 @@ import PublishProjectDialog from 'components/publish/PublishProjectDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
@@ -222,7 +222,8 @@ const ProjectHeader = () => {
                   </Button>
                 </SystemRoleGuard>
                 <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                  validProjectRoles={[]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button
                     id="project_settings-button"
@@ -261,7 +262,8 @@ const ProjectHeader = () => {
                     <Typography variant="inherit">Edit Project Details</Typography>
                   </MenuItem>
                   <ProjectRoleGuard
-                    validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
+                    validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                    validProjectRoles={[]}
                     validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                     <MenuItem onClick={() => history.push('users')}>
                       <ListItemIcon>
