@@ -100,7 +100,6 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       field: 'program',
       headerName: 'Programs',
       flex: 1,
-      resizable: true
     },
     {
       field: 'regions',
