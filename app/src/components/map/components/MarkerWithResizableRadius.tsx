@@ -1,10 +1,14 @@
-import { LatLng } from 'leaflet';
+import L, { Icon, LatLng } from 'leaflet';
 import { useState } from 'react';
 import { Circle, Marker, useMap, useMapEvents } from 'react-leaflet';
+
+type IconColor = 'green' | 'blue';
 
 interface IClickMarkerProps {
   position: LatLng;
   radius: number;
+  markerColor?: IconColor;
+  listenForMouseEvents: boolean;
   handlePlace?: (p: LatLng) => void;
   handleResize?: (n: number) => void;
 }
@@ -30,21 +34,45 @@ const distanceInMetresBetweenCoordinates = (latlng1: LatLng, latlng2: LatLng): n
 };
 
 const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
-  const { handlePlace, handleResize, position, radius } = props;
+  const { handlePlace, handleResize, position, radius, listenForMouseEvents, markerColor } = props;
   const [lastMouseDown, setLastMouseDown] = useState(new LatLng(0, 0));
   const [holdingMouse, setHoldingMouse] = useState(false);
   const map = useMap();
 
+  const blueIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  const greenIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  const iconMap: Record<IconColor, { icon: Icon; hex: string }> = {
+    blue: { icon: blueIcon, hex: '#2A81CB' },
+    green: { icon: greenIcon, hex: '#2AAD27' }
+  };
+
   useMapEvents({
     mousedown: (e) => {
+      if (!listenForMouseEvents) return;
       setLastMouseDown(e.latlng);
     },
     mousemove: (e) => {
+      if (!listenForMouseEvents) return;
       if (holdingMouse) {
         handleResize?.(distanceInMetresBetweenCoordinates(position, e.latlng));
       }
     },
     mouseup: (e) => {
+      if (!listenForMouseEvents) return;
       if (e.latlng.equals(lastMouseDown)) {
         handlePlace?.(e.latlng);
       }
@@ -59,15 +87,17 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
         bubblingMouseEvents={false}
         eventHandlers={{
           mousedown: (e) => {
+            if (!listenForMouseEvents) return;
             map.dragging.disable();
             setHoldingMouse(true);
             setLastMouseDown(e.latlng);
           }
         }}
+        color={markerColor ? iconMap[markerColor].hex : iconMap.blue.hex}
         radius={radius}
         center={position}
       />
-      <Marker position={position}></Marker>
+      <Marker icon={markerColor ? iconMap[markerColor].icon : iconMap.blue.icon} position={position}></Marker>
     </>
   );
 };

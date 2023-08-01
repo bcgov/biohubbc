@@ -32,6 +32,8 @@ const AnimalCaptureSchema = yup.object({}).shape({
   capture_comment: yup.string(),
   release_longitude: lonSchema,
   release_latitude: latSchema,
+  release_utm_northing: yup.number(),
+  release_utm_easting: yup.number(),
   release_coordinate_uncertainty: yup.number(),
   release_timestamp: yup.date(),
   release_comment: yup.string(),

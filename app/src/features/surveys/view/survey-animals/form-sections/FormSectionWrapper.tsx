@@ -11,6 +11,7 @@ interface FormSectionWrapperProps {
   handleAddSection?: () => void; // function to call when add btn selected
   handleRemoveSection?: (index: number) => void; // function to call when "X" btn selected
   children: JSX.Element[] | JSX.Element;
+  inlineChildren?: JSX.Element[]; //Additional elements to display in between title and X button (ie. like toggles)
 }
 /**
  * Wrapper for rendering the section inputs with additional controls for
