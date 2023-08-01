@@ -1,5 +1,5 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
@@ -23,7 +23,8 @@ const SurveyRouter: React.FC = () => {
       <Route exact path="/admin/projects/:id/surveys/:survey_id/edit">
         <ProjectsLayout>
           <ProjectRoleRouteGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validProjectRoles={[]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <EditSurveyPage />
           </ProjectRoleRouteGuard>
