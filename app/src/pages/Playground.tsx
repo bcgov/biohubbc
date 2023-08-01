@@ -87,6 +87,7 @@ export const Playground = () => {
                 )}
                 additionalLayers={[
                   <MarkerWithResizableRadius
+                  listenForMouseEvents={true}
                     radius={coerceZero(formikProps.values.coordinate_uncertainty)}
                     position={
                       new LatLng(coerceZero(formikProps.values.latitude), coerceZero(formikProps.values.longitude))

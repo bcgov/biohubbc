@@ -7,7 +7,7 @@ import { InferType } from 'yup';
  */
 
 export const getAnimalFieldName = <T>(animalKey: keyof IAnimal, fieldKey: keyof T, idx?: number) => {
-  return idx === undefined ? `${animalKey}.${fieldKey}` : `${animalKey}.${idx}.${fieldKey}`;
+  return idx === undefined ? `${animalKey}.${String(fieldKey)}` : `${animalKey}.${idx}.${String(fieldKey)}`;
 };
 
 const req = 'Required';
@@ -25,12 +25,19 @@ const AnimalGeneralSchema = yup.object({}).shape({
 const AnimalCaptureSchema = yup.object({}).shape({
   capture_longitude: lonSchema.required(req),
   capture_latitude: latSchema.required(req),
+  capture_utm_northing: yup.number(),
+  capture_utm_easting: yup.number(),
   capture_timestamp: yup.date().required(req),
+  capture_coordinate_uncertainty: yup.number(),
   capture_comment: yup.string(),
   release_longitude: lonSchema,
   release_latitude: latSchema,
+  release_utm_northing: yup.number(),
+  release_utm_easting: yup.number(),
+  release_coordinate_uncertainty: yup.number(),
   release_timestamp: yup.date(),
-  release_comment: yup.string()
+  release_comment: yup.string(),
+  projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
 });
 
 export const AnimalMarkingSchema = yup.object({}).shape({
