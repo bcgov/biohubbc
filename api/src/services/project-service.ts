@@ -29,7 +29,7 @@ import {
   ProjectData,
   ProjectSupplementaryData
 } from '../models/project-view';
-import { ProjectUserObject } from '../models/user';
+import { ProjectUser } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectRepository } from '../repositories/project-repository';
@@ -95,7 +95,7 @@ export class ProjectService extends DBService {
    * @return {*}  {Promise<any>}
    * @memberof ProjectService
    */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
     return this.projectParticipationService.getProjectParticipant(projectId, systemUserId);
   }
 
@@ -396,7 +396,7 @@ export class ProjectService extends DBService {
     await Promise.all(promises);
 
     // The user that creates a project is automatically assigned a project lead role, for this project
-    await this.insertParticipantRole(projectId, PROJECT_ROLE.PROJECT_LEAD);
+    await this.insertParticipantRole(projectId, PROJECT_ROLE.COORDINATOR);
 
     return projectId;
   }

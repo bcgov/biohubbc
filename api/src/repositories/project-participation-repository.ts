@@ -1,6 +1,6 @@
 import SQL from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { ProjectUserObject } from '../models/user';
+import { ProjectUser } from '../models/user';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -33,7 +33,7 @@ export class ProjectParticipationRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
     const sqlStatement = SQL`
       SELECT
         pp.project_id,
@@ -63,7 +63,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         su.record_end_date ;
       `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.query<ProjectUser>(sqlStatement.text, sqlStatement.values);
 
     const result = (response && response.rows && response.rows[0]) || null;
 

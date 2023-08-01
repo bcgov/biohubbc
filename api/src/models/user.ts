@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export class UserObject {
   id: number;
   user_identifier: string;
@@ -18,16 +20,12 @@ export class UserObject {
   }
 }
 
-export class ProjectUserObject {
-  project_id: number;
-  system_user_id: number;
-  project_role_ids: number[];
-  project_role_names: string[];
+export const ProjectUser = z.object({
+  project_id: z.number(),
+  system_user_id: z.number(),
+  project_role_ids: z.array(z.number()),
+  project_role_names: z.array(z.string()),
+  project_role_permissions: z.array(z.string())
+});
 
-  constructor(obj?: any) {
-    this.project_id = obj?.project_id || null;
-    this.system_user_id = obj?.system_user_id || null;
-    this.project_role_ids = (obj?.project_role_ids?.length && obj.project_role_ids) || [];
-    this.project_role_names = (obj?.project_role_names?.length && obj.project_role_names) || [];
-  }
-}
+export type ProjectUser = z.infer<typeof ProjectUser>;

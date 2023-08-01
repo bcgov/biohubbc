@@ -15,7 +15,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.body.project_id),
           discriminator: 'ProjectPermission'
         },
