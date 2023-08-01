@@ -25,7 +25,7 @@ const mockUseApi = {
 };
 
 const mockUser = {
-  id: 1,
+  system_user_id: 1,
   user_record_end_date: 'ending',
   user_identifier: 'testUser',
   role_names: ['system'],

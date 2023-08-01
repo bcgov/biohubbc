@@ -49,7 +49,7 @@ export class UserRepository extends BaseRepository {
   async getUserById(systemUserId: number): Promise<User> {
     const sqlStatement = SQL`
     SELECT
-      su.system_user_id as id,
+      su.system_user_id,
       su.user_identifier,
       su.user_guid,
       su.record_end_date,

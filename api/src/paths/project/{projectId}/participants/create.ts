@@ -164,5 +164,5 @@ export const ensureSystemUserAndProjectParticipantUser = async (
   const projectService = new ProjectService(connection);
 
   // Add project role, unless they already have one
-  await projectService.ensureProjectParticipant(projectId, systemUserObject.id, participant.roleId);
+  await projectService.ensureProjectParticipant(projectId, systemUserObject.system_user_id, participant.roleId);
 };

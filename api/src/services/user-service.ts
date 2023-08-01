@@ -143,10 +143,10 @@ export class UserService extends DBService {
     }
 
     // system user is not active, re-activate them
-    await this.activateSystemUser(userObject.id);
+    await this.activateSystemUser(userObject.system_user_id);
 
     // get the newly activated user
-    return this.getUserById(userObject.id);
+    return this.getUserById(userObject.system_user_id);
   }
 
   /**
