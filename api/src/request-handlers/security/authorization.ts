@@ -233,7 +233,7 @@ export const authorizeByProjectPermission = async (
   authorizeProjectRoles: AuthorizeByProjectPermissions,
   connection: IDBConnection
 ): Promise<boolean> => {
-
+  
   return true;
 }
 
