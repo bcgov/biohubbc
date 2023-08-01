@@ -1,6 +1,6 @@
 import { Request, RequestHandler } from 'express';
 import SQL from 'sql-template-strings';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP403, HTTP500 } from '../../errors/http-error';
 import { ProjectUserObject, UserObject } from '../../models/user';
@@ -25,11 +25,17 @@ export interface AuthorizeByProjectRoles {
   discriminator: 'ProjectRole';
 }
 
+export interface AuthorizeByProjectPermissions {
+  validProjectRoles: PROJECT_PERMISSION[];
+  projectId: number;
+  discriminator: 'ProjectPermission';
+}
+
 export interface AuthorizeBySystemUser {
   discriminator: 'SystemUser';
 }
 
-export type AuthorizeRule = AuthorizeBySystemRoles | AuthorizeByProjectRoles | AuthorizeBySystemUser;
+export type AuthorizeRule = AuthorizeBySystemRoles | AuthorizeByProjectRoles | AuthorizeBySystemUser | AuthorizeByProjectPermissions;
 
 export type AuthorizeConfigOr = {
   [AuthorizeOperator.AND]?: never;
@@ -153,6 +159,9 @@ export const executeAuthorizeConfig = async (
       case 'ProjectRole':
         authorizeResults.push(await authorizeByProjectRole(req, authorizeRule, connection).catch(() => false));
         break;
+      case 'ProjectPermission':
+          authorizeResults.push(await authorizeByProjectRole(req, authorizeRule, connection).catch(() => false));
+          break;
       case 'SystemUser':
         authorizeResults.push(await authorizeBySystemUser(req, connection).catch(() => false));
         break;
@@ -218,6 +227,15 @@ export const authorizeBySystemRole = async (
   // Check if the user has at least 1 of the valid roles
   return userHasValidRole(authorizeSystemRoles.validSystemRoles, systemUserObject?.role_names);
 };
+
+export const authorizeByProjectPermission = async (
+  req: Request,
+  authorizeProjectRoles: AuthorizeByProjectPermissions,
+  connection: IDBConnection
+): Promise<boolean> => {
+
+  return true;
+}
 
 /**
  * Check that the user has at least on of the valid project roles specified in `authorizeProjectRoles.validProjectRoles`.
