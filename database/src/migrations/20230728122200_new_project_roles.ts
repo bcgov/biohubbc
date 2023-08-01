@@ -179,12 +179,6 @@ export async function up(knex: Knex): Promise<void> {
       WHERE pr."name" = 'Viewer'
     );
 
-    INSERT INTO project_permission (name, record_effective_date, description)
-    VALUES 
-      ('Coordinator', NOW(), 'The administrative lead of the project.'),
-      ('Collaborator', NOW(), 'A participant team member of the project.'),
-      ('Observer', NOW(), 'Read only permissions for a project.');
-
     -------------------------------------------------------------------------
     -- Link Permissions and Roles based on name
     -------------------------------------------------------------------------
