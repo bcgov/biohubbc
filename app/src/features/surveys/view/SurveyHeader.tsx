@@ -205,7 +205,6 @@ const SurveyHeader = () => {
                 </SystemRoleGuard>
                 <ProjectRoleGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                  validProjectRoles={[]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button
                     id="survey_settings_button"

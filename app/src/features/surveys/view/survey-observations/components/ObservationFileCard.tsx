@@ -193,8 +193,7 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
                 {status === PublishStatus.SUBMITTED && (
                   <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                     <ProjectRoleGuard
-                      validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                      validProjectRoles={[]}>
+                      validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}>
                       <MenuItem
                         onClick={() => {
                           setOpenRemoveOrResubmitDialog(true);

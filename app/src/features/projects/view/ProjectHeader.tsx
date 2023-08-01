@@ -223,7 +223,6 @@ const ProjectHeader = () => {
                 </SystemRoleGuard>
                 <ProjectRoleGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                  validProjectRoles={[]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button
                     id="project_settings-button"
@@ -263,7 +262,6 @@ const ProjectHeader = () => {
                   </MenuItem>
                   <ProjectRoleGuard
                     validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
-                    validProjectRoles={[]}
                     validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                     <MenuItem onClick={() => history.push('users')}>
                       <ListItemIcon>

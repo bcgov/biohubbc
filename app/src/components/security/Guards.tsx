@@ -82,7 +82,7 @@ export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps
 
   const hasSystemRole = projectAuthStateContext.hasSystemRole(validSystemRoles);
   const hasProjectRole = projectAuthStateContext.hasProjectRole(validProjectRoles);
-  const hasProjectPermissions = projectAuthStateContext.hasProjectRole(validProjectPermissions);
+  const hasProjectPermissions = projectAuthStateContext.hasProjectPermission(validProjectPermissions);
 
   if (hasSystemRole || hasProjectRole || hasProjectPermissions) {
     return <>{props.children}</>;

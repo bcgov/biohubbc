@@ -117,8 +117,7 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
 
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectRoleGuard
-                    validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                    validProjectRoles={[]}>
+                    validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}>
                     <MenuItem
                       onClick={() => {
                         props.onRemoveOrResubmit();

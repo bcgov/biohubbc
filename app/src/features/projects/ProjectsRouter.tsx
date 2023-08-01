@@ -49,7 +49,6 @@ const ProjectsRouter: React.FC = () => {
                     PROJECT_PERMISSION.COLLABORATOR,
                     PROJECT_PERMISSION.OBSERVER
                   ]}
-                  validProjectRoles={[]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectPage />
                 </ProjectRoleRouteGuard>
@@ -60,7 +59,6 @@ const ProjectsRouter: React.FC = () => {
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                  validProjectRoles={[]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <EditProjectPage />
                 </ProjectRoleRouteGuard>
@@ -71,7 +69,6 @@ const ProjectsRouter: React.FC = () => {
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
-                  validProjectRoles={[]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectParticipantsPage />
                 </ProjectRoleRouteGuard>
@@ -86,7 +83,6 @@ const ProjectsRouter: React.FC = () => {
                     PROJECT_PERMISSION.COLLABORATOR,
                     PROJECT_PERMISSION.OBSERVER
                   ]}
-                  validProjectRoles={[]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectPage />
                 </ProjectRoleRouteGuard>
@@ -101,7 +97,6 @@ const ProjectsRouter: React.FC = () => {
                     PROJECT_PERMISSION.COLLABORATOR,
                     PROJECT_PERMISSION.OBSERVER
                   ]}
-                  validProjectRoles={[]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <SurveyContextProvider>
                     <SurveyRouter />
@@ -114,7 +109,6 @@ const ProjectsRouter: React.FC = () => {
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                  validProjectRoles={[]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <CreateSurveyPage />
                 </ProjectRoleRouteGuard>

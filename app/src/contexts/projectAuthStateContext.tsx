@@ -74,7 +74,7 @@ export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> 
       if (!participant) {
         return false;
       }
-
+      console.log(`PERMISSIONS: ${participant?.project_permission_names}`);
       return (
         participant?.project_id === getProjectId() &&
         participant?.project_permission_names.some((roleName) => validProjectPermissions.includes(roleName))

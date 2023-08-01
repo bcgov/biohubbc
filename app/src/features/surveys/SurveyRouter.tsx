@@ -24,7 +24,6 @@ const SurveyRouter: React.FC = () => {
         <ProjectsLayout>
           <ProjectRoleRouteGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-            validProjectRoles={[]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <EditSurveyPage />
           </ProjectRoleRouteGuard>
