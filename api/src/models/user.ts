@@ -1,24 +1,18 @@
 import { z } from 'zod';
 
-export class UserObject {
-  id: number;
-  user_identifier: string;
-  user_guid: string | null;
-  identity_source: string;
-  record_end_date: string;
-  role_ids: number[];
-  role_names: string[];
+export const User = z.object({
+  id: z.number(),
+  user_identifier: z.number(),
+  user_guid: z.string().nullable(),
+  identity_source: z.number(),
+  record_end_date: z.number(),
+  role_ids: z.array(z.number()),
+  role_names: z.array(z.string()),
+  permission_ids: z.array(z.number()),
+  permission_names: z.array(z.string())
+});
 
-  constructor(obj?: any) {
-    this.id = obj?.system_user_id || null;
-    this.user_identifier = obj?.user_identifier || null;
-    this.user_guid = obj?.user_guid || null;
-    this.identity_source = obj?.identity_source || null;
-    this.record_end_date = obj?.record_end_date || null;
-    this.role_ids = (obj?.role_ids?.length && obj.role_ids) || [];
-    this.role_names = (obj?.role_names?.length && obj.role_names) || [];
-  }
-}
+export type User = z.infer<typeof User>;
 
 export const ProjectUser = z.object({
   project_id: z.number(),

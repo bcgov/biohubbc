@@ -3,7 +3,7 @@ import SQL from 'sql-template-strings';
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP403, HTTP500 } from '../../errors/http-error';
-import { ProjectUser, UserObject } from '../../models/user';
+import { ProjectUser, User } from '../../models/user';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
 
@@ -182,7 +182,7 @@ export const executeAuthorizeConfig = async (
  * @return {*}  {boolean} `true` if the user is a system administrator, `false` otherwise.
  */
 export const authorizeSystemAdministrator = async (req: Request, connection: IDBConnection): Promise<boolean> => {
-  const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+  const systemUserObject: User = req['system_user'] || (await getSystemUserObject(connection));
 
   // Add the system_user to the request for future use, if needed
   req['system_user'] = systemUserObject;
@@ -213,7 +213,7 @@ export const authorizeBySystemRole = async (
     return false;
   }
 
-  const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+  const systemUserObject: User = req['system_user'] || (await getSystemUserObject(connection));
 
   // Add the system_user to the request for future use, if needed
   req['system_user'] = systemUserObject;
@@ -307,7 +307,7 @@ export const authorizeByProjectRole = async (
  * @return {*}  {Promise<boolean>} `Promise<true>` if the user is a valid system user, `Promise<false>` otherwise.
  */
 export const authorizeBySystemUser = async (req: Request, connection: IDBConnection): Promise<boolean> => {
-  const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+  const systemUserObject: User = req['system_user'] || (await getSystemUserObject(connection));
 
   // Add the system_user to the request for future use, if needed
   req['system_user'] = systemUserObject;
@@ -351,7 +351,7 @@ export const userHasValidRole = function (validRoles: string | string[], userRol
   return false;
 };
 
-export const getSystemUserObject = async (connection: IDBConnection): Promise<UserObject> => {
+export const getSystemUserObject = async (connection: IDBConnection): Promise<User> => {
   let systemUserWithRoles;
 
   try {
@@ -374,7 +374,7 @@ export const getSystemUserObject = async (connection: IDBConnection): Promise<Us
  * @return {*}  {(Promise<UserObject | null>)}
  * @return {*}
  */
-export const getSystemUserWithRoles = async (connection: IDBConnection): Promise<UserObject | null> => {
+export const getSystemUserWithRoles = async (connection: IDBConnection): Promise<User | null> => {
   const systemUserId = connection.systemUserId();
 
   if (!systemUserId) {
