@@ -1,4 +1,4 @@
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { PropsWithChildren, ReactElement, useContext } from 'react';
@@ -26,12 +26,12 @@ export interface ISystemRoleGuardProps extends IGuardProps {
 
 export interface IProjectRoleGuardProps extends IGuardProps {
   /**
-   * An array of valid project roles. The user must have 1 or more matching project roles to pass the guard.
+   * An array of valid project roles. The user may have 1 or more matching project roles to pass the guard.
    *
    * @type {PROJECT_ROLE[]}
    * @memberof IProjectRoleGuardProps
    */
-  validProjectRoles: PROJECT_ROLE[];
+  validProjectRoles?: PROJECT_ROLE[];
   /**
    * An array of valid system roles. The user may have 1 or more matching system roles to override the guard.
    *
@@ -39,6 +39,13 @@ export interface IProjectRoleGuardProps extends IGuardProps {
    * @memberof IProjectRoleGuardProps
    */
   validSystemRoles?: SYSTEM_ROLE[];
+
+  /**
+   * An array of valid project permissions. The user must have 1 or more matching permissions to pass the guard
+   * @type {PROJECT_PERMISSION[]}
+   * @memberof IProjectRoleGuardProps
+   */
+  validProjectPermissions: PROJECT_PERMISSION[];
 }
 
 /**
@@ -70,13 +77,14 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
  * @return {*}
  */
 export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps>) => {
-  const { validProjectRoles, validSystemRoles } = props;
+  const { validProjectRoles, validSystemRoles, validProjectPermissions } = props;
   const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
   const hasSystemRole = projectAuthStateContext.hasSystemRole(validSystemRoles);
   const hasProjectRole = projectAuthStateContext.hasProjectRole(validProjectRoles);
+  const hasProjectPermissions = projectAuthStateContext.hasProjectRole(validProjectPermissions);
 
-  if (hasSystemRole || hasProjectRole) {
+  if (hasSystemRole || hasProjectRole || hasProjectPermissions) {
     return <>{props.children}</>;
   }
 
@@ -94,11 +102,13 @@ export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps
  * @returns {*} boolean
  */
 export const HasProjectOrSystemRole = (roles: IProjectRoleGuardProps): boolean => {
-  const { validProjectRoles, validSystemRoles } = roles;
+  const { validProjectRoles, validSystemRoles, validProjectPermissions } = roles;
   const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
   return (
-    projectAuthStateContext.hasSystemRole(validSystemRoles) || projectAuthStateContext.hasProjectRole(validProjectRoles)
+    projectAuthStateContext.hasSystemRole(validSystemRoles) ||
+    projectAuthStateContext.hasProjectRole(validProjectRoles) ||
+    projectAuthStateContext.hasProjectPermission(validProjectPermissions)
   );
 };
 

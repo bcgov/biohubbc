@@ -1,5 +1,5 @@
 import { PublishStatus } from 'constants/attachments';
-import { PROJECT_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, PROJECT_ROLE } from 'constants/roles';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
@@ -414,5 +414,6 @@ export interface IGetUserProjectParticipantResponse {
     system_user_id: number;
     project_role_ids: number[];
     project_role_names: PROJECT_ROLE[];
+    project_permission_names: PROJECT_PERMISSION[];
   } | null;
 }

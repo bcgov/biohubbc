@@ -9,6 +9,7 @@ export interface IProjectAuthStateContext {
   getProjectParticipant: () => IGetUserProjectParticipantResponse['participant'];
   hasProjectRole: (validProjectRoles?: string[]) => boolean;
   hasSystemRole: (validSystemRoles?: string[]) => boolean;
+  hasProjectPermission: (validProjectPermissions?: string[]) => boolean;
   getProjectId: () => number;
   hasLoadedParticipantInfo: boolean;
 }
@@ -17,6 +18,7 @@ export const ProjectAuthStateContext = React.createContext<IProjectAuthStateCont
   getProjectParticipant: () => null,
   hasProjectRole: () => false,
   hasSystemRole: () => false,
+  hasProjectPermission: () => false,
   getProjectId: () => -1,
   hasLoadedParticipantInfo: false
 });
@@ -60,6 +62,27 @@ export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> 
     [getProjectId, getProjectParticipant]
   );
 
+  const hasProjectPermission = useCallback(
+    (validProjectPermissions?: string[]): boolean => {
+      //If no Project role is provided then return false
+      if (!validProjectPermissions?.length) {
+        return false;
+      }
+
+      const participant = getProjectParticipant();
+
+      if (!participant) {
+        return false;
+      }
+
+      return (
+        participant?.project_id === getProjectId() &&
+        participant?.project_permission_names.some((roleName) => validProjectPermissions.includes(roleName))
+      );
+    },
+    [getProjectId, getProjectParticipant]
+  );
+
   const hasSystemRole = useCallback(
     (validSystemRoles?: string[]): boolean => {
       //If no System role is provided then return false
@@ -87,11 +110,19 @@ export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> 
     () => ({
       hasProjectRole,
       hasSystemRole,
+      hasProjectPermission,
       getProjectParticipant,
       getProjectId,
       hasLoadedParticipantInfo: participantDataLoader.isReady
     }),
-    [hasProjectRole, hasSystemRole, getProjectParticipant, getProjectId, participantDataLoader.isReady]
+    [
+      hasProjectRole,
+      hasSystemRole,
+      hasProjectPermission,
+      getProjectParticipant,
+      getProjectId,
+      participantDataLoader.isReady
+    ]
   );
 
   return (
