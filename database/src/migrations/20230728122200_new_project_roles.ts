@@ -143,6 +143,7 @@ export async function up(knex: Knex): Promise<void> {
     -- select the role id for the old role
     -- select the participation id for a role by name 
     -- update the existing project_participation row for the old role id with the new role id
+
     UPDATE project_participation as pp SET project_role_id = (
       SELECT pr1.project_role_id 
       FROM project_role pr1
