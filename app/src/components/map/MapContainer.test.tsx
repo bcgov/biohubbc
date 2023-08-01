@@ -229,7 +229,7 @@ describe('MapContainer', () => {
     expect(onDrawChange).toHaveBeenCalledWith([]);
   });
 
-  test.skip('does not delete geometries present on the map when user does not confirm by clicking no', async () => {
+  test('does not delete geometries present on the map when user does not confirm by clicking no', async () => {
     const { getByText } = render(
       <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
@@ -248,10 +248,11 @@ describe('MapContainer', () => {
       fireEvent.click(getByText('No'));
     });
 
-    expect(onDrawChange).toHaveBeenCalledWith(initialFeatures);
+    // expect(onDrawChange).toNotHaveBeenCalled(initialFeatures);
+    expect(onDrawChange).not.toHaveBeenCalled();
   });
 
-  test.skip('does not delete geometries present on the map when user does not confirm by clicking out of the dialog', async () => {
+  test('does not delete geometries present on the map when user does not confirm by clicking out of the dialog', async () => {
     const { getByText, getAllByRole } = render(
       <MapContainer mapId="myMap" classes={classes} drawControls={{ initialFeatures }} onDrawChange={onDrawChange} />
     );
@@ -272,6 +273,6 @@ describe('MapContainer', () => {
       fireEvent.click(getAllByRole('presentation')[0].firstChild);
     });
 
-    expect(onDrawChange).toHaveBeenCalledWith(initialFeatures);
+    expect(onDrawChange).not.toHaveBeenCalled();
   });
 });
