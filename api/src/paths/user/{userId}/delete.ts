@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { queries } from '../../../queries/queries';
@@ -158,7 +158,7 @@ export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
       projectLeadsPerProject[key] = 0;
     }
 
-    if (row.project_role_name === PROJECT_ROLE.PROJECT_LEAD) {
+    if (row.project_role_name === PROJECT_PERMISSION.COORDINATOR) {
       projectLeadsPerProject[key] += 1;
     }
   });
@@ -201,7 +201,7 @@ export const doAllProjectsHaveAProjectLeadIfUserIsRemoved = (rows: any[], userId
       projectLeadsPerProject[key] = 0;
     }
 
-    if (row.system_user_id !== userId && row.project_role_name === PROJECT_ROLE.PROJECT_LEAD) {
+    if (row.system_user_id !== userId && row.project_role_name === PROJECT_PERMISSION.COORDINATOR) {
       projectLeadsPerProject[key] += 1;
     }
   });

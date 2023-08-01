@@ -7,7 +7,7 @@ import sinonChai from 'sinon-chai';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { ProjectUserObject, UserObject } from '../../models/user';
+import { ProjectUser, UserObject } from '../../models/user';
 import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as authorization from './authorization';
@@ -244,7 +244,7 @@ describe('executeAuthorizeConfig', function () {
         discriminator: 'SystemRole'
       },
       {
-        validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+        validProjectRoles: [PROJECT_ROLE.COORDINATOR],
         projectId: 1,
         discriminator: 'ProjectRole'
       },
@@ -377,7 +377,7 @@ describe('authorizeByProjectRole', function () {
   it('returns false if `authorizeProjectRoles.projectId` is null', async function () {
     const mockReq = ({} as unknown) as Request;
     const mockAuthorizeProjectRoles: authorization.AuthorizeByProjectRoles = {
-      validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+      validProjectRoles: [PROJECT_ROLE.COORDINATOR],
       projectId: (null as unknown) as number,
       discriminator: 'ProjectRole'
     };
@@ -413,13 +413,13 @@ describe('authorizeByProjectRole', function () {
   it('returns false if it fails to fetch the users project role information', async function () {
     const mockReq = ({} as unknown) as Request;
     const mockAuthorizeProjectRoles: authorization.AuthorizeByProjectRoles = {
-      validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+      validProjectRoles: [PROJECT_ROLE.COORDINATOR],
       projectId: 1,
       discriminator: 'ProjectRole'
     };
     const mockDBConnection = getMockDBConnection();
 
-    const mockProjectUserObject = (undefined as unknown) as ProjectUserObject;
+    const mockProjectUserObject = (undefined as unknown) as ProjectUser;
     sinon.stub(authorization, 'getProjectUserObject').resolves(mockProjectUserObject);
 
     const isAuthorizedBySystemRole = await authorization.authorizeByProjectRole(
@@ -432,10 +432,10 @@ describe('authorizeByProjectRole', function () {
   });
 
   it('returns false if the user does not have any valid roles', async function () {
-    const mockProjectUserObject = ({ project_role_names: [] } as unknown) as ProjectUserObject;
+    const mockProjectUserObject = ({ project_role_names: [] } as unknown) as ProjectUser;
     const mockReq = ({ project_user: mockProjectUserObject } as unknown) as Request;
     const mockAuthorizeProjectRoles: authorization.AuthorizeByProjectRoles = {
-      validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+      validProjectRoles: [PROJECT_ROLE.COORDINATOR],
       projectId: 1,
       discriminator: 'ProjectRole'
     };
@@ -451,10 +451,12 @@ describe('authorizeByProjectRole', function () {
   });
 
   it('returns true if the user has at lest one of the valid roles', async function () {
-    const mockProjectUserObject = ({ project_role_names: [PROJECT_ROLE.PROJECT_LEAD] } as unknown) as ProjectUserObject;
+    const mockProjectUserObject = ({
+      project_role_names: [PROJECT_ROLE.COORDINATOR]
+    } as unknown) as ProjectUser;
     const mockReq = ({ project_user: mockProjectUserObject } as unknown) as Request;
     const mockAuthorizeProjectRoles: authorization.AuthorizeByProjectRoles = {
-      validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+      validProjectRoles: [PROJECT_ROLE.COORDINATOR],
       projectId: 1,
       discriminator: 'ProjectRole'
     };
@@ -730,12 +732,12 @@ describe('getProjectUserObject', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserWithRolesResponse = {};
+    const mockSystemUserWithRolesResponse = {} as any;
     sinon.stub(authorization, 'getProjectUserWithRoles').resolves(mockSystemUserWithRolesResponse);
 
     const systemUserObject = await authorization.getProjectUserObject(1, mockDBConnection);
 
-    expect(systemUserObject).to.be.instanceOf(ProjectUserObject);
+    expect(systemUserObject).to.be.instanceOf(ProjectUser);
   });
 });
 
