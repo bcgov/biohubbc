@@ -7,6 +7,7 @@ import SurveySubmissionAlertBar from 'components/publish/SurveySubmissionAlertBa
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
+import { ConfigContext } from 'contexts/configContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext } from 'react';
@@ -25,6 +26,7 @@ import SurveyHeader from './SurveyHeader';
  * @return {*}
  */
 const SurveyPage: React.FC = () => {
+  const config = useContext(ConfigContext);
   const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
 
@@ -64,11 +66,14 @@ const SurveyPage: React.FC = () => {
                   <SurveyAttachments />
                 </Paper>
               </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveyAnimals />
-                </Paper>
-              </Box>
+              {/* Temporarily hiding section while integrating */}
+              {config?.CB_API_HOST ? (
+                <Box mb={3}>
+                  <Paper elevation={0}>
+                    <SurveyAnimals />
+                  </Paper>
+                </Box>
+              ) : null}
               <Box mb={3}>
                 <Paper elevation={0}>
                   <SurveyStudyArea />

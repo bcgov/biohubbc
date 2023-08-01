@@ -26,11 +26,9 @@ export type ICbRouteKey =
   | 'species'
   | 'collection_units'
   | 'taxon_collection_categories'
-  | 'taxon_marking_body_locations';
-
-// interface ICbRoute {
-//   route: string;
-// }
+  | 'taxon_marking_body_locations'
+  | 'taxon_qualitative_measurements'
+  | 'taxon_quantitative_measurements';
 
 type ICbRoutes = Record<ICbRouteKey, string>;
 const lookups = '/api/lookups';
@@ -38,7 +36,7 @@ const xref = '/api/xref';
 const lookupsEnum = lookups + '/enum';
 const lookupsTaxons = lookups + '/taxons';
 const CbRoutes: ICbRoutes = {
-  //? lookups
+  // lookups
   region_env: `${lookups}/region-envs`,
   region_nr: `${lookups}/region-nrs`,
   wmu: `${lookups}/wmus`,
@@ -50,7 +48,7 @@ const CbRoutes: ICbRoutes = {
   species: `${lookupsTaxons}/species`,
   colours: `${lookups}/colours`,
 
-  //? lookups/enum
+  // lookups/enum
   sex: `${lookupsEnum}/sex`,
   critter_status: `${lookupsEnum}/critter-status`,
   cause_of_death_confidence: `${lookupsEnum}/cod-confidence`,
@@ -59,16 +57,20 @@ const CbRoutes: ICbRoutes = {
   measurement_units: `${lookupsEnum}/measurement-units`,
   supported_systems: `${lookupsEnum}/supported-systems`,
 
-  //? xref
+  // xref
   collection_units: `${xref}/collection-units`,
-  //? taxon xrefs
+
+  // taxon xrefs
+  taxon_qualitative_measurements: `${xref}/taxon-quantitative-measurements`,
+  taxon_quantitative_measurements: `${xref}/taxon-qualitative-measurements`,
   taxon_collection_categories: `${xref}/taxon-collection-categories`,
   taxon_marking_body_locations: `${xref}/taxon-marking-body-locations`
 };
 
 const useLookupApi = (axios: AxiosInstance) => {
-  const getSelectOptions = async (route: ICbRouteKey): Promise<Array<ICbSelectRows | string>> => {
-    const { data } = await axios.get(`${CbRoutes[route]}?format=asSelect`);
+  const getSelectOptions = async (route: ICbRouteKey, taxon_id?: string): Promise<Array<ICbSelectRows | string>> => {
+    const byTaxon = taxon_id ? `&taxon_id=${taxon_id}` : ``;
+    const { data } = await axios.get(`${CbRoutes[route]}?format=asSelect${byTaxon}`);
     return data;
   };
 

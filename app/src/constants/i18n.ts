@@ -315,7 +315,7 @@ export const SurveyAnimalsI18N = {
   animalMeasurementTitle: 'Measurements',
   animalMeasurementHelp:
     'Measurements are quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
-  animalMeasurementAddBtn: 'Add Measrurement',
+  animalMeasurementAddBtn: 'Add Measurement',
 
   // Input help strings
   taxonHelp: 'Taxon help placeholder',
