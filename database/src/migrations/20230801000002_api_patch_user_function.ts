@@ -8,10 +8,10 @@ import { Knex } from 'knex';
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`
+  await knex.raw(`--sql
     set search_path=biohub;
 
-    CREATE OR REPLACE FUNCTION 
+    CREATE OR REPLACE FUNCTION
       api_patch_system_user (
         p_system_user_guid character varying,
         p_user_identifier character varying,
@@ -28,7 +28,7 @@ export async function up(knex: Knex): Promise<void> {
       AS $$
         -- *******************************************************************
         -- Procedure: api_patch_system_user
-        -- Purpose: Updates a system_user record if any of the incoming values are not the same as the existing values. 
+        -- Purpose: Updates a system_user record if any of the incoming values are not the same as the existing values.
         --
         -- MODIFICATION HISTORY
         -- Person           Date        Comments
@@ -41,28 +41,28 @@ export async function up(knex: Knex): Promise<void> {
           _user_identity_source_id user_identity_source.user_identity_source_id%type;
         BEGIN
           -- Attempt to find user based on guid
-          SELECT * INTO _system_user FROM system_user 
-            WHERE user_guid = p_system_user_guid 
+          SELECT * INTO _system_user FROM system_user
+            WHERE user_guid = p_system_user_guid
             AND record_end_date IS NULL
             LIMIT 1;
-    
+
           -- Otherwise, attempt to find user based on identifier and identity source
           IF NOT found THEN
             SELECT user_identity_source_id INTO strict _user_identity_source_id FROM user_identity_source
               WHERE name = p_user_identity_source_name
               AND record_end_date IS NULL;
-    
+
             SELECT * INTO _system_user FROM system_user
               WHERE user_identity_source_id = _user_identity_source_id
               AND user_identifier = p_user_identifier
               LIMIT 1;
           END IF;
-    
+
           -- If no user found, return and do nothing
           IF NOT found THEN
             RETURN NULL;
           END IF;
-    
+
           -- Otherwise, patch the system user record with the latest information passed to this function
           UPDATE system_user SET
             user_guid = p_system_user_guid,
@@ -72,7 +72,7 @@ export async function up(knex: Knex): Promise<void> {
             given_name = p_given_name,
             family_name = p_family_name,
             agency = p_agency
-          WHERE 
+          WHERE
             system_user_id = _system_user.system_user_id
           AND (
             user_guid != p_system_user_guid OR
@@ -83,7 +83,7 @@ export async function up(knex: Knex): Promise<void> {
             family_name != p_family_name OR
             agency != p_agency
           );
-          
+
           -- Return system user id of patched record
           RETURN _system_user.system_user_id;
         EXCEPTION

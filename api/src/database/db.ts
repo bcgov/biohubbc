@@ -9,7 +9,7 @@ import {
   getUserIdentitySource,
   getVerifiedUserInformationFromKeycloakToken,
   isBceidBusinessUserInformation,
-  isDatabaseInformation,
+  isDatabaseUserInformation,
   isIdirUserInformation,
   VerifiedUserInformation
 } from '../utils/keycloak-utils';
@@ -443,7 +443,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   const _patchSystemUser = async (verifiedUserInformation: VerifiedUserInformation) => {
     let values;
 
-    if (isDatabaseInformation(verifiedUserInformation)) {
+    if (isDatabaseUserInformation(verifiedUserInformation)) {
       // Don't patch internal database/system user records
       return;
     }
@@ -481,8 +481,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
       };
     }
 
-    console.log('1111111111111111');
-
     // Only patch the record if at least 1 of the fields is different
     const patchSystemUserSQLStatement = SQL`
       select api_patch_system_user(
@@ -496,8 +494,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
         ${values.agency || null}
       )
     `;
-
-    console.log(values);
 
     return _client.query(patchSystemUserSQLStatement.text, patchSystemUserSQLStatement.values);
   };

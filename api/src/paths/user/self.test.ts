@@ -20,6 +20,19 @@ describe('getUser', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
+    mockReq['keycloak_token'] = {
+      idir_user_guid: 'testguid',
+      identity_provider: 'idir',
+      idir_username: 'testuser',
+      email_verified: false,
+      name: 'test user',
+      preferred_username: 'testguid@idir',
+      display_name: 'test user',
+      given_name: 'test',
+      family_name: 'user',
+      email: 'email@email.com'
+    };
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
@@ -38,12 +51,25 @@ describe('getUser', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
+    mockReq['keycloak_token'] = {
+      idir_user_guid: '123456789',
+      identity_provider: 'idir',
+      idir_username: 'testuser',
+      email_verified: false,
+      name: 'test user',
+      preferred_username: 'testguid@idir',
+      display_name: 'test user',
+      given_name: 'test',
+      family_name: 'user',
+      email: 'email@email.com'
+    };
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
-      user_identifier: 'identifier',
-      user_guid: 'aaaa',
+      user_identifier: 'testuser',
+      user_guid: '123456789',
       identity_source: 'idir',
       record_end_date: '',
       role_ids: [1, 2],
@@ -55,7 +81,7 @@ describe('getUser', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.jsonValue.id).to.equal(1);
-    expect(mockRes.jsonValue.user_identifier).to.equal('identifier');
+    expect(mockRes.jsonValue.user_identifier).to.equal('testuser');
     expect(mockRes.jsonValue.role_ids).to.eql([1, 2]);
     expect(mockRes.jsonValue.role_names).to.eql(['role 1', 'role 2']);
   });
@@ -64,6 +90,19 @@ describe('getUser', () => {
     const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq['keycloak_token'] = {
+      idir_user_guid: 'testguid',
+      identity_provider: 'idir',
+      idir_username: 'testuser',
+      email_verified: false,
+      name: 'test user',
+      preferred_username: 'testguid@idir',
+      display_name: 'test user',
+      given_name: 'test',
+      family_name: 'user',
+      email: 'email@email.com'
+    };
 
     const expectedError = new Error('cannot process query');
 

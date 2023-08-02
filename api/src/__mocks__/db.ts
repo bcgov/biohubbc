@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import { IDBConnection } from '../database/db';
+import { VerifiedUserInformation } from '../utils/keycloak-utils';
 
 /**
  * Returns a mock `IDBConnection` with empty methods.
@@ -13,6 +14,15 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
   return {
     systemUserId: () => {
       return (null as unknown) as number;
+    },
+    verifiedUserInformation: () => {
+      return (null as unknown) as VerifiedUserInformation;
+    },
+    _setSystemUserContext: async () => {
+      // do nothing
+    },
+    _patchSystemUser: async () => {
+      // do nothing
     },
     open: async () => {
       // do nothing

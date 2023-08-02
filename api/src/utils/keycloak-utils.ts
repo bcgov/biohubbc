@@ -217,7 +217,7 @@ export const isBceidBusinessUserInformation = (
   return verifiedUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS.toLowerCase();
 };
 
-export const isDatabaseInformation = (
+export const isDatabaseUserInformation = (
   verifiedUserInformation: VerifiedUserInformation
 ): verifiedUserInformation is DatabaseUserInformation => {
   return verifiedUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase();

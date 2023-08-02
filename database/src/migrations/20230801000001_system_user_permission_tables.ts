@@ -8,8 +8,8 @@ import { Knex } from 'knex';
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`
-    ----------------------------------------------------------------------------------------    
+  await knex.raw(`--sql
+    ----------------------------------------------------------------------------------------
     -- Create tables
     ----------------------------------------------------------------------------------------
     set search_path=biohub;
@@ -55,7 +55,7 @@ export async function up(knex: Knex): Promise<void> {
       revision_count               integer           DEFAULT 0 NOT NULL,
       CONSTRAINT system_role_permission_pk PRIMARY KEY (system_role_permission_id)
     );
-  
+
     COMMENT ON COLUMN system_role_permission.system_role_permission_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN system_role_permission.system_role_id               IS 'Foreign key referencing the system role table.';
     COMMENT ON COLUMN system_role_permission.system_permission_id         IS 'Foreign key referencing the system permission table.';
@@ -66,11 +66,11 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN system_role_permission.revision_count               IS 'Revision count used for concurrency control.';
     COMMENT ON TABLE  system_role_permission                              IS 'A associative entity that joins system role and system permission.';
 
-    ----------------------------------------------------------------------------------------    
+    ----------------------------------------------------------------------------------------
     -- Alter tables
     ----------------------------------------------------------------------------------------
-    
-    -- Note: Include default value temporarily to satisfy existing system_user rows. Default will be removed afterwards. 
+
+    -- Note: Include default value temporarily to satisfy existing system_user rows. Default will be removed afterwards.
     alter table system_user
       ADD   COLUMN display_name     varchar(100)   NOT NULL DEFAULT 'default',
       ADD   COLUMN given_name       varchar(100),
@@ -115,7 +115,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Add indexes on key columns
     CREATE INDEX system_role_permission_idx1 ON system_role_permission(system_role_id);
-  
+
     CREATE INDEX system_role_permission_idx2 ON system_role_permission(system_permission_id);
 
     ----------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Create views
     ----------------------------------------------------------------------------------------
 
-    set search_path=biohub_dapi_v1 ;
+    set search_path=biohub_dapi_v1;
 
     create or replace view system_permission as select * from biohub.system_permission;
 
@@ -162,24 +162,24 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Populate join table, linking system roles to their corresponding system permissions
     INSERT INTO system_role_permission (
-      system_role_id, 
+      system_role_id,
       system_permission_id
     ) VALUES (
-      (select system_role_id from system_role where name = 'System Administrator'), 
+      (select system_role_id from system_role where name = 'System Administrator'),
       (select system_permission_id from system_permission where name = 'System Administrator')
     );
     INSERT INTO system_role_permission (
-      system_role_id, 
+      system_role_id,
       system_permission_id
     ) VALUES (
-      (select system_role_id from system_role where name = 'Data Administrator'), 
+      (select system_role_id from system_role where name = 'Data Administrator'),
       (select system_permission_id from system_permission where name = 'Data Administrator')
     );
     INSERT INTO system_role_permission (
-      system_role_id, 
+      system_role_id,
       system_permission_id
     ) VALUES (
-      (select system_role_id from system_role where name = 'Creator'), 
+      (select system_role_id from system_role where name = 'Creator'),
       (select system_permission_id from system_permission where name = 'Creator')
     );
 
