@@ -1,17 +1,17 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { UserObject } from './user';
+import { User } from './user';
 
 describe('UserObject', () => {
   describe('No values provided', () => {
-    let data: UserObject;
+    let data: User;
 
     before(() => {
-      data = new UserObject((null as unknown) as any);
+      data = (null as unknown) as any;
     });
 
     it('sets id', function () {
-      expect(data.id).to.equal(null);
+      expect(data.system_user_id).to.equal(null);
     });
 
     it('sets user_identifier', function () {
@@ -24,16 +24,16 @@ describe('UserObject', () => {
   });
 
   describe('valid values provided, no roles', () => {
-    let data: UserObject;
+    let data: User;
 
-    const userObject = { system_user_id: 1, user_identifier: 'test name', role_ids: [], role_names: [] };
+    const userObject = { system_user_id: 1, user_identifier: 'test name', role_ids: [], role_names: [] } as any;
 
     before(() => {
-      data = new UserObject(userObject);
+      data = userObject;
     });
 
     it('sets id', function () {
-      expect(data.id).to.equal(1);
+      expect(data.system_user_id).to.equal(1);
     });
 
     it('sets user_identifier', function () {
@@ -50,21 +50,21 @@ describe('UserObject', () => {
   });
 
   describe('valid values provided', () => {
-    let data: UserObject;
+    let data: User;
 
     const userObject = {
       system_user_id: 1,
       user_identifier: 'test name',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
-    };
+    } as any;
 
     before(() => {
-      data = new UserObject(userObject);
+      data = userObject;
     });
 
     it('sets id', function () {
-      expect(data.id).to.equal(1);
+      expect(data.system_user_id).to.equal(1);
     });
 
     it('sets user_identifier', function () {

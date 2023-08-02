@@ -81,13 +81,15 @@ describe('removeSystemUser', () => {
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: '2010-10-10',
+      record_end_date: new Date('2010-10-10'),
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['role 1', 'role 2'],
+      permission_ids: [],
+      permission_names: []
     });
 
     try {
@@ -115,13 +117,15 @@ describe('removeSystemUser', () => {
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: new Date(),
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['role 1', 'role 2'],
+      permission_ids: [],
+      permission_names: []
     });
 
     sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(null);
@@ -152,13 +156,15 @@ describe('removeSystemUser', () => {
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: new Date(),
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['role 1', 'role 2'],
+      permission_ids: [],
+      permission_names: []
     });
 
     const expectedError = new Error('A database error');
@@ -187,13 +193,15 @@ describe('removeSystemUser', () => {
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: new Date(),
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['role 1', 'role 2'],
+      permission_ids: [],
+      permission_names: []
     });
 
     sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
@@ -224,13 +232,15 @@ describe('removeSystemUser', () => {
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: new Date(),
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['role 1', 'role 2'],
+      permission_ids: [],
+      permission_names: []
     });
 
     sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
@@ -262,13 +272,15 @@ describe('removeSystemUser', () => {
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: new Date(),
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['role 1', 'role 2'],
+      permission_ids: [],
+      permission_names: []
     });
 
     sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();

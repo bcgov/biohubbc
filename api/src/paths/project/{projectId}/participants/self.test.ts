@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import { ProjectUserObject } from '../../../../models/user';
+import { ProjectUser } from '../../../../models/user';
 import { ProjectService } from '../../../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import { GET, getUserRolesForProject } from './self';
@@ -65,11 +65,12 @@ describe('getUserRolesForProject', () => {
 
     describe('response validation', () => {
       const responseValidator = new OpenAPIResponseValidator((GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
-      const mockParticipantRecord: ProjectUserObject = {
+      const mockParticipantRecord: ProjectUser = {
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1, 2],
-        project_role_names: ['RoleA', 'RoleB']
+        project_role_names: ['RoleA', 'RoleB'],
+        project_role_permissions: []
       };
 
       describe('should throw an error when', () => {
@@ -217,7 +218,8 @@ describe('getUserRolesForProject', () => {
       project_id: 1,
       system_user_id: 20,
       project_role_ids: [1],
-      project_role_names: ['Test-Role-A']
+      project_role_names: ['Test-Role-A'],
+      project_role_permissions: []
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -251,7 +253,8 @@ describe('getUserRolesForProject', () => {
       project_id: 1,
       system_user_id: 20,
       project_role_ids: [1, 2],
-      project_role_names: ['Test-Role-A', 'Test-Role-B']
+      project_role_names: ['Test-Role-A', 'Test-Role-B'],
+      project_role_permissions: []
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

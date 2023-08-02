@@ -2,10 +2,10 @@ import { z } from 'zod';
 
 export const User = z.object({
   system_user_id: z.number(),
-  user_identifier: z.number(),
+  user_identifier: z.string(),
   user_guid: z.string().nullable(),
-  identity_source: z.number(),
-  record_end_date: z.number(),
+  identity_source: z.string(),
+  record_end_date: z.date(),
   role_ids: z.array(z.number()),
   role_names: z.array(z.string()),
   permission_ids: z.array(z.number()),
