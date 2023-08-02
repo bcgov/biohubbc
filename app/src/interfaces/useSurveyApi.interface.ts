@@ -5,7 +5,6 @@ import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDat
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
 import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
 import { Feature } from 'geojson';
-import { IGetProjectForUpdateResponseFundingSource } from 'interfaces/useProjectApi.interface';
 import { StringBoolean } from 'types/misc';
 
 /**
@@ -30,25 +29,6 @@ export interface ICreateSurveyRequest
 export interface ICreateSurveyResponse {
   id: number;
 }
-
-export interface ISurveyFundingSources {
-  funding_sources: ISurveyFundingSourceForView[];
-}
-
-export interface ISurveyFundingSourceForView {
-  project_funding_source_id: number;
-  funding_amount?: number;
-  funding_start_date: string;
-  funding_end_date: string;
-  agency_name?: string;
-  funding_source_project_id: string;
-  first_nations_name?: string;
-  first_nations_id?: number;
-  investment_action_category_name?: string;
-}
-
-export type ISurveyAvailableFundingSources = IGetProjectForUpdateResponseFundingSource;
-
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   project_id: number;
@@ -87,7 +67,6 @@ export interface SurveyViewObject {
   species: IGetSpecies;
   permit: ISurveyPermits;
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
-  funding: ISurveyFundingSources;
   proprietor: IGetSurveyForViewResponseProprietor | null;
 }
 
@@ -119,9 +98,6 @@ export interface SurveyUpdateObject {
     vantage_code_ids: number[];
     surveyed_all_areas: StringBoolean;
     revision_count: number;
-  };
-  funding?: {
-    funding_sources: number[];
   };
   proprietor?: {
     survey_data_proprietary: StringBoolean;

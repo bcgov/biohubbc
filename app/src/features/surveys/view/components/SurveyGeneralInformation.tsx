@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
-import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
@@ -24,7 +23,7 @@ const SurveyGeneralInformation = () => {
   }
 
   const {
-    surveyData: { survey_details, species, funding, permit }
+    surveyData: { survey_details, species, permit }
   } = surveyForViewData;
 
   return (
@@ -122,20 +121,6 @@ const SurveyGeneralInformation = () => {
       <Box component="section">
         <Typography component="h4">Funding Sources</Typography>
         <Divider></Divider>
-        <FundingSource
-          funding_sources={funding.funding_sources.map((item) => {
-            return {
-              id: item.project_funding_source_id,
-              agency_name: item.agency_name,
-              investment_action_category_name: item.investment_action_category_name,
-              funding_amount: item.funding_amount,
-              start_date: item.funding_start_date,
-              end_date: item.funding_end_date,
-              agency_project_id: item.funding_source_project_id,
-              first_nations_name: item.first_nations_name
-            } as IFundingSource;
-          })}
-        />
       </Box>
     </>
   );

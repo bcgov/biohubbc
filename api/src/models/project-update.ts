@@ -103,47 +103,6 @@ export class PutIUCNData {
   }
 }
 
-export class PutFundingSource {
-  id?: number;
-  investment_action_category?: number;
-  agency_project_id?: string;
-  funding_amount?: number;
-  start_date: string;
-  end_date: string;
-  revision_count: number;
-  first_nations_id?: number;
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutFundingSource', message: 'params', obj });
-
-    this.id = obj?.id || null;
-    this.investment_action_category = obj?.investment_action_category || null;
-    this.agency_project_id = obj?.agency_project_id || null;
-    this.funding_amount = obj?.funding_amount || null;
-    this.start_date = obj?.start_date || null;
-    this.end_date = obj?.end_date || null;
-    this.revision_count = obj?.revision_count ?? null;
-    this.first_nations_id = obj?.first_nations_id ?? null;
-  }
-}
-
-/**
- * Processes PUT /project funding data
- *
- * @export
- * @class PostFundingData
- */
-export class PutFundingData {
-  fundingSources: PutFundingSource[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostFundingData', message: 'params', obj });
-
-    this.fundingSources =
-      (obj?.fundingSources?.length && obj.fundingSources.map((item: any) => new PutFundingSource(item))) || [];
-  }
-}
-
 export class PutPartnershipsData {
   indigenous_partnerships: number[];
   stakeholder_partnerships: string[];

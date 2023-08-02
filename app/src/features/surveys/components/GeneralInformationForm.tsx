@@ -51,9 +51,6 @@ export interface IGeneralInformationForm {
       permit_type: string;
     }[];
   };
-  funding: {
-    funding_sources: number[];
-  };
 }
 
 export const GeneralInformationInitialValues: IGeneralInformationForm = {
@@ -70,9 +67,6 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   },
   permit: {
     permits: []
-  },
-  funding: {
-    funding_sources: []
   }
 };
 
@@ -97,7 +91,6 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
 };
 
 export interface IGeneralInformationFormProps {
-  funding_sources: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
 }
@@ -236,18 +229,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         <Box>
           <SurveyPermitForm />
         </Box>
-      </Box>
-
-      <Box component="fieldset" mt={5}>
-        <Typography component="legend" variant="h5">
-          Funding Sources
-        </Typography>
-        <MultiAutocompleteFieldVariableSize
-          id="funding.funding_sources"
-          label="Select Funding Sources"
-          options={props.funding_sources}
-          required={false}
-        />
       </Box>
     </>
   );

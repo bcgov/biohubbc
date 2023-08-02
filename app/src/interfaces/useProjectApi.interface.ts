@@ -2,7 +2,6 @@ import { PublishStatus } from 'constants/attachments';
 import { PROJECT_PERMISSION, PROJECT_ROLE } from 'constants/roles';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
-import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
@@ -129,7 +128,6 @@ export interface ICreateProjectRequest
     IProjectObjectivesForm,
     IProjectLocationForm,
     IProjectIUCNForm,
-    IProjectFundingForm,
     IProjectPartnershipsForm {}
 
 /**
@@ -148,7 +146,6 @@ export enum UPDATE_GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  funding = 'funding',
   partnerships = 'partnerships'
 }
 
@@ -164,7 +161,6 @@ export interface IGetProjectForUpdateResponse {
   location?: IGetProjectForUpdateResponseLocation;
   coordinator?: IGetProjectForUpdateResponseCoordinator;
   iucn?: IGetProjectForUpdateResponseIUCN;
-  funding?: IGetProjectForUpdateResponseFundingData;
   partnerships?: IGetProjectForUpdateResponsePartnerships;
 }
 
@@ -206,25 +202,6 @@ export interface IGetProjectForUpdateResponseIUCN {
   classificationDetails: IGetProjectForUpdateResponseIUCNArrayItem[];
 }
 
-export interface IGetProjectForUpdateResponseFundingSource {
-  id: number;
-  agency_id?: number;
-  agency_name?: string;
-  investment_action_category?: number;
-  investment_action_category_name?: string;
-  agency_project_id: string | null;
-  funding_amount?: number;
-  start_date: string;
-  end_date: string;
-  revision_count: number;
-  first_nations_id?: number;
-  first_nations_name?: string;
-}
-
-export interface IGetProjectForUpdateResponseFundingData {
-  funding_sources: IGetProjectForUpdateResponseFundingSource[];
-}
-
 export interface IGetProjectForUpdateResponsePartnerships {
   indigenous_partnerships: number[];
   stakeholder_partnerships: string[];
@@ -262,7 +239,6 @@ export interface ProjectViewObject {
   location: IGetProjectForViewResponseLocation;
   coordinator: IGetProjectForViewResponseCoordinator;
   iucn: IGetProjectForViewResponseIUCN;
-  funding: IGetProjectForViewResponseFundingData;
   partnerships: IGetProjectForViewResponsePartnerships;
 }
 
@@ -300,25 +276,6 @@ interface IGetProjectForViewResponseIUCNArrayItem {
 
 export interface IGetProjectForViewResponseIUCN {
   classificationDetails: IGetProjectForViewResponseIUCNArrayItem[];
-}
-
-interface IGetProjectForViewResponseFundingSource {
-  id: number;
-  agency_id?: number;
-  agency_name?: string;
-  investment_action_category?: number;
-  investment_action_category_name?: string;
-  funding_amount?: number;
-  start_date: string;
-  end_date: string;
-  agency_project_id: string;
-  revision_count: number;
-  first_nations_id?: number;
-  first_nations_name?: string;
-}
-
-export interface IGetProjectForViewResponseFundingData {
-  fundingSources: IGetProjectForViewResponseFundingSource[];
 }
 
 export interface IGetProjectForViewResponsePartnerships {

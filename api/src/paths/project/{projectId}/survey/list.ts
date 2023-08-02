@@ -69,7 +69,6 @@ GET.apiDoc = {
                     'survey_details',
                     'species',
                     'permit',
-                    'funding',
                     'proprietor',
                     'purpose_and_methodology',
                     'location'
@@ -166,49 +165,6 @@ GET.apiDoc = {
                               },
                               permit_type: {
                                 type: 'string'
-                              }
-                            }
-                          }
-                        }
-                      }
-                    },
-                    funding: {
-                      description: 'Survey Funding Sources',
-                      type: 'object',
-                      properties: {
-                        funding_sources: {
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            required: [
-                              'project_funding_source_id',
-                              'agency_name',
-                              'funding_amount',
-                              'funding_start_date',
-                              'funding_end_date'
-                            ],
-                            properties: {
-                              project_funding_source_id: {
-                                type: 'number',
-                                nullable: true
-                              },
-                              agency_name: {
-                                type: 'string',
-                                nullable: true
-                              },
-                              funding_amount: {
-                                type: 'number',
-                                nullable: true
-                              },
-                              funding_start_date: {
-                                type: 'string',
-                                nullable: true,
-                                description: 'ISO 8601 date string'
-                              },
-                              funding_end_date: {
-                                type: 'string',
-                                nullable: true,
-                                description: 'ISO 8601 date string'
                               }
                             }
                           }

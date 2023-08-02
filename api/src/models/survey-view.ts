@@ -7,7 +7,6 @@ export type SurveyObject = {
   species: GetFocalSpeciesData & GetAncillarySpeciesData;
   permit: GetPermitData;
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
-  funding: GetSurveyFundingSources;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
 };
@@ -103,43 +102,6 @@ export class GetSurveyPurposeAndMethodologyData {
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
     this.revision_count = obj?.revision_count ?? 0;
-  }
-}
-
-interface IGetSurveyFundingSource {
-  project_funding_source_id: number;
-  funding_amount?: number;
-  agency_id: number;
-  funding_start_date: string;
-  funding_end_date: string;
-  investment_action_category_id?: number;
-  investment_action_category_name?: string;
-  agency_name?: string;
-  funding_source_project_id: string;
-  first_nations_id?: number;
-  first_nations_name?: string;
-}
-
-export class GetSurveyFundingSources {
-  funding_sources: IGetSurveyFundingSource[];
-
-  constructor(obj?: any[]) {
-    this.funding_sources =
-      obj?.map((item: any) => {
-        return {
-          project_funding_source_id: item.project_funding_source_id,
-          funding_amount: item.funding_amount,
-          agency_id: item.agency_id,
-          funding_start_date: item.funding_start_date,
-          funding_end_date: item.funding_end_date,
-          investment_action_category_id: item.investment_action_category_id,
-          investment_action_category_name: item.investment_action_category_name,
-          agency_name: item.agency_name,
-          funding_source_project_id: item.funding_source_project_id,
-          first_nations_id: item.first_nations_id,
-          first_nations_name: item.first_nations_name
-        };
-      }) ?? [];
   }
 }
 

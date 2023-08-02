@@ -4,11 +4,10 @@ import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
-import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
+import { IPostIUCN, PostProjectObject } from '../models/project-create';
 import {
   IPutIUCN,
   PutCoordinatorData,
-  PutFundingData,
   PutIUCNData,
   PutLocationData,
   PutObjectivesData,
@@ -18,7 +17,6 @@ import {
 import {
   GetAttachmentsData,
   GetCoordinatorData,
-  GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
@@ -151,21 +149,12 @@ export class ProjectService extends DBService {
   }
 
   async getProjectById(projectId: number): Promise<IGetProject> {
-    const [
-      projectData,
-      objectiveData,
-      coordinatorData,
-      locationData,
-      iucnData,
-      fundingData,
-      partnershipsData
-    ] = await Promise.all([
+    const [projectData, objectiveData, coordinatorData, locationData, iucnData, partnershipsData] = await Promise.all([
       this.getProjectData(projectId),
       this.getObjectivesData(projectId),
       this.getCoordinatorData(projectId),
       this.getLocationData(projectId),
       this.getIUCNClassificationData(projectId),
-      this.getFundingData(projectId),
       this.getPartnershipsData(projectId)
     ]);
 
@@ -175,7 +164,6 @@ export class ProjectService extends DBService {
       coordinator: coordinatorData,
       location: locationData,
       iucn: iucnData,
-      funding: fundingData,
       partnerships: partnershipsData
     };
   }
@@ -200,7 +188,6 @@ export class ProjectService extends DBService {
       objectives: undefined,
       location: undefined,
       iucn: undefined,
-      funding: undefined,
       partnerships: undefined
     };
 
@@ -253,13 +240,6 @@ export class ProjectService extends DBService {
         })
       );
     }
-    if (entities.includes(GET_ENTITIES.funding)) {
-      promises.push(
-        this.getFundingData(projectId).then((value) => {
-          results.funding = value;
-        })
-      );
-    }
 
     await Promise.all(promises);
 
@@ -284,10 +264,6 @@ export class ProjectService extends DBService {
 
   async getIUCNClassificationData(projectId: number): Promise<GetIUCNClassificationData> {
     return this.projectRepository.getIUCNClassificationData(projectId);
-  }
-
-  async getFundingData(projectId: number): Promise<GetFundingData> {
-    return this.projectRepository.getFundingData(projectId);
   }
 
   async getPartnershipsData(projectId: number): Promise<GetPartnershipsData> {
@@ -346,15 +322,6 @@ export class ProjectService extends DBService {
 
     const promises: Promise<any>[] = [];
 
-    // Handle funding sources
-    promises.push(
-      Promise.all(
-        postProjectData.funding.fundingSources.map((fundingSource: PostFundingSource) =>
-          this.insertFundingSource(fundingSource, projectId)
-        )
-      )
-    );
-
     // Handle indigenous partners
     promises.push(
       Promise.all(
@@ -403,10 +370,6 @@ export class ProjectService extends DBService {
 
   async insertProject(postProjectData: PostProjectObject): Promise<number> {
     return this.projectRepository.insertProject(postProjectData);
-  }
-
-  async insertFundingSource(fundingSource: PostFundingSource, project_id: number): Promise<number> {
-    return this.projectRepository.insertFundingSource(fundingSource, project_id);
   }
 
   async insertIndigenousNation(indigenousNationsId: number, project_id: number): Promise<number> {
@@ -486,10 +449,6 @@ export class ProjectService extends DBService {
 
     if (entities?.iucn) {
       promises.push(this.updateIUCNData(projectId, entities));
-    }
-
-    if (entities?.funding) {
-      promises.push(this.updateFundingData(projectId, entities));
     }
 
     if (entities?.location) {
@@ -574,66 +533,6 @@ export class ProjectService extends DBService {
       projectData?.project_types?.map((typeId: number) => this.insertType(typeId, projectId)) || [];
 
     await Promise.all([...insertTypePromises]);
-  }
-
-  /**
-   * Compares incoming project funding data against the existing funding data, if any, and determines which need to be
-   * deleted, added, or updated.
-   *
-   * @param {number} projectId
-   * @param {IUpdateProject} entities
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async updateFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
-    const projectRepository = new ProjectRepository(this.connection);
-
-    const putFundingData = entities?.funding && new PutFundingData(entities.funding);
-    if (!putFundingData) {
-      throw new HTTP400('Failed to create funding data object');
-    }
-    // Get any existing funding for this project
-    const existingProjectFundingSources = await projectRepository.getProjectFundingSourceIds(projectId);
-
-    // Compare the array of existing funding to the array of incoming funding (by project_funding_source_id) and collect any
-    // existing funding that are not in the incoming funding array.
-    const existingFundingSourcesToDelete = existingProjectFundingSources.filter((existingFunding) => {
-      // Find all existing funding (by project_funding_source_id) that have no matching incoming project_funding_source_id
-      return !putFundingData.fundingSources.find(
-        (incomingFunding: any) => incomingFunding.id === existingFunding.project_funding_source_id
-      );
-    });
-
-    // Delete from the database all existing project and survey funding that have been removed
-    if (existingFundingSourcesToDelete.length) {
-      const promises: Promise<any>[] = [];
-
-      existingFundingSourcesToDelete.forEach((funding) => {
-        // Delete funding connection to survey first
-        promises.push(
-          projectRepository.deleteSurveyFundingSourceConnectionToProject(funding.project_funding_source_id)
-        );
-        // Delete project funding after
-        promises.push(projectRepository.deleteProjectFundingSource(funding.project_funding_source_id));
-      });
-
-      await Promise.all(promises);
-    }
-
-    // The remaining funding are either new, and can be created, or updates to existing funding
-    const promises: Promise<any>[] = [];
-
-    putFundingData.fundingSources.forEach((funding: any) => {
-      if (funding.id) {
-        // Has a project_funding_source_id, indicating this is an update to an existing funding
-        promises.push(projectRepository.updateProjectFundingSource(funding, projectId));
-      } else {
-        // No project_funding_source_id, indicating this is a new funding which needs to be created
-        promises.push(projectRepository.insertProjectFundingSource(funding, projectId));
-      }
-    });
-
-    await Promise.all(promises);
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {

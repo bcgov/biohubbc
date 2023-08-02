@@ -1,8 +1,5 @@
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import assert from 'assert';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -43,7 +40,6 @@ export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
 };
 
 export interface IProjectAdvancedFiltersProps {
-  funding_sources: IMultiAutocompleteFieldOption[];
   coordinator_agency: string[];
 }
 
@@ -57,7 +53,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
 
   const biohubApi = useBiohubApi();
 
-  const { handleSubmit, handleChange, values } = formikProps;
+  const { handleSubmit } = formikProps;
 
   const codesContext = useContext(CodesContext);
   assert(codesContext.codesDataLoader.data);
@@ -156,26 +152,6 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
         </Grid>
         <Grid item xs={12} md={3}>
           <CustomTextField name="permit_number" label="Permit Number" />
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <FormControl fullWidth variant="outlined" required={false}>
-            <InputLabel id="agency_id-label">Funding Agency Name</InputLabel>
-            <Select
-              id="agency_id"
-              name="agency_id"
-              labelId="agency_id-label"
-              label="Funding Agency Name"
-              value={values.agency_id}
-              onChange={handleChange}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Funding Agency Name', 'data-testid': 'agency-id' }}>
-              {props.funding_sources.map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
         </Grid>
         <Grid item xs={12} md={3}>
           <CustomTextField name="agency_project_id" label="Funding Agency Project ID" />

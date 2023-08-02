@@ -122,24 +122,6 @@ describe('EmlPackage', () => {
         }
       ]);
 
-      sinon.stub(EmlService.prototype, '_getProjectFundingSources').returns({
-        funding: {
-          section: [
-            {
-              title: 'Agency Name',
-              para: 'BC Hydro',
-              section: [
-                { title: 'Funding Agency Project ID', para: 'AGENCY PROJECT ID' },
-                { title: 'Investment Action/Category', para: 'Not Applicable' },
-                { title: 'Funding Amount', para: 123456789 },
-                { title: 'Funding Start Date', para: '2023-01-02' },
-                { title: 'Funding End Date', para: '2023-01-30' }
-              ]
-            }
-          ]
-        }
-      });
-
       sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({
         geographicCoverage: {
           geographicDescription: 'Location Description',
@@ -190,21 +172,6 @@ describe('EmlPackage', () => {
         ],
         abstract: {
           section: [{ title: 'Objectives', para: 'Project objectives.' }]
-        },
-        funding: {
-          section: [
-            {
-              title: 'Agency Name',
-              para: 'BC Hydro',
-              section: [
-                { title: 'Funding Agency Project ID', para: 'AGENCY PROJECT ID' },
-                { title: 'Investment Action/Category', para: 'Not Applicable' },
-                { title: 'Funding Amount', para: 123456789 },
-                { title: 'Funding Start Date', para: '2023-01-02' },
-                { title: 'Funding End Date', para: '2023-01-30' }
-              ]
-            }
-          ]
         },
         studyAreaDescription: {
           coverage: {
@@ -476,21 +443,6 @@ describe('EmlService', () => {
         abstract: {
           section: [{ title: 'Objectives', para: 'Objectives' }]
         },
-        funding: {
-          section: [
-            {
-              title: 'Agency Name',
-              para: 'BC Hydro',
-              section: [
-                { title: 'Funding Agency Project ID', para: 'AGENCY PROJECT ID' },
-                { title: 'Investment Action/Category', para: 'Not Applicable' },
-                { title: 'Funding Amount', para: 123456789 },
-                { title: 'Funding Start Date', para: '2023-01-02' },
-                { title: 'Funding End Date', para: '2023-01-30' }
-              ]
-            }
-          ]
-        },
         studyAreaDescription: {
           coverage: {
             geographicCoverage: {
@@ -602,36 +554,6 @@ describe('EmlService', () => {
               {
                 title: 'Additional Details',
                 para: 'Additional Details'
-              }
-            ]
-          },
-          funding: {
-            section: [
-              {
-                title: 'Agency Name',
-                para: 'BC Hydro',
-                section: [
-                  {
-                    title: 'Funding Agency Project ID',
-                    para: 'AGENCY PROJECT ID'
-                  },
-                  {
-                    title: 'Investment Action/Category',
-                    para: 'Not Applicable'
-                  },
-                  {
-                    title: 'Funding Amount',
-                    para: 123456789
-                  },
-                  {
-                    title: 'Funding Start Date',
-                    para: '2023-01-02'
-                  },
-                  {
-                    title: 'Funding End Date',
-                    para: '2023-01-30'
-                  }
-                ]
               }
             ]
           },
@@ -816,36 +738,6 @@ describe('EmlService', () => {
             }
           ]
         },
-        funding: {
-          section: [
-            {
-              title: 'Agency Name',
-              para: 'BC Hydro',
-              section: [
-                {
-                  title: 'Funding Agency Project ID',
-                  para: 'AGENCY PROJECT ID'
-                },
-                {
-                  title: 'Investment Action/Category',
-                  para: 'Not Applicable'
-                },
-                {
-                  title: 'Funding Amount',
-                  para: 123456789
-                },
-                {
-                  title: 'Funding Start Date',
-                  para: '2023-01-02'
-                },
-                {
-                  title: 'Funding End Date',
-                  para: '2023-01-30'
-                }
-              ]
-            }
-          ]
-        },
         studyAreaDescription: {
           coverage: {
             geographicCoverage: {
@@ -1014,36 +906,6 @@ describe('EmlService', () => {
             {
               title: 'Objectives',
               para: 'Objectives'
-            }
-          ]
-        },
-        funding: {
-          section: [
-            {
-              title: 'Agency Name',
-              para: 'BC Hydro',
-              section: [
-                {
-                  title: 'Funding Agency Project ID',
-                  para: 'AGENCY PROJECT ID'
-                },
-                {
-                  title: 'Investment Action/Category',
-                  para: 'Not Applicable'
-                },
-                {
-                  title: 'Funding Amount',
-                  para: 123456789
-                },
-                {
-                  title: 'Funding Start Date',
-                  para: '2023-01-02'
-                },
-                {
-                  title: 'Funding End Date',
-                  para: '2023-01-30'
-                }
-              ]
             }
           ]
         },
@@ -1365,24 +1227,6 @@ describe('EmlService', () => {
         }
       ]);
 
-      sinon.stub(EmlService.prototype, '_getProjectFundingSources').returns({
-        funding: {
-          section: [
-            {
-              title: 'Agency Name',
-              para: 'BC Hydro',
-              section: [
-                { title: 'Funding Agency Project ID', para: 'AGENCY PROJECT ID' },
-                { title: 'Investment Action/Category', para: 'Not Applicable' },
-                { title: 'Funding Amount', para: 123456789 },
-                { title: 'Funding Start Date', para: '2023-01-02' },
-                { title: 'Funding End Date', para: '2023-01-30' }
-              ]
-            }
-          ]
-        }
-      });
-
       sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({
         geographicCoverage: {
           geographicDescription: 'Location Description',
@@ -1432,21 +1276,6 @@ describe('EmlService', () => {
         ],
         abstract: {
           section: [{ title: 'Objectives', para: 'Project objectives.' }]
-        },
-        funding: {
-          section: [
-            {
-              title: 'Agency Name',
-              para: 'BC Hydro',
-              section: [
-                { title: 'Funding Agency Project ID', para: 'AGENCY PROJECT ID' },
-                { title: 'Investment Action/Category', para: 'Not Applicable' },
-                { title: 'Funding Amount', para: 123456789 },
-                { title: 'Funding Start Date', para: '2023-01-02' },
-                { title: 'Funding End Date', para: '2023-01-30' }
-              ]
-            }
-          ]
         },
         studyAreaDescription: {
           coverage: {
@@ -1507,8 +1336,6 @@ describe('EmlService', () => {
           role: 'pointOfContact'
         }
       ]);
-
-      sinon.stub(EmlService.prototype, '_getProjectFundingSources').returns({});
 
       sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({});
 
@@ -1719,14 +1546,6 @@ describe('EmlService', () => {
         }
       ]);
     });
-  });
-
-  describe('_getProjectFundingSources', () => {
-    //
-  });
-
-  describe('_getSurveyFundingSources', () => {
-    //
   });
 
   describe('_getProjectTemporalCoverage', () => {

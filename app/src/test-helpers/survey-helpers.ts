@@ -39,18 +39,6 @@ export const surveyObject: SurveyViewObject = {
     proprietor_type_id: 2,
     proprietor_type_name: 'proprietor type name'
   },
-  funding: {
-    funding_sources: [
-      {
-        project_funding_source_id: 1,
-        funding_amount: 100,
-        funding_start_date: '2000-04-09 11:53:53',
-        funding_end_date: '2000-05-10 11:53:53',
-        agency_name: 'agency name',
-        funding_source_project_id: 'ABC123'
-      }
-    ]
-  },
   permit: {
     permits: [
       {

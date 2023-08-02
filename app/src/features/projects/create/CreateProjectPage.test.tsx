@@ -1,7 +1,6 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
-import { ProjectFundingFormInitialValues } from 'features/projects/components/ProjectFundingForm';
 import { ProjectIUCNFormInitialValues } from 'features/projects/components/ProjectIUCNForm';
 import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
@@ -174,7 +173,6 @@ describe('CreateProjectPage', () => {
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn,
-            funding: ProjectFundingFormInitialValues.funding,
             partnerships: ProjectPartnershipsFormInitialValues.partnerships
           }
         });
@@ -208,7 +206,6 @@ describe('CreateProjectPage', () => {
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn,
-            funding: ProjectFundingFormInitialValues.funding,
             partnerships: ProjectPartnershipsFormInitialValues.partnerships
           }
         });
@@ -250,7 +247,6 @@ describe('CreateProjectPage', () => {
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn,
-            funding: ProjectFundingFormInitialValues.funding,
             partnerships: ProjectPartnershipsFormInitialValues.partnerships
           }
         });
@@ -299,7 +295,6 @@ describe('CreateProjectPage', () => {
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn,
-            funding: ProjectFundingFormInitialValues.funding,
             partnerships: ProjectPartnershipsFormInitialValues.partnerships
           }
         });
@@ -347,7 +342,6 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          funding: ProjectFundingFormInitialValues.funding,
           partnerships: ProjectPartnershipsFormInitialValues.partnerships
         }
       });
@@ -446,7 +440,6 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          funding: ProjectFundingFormInitialValues.funding,
           partnerships: ProjectPartnershipsFormInitialValues.partnerships
         }
       });
@@ -535,7 +528,6 @@ describe('CreateProjectPage', () => {
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
-          funding: { fundingSources: [] },
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
@@ -561,7 +553,6 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          funding: ProjectFundingFormInitialValues.funding,
           partnerships: ProjectPartnershipsFormInitialValues.partnerships
         }
       });
@@ -613,7 +604,6 @@ describe('CreateProjectPage', () => {
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
-          funding: { fundingSources: [] },
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 

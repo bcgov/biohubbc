@@ -6,7 +6,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import assert from 'assert';
-import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
 import GeneralInformation from './components/GeneralInformation';
@@ -61,18 +60,6 @@ const ProjectDetails = () => {
 
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
-  const funding_sources = projectContext.projectDataLoader.data.projectData.funding.fundingSources.map((item) => {
-    return {
-      id: item.id,
-      agency_name: item.agency_name,
-      investment_action_category_name: item.investment_action_category_name,
-      funding_amount: item.funding_amount,
-      start_date: item.start_date,
-      end_date: item.end_date,
-      agency_project_id: item.agency_project_id,
-      first_nations_name: item.first_nations_name
-    } as IFundingSource;
-  });
 
   return (
     <Box>
@@ -105,14 +92,6 @@ const ProjectDetails = () => {
           </Typography>
           <Divider></Divider>
           <ProjectCoordinator />
-        </Box>
-
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Funding Sources
-          </Typography>
-          <Divider></Divider>
-          <FundingSource funding_sources={funding_sources} />
         </Box>
 
         <Box component="section">
