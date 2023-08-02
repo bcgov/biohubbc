@@ -1,8 +1,5 @@
 import { Knex } from 'knex';
 
-const DB_SCHEMA = process.env.DB_SCHEMA;
-const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
-
 /**
  * Remove caveats and climate relations
  *
@@ -15,7 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- Remove old views
     -------------------------------------------------------------------------
-    SET search_path = ${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH=biohub_dapi_v1;
     DROP VIEW project;
     DROP VIEW survey;
     DROP VIEW climate_change_initiative;
@@ -24,7 +21,7 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     -- Remove Climate initiative tables
     -------------------------------------------------------------------------
-    SET search_path = ${DB_SCHEMA};
+    SET SEARCH_PATH=biohub;
     DROP TABLE project_climate_initiative;
     DROP TABLE climate_change_initiative;
     
@@ -52,9 +49,9 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
     ALTER TABLE project DROP COLUMN caveats;
 
-    SET search_path = ${DB_SCHEMA_DAPI_V1};
-    CREATE OR REPLACE VIEW project as select * from ${DB_SCHEMA}.project;
-    CREATE OR REPLACE VIEW survey as select * from ${DB_SCHEMA}.survey;
+    SET SEARCH_PATH=biohub_dapi_v1;
+    CREATE OR REPLACE VIEW project as select * from biohub.project;
+    CREATE OR REPLACE VIEW survey as select * from biohub.survey;
   `);
 }
 
