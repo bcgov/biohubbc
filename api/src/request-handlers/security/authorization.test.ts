@@ -7,7 +7,7 @@ import sinonChai from 'sinon-chai';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { ProjectUser, UserObject } from '../../models/user';
+import { ProjectUser, User } from '../../models/user';
 import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as authorization from './authorization';
@@ -73,7 +73,7 @@ describe('authorizeRequest', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = (undefined as unknown) as UserObject;
+    const mockSystemUserObject = (undefined as unknown) as User;
     sinon.stub(authorization, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
@@ -86,7 +86,7 @@ describe('authorizeRequest', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = ({ role_names: [] } as unknown) as UserObject;
+    const mockSystemUserObject = ({ role_names: [] } as unknown) as User;
     sinon.stub(authorization, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(authorization, 'authorizeSystemAdministrator').resolves(true);
@@ -101,7 +101,7 @@ describe('authorizeRequest', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = ({ role_names: [] } as unknown) as UserObject;
+    const mockSystemUserObject = ({ role_names: [] } as unknown) as User;
     sinon.stub(authorization, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(authorization, 'authorizeSystemAdministrator').resolves(false);
@@ -116,7 +116,7 @@ describe('authorizeRequest', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = ({ role_names: [] } as unknown) as UserObject;
+    const mockSystemUserObject = ({ role_names: [] } as unknown) as User;
     sinon.stub(authorization, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(authorization, 'authorizeSystemAdministrator').resolves(false);
@@ -133,7 +133,7 @@ describe('authorizeRequest', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = ({ role_names: [] } as unknown) as UserObject;
+    const mockSystemUserObject = ({ role_names: [] } as unknown) as User;
     sinon.stub(authorization, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(authorization, 'authorizeSystemAdministrator').resolves(false);
@@ -291,7 +291,7 @@ describe('authorizeBySystemRole', function () {
     };
     const mockDBConnection = getMockDBConnection();
 
-    const mockGetSystemUsersObjectResponse = (null as unknown) as UserObject;
+    const mockGetSystemUsersObjectResponse = (null as unknown) as User;
     sinon.stub(authorization, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
     const isAuthorizedBySystemRole = await authorization.authorizeBySystemRole(
@@ -481,7 +481,7 @@ describe('authorizeBySystemUser', function () {
     const mockReq = ({} as unknown) as Request;
     const mockDBConnection = getMockDBConnection();
 
-    const mockGetSystemUsersObjectResponse = (null as unknown) as UserObject;
+    const mockGetSystemUsersObjectResponse = (null as unknown) as User;
     sinon.stub(authorization, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
     const isAuthorizedBySystemRole = await authorization.authorizeBySystemUser(mockReq, mockDBConnection);
@@ -493,7 +493,7 @@ describe('authorizeBySystemUser', function () {
     const mockReq = ({ system_user: {} } as unknown) as Request;
     const mockDBConnection = getMockDBConnection();
 
-    const mockGetSystemUsersObjectResponse = (null as unknown) as UserObject;
+    const mockGetSystemUsersObjectResponse = (null as unknown) as User;
     sinon.stub(authorization, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
     const isAuthorizedBySystemRole = await authorization.authorizeBySystemUser(mockReq, mockDBConnection);
@@ -650,11 +650,11 @@ describe('getSystemUserObject', function () {
     }
   });
 
-  it('returns a `UserObject`', async function () {
+  it('returns a `User`', async function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserWithRolesResponse = new UserObject();
+    const mockSystemUserWithRolesResponse = (null as unknown) as User;
     sinon.stub(authorization, 'getSystemUserWithRoles').resolves(mockSystemUserWithRolesResponse);
 
     const systemUserObject = await authorization.getSystemUserObject(mockDBConnection);
@@ -677,11 +677,11 @@ describe('getSystemUserWithRoles', function () {
     expect(result).to.be.null;
   });
 
-  it('returns a UserObject', async function () {
+  it('returns a User', async function () {
     const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockUsersByIdSQLResponse = new UserObject();
+    const mockUsersByIdSQLResponse = (null as unknown) as User;
     sinon.stub(UserService.prototype, 'getUserById').resolves(mockUsersByIdSQLResponse);
 
     const result = await authorization.getSystemUserWithRoles(mockDBConnection);

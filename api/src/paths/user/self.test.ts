@@ -41,13 +41,15 @@ describe('getUser', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'identifier',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: new Date(),
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['role 1', 'role 2'],
+      permission_ids: [],
+      permission_names: []
     });
 
     const requestHandler = self.getUser();

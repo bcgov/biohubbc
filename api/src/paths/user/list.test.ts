@@ -24,13 +24,15 @@ describe('users', () => {
 
       const mockResponse = [
         {
-          id: 1,
+          system_user_id: 1,
           user_identifier: 'identifier',
           user_guid: 'aaaa',
           identity_source: 'idir',
-          record_end_date: '',
+          record_end_date: new Date(),
           role_ids: [1, 2],
-          role_names: ['System Admin', 'Project Lead']
+          role_names: ['System Admin', 'Project Lead'],
+          permission_ids: [],
+          permission_names: []
         }
       ];
 

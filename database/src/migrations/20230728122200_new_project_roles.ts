@@ -8,28 +8,11 @@ import { Knex } from 'knex';
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`--sql
+  await knex.raw(`
     ------------------------------------------------------------------------------------------------------------------
     -------------------------------------  ------------------------------------------------
     ------------------------------------------------------------------------------------------------------------------
     SET SEARCH_PATH=biohub_dapi_v1;
-
-    -- drop old views
-
-    -- Project Lead ---> Coordinator
-    -- All read/write permissions
-    -- Editor ---> Collaborator
-    -- All read/write permissions
-    -- Viewer ---> Observer
-    -- read only permissions
-
-
-    -- end datae existing roles
-    -- 3 new roles
-    -- create permissions 3
-    -- update end auth work look at permissions/ guards
-    -- permission enum
-
     -------------------------------------------------------------------------
     -- Create project permission and join table
     -------------------------------------------------------------------------
