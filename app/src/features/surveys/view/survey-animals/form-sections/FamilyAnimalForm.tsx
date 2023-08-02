@@ -7,9 +7,10 @@ import useDataLoader from 'hooks/useDataLoader';
 import { Fragment } from 'react';
 import { getAnimalFieldName, IAnimal, IAnimalRelationship } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
+import { validate as uuidValidate } from 'uuid';
 
 const FamilyAnimalForm = () => {
-  const { values, touched, errors, handleChange, handleBlur } = useFormikContext<IAnimal>();
+  const { values, touched, errors, handleChange } = useFormikContext<IAnimal>();
   const critterbase = useCritterbaseApi();
   const critterLoader = useDataLoader(critterbase.critters.getAllCritters);
   if (!critterLoader.data) {
@@ -26,6 +27,10 @@ const FamilyAnimalForm = () => {
     let error: string | undefined;
     if (!critter_id) {
       error = 'Required';
+    }
+    if (!uuidValidate(critter_id)) {
+      error = 'Not a valid UUID.';
+      return error;
     }
     try {
       const critter = await critterbase.critters.getCritterByID(critter_id);
@@ -55,9 +60,7 @@ const FamilyAnimalForm = () => {
                     as={CustomTextField}
                     name={getAnimalFieldName<IAnimalRelationship>(name, 'critter_id', index)}
                     label={"Individual's ID"}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    size="small"
+                    other={{ size: 'small' }}
                     validate={validateCritterExists}
                   />
                 </Grid>
@@ -74,7 +77,7 @@ const FamilyAnimalForm = () => {
                         size="small"
                         value={values.family[index]?.relationship ?? ''}
                         onChange={handleChange}
-                        error={touched.family?.[index].relationship && Boolean(errors.family?.[index])}
+                        error={touched.family?.[index]?.relationship && Boolean(errors.family?.[index])}
                         displayEmpty>
                         <MenuItem key={'parent'} value={'parent'}>
                           Parent

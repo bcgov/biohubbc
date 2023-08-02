@@ -11,7 +11,8 @@ interface FormSectionWrapperProps {
   handleAddSection?: () => void; // function to call when add btn selected
   handleRemoveSection?: (index: number) => void; // function to call when "X" btn selected
   children: JSX.Element[] | JSX.Element;
-  inlineChildren?: JSX.Element[]; //Additional elements to display in between title and X button (ie. like toggles)
+  inlineChildren?: JSX.Element[]; //Additional elements to display in between title and X button (ie. like toggles),
+  maxSections?: number;
 }
 /**
  * Wrapper for rendering the section inputs with additional controls for
@@ -27,7 +28,8 @@ const FormSectionWrapper = ({
   children,
   handleAddSection,
   handleRemoveSection,
-  btnLabel
+  btnLabel,
+  maxSections
 }: FormSectionWrapperProps) => {
   //For convienence, vs rendering duplicated components for children and children[]
   const childs = Array.isArray(children) ? children : [children];
@@ -58,7 +60,7 @@ const FormSectionWrapper = ({
           </Grid>
         </div>
       ))}
-      {btnLabel && handleAddSection ? (
+      {btnLabel && handleAddSection && (maxSections === undefined || childs.length < maxSections) ? (
         <Button
           onClick={handleAddSection}
           startIcon={<Icon path={mdiPlus} size={1} />}

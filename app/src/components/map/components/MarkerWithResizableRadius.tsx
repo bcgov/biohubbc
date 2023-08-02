@@ -2,7 +2,7 @@ import L, { Icon, LatLng } from 'leaflet';
 import { useState } from 'react';
 import { Circle, Marker, useMap, useMapEvents } from 'react-leaflet';
 
-type IconColor = 'green' | 'blue';
+type IconColor = 'green' | 'blue' | 'red';
 
 interface IClickMarkerProps {
   position: LatLng;
@@ -55,9 +55,18 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
     shadowSize: [41, 41]
   });
 
+  const redIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
   const iconMap: Record<IconColor, { icon: Icon; hex: string }> = {
     blue: { icon: blueIcon, hex: '#2A81CB' },
-    green: { icon: greenIcon, hex: '#2AAD27' }
+    green: { icon: greenIcon, hex: '#2AAD27' },
+    red: { icon: redIcon, hex: '#CB2B3E' }
   };
 
   useMapEvents({

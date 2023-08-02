@@ -28,6 +28,7 @@ const GeneralAnimalForm = () => {
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
             <CbSelectField
               name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
+              controlProps={{ size: 'small' }}
               label={'Taxon'}
               id={'taxon'}
               route={'taxons'}

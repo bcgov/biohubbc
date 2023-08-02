@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 
-interface ICbSelectRows {
+export interface ICbSelectRows {
   key: string;
   id: string;
   value: string;

@@ -1,6 +1,6 @@
-import { FormControl, FormControlProps, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, FormControlProps, FormHelperText, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { useFormikContext } from 'formik';
-import { ICbRouteKey } from 'hooks/cb_api/useLookupApi';
+import { ICbRouteKey, ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';
@@ -13,6 +13,7 @@ export interface ICbSelectField {
   route: ICbRouteKey;
   taxon_id?: string;
   controlProps?: FormControlProps;
+  handleChangeSideEffect?: (value: string, label: string) => void;
 }
 
 interface ICbSelectOption {
@@ -21,11 +22,11 @@ interface ICbSelectOption {
 }
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
-  const { name, label, taxon_id, route } = props;
+  const { name, label, taxon_id, route, handleChangeSideEffect } = props;
 
   const api = useCritterbaseApi();
   const { data, load, refresh, isReady } = useDataLoader(async () => api.lookup.getSelectOptions(route, taxon_id));
-  const { values, touched, errors, handleChange, handleBlur, setFieldValue, setFieldTouched, setFieldError } =
+  const { values, touched, errors, handleChange, handleBlur, setFieldValue, setFieldTouched } =
     useFormikContext<ICbSelectOption>();
 
   const err = get(touched, name) && get(errors, name);
@@ -55,6 +56,14 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   useEffect(refresh, [taxon_id]);
   useEffect(handleInRange, [isReady]);
 
+  const innerChangeHandler = (e: SelectChangeEvent<any>) => {
+    handleChange(e);
+    if (handleChangeSideEffect) {
+      const item = data?.find((a) => typeof a !== 'string' && a.id === e.target.value);
+      handleChangeSideEffect(e.target.value, (item as ICbSelectRows).value);
+    }
+  };
+
   return (
     <FormControl variant="outlined" fullWidth {...props.controlProps} error={Boolean(err)}>
       <InputLabel id={`${name}-label`}>{label}</InputLabel>
@@ -63,7 +72,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
         labelId="cb_select"
         label={label}
         value={isValueInRange() ? val : ''}
-        onChange={handleChange}
+        onChange={innerChangeHandler}
         onBlur={handleBlur}
         displayEmpty
         inputProps={{ 'aria-label': 'Permit Type' }}>

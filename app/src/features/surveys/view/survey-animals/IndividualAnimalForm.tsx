@@ -1,12 +1,13 @@
 import { Box, Typography } from '@mui/material';
-import React from 'react';
-import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import { AnimalSchema, IAnimal } from './animal';
 import { Form, Formik } from 'formik';
+import React from 'react';
+import { AnimalSchema, IAnimal } from './animal';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
+import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
+import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
-import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
+import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
 
 /**
  * Renders The 'Individual Animals' Form displayed in Survey view
@@ -19,7 +20,7 @@ export const AnimalFormValues: Partial<IAnimal> = {
   general: { taxon_id: '', taxon_label: '' },
   capture: [],
   marking: [],
-  mortality: undefined,
+  mortality: [],
   measurement: [],
   family: [],
   image: [],
@@ -39,6 +40,7 @@ const IndividualAnimalForm = () => {
         <Box component="fieldset">
           <GeneralAnimalForm />
           <CaptureAnimalForm />
+          <MortalityAnimalForm />
           <MarkingAnimalForm />
           <MeasurementAnimalForm />
           <FamilyAnimalForm />

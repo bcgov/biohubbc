@@ -320,6 +320,10 @@ export const SurveyAnimalsI18N = {
   animalFamilyHelp:
     'Family Relationships describe how multiple individuals are related to one another. You must add an individual before it can be referenced as a parent or child of another individual.',
   animalFamilyAddBtn: 'Add Relationship',
+  animalMortalityTitle: 'Mortality',
+  animalMortalityHelp:
+    "Mortality Events describe an individual's death, including the suspected location, date, and cause of death. An individual can only have one Mortality Event.",
+  animalMortalityAddBtn: 'Add Mortality',
 
   // Input help strings
   taxonHelp: 'Taxon help placeholder',
