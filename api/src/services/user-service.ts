@@ -1,8 +1,15 @@
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { IDBConnection } from '../database/db';
 import { ApiBuildSQLError, ApiExecuteSQLError } from '../errors/api-error';
 import { UserObject } from '../models/user';
 import { queries } from '../queries/queries';
 import { UserRepository } from '../repositories/user-repository';
+import {
+  isBceidBusinessUserInformation,
+  isDatabaseUserInformation,
+  isIdirUserInformation,
+  KeycloakUserInformation
+} from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
@@ -226,5 +233,61 @@ export class UserService extends DBService {
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert user system roles');
     }
+  }
+
+  /**
+   * Update a system user's record with the latest information from a verified Keycloak token.
+   *
+   * Note: Does nothing if the user is an internal database user.
+   *
+   * @param {KeycloakUserInformation} keycloakUserInformation
+   * @return {*}  {(Promise<number | null>)} the system user id, if a matching system user record was found and updated,
+   * otherwise null.
+   * @memberof UserService
+   */
+  async updateSystemUserInformation(keycloakUserInformation: KeycloakUserInformation): Promise<number | null> {
+    let values;
+
+    if (isDatabaseUserInformation(keycloakUserInformation)) {
+      // Don't patch internal database user records
+      return null;
+    }
+
+    // We don't yet know at this point what kind of token was used (idir vs bceid basic, etc).
+    // Determine which type it is, and parse the information into a generic structure
+    if (isIdirUserInformation(keycloakUserInformation)) {
+      values = {
+        user_guid: keycloakUserInformation.idir_user_guid,
+        user_identifier: keycloakUserInformation.idir_username,
+        user_identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        display_name: keycloakUserInformation.display_name,
+        email: keycloakUserInformation.email,
+        given_name: keycloakUserInformation.given_name,
+        family_name: keycloakUserInformation.family_name
+      };
+    } else if (isBceidBusinessUserInformation(keycloakUserInformation)) {
+      values = {
+        user_guid: keycloakUserInformation.bceid_user_guid,
+        user_identifier: keycloakUserInformation.bceid_username,
+        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS,
+        display_name: keycloakUserInformation.display_name,
+        email: keycloakUserInformation.email,
+        given_name: keycloakUserInformation.given_name,
+        family_name: keycloakUserInformation.family_name,
+        agency: keycloakUserInformation.bceid_business_name
+      };
+    } else {
+      values = {
+        user_guid: keycloakUserInformation.bceid_user_guid,
+        user_identifier: keycloakUserInformation.bceid_username,
+        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+        display_name: keycloakUserInformation.display_name,
+        email: keycloakUserInformation.email,
+        given_name: keycloakUserInformation.given_name,
+        family_name: keycloakUserInformation.family_name
+      };
+    }
+
+    return this.userRepository.updateSystemUserInformation(values);
   }
 }

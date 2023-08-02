@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/http-error';
 import { AdministrativeActivityService } from '../services/administrative-activity-service';
-import { getUserIdentifier, getVerifiedUserInformationFromKeycloakToken } from '../utils/keycloak-utils';
+import { getKeycloakUserInformationFromKeycloakToken, getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
@@ -166,14 +166,14 @@ export function getAdministrativeActivityStanding(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const verifiedUserInformation = getVerifiedUserInformationFromKeycloakToken(req['keycloak_token']);
+      const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(req['keycloak_token']);
 
-      if (!verifiedUserInformation) {
+      if (!keycloakUserInformation) {
         throw new HTTP400('Failed to identify user');
       }
 
       // TODO Update to use user guid instead of identifier
-      const userIdentifier = getUserIdentifier(verifiedUserInformation);
+      const userIdentifier = getUserIdentifier(keycloakUserInformation);
 
       await connection.open();
 

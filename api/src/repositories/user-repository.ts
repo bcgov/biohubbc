@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
@@ -406,5 +407,57 @@ export class UserRepository extends BaseRepository {
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
+  }
+
+  /**
+   * Update a system user's information.
+   *
+   * Note: Attempts to find a system user record using the `user_guid` first, and if no record is found, attempts
+   * using the `user_identifier` + `user_identity_source`. If a record is found, the record is updated and the
+   * system user id is returned. If no user is found, does nothing and returns null.
+   *
+   * @param {({
+   *     user_guid: string;
+   *     user_identifier: string;
+   *     user_identity_source: SYSTEM_IDENTITY_SOURCE;
+   *     email: string;
+   *     display_name: string;
+   *     given_name?: string | null;
+   *     family_name?: string | null;
+   *     agency?: string | null;
+   *   })} userInformation
+   * @return {*}  {(Promise<number | null>)} the system user id, if a matching system user record was found and updated,
+   * otherwise null.
+   * @memberof UserRepository
+   */
+  async updateSystemUserInformation(userInformation: {
+    user_guid: string;
+    user_identifier: string;
+    user_identity_source: SYSTEM_IDENTITY_SOURCE;
+    email: string;
+    display_name: string;
+    given_name?: string | null;
+    family_name?: string | null;
+    agency?: string | null;
+  }): Promise<number | null> {
+    const patchSystemUserSQLStatement = SQL`
+      select api_patch_system_user(
+        ${userInformation.user_guid},
+        ${userInformation.user_identifier},
+        ${userInformation.user_identity_source},
+        ${userInformation.email},
+        ${userInformation.display_name},
+        ${userInformation.given_name || null},
+        ${userInformation.family_name || null},
+        ${userInformation.agency || null}
+      )
+    `;
+
+    const response = await this.connection.sql(
+      patchSystemUserSQLStatement,
+      z.object({ api_patch_system_user: z.number().nullable() })
+    );
+
+    return response?.rows?.[0].api_patch_system_user;
   }
 }

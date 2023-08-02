@@ -5,13 +5,10 @@ import { z } from 'zod';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
 import {
+  getKeycloakUserInformationFromKeycloakToken,
   getUserGuid,
   getUserIdentitySource,
-  getVerifiedUserInformationFromKeycloakToken,
-  isBceidBusinessUserInformation,
-  isDatabaseUserInformation,
-  isIdirUserInformation,
-  VerifiedUserInformation
+  KeycloakUserInformation
 } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 import { asyncErrorWrapper, getZodQueryResult, syncErrorWrapper } from './db-utils';
@@ -163,36 +160,14 @@ export interface IDBConnection {
    */
   systemUserId: () => number;
   /**
-   * Get the user keycloak information.
+   * Get the currently logged in user's keycloak information.
+   *
+   * Note: This is only a subset of the full token, specifically the fields that hold user details (name, email, etc).
    *
    * @throws If the connection is not open.
    * @memberof IDBConnection
    */
-  verifiedUserInformation: () => VerifiedUserInformation;
-  /**
-   * Sets the system user context.
-   *
-   * @param {string} userGuid
-   * @param {SYSTEM_IDENTITY_SOURCE} userIdentitySource
-   * @memberof IDBConnection
-   */
-  _setSystemUserContext: (userGuid: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE) => Promise<void>;
-  /**
-   * Patches a system user record.
-   *
-   * @param {{
-   *   user_guid: string;
-   *   user_identifier: string;
-   *   user_identity_source: SYSTEM_IDENTITY_SOURCE;
-   *   email: string;
-   *   display_name: string;
-   *   given_name?: string;
-   *   family_name?: string;
-   *   agency?: string;
-   * }} values
-   * @memberof IDBConnection
-   */
-  _patchSystemUser: (verifiedUserInformation: VerifiedUserInformation) => Promise<any>;
+  keycloakUserInformation: () => KeycloakUserInformation;
 }
 
 /**
@@ -230,7 +205,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
 
   let _systemUserId: number | null = null;
 
-  let _verifiedUserInformation: VerifiedUserInformation | null;
+  let _keycloakUserInformation: KeycloakUserInformation | null;
 
   const _token = keycloakToken;
 
@@ -336,12 +311,12 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     return _systemUserId as number;
   };
 
-  const _getVerifiedUserInformation = (): VerifiedUserInformation => {
+  const _getKeycloakUserInformation = (): KeycloakUserInformation => {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
     }
 
-    return _verifiedUserInformation as VerifiedUserInformation;
+    return _keycloakUserInformation as KeycloakUserInformation;
   };
 
   /**
@@ -398,16 +373,16 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * Sets the _systemUserId if successful.
    */
   const _setUserContext = async () => {
-    _verifiedUserInformation = getVerifiedUserInformationFromKeycloakToken(_token);
+    _keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(_token);
 
-    if (!_verifiedUserInformation) {
+    if (!_keycloakUserInformation) {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
-    defaultLog.debug({ label: '_setUserContext', _verifiedUserInformation });
+    defaultLog.debug({ label: '_setUserContext', _keycloakUserInformation });
 
-    const userGuid = getUserGuid(_verifiedUserInformation);
-    const userIdentitySource = getUserIdentitySource(_verifiedUserInformation);
+    const userGuid = getUserGuid(_keycloakUserInformation);
+    const userIdentitySource = getUserIdentitySource(_keycloakUserInformation);
 
     try {
       // Set the user context in the database, so database queries are aware of the calling user when writing to audit
@@ -432,72 +407,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     return response?.rows?.[0].api_set_context;
   };
 
-  /**
-   * Patch a system user record with the latest information from a verified Keycloak token.
-   *
-   * Note: Does nothing if the user is an internal database/system user.
-   *
-   * @param {VerifiedUserInformation} verifiedUserInformation
-   * @return {*}
-   */
-  const _patchSystemUser = async (verifiedUserInformation: VerifiedUserInformation) => {
-    let values;
-
-    if (isDatabaseUserInformation(verifiedUserInformation)) {
-      // Don't patch internal database/system user records
-      return;
-    }
-
-    if (isIdirUserInformation(verifiedUserInformation)) {
-      values = {
-        user_guid: verifiedUserInformation.idir_user_guid,
-        user_identifier: verifiedUserInformation.idir_username,
-        user_identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
-        display_name: verifiedUserInformation.display_name,
-        email: verifiedUserInformation.email,
-        given_name: verifiedUserInformation.given_name,
-        family_name: verifiedUserInformation.family_name
-      };
-    } else if (isBceidBusinessUserInformation(verifiedUserInformation)) {
-      values = {
-        user_guid: verifiedUserInformation.bceid_user_guid,
-        user_identifier: verifiedUserInformation.bceid_username,
-        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS,
-        display_name: verifiedUserInformation.display_name,
-        email: verifiedUserInformation.email,
-        given_name: verifiedUserInformation.given_name,
-        family_name: verifiedUserInformation.family_name,
-        agency: verifiedUserInformation.bceid_business_name
-      };
-    } else {
-      values = {
-        user_guid: verifiedUserInformation.bceid_user_guid,
-        user_identifier: verifiedUserInformation.bceid_username,
-        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
-        display_name: verifiedUserInformation.display_name,
-        email: verifiedUserInformation.email,
-        given_name: verifiedUserInformation.given_name,
-        family_name: verifiedUserInformation.family_name
-      };
-    }
-
-    // Only patch the record if at least 1 of the fields is different
-    const patchSystemUserSQLStatement = SQL`
-      select api_patch_system_user(
-        ${values.user_guid},
-        ${values.user_identifier},
-        ${values.user_identity_source},
-        ${values.email},
-        ${values.display_name},
-        ${values.given_name || null},
-        ${values.family_name || null},
-        ${values.agency || null}
-      )
-    `;
-
-    return _client.query(patchSystemUserSQLStatement.text, patchSystemUserSQLStatement.values);
-  };
-
   return {
     open: asyncErrorWrapper(_open),
     query: asyncErrorWrapper(_query),
@@ -507,9 +416,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     commit: asyncErrorWrapper(_commit),
     rollback: asyncErrorWrapper(_rollback),
     systemUserId: syncErrorWrapper(_getSystemUserID),
-    verifiedUserInformation: syncErrorWrapper(_getVerifiedUserInformation),
-    _setSystemUserContext: asyncErrorWrapper(_setSystemUserContext),
-    _patchSystemUser: asyncErrorWrapper(_patchSystemUser)
+    keycloakUserInformation: syncErrorWrapper(_getKeycloakUserInformation)
   };
 };
 

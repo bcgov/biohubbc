@@ -55,7 +55,10 @@ export const BceidBusinessUserInformation = z.object({
 export type BceidBusinessUserInformation = z.infer<typeof BceidBusinessUserInformation>;
 
 /**
- * User information from a verified BCeID Keycloak token.
+ * User information for an internal database user.
+ *
+ * Note: Spoofs a keycloak token in order to leverage the same keycloak/database code that would normally be
+ * called when queries are executed on behalf of a real human user.
  */
 export const DatabaseUserInformation = z.object({
   database_user_guid: z.string(),
@@ -65,57 +68,32 @@ export const DatabaseUserInformation = z.object({
 export type DatabaseUserInformation = z.infer<typeof DatabaseUserInformation>;
 
 /**
- * User information from either an IDIR or BCeID Keycloak token.
+ * User information from either an IDIR or BCeID Basic or BCeID Business Keycloak token.
  */
-export const VerifiedUserInformation = z.discriminatedUnion('identity_provider', [
+export const KeycloakUserInformation = z.discriminatedUnion('identity_provider', [
   IdirUserInformation,
   BceidBasicUserInformation,
   BceidBusinessUserInformation,
   DatabaseUserInformation
 ]);
-export type VerifiedUserInformation = z.infer<typeof VerifiedUserInformation>;
-
-/**
- * User information from a manually entered unverified source (neither a verified IDIR or BCeID Keycloak token).
- */
-export const UnverifiedUserInformation = z.object({
-  username: z.string().optional().nullable(),
-  identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.UNVERIFIED.toLowerCase()),
-  display_name: z.string(),
-  given_name: z.string(),
-  family_name: z.string().optional().nullable(),
-  email: z.string(),
-  agency: z.string().optional().nullable()
-});
-export type UnverifiedUserInformation = z.infer<typeof UnverifiedUserInformation>;
-
-/**
- * User information from either a verified IDIR or BCeID Keycloak token, or a manually entered unverified source.
- */
-export const UserInformation = z.union([
-  IdirUserInformation,
-  BceidBasicUserInformation,
-  BceidBusinessUserInformation,
-  UnverifiedUserInformation
-]);
-export type UserInformation = z.infer<typeof UserInformation>;
+export type KeycloakUserInformation = z.infer<typeof KeycloakUserInformation>;
 
 /**
  * Returns the user information guid.
  *
- * @param {VerifiedUserInformation} verifiedUserInformation
+ * @param {KeycloakUserInformation} keycloakUserInformation
  * @return {*}  {(string | null)}
  */
-export const getUserGuid = (verifiedUserInformation: VerifiedUserInformation): string => {
-  if (isIdirUserInformation(verifiedUserInformation)) {
-    return verifiedUserInformation.idir_user_guid.toLowerCase();
+export const getUserGuid = (keycloakUserInformation: KeycloakUserInformation): string => {
+  if (isIdirUserInformation(keycloakUserInformation)) {
+    return keycloakUserInformation.idir_user_guid.toLowerCase();
   }
 
-  if (isBceidBusinessUserInformation(verifiedUserInformation) || isBceidBasicUserInformation(verifiedUserInformation)) {
-    return verifiedUserInformation.bceid_user_guid.toLowerCase();
+  if (isBceidBusinessUserInformation(keycloakUserInformation) || isBceidBasicUserInformation(keycloakUserInformation)) {
+    return keycloakUserInformation.bceid_user_guid.toLowerCase();
   }
 
-  return verifiedUserInformation.database_user_guid;
+  return keycloakUserInformation.database_user_guid;
 };
 
 /**
@@ -127,8 +105,8 @@ export const getUserGuid = (verifiedUserInformation: VerifiedUserInformation): s
  * @param {Record<string, any>} keycloakToken
  * @return {*} {SYSTEM_IDENTITY_SOURCE} the identity source belonging to type SYSTEM_IDENTITY_SOURCE
  */
-export const getUserIdentitySource = (verifiedUserInformation: VerifiedUserInformation): SYSTEM_IDENTITY_SOURCE => {
-  return coerceUserIdentitySource(verifiedUserInformation.identity_provider);
+export const getUserIdentitySource = (keycloakUserInformation: KeycloakUserInformation): SYSTEM_IDENTITY_SOURCE => {
+  return coerceUserIdentitySource(keycloakUserInformation.identity_provider);
 };
 
 /**
@@ -166,31 +144,31 @@ export const coerceUserIdentitySource = (userIdentitySource: string): SYSTEM_IDE
  *
  * @example getUserIdentifier({ idir_username: 'jsmith' }) => 'jsmith'
  *
- * @param {VerifiedUserInformation} verifiedUserInformation
+ * @param {KeycloakUserInformation} keycloakUserInformation
  * @return {*}  {string}
  */
-export const getUserIdentifier = (verifiedUserInformation: VerifiedUserInformation): string => {
-  if (isIdirUserInformation(verifiedUserInformation)) {
-    return verifiedUserInformation.idir_username;
+export const getUserIdentifier = (keycloakUserInformation: KeycloakUserInformation): string => {
+  if (isIdirUserInformation(keycloakUserInformation)) {
+    return keycloakUserInformation.idir_username;
   }
 
-  if (isBceidBusinessUserInformation(verifiedUserInformation) || isBceidBasicUserInformation(verifiedUserInformation)) {
-    return verifiedUserInformation.bceid_username;
+  if (isBceidBusinessUserInformation(keycloakUserInformation) || isBceidBasicUserInformation(keycloakUserInformation)) {
+    return keycloakUserInformation.bceid_username;
   }
 
-  return verifiedUserInformation.username;
+  return keycloakUserInformation.username;
 };
 
 /**
- * Get a `VerifiedUserInformation` object from a Keycloak Bearer Token (IDIR or BCeID Basic or BCeID Business token).
+ * Get a `KeycloakUserInformation` object from a Keycloak Bearer Token (IDIR or BCeID Basic or BCeID Business token).
  *
  * @param {Record<string, any>} keycloakToken
- * @return {*}  {(VerifiedUserInformation | null)}
+ * @return {*}  {(KeycloakUserInformation | null)}
  */
-export const getVerifiedUserInformationFromKeycloakToken = (
+export const getKeycloakUserInformationFromKeycloakToken = (
   keycloakToken: Record<string, any>
-): VerifiedUserInformation | null => {
-  const result = VerifiedUserInformation.safeParse(keycloakToken);
+): KeycloakUserInformation | null => {
+  const result = KeycloakUserInformation.safeParse(keycloakToken);
 
   if (!result.success) {
     return null;
@@ -200,25 +178,25 @@ export const getVerifiedUserInformationFromKeycloakToken = (
 };
 
 export const isIdirUserInformation = (
-  verifiedUserInformation: VerifiedUserInformation
-): verifiedUserInformation is IdirUserInformation => {
-  return verifiedUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.IDIR.toLowerCase();
+  keycloakUserInformation: KeycloakUserInformation
+): keycloakUserInformation is IdirUserInformation => {
+  return keycloakUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.IDIR.toLowerCase();
 };
 
 export const isBceidBasicUserInformation = (
-  verifiedUserInformation: VerifiedUserInformation
-): verifiedUserInformation is BceidBasicUserInformation => {
-  return verifiedUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.BCEID_BASIC.toLowerCase();
+  keycloakUserInformation: KeycloakUserInformation
+): keycloakUserInformation is BceidBasicUserInformation => {
+  return keycloakUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.BCEID_BASIC.toLowerCase();
 };
 
 export const isBceidBusinessUserInformation = (
-  verifiedUserInformation: VerifiedUserInformation
-): verifiedUserInformation is BceidBusinessUserInformation => {
-  return verifiedUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS.toLowerCase();
+  keycloakUserInformation: KeycloakUserInformation
+): keycloakUserInformation is BceidBusinessUserInformation => {
+  return keycloakUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS.toLowerCase();
 };
 
 export const isDatabaseUserInformation = (
-  verifiedUserInformation: VerifiedUserInformation
-): verifiedUserInformation is DatabaseUserInformation => {
-  return verifiedUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase();
+  keycloakUserInformation: KeycloakUserInformation
+): keycloakUserInformation is DatabaseUserInformation => {
+  return keycloakUserInformation.identity_provider === SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase();
 };

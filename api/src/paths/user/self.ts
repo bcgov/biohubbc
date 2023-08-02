@@ -4,7 +4,6 @@ import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
-import { getVerifiedUserInformationFromKeycloakToken } from '../../utils/keycloak-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}');
@@ -98,7 +97,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get a user by its user identifier.
+ * Get the currently logged in user.
  *
  * @returns {RequestHandler}
  */
@@ -109,22 +108,24 @@ export function getUser(): RequestHandler {
     try {
       await connection.open();
 
-      const verifiedUserInformation = getVerifiedUserInformationFromKeycloakToken(req['keycloak_token']);
-
-      if (!verifiedUserInformation) {
-        throw new HTTP400('Failed to identify system user ID');
-      }
-
       const userId = connection.systemUserId();
 
       if (!userId) {
         throw new HTTP400('Failed to identify system user ID');
       }
 
-      await connection._patchSystemUser(verifiedUserInformation);
+      const keycloakUserInformation = connection.keycloakUserInformation();
+
+      if (!keycloakUserInformation) {
+        throw new HTTP400('Failed to identify system user');
+      }
 
       const userService = new UserService(connection);
 
+      // Update system user information with the latest information from their verified Keycloak token
+      await userService.updateSystemUserInformation(keycloakUserInformation);
+
+      // Fetch system user record
       const userObject = await userService.getUserById(userId);
 
       await connection.commit();
