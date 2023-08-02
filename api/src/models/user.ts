@@ -5,7 +5,7 @@ export const User = z.object({
   user_identifier: z.string(),
   user_guid: z.string().nullable(),
   identity_source: z.string(),
-  record_end_date: z.date(),
+  record_end_date: z.date().nullable(),
   role_ids: z.array(z.number()),
   role_names: z.array(z.string()),
   permission_ids: z.array(z.number()),

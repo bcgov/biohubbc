@@ -17,7 +17,7 @@ describe('removeSystemUser', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error if the user is the only Project Lead role on one or more projects', async () => {
+  it('should throw a 400 error if the user is the only Coordinator role on one or more projects', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -33,21 +33,21 @@ describe('removeSystemUser', () => {
         project_id: 3,
         system_user_id: 33,
         project_role_id: 1,
-        project_role_name: 'Project Lead'
+        project_role_name: 'Coordinator'
       },
       {
         project_participation_id: 57,
         project_id: 1,
         system_user_id: 33,
         project_role_id: 3,
-        project_role_name: 'Viewer'
+        project_role_name: 'Observer'
       },
       {
         project_participation_id: 40,
         project_id: 1,
         system_user_id: 27,
         project_role_id: 1,
-        project_role_name: 'Project Lead'
+        project_role_name: 'Coordinator'
       }
     ];
 
@@ -63,7 +63,7 @@ describe('removeSystemUser', () => {
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
       expect((actualError as HTTPError).message).to.equal(
-        'Cannot remove user. User is the only Project Lead for one or more projects.'
+        'Cannot remove user. User is the only Coordinator for one or more projects.'
       );
     }
   });
@@ -121,7 +121,7 @@ describe('removeSystemUser', () => {
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: new Date(),
+      record_end_date: null,
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2'],
       permission_ids: [],
@@ -160,7 +160,7 @@ describe('removeSystemUser', () => {
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: new Date(),
+      record_end_date: null,
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2'],
       permission_ids: [],
@@ -197,7 +197,7 @@ describe('removeSystemUser', () => {
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: new Date(),
+      record_end_date: null,
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2'],
       permission_ids: [],
@@ -236,7 +236,7 @@ describe('removeSystemUser', () => {
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: new Date(),
+      record_end_date: null,
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2'],
       permission_ids: [],
@@ -276,7 +276,7 @@ describe('removeSystemUser', () => {
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: new Date(),
+      record_end_date: null,
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2'],
       permission_ids: [],
@@ -296,9 +296,9 @@ describe('removeSystemUser', () => {
 });
 
 describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
-  describe('user has Project Lead role', () => {
+  describe('user has Coordinator role', () => {
     describe('user is on 1 project', () => {
-      it('should return false if the user is not the only Project Lead role', () => {
+      it('should return false if the user is not the only Coordinator role', () => {
         const userId = 10;
 
         const rows = [
@@ -307,14 +307,14 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
             project_id: 1,
             system_user_id: userId,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           },
           {
             project_participation_id: 2,
             project_id: 1,
             system_user_id: 20,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           }
         ];
 
@@ -323,7 +323,7 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
         expect(result).to.equal(true);
       });
 
-      it('should return true if the user is the only Project Lead role', () => {
+      it('should return true if the user is the only Coordinator role', () => {
         const userId = 10;
 
         const rows = [
@@ -332,14 +332,14 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
             project_id: 1,
             system_user_id: userId,
             project_role_id: 1,
-            project_role_name: 'Project Lead' // Only Project Lead on project 1
+            project_role_name: 'Coordinator' // Only Coordinator on project 1
           },
           {
             project_participation_id: 2,
             project_id: 1,
             system_user_id: 20,
             project_role_id: 2,
-            project_role_name: 'Editor'
+            project_role_name: 'Collaborator'
           }
         ];
 
@@ -350,7 +350,7 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
     });
 
     describe('user is on multiple projects', () => {
-      it('should return true if the user is not the only Project Lead on all projects', () => {
+      it('should return true if the user is not the only Coordinator on all projects', () => {
         const userId = 10;
 
         const rows = [
@@ -359,28 +359,28 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
             project_id: 1,
             system_user_id: userId,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           },
           {
             project_participation_id: 2,
             project_id: 1,
             system_user_id: 2,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           },
           {
             project_participation_id: 1,
             project_id: 2,
             system_user_id: userId,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           },
           {
             project_participation_id: 2,
             project_id: 2,
             system_user_id: 2,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           }
         ];
 
@@ -389,38 +389,38 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
         expect(result).to.equal(true);
       });
 
-      it('should return false if the user the only Project Lead on any project', () => {
+      it('should return false if the user the only Coordinator on any project', () => {
         const userId = 10;
 
-        // User is on 1 project, and is not the only Project Lead
+        // User is on 1 project, and is not the only Coordinator
         const rows = [
           {
             project_participation_id: 1,
             project_id: 1,
             system_user_id: userId,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Collaborator'
           },
           {
             project_participation_id: 2,
             project_id: 1,
             system_user_id: 2,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           },
           {
             project_participation_id: 1,
             project_id: 2,
             system_user_id: userId,
             project_role_id: 1,
-            project_role_name: 'Project Lead' // Only Project Lead on project 2
+            project_role_name: 'Coordinator' // Only Coordinator on project 2
           },
           {
             project_participation_id: 2,
             project_id: 2,
             system_user_id: 2,
             project_role_id: 1,
-            project_role_name: 'Editor'
+            project_role_name: 'Collaborator'
           }
         ];
 
@@ -431,7 +431,7 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
     });
   });
 
-  describe('user does not have Project Lead role', () => {
+  describe('user does not have Coordinator role', () => {
     describe('user is on 1 project', () => {
       it('should return true', () => {
         const userId = 10;
@@ -442,14 +442,14 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
             project_id: 1,
             system_user_id: userId,
             project_role_id: 1,
-            project_role_name: 'Editor'
+            project_role_name: 'Collaborator'
           },
           {
             project_participation_id: 2,
             project_id: 1,
             system_user_id: 20,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           }
         ];
 
@@ -469,28 +469,28 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
             project_id: 1,
             system_user_id: userId,
             project_role_id: 1,
-            project_role_name: 'Editor'
+            project_role_name: 'Collaborator'
           },
           {
             project_participation_id: 2,
             project_id: 1,
             system_user_id: 2,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           },
           {
             project_participation_id: 1,
             project_id: 2,
             system_user_id: userId,
             project_role_id: 1,
-            project_role_name: 'Viewer'
+            project_role_name: 'Observer'
           },
           {
             project_participation_id: 2,
             project_id: 2,
             system_user_id: 2,
             project_role_id: 1,
-            project_role_name: 'Project Lead'
+            project_role_name: 'Coordinator'
           }
         ];
 
@@ -511,14 +511,14 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
           project_id: 1,
           system_user_id: 20,
           project_role_id: 1,
-          project_role_name: 'Editor'
+          project_role_name: 'Collaborator'
         },
         {
           project_participation_id: 2,
           project_id: 1,
           system_user_id: 30,
           project_role_id: 1,
-          project_role_name: 'Project Lead'
+          project_role_name: 'Coordinator'
         }
       ];
 
@@ -530,21 +530,21 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
 });
 
 describe('doAllProjectsHaveAProjectLead', () => {
-  it('should return false if no user has Project Lead role', () => {
+  it('should return false if no user has Coordinator role', () => {
     const rows = [
       {
         project_participation_id: 1,
         project_id: 1,
         system_user_id: 10,
         project_role_id: 2,
-        project_role_name: 'Editor'
+        project_role_name: 'Collaborator'
       },
       {
         project_participation_id: 2,
         project_id: 1,
         system_user_id: 20,
         project_role_id: 2,
-        project_role_name: 'Editor'
+        project_role_name: 'Collaborator'
       }
     ];
 
@@ -553,21 +553,21 @@ describe('doAllProjectsHaveAProjectLead', () => {
     expect(result).to.equal(false);
   });
 
-  it('should return true if one Project Lead role exists per project', () => {
+  it('should return true if one Coordinator role exists per project', () => {
     const rows = [
       {
         project_participation_id: 1,
         project_id: 1,
         system_user_id: 12,
         project_role_id: 1,
-        project_role_name: 'Project Lead' // Only Project Lead on project 1
+        project_role_name: 'Coordinator' // Only Coordinator on project 1
       },
       {
         project_participation_id: 2,
         project_id: 1,
         system_user_id: 20,
         project_role_id: 2,
-        project_role_name: 'Editor'
+        project_role_name: 'Collaborator'
       }
     ];
 
@@ -576,35 +576,35 @@ describe('doAllProjectsHaveAProjectLead', () => {
     expect(result).to.equal(true);
   });
 
-  it('should return true if one Project Lead exists on all projects', () => {
+  it('should return true if one Coordinator exists on all projects', () => {
     const rows = [
       {
         project_participation_id: 1,
         project_id: 1,
         system_user_id: 10,
         project_role_id: 1,
-        project_role_name: 'Project Lead'
+        project_role_name: 'Coordinator'
       },
       {
         project_participation_id: 2,
         project_id: 1,
         system_user_id: 2,
         project_role_id: 2,
-        project_role_name: 'Editor'
+        project_role_name: 'Collaborator'
       },
       {
         project_participation_id: 1,
         project_id: 2,
         system_user_id: 10,
         project_role_id: 1,
-        project_role_name: 'Project Lead'
+        project_role_name: 'Coordinator'
       },
       {
         project_participation_id: 2,
         project_id: 2,
         system_user_id: 2,
         project_role_id: 2,
-        project_role_name: 'Editor'
+        project_role_name: 'Collaborator'
       }
     ];
 
@@ -613,35 +613,35 @@ describe('doAllProjectsHaveAProjectLead', () => {
     expect(result).to.equal(true);
   });
 
-  it('should return false if no Project Lead exists on any one project', () => {
+  it('should return false if no Coordinator exists on any one project', () => {
     const rows = [
       {
         project_participation_id: 1,
         project_id: 1,
         system_user_id: 10,
         project_role_id: 1,
-        project_role_name: 'Project Lead'
+        project_role_name: 'Coordinator'
       },
       {
         project_participation_id: 2,
         project_id: 1,
         system_user_id: 20,
         project_role_id: 2,
-        project_role_name: 'Editor'
+        project_role_name: 'Collaborator'
       },
       {
         project_participation_id: 1,
         project_id: 2,
         system_user_id: 10,
         project_role_id: 2,
-        project_role_name: 'Editor'
+        project_role_name: 'Collaborator'
       },
       {
         project_participation_id: 2,
         project_id: 2,
         system_user_id: 20,
         project_role_id: 2,
-        project_role_name: 'Editor'
+        project_role_name: 'Collaborator'
       }
     ];
 

@@ -225,9 +225,9 @@ describe('UserService', () => {
         user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
         user_guid: '',
-        record_end_date: new Date(),
+        record_end_date: null,
         role_ids: [1],
-        role_names: ['Editor'],
+        role_names: ['Collaborator'],
         permission_ids: [],
         permission_names: []
       };
@@ -264,7 +264,7 @@ describe('UserService', () => {
         user_guid: '',
         record_end_date: new Date(),
         role_ids: [1],
-        role_names: ['Editor'],
+        role_names: ['Collaborator'],
         permission_ids: [],
         permission_names: []
       };
@@ -280,9 +280,9 @@ describe('UserService', () => {
         user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
         user_guid: '',
-        record_end_date: new Date(),
+        record_end_date: null,
         role_ids: [1],
-        role_names: ['Editor'],
+        role_names: ['Collaborator'],
         permission_ids: [],
         permission_names: []
       };

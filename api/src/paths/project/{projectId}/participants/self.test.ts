@@ -219,7 +219,7 @@ describe('getUserRolesForProject', () => {
       system_user_id: 20,
       project_role_ids: [1],
       project_role_names: ['Test-Role-A'],
-      project_role_permissions: []
+      project_role_permissions: ['Test Permission']
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -237,7 +237,8 @@ describe('getUserRolesForProject', () => {
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1],
-        project_role_names: ['Test-Role-A']
+        project_role_names: ['Test-Role-A'],
+        project_role_permissions: ['Test Permission']
       }
     });
   });
@@ -254,7 +255,7 @@ describe('getUserRolesForProject', () => {
       system_user_id: 20,
       project_role_ids: [1, 2],
       project_role_names: ['Test-Role-A', 'Test-Role-B'],
-      project_role_permissions: []
+      project_role_permissions: ['Test Permission']
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -272,7 +273,8 @@ describe('getUserRolesForProject', () => {
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1, 2],
-        project_role_names: ['Test-Role-A', 'Test-Role-B']
+        project_role_names: ['Test-Role-A', 'Test-Role-B'],
+        project_role_permissions: ['Test Permission']
       }
     });
   });

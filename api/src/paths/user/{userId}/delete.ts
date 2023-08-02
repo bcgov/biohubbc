@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { queries } from '../../../queries/queries';
@@ -121,7 +121,7 @@ export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, c
   const onlyProjectLeadResponse = doAllProjectsHaveAProjectLeadIfUserIsRemoved(getAllParticipantsResponse, userId);
 
   if (!onlyProjectLeadResponse) {
-    throw new HTTP400('Cannot remove user. User is the only Project Lead for one or more projects.');
+    throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);
   }
 };
 
