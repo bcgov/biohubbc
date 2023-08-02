@@ -34,7 +34,8 @@ const MeasurementAnimalForm = () => {
                     label="Measurement Type"
                     name={getAnimalFieldName<IAnimalMeasurement>(name, 'measurement_type_id', index)}
                     id="measurement_type"
-                    route="marking_type"
+                    route="taxon_quantitative_measurements"
+                    taxon_id={values.general.taxon_id}
                     controlProps={{ size: 'small', required: true }}
                   />
                 </Grid>

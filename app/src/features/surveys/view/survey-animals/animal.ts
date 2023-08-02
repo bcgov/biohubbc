@@ -64,13 +64,7 @@ const AnimalRelationshipSchema = yup
   })
   .shape({});
 
-const AnimalTelemetryDeviceSchema = yup.object({}).shape({
-  device_id: yup.string().required(req),
-  manufacturer: yup.string().required(req),
-  //I think this needs an additional field for hz
-  device_frequency: yup.number().required(req),
-  model: yup.string().required(req)
-});
+const AnimalTelemetryDeviceSchema = yup.object({}).shape({});
 
 const AnimalImageSchema = yup.object({}).shape({});
 

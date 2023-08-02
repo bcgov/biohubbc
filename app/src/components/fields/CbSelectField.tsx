@@ -4,13 +4,14 @@ import { ICbRouteKey } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export interface ICbSelectField {
   name: string;
   label: string;
   id: string;
   route: ICbRouteKey;
+  taxon_id?: string;
   controlProps?: FormControlProps;
 }
 
@@ -20,31 +21,54 @@ interface ICbSelectOption {
 }
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
+  const { name, label, taxon_id, route } = props;
+
   const api = useCritterbaseApi();
-  const cbLookupLoader = useDataLoader(async () => api.lookup.getSelectOptions(props.route));
-  const { values, touched, errors, handleChange, handleBlur } = useFormikContext<ICbSelectOption>();
+  const { data, load, refresh, isReady } = useDataLoader(async () => api.lookup.getSelectOptions(route, taxon_id));
+  const { values, touched, errors, handleChange, handleBlur, setFieldValue, setFieldTouched, setFieldError } =
+    useFormikContext<ICbSelectOption>();
 
-  const err = get(touched, props.name) && get(errors, props.name);
+  const err = get(touched, name) && get(errors, name);
+  const val = get(values, name) ?? '';
 
-  if (!cbLookupLoader.data) {
-    cbLookupLoader.load();
+  if (!data) {
+    load();
   }
 
+  const isValueInRange = () => {
+    if (val === '') {
+      return true;
+    }
+    if (!data) {
+      return false;
+    }
+    return data.some((d) => (typeof d === 'string' ? d === val : d.id === val));
+  };
+
+  const handleInRange = () => {
+    if (!isValueInRange()) {
+      setFieldValue(name, '');
+      setFieldTouched(name);
+    }
+  };
+
+  useEffect(refresh, [taxon_id]);
+  useEffect(handleInRange, [isReady]);
+
   return (
-    <FormControl variant="outlined" fullWidth {...props.controlProps} error={!!err}>
-      <InputLabel id={`${props.name}-label`}>{props.label}</InputLabel>
+    <FormControl variant="outlined" fullWidth {...props.controlProps} error={Boolean(err)}>
+      <InputLabel id={`${name}-label`}>{label}</InputLabel>
       <Select
-        name={props.name}
+        name={name}
         labelId="cb_select"
-        label={props.label}
-        value={get(values, props.name) ?? ''}
+        label={label}
+        value={isValueInRange() ? val : ''}
         onChange={handleChange}
         onBlur={handleBlur}
         displayEmpty
         inputProps={{ 'aria-label': 'Permit Type' }}>
-        {cbLookupLoader.data?.map((a) => {
-          const item =
-            typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id, subtext: 'Subtext' };
+        {data?.map((a) => {
+          const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
           return (
             <MenuItem key={item.value} value={item.value}>
               {item.label}
