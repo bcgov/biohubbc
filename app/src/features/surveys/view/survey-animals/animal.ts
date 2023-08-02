@@ -57,7 +57,12 @@ const AnimalMeasurementSchema = yup.object({}).shape({
 
 const AnimalMortalitySchema = yup.object({}).shape({});
 
-const AnimalRelationshipSchema = yup.object({}).shape({});
+const AnimalRelationshipSchema = yup
+  .object({
+    critter_id: yup.string().uuid().required(req),
+    relationship: yup.mixed().oneOf(['Parent', 'Child']).required(req)
+  })
+  .shape({});
 
 const AnimalTelemetryDeviceSchema = yup.object({}).shape({
   device_id: yup.string().required(req),

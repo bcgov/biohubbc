@@ -5,6 +5,7 @@ import useAxios from './api/useAxios';
 import { useAuthentication } from './cb_api/useAuthenticationApi';
 import { useLookupApi } from './cb_api/useLookupApi';
 import { useMarkings } from './cb_api/useMarkingsApi';
+import { useCritterApi } from './cb_api/useCritterApi';
 
 /**
  * Returns a set of supported api methods.
@@ -17,9 +18,11 @@ export const useCritterbaseApi = () => {
   const markings = useMarkings(apiAxios);
   const authentication = useAuthentication(apiAxios);
   const lookup = useLookupApi(apiAxios);
+  const critters = useCritterApi(apiAxios);
   return {
     markings,
     authentication,
-    lookup
+    lookup,
+    critters
   };
 };
