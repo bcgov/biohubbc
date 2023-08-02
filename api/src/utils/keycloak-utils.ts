@@ -7,7 +7,7 @@ import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 export const IdirUserInformation = z.object({
   idir_user_guid: z.string().toLowerCase(),
   identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.IDIR.toLowerCase()),
-  idir_username: z.string(),
+  idir_username: z.string().toLowerCase(),
   email_verified: z.boolean(),
   name: z.string(),
   preferred_username: z.string(),
