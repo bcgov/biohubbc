@@ -73,7 +73,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Note: Include default value temporarily to satisfy existing system_user rows. Default will be removed afterwards. 
     alter table system_user
       ADD   COLUMN display_name     varchar(100)   NOT NULL DEFAULT 'default',
-      ADD   COLUMN given_name       varchar(100)   NOT NULL DEFAULT 'default',
+      ADD   COLUMN given_name       varchar(100),
       ADD   COLUMN family_name      varchar(100),
       ADD   COLUMN email            varchar(100)   NOT NULL DEFAULT 'default',
       ADD   COLUMN agency           varchar(100),
@@ -132,7 +132,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Create views
     ----------------------------------------------------------------------------------------
 
-    set search_path=biohub_dapi_v1;
+    set search_path=biohub_dapi_v1 ;
 
     create or replace view system_permission as select * from biohub.system_permission;
 
@@ -184,13 +184,12 @@ export async function up(knex: Knex): Promise<void> {
     );
 
     ----------------------------------------------------------------------------------------
-    -- CLeanup Temporary Defaults
+    -- Cleanup Temporary Defaults
     ----------------------------------------------------------------------------------------
 
     -- Note: Removing default value temporarily added to satisfy existing system_user rows.
     alter table system_user
       ALTER COLUMN display_name  DROP DEFAULT,
-      ALTER COLUMN given_name    DROP DEFAULT,
       ALTER COLUMN email         DROP DEFAULT;
   `);
 }

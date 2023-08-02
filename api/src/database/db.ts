@@ -2,8 +2,17 @@ import knex, { Knex } from 'knex';
 import * as pg from 'pg';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
-import { getUserGuid, getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
+import {
+  getUserGuid,
+  getUserIdentitySource,
+  getVerifiedUserInformationFromKeycloakToken,
+  isBceidBusinessUserInformation,
+  isDatabaseInformation,
+  isIdirUserInformation,
+  VerifiedUserInformation
+} from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 import { asyncErrorWrapper, getZodQueryResult, syncErrorWrapper } from './db-utils';
 
@@ -149,12 +158,41 @@ export interface IDBConnection {
   /**
    * Get the ID of the system user in context.
    *
-   * Note: will always return `null` if the connection is not open.
-   *
    * @throws If the connection is not open.
    * @memberof IDBConnection
    */
   systemUserId: () => number;
+  /**
+   * Get the user keycloak information.
+   *
+   * @throws If the connection is not open.
+   * @memberof IDBConnection
+   */
+  verifiedUserInformation: () => VerifiedUserInformation;
+  /**
+   * Sets the system user context.
+   *
+   * @param {string} userGuid
+   * @param {SYSTEM_IDENTITY_SOURCE} userIdentitySource
+   * @memberof IDBConnection
+   */
+  _setSystemUserContext: (userGuid: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE) => Promise<void>;
+  /**
+   * Patches a system user record.
+   *
+   * @param {{
+   *   user_guid: string;
+   *   user_identifier: string;
+   *   user_identity_source: SYSTEM_IDENTITY_SOURCE;
+   *   email: string;
+   *   display_name: string;
+   *   given_name?: string;
+   *   family_name?: string;
+   *   agency?: string;
+   * }} values
+   * @memberof IDBConnection
+   */
+  _patchSystemUser: (verifiedUserInformation: VerifiedUserInformation) => Promise<any>;
 }
 
 /**
@@ -191,6 +229,8 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   let _isReleased = false;
 
   let _systemUserId: number | null = null;
+
+  let _verifiedUserInformation: VerifiedUserInformation | null;
 
   const _token = keycloakToken;
 
@@ -296,6 +336,14 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     return _systemUserId as number;
   };
 
+  const _getVerifiedUserInformation = (): VerifiedUserInformation => {
+    if (!_client || !_isOpen) {
+      throw Error('DBConnection is not open');
+    }
+
+    return _verifiedUserInformation as VerifiedUserInformation;
+  };
+
   /**
    * Performs a query against this connection, returning the results.
    *
@@ -350,58 +398,108 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * Sets the _systemUserId if successful.
    */
   const _setUserContext = async () => {
-    const userGuid = getUserGuid(_token);
-    const userIdentifier = getUserIdentifier(_token);
-    const userIdentitySource = getUserIdentitySource(_token);
-    defaultLog.debug({ label: '_setUserContext', userGuid, userIdentifier, userIdentitySource });
+    _verifiedUserInformation = getVerifiedUserInformationFromKeycloakToken(_token);
 
-    if (!userGuid || !userIdentifier || !userIdentitySource) {
+    if (!_verifiedUserInformation) {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
-    // Patch user GUID
-    const patchUserGuidSqlStatement = SQL`
-      UPDATE
-        system_user
-      SET
-        user_guid = ${userGuid.toLowerCase()}
-      WHERE
-        system_user_id
-      IN (
-        SELECT
-          su.system_user_id
-        FROM
-          system_user su
-        LEFT JOIN
-          user_identity_source uis
-        ON
-          uis.user_identity_source_id = su.user_identity_source_id
-        WHERE
-          su.user_identifier ILIKE ${userIdentifier}
-        AND
-          uis.name ILIKE ${userIdentitySource}
-        AND
-          user_guid IS NULL
-      );
-    `;
+    defaultLog.debug({ label: '_setUserContext', _verifiedUserInformation });
 
+    const userGuid = getUserGuid(_verifiedUserInformation);
+    const userIdentitySource = getUserIdentitySource(_verifiedUserInformation);
+
+    try {
+      // Set the user context in the database, so database queries are aware of the calling user when writing to audit
+      // tables, etc.
+      _systemUserId = await _setSystemUserContext(userGuid, userIdentitySource);
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to set user context', [error as object]);
+    }
+  };
+
+  const _setSystemUserContext = async (userGuid: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE) => {
     // Set the user context for all queries made using this connection
     const setSystemUserContextSQLStatement = SQL`
       SELECT api_set_context(${userGuid}, ${userIdentitySource});
     `;
 
-    try {
-      await _client.query(patchUserGuidSqlStatement.text, patchUserGuidSqlStatement.values);
+    const response = await _client.query(
+      setSystemUserContextSQLStatement.text,
+      setSystemUserContextSQLStatement.values
+    );
 
-      const response = await _client.query(
-        setSystemUserContextSQLStatement.text,
-        setSystemUserContextSQLStatement.values
-      );
+    return response?.rows?.[0].api_set_context;
+  };
 
-      _systemUserId = response?.rows?.[0].api_set_context;
-    } catch (error) {
-      throw new ApiExecuteSQLError('Failed to set user context', [error as object]);
+  /**
+   * Patch a system user record with the latest information from a verified Keycloak token.
+   *
+   * Note: Does nothing if the user is an internal database/system user.
+   *
+   * @param {VerifiedUserInformation} verifiedUserInformation
+   * @return {*}
+   */
+  const _patchSystemUser = async (verifiedUserInformation: VerifiedUserInformation) => {
+    let values;
+
+    if (isDatabaseInformation(verifiedUserInformation)) {
+      // Don't patch internal database/system user records
+      return;
     }
+
+    if (isIdirUserInformation(verifiedUserInformation)) {
+      values = {
+        user_guid: verifiedUserInformation.idir_user_guid,
+        user_identifier: verifiedUserInformation.idir_username,
+        user_identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        display_name: verifiedUserInformation.display_name,
+        email: verifiedUserInformation.email,
+        given_name: verifiedUserInformation.given_name,
+        family_name: verifiedUserInformation.family_name
+      };
+    } else if (isBceidBusinessUserInformation(verifiedUserInformation)) {
+      values = {
+        user_guid: verifiedUserInformation.bceid_user_guid,
+        user_identifier: verifiedUserInformation.bceid_username,
+        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS,
+        display_name: verifiedUserInformation.display_name,
+        email: verifiedUserInformation.email,
+        given_name: verifiedUserInformation.given_name,
+        family_name: verifiedUserInformation.family_name,
+        agency: verifiedUserInformation.bceid_business_name
+      };
+    } else {
+      values = {
+        user_guid: verifiedUserInformation.bceid_user_guid,
+        user_identifier: verifiedUserInformation.bceid_username,
+        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+        display_name: verifiedUserInformation.display_name,
+        email: verifiedUserInformation.email,
+        given_name: verifiedUserInformation.given_name,
+        family_name: verifiedUserInformation.family_name
+      };
+    }
+
+    console.log('1111111111111111');
+
+    // Only patch the record if at least 1 of the fields is different
+    const patchSystemUserSQLStatement = SQL`
+      select api_patch_system_user(
+        ${values.user_guid},
+        ${values.user_identifier},
+        ${values.user_identity_source},
+        ${values.email},
+        ${values.display_name},
+        ${values.given_name || null},
+        ${values.family_name || null},
+        ${values.agency || null}
+      )
+    `;
+
+    console.log(values);
+
+    return _client.query(patchSystemUserSQLStatement.text, patchSystemUserSQLStatement.values);
   };
 
   return {
@@ -412,7 +510,10 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     release: syncErrorWrapper(_release),
     commit: asyncErrorWrapper(_commit),
     rollback: asyncErrorWrapper(_rollback),
-    systemUserId: syncErrorWrapper(_getSystemUserID)
+    systemUserId: syncErrorWrapper(_getSystemUserID),
+    verifiedUserInformation: syncErrorWrapper(_getVerifiedUserInformation),
+    _setSystemUserContext: asyncErrorWrapper(_setSystemUserContext),
+    _patchSystemUser: asyncErrorWrapper(_patchSystemUser)
   };
 };
 
@@ -426,9 +527,9 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({
-    preferred_username: `${getDbUsername()}@database`,
-    sims_system_username: getDbUsername(),
-    identity_provider: 'database'
+    database_user_guid: getDbUsername(),
+    identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
+    username: getDbUsername()
   });
 };
 

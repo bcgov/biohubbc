@@ -371,9 +371,9 @@ describe('db', () => {
       const DB_USERNAME = process.env.DB_USER_API;
 
       expect(getDBConnectionStub).to.have.been.calledWith({
-        preferred_username: `${DB_USERNAME}@database`,
-        sims_system_username: DB_USERNAME,
-        identity_provider: 'database'
+        database_user_guid: DB_USERNAME,
+        identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
+        username: DB_USERNAME
       });
     });
   });

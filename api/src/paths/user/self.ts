@@ -4,6 +4,7 @@ import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
+import { getVerifiedUserInformationFromKeycloakToken } from '../../utils/keycloak-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}');
@@ -108,11 +109,19 @@ export function getUser(): RequestHandler {
     try {
       await connection.open();
 
+      const verifiedUserInformation = getVerifiedUserInformationFromKeycloakToken(req['keycloak_token']);
+
+      if (!verifiedUserInformation) {
+        throw new HTTP400('Failed to identify system user ID');
+      }
+
       const userId = connection.systemUserId();
 
       if (!userId) {
         throw new HTTP400('Failed to identify system user ID');
       }
+
+      await connection._patchSystemUser(verifiedUserInformation);
 
       const userService = new UserService(connection);
 
