@@ -312,7 +312,7 @@ export class ProjectRepository extends BaseRepository {
 
     sqlStatement.append(';');
 
-    const response = await this.connection.sql<ProjectData>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ProjectData);
     if (!response.rows) {
       return [];
     }
@@ -362,7 +362,7 @@ export class ProjectRepository extends BaseRepository {
         p.project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql<ProjectData>(getProjectSqlStatement);
+    const response = await this.connection.sql(getProjectSqlStatement, ProjectData);
 
     if (response?.rowCount < 1) {
       throw new ApiExecuteSQLError('Failed to get project data', [

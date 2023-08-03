@@ -91,7 +91,11 @@ export class UserService extends DBService {
    * @return {*}  {Promise<User>}
    * @memberof UserService
    */
-  async addSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<User> {
+  async addSystemUser(
+    userGuid: string | null,
+    userIdentifier: string,
+    identitySource: string
+  ): Promise<{ system_user_id: number }> {
     const response = await this.userRepository.addSystemUser(userGuid, userIdentifier, identitySource);
 
     return response;
@@ -134,7 +138,10 @@ export class UserService extends DBService {
       }
 
       // Found no existing user, add them
-      userObject = await this.addSystemUser(userGuid, userIdentifier, identitySource);
+      const newId = await this.addSystemUser(userGuid, userIdentifier, identitySource);
+
+      // fetch the new user object
+      userObject = await this.getUserById(newId.system_user_id);
     }
 
     if (!userObject.record_end_date) {

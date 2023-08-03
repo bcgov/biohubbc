@@ -64,7 +64,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         su.record_end_date ;
       `;
 
-    const response = await this.connection.query<ProjectUser>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement, ProjectUser);
 
     const result = (response && response.rows && response.rows[0]) || null;
 

@@ -457,7 +457,7 @@ export const getProjectUserWithRoles = async function (
     return null;
   }
 
-  const response = await connection.sql<ProjectUser>(sqlStatement);
+  const response = await connection.sql(sqlStatement, ProjectUser);
 
   return response.rows[0] || null;
 };

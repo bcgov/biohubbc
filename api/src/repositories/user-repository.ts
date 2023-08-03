@@ -82,7 +82,7 @@ export class UserRepository extends BaseRepository {
       su.user_identifier;
   `;
 
-    const response = await this.connection.sql<User>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, User);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get user by id', [
@@ -134,7 +134,7 @@ export class UserRepository extends BaseRepository {
       uis.name;
   `;
 
-    const response = await this.connection.sql<User>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, User);
 
     return response.rows;
   }
@@ -184,7 +184,7 @@ export class UserRepository extends BaseRepository {
         uis.name;
     `;
 
-    const response = await this.connection.sql<User>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, User);
 
     return response.rows;
   }
@@ -200,7 +200,11 @@ export class UserRepository extends BaseRepository {
    * @return {*}  {Promise<User>}
    * @memberof UserRepository
    */
-  async addSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<User> {
+  async addSystemUser(
+    userGuid: string | null,
+    userIdentifier: string,
+    identitySource: string
+  ): Promise<{ system_user_id: number }> {
     const sqlStatement = SQL`
     INSERT INTO
       system_user
@@ -224,21 +228,17 @@ export class UserRepository extends BaseRepository {
       now()
     )
     RETURNING
-      system_user_id,
-      user_identity_source_id,
-      user_identifier,
-      record_effective_date,
-      record_end_date;
+      system_user_id;
   `;
-    const response = await this.connection.sql<User>(sqlStatement);
-
-    if (response.rowCount !== 1) {
+    const newUserResponse = await this.connection.sql<{ system_user_id: number }>(sqlStatement);
+    if (newUserResponse.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert new user', [
         'UserRepository->addSystemUser',
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
-    return response.rows[0];
+
+    return newUserResponse.rows[0];
   }
 
   /**
@@ -280,7 +280,7 @@ export class UserRepository extends BaseRepository {
       su.user_identifier,
       uis.name;
   `;
-    const response = await this.connection.sql<User>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, User);
 
     return response.rows;
   }
