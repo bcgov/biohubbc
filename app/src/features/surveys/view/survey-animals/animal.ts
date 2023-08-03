@@ -50,16 +50,42 @@ export const AnimalMarkingSchema = yup.object({}).shape({
 
 const AnimalMeasurementSchema = yup.object({}).shape({
   taxon_measurement_id: yup.string().required(req),
-  valueOrOption: yup.mixed().oneOf([yup.string(), yup.number()]),
+  valueOrOption: yup.string(),
   measured_timestamp: yup.date(),
   measurement_comment: yup.string()
 });
 
-const AnimalMortalitySchema = yup.object({}).shape({});
+const AnimalMortalitySchema = yup.object({}).shape({
+  mortality_longitude: lonSchema.required(req),
+  mortality_latitude: latSchema.required(req),
+  mortality_utm_northing: yup.number(),
+  mortality_utm_easting: yup.number(),
+  mortality_timestamp: yup.date().required(req),
+  mortality_coordinate_uncertainty: yup.number(),
+  mortality_comment: yup.string(),
+  mortality_pcod_reason: yup.string().uuid().required(req),
+  mortality_pcod_confidence: yup.string(),
+  mortality_pcod_taxon_id: yup.string().uuid(),
+  mortality_ucod_reason: yup.string().uuid(),
+  mortality_ucod_confidence: yup.string(),
+  mortality_ucod_taxon_id: yup.string().uuid(),
+  projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
+});
 
-const AnimalRelationshipSchema = yup.object({}).shape({});
+const AnimalRelationshipSchema = yup
+  .object({
+    critter_id: yup.string().uuid().required(req),
+    relationship: yup.mixed().oneOf(['Parent', 'Child']).required(req)
+  })
+  .shape({});
 
-const AnimalTelemetryDeviceSchema = yup.object({}).shape({});
+const AnimalTelemetryDeviceSchema = yup.object({}).shape({
+  device_id: yup.string().required(req),
+  manufacturer: yup.string().required(req),
+  //I think this needs an additional field for hz
+  device_frequency: yup.number().required(req),
+  model: yup.string().required(req)
+});
 
 const AnimalImageSchema = yup.object({}).shape({});
 
@@ -84,10 +110,10 @@ export const AnimalSchema = yup.object({}).shape({
   capture: yup.array().of(AnimalCaptureSchema).required(),
   marking: yup.array().of(AnimalMarkingSchema).required(),
   measurement: yup.array().of(AnimalMeasurementSchema).required(),
-  mortality: AnimalMortalitySchema,
+  mortality: yup.array().of(AnimalMortalitySchema).required(),
   family: yup.array().of(AnimalRelationshipSchema).required(),
   image: yup.array().of(AnimalImageSchema).required(),
-  device: AnimalTelemetryDeviceSchema
+  device: AnimalTelemetryDeviceSchema.optional()
 });
 
 export type IAnimal = InferType<typeof AnimalSchema>;

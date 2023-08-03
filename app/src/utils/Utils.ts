@@ -282,3 +282,10 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
 export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], property: string) => {
   return _.sortBy(data, property);
 };
+
+/**
+ * Coerce a potentially invalid number towards zero.
+ * @param n a potentially NaN number
+ * @returns n if a number, 0 otherwise
+ */
+export const coerceZero = (n: number | undefined): number => (isNaN(n ?? NaN) ? 0 : Number(n));

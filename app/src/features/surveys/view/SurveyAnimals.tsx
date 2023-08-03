@@ -4,8 +4,9 @@ import Icon from '@mdi/react';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import React, { useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import ComponentDialog from 'components/dialog/ComponentDialog';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
+import EditDialog from 'components/dialog/EditDialog';
+import { AnimalSchema, IAnimal } from './survey-animals/animal';
 
 const SurveyAnimals: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -14,25 +15,35 @@ const SurveyAnimals: React.FC = () => {
     setOpenDialog((d) => !d);
   };
 
+  const AnimalFormValues: Partial<IAnimal> = {
+    general: { taxon_id: '', taxon_label: '' },
+    capture: [],
+    marking: [],
+    mortality: [],
+    measurement: [],
+    family: [],
+    image: [],
+    device: undefined
+  };
+
+  const handleOnSave = (a: Partial<IAnimal>) => {
+    console.log(a);
+    toggleDialog();
+  };
+
   return (
     <Box>
-      {/*<SubmitBiohubDialog<IAnimal>
+      <EditDialog
         dialogTitle={'Individual Animals'}
-        submissionSuccessDialogTitle={'Success'}
-        submissionSuccessDialogText={'Success Text'}
-        noSubmissionDataDialogTitle={'No submission dialog title'}
-        noSubmissionDataDialogText={'No submission Text'}
-        hasSubmissionData={true}
         open={openDialog}
-        onClose={toggleDialog}
-        onSubmit={async () => console.log('submit')}
-        formikProps={{ initialValues: AnimalFormValues, validationSchema: AnimalSchema }}>
-        <IndividualAnimalForm />
-      </SubmitBiohubDialog>
-      */}
-      <ComponentDialog open={openDialog} dialogTitle="Individual Animals" onClose={toggleDialog}>
-        <IndividualAnimalForm />
-      </ComponentDialog>
+        onSave={(values) => handleOnSave(values)}
+        onCancel={toggleDialog}
+        component={{
+          element: <IndividualAnimalForm />,
+          initialValues: AnimalFormValues,
+          validationSchema: AnimalSchema
+        }}
+      />
       <H2ButtonToolbar
         label="Individual Animals"
         buttonLabel="Import"

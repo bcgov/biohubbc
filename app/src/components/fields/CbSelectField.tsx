@@ -1,6 +1,14 @@
-import { FormControl, FormControlProps, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  FormControl,
+  FormControlProps,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent
+} from '@mui/material';
 import { useFormikContext } from 'formik';
-import { ICbRouteKey } from 'hooks/cb_api/useLookupApi';
+import { ICbRouteKey, ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';
@@ -14,6 +22,7 @@ export interface ICbSelectField {
   param?: string;
   query?: string;
   controlProps?: FormControlProps;
+  handleChangeSideEffect?: (value: string, label: string) => void;
 }
 
 interface ICbSelectOption {
@@ -22,7 +31,7 @@ interface ICbSelectOption {
 }
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
-  const { name, label, route, param, query } = props;
+  const { name, label, route, param, query, handleChangeSideEffect } = props;
 
   const api = useCritterbaseApi();
   const { data, load, refresh, isReady } = useDataLoader(async () => api.lookup.getSelectOptions(route, param, query));
@@ -53,8 +62,21 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
     }
   };
 
-  useEffect(refresh, [param, query]);
+  useEffect(() => {
+    if (query || param) {
+      refresh();
+    }
+  }, [param, query]);
+
   useEffect(handleInRange, [isReady]);
+
+  const innerChangeHandler = (e: SelectChangeEvent<any>) => {
+    handleChange(e);
+    if (handleChangeSideEffect) {
+      const item = data?.find((a) => typeof a !== 'string' && a.id === e.target.value);
+      handleChangeSideEffect(e.target.value, (item as ICbSelectRows).value);
+    }
+  };
 
   return (
     <FormControl variant="outlined" fullWidth {...props.controlProps} error={Boolean(err)}>
@@ -64,7 +86,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
         labelId="cb_select"
         label={label}
         value={isValueInRange() ? val : ''}
-        onChange={handleChange}
+        onChange={innerChangeHandler}
         onBlur={handleBlur}
         displayEmpty>
         {data?.map((a) => {
