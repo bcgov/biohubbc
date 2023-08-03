@@ -113,7 +113,7 @@ export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, c
     userId
   );
 
-  // No projects associated to user, skip Project Lead role check
+  // No projects associated to user, skip coordinator role check
   if (!getAllParticipantsResponse.length) {
     return;
   }
@@ -136,21 +136,21 @@ export const deleteAllProjectRoles = async (userId: number, connection: IDBConne
 };
 
 /**
- * Given an array of project participation role objects, return false if any project has no Project Lead role. Return
+ * Given an array of project participation role objects, return false if any project has no Coordinator role. Return
  * true otherwise.
  *
  * @param {any[]} rows
  * @return {*}  {boolean}
  */
 export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
-  // No project with project lead
+  // No project with Coordinator
   if (!rows.length) {
     return false;
   }
 
   const projectLeadsPerProject: { [key: string]: any } = {};
 
-  // count how many Project Lead roles there are per project
+  // count how many coordinator roles there are per project
   rows.forEach((row) => {
     const key = row.project_id;
 
@@ -165,20 +165,20 @@ export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
 
   const projectLeadCounts = Object.values(projectLeadsPerProject);
 
-  // check if any projects would be left with no Project Lead
+  // check if any projects would be left with no Coordinator
   for (const count of projectLeadCounts) {
     if (!count) {
-      // found a project with no Project Lead
+      // found a project with no Coordinator
       return false;
     }
   }
 
-  // all projects have a Project Lead
+  // all projects have a Coordinator
   return true;
 };
 
 /**
- * Given an array of project participation role objects, return true if any project has no Project Lead role after
+ * Given an array of project participation role objects, return true if any project has no Coordinator role after
  * removing all rows associated with the provided `userId`. Return false otherwise.
  *
  * @param {any[]} rows
@@ -186,14 +186,14 @@ export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
  * @return {*}  {boolean}
  */
 export const doAllProjectsHaveAProjectLeadIfUserIsRemoved = (rows: any[], userId: number): boolean => {
-  // No project with project lead
+  // No project with coordinator
   if (!rows.length) {
     return false;
   }
 
   const projectLeadsPerProject: { [key: string]: any } = {};
 
-  // count how many Project Lead roles there are per project
+  // count how many Coordinator roles there are per project
   rows.forEach((row) => {
     const key = row.project_id;
 
@@ -208,14 +208,14 @@ export const doAllProjectsHaveAProjectLeadIfUserIsRemoved = (rows: any[], userId
 
   const projectLeadCounts = Object.values(projectLeadsPerProject);
 
-  // check if any projects would be left with no Project Lead
+  // check if any projects would be left with no Coordinator
   for (const count of projectLeadCounts) {
     if (!count) {
-      // found a project with no Project Lead
+      // found a project with no Coordinator
       return false;
     }
   }
 
-  // all projects have a Project Lead
+  // all projects have a Coordinator
   return true;
 };

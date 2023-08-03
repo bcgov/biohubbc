@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
     SET SEARCH_PATH=biohub, public;
 
     CREATE TABLE project_permission(
-      project_permission_id   integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      project_permission_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                     varchar(50)       NOT NULL,
       description              varchar(250)      NOT NULL,
       notes                    varchar(3000),
@@ -43,7 +43,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON TABLE  project_permission                          IS 'Project permissions.';
 
     CREATE TABLE project_role_permission(
-      project_role_permission_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      project_role_permission_id            integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       project_permission_id                 integer           NOT NULL,
       project_role_id                       integer           NOT NULL,
       create_date                           timestamptz(6)    DEFAULT now() NOT NULL,
@@ -54,10 +54,10 @@ export async function up(knex: Knex): Promise<void> {
       CONSTRAINT project_role_permission_pk PRIMARY KEY (project_role_permission_id)
     );
 
-    COMMENT ON COLUMN project_role_permission.project_role_permission_id  IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN project_role_permission.project_role_permission_id          IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN project_role_permission.project_permission_id               IS 'The id of the project permission.';
     COMMENT ON COLUMN project_role_permission.project_role_id                     IS 'The id of the project role.';
-    COMMENT ON COLUMN project_role_permission.create_date                         IS 'the datetime the record was created';
+    COMMENT ON COLUMN project_role_permission.create_date                         IS 'The datetime the record was created';
     COMMENT ON COLUMN project_role_permission.create_user                         IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN project_role_permission.update_date                         IS 'The datetime the record was updated.';
     COMMENT ON COLUMN project_role_permission.update_user                         IS 'The id of the user who updated the record as identified in the system user table.';

@@ -261,12 +261,12 @@ export const ProjectParticipantsI18N = {
 };
 
 export const SystemUserI18N = {
-  deleteProjectLeadErrorTitle: 'Error Deleting Project Lead',
+  deleteProjectLeadErrorTitle: 'Error Deleting Coordinator',
   deleteProjectLeadErrorText:
-    'An error has occurred while attempting to delete the project lead, please assign a different project lead before removing. Please try again, if the error persists please contact your system administrator.',
-  updateProjectLeadRoleErrorTitle: 'Error Updating Project Lead Role',
+    'An error has occurred while attempting to delete the coordinator, please assign a different coordinator before removing. Please try again, if the error persists please contact your system administrator.',
+  updateProjectLeadRoleErrorTitle: 'Error Updating Coordinator Role',
   updateProjectLeadRoleErrorText:
-    "An error has occurred while attempting to update the user's project lead role, please assign a different project lead before changing. Please try again, if the error persists please contact your system administrator.",
+    "An error has occurred while attempting to update the user's coordinator role, please assign a different coordinator before changing. Please try again, if the error persists please contact your system administrator.",
   removeSystemUserTitle: 'Remove system user?',
   removeUserFromProject: 'Remove user from project?',
   removeUserErrorTitle: 'Error Removing User From Team',

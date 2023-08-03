@@ -395,7 +395,7 @@ export class ProjectService extends DBService {
 
     await Promise.all(promises);
 
-    // The user that creates a project is automatically assigned a project lead role, for this project
+    // The user that creates a project is automatically assigned a coordinator role, for this project
     await this.insertParticipantRole(projectId, PROJECT_ROLE.COORDINATOR);
 
     return projectId;
