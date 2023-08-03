@@ -215,7 +215,7 @@ export class SurveyService extends DBService {
    * Get Occurrence Submission for a given survey id.
    *
    * @param {number} surveyId
-   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}F
+   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}
    * @memberof SurveyService
    */
   async getOccurrenceSubmission(surveyId: number): Promise<{ occurrence_submission_id: number | null }> {

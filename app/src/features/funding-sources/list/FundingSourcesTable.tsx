@@ -1,21 +1,12 @@
 import { Theme } from '@mui/material';
-import Chip from '@mui/material/Chip';
 import { grey } from '@mui/material/colors';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
-import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { PublishStatus } from 'constants/attachments';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { SYSTEM_ROLE } from 'constants/roles';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
-import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
+import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getFormattedDate } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectsTable: {
@@ -49,20 +40,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface IProjectsListTableProps {
-  projects: IGetProjectsListResponse[];
-  drafts: IGetDraftsListResponse[];
-  codes: IGetAllCodeSetsResponse;
+export interface IFundingSourcesTableTableProps {
+  fundingSources: IGetFundingSourcesResponse[];
 }
 
-interface IProjectsListTableEntry {
-  id: number;
-  isDraft: boolean;
+interface IFundingSourcesTableEntry {
+  funding_source_id: number;
   name: string;
-  status?: PublishStatus;
-  type?: string;
-  startDate?: string;
-  endDate?: string;
+  description: string;
 }
 
 const NoRowsOverlay = (props: { className: string }) => (
@@ -73,10 +58,10 @@ const NoRowsOverlay = (props: { className: string }) => (
   </GridOverlay>
 );
 
-const FundingSourcesTable = (props: IProjectsListTableProps) => {
+const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
   const classes = useStyles();
 
-  const columns: GridColDef<IProjectsListTableEntry>[] = [
+  const columns: GridColDef<IFundingSourcesTableEntry>[] = [
     {
       field: 'name',
       headerName: 'Name',
@@ -89,92 +74,26 @@ const FundingSourcesTable = (props: IProjectsListTableProps) => {
           underline="always"
           title={params.row.name}
           component={RouterLink}
-          to={
-            params.row.isDraft ? `/admin/projects/create?draftId=${params.row.id}` : `/admin/projects/${params.row.id}`
-          }
+          to={`/admin/funding-sources/edit?fundingSourceId=${params.row.funding_source_id}`}
           children={params.row.name}
         />
       )
     },
     {
-      field: 'program',
-      headerName: 'Programs',
+      field: 'description',
+      headerName: 'Description',
       flex: 1
-    },
-    {
-      field: 'regions',
-      headerName: 'Regions',
-      flex: 1
-    },
-    {
-      field: 'startDate',
-      headerName: 'Start Date',
-      minWidth: 150,
-      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
-      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined)
-    },
-    {
-      field: 'endDate',
-      headerName: 'End Date',
-      minWidth: 150,
-      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
-      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined)
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      minWidth: 150,
-      renderCell: (params) => {
-        if (params.row.isDraft) {
-          return <Chip label={'Draft'} />;
-        }
-
-        if (!params.row.status) {
-          return <></>;
-        }
-
-        //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-        return (
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <SubmitStatusChip status={params.row.status} />
-          </SystemRoleGuard>
-        );
-      }
     }
   ];
 
   const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
 
-  const getProjectPrograms = (project: IGetProjectsListResponse) => {
-    return (
-      props.codes.program
-        .filter((code) => project.projectData.project_programs.includes(code.id))
-        .map((code) => code.name)
-        .join(', ') || ''
-    );
-  };
   return (
     <DataGrid
       className={classes.dataGrid}
       autoHeight
-      rows={[
-        ...props.drafts.map((draft: IGetDraftsListResponse) => ({
-          id: draft.webform_draft_id,
-          name: draft.name,
-          isDraft: true
-        })),
-        ...props.projects.map((project: IGetProjectsListResponse) => ({
-          id: project.projectData.id,
-          name: project.projectData.name,
-          status: project.projectSupplementaryData.publishStatus,
-          program: getProjectPrograms(project),
-          startDate: project.projectData.start_date,
-          endDate: project.projectData.end_date,
-          isDraft: false,
-          regions: project.projectData.regions?.join(', ')
-        }))
-      ]}
-      getRowId={(row) => (row.isDraft ? `draft-${row.id}` : `project-${row.id}`)}
+      rows={props.fundingSources}
+      getRowId={(row) => `funding-source-${row.funding_source_id}`}
       columns={columns}
       pageSizeOptions={[5]}
       rowSelection={false}

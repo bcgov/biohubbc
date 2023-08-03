@@ -6,6 +6,7 @@ import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
+import useFundingSourceApi from './api/useFundingSourceApi';
 import useObservationApi from './api/useObservationApi';
 import useProjectApi from './api/useProjectApi';
 import usePublishApi from './api/usePublishApi';
@@ -51,6 +52,8 @@ export const useBiohubApi = () => {
 
   const spatial = useSpatialApi(apiAxios);
 
+  const funding = useFundingSourceApi(apiAxios);
+
   return {
     project,
     search,
@@ -64,6 +67,7 @@ export const useBiohubApi = () => {
     admin,
     external,
     publish,
-    spatial
+    spatial,
+    funding
   };
 };

@@ -1,23 +1,20 @@
-import { mdiFilterOutline, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
+import { Skeleton, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
-import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
-import { SystemRoleGuard } from 'components/security/Guards';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import FundingSourcesTable from './FundingSourcesTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
   pageTitleContainer: {
@@ -58,29 +55,19 @@ const FundingSourcesListPage: React.FC = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-
   const codesContext = useContext(CodesContext);
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
-  const projectsDataLoader = useDataLoader((filter?: IProjectAdvancedFilters) =>
-    biohubApi.project.getProjectsList(filter)
-  );
-  projectsDataLoader.load();
+  const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
+  fundingSourceDataLoader.load();
 
-  const draftsDataLoader = useDataLoader(() => biohubApi.draft.getDraftsList());
-  draftsDataLoader.load();
-
-  const handleSubmit = async (filterValues: IProjectAdvancedFilters) => {
-    projectsDataLoader.refresh(filterValues);
-  };
-
-  const handleReset = async () => {
-    projectsDataLoader.refresh();
-  };
-
-  if (!codesContext.codesDataLoader.data || !projectsDataLoader.data || !draftsDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
+  if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {
+    return (
+      <>
+        <Skeleton variant="rectangular" animation="wave" />
+        <Skeleton variant="rectangular" animation="wave" />
+      </>
+    );
   }
 
   return (
@@ -91,25 +78,18 @@ const FundingSourcesListPage: React.FC = () => {
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
-                  Projects
+                  Funding Sources
                 </Typography>
               </Box>
               <Box flex="0 0 auto" className={classes.pageTitleActions}>
-                <SystemRoleGuard
-                  validSystemRoles={[
-                    SYSTEM_ROLE.SYSTEM_ADMIN,
-                    SYSTEM_ROLE.PROJECT_CREATOR,
-                    SYSTEM_ROLE.DATA_ADMINISTRATOR
-                  ]}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Icon path={mdiPlus} size={1} />}
-                    component={RouterLink}
-                    to={'/admin/projects/create'}>
-                    Create Project
-                  </Button>
-                </SystemRoleGuard>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Icon path={mdiPlus} size={1} />}
+                  component={RouterLink}
+                  to={'/admin/funding-sources/create'}>
+                  Add Funding Source
+                </Button>
               </Box>
             </Box>
           </Box>
@@ -117,25 +97,19 @@ const FundingSourcesListPage: React.FC = () => {
       </Paper>
       <Container maxWidth="xl">
         <Box py={3}>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <ProjectsSubmissionAlertBar projects={projectsDataLoader.data} />
-          </SystemRoleGuard>
           <Paper elevation={0}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2">
                 Records Found &zwnj;
                 <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
-                  ({projectsDataLoader.data?.length || 0})
+                  ({fundingSourceDataLoader.data?.length || 0})
                 </Typography>
               </Typography>
-              <Button
-                variant="text"
-                color="primary"
-                startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
-                onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
-                {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
-              </Button>
             </Toolbar>
+            <Divider></Divider>
+            <Box py={1} pb={2} px={3}>
+              <FundingSourcesTable fundingSources={[]} />
+            </Box>
           </Paper>
         </Box>
       </Container>
