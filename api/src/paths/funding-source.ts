@@ -5,9 +5,9 @@ import { getDBConnection } from '../database/db';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('paths/funding-sources');
+const defaultLog = getLogger('paths/funding-source/{fundingSourceId}');
 
-export const GET: Operation = [
+export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
@@ -18,20 +18,32 @@ export const GET: Operation = [
       ]
     };
   }),
-  getFundingSources()
+  postFundingSource()
 ];
 
-GET.apiDoc = {
-  description: 'Get all funding sources.',
+POST.apiDoc = {
+  description: 'Create a funding source.',
   tags: ['funding-source'],
   security: [
     {
       Bearer: []
     }
   ],
+  requestBody: {
+    description: 'Funding source post request object.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: [],
+          properties: {}
+        }
+      }
+    }
+  },
   responses: {
     200: {
-      description: 'Funding sources response object.',
+      description: 'Funding source response object.',
       content: {
         'application/json': {
           schema: {
@@ -64,11 +76,11 @@ GET.apiDoc = {
 };
 
 /**
- * Get a list of funding sources.
+ * Create a new funding source.
  *
  * @returns {RequestHandler}
  */
-export function getFundingSources(): RequestHandler {
+export function postFundingSource(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -81,7 +93,7 @@ export function getFundingSources(): RequestHandler {
 
       return res.status(200).json();
     } catch (error) {
-      defaultLog.error({ label: 'getFundingSources', message: 'error', error });
+      defaultLog.error({ label: 'createFundingSource', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
