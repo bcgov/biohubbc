@@ -18,7 +18,8 @@ import {
   GetObjectivesData,
   GetReportAttachmentsData,
   IProjectAdvancedFilters,
-  ProjectData
+  ProjectData,
+  ProjectListData
 } from '../models/project-view';
 import { queries } from '../queries/queries';
 import { BaseRepository } from './base-repository';
@@ -186,13 +187,15 @@ export class ProjectRepository extends BaseRepository {
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters
-  ): Promise<any[]> {
+  ): Promise<ProjectListData[]> {
     const sqlStatement = SQL`
       SELECT
-        p.project_id as id,
-        p.name,
+        p.project_id,
+        p.name as project_name,
+        p.uuid,
         p.start_date,
         p.end_date,
+        p.revision_count,
         p.coordinator_agency_name as coordinator_agency,
         array_remove(array_agg(DISTINCT rl.region_name), null) as regions,
         array_agg(distinct p2.program_id) as project_programs
@@ -282,7 +285,9 @@ export class ProjectRepository extends BaseRepository {
         p.name,
         p.start_date,
         p.end_date,
-        p.coordinator_agency_name
+        p.coordinator_agency_name,
+        p.uuid,
+        p.revision_count
     `);
 
     /* 
@@ -312,7 +317,7 @@ export class ProjectRepository extends BaseRepository {
 
     sqlStatement.append(';');
 
-    const response = await this.connection.sql(sqlStatement, ProjectData);
+    const response = await this.connection.sql(sqlStatement, ProjectListData);
     if (!response.rows) {
       return [];
     }

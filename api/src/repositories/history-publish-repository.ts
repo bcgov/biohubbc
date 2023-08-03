@@ -47,11 +47,11 @@ export interface ISurveyReportPublish {
 export const ProjectMetadataPublish = z.object({
   project_metadata_publish_id: z.number(),
   project_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   queue_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -61,11 +61,11 @@ export type ProjectMetadataPublish = z.infer<typeof ProjectMetadataPublish>;
 export const SurveyMetadataPublish = z.object({
   survey_metadata_publish_id: z.number(),
   survey_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   queue_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -75,11 +75,11 @@ export type SurveyMetadataPublish = z.infer<typeof SurveyMetadataPublish>;
 export const OccurrenceSubmissionPublish = z.object({
   occurrence_submission_publish_id: z.number(),
   occurrence_submission_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   queue_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -89,11 +89,11 @@ export type OccurrenceSubmissionPublish = z.infer<typeof OccurrenceSubmissionPub
 export const ProjectReportPublish = z.object({
   project_report_publish_id: z.number(),
   project_report_attachment_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -103,11 +103,11 @@ export type ProjectReportPublish = z.infer<typeof ProjectReportPublish>;
 export const ProjectAttachmentPublish = z.object({
   project_attachment_publish_id: z.number(),
   project_attachment_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -117,11 +117,11 @@ export type ProjectAttachmentPublish = z.infer<typeof ProjectAttachmentPublish>;
 export const SurveyReportPublish = z.object({
   survey_report_publish_id: z.number(),
   survey_report_attachment_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -131,11 +131,11 @@ export type SurveyReportPublish = z.infer<typeof SurveyReportPublish>;
 export const SurveyAttachmentPublish = z.object({
   survey_attachment_publish_id: z.number(),
   survey_attachment_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -145,11 +145,11 @@ export type SurveyAttachmentPublish = z.infer<typeof SurveyAttachmentPublish>;
 export const SurveySummarySubmissionPublish = z.object({
   survey_summary_submission_publish_id: z.number(),
   survey_summary_submission_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -166,13 +166,13 @@ export const SurveyAttachmentWithPublishData = z.object({
   description: z.string(),
   key: z.string(),
   file_size: z.number(),
-  create_date: z.date().nullable(),
+  create_date: z.string().nullable(),
   create_user: z.number().nullable(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
   uuid: z.string(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number()
 });
 
@@ -188,13 +188,13 @@ export const SurveyReportWithPublishData = z.object({
   year: z.number(),
   key: z.string(),
   file_size: z.number(),
-  create_date: z.date().nullable(),
+  create_date: z.string().nullable(),
   create_user: z.number().nullable(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
   uuid: z.string(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number()
 });
 
@@ -210,13 +210,13 @@ export const ProjectAttachmentWithPublishData = z.object({
   description: z.string(),
   key: z.string(),
   file_size: z.number(),
-  create_date: z.date().nullable(),
+  create_date: z.string().nullable(),
   create_user: z.number().nullable(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
   uuid: z.string(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number()
 });
 
@@ -232,13 +232,13 @@ export const ProjectReportWithPublishData = z.object({
   year: z.number(),
   key: z.string(),
   file_size: z.number(),
-  create_date: z.date().nullable(),
+  create_date: z.string().nullable(),
   create_user: z.number().nullable(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
   uuid: z.string(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number()
 });
 

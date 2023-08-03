@@ -3,13 +3,11 @@ import { z } from 'zod';
 export const User = z.object({
   system_user_id: z.number(),
   user_identifier: z.string(),
-  user_guid: z.string().nullable(),
+  user_guid: z.string().optional(),
   identity_source: z.string(),
-  record_end_date: z.date().nullable(),
-  role_ids: z.array(z.number()),
-  role_names: z.array(z.string()),
-  permission_ids: z.array(z.number()),
-  permission_names: z.array(z.string())
+  record_end_date: z.string().nullable(),
+  role_ids: z.array(z.number()).default([]),
+  role_names: z.array(z.string()).default([])
 });
 
 export type User = z.infer<typeof User>;

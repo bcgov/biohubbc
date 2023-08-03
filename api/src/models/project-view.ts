@@ -30,13 +30,27 @@ export const ProjectData = z.object({
   project_name: z.string(),
   project_programs: z.array(z.number()),
   project_types: z.array(z.number()),
-  start_date: z.date(),
-  end_date: z.date().nullable(),
+  start_date: z.string(),
+  end_date: z.string().nullable(),
   comments: z.string().nullable(),
   revision_count: z.number()
 });
 
 export type ProjectData = z.infer<typeof ProjectData>;
+
+export const ProjectListData = z.object({
+  project_id: z.number(),
+  uuid: z.string(),
+  project_name: z.string(),
+  coordinator_agency: z.string(),
+  project_programs: z.array(z.number()).default([]),
+  project_types: z.array(z.number()).default([]),
+  regions: z.array(z.string()).default([]),
+  start_date: z.string(),
+  end_date: z.string().optional()
+});
+
+export type ProjectListData = z.infer<typeof ProjectListData>;
 
 /**
  * Pre-processes GET /projects/{id} objectives data
