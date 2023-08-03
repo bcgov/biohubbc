@@ -70,11 +70,9 @@ describe('approveAccessRequest', () => {
       user_identifier: '',
       user_guid: '',
       identity_source: 'idir',
-      record_end_date: new Date(),
+      record_end_date: '',
       role_ids: existingRoleIds,
-      role_names: [],
-      permission_ids: [],
-      permission_names: []
+      role_names: []
     };
     const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockSystemUser);
 

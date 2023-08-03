@@ -44,11 +44,9 @@ describe('PermitService', () => {
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
-        record_end_date: new Date(),
+        record_end_date: '',
         role_ids: [],
-        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN],
-        permission_ids: [],
-        permission_names: []
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
       };
 
       const mockDBConnection = getMockDBConnection();
@@ -85,11 +83,9 @@ describe('PermitService', () => {
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
-        record_end_date: new Date(),
+        record_end_date: '',
         role_ids: [],
-        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-        permission_ids: [],
-        permission_names: []
+        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR]
       };
 
       const mockDBConnection = getMockDBConnection();
@@ -126,11 +122,9 @@ describe('PermitService', () => {
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
-        record_end_date: new Date(),
+        record_end_date: '',
         role_ids: [],
-        role_names: [],
-        permission_ids: [],
-        permission_names: []
+        role_names: []
       };
 
       const mockDBConnection = getMockDBConnection();

@@ -57,9 +57,7 @@ describe('user', () => {
         role_ids: [],
         role_names: [],
         user_guid: 'aaaa',
-        user_identifier: 'user_identifier',
-        permission_ids: [],
-        permission_names: []
+        user_identifier: 'user_identifier'
       });
 
       const requestHandler = user.getUserById();
@@ -73,9 +71,7 @@ describe('user', () => {
         role_ids: [],
         role_names: [],
         user_guid: 'aaaa',
-        user_identifier: 'user_identifier',
-        permission_ids: [],
-        permission_names: []
+        user_identifier: 'user_identifier'
       });
     });
   });

@@ -85,11 +85,9 @@ describe('removeSystemUser', () => {
       user_identifier: 'testname',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: new Date('2010-10-10'),
+      record_end_date: '2010-10-10',
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2'],
-      permission_ids: [],
-      permission_names: []
+      role_names: ['role 1', 'role 2']
     });
 
     try {
@@ -123,9 +121,7 @@ describe('removeSystemUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2'],
-      permission_ids: [],
-      permission_names: []
+      role_names: ['role 1', 'role 2']
     });
 
     sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(null);
@@ -162,9 +158,7 @@ describe('removeSystemUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2'],
-      permission_ids: [],
-      permission_names: []
+      role_names: ['role 1', 'role 2']
     });
 
     const expectedError = new Error('A database error');
@@ -199,9 +193,7 @@ describe('removeSystemUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2'],
-      permission_ids: [],
-      permission_names: []
+      role_names: ['role 1', 'role 2']
     });
 
     sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
@@ -238,9 +230,7 @@ describe('removeSystemUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2'],
-      permission_ids: [],
-      permission_names: []
+      role_names: ['role 1', 'role 2']
     });
 
     sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
@@ -278,9 +268,7 @@ describe('removeSystemUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2'],
-      permission_ids: [],
-      permission_names: []
+      role_names: ['role 1', 'role 2']
     });
 
     sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();

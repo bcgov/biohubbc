@@ -661,9 +661,7 @@ describe('getSystemUserObject', function () {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2'],
-      permission_ids: [],
-      permission_names: []
+      role_names: ['role 1', 'role 2']
     } as unknown) as User;
     sinon.stub(authorization, 'getSystemUserWithRoles').resolves(mockSystemUserWithRolesResponse);
 
@@ -749,9 +747,7 @@ describe('getProjectUserObject', function () {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2'],
-      permission_ids: [],
-      permission_names: []
+      role_names: ['role 1', 'role 2']
     } as any;
     sinon.stub(authorization, 'getProjectUserWithRoles').resolves(mockSystemUserWithRolesResponse);
 

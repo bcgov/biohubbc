@@ -28,11 +28,9 @@ describe('users', () => {
           user_identifier: 'identifier',
           user_guid: 'aaaa',
           identity_source: 'idir',
-          record_end_date: new Date(),
+          record_end_date: '',
           role_ids: [1, 2],
-          role_names: ['System Admin', 'Coordinator'],
-          permission_ids: [],
-          permission_names: []
+          role_names: ['System Admin', 'Coordinator']
         }
       ];
 

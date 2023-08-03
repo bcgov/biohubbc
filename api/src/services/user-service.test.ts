@@ -201,6 +201,8 @@ describe('UserService', () => {
 
       const activateSystemUserStub = sinon.stub(UserService.prototype, 'activateSystemUser');
 
+      const getUserById = sinon.stub(UserService.prototype, 'getUserById').resolves(addedSystemUser);
+
       const userIdentifier = 'username';
       const userGuid = 'aaaa';
       const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
@@ -214,6 +216,7 @@ describe('UserService', () => {
 
       expect(getUserByGuidStub).to.have.been.calledOnce;
       expect(addSystemUserStub).to.have.been.calledOnce;
+      expect(getUserById).to.have.been.calledOnce;
       expect(activateSystemUserStub).not.to.have.been.called;
     });
 
@@ -227,9 +230,7 @@ describe('UserService', () => {
         user_guid: '',
         record_end_date: null,
         role_ids: [1],
-        role_names: ['Collaborator'],
-        permission_ids: [],
-        permission_names: []
+        role_names: ['Collaborator']
       };
 
       const getUserByGuidStub = sinon.stub(UserService.prototype, 'getUserByGuid').resolves(existingInactiveSystemUser);
@@ -262,11 +263,9 @@ describe('UserService', () => {
         user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
         user_guid: '',
-        record_end_date: new Date(),
+        record_end_date: '1900-01-01',
         role_ids: [1],
-        role_names: ['Collaborator'],
-        permission_ids: [],
-        permission_names: []
+        role_names: ['Collaborator']
       };
 
       const getUserByGuidStub = sinon.stub(UserService.prototype, 'getUserByGuid').resolves(existingSystemUser);
@@ -282,9 +281,7 @@ describe('UserService', () => {
         user_guid: '',
         record_end_date: null,
         role_ids: [1],
-        role_names: ['Collaborator'],
-        permission_ids: [],
-        permission_names: []
+        role_names: ['Collaborator']
       };
 
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(activatedSystemUser);

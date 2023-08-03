@@ -63,7 +63,7 @@ describe('paths/draft/{draftId}/get', () => {
         webform_draft_id: 1,
         name: 'draft object',
         data: {},
-        create_date: ('2022-10-10' as unknown) as Date,
+        create_date: '2022-10-10',
         update_date: null
       });
 
@@ -75,7 +75,7 @@ describe('paths/draft/{draftId}/get', () => {
         webform_draft_id: 1,
         name: 'draft object',
         data: {},
-        create_date: ('2022-10-10' as unknown) as Date,
+        create_date: '2022-10-10',
         update_date: null
       });
     });
