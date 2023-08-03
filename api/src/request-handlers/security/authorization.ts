@@ -237,7 +237,7 @@ export const authorizeByProjectPermission = async (
   authorizeProjectPermissions: AuthorizeByProjectPermissions,
   connection: IDBConnection
 ): Promise<boolean> => {
-  if (!authorizeProjectPermissions || !authorizeProjectPermissions.projectId) {
+  if (!authorizeProjectPermissions?.projectId) {
     // No project id to verify roles for
     return false;
   }
