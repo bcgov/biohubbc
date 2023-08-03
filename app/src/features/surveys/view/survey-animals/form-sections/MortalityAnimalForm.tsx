@@ -1,17 +1,13 @@
-import { Box, FormControlLabel, FormGroup, Grid, Switch, Tab, Tabs } from '@mui/material';
+import { Grid } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
-import { MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
-import MapContainer from 'components/map/MapContainer';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, FormikErrors, useFormikContext } from 'formik';
-import { LatLng } from 'leaflet';
-import { ChangeEvent, useState } from 'react';
-import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
-import { coerceZero } from 'utils/Utils';
+import { useState } from 'react';
 import { getAnimalFieldName, IAnimal, IAnimalMortality } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
+import LocationEntryForm from './LocationEntryForm';
 
 /**
  * Renders the Mortality section for the Individual Animal form
@@ -25,7 +21,7 @@ import FormSectionWrapper from './FormSectionWrapper';
  *
  * Note C: Mortality gets set like an array here, though it should only ever contain one value.
  * This might seem odd, but this is in line with how critterbase stores these values.
- * To encourage the max of one rule, we use the maxSections prop here to prevent additional copies of the form 
+ * To encourage the max of one rule, we use the maxSections prop here to prevent additional copies of the form
  * from rendering.
  *
  * Returns {*}
@@ -88,218 +84,106 @@ interface MortalityAnimalFormContentProps {
 }
 
 const MortalityAnimalFormContent = ({ name, index, setFieldValue, value }: MortalityAnimalFormContentProps) => {
-  const [tabState, setTabState] = useState(0); //Controls whether we are showing Forms tab or Map tab
   const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
   const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
 
-  const handleMarkerPlacement = (e: LatLng) => {
-    setFieldValue(getAnimalFieldName<IAnimalMortality>(name, 'mortality_latitude', index), e.lat.toFixed(3));
-    setFieldValue(getAnimalFieldName<IAnimalMortality>(name, 'mortality_longitude', index), e.lng.toFixed(3));
-    const utm_coords = getLatLngAsUtm(e.lat, e.lng);
-    setFieldValue(getAnimalFieldName<IAnimalMortality>(name, 'mortality_utm_northing', index), utm_coords[1]);
-    setFieldValue(getAnimalFieldName<IAnimalMortality>(name, 'mortality_utm_easting', index), utm_coords[0]);
-  };
-
-  const onProjectionModeSwitch = (e: ChangeEvent<HTMLInputElement>, isRelease: boolean) => {
-    if (value.projection_mode === 'wgs') {
-      const utm_coords = getLatLngAsUtm(value.mortality_latitude, value.mortality_longitude);
-      setFieldValue(getAnimalFieldName<IAnimalMortality>(name, 'mortality_utm_northing', index), utm_coords[1]);
-      setFieldValue(getAnimalFieldName<IAnimalMortality>(name, 'mortality_utm_easting', index), utm_coords[0]);
-    } else {
-      const wgs_coords = getUtmAsLatLng(
-        coerceZero(value.mortality_utm_northing),
-        coerceZero(value.mortality_utm_easting)
-      );
-      setFieldValue(getAnimalFieldName<IAnimalMortality>(name, 'mortality_latitude', index), wgs_coords[1]);
-      setFieldValue(getAnimalFieldName<IAnimalMortality>(name, 'mortality_longitude', index), wgs_coords[0]);
-    }
-    setFieldValue(
-      getAnimalFieldName<IAnimalMortality>(name, 'projection_mode', index),
-      e.target.checked ? 'utm' : 'wgs'
+  const renderFields = (): JSX.Element => {
+    return (
+      <>
+        <Grid item xs={6}>
+          <CustomTextField
+            other={{ required: true, size: 'small' }}
+            label="Temp Mortality Timestamp"
+            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <CbSelectField
+            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_reason', index)}
+            handleChangeSideEffect={(value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
+            label={'PCOD Reason'}
+            controlProps={{ size: 'small' }}
+            id={`${index}-pcod-reason`}
+            route={'cod'}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <CbSelectField
+            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_confidence', index)}
+            label={'PCOD Confidence'}
+            controlProps={{ size: 'small' }}
+            id={`${index}-pcod-confidence`}
+            route={'cause_of_death_confidence'}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <CbSelectField
+            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_taxon_id', index)}
+            label={'PCOD Taxon'}
+            controlProps={{ size: 'small', disabled: pcodTaxonDisabled }}
+            id={`${index}-pcod-taxon`}
+            route={'taxons'}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <CbSelectField
+            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_reason', index)}
+            handleChangeSideEffect={(value, label) => {
+              setUcodTaxonDisabled(!label.includes('Predation'));
+            }}
+            label={'UCOD Reason'}
+            controlProps={{ size: 'small' }}
+            id={`${index}-ucod-reason`}
+            route={'cod'}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <CbSelectField
+            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_confidence', index)}
+            label={'UCOD Confidence'}
+            controlProps={{ size: 'small' }}
+            id={`${index}-ucod-confidence`}
+            route={'cause_of_death_confidence'}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <CbSelectField
+            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_taxon_id', index)}
+            label={'UCOD Taxon'}
+            controlProps={{ size: 'small', disabled: ucodTaxonDisabled }}
+            id={`${index}-ucod-taxon`}
+            route={'taxons'}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextInputToggle label="Add comment about this Mortality">
+            <CustomTextField
+              other={{ required: true, size: 'small' }}
+              label="Mortality Comment"
+              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_comment', index)}
+            />
+          </TextInputToggle>
+        </Grid>
+      </>
     );
-  };
-
-  const getCurrentMarkerPos = (): LatLng => {
-    if (value.projection_mode === 'utm') {
-      const latlng_coords = getUtmAsLatLng(
-        coerceZero(value.mortality_utm_northing),
-        coerceZero(value.mortality_utm_easting)
-      );
-      return new LatLng(latlng_coords[1], latlng_coords[0]);
-    } else {
-      return new LatLng(coerceZero(value.mortality_latitude), coerceZero(value.mortality_longitude));
-    }
   };
 
   return (
     <>
-      <Grid item xs={12}>
-        <Tabs
-          value={tabState}
-          variant="fullWidth"
-          onChange={(e, newVal) => {
-            setTabState(newVal);
-          }}>
-          <Tab label="Forms" />
-          <Tab label="Map" />
-        </Tabs>
-      </Grid>
-
-      {tabState === 0 ? (
-        <>
-          <Grid item xs={12}>
-            <FormGroup sx={{ alignItems: 'end' }}>
-              <FormControlLabel
-                control={
-                  <Switch checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} size={'small'} />
-                }
-                label="UTM Coordinates"
-              />
-            </FormGroup>
-          </Grid>
-          {value.projection_mode === 'wgs' ? (
-            <>
-              <Grid item xs={6}>
-                <CustomTextField
-                  other={{ required: true, size: 'small' }}
-                  label="Mortality Latitude"
-                  name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_latitude', index)}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <CustomTextField
-                  other={{ required: true, size: 'small' }}
-                  label="Mortality Longitude"
-                  name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_longitude', index)}
-                />
-              </Grid>
-            </>
-          ) : (
-            <>
-              <Grid item xs={6}>
-                <CustomTextField
-                  other={{ required: true, size: 'small' }}
-                  label="Mortality UTM Northing"
-                  name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_utm_northing', index)}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <CustomTextField
-                  other={{ required: true, size: 'small' }}
-                  label="Mortality UTM Easting"
-                  name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_utm_easting', index)}
-                />
-              </Grid>
-            </>
-          )}
-
-          <Grid item xs={6}>
-            <CustomTextField
-              other={{ required: true, size: 'small' }}
-              label="Mortality Coordinate Uncertainty"
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_coordinate_uncertainty', index)}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <CustomTextField
-              other={{ required: true, size: 'small' }}
-              label="Temp Mortality Timestamp"
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <CbSelectField
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_reason', index)}
-              handleChangeSideEffect={(value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
-              label={'PCOD Reason'}
-              controlProps={{ size: 'small' }}
-              id={`${index}-pcod-reason`}
-              route={'cod'}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <CbSelectField
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_confidence', index)}
-              label={'PCOD Confidence'}
-              controlProps={{ size: 'small' }}
-              id={`${index}-pcod-confidence`}
-              route={'cause_of_death_confidence'}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <CbSelectField
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_taxon_id', index)}
-              label={'PCOD Taxon'}
-              controlProps={{ size: 'small', disabled: pcodTaxonDisabled }}
-              id={`${index}-pcod-taxon`}
-              route={'taxons'}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <CbSelectField
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_reason', index)}
-              handleChangeSideEffect={(value, label) => {
-                setUcodTaxonDisabled(!label.includes('Predation'));
-              }}
-              label={'UCOD Reason'}
-              controlProps={{ size: 'small' }}
-              id={`${index}-ucod-reason`}
-              route={'cod'}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <CbSelectField
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_confidence', index)}
-              label={'UCOD Confidence'}
-              controlProps={{ size: 'small' }}
-              id={`${index}-ucod-confidence`}
-              route={'cause_of_death_confidence'}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <CbSelectField
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_taxon_id', index)}
-              label={'UCOD Taxon'}
-              controlProps={{ size: 'small', disabled: ucodTaxonDisabled }}
-              id={`${index}-ucod-taxon`}
-              route={'taxons'}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextInputToggle label="Add comment about this Mortality">
-              <CustomTextField
-                other={{ required: true, size: 'small' }}
-                label="Mortality Comment"
-                name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_comment', index)}
-              />
-            </TextInputToggle>
-          </Grid>
-        </>
-      ) : (
-        <Grid item xs={12}>
-          <Box position="relative" height={500}>
-            <MapContainer
-              mapId="mortality_form_map"
-              scrollWheelZoom={true}
-              additionalLayers={[
-                <MarkerWithResizableRadius
-                  radius={coerceZero(value.mortality_coordinate_uncertainty ?? NaN)}
-                  position={getCurrentMarkerPos()}
-                  markerColor="red"
-                  listenForMouseEvents={true}
-                  handlePlace={handleMarkerPlacement}
-                  handleResize={(n) => {
-                    setFieldValue(
-                      getAnimalFieldName<IAnimalMortality>(name, 'mortality_coordinate_uncertainty', index),
-                      n.toFixed(3)
-                    );
-                  }}
-                />
-              ]}
-            />
-          </Box>
-        </Grid>
-      )}
+      <LocationEntryForm
+        name={name}
+        index={index}
+        setFieldValue={setFieldValue}
+        value={value}
+        primaryLocationFields={{
+          latitude: 'mortality_latitude',
+          longitude: 'mortality_longitude',
+          coordinate_uncertainty: 'mortality_coordinate_uncertainty',
+          utm_northing: 'mortality_utm_northing',
+          utm_easting: 'mortality_utm_easting'
+        }}
+        otherPrimaryFields={[renderFields()]}
+      />
     </>
   );
 };

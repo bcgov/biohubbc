@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { Circle, Marker, useMap, useMapEvents } from 'react-leaflet';
 import { distanceInMetresBetweenCoordinates } from 'utils/mapProjectionHelpers';
 
-type IconColor = 'green' | 'blue' | 'red';
+export type MarkerIconColor = 'green' | 'blue' | 'red';
 
 interface IClickMarkerProps {
   position: LatLng;
   radius: number;
-  markerColor?: IconColor;
+  markerColor?: MarkerIconColor;
   listenForMouseEvents: boolean; //Have this here so you can NOOP the mouse events in the case of multiple instances of this component on same mapf
   handlePlace?: (p: LatLng) => void;
   handleResize?: (n: number) => void;
@@ -50,7 +50,7 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
     ...commonIconProps
   });
 
-  const iconMap: Record<IconColor, { icon: Icon; hex: string }> = {
+  const iconMap: Record<MarkerIconColor, { icon: Icon; hex: string }> = {
     blue: { icon: blueIcon, hex: '#2A81CB' },
     green: { icon: greenIcon, hex: '#2AAD27' },
     red: { icon: redIcon, hex: '#CB2B3E' }
