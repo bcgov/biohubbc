@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
     SET SEARCH_PATH=biohub, public;
 
     CREATE TABLE project_permission(
-      project_permission_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      project_permission_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                     varchar(50)       NOT NULL,
       description              varchar(250)      NOT NULL,
       notes                    varchar(3000),
@@ -43,7 +43,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON TABLE  project_permission                          IS 'Project permissions.';
 
     CREATE TABLE project_role_permission(
-      project_role_permission_id            integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      project_role_permission_id            integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       project_permission_id                 integer           NOT NULL,
       project_role_id                       integer           NOT NULL,
       create_date                           timestamptz(6)    DEFAULT now() NOT NULL,
