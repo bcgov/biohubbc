@@ -48,6 +48,8 @@ describe('user', () => {
       mockReq.body = {
         userGuid: 'aaaa',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+        displayName: 'display name',
+        email: 'email',
         roleId: 1
       };
 
@@ -72,6 +74,8 @@ describe('user', () => {
       mockReq.body = {
         userGuid: 'aaaa',
         userIdentifier: 'username',
+        displayName: 'display name',
+        email: 'email',
         roleId: 1
       };
 
@@ -96,7 +100,9 @@ describe('user', () => {
       mockReq.body = {
         userGuid: 'aaaa',
         userIdentifier: 'username',
-        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+        displayName: 'display name',
+        email: 'email'
       };
 
       try {
@@ -121,6 +127,8 @@ describe('user', () => {
         userGuid: 'aaaa',
         userIdentifier: 'username',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+        displayName: 'display name',
+        email: 'email',
         roleId: 1
       };
 
@@ -156,6 +164,8 @@ describe('user', () => {
       mockReq.body = {
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         userIdentifier: 'username',
+        displayName: 'display name',
+        email: 'email',
         roleId: 1
       };
 

@@ -207,10 +207,18 @@ export class UserRepository extends BaseRepository {
    * @param {string | null} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
+   * @param {string} displayName
+   * @param {string} email
    * @return {*}  {Promise<IInsertUser>}
    * @memberof UserRepository
    */
-  async addSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<IInsertUser> {
+  async addSystemUser(
+    userGuid: string | null,
+    userIdentifier: string,
+    identitySource: string,
+    displayName: string,
+    email: string
+  ): Promise<IInsertUser> {
     const sqlStatement = SQL`
     INSERT INTO
       system_user
@@ -218,6 +226,8 @@ export class UserRepository extends BaseRepository {
       user_guid,
       user_identity_source_id,
       user_identifier,
+      display_name,
+      email,
       record_effective_date
     )
     VALUES (
@@ -231,6 +241,8 @@ export class UserRepository extends BaseRepository {
           name = ${identitySource.toUpperCase()}
       ),
       ${userIdentifier.toLowerCase()},
+      ${displayName},
+      ${email.toLowerCase()},
       now()
     )
     RETURNING

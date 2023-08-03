@@ -124,8 +124,10 @@ describe('UserService', () => {
       const userIdentifier = 'username';
       const userGuid = 'aaaa';
       const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
+      const displayName = 'display name';
+      const email = 'email';
 
-      const result = await userService.addSystemUser(userGuid, userIdentifier, identitySource);
+      const result = await userService.addSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
 
       expect(result).to.eql(new UserObject(mockRowObj));
       expect(mockUserRepository).to.have.been.calledOnce;
@@ -185,11 +187,13 @@ describe('UserService', () => {
       const userIdentifier = 'username';
       const userGuid = 'aaaa';
       const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
+      const displayName = 'display name';
+      const email = 'email';
 
       const userService = new UserService(mockDBConnection);
 
       try {
-        await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
+        await userService.ensureSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
         expect.fail();
       } catch (actualError) {
         expect((actualError as ApiError).message).to.equal('Failed to identify system user ID');
@@ -214,10 +218,12 @@ describe('UserService', () => {
       const userIdentifier = 'username';
       const userGuid = 'aaaa';
       const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
+      const displayName = 'display name';
+      const email = 'email';
 
       const userService = new UserService(mockDBConnection);
 
-      const result = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
+      const result = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
 
       expect(result.id).to.equal(2);
       expect(result.record_end_date).to.equal(null);
@@ -246,10 +252,12 @@ describe('UserService', () => {
       const userIdentifier = 'username';
       const userGuid = 'aaaa';
       const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
+      const displayName = 'display name';
+      const email = 'email';
 
       const userService = new UserService(mockDBConnection);
 
-      const result = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
+      const result = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
 
       expect(result.id).to.equal(2);
       expect(result.record_end_date).to.equal(null);
@@ -287,10 +295,12 @@ describe('UserService', () => {
       const userIdentifier = 'username';
       const userGuid = 'aaaa';
       const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
+      const displayName = 'display name';
+      const email = 'email';
 
       const userService = new UserService(mockDBConnection);
 
-      const result = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
+      const result = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
 
       expect(result.id).to.equal(2);
       expect(result.record_end_date).to.equal(null);

@@ -195,6 +195,8 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         await biohubApi.admin.addSystemUser(
           systemUser.userIdentifier,
           systemUser.identitySource,
+          systemUser.displayName,
+          systemUser.email,
           systemUser.systemRole
         );
       }

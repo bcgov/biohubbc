@@ -17,6 +17,8 @@ import yup from 'utils/YupSchema';
 
 export interface IAddProjectParticipantsFormArrayItem {
   userIdentifier: string;
+  displayName: string;
+  email: string;
   identitySource: string;
   roleId: number;
 }
@@ -27,6 +29,8 @@ export interface IAddProjectParticipantsForm {
 
 export const AddProjectParticipantsFormArrayItemInitialValues: IAddProjectParticipantsFormArrayItem = {
   userIdentifier: '',
+  displayName: '',
+  email: '',
   identitySource: '',
   roleId: '' as unknown as number
 };
@@ -39,6 +43,8 @@ export const AddProjectParticipantsFormYupSchema = yup.object().shape({
   participants: yup.array().of(
     yup.object().shape({
       userIdentifier: yup.string().required('Username is required'),
+      displayName: yup.string().required('Display Name is required'),
+      email: yup.string().email('Must be a valid email').required('Email is required'),
       identitySource: yup.string().required('Login Method is required'),
       roleId: yup.number().required('Role is required')
     })
@@ -61,6 +67,8 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
             <Grid container direction="row" spacing={2}>
               {values.participants?.map((participant, index) => {
                 const userIdentifierMeta = getFieldMeta(`participants.[${index}].userIdentifier`);
+                const displayNameMeta = getFieldMeta(`participants.[${index}].displayName`);
+                const emailMeta = getFieldMeta(`participants.[${index}].email`);
                 const identitySourceMeta = getFieldMeta(`participants.[${index}].identitySource`);
                 const roleIdMeta = getFieldMeta(`participants.[${index}].roleId`);
 
@@ -78,6 +86,30 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                                 value: participant.userIdentifier,
                                 error: userIdentifierMeta.touched && Boolean(userIdentifierMeta.error),
                                 helperText: userIdentifierMeta.touched && userIdentifierMeta.error
+                              }}
+                            />
+                          </Box>
+                          <Box pl={1} width={220}>
+                            <CustomTextField
+                              name={`participants.[${index}].displayName`}
+                              label="Display Name"
+                              other={{
+                                required: true,
+                                value: participant.displayName,
+                                error: displayNameMeta.touched && Boolean(displayNameMeta.error),
+                                helperText: displayNameMeta.touched && displayNameMeta.error
+                              }}
+                            />
+                          </Box>
+                          <Box pl={1} width={220}>
+                            <CustomTextField
+                              name={`participants.[${index}].email`}
+                              label="Email"
+                              other={{
+                                required: true,
+                                value: participant.email,
+                                error: emailMeta.touched && Boolean(emailMeta.error),
+                                helperText: emailMeta.touched && emailMeta.error
                               }}
                             />
                           </Box>

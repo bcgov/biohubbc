@@ -18,6 +18,7 @@ export type IAccessRequestDataObject = {
   username: string;
   email: string;
   identitySource: string;
+  displayName: string;
 } & (IIDIRAccessRequestDataObject | IBCeIDBasicAccessRequestDataObject | IBCeIDBusinessAccessRequestDataObject);
 
 export interface IGetAccessRequestsListResponse {

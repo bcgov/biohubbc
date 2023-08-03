@@ -61,7 +61,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['userGuid', 'userIdentifier', 'identitySource'],
+          required: ['userGuid', 'userIdentifier', 'identitySource', 'displayName', 'email'],
           properties: {
             userGuid: {
               type: 'string',
@@ -74,6 +74,14 @@ PUT.apiDoc = {
             identitySource: {
               type: 'string',
               enum: AllUserIdentitySources
+            },
+            displayName: {
+              type: 'string',
+              description: 'The display name for the user.'
+            },
+            email: {
+              type: 'string',
+              description: 'The email for the user.'
             },
             roleIds: {
               type: 'array',
@@ -116,6 +124,8 @@ export function approveAccessRequest(): RequestHandler {
 
     const userGuid = req.body.userGuid;
     const userIdentifier = req.body.userIdentifier;
+    const displayName = req.body.displayName;
+    const email = req.body.email;
 
     // Convert identity sources that have multiple variations (ie: BCEID) into a single value supported by this app
     const identitySource = req.body.identitySource && coerceUserIdentitySource(req.body.identitySource);
@@ -137,7 +147,13 @@ export function approveAccessRequest(): RequestHandler {
       const administrativeActivityService = new AdministrativeActivityService(connection);
 
       // Get the system user (adding or activating them if they already existed).
-      const systemUserObject = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
+      const systemUserObject = await userService.ensureSystemUser(
+        userGuid,
+        userIdentifier,
+        identitySource,
+        displayName,
+        email
+      );
 
       // Filter out any system roles that have already been added to the user
       const rolesIdsToAdd = roleIds.filter((roleId) => !systemUserObject.role_ids.includes(roleId));
