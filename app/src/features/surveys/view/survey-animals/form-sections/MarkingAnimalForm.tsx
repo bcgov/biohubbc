@@ -47,7 +47,7 @@ const MarkingAnimalForm = () => {
                     name={getAnimalFieldName<IAnimalMarking>(name, 'marking_body_location_id', index)}
                     id="marking_body_location"
                     route="taxon_marking_body_locations"
-                    taxon_id={values.general.taxon_id}
+                    query={`taxon_id=${values.general.taxon_id}`}
                     controlProps={{ size: 'small' }}
                   />
                 </Grid>

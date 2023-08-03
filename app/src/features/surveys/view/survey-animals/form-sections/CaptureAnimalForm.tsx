@@ -35,7 +35,7 @@ const CaptureAnimalForm = () => {
     capture_utm_northing: '' as unknown as number,
     capture_utm_easting: '' as unknown as number,
     capture_comment: '',
-    capture_coordinate_uncertainty: 1,
+    capture_coordinate_uncertainty: 10,
     capture_timestamp: '' as unknown as Date,
     release_latitude: '' as unknown as number,
     release_longitude: '' as unknown as number,
@@ -43,7 +43,7 @@ const CaptureAnimalForm = () => {
     release_utm_easting: '' as unknown as number,
     release_comment: '',
     release_timestamp: '' as unknown as Date,
-    release_coordinate_uncertainty: 1,
+    release_coordinate_uncertainty: 10,
     projection_mode: 'wgs' as ProjectionMode
   };
 
@@ -172,7 +172,7 @@ const CaptureAnimalFormContent = ({ name, index, setFieldValue, value }: Capture
           onChange={(e, newVal) => {
             setTabState(newVal);
           }}>
-          <Tab label="Forms" />
+          <Tab label="Text" />
           <Tab label="Map" />
         </Tabs>
       </Grid>
@@ -322,15 +322,13 @@ const CaptureAnimalFormContent = ({ name, index, setFieldValue, value }: Capture
         </>
       ) : (
         <Grid item xs={12}>
-          <Box position="relative" height={500}>
-            <FormGroup sx={{ alignItems: 'end' }}>
-              <FormControlLabel
-                control={
-                  <Switch checked={placeReleaseMode} onChange={(e, b) => setPlaceReleaseMode(b)} size={'small'} />
-                }
-                label="Place Release Coordinate"
-              />
-            </FormGroup>
+          <FormGroup sx={{ alignItems: 'end' }}>
+            <FormControlLabel
+              control={<Switch checked={placeReleaseMode} onChange={(e, b) => setPlaceReleaseMode(b)} size={'small'} />}
+              label="Place Release Coordinate"
+            />
+          </FormGroup>
+          <Box position="relative" height={350}>
             <MapContainer
               mapId="caputre_form_map"
               scrollWheelZoom={true}

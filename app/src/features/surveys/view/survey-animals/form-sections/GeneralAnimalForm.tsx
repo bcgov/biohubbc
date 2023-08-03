@@ -31,6 +31,7 @@ const GeneralAnimalForm = () => {
               label={'Taxon'}
               id={'taxon'}
               route={'taxons'}
+              controlProps={{ required: true, size: 'small' }}
             />
           </HelpButtonTooltip>
         </Box>

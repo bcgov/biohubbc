@@ -2,7 +2,9 @@ import { mdiClose, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Grid, IconButton, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import { useFormikContext } from 'formik';
 import React from 'react';
+import { IAnimal } from '../animal';
 
 interface FormSectionWrapperProps {
   title: string; // Section title ie: General / Capture etc
@@ -29,6 +31,7 @@ const FormSectionWrapper = ({
   handleRemoveSection,
   btnLabel
 }: FormSectionWrapperProps) => {
+  const { values } = useFormikContext<IAnimal>();
   //For convienence, vs rendering duplicated components for children and children[]
   const childs = Array.isArray(children) ? children : [children];
 
@@ -64,6 +67,7 @@ const FormSectionWrapper = ({
           startIcon={<Icon path={mdiPlus} size={1} />}
           variant="outlined"
           size="small"
+          disabled={!values.general.taxon_id}
           color="primary">
           {btnLabel}
         </Button>

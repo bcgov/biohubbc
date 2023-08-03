@@ -11,7 +11,8 @@ export interface ICbSelectField {
   label: string;
   id: string;
   route: ICbRouteKey;
-  taxon_id?: string;
+  param?: string;
+  query?: string;
   controlProps?: FormControlProps;
 }
 
@@ -21,11 +22,11 @@ interface ICbSelectOption {
 }
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
-  const { name, label, taxon_id, route } = props;
+  const { name, label, route, param, query } = props;
 
   const api = useCritterbaseApi();
-  const { data, load, refresh, isReady } = useDataLoader(async () => api.lookup.getSelectOptions(route, taxon_id));
-  const { values, touched, errors, handleChange, handleBlur, setFieldValue, setFieldTouched, setFieldError } =
+  const { data, load, refresh, isReady } = useDataLoader(async () => api.lookup.getSelectOptions(route, param, query));
+  const { values, touched, errors, handleChange, handleBlur, setFieldValue, setFieldTouched } =
     useFormikContext<ICbSelectOption>();
 
   const err = get(touched, name) && get(errors, name);
@@ -52,7 +53,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
     }
   };
 
-  useEffect(refresh, [taxon_id]);
+  useEffect(refresh, [param, query]);
   useEffect(handleInRange, [isReady]);
 
   return (
@@ -65,8 +66,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
         value={isValueInRange() ? val : ''}
         onChange={handleChange}
         onBlur={handleBlur}
-        displayEmpty
-        inputProps={{ 'aria-label': 'Permit Type' }}>
+        displayEmpty>
         {data?.map((a) => {
           const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
           return (

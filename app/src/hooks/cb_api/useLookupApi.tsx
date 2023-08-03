@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 
-interface ICbSelectRows {
+export interface ICbSelectRows {
   key: string;
   id: string;
   value: string;
@@ -27,8 +27,10 @@ export type ICbRouteKey =
   | 'collection_units'
   | 'taxon_collection_categories'
   | 'taxon_marking_body_locations'
+  | 'taxon_measurements'
+  | 'taxon_quantitative_measurements'
   | 'taxon_qualitative_measurements'
-  | 'taxon_quantitative_measurements';
+  | 'taxon_qualitative_measurement_options';
 
 type ICbRoutes = Record<ICbRouteKey, string>;
 const lookups = '/api/lookups';
@@ -61,16 +63,23 @@ const CbRoutes: ICbRoutes = {
   collection_units: `${xref}/collection-units`,
 
   // taxon xrefs
+  taxon_measurements: `${xref}/taxon-measurements`,
   taxon_qualitative_measurements: `${xref}/taxon-quantitative-measurements`,
+  taxon_qualitative_measurement_options: `${xref}/taxon-qualitative-measurement-options`,
   taxon_quantitative_measurements: `${xref}/taxon-qualitative-measurements`,
   taxon_collection_categories: `${xref}/taxon-collection-categories`,
   taxon_marking_body_locations: `${xref}/taxon-marking-body-locations`
 };
 
 const useLookupApi = (axios: AxiosInstance) => {
-  const getSelectOptions = async (route: ICbRouteKey, taxon_id?: string): Promise<Array<ICbSelectRows | string>> => {
-    const byTaxon = taxon_id ? `&taxon_id=${taxon_id}` : ``;
-    const { data } = await axios.get(`${CbRoutes[route]}?format=asSelect${byTaxon}`);
+  const getSelectOptions = async <T extends ICbSelectRows | string>(
+    route: ICbRouteKey,
+    param?: string,
+    query?: string
+  ): Promise<Array<T>> => {
+    const _param = param ? `/${param}` : ``;
+    const _query = query ? `&${query}` : ``;
+    const { data } = await axios.get(`${CbRoutes[route]}${_param}?format=asSelect${_query}`);
     return data;
   };
 

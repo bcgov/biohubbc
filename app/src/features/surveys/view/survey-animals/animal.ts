@@ -49,9 +49,9 @@ export const AnimalMarkingSchema = yup.object({}).shape({
 });
 
 const AnimalMeasurementSchema = yup.object({}).shape({
-  measurement_type_id: yup.string().required(req),
-  measurement_value: yup.string().required(req), //Can be string or number
-  measurement_unit_id: yup.string().required(req),
+  taxon_measurement_id: yup.string().required(req),
+  valueOrOption: yup.mixed().oneOf([yup.string(), yup.number()]),
+  measured_timestamp: yup.date(),
   measurement_comment: yup.string()
 });
 
