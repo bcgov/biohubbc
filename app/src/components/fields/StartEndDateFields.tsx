@@ -32,7 +32,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
 
   const rawStartDateValue = get(values, startName);
   const rawEndDateValue = get(values, endName);
-  console.log(`NEW PROJECT END DATE: `, rawEndDateValue);
+
   const formattedStartDateValue =
     (rawStartDateValue &&
       moment(rawStartDateValue).isValid() &&
