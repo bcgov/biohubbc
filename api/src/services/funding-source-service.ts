@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { FundingSourceRepository } from '../repositories/funding-source-repository';
+import { FundingSource, FundingSourceRepository } from '../repositories/funding-source-repository';
 import { DBService } from './db-service';
 
 export class FundingSourceService extends DBService {
@@ -9,5 +9,15 @@ export class FundingSourceService extends DBService {
     super(connection);
 
     this.fundingSourceRepository = new FundingSourceRepository(connection);
+  }
+
+  /**
+   * Get all funding sources.
+   *
+   * @return {*}  {Promise<FundingSource[]>}
+   * @memberof FundingSourceService
+   */
+  async getFundingSources(): Promise<FundingSource[]> {
+    return this.fundingSourceRepository.getFundingSources();
   }
 }
