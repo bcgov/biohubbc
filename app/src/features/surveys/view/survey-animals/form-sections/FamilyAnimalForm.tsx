@@ -3,19 +3,22 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import useDataLoader from 'hooks/useDataLoader';
 import { Fragment } from 'react';
+import { validate as uuidValidate } from 'uuid';
 import { getAnimalFieldName, IAnimal, IAnimalRelationship } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
-import { validate as uuidValidate } from 'uuid';
 
+/**
+ * Renders the Family section for the Individual Animal form
+ *
+ * This form needs to validate against the Critterbase critter table, as only critters that have already been
+ * added to Critterbase are permissible as family members.
+ *
+ * Returns {*}
+ */
 const FamilyAnimalForm = () => {
   const { values, touched, errors, handleChange } = useFormikContext<IAnimal>();
   const critterbase = useCritterbaseApi();
-  const critterLoader = useDataLoader(critterbase.critters.getAllCritters);
-  if (!critterLoader.data) {
-    critterLoader.load();
-  }
 
   const name: keyof IAnimal = 'family';
   const newRelationship: IAnimalRelationship = {
@@ -33,6 +36,7 @@ const FamilyAnimalForm = () => {
       return error;
     }
     try {
+      //Check the actual critter table here.
       const critter = await critterbase.critters.getCritterByID(critter_id);
       if (critter.critter_id !== critter_id) {
         error = 'Critter not in critterbase.';
@@ -56,7 +60,7 @@ const FamilyAnimalForm = () => {
             {values.family.map((_cap, index) => (
               <Fragment key={`family-inputs-${index}`}>
                 <Grid item xs={6}>
-                  <Field
+                  <Field //Using Formik Field here in order to have custom field level validation. Note that you can pass extra props and it will feed it to CustomTextField
                     as={CustomTextField}
                     name={getAnimalFieldName<IAnimalRelationship>(name, 'critter_id', index)}
                     label={"Individual's ID"}
@@ -70,7 +74,7 @@ const FamilyAnimalForm = () => {
                       <InputLabel size="small" id={`relationship-family-${index}`}>
                         Relationship
                       </InputLabel>
-                      <Select
+                      <Select //Doing a raw MUI Select here since we don't enumerate these values in Critterbase
                         id={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
                         name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
                         label={'Relationship'}

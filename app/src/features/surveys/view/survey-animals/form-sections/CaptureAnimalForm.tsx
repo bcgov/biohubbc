@@ -5,8 +5,9 @@ import MapContainer from 'components/map/MapContainer';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, FormikErrors, useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';
-import proj4 from 'proj4';
 import { ChangeEvent, useState } from 'react';
+import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
+import { coerceZero } from 'utils/Utils';
 import { getAnimalFieldName, IAnimal, IAnimalCapture } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
@@ -23,7 +24,6 @@ import FormSectionWrapper from './FormSectionWrapper';
  * Returns {*}
  */
 
-//type CaptureTabState = 'form' | 'map';
 type ProjectionMode = 'wgs' | 'utm';
 const CaptureAnimalForm = () => {
   const { values, setFieldValue } = useFormikContext<IAnimal>();
@@ -80,26 +80,12 @@ interface CaptureAnimalFormContentProps {
   value: IAnimalCapture;
 }
 
-const coerceZero = (n: number | undefined): number => (isNaN(n ?? NaN) ? 0 : Number(n));
-
 const CaptureAnimalFormContent = ({ name, index, setFieldValue, value }: CaptureAnimalFormContentProps) => {
-  const [showRelease, setShowRelease] = useState(false);
-  const [tabState, setTabState] = useState(0);
-  const [placeReleaseMode, setPlaceReleaseMode] = useState(false);
-
-  const utmProjection = `+proj=utm +zone=${10} +north +datum=WGS84 +units=m +no_defs`;
-  const wgs84Projection = `+proj=longlat +datum=WGS84 +no_defs`;
-
-  const getUtmAsLatLng = (northing: number, easting: number) => {
-    return proj4(utmProjection, wgs84Projection, [Number(easting), Number(northing)]).map((a) => Number(a.toFixed(3)));
-  };
-
-  const getLatLngAsUtm = (lat: number, lng: number) => {
-    return proj4(wgs84Projection, utmProjection, [Number(lng), Number(lat)]).map((a) => Number(a.toFixed(3)));
-  };
+  const [showRelease, setShowRelease] = useState(false); //Controls whether fields for the release event are shown or not.
+  const [tabState, setTabState] = useState(0); //Controls whether we are on the Forms tab or the Map tab.
+  const [placeReleaseMode, setPlaceReleaseMode] = useState(false); //Controls whether left clicking on the map will place the capture or release marker.
 
   const handleMarkerPlacement = (e: LatLng, isRelease: boolean) => {
-    console.log(`handleMarkerPlace ${JSON.stringify(e)}, ${isRelease}`);
     setFieldValue(
       getAnimalFieldName<IAnimalCapture>(name, isRelease ? 'release_latitude' : 'capture_latitude', index),
       e.lat.toFixed(3)
@@ -119,7 +105,9 @@ const CaptureAnimalFormContent = ({ name, index, setFieldValue, value }: Capture
     );
   };
 
-  const onProjectionModeSwitch = (e: ChangeEvent<HTMLInputElement>, isRelease: boolean) => {
+  const onProjectionModeSwitch = (e: ChangeEvent<HTMLInputElement>) => {
+    //This gets called everytime the toggle element fires. We need to do a projection each time so that the new fields that get shown
+    //will be in sync with the values from the ones that were just hidden.
     if (value.projection_mode === 'wgs') {
       const utm_coords = getLatLngAsUtm(value.capture_latitude, value.capture_longitude);
       setFieldValue(getAnimalFieldName<IAnimalCapture>(name, 'capture_utm_northing', index), utm_coords[1]);

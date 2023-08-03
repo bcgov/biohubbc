@@ -6,11 +6,30 @@ import MapContainer from 'components/map/MapContainer';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, FormikErrors, useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';
-import proj4 from 'proj4';
 import { ChangeEvent, useState } from 'react';
+import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
+import { coerceZero } from 'utils/Utils';
 import { getAnimalFieldName, IAnimal, IAnimalMortality } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
+
+/**
+ * Renders the Mortality section for the Individual Animal form
+ *
+ * Note A: Using <FieldArray/> the name properties must stay in sync with
+ * values object and nested arrays.
+ * ie: values = { mortality: [{id: 'test'}] };  name = 'mortality.[0].id';
+ *
+ * Note B: FormSectionWrapper uses a Grid container to render children elements.
+ * Children of FormSectionWrapper can use Grid items to organize inputs.
+ *
+ * Note C: Mortality gets set like an array here, though it should only ever contain one value.
+ * This might seem odd, but this is in line with how critterbase stores these values.
+ * To encourage the max of one rule, we use the maxSections prop here to prevent additional copies of the form 
+ * from rendering.
+ *
+ * Returns {*}
+ */
 
 type ProjectionMode = 'wgs' | 'utm';
 const MortalityAnimalForm = () => {
@@ -68,23 +87,10 @@ interface MortalityAnimalFormContentProps {
   value: IAnimalMortality;
 }
 
-const coerceZero = (n: number | undefined): number => (isNaN(n ?? NaN) ? 0 : Number(n));
-
 const MortalityAnimalFormContent = ({ name, index, setFieldValue, value }: MortalityAnimalFormContentProps) => {
-  const [tabState, setTabState] = useState(0);
-  const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true);
-  const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true);
-
-  const utmProjection = `+proj=utm +zone=${10} +north +datum=WGS84 +units=m +no_defs`;
-  const wgs84Projection = `+proj=longlat +datum=WGS84 +no_defs`;
-
-  const getUtmAsLatLng = (northing: number, easting: number) => {
-    return proj4(utmProjection, wgs84Projection, [Number(easting), Number(northing)]).map((a) => Number(a.toFixed(3)));
-  };
-
-  const getLatLngAsUtm = (lat: number, lng: number) => {
-    return proj4(wgs84Projection, utmProjection, [Number(lng), Number(lat)]).map((a) => Number(a.toFixed(3)));
-  };
+  const [tabState, setTabState] = useState(0); //Controls whether we are showing Forms tab or Map tab
+  const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
+  const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
 
   const handleMarkerPlacement = (e: LatLng) => {
     setFieldValue(getAnimalFieldName<IAnimalMortality>(name, 'mortality_latitude', index), e.lat.toFixed(3));

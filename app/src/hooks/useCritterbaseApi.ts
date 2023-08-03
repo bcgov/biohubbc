@@ -3,9 +3,9 @@ import { ConfigContext } from 'contexts/configContext';
 import { useContext } from 'react';
 import useAxios from './api/useAxios';
 import { useAuthentication } from './cb_api/useAuthenticationApi';
-import { useLookupApi } from './cb_api/useLookupApi';
-import { useMarkings } from './cb_api/useMarkingsApi';
 import { useCritterApi } from './cb_api/useCritterApi';
+import { useLookupApi } from './cb_api/useLookupApi';
+import { useMarkings } from './cb_api/useMarkings';
 
 /**
  * Returns a set of supported api methods.
