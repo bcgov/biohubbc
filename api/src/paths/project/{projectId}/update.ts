@@ -117,7 +117,8 @@ GET.apiDoc = {
                   end_date: {
                     type: 'string',
                     format: 'date',
-                    description: 'ISO 8601 date string for the project end date'
+                    description: 'ISO 8601 date string for the project end date',
+                    nullable: true
                   },
                   revision_count: {
                     type: 'number'
