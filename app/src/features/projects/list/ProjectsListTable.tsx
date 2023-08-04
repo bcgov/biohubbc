@@ -99,7 +99,7 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     {
       field: 'program',
       headerName: 'Programs',
-      flex: 1,
+      flex: 1
     },
     {
       field: 'regions',

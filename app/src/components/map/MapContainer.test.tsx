@@ -248,7 +248,6 @@ describe('MapContainer', () => {
       fireEvent.click(getByText('No'));
     });
 
-    // expect(onDrawChange).toNotHaveBeenCalled(initialFeatures);
     expect(onDrawChange).not.toHaveBeenCalled();
   });
 
