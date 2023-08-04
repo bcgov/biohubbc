@@ -38,7 +38,7 @@ export const ProjectDetailsFormYupSchema = yup.object().shape({
       .min(1, 'At least 1 Project Program is Required')
       .required('Project Program is Required'),
     start_date: yup.string().isValidDateString().required('Start Date is Required'),
-    end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
+    end_date: yup.string().nullable().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
   })
 });
 

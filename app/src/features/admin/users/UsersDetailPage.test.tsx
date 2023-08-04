@@ -51,7 +51,7 @@ describe('UsersDetailPage', () => {
     history.push('/admin/users/1');
 
     mockUseApi.user.getUserById.mockResolvedValue({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'LongerUserName',
       user_record_end_date: 'end',
       role_names: ['role1', 'role2'],

@@ -86,11 +86,11 @@ describe('getUser', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'testuser',
       user_guid: '123456789',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: null,
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
     });

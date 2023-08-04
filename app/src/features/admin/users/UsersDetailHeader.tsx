@@ -78,11 +78,11 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   );
 
   const deActivateSystemUser = async (user: IGetUserResponse) => {
-    if (!user?.id) {
+    if (!user?.system_user_id) {
       return;
     }
     try {
-      await biohubApi.user.deleteSystemUser(user.id);
+      await biohubApi.user.deleteSystemUser(user.system_user_id);
 
       dialogContext.setSnackbar({
         snackbarMessage: (

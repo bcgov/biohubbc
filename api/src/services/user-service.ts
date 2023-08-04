@@ -1,7 +1,7 @@
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { IDBConnection } from '../database/db';
 import { ApiBuildSQLError, ApiExecuteSQLError } from '../errors/api-error';
-import { UserObject } from '../models/user';
+import { User } from '../models/user';
 import { queries } from '../queries/queries';
 import { UserRepository } from '../repositories/user-repository';
 import {
@@ -12,14 +12,6 @@ import {
 } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
-
-export type ListSystemUsers = {
-  id: number;
-  user_identifier: string;
-  record_end_date: string;
-  role_ids: number[];
-  role_names: string[];
-};
 
 const defaultLog = getLogger('services/user-service');
 
@@ -39,23 +31,23 @@ export class UserService extends DBService {
    * Fetch a single system user by their system user ID.
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<UserObject>)}
+   * @return {*}  {(Promise<User>)}
    * @memberof UserService
    */
-  async getUserById(systemUserId: number): Promise<UserObject> {
+  async getUserById(systemUserId: number): Promise<User> {
     const response = await this.userRepository.getUserById(systemUserId);
 
-    return new UserObject(response);
+    return response;
   }
 
   /**
    * Get an existing system user by their GUID.
    *
    * @param {string} userGuid The user's GUID
-   * @return {*}  {(Promise<UserObject | null>)}
+   * @return {*}  {(Promise<User | null>)}
    * @memberof UserService
    */
-  async getUserByGuid(userGuid: string): Promise<UserObject | null> {
+  async getUserByGuid(userGuid: string): Promise<User | null> {
     defaultLog.debug({ label: 'getUserByGuid', userGuid });
 
     const response = await this.userRepository.getUserByGuid(userGuid);
@@ -64,7 +56,7 @@ export class UserService extends DBService {
       return null;
     }
 
-    return new UserObject(response[0]);
+    return response[0];
   }
 
   /**
@@ -72,10 +64,10 @@ export class UserService extends DBService {
    *
    * @param userIdentifier the user's identifier
    * @param identitySource the user's identity source, e.g. `'IDIR'`
-   * @return {*}  {(Promise<UserObject | null>)} Promise resolving the UserObject, or `null` if the user wasn't found.
+   * @return {*}  {(Promise<User | null>)} Promise resolving the User, or `null` if the user wasn't found.
    * @memberof UserService
    */
-  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<UserObject | null> {
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<User | null> {
     defaultLog.debug({ label: 'getUserByIdentifier', userIdentifier, identitySource });
 
     const response = await this.userRepository.getUserByIdentifier(userIdentifier, identitySource);
@@ -84,7 +76,7 @@ export class UserService extends DBService {
       return null;
     }
 
-    return new UserObject(response[0]);
+    return response[0];
   }
 
   /**
@@ -97,7 +89,7 @@ export class UserService extends DBService {
    * @param {string} identitySource
    * @param {string} displayName
    * @param {string} email
-   * @return {*}  {Promise<UserObject>}
+   * @return {*}  {Promise<User>}
    * @memberof UserService
    */
   async addSystemUser(
@@ -106,7 +98,7 @@ export class UserService extends DBService {
     identitySource: string,
     displayName: string,
     email: string
-  ): Promise<UserObject> {
+  ): Promise<{ system_user_id: number }> {
     const response = await this.userRepository.addSystemUser(
       userGuid,
       userIdentifier,
@@ -115,19 +107,19 @@ export class UserService extends DBService {
       email
     );
 
-    return new UserObject(response);
+    return response;
   }
 
   /**
    * Get a list of all system users.
    *
-   * @return {*}  {Promise<UserObject[]>}
+   * @return {*}  {Promise<User[]>}
    * @memberof UserService
    */
-  async listSystemUsers(): Promise<UserObject[]> {
+  async listSystemUsers(): Promise<User[]> {
     const response = await this.userRepository.listSystemUsers();
 
-    return response.map((row) => new UserObject(row));
+    return response;
   }
 
   /**
@@ -139,7 +131,7 @@ export class UserService extends DBService {
    * @param {string} identitySource
    * @param {string} displayName
    * @param {string} email
-   * @return {*}  {Promise<UserObject>}
+   * @return {*}  {Promise<User>}
    * @memberof UserService
    */
   async ensureSystemUser(
@@ -148,7 +140,7 @@ export class UserService extends DBService {
     identitySource: string,
     displayName: string,
     email: string
-  ): Promise<UserObject> {
+  ): Promise<User> {
     // Check if the user exists in SIMS
     let userObject = userGuid
       ? await this.getUserByGuid(userGuid)
@@ -163,7 +155,10 @@ export class UserService extends DBService {
       }
 
       // Found no existing user, add them
-      userObject = await this.addSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
+      const newId = await this.addSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
+
+      // fetch the new user object
+      userObject = await this.getUserById(newId.system_user_id);
     }
 
     if (!userObject.record_end_date) {
@@ -172,17 +167,17 @@ export class UserService extends DBService {
     }
 
     // system user is not active, re-activate them
-    await this.activateSystemUser(userObject.id);
+    await this.activateSystemUser(userObject.system_user_id);
 
     // get the newly activated user
-    return this.getUserById(userObject.id);
+    return this.getUserById(userObject.system_user_id);
   }
 
   /**
    * Activates an existing system user that had been deactivated (soft deleted).
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<UserObject>)}
+   * @return {*}  {(Promise<User>)}
    * @memberof UserService
    */
   async activateSystemUser(systemUserId: number) {
@@ -203,7 +198,7 @@ export class UserService extends DBService {
    * Deactivates an existing system user (soft delete).
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<UserObject>)}
+   * @return {*}  {(Promise<User>)}
    * @memberof UserService
    */
   async deactivateSystemUser(systemUserId: number) {

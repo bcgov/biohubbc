@@ -64,6 +64,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
@@ -127,6 +128,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
@@ -186,6 +188,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
@@ -258,6 +261,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
@@ -349,6 +353,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
@@ -451,6 +456,7 @@ describe('SurveyAttachments', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true

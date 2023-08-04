@@ -147,7 +147,7 @@ export function addSystemRoleUser(): RequestHandler {
       );
 
       if (userObject) {
-        await userService.addUserSystemRoles(userObject.id, [roleId]);
+        await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
       }
 
       await connection.commit();

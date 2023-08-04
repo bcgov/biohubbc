@@ -23,7 +23,7 @@ import PublishSurveyDialog from 'components/publish/PublishSurveyDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -204,7 +204,7 @@ const SurveyHeader = () => {
                   </Button>
                 </SystemRoleGuard>
                 <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button
                     id="survey_settings_button"
