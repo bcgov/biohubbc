@@ -123,7 +123,7 @@ export function addSystemRoleUser(): RequestHandler {
       const userObject = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
 
       if (userObject) {
-        await userService.addUserSystemRoles(userObject.id, [roleId]);
+        await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
       }
 
       await connection.commit();

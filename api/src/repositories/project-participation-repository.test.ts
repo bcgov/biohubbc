@@ -38,15 +38,22 @@ describe('ProjectParticipationRepository', () => {
 
   describe('getProjectParticipant', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
+      const mockResponse = ({
+        rows: [
+          {
+            system_user_id: 1
+          }
+        ],
+        rowCount: 1
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
 
       const response = await repository.getProjectParticipant(1, 1);
 
       expect(response).to.not.be.null;
-      expect(response).to.eql({ id: 1 });
+      expect(response).to.eql({ system_user_id: 1 });
     });
 
     it('should return null', async () => {

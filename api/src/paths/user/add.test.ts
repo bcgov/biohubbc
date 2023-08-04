@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { UserObject } from '../../models/user';
+import { User } from '../../models/user';
 import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as user from './add';
@@ -124,8 +124,8 @@ describe('user', () => {
         roleId: 1
       };
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: User = {
+        system_user_id: 1,
         user_identifier: '',
         user_guid: '',
         identity_source: '',
@@ -159,10 +159,10 @@ describe('user', () => {
         roleId: 1
       };
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: User = {
+        system_user_id: 1,
         user_identifier: '',
-        user_guid: null,
+        user_guid: '',
         identity_source: '',
         record_end_date: '',
         role_ids: [1],

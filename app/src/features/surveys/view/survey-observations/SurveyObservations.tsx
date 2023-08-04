@@ -179,6 +179,7 @@ const SurveyObservations: React.FC = () => {
           if (
             HasProjectOrSystemRole({
               validProjectRoles: [],
+              validProjectPermissions: [],
               validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
             }) ||
             occurrenceSubmissionPublishStatus !== PublishStatus.SUBMITTED

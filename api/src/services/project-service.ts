@@ -29,7 +29,7 @@ import {
   ProjectData,
   ProjectSupplementaryData
 } from '../models/project-view';
-import { ProjectUserObject } from '../models/user';
+import { ProjectUser } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectRepository } from '../repositories/project-repository';
@@ -95,7 +95,7 @@ export class ProjectService extends DBService {
    * @return {*}  {Promise<any>}
    * @memberof ProjectService
    */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
     return this.projectParticipationService.getProjectParticipant(projectId, systemUserId);
   }
 
@@ -137,11 +137,11 @@ export class ProjectService extends DBService {
     const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields);
 
     return response.map((row) => ({
-      id: row.id,
-      name: row.name,
+      id: row.project_id,
+      name: row.project_name,
       start_date: row.start_date,
       end_date: row.end_date,
-      coordinator_agency: row.coordinator_agency_name,
+      coordinator_agency: row.coordinator_agency,
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
@@ -395,8 +395,8 @@ export class ProjectService extends DBService {
 
     await Promise.all(promises);
 
-    // The user that creates a project is automatically assigned a project lead role, for this project
-    await this.insertParticipantRole(projectId, PROJECT_ROLE.PROJECT_LEAD);
+    // The user that creates a project is automatically assigned a coordinator role, for this project
+    await this.insertParticipantRole(projectId, PROJECT_ROLE.COORDINATOR);
 
     return projectId;
   }

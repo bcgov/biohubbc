@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../../constants/administrative-activity';
 import * as db from '../../../../database/db';
-import { UserObject } from '../../../../models/user';
+import { User } from '../../../../models/user';
 import { AdministrativeActivityService } from '../../../../services/administrative-activity-service';
 import { UserService } from '../../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
@@ -65,10 +65,10 @@ describe('approveAccessRequest', () => {
 
     const systemUserId = 4;
     const existingRoleIds = [1, 2];
-    const mockSystemUser: UserObject = {
-      id: systemUserId,
+    const mockSystemUser: User = {
+      system_user_id: systemUserId,
       user_identifier: '',
-      user_guid: 'aaaa',
+      user_guid: '',
       identity_source: 'idir',
       record_end_date: '',
       role_ids: existingRoleIds,

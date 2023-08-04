@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { UserObject } from '../models/user';
+import { User } from '../models/user';
 import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { PermitService } from './permit-service';
@@ -39,8 +39,8 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: User = {
+        system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
@@ -56,10 +56,10 @@ describe('PermitService', () => {
 
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
 
-      const response = await permitService.getPermitByUser(mockUserObject.id);
+      const response = await permitService.getPermitByUser(mockUserObject.system_user_id);
 
       expect(getAllPermits).to.be.calledOnce;
-      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.system_user_id);
       expect(response).to.eql(mockPermitResponse);
     });
 
@@ -78,8 +78,8 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: User = {
+        system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
@@ -95,10 +95,10 @@ describe('PermitService', () => {
 
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
 
-      const response = await permitService.getPermitByUser(mockUserObject.id);
+      const response = await permitService.getPermitByUser(mockUserObject.system_user_id);
 
       expect(getAllPermits).to.be.calledOnce;
-      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.system_user_id);
       expect(response).to.eql(mockPermitResponse);
     });
 
@@ -117,8 +117,8 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: User = {
+        system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
@@ -134,10 +134,10 @@ describe('PermitService', () => {
 
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
 
-      const response = await permitService.getPermitByUser(mockUserObject.id);
+      const response = await permitService.getPermitByUser(mockUserObject.system_user_id);
 
       expect(getPermitByUser).to.be.calledOnce;
-      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.system_user_id);
       expect(response).to.eql(mockPermitResponse);
     });
   });

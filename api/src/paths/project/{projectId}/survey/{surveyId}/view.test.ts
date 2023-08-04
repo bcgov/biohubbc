@@ -167,9 +167,9 @@ describe('survey/{surveyId}/view', () => {
         survey_metadata_publish: {
           survey_metadata_publish_id: 1,
           survey_id: 1,
-          event_timestamp: new Date('2020-04-04'),
+          event_timestamp: '2020-04-04',
           queue_id: 1,
-          create_date: new Date('2020-04-04'),
+          create_date: '2020-04-04',
           create_user: 1,
           update_date: null,
           update_user: null,
@@ -203,9 +203,9 @@ describe('survey/{surveyId}/view', () => {
           survey_metadata_publish: {
             survey_metadata_publish_id: 1,
             survey_id: 1,
-            event_timestamp: new Date('2020-04-04'),
+            event_timestamp: '2020-04-04',
             queue_id: 1,
-            create_date: new Date('2020-04-04'),
+            create_date: '2020-04-04',
             create_user: 1,
             update_date: null,
             update_user: null,

@@ -31,14 +31,14 @@ export const IAdministrativeActivity = z.object({
   description: z.string().nullable(),
   data: JsonSchema,
   notes: z.string().nullable(),
-  create_date: z.union([z.date(), z.string()])
+  create_date: z.string()
 });
 
 export type IAdministrativeActivity = z.infer<typeof IAdministrativeActivity>;
 
 export const ICreateAdministrativeActivity = z.object({
   id: z.number(),
-  date: z.date()
+  date: z.string()
 });
 
 export type ICreateAdministrativeActivity = z.infer<typeof ICreateAdministrativeActivity>;
