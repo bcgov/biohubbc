@@ -49,9 +49,9 @@ GET.apiDoc = {
           schema: {
             title: 'User Response Object',
             type: 'object',
-            required: ['id', 'user_identifier', 'user_guid', 'record_end_date', 'role_ids', 'role_names'],
+            required: ['system_user_id', 'user_identifier', 'user_guid', 'record_end_date', 'role_ids', 'role_names'],
             properties: {
-              id: {
+              system_user_id: {
                 description: 'user id',
                 type: 'integer',
                 minimum: 1

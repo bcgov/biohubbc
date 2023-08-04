@@ -139,6 +139,7 @@ describe('SurveyStudyArea', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
@@ -244,6 +245,7 @@ describe('SurveyStudyArea', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true

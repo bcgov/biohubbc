@@ -1,6 +1,6 @@
 import SQL from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { ProjectUserObject } from '../models/user';
+import { ProjectUser } from '../models/user';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -33,24 +33,25 @@ export class ProjectParticipationRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
     const sqlStatement = SQL`
       SELECT
         pp.project_id,
         pp.system_user_id,
         su.record_end_date,
         array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS project_role_names
+        array_remove(array_agg(pr.name), NULL) AS project_role_names,
+        array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
-      LEFT JOIN
-        project_role pr
-      ON
-        pp.project_role_id = pr.project_role_id
-      LEFT JOIN
-        system_user su
-      ON
-        pp.system_user_id = su.system_user_id
+      LEFT JOIN project_role pr
+        ON pp.project_role_id = pr.project_role_id
+      LEFT JOIN project_role_permission prp 
+        ON pp.project_role_id = prp.project_role_id
+      LEFT JOIN project_permission pp2 
+        ON pp2.project_permission_id = prp.project_permission_id
+      LEFT JOIN system_user su
+        ON pp.system_user_id = su.system_user_id
       WHERE
         pp.project_id = ${projectId}
       AND
@@ -63,7 +64,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         su.record_end_date ;
       `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement, ProjectUser);
 
     const result = (response && response.rows && response.rows[0]) || null;
 

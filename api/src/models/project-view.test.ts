@@ -23,8 +23,8 @@ describe('ProjectData', () => {
         project_name: '',
         project_programs: [],
         project_types: [],
-        start_date: new Date('2005-01-01'),
-        end_date: new Date('2006-01-01'),
+        start_date: '2005-01-01',
+        end_date: '2006-01-01',
         comments: '',
         revision_count: 1
       };
@@ -47,11 +47,11 @@ describe('ProjectData', () => {
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.eql(new Date('2005-01-01'));
+      expect(data.start_date).to.eql('2005-01-01');
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.eql(new Date('2006-01-01'));
+      expect(data.end_date).to.eql('2006-01-01');
     });
   });
 
@@ -74,8 +74,8 @@ describe('ProjectData', () => {
         project_name: 'project name',
         project_programs: [1],
         project_types: [1, 2],
-        start_date: new Date('2020-04-20T07:00:00.000Z'),
-        end_date: new Date('2020-05-20T07:00:00.000Z'),
+        start_date: '2020-04-20T07:00:00.000Z',
+        end_date: '2020-05-20T07:00:00.000Z',
         comments: '',
         revision_count: 1
       };
@@ -98,16 +98,12 @@ describe('ProjectData', () => {
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.eql(new Date('2020-04-20T07:00:00.000Z'));
+      expect(data.start_date).to.eql('2020-04-20T07:00:00.000Z');
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.eql(new Date('2020-05-20T07:00:00.000Z'));
+      expect(data.end_date).to.eql('2020-05-20T07:00:00.000Z');
     });
-
-    // it('sets completion_status', () => {
-    //   expect(data.completion_status).to.equal(COMPLETION_STATUS.COMPLETED);
-    // });
   });
 });
 
