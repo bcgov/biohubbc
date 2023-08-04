@@ -35,11 +35,11 @@ interface ICbSelectOption {
 }
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
-  const { name, label, route, param, query, handleChangeSideEffect } = props;
+  const { name, label, route, param, query, handleChangeSideEffect, controlProps } = props;
 
   const api = useCritterbaseApi();
   const { data, load, refresh, isReady } = useDataLoader(async () =>
-    api.lookup.getSelectOptions({ route, param, query })
+    api.lookup.getSelectOptions<ICbSelectRows | string>({ route, param, query })
   );
   const { values, handleChange, setFieldValue, setFieldTouched } = useFormikContext<ICbSelectOption>();
 
@@ -79,7 +79,12 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   };
 
   return (
-    <FormikSelectWrapper name={name} label={label} onChange={innerChangeHandler} value={isValueInRange() ? val : ''}>
+    <FormikSelectWrapper
+      name={name}
+      label={label}
+      controlProps={controlProps}
+      onChange={innerChangeHandler}
+      value={isValueInRange() ? val : ''}>
       {data?.map((a) => {
         const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
         return (

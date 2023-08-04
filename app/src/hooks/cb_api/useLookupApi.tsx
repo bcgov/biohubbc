@@ -78,7 +78,7 @@ interface SelectOptionsProps {
   asSelect?: boolean;
 }
 const useLookupApi = (axios: AxiosInstance) => {
-  const getSelectOptions = async <T extends ICbSelectRows | string>({
+  const getSelectOptions = async <T,>({
     route,
     param,
     query,

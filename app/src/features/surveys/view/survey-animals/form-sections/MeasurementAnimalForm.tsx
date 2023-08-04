@@ -1,31 +1,38 @@
-import { Grid } from '@mui/material';
-import CbSelectField from 'components/fields/CbSelectField';
+import { Grid, MenuItem } from '@mui/material';
+import CbSelectField, { FormikSelectWrapper } from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { Fragment, useEffect } from 'react';
+import { has } from 'lodash-es';
+import React, { Fragment, useEffect, useState } from 'react';
 import { getAnimalFieldName, IAnimal, IAnimalMeasurement } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
 const NAME: keyof IAnimal = 'measurement';
 
+interface IMeasurement {
+  taxon_measurement_id: string;
+  measurement_name: string;
+  min_value?: number;
+  max_value?: number;
+  unit?: string;
+}
 const MeasurementAnimalForm = () => {
   const api = useCritterbaseApi();
   const { values } = useFormikContext<IAnimal>();
 
-  const { data: quantData, load } = useDataLoader(async () =>
-    api.lookup.getSelectOptions<ICbSelectRows>({
-      route: 'taxon_quantitative_measurements',
+  const { data: measurements, load } = useDataLoader(async () =>
+    api.lookup.getSelectOptions<IMeasurement>({
+      route: 'taxon_measurements',
       query: `taxon_id=${values.general.taxon_id}`,
       asSelect: false
     })
   );
 
-  const canLoadData = !quantData && values.measurement.length > 0 && values.general.taxon_id;
+  const canLoadData = !measurements && values.measurement.length > 0 && values.general.taxon_id;
 
   if (canLoadData) {
     load();
@@ -50,11 +57,7 @@ const MeasurementAnimalForm = () => {
             handleAddSection={() => push(newMeasurement)}
             handleRemoveSection={remove}>
             {values.measurement.map((_cap, index) => (
-              <MeasurementFormContent
-                key={`measurement-form-${index}`}
-                index={index}
-                quantitativeMeasurements={quantData}
-              />
+              <MeasurementFormContent key={`measurement-form-${index}`} index={index} measurements={measurements} />
             ))}
           </FormSectionWrapper>
         </>
@@ -65,32 +68,38 @@ const MeasurementAnimalForm = () => {
 
 interface MeasurementFormContentProps {
   index: number;
-  quantitativeMeasurements?: ICbSelectRows[];
+  measurements?: IMeasurement[];
 }
 
-const MeasurementFormContent = ({ index, quantitativeMeasurements }: MeasurementFormContentProps) => {
+const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
   const { values, setFieldValue } = useFormikContext<IAnimal>();
   const taxonMeasurementId = values.measurement[index].taxon_measurement_id;
+  const [measurement, setMeasurement] = useState<IMeasurement>();
+  const isQuantMeasurement = has(measurement, 'unit');
 
   useEffect(() => {
     setFieldValue(getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index), '');
     setFieldValue(getAnimalFieldName<IAnimalMeasurement>(NAME, 'option_id', index), '');
+    const m = measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId);
+    setMeasurement(m);
   }, [taxonMeasurementId]);
 
   return (
     <Fragment key={`marking-inputs-${index}`}>
       <Grid item xs={6}>
-        <CbSelectField
+        <FormikSelectWrapper
           label="Measurement Type"
           name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'taxon_measurement_id', index)}
-          id="taxon_measurement_type"
-          route="taxon_measurements"
-          query={values.general.taxon_id && `taxon_id=${values.general.taxon_id}`}
-          controlProps={{ size: 'small', required: true }}
-        />
+          controlProps={{ size: 'small', required: true }}>
+          {measurements?.map((m) => (
+            <MenuItem key={m.taxon_measurement_id} value={m.taxon_measurement_id}>
+              {m.measurement_name}
+            </MenuItem>
+          ))}
+        </FormikSelectWrapper>
       </Grid>
-      <Grid item xs={4}>
-        {taxonMeasurementId && quantitativeMeasurements?.some((q) => q.id === taxonMeasurementId) ? (
+      <Grid item xs={6}>
+        {!isQuantMeasurement && taxonMeasurementId ? (
           <CbSelectField
             label="Measurement Option"
             name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'option_id', index)}
@@ -101,7 +110,7 @@ const MeasurementFormContent = ({ index, quantitativeMeasurements }: Measurement
           />
         ) : (
             <CustomTextField
-              label="Measurement Value"
+              label={`Measurement Value${measurement?.unit ? ` (${measurement?.unit}'s)` : ``}`}
               name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index)}
               other={{ required: true, size: 'small' }}
             />

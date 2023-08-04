@@ -16,10 +16,10 @@ import FormSectionWrapper from './FormSectionWrapper';
  */
 
 const GeneralAnimalForm = () => {
-  const { values, errors } = useFormikContext<IAnimal>();
+  const { values } = useFormikContext<IAnimal>();
   const name: keyof IAnimal = 'general';
   useEffect(() => {
-    console.log(errors);
+    console.log(values);
   }, [JSON.stringify(values)]);
   return (
     <FormSectionWrapper title={SurveyAnimalsI18N.animalGeneralTitle} titleHelp={SurveyAnimalsI18N.animalGeneralHelp}>
