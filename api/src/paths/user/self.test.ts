@@ -99,7 +99,7 @@ describe('getUser', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockRes.jsonValue.id).to.equal(1);
+    expect(mockRes.jsonValue.system_user_id).to.equal(1);
     expect(mockRes.jsonValue.user_identifier).to.equal('testuser');
     expect(mockRes.jsonValue.role_ids).to.eql([1, 2]);
     expect(mockRes.jsonValue.role_names).to.eql(['role 1', 'role 2']);

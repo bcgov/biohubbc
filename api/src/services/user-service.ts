@@ -142,11 +142,11 @@ export class UserService extends DBService {
     email: string
   ): Promise<User> {
     // Check if the user exists in SIMS
-    let userObject = userGuid
+    const existingUser = userGuid
       ? await this.getUserByGuid(userGuid)
       : await this.getUserByIdentifier(userIdentifier, identitySource);
 
-    if (!userObject) {
+    if (!existingUser) {
       // Id of the current authenticated user
       const systemUserId = this.connection.systemUserId();
 
@@ -155,22 +155,22 @@ export class UserService extends DBService {
       }
 
       // Found no existing user, add them
-      const newId = await this.addSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
+      const newUserId = await this.addSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
 
       // fetch the new user object
-      userObject = await this.getUserById(newId.system_user_id);
+      return this.getUserById(newUserId.system_user_id);
     }
 
-    if (!userObject.record_end_date) {
+    if (!existingUser.record_end_date) {
       // system user is already active
-      return userObject;
+      return existingUser;
     }
 
     // system user is not active, re-activate them
-    await this.activateSystemUser(userObject.system_user_id);
+    await this.activateSystemUser(existingUser.system_user_id);
 
     // get the newly activated user
-    return this.getUserById(userObject.system_user_id);
+    return this.getUserById(existingUser.system_user_id);
   }
 
   /**
