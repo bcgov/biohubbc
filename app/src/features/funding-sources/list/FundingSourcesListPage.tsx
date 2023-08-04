@@ -9,11 +9,12 @@ import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
+import EditDialog from 'components/dialog/EditDialog';
 import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import FundingSourceForm, { FundingSourceData, FundingSourceYupSchema } from '../components/FundingSourceForm';
 import FundingSourcesTable from './FundingSourcesTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -52,6 +53,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const FundingSourcesListPage: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
@@ -86,8 +88,9 @@ const FundingSourcesListPage: React.FC = () => {
                   variant="contained"
                   color="primary"
                   startIcon={<Icon path={mdiPlus} size={1} />}
-                  component={RouterLink}
-                  to={'/admin/funding-sources/create'}>
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}>
                   Add Funding Source
                 </Button>
               </Box>
@@ -95,6 +98,27 @@ const FundingSourcesListPage: React.FC = () => {
           </Box>
         </Container>
       </Paper>
+      <EditDialog
+        dialogTitle="Add New Funding Source"
+        open={isModalOpen}
+        component={{
+          element: <FundingSourceForm />,
+          initialValues: {
+            funding_source_id: null,
+            name: '',
+            description: '',
+            start_date: '',
+            end_date: ''
+          } as FundingSourceData,
+          validationSchema: FundingSourceYupSchema
+        }}
+        dialogSaveButtonLabel="Add"
+        onCancel={() => setIsModalOpen(false)}
+        onSave={(formValues) => {
+          console.log('SUBMIT THIS FORM PLS');
+          console.log(formValues);
+        }}
+      />
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>

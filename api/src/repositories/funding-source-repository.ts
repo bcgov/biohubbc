@@ -29,4 +29,22 @@ export class FundingSourceRepository extends BaseRepository {
 
     return response.rows;
   }
+
+  async hasFundingSourceNameBeenUsed(name: string): Promise<boolean> {
+    const sqlStatement = SQL`
+      SELECT 
+        * 
+      FROM 
+        funding_sources
+      WHERE 
+        LOWER(name) = '${name.toLowerCase()}';
+    `;
+
+    const response = await this.connection.sql(sqlStatement, FundingSource);
+    return response.rowCount > 0;
+  }
+
+  async insertFundingSource(): Promise<{ funding_source_id: number }> {
+    return { funding_source_id: 1 };
+  }
 }
