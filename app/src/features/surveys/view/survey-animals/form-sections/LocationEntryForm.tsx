@@ -223,17 +223,17 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
         </>
       ) : (
           <Grid item xs={12}>
-            <Box position="relative" height={500}>
-              {secondaryLocationFields ? (
-                <FormGroup sx={{ alignItems: 'end' }}>
-                  <FormControlLabel
-                    control={
-                      <Switch checked={placeSecondaryMode} onChange={(e, b) => setPlaceSecondary(b)} size={'small'} />
-                    }
-                    label={'Place Other Coordinate'}
-                  />
-                </FormGroup>
-              ) : null}
+            {secondaryLocationFields ? (
+              <FormGroup sx={{ alignItems: 'end' }}>
+                <FormControlLabel
+                  control={
+                    <Switch checked={placeSecondaryMode} onChange={(e, b) => setPlaceSecondary(b)} size={'small'} />
+                  }
+                  label={'Place Other Coordinate'}
+                />
+              </FormGroup>
+            ) : null}
+            <Box position="relative" height={400}>
               <MapContainer
                 mapId={`location-entry-${name}-${index}`}
                 scrollWheelZoom={true}

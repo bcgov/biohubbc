@@ -22,8 +22,7 @@ const SurveyAnimals: React.FC = () => {
     mortality: [],
     measurement: [],
     family: [],
-    image: [],
-    device: undefined
+    image: []
   };
 
   const handleOnSave = (a: Partial<IAnimal>) => {

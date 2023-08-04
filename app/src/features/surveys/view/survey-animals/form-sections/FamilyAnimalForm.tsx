@@ -64,7 +64,7 @@ const FamilyAnimalForm = () => {
                     as={CustomTextField}
                     name={getAnimalFieldName<IAnimalRelationship>(name, 'critter_id', index)}
                     label={"Individual's ID"}
-                    other={{ size: 'small' }}
+                    other={{ size: 'small', required: true }}
                     validate={validateCritterExists}
                   />
                 </Grid>

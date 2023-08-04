@@ -30,7 +30,7 @@ const MarkingAnimalForm = () => {
             btnLabel={SurveyAnimalsI18N.animalMarkingAddBtn}
             handleAddSection={() => push(newMarking)}
             handleRemoveSection={remove}>
-            {values.marking.map((_cap, index) => (
+            {values?.marking?.map((_cap, index) => (
               <Fragment key={`marking-inputs-${index}`}>
                 <Grid item xs={6}>
                   <CbSelectField

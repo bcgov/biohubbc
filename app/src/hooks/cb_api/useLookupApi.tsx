@@ -64,22 +64,31 @@ const CbRoutes: ICbRoutes = {
 
   // taxon xrefs
   taxon_measurements: `${xref}/taxon-measurements`,
-  taxon_qualitative_measurements: `${xref}/taxon-quantitative-measurements`,
+  taxon_qualitative_measurements: `${xref}/taxon-qualitative-measurements`,
   taxon_qualitative_measurement_options: `${xref}/taxon-qualitative-measurement-options`,
-  taxon_quantitative_measurements: `${xref}/taxon-qualitative-measurements`,
+  taxon_quantitative_measurements: `${xref}/taxon-quantitative-measurements`,
   taxon_collection_categories: `${xref}/taxon-collection-categories`,
   taxon_marking_body_locations: `${xref}/taxon-marking-body-locations`
 };
 
+interface SelectOptionsProps {
+  route: ICbRouteKey;
+  param?: string;
+  query?: string;
+  asSelect?: boolean;
+}
 const useLookupApi = (axios: AxiosInstance) => {
-  const getSelectOptions = async <T extends ICbSelectRows | string>(
-    route: ICbRouteKey,
-    param?: string,
-    query?: string
-  ): Promise<Array<T>> => {
+  const getSelectOptions = async <T extends ICbSelectRows | string>({
+    route,
+    param,
+    query,
+    asSelect = true
+  }: SelectOptionsProps): Promise<Array<T>> => {
     const _param = param ? `/${param}` : ``;
-    const _query = query ? `&${query}` : ``;
-    const { data } = await axios.get(`${CbRoutes[route]}${_param}?format=asSelect${_query}`);
+    const format = asSelect ? `format=asSelect` : ``;
+    const _query = query ? query : ``;
+
+    const { data } = await axios.get(`${CbRoutes[route]}${_param}?${format}${format ? `&${_query}` : _query}`);
     return data;
   };
 

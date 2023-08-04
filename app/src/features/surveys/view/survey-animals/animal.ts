@@ -12,29 +12,31 @@ export const getAnimalFieldName = <T>(animalKey: keyof IAnimal, fieldKey: keyof 
 
 const req = 'Required';
 const mustBeNum = 'Must be a number';
+
 const glt = (num: number, greater = true) => `Must be ${greater ? 'greater' : 'less'} than or equal to ${num}`;
 
+const numSchema = yup.number().typeError(mustBeNum);
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
 
 const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
-  animal_id: yup.string() //nickname
+  animal_id: yup.string()
 });
 
 const AnimalCaptureSchema = yup.object({}).shape({
   capture_longitude: lonSchema.required(req),
   capture_latitude: latSchema.required(req),
-  capture_utm_northing: yup.number(),
-  capture_utm_easting: yup.number(),
+  capture_utm_northing: numSchema,
+  capture_utm_easting: numSchema,
   capture_timestamp: yup.date().required(req),
-  capture_coordinate_uncertainty: yup.number(),
+  capture_coordinate_uncertainty: numSchema,
   capture_comment: yup.string(),
   release_longitude: lonSchema,
   release_latitude: latSchema,
-  release_utm_northing: yup.number(),
-  release_utm_easting: yup.number(),
-  release_coordinate_uncertainty: yup.number(),
+  release_utm_northing: numSchema,
+  release_utm_easting: numSchema,
+  release_coordinate_uncertainty: numSchema,
   release_timestamp: yup.date(),
   release_comment: yup.string(),
   projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
@@ -50,7 +52,8 @@ export const AnimalMarkingSchema = yup.object({}).shape({
 
 const AnimalMeasurementSchema = yup.object({}).shape({
   taxon_measurement_id: yup.string().required(req),
-  valueOrOption: yup.string(),
+  value: numSchema,
+  option_id: yup.string(),
   measured_timestamp: yup.date(),
   measurement_comment: yup.string()
 });
@@ -58,10 +61,10 @@ const AnimalMeasurementSchema = yup.object({}).shape({
 const AnimalMortalitySchema = yup.object({}).shape({
   mortality_longitude: lonSchema.required(req),
   mortality_latitude: latSchema.required(req),
-  mortality_utm_northing: yup.number(),
-  mortality_utm_easting: yup.number(),
+  mortality_utm_northing: numSchema,
+  mortality_utm_easting: numSchema,
   mortality_timestamp: yup.date().required(req),
-  mortality_coordinate_uncertainty: yup.number(),
+  mortality_coordinate_uncertainty: numSchema,
   mortality_comment: yup.string(),
   mortality_pcod_reason: yup.string().uuid().required(req),
   mortality_pcod_confidence: yup.string(),
@@ -72,18 +75,16 @@ const AnimalMortalitySchema = yup.object({}).shape({
   projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
 });
 
-const AnimalRelationshipSchema = yup
-  .object({
-    critter_id: yup.string().uuid().required(req),
-    relationship: yup.mixed().oneOf(['Parent', 'Child']).required(req)
-  })
-  .shape({});
+const AnimalRelationshipSchema = yup.object({}).shape({
+  critter_id: yup.string().uuid('Must be a UUID').required(req),
+  relationship: yup.mixed().oneOf(['Parent', 'Child']).required(req)
+});
 
 const AnimalTelemetryDeviceSchema = yup.object({}).shape({
   device_id: yup.string().required(req),
   manufacturer: yup.string().required(req),
   //I think this needs an additional field for hz
-  device_frequency: yup.number().required(req),
+  device_frequency: numSchema.required(req),
   model: yup.string().required(req)
 });
 
@@ -113,7 +114,7 @@ export const AnimalSchema = yup.object({}).shape({
   mortality: yup.array().of(AnimalMortalitySchema).required(),
   family: yup.array().of(AnimalRelationshipSchema).required(),
   image: yup.array().of(AnimalImageSchema).required(),
-  device: AnimalTelemetryDeviceSchema.optional()
+  device: AnimalTelemetryDeviceSchema.default(undefined)
 });
 
 export type IAnimal = InferType<typeof AnimalSchema>;

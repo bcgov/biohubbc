@@ -34,7 +34,9 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const { name, label, route, param, query, handleChangeSideEffect } = props;
 
   const api = useCritterbaseApi();
-  const { data, load, refresh, isReady } = useDataLoader(async () => api.lookup.getSelectOptions(route, param, query));
+  const { data, load, refresh, isReady } = useDataLoader(async () =>
+    api.lookup.getSelectOptions({ route, param, query })
+  );
   const { values, touched, errors, handleChange, handleBlur, setFieldValue, setFieldTouched } =
     useFormikContext<ICbSelectOption>();
 
@@ -62,11 +64,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (query || param) {
-      refresh();
-    }
-  }, [param, query]);
+  useEffect(refresh, [param, query]);
 
   useEffect(handleInRange, [isReady]);
 

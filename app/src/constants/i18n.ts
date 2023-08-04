@@ -315,7 +315,7 @@ export const SurveyAnimalsI18N = {
   animalMeasurementTitle: 'Measurements',
   animalMeasurementHelp:
     'Measurements are quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
-  animalMeasurementAddBtn: 'Add Measrurement',
+  animalMeasurementAddBtn: 'Add Measurement',
   animalFamilyTitle: 'Family',
   animalFamilyHelp:
     'Family Relationships describe how multiple individuals are related to one another. You must add an individual before it can be referenced as a parent or child of another individual.',

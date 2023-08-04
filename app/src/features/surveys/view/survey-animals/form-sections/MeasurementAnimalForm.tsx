@@ -15,18 +15,17 @@ const NAME: keyof IAnimal = 'measurement';
 
 const MeasurementAnimalForm = () => {
   const api = useCritterbaseApi();
-  const { values, errors } = useFormikContext<IAnimal>();
-  console.log(errors);
+  const { values } = useFormikContext<IAnimal>();
 
-  const { data: qualData, load } = useDataLoader(async () =>
-    api.lookup.getSelectOptions<ICbSelectRows>(
-      'taxon_qualitative_measurements',
-      undefined,
-      `taxon_id=${values.general.taxon_id}`
-    )
+  const { data: quantData, load } = useDataLoader(async () =>
+    api.lookup.getSelectOptions<ICbSelectRows>({
+      route: 'taxon_quantitative_measurements',
+      query: `taxon_id=${values.general.taxon_id}`,
+      asSelect: false
+    })
   );
 
-  const canLoadData = !qualData && values.measurement.length > 0 && values.general.taxon_id;
+  const canLoadData = !quantData && values.measurement.length > 0 && values.general.taxon_id;
 
   if (canLoadData) {
     load();
@@ -34,7 +33,8 @@ const MeasurementAnimalForm = () => {
 
   const newMeasurement: IAnimalMeasurement = {
     taxon_measurement_id: '',
-    valueOrOption: '',
+    value: '' as unknown as number,
+    option_id: '',
     measured_timestamp: '' as unknown as Date,
     measurement_comment: ''
   };
@@ -50,7 +50,11 @@ const MeasurementAnimalForm = () => {
             handleAddSection={() => push(newMeasurement)}
             handleRemoveSection={remove}>
             {values.measurement.map((_cap, index) => (
-              <MeasurementFormContent index={index} qualitativeMeasurements={qualData} />
+              <MeasurementFormContent
+                key={`measurement-form-${index}`}
+                index={index}
+                quantitativeMeasurements={quantData}
+              />
             ))}
           </FormSectionWrapper>
         </>
@@ -61,15 +65,16 @@ const MeasurementAnimalForm = () => {
 
 interface MeasurementFormContentProps {
   index: number;
-  qualitativeMeasurements?: ICbSelectRows[];
+  quantitativeMeasurements?: ICbSelectRows[];
 }
 
-const MeasurementFormContent = ({ index, qualitativeMeasurements }: MeasurementFormContentProps) => {
+const MeasurementFormContent = ({ index, quantitativeMeasurements }: MeasurementFormContentProps) => {
   const { values, setFieldValue } = useFormikContext<IAnimal>();
   const taxonMeasurementId = values.measurement[index].taxon_measurement_id;
 
   useEffect(() => {
-    setFieldValue(getAnimalFieldName<IAnimalMeasurement>(NAME, 'valueOrOption', index), '');
+    setFieldValue(getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index), '');
+    setFieldValue(getAnimalFieldName<IAnimalMeasurement>(NAME, 'option_id', index), '');
   }, [taxonMeasurementId]);
 
   return (
@@ -85,19 +90,19 @@ const MeasurementFormContent = ({ index, qualitativeMeasurements }: MeasurementF
         />
       </Grid>
       <Grid item xs={4}>
-        {!qualitativeMeasurements?.some((q) => q.id === taxonMeasurementId) ? (
+        {taxonMeasurementId && quantitativeMeasurements?.some((q) => q.id === taxonMeasurementId) ? (
           <CbSelectField
             label="Measurement Option"
-            name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'valueOrOption', index)}
+            name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'option_id', index)}
             id="qualitative_option"
             route="taxon_qualitative_measurement_options"
-            query={taxonMeasurementId && `taxon_measurement_id=${taxonMeasurementId}`}
+            query={`taxon_measurement_id=${taxonMeasurementId}`}
             controlProps={{ size: 'small', disabled: !taxonMeasurementId }}
           />
         ) : (
             <CustomTextField
               label="Measurement Value"
-              name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'valueOrOption', index)}
+              name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index)}
               other={{ required: true, size: 'small' }}
             />
           )}

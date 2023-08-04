@@ -196,10 +196,4 @@ yup.addMethod(yup.array, 'isUniqueAuthor', function(message: string) {
   });
 });
 
-yup.addMethod(yup.mixed, 'or', function(schemas: yup.AnySchema[]) {
-  return this.test('or', 'Not all items in ${path} match one of the allowed schemas', (item) =>
-    schemas.some((schema) => schema.isValidSync(item, { strict: true }))
-  );
-});
-
 export default yup;
