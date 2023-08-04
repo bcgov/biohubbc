@@ -14,7 +14,13 @@ export const FundingSourceYupSchema = yup.object().shape({
   end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
 });
 export type FundingSourceData = yup.InferType<typeof FundingSourceYupSchema>;
-
+/*
+  TODO:
+  - replace existing StartEndDateFields
+  - make UI better
+  - look into fieldset child relationship
+  - look into fixing project edit/ form validation
+*/
 const FundingSourceForm: React.FC = (props) => {
   const formikProps = useFormikContext<FundingSourceData>();
   const { handleSubmit } = formikProps;
