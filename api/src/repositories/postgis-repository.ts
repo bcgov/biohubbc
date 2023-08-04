@@ -22,7 +22,11 @@ export class PostgisRepository extends BaseRepository {
     const queryBuilder = knex
       .queryBuilder()
       .select(
-        knex.raw(`ST_AsText(ST_TRANSFORM(ST_GeomFromGeoJSON('${JSON.stringify(geometry)}'), ${srid})) as geometry`)
+        knex.raw(
+          `public.ST_AsText(public.ST_TRANSFORM(public.ST_Force2D(public.ST_GeomFromGeoJSON('${JSON.stringify(
+            geometry
+          )}')), ${srid})) as geometry`
+        )
       );
 
     const response = await this.connection.knex(queryBuilder, z.object({ geometry: z.string() }));

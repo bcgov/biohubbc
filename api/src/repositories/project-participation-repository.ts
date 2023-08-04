@@ -41,7 +41,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         su.record_end_date,
         array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
         array_remove(array_agg(pr.name), NULL) AS project_role_names,
-        array_remove(array_agg(pp2.name), NULL) as project_permission_names
+        array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
       LEFT JOIN project_role pr

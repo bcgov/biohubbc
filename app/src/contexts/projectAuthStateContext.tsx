@@ -77,7 +77,7 @@ export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> 
 
       return (
         participant?.project_id === getProjectId() &&
-        participant?.project_permission_names.some((roleName) => validProjectPermissions.includes(roleName))
+        participant?.project_role_permissions.some((roleName) => validProjectPermissions.includes(roleName))
       );
     },
     [getProjectId, getProjectParticipant]

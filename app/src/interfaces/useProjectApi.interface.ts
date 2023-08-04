@@ -414,6 +414,6 @@ export interface IGetUserProjectParticipantResponse {
     system_user_id: number;
     project_role_ids: number[];
     project_role_names: PROJECT_ROLE[];
-    project_permission_names: PROJECT_PERMISSION[];
+    project_role_permissions: PROJECT_PERMISSION[];
   } | null;
 }
