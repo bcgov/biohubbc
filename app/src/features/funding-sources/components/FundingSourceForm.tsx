@@ -18,11 +18,19 @@ const FundingSourceForm: React.FC = (props) => {
   return (
     <form>
       <Box component={'fieldset'}>
-        <Typography id="agency_details" component="legend">
-          Name and description
-        </Typography>
-        <TextField id="name" name="name" label="Name" required />
-        <TextField id="description" name="description" label="Description" required />
+        <Box>
+          <Typography id="agency_details" component="legend">
+            Name and description
+          </Typography>
+          <TextField id="name" name="name" label="Name" required />
+          <TextField id="description" name="description" label="Description" required />
+        </Box>
+        <Box>
+          <Typography id="agency_details" component="legend">
+            Effective Dates
+          </Typography>
+          <Box></Box>
+        </Box>
       </Box>
     </form>
   );

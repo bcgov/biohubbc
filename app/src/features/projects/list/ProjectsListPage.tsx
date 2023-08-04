@@ -139,7 +139,7 @@ const ProjectsListPage: React.FC = () => {
         </Container>
       </Paper>
       <EditDialog
-        dialogTitle="Coolio"
+        dialogTitle="Add New Funding Source"
         open={isModalOpen}
         component={{ element: <FundingSourceForm />, initialValues: {}, validationSchema: FundingSourceYupSchema }}
         onCancel={() => setIsModalOpen(false)}
