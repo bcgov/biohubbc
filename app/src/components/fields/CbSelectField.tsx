@@ -5,23 +5,27 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent
+  SelectChangeEvent,
+  SelectProps
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { ICbRouteKey, ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';
-import React, { useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 
-export interface ICbSelectField {
+interface ICbSelectSharedProps {
   name: string;
   label: string;
+  controlProps?: FormControlProps;
+}
+
+export interface ICbSelectField extends ICbSelectSharedProps {
   id: string;
   route: ICbRouteKey;
   param?: string;
   query?: string;
-  controlProps?: FormControlProps;
   handleChangeSideEffect?: (value: string, label: string) => void;
 }
 
@@ -37,10 +41,8 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const { data, load, refresh, isReady } = useDataLoader(async () =>
     api.lookup.getSelectOptions({ route, param, query })
   );
-  const { values, touched, errors, handleChange, handleBlur, setFieldValue, setFieldTouched } =
-    useFormikContext<ICbSelectOption>();
+  const { values, handleChange, setFieldValue, setFieldTouched } = useFormikContext<ICbSelectOption>();
 
-  const err = get(touched, name) && get(errors, name);
   const val = get(values, name) ?? '';
 
   if (!data) {
@@ -77,24 +79,48 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   };
 
   return (
-    <FormControl variant="outlined" fullWidth {...props.controlProps} error={Boolean(err)}>
+    <FormikSelectWrapper name={name} label={label} onChange={innerChangeHandler} value={isValueInRange() ? val : ''}>
+      {data?.map((a) => {
+        const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
+        return (
+          <MenuItem key={item.value} value={item.value}>
+            {item.label}
+          </MenuItem>
+        );
+      })}
+    </FormikSelectWrapper>
+  );
+};
+
+interface FormikSelectWrapperProps extends ICbSelectSharedProps {
+  children?: ReactNode;
+  onChange?: SelectProps['onChange'];
+  value?: SelectProps['value'];
+}
+
+export const FormikSelectWrapper = ({
+  children,
+  name,
+  label,
+  controlProps,
+  onChange,
+  value
+}: FormikSelectWrapperProps) => {
+  const { values, touched, errors, handleBlur, handleChange } = useFormikContext<ICbSelectOption>();
+  const val = get(values, name) ?? '';
+  const err = get(touched, name) && get(errors, name);
+  return (
+    <FormControl variant="outlined" fullWidth {...controlProps} error={Boolean(err)}>
       <InputLabel id={`${name}-label`}>{label}</InputLabel>
       <Select
         name={name}
-        labelId="cb_select"
+        labelId="cb-select-wrapper"
+        value={value ?? val}
+        onChange={onChange ?? handleChange}
         label={label}
-        value={isValueInRange() ? val : ''}
-        onChange={innerChangeHandler}
         onBlur={handleBlur}
         displayEmpty>
-        {data?.map((a) => {
-          const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
-          return (
-            <MenuItem key={item.value} value={item.value}>
-              {item.label}
-            </MenuItem>
-          );
-        })}
+        {children}
       </Select>
       <FormHelperText>{err}</FormHelperText>
     </FormControl>
