@@ -10,13 +10,11 @@ import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import EditDialog from 'components/dialog/EditDialog';
 import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
-import FundingSourceForm, { FundingSourceYupSchema } from 'features/funding-sources/components/FundingSourceForm';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
@@ -66,7 +64,6 @@ const ProjectsListPage: React.FC = () => {
   const biohubApi = useBiohubApi();
 
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const codesContext = useContext(CodesContext);
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
@@ -123,30 +120,12 @@ const ProjectsListPage: React.FC = () => {
                     to={'/admin/projects/create'}>
                     Create Project
                   </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Icon path={mdiPlus} size={1} />}
-                    onClick={() => {
-                      setIsModalOpen(true);
-                    }}>
-                    Create Funding Source
-                  </Button>
                 </SystemRoleGuard>
               </Box>
             </Box>
           </Box>
         </Container>
       </Paper>
-      <EditDialog
-        dialogTitle="Add New Funding Source"
-        open={isModalOpen}
-        component={{ element: <FundingSourceForm />, initialValues: {}, validationSchema: FundingSourceYupSchema }}
-        onCancel={() => setIsModalOpen(false)}
-        onSave={(formValues) => {
-          console.log('WE DOIN IT', formValues);
-        }}
-      />
       <Container maxWidth="xl">
         <Box py={3}>
           <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
