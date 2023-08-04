@@ -1,9 +1,11 @@
 import { TextField } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
+import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+
 export const FundingSourceYupSchema = yup.object().shape({
   funding_source_id: yup.number(),
   name: yup.string().required('A funding source name is required'),
@@ -14,7 +16,7 @@ export const FundingSourceYupSchema = yup.object().shape({
 
 const FundingSourceForm: React.FC = (props) => {
   const formikProps = useFormikContext<any>();
-  console.log(formikProps);
+
   return (
     <form>
       <Box component={'fieldset'}>
@@ -29,7 +31,15 @@ const FundingSourceForm: React.FC = (props) => {
           <Typography id="agency_details" component="legend">
             Effective Dates
           </Typography>
-          <Box></Box>
+          <Box>
+            <StartEndDateFields
+              formikProps={formikProps}
+              startName="start_date"
+              endName="end_date"
+              startRequired={false}
+              endRequired={false}
+            />
+          </Box>
         </Box>
       </Box>
     </form>

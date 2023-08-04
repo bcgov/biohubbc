@@ -14,7 +14,7 @@ import { CodesContext } from 'contexts/codesContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
-import { FundingSourceForm, FundingSourceYupSchema } from '../components/FundingSourceForm';
+import FundingSourceForm, { FundingSourceYupSchema } from '../components/FundingSourceForm';
 import FundingSourcesTable from './FundingSourcesTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -102,6 +102,7 @@ const FundingSourcesListPage: React.FC = () => {
         dialogTitle="Add New Funding Source"
         open={isModalOpen}
         component={{ element: <FundingSourceForm />, initialValues: {}, validationSchema: FundingSourceYupSchema }}
+        dialogSaveButtonLabel="Add"
         onCancel={() => setIsModalOpen(false)}
         onSave={(formValues) => {
           console.log('WE DOIN IT', formValues);
