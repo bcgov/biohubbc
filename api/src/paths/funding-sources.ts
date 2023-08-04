@@ -39,7 +39,7 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
-              required: ['funding_source_id', 'name', 'description'],
+              required: ['funding_source_id', 'name', 'description', 'revision_count'],
               properties: {
                 funding_source_id: {
                   type: 'integer',
@@ -50,6 +50,10 @@ GET.apiDoc = {
                 },
                 description: {
                   type: 'string'
+                },
+                revision_count: {
+                  type: 'integer',
+                  minimum: 0
                 }
               }
             }

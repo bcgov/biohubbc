@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { FundingSourceService } from '../../services/funding-source-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/funding-source/{fundingSourceId}');
@@ -46,11 +47,23 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: [],
-              properties: {}
+            type: 'object',
+            required: ['funding_source_id', 'name', 'description', 'revision_count'],
+            properties: {
+              funding_source_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              name: {
+                type: 'string'
+              },
+              description: {
+                type: 'string'
+              },
+              revision_count: {
+                type: 'integer',
+                minimum: 0
+              }
             }
           }
         }
@@ -83,14 +96,18 @@ export function getFundingSource(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
+    const fundingSourceId = Number(req.params.fundingSourceId);
+
     try {
       await connection.open();
 
-      // TODO
+      const fundingSourceService = new FundingSourceService(connection);
+
+      const response = await fundingSourceService.getFundingSourceById(fundingSourceId);
 
       await connection.commit();
 
-      return res.status(200).json();
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getFundingSource', message: 'error', error });
       await connection.rollback();
