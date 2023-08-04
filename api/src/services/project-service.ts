@@ -23,9 +23,10 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData,
   GetReportAttachmentsData,
   IGetProject,
+  IProjectAdvancedFilters,
+  ProjectData,
   ProjectSupplementaryData
 } from '../models/project-view';
 import { ProjectUserObject } from '../models/user';
@@ -128,7 +129,11 @@ export class ProjectService extends DBService {
     return this.projectParticipationService.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
   }
 
-  async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any> {
+  async getProjectList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
+  ): Promise<any> {
     const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields);
 
     return response.map((row) => ({
@@ -140,7 +145,7 @@ export class ProjectService extends DBService {
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
-      project_type: row.project_type,
+      project_programs: row.project_programs,
       regions: row.regions
     }));
   }
@@ -261,7 +266,7 @@ export class ProjectService extends DBService {
     return results;
   }
 
-  async getProjectData(projectId: number): Promise<GetProjectData> {
+  async getProjectData(projectId: number): Promise<ProjectData> {
     return this.projectRepository.getProjectData(projectId);
   }
 
@@ -379,15 +384,14 @@ export class ProjectService extends DBService {
 
     // Handle project activities
     promises.push(
-      Promise.all(
-        postProjectData.project.project_activities.map((activityId: number) =>
-          this.insertActivity(activityId, projectId)
-        )
-      )
+      Promise.all(postProjectData.project.project_types.map((typeId: number) => this.insertType(typeId, projectId)))
     );
 
     // Handle project regions
     promises.push(this.insertRegion(projectId, postProjectData.location.geometry));
+
+    // Handle project programs
+    promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
 
     await Promise.all(promises);
 
@@ -417,8 +421,8 @@ export class ProjectService extends DBService {
     return this.projectRepository.insertClassificationDetail(iucn3_id, project_id);
   }
 
-  async insertActivity(activityId: number, projectId: number): Promise<number> {
-    return this.projectRepository.insertActivity(activityId, projectId);
+  async insertType(typeId: number, projectId: number): Promise<number> {
+    return this.projectRepository.insertType(typeId, projectId);
   }
 
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
@@ -428,6 +432,11 @@ export class ProjectService extends DBService {
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {
     const regionService = new RegionService(this.connection);
     return regionService.addRegionsToProjectFromFeatures(projectId, features);
+  }
+
+  async insertPrograms(projectId: number, projectPrograms: number[]): Promise<void> {
+    await this.projectRepository.deletePrograms(projectId);
+    await this.projectRepository.insertProgram(projectId, projectPrograms);
   }
 
   /**
@@ -485,6 +494,10 @@ export class ProjectService extends DBService {
 
     if (entities?.location) {
       promises.push(this.insertRegion(projectId, entities.location.geometry));
+    }
+
+    if (entities?.project?.project_programs) {
+      promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
     }
 
     await Promise.all(promises);
@@ -549,18 +562,18 @@ export class ProjectService extends DBService {
       revision_count
     );
 
-    if (putProjectData?.project_activities.length) {
-      await this.updateActivityData(projectId, putProjectData);
+    if (putProjectData?.project_types) {
+      await this.updateTypeData(projectId, putProjectData);
     }
   }
 
-  async updateActivityData(projectId: number, projectData: PutProjectData) {
-    await this.projectRepository.deleteActivityData(projectId);
+  async updateTypeData(projectId: number, projectData: PutProjectData) {
+    await this.projectRepository.deleteTypeData(projectId);
 
-    const insertActivityPromises =
-      projectData?.project_activities?.map((activityId: number) => this.insertActivity(activityId, projectId)) || [];
+    const insertTypePromises =
+      projectData?.project_types?.map((typeId: number) => this.insertType(typeId, projectId)) || [];
 
-    await Promise.all([...insertActivityPromises]);
+    await Promise.all([...insertTypePromises]);
   }
 
   /**
@@ -587,7 +600,7 @@ export class ProjectService extends DBService {
     const existingFundingSourcesToDelete = existingProjectFundingSources.filter((existingFunding) => {
       // Find all existing funding (by project_funding_source_id) that have no matching incoming project_funding_source_id
       return !putFundingData.fundingSources.find(
-        (incomingFunding) => incomingFunding.id === existingFunding.project_funding_source_id
+        (incomingFunding: any) => incomingFunding.id === existingFunding.project_funding_source_id
       );
     });
 
@@ -610,7 +623,7 @@ export class ProjectService extends DBService {
     // The remaining funding are either new, and can be created, or updates to existing funding
     const promises: Promise<any>[] = [];
 
-    putFundingData.fundingSources.forEach((funding) => {
+    putFundingData.fundingSources.forEach((funding: any) => {
       if (funding.id) {
         // Has a project_funding_source_id, indicating this is an update to an existing funding
         promises.push(projectRepository.updateProjectFundingSource(funding, projectId));

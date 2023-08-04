@@ -5,8 +5,8 @@ const defaultLog = getLogger('models/project-update');
 
 export class PutProjectData {
   name: string;
-  type: number;
-  project_activities: number[];
+  project_programs: number[];
+  project_types: number[];
   start_date: string;
   end_date: string;
   revision_count: number;
@@ -15,8 +15,8 @@ export class PutProjectData {
     defaultLog.debug({ label: 'PutProjectData', message: 'params', obj });
 
     this.name = obj?.project_name || null;
-    this.type = obj?.project_type || null;
-    this.project_activities = (obj?.project_activities?.length && obj.project_activities) || [];
+    this.project_programs = obj?.project_programs || [];
+    this.project_types = obj?.project_types || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.revision_count = obj?.revision_count ?? null;
@@ -25,14 +25,12 @@ export class PutProjectData {
 
 export class PutObjectivesData {
   objectives: string;
-  caveats: string;
   revision_count: number;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PutObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || '';
     this.revision_count = obj?.revision_count ?? null;
   }
 }

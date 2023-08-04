@@ -63,8 +63,8 @@ export class PostCoordinatorData {
  */
 export class PostProjectData {
   name: string;
-  type: number;
-  project_activities: number[];
+  project_programs: number[];
+  project_types: number[];
   start_date: string;
   end_date: string;
   comments: string;
@@ -73,8 +73,8 @@ export class PostProjectData {
     defaultLog.debug({ label: 'PostProjectData', message: 'params', obj });
 
     this.name = obj?.project_name || null;
-    this.type = obj?.project_type || null;
-    this.project_activities = (obj?.project_activities?.length && obj.project_activities) || [];
+    this.project_programs = obj?.project_programs || [];
+    this.project_types = obj?.project_types || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.comments = obj?.comments || null;
@@ -89,13 +89,11 @@ export class PostProjectData {
  */
 export class PostObjectivesData {
   objectives: string;
-  caveats: string;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || '';
   }
 }
 

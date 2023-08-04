@@ -48,7 +48,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              funding_source: {
+              agency: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -70,21 +70,7 @@ GET.apiDoc = {
                     id: {
                       type: 'number'
                     },
-                    fs_id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              project_activity: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
+                    agency_id: {
                       type: 'number'
                     },
                     name: {
@@ -107,7 +93,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              coordinator_agency: {
+              project_program: {
                 type: 'array',
                 items: {
                   type: 'object',

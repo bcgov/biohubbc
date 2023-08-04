@@ -108,7 +108,6 @@ describe('useProjectApi', () => {
         location_description: 'location',
         start_date: '2020/04/04',
         end_date: '2020/05/05',
-        caveats: 'caveat',
         comments: 'comment',
         coordinator_first_name: 'first',
         coordinator_last_name: 'last',
@@ -137,7 +136,6 @@ describe('useProjectApi', () => {
     mock.onGet(`api/project/${projectId}/update`).reply(200, {
       objectives: {
         objectives: 'objectives',
-        caveats: 'caveats',
         revision_count: 1
       }
     });
@@ -146,7 +144,6 @@ describe('useProjectApi', () => {
 
     expect(result.objectives).toEqual({
       objectives: 'objectives',
-      caveats: 'caveats',
       revision_count: 1
     });
   });
@@ -160,28 +157,6 @@ describe('useProjectApi', () => {
         revision_count: 1
       }
     });
-
-    expect(result).toEqual(true);
-  });
-
-  it('addFundingSource works as expected', async () => {
-    mock.onPost(`/api/project/${projectId}/funding-sources/add`).reply(200, {
-      id: 1
-    });
-
-    const result = await useProjectApi(axios).addFundingSource(projectId, {
-      funding_source_name: 'funding source name'
-    });
-
-    expect(result).toEqual({ id: 1 });
-  });
-
-  it('deleteFundingSource works as expected', async () => {
-    const pfsId = 2;
-
-    mock.onDelete(`/api/project/${projectId}/funding-sources/${pfsId}/delete`).reply(200, true);
-
-    const result = await useProjectApi(axios).deleteFundingSource(projectId, pfsId);
 
     expect(result).toEqual(true);
   });

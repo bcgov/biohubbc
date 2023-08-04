@@ -65,27 +65,29 @@ GET.apiDoc = {
                     description: 'Basic project metadata',
                     type: 'object',
                     required: [
-                      'id',
+                      'project_id',
                       'project_name',
-                      'project_type',
-                      'project_activities',
+                      'project_programs',
+                      'project_types',
                       'start_date',
                       'end_date',
-                      'comments',
-                      'completion_status'
+                      'comments'
                     ],
                     properties: {
-                      id: {
+                      project_id: {
                         type: 'integer',
                         minimum: 1
                       },
                       project_name: {
                         type: 'string'
                       },
-                      project_type: {
-                        type: 'number'
+                      project_programs: {
+                        type: 'array',
+                        items: {
+                          type: 'number'
+                        }
                       },
-                      project_activities: {
+                      project_types: {
                         type: 'array',
                         items: {
                           type: 'number'
@@ -103,11 +105,8 @@ GET.apiDoc = {
                       },
                       comments: {
                         type: 'string',
+                        nullable: true,
                         description: 'Comments'
-                      },
-                      completion_status: {
-                        description: 'Status of the project being active/completed',
-                        type: 'string'
                       }
                     }
                   },
@@ -141,14 +140,11 @@ GET.apiDoc = {
                     }
                   },
                   objectives: {
-                    description: 'The project objectives and caveats',
+                    description: 'The project objectives',
                     type: 'object',
-                    required: ['objectives', 'caveats'],
+                    required: ['objectives'],
                     properties: {
                       objectives: {
-                        type: 'string'
-                      },
-                      caveats: {
                         type: 'string'
                       }
                     }

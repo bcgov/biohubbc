@@ -500,10 +500,7 @@ export class EmlService extends DBService {
       title: projectData.project.project_name,
       personnel: this._getProjectPersonnel(projectData),
       abstract: {
-        section: [
-          { title: 'Objectives', para: projectData.objectives.objectives },
-          { title: 'Caveats', para: projectData.objectives.caveats || NOT_SUPPLIED }
-        ]
+        section: [{ title: 'Objectives', para: projectData.objectives.objectives }]
       },
       ...this._getProjectFundingSources(projectData),
       studyAreaDescription: {
@@ -552,20 +549,22 @@ export class EmlService extends DBService {
     const additionalMetadata: AdditionalMetadata[] = [];
     const codes = await this.codes();
 
-    if (projectData.project.project_type) {
+    if (projectData.project.project_programs) {
       additionalMetadata.push({
         describes: projectData.project.uuid,
         metadata: {
-          projectTypes: {
-            projectType: codes.project_type.find((code) => projectData.project.project_type === code.id)?.name
+          projectPrograms: {
+            projectProgram: projectData.project.project_programs.map(
+              (item) => codes.program.find((code) => code.id === item)?.name
+            )
           }
         }
       });
     }
 
-    if (projectData.project.project_activities.length) {
-      const names = codes.activity
-        .filter((code) => projectData.project.project_activities.includes(code.id))
+    if (projectData.project.project_types.length) {
+      const names = codes.type
+        .filter((code) => projectData.project.project_types.includes(code.id))
         .map((code) => code.name);
 
       additionalMetadata.push({

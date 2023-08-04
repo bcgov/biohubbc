@@ -1,11 +1,22 @@
 import { Feature } from 'geojson';
-import moment from 'moment';
-import { COMPLETION_STATUS } from '../constants/status';
+import { z } from 'zod';
 import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 
+export interface IProjectAdvancedFilters {
+  coordinator_agency?: string;
+  permit_number?: string;
+  project_programs?: number[];
+  start_date?: string;
+  end_date?: string;
+  keyword?: string;
+  project_name?: string;
+  agency_id?: number;
+  agency_project_id?: number;
+  species?: number[];
+}
 export interface IGetProject {
   coordinator: GetCoordinatorData;
-  project: GetProjectData;
+  project: ProjectData;
   objectives: GetObjectivesData;
   location: GetLocationData;
   iucn: GetIUCNClassificationData;
@@ -13,41 +24,19 @@ export interface IGetProject {
   partnerships: GetPartnershipsData;
 }
 
-/**
- * Pre-processes GET /projects/{id} project data
- *
- * @export
- * @class GetProjectData
- */
-export class GetProjectData {
-  id: number;
-  uuid: string;
-  project_name: string;
-  project_type: number;
-  project_activities: number[];
-  start_date: string;
-  end_date: string;
-  comments: string;
-  completion_status: string;
-  revision_count: number;
+export const ProjectData = z.object({
+  project_id: z.number(),
+  uuid: z.string(),
+  project_name: z.string(),
+  project_programs: z.array(z.number()),
+  project_types: z.array(z.number()),
+  start_date: z.date(),
+  end_date: z.date().nullable(),
+  comments: z.string().nullable(),
+  revision_count: z.number()
+});
 
-  constructor(projectData?: any, activityData?: any[]) {
-    this.id = projectData?.project_id || null;
-    this.uuid = projectData?.uuid || '';
-    this.project_name = projectData?.name || '';
-    this.project_type = projectData?.pt_id || -1;
-    this.project_activities = (activityData?.length && activityData.map((item) => item.activity_id)) || [];
-    this.start_date = projectData?.start_date || '';
-    this.end_date = projectData?.end_date || '';
-    this.comments = projectData?.comments || '';
-    this.completion_status =
-      (projectData?.end_date &&
-        moment(projectData.end_date).endOf('day').isBefore(moment()) &&
-        COMPLETION_STATUS.COMPLETED) ||
-      COMPLETION_STATUS.ACTIVE;
-    this.revision_count = projectData?.revision_count ?? null;
-  }
-}
+export type ProjectData = z.infer<typeof ProjectData>;
 
 /**
  * Pre-processes GET /projects/{id} objectives data
@@ -57,12 +46,10 @@ export class GetProjectData {
  */
 export class GetObjectivesData {
   objectives: string;
-  caveats: string;
   revision_count: number;
 
   constructor(objectivesData?: any) {
     this.objectives = objectivesData?.objectives || '';
-    this.caveats = objectivesData?.caveats || '';
     this.revision_count = objectivesData?.revision_count ?? null;
   }
 }

@@ -192,9 +192,10 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.projectData.project.id, [
-        UPDATE_GET_ENTITIES.location
-      ]);
+      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.project_id,
+        [UPDATE_GET_ENTITIES.location]
+      );
     });
 
     await waitFor(() => {
@@ -217,13 +218,16 @@ describe.skip('LocationBoundary', () => {
 
     await waitFor(() => {
       expect(mockUseApi.project.updateProject).toHaveBeenCalledTimes(1);
-      expect(mockUseApi.project.updateProject).toBeCalledWith(getProjectForViewResponse.projectData.project.id, {
-        location: {
-          location_description: 'description',
-          geometry: geoJsonFeature,
-          revision_count: 1
+      expect(mockUseApi.project.updateProject).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.project_id,
+        {
+          location: {
+            location_description: 'description',
+            geometry: geoJsonFeature,
+            revision_count: 1
+          }
         }
-      });
+      );
 
       expect(mockRefresh).toBeCalledTimes(1);
     });
@@ -360,9 +364,10 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.projectData.project.id, [
-        UPDATE_GET_ENTITIES.location
-      ]);
+      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.project_id,
+        [UPDATE_GET_ENTITIES.location]
+      );
     });
 
     await waitFor(() => {

@@ -107,9 +107,9 @@ export class GetSurveyPurposeAndMethodologyData {
 }
 
 interface IGetSurveyFundingSource {
-  pfs_id: number;
+  project_funding_source_id: number;
   funding_amount?: number;
-  funding_source_id: number;
+  agency_id: number;
   funding_start_date: string;
   funding_end_date: string;
   investment_action_category_id?: number;
@@ -127,9 +127,9 @@ export class GetSurveyFundingSources {
     this.funding_sources =
       obj?.map((item: any) => {
         return {
-          pfs_id: item.project_funding_source_id,
+          project_funding_source_id: item.project_funding_source_id,
           funding_amount: item.funding_amount,
-          funding_source_id: item.funding_source_id,
+          agency_id: item.agency_id,
           funding_start_date: item.funding_start_date,
           funding_end_date: item.funding_end_date,
           investment_action_category_id: item.investment_action_category_id,

@@ -1,18 +1,18 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  getActivitySQL,
   getAdministrativeActivityStatusTypeSQL,
+  getAgencySQL,
   getFirstNationsSQL,
-  getFundingSourceSQL,
   getInvestmentActionCategorySQL,
   getIUCNConservationActionLevel1ClassificationSQL,
   getIUCNConservationActionLevel2SubclassificationSQL,
   getIUCNConservationActionLevel3SubclassificationSQL,
   getManagementActionTypeSQL,
-  getProjectTypeSQL,
+  getProgramSQL,
   getProprietorTypeSQL,
-  getSystemRolesSQL
+  getSystemRolesSQL,
+  getTypeSQL
 } from './code-queries';
 
 describe('getManagementActionTypeSQL', () => {
@@ -29,9 +29,9 @@ describe('getFirstNationsSQL', () => {
   });
 });
 
-describe('getFundingSourceSQL', () => {
+describe('getAgencySQL', () => {
   it('returns valid sql statement', () => {
-    const response = getFundingSourceSQL();
+    const response = getAgencySQL();
     expect(response).to.not.be.null;
   });
 });
@@ -45,14 +45,14 @@ describe('getProprietorTypeSQL', () => {
 
 describe('getActivitySQL', () => {
   it('returns valid sql statement', () => {
-    const response = getActivitySQL();
+    const response = getTypeSQL();
     expect(response).to.not.be.null;
   });
 });
 
-describe('getProjectTypeSQL', () => {
+describe('getProgramSQL', () => {
   it('returns valid sql statement', () => {
-    const response = getProjectTypeSQL();
+    const response = getProgramSQL();
     expect(response).to.not.be.null;
   });
 });

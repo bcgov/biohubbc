@@ -21,15 +21,14 @@ export type CodeSet<T extends ICode = ICode> = T[];
  * @interface IGetAllCodeSetsResponse
  */
 export interface IGetAllCodeSetsResponse {
-  coordinator_agency: CodeSet;
   management_action_type: CodeSet;
   first_nations: CodeSet;
-  funding_source: CodeSet;
-  investment_action_category: CodeSet<{ id: number; fs_id: number; name: string }>;
-  activity: CodeSet;
-  project_type: CodeSet;
+  agency: CodeSet;
+  investment_action_category: CodeSet<{ id: number; agency_id: number; name: string }>;
+  type: CodeSet;
   region: CodeSet;
   proprietor_type: CodeSet<{ id: number; name: string; is_first_nation: boolean }>;
+  program: CodeSet;
   iucn_conservation_action_level_1_classification: CodeSet;
   iucn_conservation_action_level_2_subclassification: CodeSet<{ id: number; iucn1_id: number; name: string }>;
   iucn_conservation_action_level_3_subclassification: CodeSet<{ id: number; iucn2_id: number; name: string }>;
