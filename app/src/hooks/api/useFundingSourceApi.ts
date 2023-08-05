@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { FundingSourceData } from 'features/funding-sources/components/FundingSourceForm';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 
 /**
@@ -19,8 +20,39 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const createFundingSource = async (fundingSource: FundingSourceData): Promise<IGetFundingSourcesResponse[]> => {
+    const { data } = await axios.post('/api/funding-source', fundingSource);
+
+    return data;
+  };
+
+  const updateFundingSource = async (fundingSource: FundingSourceData): Promise<IGetFundingSourcesResponse[]> => {
+    const { data } = await axios.put(`/api/funding-source/${fundingSource.funding_source_id}`, fundingSource);
+
+    return data;
+  };
+
+  /**
+   * Checks if a name for a new funding source has already been used.
+   * This will return true if the name has been used, otherwise it returns false
+   *
+   * @return {*}  {Promise<Boolean>}
+   */
+  const hasFundingSourceNameBeenUsed = async (name: string): Promise<boolean> => {
+    const { data } = await axios.get('/api/funding-sources', {
+      params: {
+        name
+      }
+    });
+
+    return data.length > 0;
+  };
+
   return {
-    getAllFundingSources
+    getAllFundingSources,
+    createFundingSource,
+    updateFundingSource,
+    hasFundingSourceNameBeenUsed
   };
 };
 

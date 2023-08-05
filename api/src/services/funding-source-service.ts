@@ -2,6 +2,10 @@ import { IDBConnection } from '../database/db';
 import { FundingSource, FundingSourceRepository } from '../repositories/funding-source-repository';
 import { DBService } from './db-service';
 
+export interface IFundingSourceSearchParams {
+  name?: string;
+}
+
 export class FundingSourceService extends DBService {
   fundingSourceRepository: FundingSourceRepository;
 
@@ -17,7 +21,7 @@ export class FundingSourceService extends DBService {
    * @return {*}  {Promise<FundingSource[]>}
    * @memberof FundingSourceService
    */
-  async getFundingSources(): Promise<FundingSource[]> {
-    return this.fundingSourceRepository.getFundingSources();
+  async getFundingSources(searchParams: IFundingSourceSearchParams): Promise<FundingSource[]> {
+    return this.fundingSourceRepository.getFundingSources(searchParams);
   }
 }

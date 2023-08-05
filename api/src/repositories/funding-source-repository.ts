@@ -1,5 +1,7 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
+import { IFundingSourceSearchParams } from '../services/funding-source-service';
 import { BaseRepository } from './base-repository';
 
 const FundingSource = z.object({
@@ -17,15 +19,17 @@ export class FundingSourceRepository extends BaseRepository {
    * @return {*}  {Promise<FundingSource[]>}
    * @memberof BaseRepository
    */
-  async getFundingSources(): Promise<FundingSource[]> {
-    const sqlStatement = SQL`
-      SELECT 
-        * 
-      FROM 
-        funding_sources;
-    `;
+  async getFundingSources(searchParams: IFundingSourceSearchParams): Promise<FundingSource[]> {
+    const knex = getKnex();
+    const queryBuilder = knex.queryBuilder();
 
-    const response = await this.connection.sql(sqlStatement, FundingSource);
+    queryBuilder.select(['name', 'description', 'start_date', 'end_date']).from('funding_sources');
+
+    if (searchParams.name) {
+      queryBuilder.andWhere('name', searchParams.name);
+    }
+
+    const response = await this.connection.knex(queryBuilder, FundingSource);
 
     return response.rows;
   }
