@@ -12,7 +12,7 @@ import {
   GetPartnershipsData,
   ProjectData
 } from '../models/project-view';
-import { ProjectUserObject } from '../models/user';
+import { ProjectUser } from '../models/user';
 import { IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
@@ -39,7 +39,7 @@ describe('ProjectService', () => {
 
       const getProjectParticipantStub = sinon
         .stub(ProjectService.prototype, 'getProjectParticipant')
-        .resolves({} as ProjectUserObject);
+        .resolves({} as ProjectUser);
 
       const addProjectParticipantStub = sinon.stub(ProjectService.prototype, 'addProjectParticipant');
 
@@ -88,7 +88,7 @@ describe('ProjectService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const data = { project_id: 1 } as ProjectUserObject;
+      const data = { project_id: 1 } as ProjectUser;
 
       const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipant').resolves(data);
 
@@ -185,18 +185,26 @@ describe('ProjectService', () => {
 
       const data = [
         {
-          id: 123,
-          name: 'Project 1',
+          project_id: 123,
+          uuid: '',
+          project_name: 'Project 1',
+          coordinator_agency: '',
+          project_programs: [],
+          project_types: [],
+          regions: [],
           start_date: '1900-01-01',
-          end_date: '2200-10-10',
-          coordinator_agency: 'Agency 1'
+          end_date: '2200-10-10'
         },
         {
-          id: 456,
-          name: 'Project 2',
+          project_id: 456,
+          uuid: '',
+          project_name: 'Project 2',
+          coordinator_agency: '',
+          project_programs: [],
+          project_types: [],
+          regions: [],
           start_date: '1900-01-01',
-          end_date: '2000-12-31',
-          coordinator_agency: 'Agency 2'
+          end_date: '2000-12-31'
         }
       ];
 
@@ -223,9 +231,9 @@ describe('ProjectService', () => {
       const mockProjectMetadataPublish = {
         project_metadata_publish_id: 1,
         project_id: 1,
-        event_timestamp: new Date(),
+        event_timestamp: '',
         queue_id: 1,
-        create_date: new Date(),
+        create_date: '',
         create_user: 1,
         update_date: null,
         update_user: null,

@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
-import { ProjectUserObject } from '../../../../models/user';
 import { ProjectService } from '../../../../services/project-service';
 import { getLogger } from '../../../../utils/logger';
 
@@ -31,7 +30,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Project particpant roles.',
+      description: 'Project participant roles.',
       content: {
         'application/json': {
           schema: {
@@ -117,7 +116,7 @@ export function getUserRolesForProject(): RequestHandler {
       await connection.commit();
 
       return res.status(200).json({
-        participant: result ? new ProjectUserObject(result) : null
+        participant: result
       });
     } catch (error) {
       defaultLog.error({ label: 'getAllProjectParticipantsSQL', message: 'error', error });

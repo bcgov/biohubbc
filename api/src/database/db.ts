@@ -41,6 +41,15 @@ pg.types.setTypeParser(pg.types.builtins.DATE, (stringValue: string) => {
   return stringValue; // 1082 for `DATE` type
 });
 
+// Adding a TIMESTAMP type parser to keep all dates used in the system consistent
+pg.types.setTypeParser(pg.types.builtins.TIMESTAMP, (stringValue: string) => {
+  return stringValue; // 1082 for `TIMESTAMP` type
+});
+// Adding a TIMESTAMPTZ type parser to keep all dates used in the system consistent
+pg.types.setTypeParser(pg.types.builtins.TIMESTAMPTZ, (stringValue: string) => {
+  return stringValue; // 1082 for `DATE` type
+});
+
 // singleton pg pool instance used by the api
 let DBPool: pg.Pool | undefined;
 

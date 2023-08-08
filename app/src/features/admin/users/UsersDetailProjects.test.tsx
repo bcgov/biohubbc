@@ -25,7 +25,7 @@ const mockUseApi = {
 };
 
 const mockUser = {
-  id: 1,
+  system_user_id: 1,
   user_record_end_date: 'ending',
   user_identifier: 'testUser',
   role_names: ['system'],
@@ -88,7 +88,7 @@ describe('UsersDetailProjects', () => {
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
-      project_roles: [{ id: 1, name: 'Project Lead' }]
+      project_roles: [{ id: 1, name: 'Coordinator' }]
     } as any);
 
     mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
@@ -120,7 +120,7 @@ describe('UsersDetailProjects', () => {
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
-      project_roles: [{ id: 1, name: 'Project Lead' }]
+      project_roles: [{ id: 1, name: 'Coordinator' }]
     } as any);
 
     mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
@@ -160,7 +160,7 @@ describe('UsersDetailProjects', () => {
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
-      project_roles: [{ id: 1, name: 'Project Lead' }]
+      project_roles: [{ id: 1, name: 'Coordinator' }]
     } as any);
 
     mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
@@ -196,7 +196,7 @@ describe('UsersDetailProjects', () => {
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
-        project_roles: [{ id: 1, name: 'Project Lead' }]
+        project_roles: [{ id: 1, name: 'Coordinator' }]
       } as any);
 
       mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
@@ -239,7 +239,7 @@ describe('UsersDetailProjects', () => {
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
-        project_roles: [{ id: 1, name: 'Project Lead' }]
+        project_roles: [{ id: 1, name: 'Coordinator' }]
       } as any);
 
       mockUseApi.project.removeProjectParticipant.mockResolvedValue(true);
@@ -309,9 +309,9 @@ describe('UsersDetailProjects', () => {
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [
-          { id: 1, name: 'Project Lead' },
-          { id: 2, name: 'Editor' },
-          { id: 3, name: 'Viewer' }
+          { id: 1, name: 'Coordinator' },
+          { id: 2, name: 'Collaborator' },
+          { id: 3, name: 'Observer' }
         ]
       } as any);
 
@@ -337,12 +337,12 @@ describe('UsersDetailProjects', () => {
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Viewer'));
+      fireEvent.click(getByText('Observer'));
 
       await waitFor(() => {
-        expect(getAllByText('Project Lead').length).toEqual(1);
-        expect(getAllByText('Editor').length).toEqual(1);
-        expect(getAllByText('Viewer').length).toEqual(2);
+        expect(getAllByText('Coordinator').length).toEqual(1);
+        expect(getAllByText('Collaborator').length).toEqual(1);
+        expect(getAllByText('Observer').length).toEqual(2);
       });
     });
 
@@ -352,9 +352,9 @@ describe('UsersDetailProjects', () => {
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [
-          { id: 1, name: 'Project Lead' },
-          { id: 2, name: 'Editor' },
-          { id: 3, name: 'Viewer' }
+          { id: 1, name: 'Coordinator' },
+          { id: 2, name: 'Collaborator' },
+          { id: 3, name: 'Observer' }
         ]
       } as any);
 
@@ -382,15 +382,15 @@ describe('UsersDetailProjects', () => {
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Viewer'));
+      fireEvent.click(getByText('Observer'));
 
       await waitFor(() => {
-        expect(getAllByText('Project Lead').length).toEqual(1);
-        expect(getAllByText('Editor').length).toEqual(1);
-        expect(getAllByText('Viewer').length).toEqual(2);
+        expect(getAllByText('Coordinator').length).toEqual(1);
+        expect(getAllByText('Collaborator').length).toEqual(1);
+        expect(getAllByText('Observer').length).toEqual(2);
       });
 
-      fireEvent.click(getByText('Editor'));
+      fireEvent.click(getByText('Collaborator'));
 
       await waitFor(() => {
         expect(getAllByText('Change project role?').length).toEqual(1);
@@ -409,9 +409,9 @@ describe('UsersDetailProjects', () => {
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [
-          { id: 1, name: 'Project Lead' },
-          { id: 2, name: 'Editor' },
-          { id: 3, name: 'Viewer' }
+          { id: 1, name: 'Coordinator' },
+          { id: 2, name: 'Collaborator' },
+          { id: 3, name: 'Observer' }
         ]
       } as any);
 
@@ -441,15 +441,15 @@ describe('UsersDetailProjects', () => {
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Viewer'));
+      fireEvent.click(getByText('Observer'));
 
       await waitFor(() => {
-        expect(getAllByText('Project Lead').length).toEqual(1);
-        expect(getAllByText('Editor').length).toEqual(1);
-        expect(getAllByText('Viewer').length).toEqual(2);
+        expect(getAllByText('Coordinator').length).toEqual(1);
+        expect(getAllByText('Collaborator').length).toEqual(1);
+        expect(getAllByText('Observer').length).toEqual(2);
       });
 
-      fireEvent.click(getByText('Editor'));
+      fireEvent.click(getByText('Collaborator'));
 
       await waitFor(() => {
         expect(getAllByText('Change project role?').length).toEqual(1);
@@ -458,7 +458,7 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getByText('Change Role'));
 
       await waitFor(() => {
-        expect(getAllByText('Editor').length).toEqual(1);
+        expect(getAllByText('Collaborator').length).toEqual(1);
       });
     });
   });

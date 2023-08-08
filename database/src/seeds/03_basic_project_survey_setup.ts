@@ -234,7 +234,7 @@ const insertProjectParticipationData = () => `
             su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
         ), 1)
       ),
-      1
+      (SELECT project_role_id FROM project_role WHERE name = 'Coordinator' LIMIT 1)
     )
   ;
 `;

@@ -40,9 +40,9 @@ GET.apiDoc = {
             items: {
               title: 'User Response Object',
               type: 'object',
-              required: ['id', 'user_identifier', 'identity_source', 'role_ids', 'role_names'],
+              required: ['system_user_id', 'user_identifier', 'identity_source', 'role_ids', 'role_names'],
               properties: {
-                id: {
+                system_user_id: {
                   type: 'number'
                 },
                 user_guid: {

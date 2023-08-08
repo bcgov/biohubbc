@@ -42,7 +42,7 @@ describe('createAdministrativeActivity', () => {
     const dbConnectionObj = getMockDBConnection({ systemUserId: () => systemUserId, commit: sinon.stub() });
     sinon.stub(db, 'getAPIUserDBConnection').returns(dbConnectionObj);
 
-    const mockResponse: ICreateAdministrativeActivity = { id: 2, date: new Date() };
+    const mockResponse: ICreateAdministrativeActivity = { id: 2, date: '2023-01-01' };
 
     sinon.stub(AdministrativeActivityService.prototype, 'createPendingAccessRequest').resolves(mockResponse);
     sinon.stub(AdministrativeActivityService.prototype, 'sendAccessRequestNotificationEmailToAdmin').resolves();

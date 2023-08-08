@@ -241,7 +241,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   }, [keycloakUserDataLoader.data, userDataLoader.data]);
 
   const isSystemUser = (): boolean => {
-    return Boolean(userDataLoader.data?.id);
+    return Boolean(userDataLoader.data?.system_user_id);
   };
 
   const getSystemRoles = (): string[] => {

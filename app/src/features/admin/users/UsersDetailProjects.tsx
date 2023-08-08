@@ -78,15 +78,15 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     [biohubApi.project]
   );
 
-  const refresh = () => handleGetUserProjects(userDetails.id);
+  const refresh = () => handleGetUserProjects(userDetails.system_user_id);
 
   useEffect(() => {
     if (assignedProjects) {
       return;
     }
 
-    handleGetUserProjects(userDetails.id);
-  }, [userDetails.id, assignedProjects, handleGetUserProjects]);
+    handleGetUserProjects(userDetails.system_user_id);
+  }, [userDetails.system_user_id, assignedProjects, handleGetUserProjects]);
 
   useEffect(() => {
     const getCodes = async () => {
@@ -126,7 +126,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
         )
       });
 
-      handleGetUserProjects(userDetails.id);
+      handleGetUserProjects(userDetails.system_user_id);
     } catch (error) {
       openErrorDialog({
         dialogTitle: SystemUserI18N.removeUserErrorTitle,
