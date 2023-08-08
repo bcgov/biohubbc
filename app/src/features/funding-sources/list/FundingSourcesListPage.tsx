@@ -10,8 +10,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import EditDialog from 'components/dialog/EditDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { CreateFundingSourceI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
@@ -90,15 +93,16 @@ const FundingSourcesListPage: React.FC = () => {
   const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
   fundingSourceDataLoader.load();
 
-  // const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-  //   dialogContext.setErrorDialog({
-  //     dialogTitle: CreateFundingSourceI18N.createErrorTitle,
-  //     dialogText: CreateFundingSourceI18N.createErrorText,
-  //     ...defaultErrorDialogProps,
-  //     ...textDialogProps,
-  //     open: true
-  //   });
-  // };
+  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      dialogTitle: CreateFundingSourceI18N.createErrorTitle,
+      dialogText: CreateFundingSourceI18N.createErrorText,
+      onClose: () => dialogContext.setErrorDialog({ open: false }),
+      onOk: () => dialogContext.setErrorDialog({ open: false }),
+      ...textDialogProps,
+      open: true
+    });
+  };
 
   const handleSubmitDraft = async (values: IFundingSourceData) => {
     setIsSubmitting(true);
@@ -109,7 +113,7 @@ const FundingSourcesListPage: React.FC = () => {
       } else {
         await biohubApi.funding.postFundingSource(values);
       }
-      setIsSubmitting(false);
+
       setIsModalOpen(false);
 
       fundingSourceDataLoader.refresh();
@@ -125,8 +129,13 @@ const FundingSourcesListPage: React.FC = () => {
         open: true
       });
       // refresh the list
-    } catch (error) {
-      console.log('Show an error dialog');
+    } catch (error: any) {
+      console.log(error);
+      showCreateErrorDialog({
+        dialogError: (error as APIError).message,
+        dialogErrorDetails: (error as APIError).errors
+      });
+      setIsSubmitting(false);
     }
   };
 
