@@ -51,13 +51,13 @@ export class FundingSourceRepository extends BaseRepository {
   }
 
   /**
-   * Fetch a single funding source by id.
+   * Fetch a single funding source.
    *
    * @param {number} fundingSourceId
    * @return {*}  {Promise<FundingSource>}
    * @memberof FundingSourceRepository
    */
-  async getFundingSourceById(fundingSourceId: number): Promise<FundingSource> {
+  async getFundingSource(fundingSourceId: number): Promise<FundingSource> {
     const sqlStatement = SQL`
       SELECT 
         * 
@@ -71,7 +71,7 @@ export class FundingSourceRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get funding source', [
-        'FundingSourceRepository->getFundingSourceById',
+        'FundingSourceRepository->getFundingSource',
         'rowCount was != 1, expected rowCount = 1'
       ]);
     }
@@ -80,7 +80,7 @@ export class FundingSourceRepository extends BaseRepository {
   }
 
   /**
-   * Fetch a single funding source by id.
+   * Update a single funding source.
    *
    * @param {FundingSource} fundingSource
    * @return {*}  {Promise<Pick<FundingSource, 'funding_source_id'>>}
@@ -106,6 +106,36 @@ export class FundingSourceRepository extends BaseRepository {
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to update funding source', [
         'FundingSourceRepository->putFundingSource',
+        'rowCount was != 1, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
+   * Delete a single funding source.
+   *
+   * @param {number} fundingSourceId
+   * @return {*}  {Promise<Pick<FundingSource, 'funding_source_id'>>}
+   * @memberof FundingSourceRepository
+   */
+  async deleteFundingSource(fundingSourceId: number): Promise<Pick<FundingSource, 'funding_source_id'>> {
+    const sqlStatement = SQL`
+      DELETE 
+      FROM 
+        funding_source
+      WHERE 
+        funding_source_id = ${fundingSourceId}
+      RETURNING
+        funding_source_id;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, FundingSource.pick({ funding_source_id: true }));
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to delete funding source', [
+        'FundingSourceRepository->deleteFundingSource',
         'rowCount was != 1, expected rowCount = 1'
       ]);
     }

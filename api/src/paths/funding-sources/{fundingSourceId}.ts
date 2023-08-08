@@ -103,7 +103,7 @@ export function getFundingSource(): RequestHandler {
 
       const fundingSourceService = new FundingSourceService(connection);
 
-      const response = await fundingSourceService.getFundingSourceById(fundingSourceId);
+      const response = await fundingSourceService.getFundingSource(fundingSourceId);
 
       await connection.commit();
 
@@ -157,8 +157,23 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: [],
-          properties: {}
+          required: ['name', 'description', 'revision_count'],
+          properties: {
+            funding_source_id: {
+              type: 'integer',
+              minimum: 1
+            },
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            revision_count: {
+              type: 'integer',
+              minimum: 0
+            }
+          }
         }
       }
     }
@@ -172,8 +187,13 @@ PUT.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
-              required: [],
-              properties: {}
+              required: ['funding_source_id'],
+              properties: {
+                funding_source_id: {
+                  type: 'integer',
+                  minimum: 1
+                }
+              }
             }
           }
         }
@@ -209,11 +229,13 @@ export function putFundingSource(): RequestHandler {
     try {
       await connection.open();
 
-      // TODO
+      const fundingSourceService = new FundingSourceService(connection);
+
+      const response = await fundingSourceService.putFundingSource(req.body);
 
       await connection.commit();
 
-      return res.status(200).json();
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'putFundingSource', message: 'error', error });
       await connection.rollback();
@@ -266,8 +288,13 @@ DELETE.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
-              required: [],
-              properties: {}
+              required: ['funding_source_id'],
+              properties: {
+                funding_source_id: {
+                  type: 'integer',
+                  minimum: 1
+                }
+              }
             }
           }
         }
@@ -300,14 +327,18 @@ export function deleteFundingSource(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
+    const fundingSourceId = Number(req.params.fundingSourceId);
+
     try {
       await connection.open();
 
-      // TODO
+      const fundingSourceService = new FundingSourceService(connection);
+
+      const response = await fundingSourceService.deleteFundingSource(fundingSourceId);
 
       await connection.commit();
 
-      return res.status(200).json();
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'deleteFundingSource', message: 'error', error });
       await connection.rollback();
