@@ -191,6 +191,38 @@ export class FundingSourceRepository extends BaseRepository {
    */
 
   /**
+   * Fetch a single survey funding source by survey id and funding source id.
+   *
+   * @param {number} surveyId
+   * @param {number} fundingSourceId
+   * @return {*}  {Promise<SurveyFundingSource>}
+   * @memberof FundingSourceRepository
+   */
+  async getSurveyFundingSourceByFundingSourceId(
+    surveyId: number,
+    fundingSourceId: number
+  ): Promise<SurveyFundingSource> {
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_funding_source
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        funding_source_id = ${fundingSourceId};
+    `;
+    const response = await this.connection.sql(sqlStatement, SurveyFundingSource);
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get survey funding source', [
+        'FundingSourceRepository->getSurveyFundingSourceByFundingSourceId',
+        'rowCount was != 1, expected rowCount = 1'
+      ]);
+    }
+    return response.rows[0];
+  }
+
+  /**
    * Fetch all survey funding sources by survey id.
    *
    * @param {number} surveyId
@@ -248,15 +280,22 @@ export class FundingSourceRepository extends BaseRepository {
    * @param {number} surveyId
    * @param {number} fundingSourceId
    * @param {number} amount
+   * @param {number} revision_count
    * @return {*}  {Promise<void>}
    * @memberof FundingSourceRepository
    */
-  async putSurveyFundingSource(surveyId: number, fundingSourceId: number, amount: number): Promise<void> {
+  async putSurveyFundingSource(
+    surveyId: number,
+    fundingSourceId: number,
+    amount: number,
+    revision_count: number
+  ): Promise<void> {
     const sqlStatement = SQL`
       UPDATE
         survey_funding_source
       SET
-        amount = ${amount}
+        amount = ${amount},
+        revision_count = ${revision_count}
       WHERE
         survey_id = ${surveyId}
       AND
