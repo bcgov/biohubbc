@@ -2,6 +2,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -23,6 +24,14 @@ export interface IEditDialogProps<T> {
    * @memberof IEditDialogProps
    */
   dialogTitle: string;
+
+  /**
+   * The dialog window content text.
+   *
+   * @type {string}
+   * @memberof IEditDialogProps
+   */
+  dialogText?: string;
 
   /**
    * The label of the `onSave` button.
@@ -107,9 +116,13 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           aria-labelledby="edit-dialog-title"
           aria-describedby="edit-dialog-description">
           <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
-          <DialogContent>{props.component.element}</DialogContent>
+          <DialogContent>
+            <DialogContentText>{props.dialogText}</DialogContentText>
+            {props.component.element}
+          </DialogContent>
           <DialogActions>
             <LoadingButton
+              sx={{ marginX: 1 }}
               loading={props.dialogLoading || false}
               onClick={formikProps.submitForm}
               color="primary"

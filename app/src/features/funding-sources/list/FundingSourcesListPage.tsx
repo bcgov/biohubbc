@@ -176,6 +176,7 @@ const FundingSourcesListPage: React.FC = () => {
       </Paper>
       <EditDialog
         dialogTitle="Add New Funding Source"
+        dialogText="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed."
         open={isModalOpen}
         dialogLoading={isSubmitting}
         component={{
