@@ -32,14 +32,14 @@ export class FundingSourceService extends DBService {
   }
 
   /**
-   * Fetch a single funding source by id.
+   * Fetch a single funding source.
    *
    * @param {number} fundingSourceId
    * @return {*}  {Promise<FundingSource>}
    * @memberof FundingSourceService
    */
-  async getFundingSourceById(fundingSourceId: number): Promise<FundingSource> {
-    return this.fundingSourceRepository.getFundingSourceById(fundingSourceId);
+  async getFundingSource(fundingSourceId: number): Promise<FundingSource> {
+    return this.fundingSourceRepository.getFundingSource(fundingSourceId);
   }
 
   /**
@@ -61,5 +61,15 @@ export class FundingSourceService extends DBService {
    */
   async createFundingSource(newFundingSource: ICreateFundingSource): Promise<{ funding_source_id: number }> {
     return this.fundingSourceRepository.createFundingSource(newFundingSource);
+  }
+  /**
+   * Delete a single funding source.
+   *
+   * @param {number} fundingSourceId
+   * @return {*}  {Promise<Pick<FundingSource, 'funding_source_id'>>}
+   * @memberof FundingSourceService
+   */
+  async deleteFundingSource(fundingSourceId: number): Promise<Pick<FundingSource, 'funding_source_id'>> {
+    return this.fundingSourceRepository.deleteFundingSource(fundingSourceId);
   }
 }

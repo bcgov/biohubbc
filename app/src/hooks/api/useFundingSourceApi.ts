@@ -54,7 +54,7 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
    * @param {number} fundingSourceId
    * @return {*}  {Promise<IGetFundingSourcesResponse>}
    */
-  const getFundingSourceById = async (fundingSourceId: number): Promise<IGetFundingSourcesResponse> => {
+  const getFundingSource = async (fundingSourceId: number): Promise<IGetFundingSourcesResponse> => {
     const { data } = await axios.get(`/api/funding-sources/${fundingSourceId}`);
 
     return data;
@@ -107,7 +107,7 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
     createFundingSource,
     updateFundingSource,
     hasFundingSourceNameBeenUsed,
-    getFundingSourceById,
+    getFundingSource,
     deleteFundingSourceById,
     putFundingSourceById,
     postFundingSource

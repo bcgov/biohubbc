@@ -29,6 +29,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertProjectIUCNData()}
       ${insertProjectParticipationData()}
       ${insertProjectStakeholderData()}
+      ${insertFundingData()}
       ${insertSurveyData()}
       ${insertSurveyPermitData()}
       ${insertSurveySpeciesData()}
@@ -37,7 +38,6 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyVantageData()}
       ${insertProjectProgramData()}
       `);
-    // ${insertProjectFundingData()}
   }
 }
 
@@ -96,6 +96,20 @@ const insertSurveyProprietorData = () => `
   );
 `;
 
+const insertFundingData = () => `
+  INSERT into funding_source
+  (
+    name,
+    description,
+    record_effective_date
+  )
+  VALUES (
+    'Funding Source Name',
+    'Funding Source Description',
+    '2021-01-01'
+  );
+`;
+
 /**
  * SQL to insert Survey funding data
  *
@@ -104,10 +118,11 @@ const insertSurveyFundingData = () => `
   INSERT into survey_funding_source
     (
       survey_id,
-      project_funding_source_id
+      funding_source_id,
+      amount
     )
   VALUES (
-    1, 1
+    1, 1, 1000
   );
 `;
 
@@ -249,18 +264,6 @@ const insertProjectIUCNData = () => `
     ( 1, 34 )
   ;
 `;
-
-// /**
-//  * SQL to insert Project Funding data
-//  *
-//  */
-// const insertProjectFundingData = () => `
-//   INSERT into project_funding_source
-//     ( investment_action_category_id, project_id, funding_source_project_id, funding_amount, funding_start_date, funding_end_date )
-//   VALUES
-//     ( 50, 1, 'AGENCY PROJECT ID', '$123,456,789.00', '2023-01-02', '2023-01-30' )
-//   ;
-// `;
 
 /**
  * SQL to insert Project Type data

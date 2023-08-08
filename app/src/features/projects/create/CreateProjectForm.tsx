@@ -157,25 +157,11 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <Divider className={classes.sectionDivider} />
 
         <HorizontalSplitFormComponent
-          title="Funding and Partnerships"
-          summary="Specify project funding sources and additional partnerships."
+          title="Partnerships"
+          summary="Specify project additional partnerships."
           component={
             <>
               <Box component="fieldset">
-                <Typography component="legend" variant="h5">
-                  Funding Sources
-                </Typography>
-                <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-                  Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to be
-                  exact, please round to the nearest 100.
-                </Typography>
-                <Box mt={3}>
-                  {
-                    //funding
-                  }
-                </Box>
-              </Box>
-              <Box component="fieldset" mt={5}>
                 <Typography component="legend" variant="h5">
                   Partnerships
                 </Typography>

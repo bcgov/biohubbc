@@ -32,7 +32,7 @@ describe('useFundingSourceApi', () => {
     });
   });
 
-  describe('getFundingSourceById', () => {
+  describe('getFundingSource', () => {
     it('works as expected', async () => {
       // TODO
     });
