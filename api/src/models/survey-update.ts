@@ -4,6 +4,7 @@ export class PutSurveyObject {
   survey_details: PutSurveyDetailsData;
   species: PutSurveySpeciesData;
   permit: PutSurveyPermitData;
+  funding_sources: PutFundingSourceData[];
   proprietor: PutSurveyProprietorData;
   purpose_and_methodology: PutSurveyPurposeAndMethodologyData;
   location: PutSurveyLocationData;
@@ -12,10 +13,22 @@ export class PutSurveyObject {
     this.survey_details = (obj?.survey_details && new PutSurveyDetailsData(obj.survey_details)) || null;
     this.species = (obj?.species && new PutSurveySpeciesData(obj.species)) || null;
     this.permit = (obj?.permit && new PutSurveyPermitData(obj.permit)) || null;
+    this.funding_sources =
+      (obj?.funding_sources?.length && obj.funding_sources.map((fs: any) => new PutFundingSourceData(fs))) || [];
     this.proprietor = (obj?.proprietor && new PutSurveyProprietorData(obj.proprietor)) || null;
     this.purpose_and_methodology =
       (obj?.purpose_and_methodology && new PutSurveyPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
     this.location = (obj?.location && new PutSurveyLocationData(obj.location)) || null;
+  }
+}
+
+export class PutFundingSourceData {
+  funding_source_id: number;
+  amount: number;
+
+  constructor(obj?: any) {
+    this.funding_source_id = obj?.funding_source_id || null;
+    this.amount = obj?.amount || null;
   }
 }
 
