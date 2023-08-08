@@ -12,13 +12,7 @@ export interface IFundingSourceData {
   start_date: string | null;
   end_date: string | null;
 }
-/*
-  TODO:
-  - replace existing StartEndDateFields, not sure if this is possible
-  - make UI better
-  - look into fieldset child relationship
-  - display errors from api
-*/
+
 const FundingSourceForm: React.FC = (props) => {
   const formikProps = useFormikContext<IFundingSourceData>();
   const { handleSubmit } = formikProps;
