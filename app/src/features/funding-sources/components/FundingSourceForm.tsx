@@ -21,16 +21,16 @@ export const FundingSourceYupSchema = yup.object().shape({
   //   return false;
   // }),
   description: yup.string().max(200).required('A description is required'),
-  start_date: yup.string().isValidDateString(),
-  end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
+  start_date: yup.string().isValidDateString().nullable(),
+  end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').nullable()
 });
 export type FundingSourceData = yup.InferType<typeof FundingSourceYupSchema>;
 /*
   TODO:
-  - replace existing StartEndDateFields
+  - replace existing StartEndDateFields, not sure if this is possible
   - make UI better
   - look into fieldset child relationship
-  - look into fixing project edit/ form validation
+  - display errors from api
 */
 const FundingSourceForm: React.FC = (props) => {
   const formikProps = useFormikContext<FundingSourceData>();

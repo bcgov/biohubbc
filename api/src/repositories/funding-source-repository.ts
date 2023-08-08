@@ -25,7 +25,9 @@ export class FundingSourceRepository extends BaseRepository {
     const knex = getKnex();
     const queryBuilder = knex.queryBuilder();
 
-    queryBuilder.select(['name', 'description', 'start_date', 'end_date']).from('funding_source');
+    queryBuilder
+      .select(['funding_source_id', 'name', 'description', 'start_date', 'end_date', 'revision_count'])
+      .from('funding_source');
 
     if (searchParams.name) {
       queryBuilder.andWhere('name', searchParams.name);
@@ -56,12 +58,14 @@ export class FundingSourceRepository extends BaseRepository {
         name, 
         description, 
         start_date, 
-        end_date
+        end_date,
+        record_effective_date
       ) VALUES (
         ${data.name},
         ${data.description},
         ${data.start_date},
-        ${data.end_date}
+        ${data.end_date},
+         NOW()
       )
       RETURNING 
         funding_source_id;

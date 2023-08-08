@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import EditDialog from 'components/dialog/EditDialog';
 import { CodesContext } from 'contexts/codesContext';
+import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
@@ -56,8 +57,11 @@ const FundingSourcesListPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const classes = useStyles();
   const biohubApi = useBiohubApi();
-  // const dialogContext = useContext(DialogContext);
+  const dialogContext = useContext(DialogContext);
 
+  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
   const codesContext = useContext(CodesContext);
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
@@ -78,12 +82,25 @@ const FundingSourcesListPage: React.FC = () => {
     try {
       if (values.funding_source_id) {
         // edit the funding source
-        await biohubApi.funding.updateFundingSource(values);
+        await biohubApi.funding.putFundingSource(values);
       } else {
-        await biohubApi.funding.createFundingSource(values);
+        await biohubApi.funding.postFundingSource(values);
       }
 
-      // setIsModalOpen(false);
+      setIsModalOpen(false);
+
+      fundingSourceDataLoader.refresh();
+
+      showSnackBar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              Funding Source: <strong>{values.name}</strong> has been created.
+            </Typography>
+          </>
+        ),
+        open: true
+      });
       // refresh the list
     } catch (error) {
       console.log('Show an error dialog');
@@ -136,8 +153,8 @@ const FundingSourcesListPage: React.FC = () => {
             funding_source_id: null,
             name: '',
             description: '',
-            start_date: '',
-            end_date: ''
+            start_date: null,
+            end_date: null
           } as FundingSourceData,
           validationSchema: FundingSourceYupSchema
         }}

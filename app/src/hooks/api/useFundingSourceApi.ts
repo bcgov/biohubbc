@@ -20,18 +20,6 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const createFundingSource = async (fundingSource: FundingSourceData): Promise<IGetFundingSourcesResponse[]> => {
-    const { data } = await axios.post('/api/funding-source', fundingSource);
-
-    return data;
-  };
-
-  const updateFundingSource = async (fundingSource: FundingSourceData): Promise<IGetFundingSourcesResponse[]> => {
-    const { data } = await axios.put(`/api/funding-source/${fundingSource.funding_source_id}`, fundingSource);
-
-    return data;
-  };
-
   /**
    * Checks if a name for a new funding source has already been used.
    * This will return true if the name has been used, otherwise it returns false
@@ -63,13 +51,12 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
   /**
    * Create a new funding source.
    *
-   * // TODO fill in request body and response type
    *
    * @param {number} fundingSourceId
    * @return {*}  {Promise<unknown>}
    */
-  const postFundingSource = async (): Promise<unknown> => {
-    const { data } = await axios.post('/api/funding-sources', {});
+  const postFundingSource = async (fundingSource: FundingSourceData): Promise<IGetFundingSourcesResponse[]> => {
+    const { data } = await axios.post('/api/funding-sources', fundingSource);
 
     return data;
   };
@@ -91,25 +78,22 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
   /**
    * Update a single funding source.
    *
-   * // TODO fill in request body and response type
    *
    * @param {number} fundingSourceId
    * @return {*}  {Promise<unknown>}
    */
-  const putFundingSourceById = async (fundingSourceId: number): Promise<unknown> => {
-    const { data } = await axios.put(`/api/funding-sources/${fundingSourceId}`, {});
+  const putFundingSource = async (fundingSource: FundingSourceData): Promise<IGetFundingSourcesResponse[]> => {
+    const { data } = await axios.put(`/api/funding-sources/${fundingSource.funding_source_id}`, fundingSource);
 
     return data;
   };
 
   return {
     getAllFundingSources,
-    createFundingSource,
-    updateFundingSource,
     hasFundingSourceNameBeenUsed,
     getFundingSource,
     deleteFundingSourceById,
-    putFundingSourceById,
+    putFundingSource,
     postFundingSource
   };
 };

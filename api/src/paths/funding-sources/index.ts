@@ -136,7 +136,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['name', 'description', 'start_date', 'end_date'],
+          required: ['name', 'description'],
           properties: {
             name: {
               type: 'string'
@@ -145,10 +145,12 @@ POST.apiDoc = {
               type: 'string'
             },
             start_date: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             end_date: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             }
           }
         }
@@ -202,7 +204,11 @@ export function postFundingSource(): RequestHandler {
     const data = req.body;
     try {
       await connection.open();
-
+      console.log('_________________');
+      console.log('_________________');
+      console.log('_________________');
+      console.log('_________________');
+      console.log(data);
       const response = await service.postFundingSource(data);
       await connection.commit();
 
