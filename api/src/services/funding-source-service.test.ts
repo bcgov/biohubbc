@@ -31,20 +31,20 @@ describe('FundingSourceService', () => {
     });
   });
 
-  describe('getFundingSourceById', () => {
-    it('returns an array of funding source items', async () => {
+  describe('getFundingSource', () => {
+    it('returns a single funding source', async () => {
       const dbConnection = getMockDBConnection();
       const fundingSourceService = new FundingSourceService(dbConnection);
 
       const expectedResult = { funding_source_id: 1, name: 'name', description: 'description' };
 
       const getFundingSourceByIdStub = sinon
-        .stub(FundingSourceRepository.prototype, 'getFundingSourceById')
+        .stub(FundingSourceRepository.prototype, 'getFundingSource')
         .resolves(expectedResult);
 
       const fundingSourceId = 1;
 
-      const response = await fundingSourceService.getFundingSourceById(fundingSourceId);
+      const response = await fundingSourceService.getFundingSource(fundingSourceId);
 
       expect(getFundingSourceByIdStub).to.be.calledOnce;
       expect(response).to.eql(expectedResult);
@@ -72,6 +72,26 @@ describe('FundingSourceService', () => {
       const response = await fundingSourceService.putFundingSource(fundingSource);
 
       expect(putFundingSourceStub).to.be.calledOnce;
+      expect(response).to.eql(expectedResult);
+    });
+  });
+
+  describe('deleteFundingSource', () => {
+    it('deletes a funding source and returns the id of the deleted record', async () => {
+      const dbConnection = getMockDBConnection();
+      const fundingSourceService = new FundingSourceService(dbConnection);
+
+      const expectedResult = { funding_source_id: 1 };
+
+      const deleteFundingSourceStub = sinon
+        .stub(FundingSourceRepository.prototype, 'deleteFundingSource')
+        .resolves(expectedResult);
+
+      const fundingSourceId = 1;
+
+      const response = await fundingSourceService.deleteFundingSource(fundingSourceId);
+
+      expect(deleteFundingSourceStub).to.be.calledOnce;
       expect(response).to.eql(expectedResult);
     });
   });

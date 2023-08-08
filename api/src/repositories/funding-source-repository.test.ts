@@ -44,7 +44,7 @@ describe('FundingSourceRepository', () => {
     });
   });
 
-  describe('getFundingSourceById', () => {
+  describe('getFundingSource', () => {
     it('returns a single funding source', async () => {
       const expectedResult: FundingSource = {
         funding_source_id: 1,
@@ -60,7 +60,7 @@ describe('FundingSourceRepository', () => {
 
       const fundingSourceId = 1;
 
-      const response = await fundingSourceRepository.getFundingSourceById(fundingSourceId);
+      const response = await fundingSourceRepository.getFundingSource(fundingSourceId);
 
       expect(response).to.eql(expectedResult);
     });
@@ -75,7 +75,7 @@ describe('FundingSourceRepository', () => {
       const fundingSourceId = 1;
 
       try {
-        await fundingSourceRepository.getFundingSourceById(fundingSourceId);
+        await fundingSourceRepository.getFundingSource(fundingSourceId);
 
         expect.fail();
       } catch (error) {
@@ -93,7 +93,7 @@ describe('FundingSourceRepository', () => {
       const fundingSourceId = 1;
 
       try {
-        await fundingSourceRepository.getFundingSourceById(fundingSourceId);
+        await fundingSourceRepository.getFundingSource(fundingSourceId);
 
         expect.fail();
       } catch (error) {
@@ -170,6 +170,60 @@ describe('FundingSourceRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as ApiError).message).to.equal('Failed to update funding source');
+      }
+    });
+  });
+
+  describe('deleteFundingSource', () => {
+    it('deletes a single funding source', async () => {
+      const expectedResult = { funding_source_id: 1 };
+
+      const mockResponse = ({ rowCount: 1, rows: [expectedResult] } as unknown) as Promise<QueryResult<any>>;
+
+      const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
+
+      const fundingSourceRepository = new FundingSourceRepository(dbConnection);
+
+      const fundingSourceId = 1;
+
+      const response = await fundingSourceRepository.deleteFundingSource(fundingSourceId);
+
+      expect(response).to.eql(expectedResult);
+    });
+
+    it('throws an error if rowCount is 0', async () => {
+      const mockResponse = ({ rowCount: 0, rows: [] } as unknown) as Promise<QueryResult<any>>;
+
+      const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
+
+      const fundingSourceRepository = new FundingSourceRepository(dbConnection);
+
+      const fundingSourceId = 1;
+
+      try {
+        await fundingSourceRepository.deleteFundingSource(fundingSourceId);
+
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiError).message).to.equal('Failed to delete funding source');
+      }
+    });
+
+    it('throws an error if rowCount is greater than 1', async () => {
+      const mockResponse = ({ rowCount: 2, rows: [] } as unknown) as Promise<QueryResult<any>>;
+
+      const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
+
+      const fundingSourceRepository = new FundingSourceRepository(dbConnection);
+
+      const fundingSourceId = 1;
+
+      try {
+        await fundingSourceRepository.deleteFundingSource(fundingSourceId);
+
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiError).message).to.equal('Failed to delete funding source');
       }
     });
   });
