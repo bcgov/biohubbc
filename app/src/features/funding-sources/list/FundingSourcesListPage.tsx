@@ -56,12 +56,41 @@ const FundingSourcesListPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const classes = useStyles();
   const biohubApi = useBiohubApi();
+  // const dialogContext = useContext(DialogContext);
 
   const codesContext = useContext(CodesContext);
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
   const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
   fundingSourceDataLoader.load();
+
+  // const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+  //   dialogContext.setErrorDialog({
+  //     dialogTitle: CreateFundingSourceI18N.createErrorTitle,
+  //     dialogText: CreateFundingSourceI18N.createErrorText,
+  //     ...defaultErrorDialogProps,
+  //     ...textDialogProps,
+  //     open: true
+  //   });
+  // };
+
+  const handleSubmitDraft = async (values: FundingSourceData) => {
+    try {
+      if (values.funding_source_id) {
+        // edit the funding source
+        await biohubApi.funding.updateFundingSource(values);
+      } else {
+        await biohubApi.funding.createFundingSource(values);
+      }
+
+      // setIsModalOpen(false);
+      // refresh the list
+    } catch (error) {
+      console.log('Show an error dialog');
+    }
+  };
+
+  // const getFundningSource = async (funding_source_id: number) => {};
 
   if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {
     return (
@@ -115,8 +144,7 @@ const FundingSourcesListPage: React.FC = () => {
         dialogSaveButtonLabel="Add"
         onCancel={() => setIsModalOpen(false)}
         onSave={(formValues) => {
-          console.log('SUBMIT THIS FORM PLS');
-          console.log(formValues);
+          handleSubmitDraft(formValues);
         }}
       />
       <Container maxWidth="xl">

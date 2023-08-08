@@ -6,6 +6,12 @@ export interface IFundingSourceSearchParams {
   name?: string;
 }
 
+export interface ICreateFundingSource {
+  name: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+}
 export class FundingSourceService extends DBService {
   fundingSourceRepository: FundingSourceRepository;
 
@@ -45,5 +51,15 @@ export class FundingSourceService extends DBService {
    */
   async putFundingSource(fundingSource: FundingSource): Promise<Pick<FundingSource, 'funding_source_id'>> {
     return this.fundingSourceRepository.putFundingSource(fundingSource);
+  }
+
+  /**
+   *
+   * This assumes that the name of the funding source is unique
+   * @param newFundingSource
+   * @returns
+   */
+  async createFundingSource(newFundingSource: ICreateFundingSource): Promise<{ funding_source_id: number }> {
+    return this.fundingSourceRepository.createFundingSource(newFundingSource);
   }
 }

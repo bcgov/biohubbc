@@ -3,26 +3,23 @@ import { Box } from '@mui/system';
 import CustomTextField from 'components/fields/CustomTextField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
 export const FundingSourceYupSchema = yup.object().shape({
   funding_source_id: yup.number().nullable(),
-  name: yup
-    .string()
-    .required('A funding source name is required')
-    .test('nameUsed', 'This name has already been used', async (val) => {
-      // make an api call to a thing
-      // let hasBeenUsed = false;
-      if (val) {
-        // can't use this here because it is a hook
-        const thing = await useBiohubApi().funding.hasFundingSourceNameBeenUsed(val);
-        console.log(`This name has been used: ${thing}`);
-        // hasBeenUsed = await useBiohubApi().funding.hasFundingSourceNameBeenUsed(val);
-      }
-      return false;
-    }),
+  name: yup.string().required('A funding source name is required'),
+  // .test('nameUsed', 'This name has already been used', async (val) => {
+  //   // make an api call to a thing
+  //   // React hook cannot be used inside the yup schema
+  //   // let hasBeenUsed = false;
+  //   if (val) {
+  //     const thing = await useBiohubApi().funding.hasFundingSourceNameBeenUsed(val);
+  //     console.log(`This name has been used: ${thing}`);
+  //     // hasBeenUsed = await useBiohubApi().funding.hasFundingSourceNameBeenUsed(val);
+  //   }
+  //   return false;
+  // }),
   description: yup.string().max(200).required('A description is required'),
   start_date: yup.string().isValidDateString(),
   end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')

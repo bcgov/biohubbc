@@ -296,3 +296,11 @@ export const SubmitSurveyBiohubI18N = {
   submitSurveyBiohubNoSubmissionDataDialogTitle: 'No survey data to submit',
   submitSurveyBiohubNoSubmissionDataDialogText: 'No new data or information has been added to this survey to submit.'
 };
+
+export const CreateFundingSourceI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Funding Source',
+  createErrorText:
+    'An error has occurred while attempting to create your funding source, please try again. If the error persists, please contact your system administrator.'
+};

@@ -2,7 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { IFundingSourceSearchParams } from '../services/funding-source-service';
+import { ICreateFundingSource, IFundingSourceSearchParams } from '../services/funding-source-service';
 import { BaseRepository } from './base-repository';
 
 const FundingSource = z.object({
@@ -50,8 +50,31 @@ export class FundingSourceRepository extends BaseRepository {
     return response.rowCount > 0;
   }
 
-  async insertFundingSource(): Promise<{ funding_source_id: number }> {
-    return { funding_source_id: 1 };
+  async createFundingSource(data: ICreateFundingSource): Promise<{ funding_source_id: number }> {
+    const sql = SQL`
+      INSERT INTO funding_sources (
+        name, 
+        description, 
+        start_date, 
+        end_date
+      ) VALUES (
+        ${data.name},
+        ${data.description},
+        ${data.start_date},
+        ${data.end_date}
+      )
+      RETURNING 
+        funding_source_id;
+    `;
+    const response = await this.connection.sql(sql);
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to insert Funding Source record', [
+        'FundingSourceRepository->insertFundingSource',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
+
+    return response.rows[0].funding_source_id;
   }
 
   /**
