@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { FundingSourceService } from '../../services/funding-source-service';
+import { FundingSourceService, IFundingSourceSearchParams } from '../../services/funding-source-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/funding-sources/index');
@@ -87,13 +87,13 @@ GET.apiDoc = {
 export function getFundingSources(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
-
+    const filterFields: IFundingSourceSearchParams = req.query || {};
     try {
       await connection.open();
 
       const fundingSourceService = new FundingSourceService(connection);
 
-      const response = await fundingSourceService.getFundingSources();
+      const response = await fundingSourceService.getFundingSources(filterFields);
 
       await connection.commit();
 
@@ -136,8 +136,21 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: [],
-          properties: {}
+          required: ['name', 'description', 'start_date', 'end_date'],
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            start_date: {
+              type: 'string'
+            },
+            end_date: {
+              type: 'string'
+            }
+          }
         }
       }
     }
@@ -148,11 +161,12 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: [],
-              properties: {}
+            type: 'object',
+            required: ['funding_source_id'],
+            properties: {
+              funding_source_id: {
+                type: 'number'
+              }
             }
           }
         }
@@ -184,15 +198,15 @@ POST.apiDoc = {
 export function postFundingSource(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
-
+    const service = new FundingSourceService(connection);
+    const data = req.body;
     try {
       await connection.open();
 
-      // TODO
-
+      const response = await service.postFundingSource(data);
       await connection.commit();
 
-      return res.status(200).json();
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'createFundingSource', message: 'error', error });
       await connection.rollback();
