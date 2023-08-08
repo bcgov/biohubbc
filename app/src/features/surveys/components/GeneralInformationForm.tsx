@@ -9,7 +9,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
@@ -123,19 +123,23 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
     return convertOptions(response.searchResponse);
   };
 
-  const handleSearch = debounce(
-    async (
-      inputValue: string,
-      existingValues: (string | number)[],
-      callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
-    ) => {
-      const response = await biohubApi.taxonomy.searchSpecies(inputValue);
-      const newOptions = convertOptions(response.searchResponse).filter(
-        (item: any) => !existingValues?.includes(item.value)
-      );
-      callback(newOptions);
-    },
-    500
+  const handleSearch = useMemo(
+    () =>
+      debounce(
+        async (
+          inputValue: string,
+          existingValues: (string | number)[],
+          callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
+        ) => {
+          const response = await biohubApi.taxonomy.searchSpecies(inputValue);
+          const newOptions = convertOptions(response.searchResponse).filter(
+            (item: any) => !existingValues?.includes(item.value)
+          );
+          callback(newOptions);
+        },
+        500
+      ),
+    [biohubApi.taxonomy]
   );
 
   return (
