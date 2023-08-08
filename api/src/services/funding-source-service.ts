@@ -59,9 +59,10 @@ export class FundingSourceService extends DBService {
    * @param newFundingSource
    * @returns
    */
-  async createFundingSource(newFundingSource: ICreateFundingSource): Promise<{ funding_source_id: number }> {
-    return this.fundingSourceRepository.createFundingSource(newFundingSource);
+  async postFundingSource(newFundingSource: ICreateFundingSource): Promise<{ funding_source_id: number }> {
+    return this.fundingSourceRepository.postFundingSource(newFundingSource);
   }
+
   /**
    * Delete a single funding source.
    *

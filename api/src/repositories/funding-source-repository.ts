@@ -25,7 +25,7 @@ export class FundingSourceRepository extends BaseRepository {
     const knex = getKnex();
     const queryBuilder = knex.queryBuilder();
 
-    queryBuilder.select(['name', 'description', 'start_date', 'end_date']).from('funding_sources');
+    queryBuilder.select(['name', 'description', 'start_date', 'end_date']).from('funding_source');
 
     if (searchParams.name) {
       queryBuilder.andWhere('name', searchParams.name);
@@ -41,7 +41,7 @@ export class FundingSourceRepository extends BaseRepository {
       SELECT 
         * 
       FROM 
-        funding_sources
+        funding_source
       WHERE 
         LOWER(name) = '${name.toLowerCase()}';
     `;
@@ -50,9 +50,9 @@ export class FundingSourceRepository extends BaseRepository {
     return response.rowCount > 0;
   }
 
-  async createFundingSource(data: ICreateFundingSource): Promise<{ funding_source_id: number }> {
+  async postFundingSource(data: ICreateFundingSource): Promise<Pick<FundingSource, 'funding_source_id'>> {
     const sql = SQL`
-      INSERT INTO funding_sources (
+      INSERT INTO funding_source (
         name, 
         description, 
         start_date, 
@@ -66,7 +66,7 @@ export class FundingSourceRepository extends BaseRepository {
       RETURNING 
         funding_source_id;
     `;
-    const response = await this.connection.sql(sql);
+    const response = await this.connection.sql(sql, FundingSource.pick({ funding_source_id: true }));
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert Funding Source record', [
         'FundingSourceRepository->insertFundingSource',
@@ -74,7 +74,7 @@ export class FundingSourceRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].funding_source_id;
+    return response.rows[0];
   }
 
   /**
