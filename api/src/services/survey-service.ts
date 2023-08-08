@@ -10,7 +10,6 @@ import {
   GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
-  GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
@@ -82,7 +81,6 @@ export class SurveyService extends DBService {
       surveyData,
       speciesData,
       permitData,
-      fundingData,
       purposeAndMethodologyData,
       proprietorData,
       locationData
@@ -90,7 +88,6 @@ export class SurveyService extends DBService {
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
       this.getPermitData(surveyId),
-      this.getSurveyFundingSourcesData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
       this.getSurveyLocationData(surveyId)
@@ -101,7 +98,6 @@ export class SurveyService extends DBService {
       species: speciesData,
       permit: permitData,
       purpose_and_methodology: purposeAndMethodologyData,
-      funding: fundingData,
       proprietor: proprietorData,
       location: locationData
     };
@@ -176,17 +172,6 @@ export class SurveyService extends DBService {
    */
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     return this.surveyRepository.getSurveyPurposeAndMethodology(surveyId);
-  }
-
-  /**
-   * Get Survey funding sources for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyFundingSources>}
-   * @memberof SurveyService
-   */
-  async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
-    return this.surveyRepository.getSurveyFundingSourcesData(surveyId);
   }
 
   /**
@@ -379,15 +364,6 @@ export class SurveyService extends DBService {
       )
     );
 
-    // Handle inserting any funding sources associated to this survey
-    promises.push(
-      Promise.all(
-        postSurveyData.funding.funding_sources.map((project_funding_source_id: number) =>
-          this.insertSurveyFundingSource(project_funding_source_id, surveyId)
-        )
-      )
-    );
-
     // Handle survey proprietor data
     postSurveyData.proprietor && promises.push(this.insertSurveyProprietor(postSurveyData.proprietor, surveyId));
 
@@ -523,18 +499,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Inserts new record and associates funding source to a survey
-   *
-   * @param {number} project_funding_source_id
-   * @param {number} surveyID
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async insertSurveyFundingSource(project_funding_source_id: number, surveyId: number) {
-    return this.surveyRepository.insertSurveyFundingSource(project_funding_source_id, surveyId);
-  }
-
-  /**
    * Updates provided survey information and submits affected metadata to BioHub
    *
    * @param {number} projectId
@@ -588,10 +552,6 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.permit) {
       promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
-    }
-
-    if (putSurveyData?.funding) {
-      promises.push(this.updateSurveyFundingData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.proprietor) {
@@ -711,36 +671,6 @@ export class SurveyService extends DBService {
    */
   async unassociatePermitFromSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.unassociatePermitFromSurvey(surveyId);
-  }
-
-  /**
-   * Updates a Survey funding source for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<any[]>}
-   * @memberof SurveyService
-   */
-  async updateSurveyFundingData(surveyId: number, surveyData: PutSurveyObject) {
-    await this.deleteSurveyFundingSourcesData(surveyId);
-
-    const promises: Promise<any>[] = [];
-
-    surveyData.funding.funding_sources.forEach((project_funding_source_id: number) =>
-      promises.push(this.insertSurveyFundingSource(project_funding_source_id, surveyId))
-    );
-
-    return Promise.all(promises);
-  }
-
-  /**
-   * Breaks link between a funding source and a survey for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async deleteSurveyFundingSourcesData(surveyId: number): Promise<void> {
-    return this.surveyRepository.deleteSurveyFundingSourcesData(surveyId);
   }
 
   /**

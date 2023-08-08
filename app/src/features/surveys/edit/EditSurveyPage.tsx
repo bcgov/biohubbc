@@ -89,12 +89,6 @@ const EditSurveyPage = () => {
 
   const surveyContext = useContext(SurveyContext);
 
-  const getSurveyFundingSourcesDataLoader = useDataLoader(() =>
-    biohubApi.survey.getAvailableSurveyFundingSources(projectContext.projectId)
-  );
-  getSurveyFundingSourcesDataLoader.load();
-  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data ?? [];
-
   const editSurveyDL = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
   );
@@ -244,7 +238,6 @@ const EditSurveyPage = () => {
           <EditSurveyForm
             codes={codes}
             projectData={projectData}
-            surveyFundingSources={fundingSourcesData}
             handleSubmit={handleSubmit}
             handleCancel={handleCancel}
             formikRef={formikRef}

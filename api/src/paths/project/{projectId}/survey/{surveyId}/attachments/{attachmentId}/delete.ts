@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { UserObject } from '../../../../../../../models/user';
+import { User } from '../../../../../../../models/user';
 import {
   authorizeRequestHandler,
   getSystemUserObject
@@ -18,9 +18,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -112,7 +112,7 @@ export function deleteAttachment(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+      const systemUserObject: User = req['system_user'] || (await getSystemUserObject(connection));
       const isAdmin =
         systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
         systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR);

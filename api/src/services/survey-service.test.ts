@@ -13,7 +13,6 @@ import {
   GetAttachmentsData,
   GetFocalSpeciesData,
   GetSurveyData,
-  GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
@@ -60,9 +59,6 @@ describe('SurveyService', () => {
       const getPermitDataStub = sinon
         .stub(SurveyService.prototype, 'getPermitData')
         .resolves(({ data: 'permitData' } as unknown) as any);
-      const getSurveyFundingSourcesDataStub = sinon
-        .stub(SurveyService.prototype, 'getSurveyFundingSourcesData')
-        .resolves(({ data: 'fundingData' } as unknown) as any);
       const getSurveyPurposeAndMethodologyStub = sinon
         .stub(SurveyService.prototype, 'getSurveyPurposeAndMethodology')
         .resolves(({ data: 'purposeAndMethodologyData' } as unknown) as any);
@@ -78,7 +74,6 @@ describe('SurveyService', () => {
       expect(getSurveyDataStub).to.be.calledOnce;
       expect(getSpeciesDataStub).to.be.calledOnce;
       expect(getPermitDataStub).to.be.calledOnce;
-      expect(getSurveyFundingSourcesDataStub).to.be.calledOnce;
       expect(getSurveyPurposeAndMethodologyStub).to.be.calledOnce;
       expect(getSurveyProprietorDataForViewStub).to.be.calledOnce;
       expect(getSurveyLocationDataStub).to.be.calledOnce;
@@ -88,7 +83,6 @@ describe('SurveyService', () => {
         species: { data: 'speciesData' },
         permit: { data: 'permitData' },
         purpose_and_methodology: { data: 'purposeAndMethodologyData' },
-        funding: { data: 'fundingData' },
         proprietor: { data: 'proprietorData' },
         location: { data: 'locationData' }
       });
@@ -109,7 +103,6 @@ describe('SurveyService', () => {
         .resolves();
       const updateSurveySpeciesDataStub = sinon.stub(SurveyService.prototype, 'updateSurveySpeciesData').resolves();
       const updateSurveyPermitDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyPermitData').resolves();
-      const updateSurveyFundingDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyFundingData').resolves();
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
@@ -125,7 +118,6 @@ describe('SurveyService', () => {
       expect(updateSurveyVantageCodesDataStub).not.to.have.been.called;
       expect(updateSurveySpeciesDataStub).not.to.have.been.called;
       expect(updateSurveyPermitDataStub).not.to.have.been.called;
-      expect(updateSurveyFundingDataStub).not.to.have.been.called;
       expect(updateSurveyProprietorDataStub).not.to.have.been.called;
     });
 
@@ -138,7 +130,6 @@ describe('SurveyService', () => {
         .resolves();
       const updateSurveySpeciesDataStub = sinon.stub(SurveyService.prototype, 'updateSurveySpeciesData').resolves();
       const updateSurveyPermitDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyPermitData').resolves();
-      const updateSurveyFundingDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyFundingData').resolves();
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
@@ -151,7 +142,6 @@ describe('SurveyService', () => {
         survey_details: {},
         species: {},
         permit: {},
-        funding: {},
         proprietor: {},
         purpose_and_methodology: {},
         location: {}
@@ -163,7 +153,6 @@ describe('SurveyService', () => {
       expect(updateSurveyVantageCodesDataStub).to.have.been.calledOnce;
       expect(updateSurveySpeciesDataStub).to.have.been.calledOnce;
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
-      expect(updateSurveyFundingDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
       expect(updateSurveyRegionStub).to.have.been.calledOnce;
     });
@@ -325,22 +314,6 @@ describe('SurveyService', () => {
       const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyPurposeAndMethodology').resolves(data);
 
       const response = await service.getSurveyPurposeAndMethodology(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(data);
-    });
-  });
-
-  describe('getSurveyFundingSourcesData', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const data = new GetSurveyFundingSources([{ id: 1 }]);
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyFundingSourcesData').resolves(data);
-
-      const response = await service.getSurveyFundingSourcesData(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);
@@ -608,20 +581,6 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('insertSurveyFundingSource', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyFundingSource').resolves();
-
-      const response = await service.insertSurveyFundingSource(1, 1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(undefined);
-    });
-  });
-
   describe('updateSurveyDetailsData', () => {
     afterEach(() => {
       sinon.restore();
@@ -795,47 +754,6 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('updateSurveyFundingData', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns data if response is not null', async () => {
-      sinon.stub(SurveyService.prototype, 'deleteSurveyFundingSourcesData').resolves(undefined);
-      sinon.stub(SurveyService.prototype, 'insertSurveyFundingSource').resolves(undefined);
-
-      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
-      const surveyService = new SurveyService(mockDBConnection);
-
-      const response = await surveyService.updateSurveyFundingData(1, ({
-        permit: { permit_number: '1', permit_type: 'type' },
-        funding: { funding_sources: [1] }
-      } as unknown) as PutSurveyObject);
-
-      expect(response).to.eql([undefined]);
-    });
-  });
-
-  describe('deleteSurveyFundingSourcesData', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'deleteSurveyFundingSourcesData').resolves();
-
-      const response = await service.deleteSurveyFundingSourcesData(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(undefined);
-    });
-  });
-
   describe('updateSurveyProprietorData', () => {
     afterEach(() => {
       sinon.restore();
@@ -901,7 +819,6 @@ describe('SurveyService', () => {
 
       const response = await surveyService.updateSurveyVantageCodesData(1, ({
         permit: { permit_number: '1', permit_type: 'type' },
-        funding: { funding_sources: [1] },
         purpose_and_methodology: { vantage_code_ids: undefined }
       } as unknown) as PutSurveyObject);
 
@@ -919,7 +836,6 @@ describe('SurveyService', () => {
 
       const response = await surveyService.updateSurveyVantageCodesData(1, ({
         permit: { permit_number: '1', permit_type: 'type' },
-        funding: { funding_sources: [1] },
         proprietor: { survey_data_proprietary: 'asd' },
         purpose_and_methodology: { vantage_code_ids: [1] }
       } as unknown) as PutSurveyObject);

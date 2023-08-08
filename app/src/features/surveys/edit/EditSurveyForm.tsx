@@ -9,12 +9,12 @@ import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForUpdateResponseFundingSource, ProjectViewObject } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
-import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/AgreementsForm';
 import GeneralInformationForm, {
@@ -42,7 +42,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IEditSurveyForm {
   codes: IGetAllCodeSetsResponse;
   projectData: ProjectViewObject;
-  surveyFundingSources: IGetProjectForUpdateResponseFundingSource[];
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   handleCancel: () => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
@@ -145,20 +144,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             summary=""
             component={
               <GeneralInformationForm
-                funding_sources={
-                  props.surveyFundingSources?.map((item) => {
-                    return {
-                      value: item.id,
-                      label: `${item.agency_name || item.first_nations_name} | ${getFormattedAmount(
-                        item.funding_amount
-                      )} | ${getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        item.start_date,
-                        item.end_date
-                      )}`
-                    };
-                  }) || []
-                }
                 projectStartDate={props.projectData.project.start_date}
                 projectEndDate={props.projectData.project.end_date}
               />

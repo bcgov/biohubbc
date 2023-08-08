@@ -14,7 +14,6 @@ import {
   IGetSurveyForListResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
-  ISurveyAvailableFundingSources,
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
@@ -212,18 +211,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyAttachments = async (projectId: number, surveyId: number): Promise<IGetSurveyAttachmentsResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/attachments/list`);
-
-    return data;
-  };
-
-  /**
-   * Get funding sources for a survey by project ID
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<ISurveyAvailableFundingSources[]>}
-   */
-  const getAvailableSurveyFundingSources = async (projectId: number): Promise<ISurveyAvailableFundingSources[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/funding-sources/list`);
 
     return data;
   };
@@ -435,7 +422,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
     deleteSurvey,
-    getAvailableSurveyFundingSources,
     getSummarySubmissionSignedURL,
     deleteSummarySubmission
   };

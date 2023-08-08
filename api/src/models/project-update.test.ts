@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   PutCoordinatorData,
-  PutFundingSource,
   PutIUCNData,
   PutLocationData,
   PutObjectivesData,
@@ -295,88 +294,6 @@ describe('PutIUCNData', () => {
 
     it('sets classification details', () => {
       expect(data.classificationDetails).to.eql(obj.classificationDetails);
-    });
-  });
-});
-
-describe('PutFundingSource', () => {
-  describe('No values provided', () => {
-    let data: PutFundingSource;
-
-    before(() => {
-      data = new PutFundingSource(null);
-    });
-
-    it('sets id', () => {
-      expect(data.id).to.equal(null);
-    });
-
-    it('sets investment_action_category', () => {
-      expect(data.investment_action_category).to.equal(null);
-    });
-
-    it('sets agency_project_id', () => {
-      expect(data.agency_project_id).to.equal(null);
-    });
-
-    it('sets funding_amount', () => {
-      expect(data.funding_amount).to.equal(null);
-    });
-
-    it('sets start_date', () => {
-      expect(data.start_date).to.equal(null);
-    });
-
-    it('sets end_date', () => {
-      expect(data.end_date).to.equal(null);
-    });
-
-    it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(null);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: PutFundingSource;
-
-    before(() => {
-      data = new PutFundingSource({
-        id: 1,
-        investment_action_category: 1,
-        agency_project_id: 'agency project id',
-        funding_amount: 20,
-        start_date: '2020/04/04',
-        end_date: '2020/05/05',
-        revision_count: 1
-      });
-    });
-
-    it('sets id', () => {
-      expect(data.id).to.equal(1);
-    });
-
-    it('sets investment_action_category', () => {
-      expect(data.investment_action_category).to.equal(1);
-    });
-
-    it('sets agency_project_id', () => {
-      expect(data.agency_project_id).to.equal('agency project id');
-    });
-
-    it('sets funding_amount', () => {
-      expect(data.funding_amount).to.equal(20);
-    });
-
-    it('sets start_date', () => {
-      expect(data.start_date).to.equal('2020/04/04');
-    });
-
-    it('sets end_date', () => {
-      expect(data.end_date).to.equal('2020/05/05');
-    });
-
-    it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(1);
     });
   });
 });

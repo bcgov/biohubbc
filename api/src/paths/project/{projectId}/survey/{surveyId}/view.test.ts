@@ -38,17 +38,6 @@ describe('survey/{surveyId}/view', () => {
               permit_number: '123',
               permit_type: 'type'
             },
-            funding: {
-              funding_sources: [
-                {
-                  project_funding_source_id: 1,
-                  agency_name: 'name',
-                  funding_amount: 100,
-                  funding_start_date: '2020-04-04',
-                  funding_end_date: '2020-05-05'
-                }
-              ]
-            },
             purpose_and_methodology: {
               field_method_id: 1,
               additional_details: 'details',
@@ -113,17 +102,6 @@ describe('survey/{surveyId}/view', () => {
               permit_number: null,
               permit_type: null
             },
-            funding: {
-              funding_sources: [
-                {
-                  project_funding_source_id: null,
-                  agency_name: null,
-                  funding_amount: null,
-                  funding_start_date: null,
-                  funding_end_date: null
-                }
-              ]
-            },
             purpose_and_methodology: {
               field_method_id: 1,
               additional_details: null,
@@ -167,9 +145,9 @@ describe('survey/{surveyId}/view', () => {
         survey_metadata_publish: {
           survey_metadata_publish_id: 1,
           survey_id: 1,
-          event_timestamp: new Date('2020-04-04'),
+          event_timestamp: '2020-04-04',
           queue_id: 1,
-          create_date: new Date('2020-04-04'),
+          create_date: '2020-04-04',
           create_user: 1,
           update_date: null,
           update_user: null,
@@ -203,9 +181,9 @@ describe('survey/{surveyId}/view', () => {
           survey_metadata_publish: {
             survey_metadata_publish_id: 1,
             survey_id: 1,
-            event_timestamp: new Date('2020-04-04'),
+            event_timestamp: '2020-04-04',
             queue_id: 1,
-            create_date: new Date('2020-04-04'),
+            create_date: '2020-04-04',
             create_user: 1,
             update_date: null,
             update_user: null,

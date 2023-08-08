@@ -30,7 +30,7 @@ describe('updateSystemRolesHandler', () => {
     };
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'test name',
       user_guid: 'aaaa',
       identity_source: 'idir',
@@ -77,7 +77,7 @@ describe('updateSystemRolesHandler', () => {
     });
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'test name',
       user_guid: 'aaaa',
       identity_source: 'idir',
@@ -114,7 +114,7 @@ describe('updateSystemRolesHandler', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'test name',
       user_guid: 'aaaa',
       identity_source: 'idir',
@@ -158,7 +158,7 @@ describe('updateSystemRolesHandler', () => {
     });
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'test name',
       user_guid: 'aaaa',
       identity_source: 'idir',

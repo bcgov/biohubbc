@@ -39,9 +39,6 @@ const generalInformationFilledValues: IGeneralInformationForm = {
         permit_type: 'Park Use Permit'
       }
     ]
-  },
-  funding: {
-    funding_sources: [1]
   }
 };
 
@@ -64,12 +61,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            funding_sources={[
-              {
-                value: 1,
-                label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
-              }
-            ]}
             projectStartDate={getProjectForViewResponse.projectData.project.start_date}
             projectEndDate={getProjectForViewResponse.projectData.project.end_date}
           />
@@ -93,12 +84,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            funding_sources={[
-              {
-                value: 1,
-                label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
-              }
-            ]}
             projectStartDate={getProjectForViewResponse.projectData.project.start_date}
             projectEndDate={getProjectForViewResponse.projectData.project.end_date}
           />
@@ -147,12 +132,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            funding_sources={[
-              {
-                value: 1,
-                label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
-              }
-            ]}
             projectStartDate={getProjectForViewResponse.projectData.project.start_date}
             projectEndDate={getProjectForViewResponse.projectData.project.end_date}
           />

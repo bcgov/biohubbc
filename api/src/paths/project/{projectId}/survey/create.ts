@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { PostSurveyObject } from '../../../../models/survey-create';
 import { GeoJSONFeature } from '../../../../openapi/schemas/geoJson';
@@ -15,9 +15,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -59,7 +59,6 @@ POST.apiDoc = {
             'survey_details',
             'species',
             'permit',
-            'funding',
             'proprietor',
             'purpose_and_methodology',
             'location',
@@ -123,17 +122,6 @@ POST.apiDoc = {
                         type: 'string'
                       }
                     }
-                  }
-                }
-              }
-            },
-            funding: {
-              type: 'object',
-              properties: {
-                funding_sources: {
-                  type: 'array',
-                  items: {
-                    type: 'integer'
                   }
                 }
               }

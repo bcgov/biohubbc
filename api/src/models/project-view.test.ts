@@ -3,7 +3,6 @@ import { describe } from 'mocha';
 import {
   GetAttachmentsData,
   GetCoordinatorData,
-  GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
@@ -23,8 +22,8 @@ describe('ProjectData', () => {
         project_name: '',
         project_programs: [],
         project_types: [],
-        start_date: new Date('2005-01-01'),
-        end_date: new Date('2006-01-01'),
+        start_date: '2005-01-01',
+        end_date: '2006-01-01',
         comments: '',
         revision_count: 1
       };
@@ -47,11 +46,11 @@ describe('ProjectData', () => {
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.eql(new Date('2005-01-01'));
+      expect(data.start_date).to.eql('2005-01-01');
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.eql(new Date('2006-01-01'));
+      expect(data.end_date).to.eql('2006-01-01');
     });
   });
 
@@ -74,8 +73,8 @@ describe('ProjectData', () => {
         project_name: 'project name',
         project_programs: [1],
         project_types: [1, 2],
-        start_date: new Date('2020-04-20T07:00:00.000Z'),
-        end_date: new Date('2020-05-20T07:00:00.000Z'),
+        start_date: '2020-04-20T07:00:00.000Z',
+        end_date: '2020-05-20T07:00:00.000Z',
         comments: '',
         revision_count: 1
       };
@@ -98,16 +97,12 @@ describe('ProjectData', () => {
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.eql(new Date('2020-04-20T07:00:00.000Z'));
+      expect(data.start_date).to.eql('2020-04-20T07:00:00.000Z');
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.eql(new Date('2020-05-20T07:00:00.000Z'));
+      expect(data.end_date).to.eql('2020-05-20T07:00:00.000Z');
     });
-
-    // it('sets completion_status', () => {
-    //   expect(data.completion_status).to.equal(COMPLETION_STATUS.COMPLETED);
-    // });
   });
 });
 
@@ -346,61 +341,6 @@ describe('GetIUCNClassificationData', () => {
           subClassification2: 'subclass2'
         }
       ]);
-    });
-  });
-});
-
-describe('GetFundingData', () => {
-  describe('No values provided', () => {
-    let projectFundingData: GetFundingData;
-
-    before(() => {
-      projectFundingData = new GetFundingData((null as unknown) as any[]);
-    });
-
-    it('sets funding sources', function () {
-      expect(projectFundingData.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('Empty array as values provided', () => {
-    let projectFundingData: GetFundingData;
-
-    before(() => {
-      projectFundingData = new GetFundingData([]);
-    });
-
-    it('sets funding sources', function () {
-      expect(projectFundingData.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectFundingData: GetFundingData;
-
-    const fundings = [
-      {
-        id: 1,
-        agency_id: 2,
-        investment_action_category: 3,
-        investment_action_category_name: 'Something',
-        agency_name: 'fake',
-        funding_amount: 123456,
-        start_date: Date.now().toString(),
-        end_date: Date.now().toString(),
-        agency_project_id: '12',
-        revision_count: 1,
-        first_nations_name: null,
-        first_nations_id: null
-      }
-    ];
-
-    before(() => {
-      projectFundingData = new GetFundingData(fundings);
-    });
-
-    it('sets funding sources', function () {
-      expect(projectFundingData.fundingSources).to.eql(fundings);
     });
   });
 });

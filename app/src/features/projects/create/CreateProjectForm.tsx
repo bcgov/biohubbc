@@ -18,11 +18,6 @@ import ProjectDetailsForm, {
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
 } from '../components/ProjectDetailsForm';
-import ProjectFundingForm, {
-  ProjectFundingFormInitialValues,
-  ProjectFundingFormYupSchema
-} from '../components/ProjectFundingForm';
-import { FundingSourceType } from '../components/ProjectFundingItemForm';
 import ProjectIUCNForm, { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from '../components/ProjectIUCNForm';
 import ProjectLocationForm, {
   ProjectLocationFormInitialValues,
@@ -58,7 +53,6 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
-  ...ProjectFundingFormInitialValues,
   ...ProjectPartnershipsFormInitialValues
 };
 
@@ -66,7 +60,6 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
   .concat(ProjectObjectivesFormYupSchema)
   .concat(ProjectLocationFormYupSchema)
   .concat(ProjectIUCNFormYupSchema)
-  .concat(ProjectFundingFormYupSchema)
   .concat(ProjectPartnershipsFormYupSchema);
 
 //Function to get the list of coordinator agencies from the code set
@@ -177,23 +170,9 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   exact, please round to the nearest 100.
                 </Typography>
                 <Box mt={3}>
-                  <ProjectFundingForm
-                    funding_sources={
-                      codes?.agency?.map((item) => {
-                        return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
-                      }) || []
-                    }
-                    investment_action_category={
-                      codes?.investment_action_category?.map((item) => {
-                        return { value: item.id, agency_id: item.agency_id, label: item.name };
-                      }) || []
-                    }
-                    first_nations={
-                      codes.first_nations?.map((item) => {
-                        return { value: item.id, label: item.name, type: FundingSourceType.FIRST_NATIONS };
-                      }) || []
-                    }
-                  />
+                  {
+                    //funding
+                  }
                 </Box>
               </Box>
               <Box component="fieldset" mt={5}>

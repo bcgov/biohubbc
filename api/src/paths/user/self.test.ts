@@ -41,11 +41,11 @@ describe('getUser', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
+      system_user_id: 1,
       user_identifier: 'identifier',
       user_guid: 'aaaa',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: null,
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
     });
@@ -54,7 +54,7 @@ describe('getUser', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockRes.jsonValue.id).to.equal(1);
+    expect(mockRes.jsonValue.system_user_id).to.equal(1);
     expect(mockRes.jsonValue.user_identifier).to.equal('identifier');
     expect(mockRes.jsonValue.role_ids).to.eql([1, 2]);
     expect(mockRes.jsonValue.role_names).to.eql(['role 1', 'role 2']);

@@ -1,80 +1,10 @@
-// A funding source object requiring first nations specific data (first_nations_id)
-export const projectFundingSourceFirstNations = {
-  title: 'Project funding source with First Nations data',
-  type: 'object',
-  required: ['first_nations_id'],
-  properties: {
-    first_nations_id: {
-      type: 'integer',
-      minimum: 1
-    },
-    agency_id: {
-      type: 'integer',
-      nullable: true
-    },
-    investment_action_category: {
-      type: 'integer',
-      nullable: true
-    },
-    agency_project_id: {
-      type: 'string',
-      nullable: true
-    },
-    funding_amount: {
-      type: 'number',
-      nullable: true
-    },
-    start_date: {
-      type: 'string',
-      description: 'ISO 8601 date string',
-      nullable: true
-    },
-    end_date: {
-      type: 'string',
-      description: 'ISO 8601 date string',
-      nullable: true
-    }
-  }
-};
-
-// A funding source object requiring agency specific data (agency_id, funding_amount)
-export const projectFundingSourceAgency = {
-  title: 'Project funding source with Agency data',
-  type: 'object',
-  required: ['agency_id', 'investment_action_category', 'start_date', 'end_date', 'funding_amount'],
-  properties: {
-    agency_id: {
-      type: 'integer',
-      minimum: 1
-    },
-    investment_action_category: {
-      type: 'number',
-      nullable: false
-    },
-    agency_project_id: {
-      type: 'string',
-      nullable: true
-    },
-    funding_amount: {
-      type: 'number'
-    },
-    start_date: {
-      type: 'string',
-      description: 'ISO 8601 date string'
-    },
-    end_date: {
-      type: 'string',
-      description: 'ISO 8601 date string'
-    }
-  }
-};
 /**
  * Request Object for project create POST request
  */
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
-  required: ['coordinator', 'project', 'location', 'iucn', 'funding'],
+  required: ['coordinator', 'project', 'location', 'iucn'],
   properties: {
     coordinator: {
       title: 'Project coordinator',
@@ -163,18 +93,6 @@ export const projectCreatePostRequestObject = {
         }
       }
     },
-    funding: {
-      title: 'Project funding sources',
-      type: 'object',
-      properties: {
-        fundingSources: {
-          type: 'array',
-          items: {
-            anyOf: [{ ...projectFundingSourceAgency }, { ...projectFundingSourceFirstNations }]
-          }
-        }
-      }
-    },
     partnerships: {
       title: 'Project partnerships',
       type: 'object',
@@ -230,17 +148,6 @@ const projectUpdateProperties = {
               type: 'number'
             }
           }
-        }
-      }
-    }
-  },
-  funding: {
-    type: 'object',
-    properties: {
-      fundingSources: {
-        type: 'array',
-        items: {
-          anyOf: [{ ...projectFundingSourceAgency }, { ...projectFundingSourceFirstNations }]
         }
       }
     }

@@ -79,7 +79,7 @@ export class PermitRepository extends BaseRepository {
     AND
       p2.project_id = pp.project_id
     AND
-      pr."name" in ('${PROJECT_ROLE.PROJECT_LEAD}', '${PROJECT_ROLE.PROJECT_EDITOR}')
+      pr."name" in ('${PROJECT_ROLE.COORDINATOR}', '${PROJECT_ROLE.COLLABORATOR}')
     AND
       pp.project_role_id = pr.project_role_id
     AND

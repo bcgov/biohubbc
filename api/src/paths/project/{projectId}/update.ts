@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { Feature } from 'geojson';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
@@ -17,9 +17,9 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -37,7 +37,6 @@ export enum GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  funding = 'funding',
   partnerships = 'partnerships'
 }
 
@@ -117,7 +116,8 @@ GET.apiDoc = {
                   end_date: {
                     type: 'string',
                     format: 'date',
-                    description: 'ISO 8601 date string for the project end date'
+                    description: 'ISO 8601 date string for the project end date',
+                    nullable: true
                   },
                   revision_count: {
                     type: 'number'
@@ -211,72 +211,6 @@ GET.apiDoc = {
                   }
                 }
               },
-              funding: {
-                description: 'The project funding details',
-                type: 'object',
-                required: ['fundingSources'],
-                nullable: true,
-                properties: {
-                  fundingSources: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        id: {
-                          type: 'number'
-                        },
-                        agency_id: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        investment_action_category: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        investment_action_category_name: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        agency_name: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        funding_amount: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        start_date: {
-                          type: 'string',
-                          format: 'date',
-                          nullable: true,
-                          description: 'ISO 8601 date string for the funding start date'
-                        },
-                        end_date: {
-                          type: 'string',
-                          format: 'date',
-                          nullable: true,
-                          description: 'ISO 8601 date string for the funding end_date'
-                        },
-                        agency_project_id: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        revision_count: {
-                          type: 'number'
-                        },
-                        first_nations_id: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        first_nations_name: {
-                          type: 'string',
-                          nullable: true
-                        }
-                      }
-                    }
-                  }
-                }
-              },
               partnerships: {
                 description: 'The project partners',
                 type: 'object',
@@ -360,9 +294,9 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -435,7 +369,6 @@ export interface IUpdateProject {
   objectives: any | null;
   location: { geometry: Feature[]; location_description: string } | null;
   iucn: any | null;
-  funding: any | null;
   partnerships: any | null;
 }
 

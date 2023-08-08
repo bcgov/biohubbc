@@ -502,7 +502,6 @@ export class EmlService extends DBService {
       abstract: {
         section: [{ title: 'Objectives', para: projectData.objectives.objectives }]
       },
-      ...this._getProjectFundingSources(projectData),
       studyAreaDescription: {
         coverage: {
           ...this._getProjectGeographicCoverage(projectData),
@@ -749,68 +748,6 @@ export class EmlService extends DBService {
         role: 'pointOfContact'
       }
     ];
-  }
-
-  /**
-   * Creates an object representing all funding sources for the given project.
-   *
-   * @param {IGetProject} projectData
-   * @return {*}  {Record<string, any>}
-   * @memberof EmlService
-   */
-  _getProjectFundingSources(projectData: IGetProject): Record<string, any> {
-    if (!projectData.funding.fundingSources.length) {
-      return {};
-    }
-
-    return {
-      funding: {
-        section: projectData.funding.fundingSources.map((fundingSource) => {
-          return {
-            title: 'Agency Name',
-            para: fundingSource.agency_name ?? fundingSource.first_nations_name,
-            section: [
-              { title: 'Funding Agency Project ID', para: fundingSource.agency_project_id },
-              { title: 'Investment Action/Category', para: fundingSource.investment_action_category_name },
-              { title: 'Funding Amount', para: fundingSource.funding_amount },
-              { title: 'Funding Start Date', para: this._makeEmlDateString(fundingSource.start_date) },
-              { title: 'Funding End Date', para: this._makeEmlDateString(fundingSource.end_date) }
-            ]
-          };
-        })
-      }
-    };
-  }
-
-  /**
-   * Creates an object representing all funding sources for the given survey.
-   *
-   * @param {SurveyObject} surveyData
-   * @return {*}  {Record<string, any>}
-   * @memberof EmlService
-   */
-  _getSurveyFundingSources(surveyData: SurveyObject): Record<string, any> {
-    if (!surveyData.funding.funding_sources.length) {
-      return {};
-    }
-
-    return {
-      funding: {
-        section: surveyData.funding.funding_sources.map((fundingSource) => {
-          return {
-            title: 'Agency Name',
-            para: fundingSource.agency_name ?? fundingSource.first_nations_name,
-            section: [
-              { title: 'Funding Agency Project ID', para: fundingSource.funding_source_project_id },
-              { title: 'Investment Action/Category', para: fundingSource.investment_action_category_name },
-              { title: 'Funding Amount', para: fundingSource.funding_amount },
-              { title: 'Funding Start Date', para: this._makeEmlDateString(fundingSource.funding_start_date) },
-              { title: 'Funding End Date', para: this._makeEmlDateString(fundingSource.funding_end_date) }
-            ]
-          };
-        })
-      }
-    };
   }
 
   /**
@@ -1088,7 +1025,6 @@ export class EmlService extends DBService {
           }
         ]
       },
-      ...this._getSurveyFundingSources(surveyData),
       studyAreaDescription: {
         coverage: {
           ...this._getSurveyGeographicCoverage(surveyData),

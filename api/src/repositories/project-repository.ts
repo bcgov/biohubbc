@@ -1,24 +1,18 @@
 import { isArray } from 'lodash';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { PostFundingSource, PostProjectObject } from '../models/project-create';
-import {
-  PutCoordinatorData,
-  PutFundingSource,
-  PutLocationData,
-  PutObjectivesData,
-  PutProjectData
-} from '../models/project-update';
+import { PostProjectObject } from '../models/project-create';
+import { PutCoordinatorData, PutLocationData, PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
   GetAttachmentsData,
   GetCoordinatorData,
-  GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IProjectAdvancedFilters,
-  ProjectData
+  ProjectData,
+  ProjectListData
 } from '../models/project-view';
 import { queries } from '../queries/queries';
 import { BaseRepository } from './base-repository';
@@ -31,191 +25,36 @@ import { BaseRepository } from './base-repository';
  * @extends {BaseRepository}
  */
 export class ProjectRepository extends BaseRepository {
-  async getProjectFundingSourceIds(
-    projectId: number
-  ): Promise<
-    {
-      project_funding_source_id: number;
-    }[]
-  > {
-    const sqlStatement = SQL`
-    SELECT
-      pfs.project_funding_source_id
-    FROM
-      project_funding_source pfs
-    WHERE
-      pfs.project_id = ${projectId};
-  `;
-
-    const response = await this.connection.sql<{
-      project_funding_source_id: number;
-    }>(sqlStatement);
-
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project funding sources by Id', [
-        'ProjectRepository->getProjectFundingSourceIds',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
-  }
-
-  async deleteSurveyFundingSourceConnectionToProject(projectFundingSourceId: number) {
-    const sqlStatement: SQLStatement = SQL`
-    DELETE
-      from survey_funding_source sfs
-    WHERE
-      sfs.project_funding_source_id = ${projectFundingSourceId}
-    RETURNING survey_id;`;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to delete survey funding source by id', [
-        'ProjectRepository->deleteSurveyFundingSourceConnectionToProject',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
-  }
-
-  async deleteProjectFundingSource(projectFundingSourceId: number) {
-    const sqlStatement: SQLStatement = SQL`
-    DELETE
-      from project_funding_source
-    WHERE
-        project_funding_source_id = ${projectFundingSourceId};
-  `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to delete project funding source', [
-        'ProjectRepository->deleteProjectFundingSource',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
-  }
-
-  async updateProjectFundingSource(
-    fundingSource: PutFundingSource,
-    projectId: number
-  ): Promise<{ project_funding_source_id: number }> {
-    const sqlStatement: SQLStatement = SQL`
-    UPDATE
-        project_funding_source
-    SET
-      project_id =  ${projectId},
-      investment_action_category_id = ${fundingSource.investment_action_category},
-      funding_source_project_id = ${fundingSource.agency_project_id},
-      funding_amount = ${fundingSource.funding_amount},
-      funding_start_date = ${fundingSource.start_date},
-      funding_end_date = ${fundingSource.end_date},
-      first_nations_id = ${fundingSource.first_nations_id}
-    WHERE
-      project_funding_source_id = ${fundingSource.id}
-    RETURNING
-      project_funding_source_id;
-  `;
-
-    const response = await this.connection.sql<{ project_funding_source_id: number }>(sqlStatement);
-
-    const result = response?.rows?.[0];
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to update project funding source', [
-        'ProjectRepository->putProjectFundingSource',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
-  }
-
-  async insertProjectFundingSource(
-    fundingSource: PutFundingSource,
-    projectId: number
-  ): Promise<{ project_funding_source_id: number }> {
-    const sqlStatement: SQLStatement = SQL`
-    INSERT INTO project_funding_source (
-      project_id,
-      investment_action_category_id,
-      funding_source_project_id,
-      funding_amount,
-      funding_start_date,
-      funding_end_date,
-      first_nations_id
-    ) VALUES (
-      ${projectId},
-      ${fundingSource.investment_action_category},
-      ${fundingSource.agency_project_id},
-      ${fundingSource.funding_amount},
-      ${fundingSource.start_date},
-      ${fundingSource.end_date},
-      ${fundingSource.first_nations_id}
-    )
-    RETURNING
-      project_funding_source_id;
-  `;
-
-    const response = await this.connection.sql<{ project_funding_source_id: number }>(sqlStatement);
-
-    const result = response?.rows?.[0];
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to insert project funding source', [
-        'ProjectRepository->putProjectFundingSource',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
-  }
-
   async getProjectList(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters
-  ): Promise<any[]> {
+  ): Promise<ProjectListData[]> {
     const sqlStatement = SQL`
       SELECT
-        p.project_id as id,
-        p.name,
+        p.project_id,
+        p.name as project_name,
+        p.uuid,
         p.start_date,
         p.end_date,
+        p.revision_count,
         p.coordinator_agency_name as coordinator_agency,
         array_remove(array_agg(DISTINCT rl.region_name), null) as regions,
         array_agg(distinct p2.program_id) as project_programs
       FROM
         project as p
-      LEFT JOIN project_program pp 
-        ON p.project_id = pp.project_id 
-      LEFT JOIN program p2 
-        ON p2.program_id = pp.program_id 
-      LEFT OUTER JOIN project_funding_source as pfs
-        ON pfs.project_id = p.project_id
-      LEFT OUTER JOIN investment_action_category as iac
-        ON pfs.investment_action_category_id = iac.investment_action_category_id
+      LEFT JOIN project_program pp
+        ON p.project_id = pp.project_id
+      LEFT JOIN program p2
+        ON p2.program_id = pp.program_id
       LEFT OUTER JOIN survey as s
         ON s.project_id = p.project_id
       LEFT OUTER JOIN study_species as sp
         ON sp.survey_id = s.survey_id
-      LEFT JOIN project_region pr 
+      LEFT JOIN project_region pr
         ON p.project_id = pr.project_id
-      LEFT JOIN region_lookup rl 
+      LEFT JOIN region_lookup rl
         ON pr.region_id = rl.region_id
-      LEFT OUTER JOIN agency as a
-        ON iac.agency_id = a.agency_id
       WHERE 1 = 1
     `;
 
@@ -255,10 +94,6 @@ export class ProjectRepository extends BaseRepository {
         sqlStatement.append(SQL` AND p.name = ${filterFields.project_name}`);
       }
 
-      if (filterFields.agency_project_id) {
-        sqlStatement.append(SQL` AND pfs.funding_source_project_id = ${filterFields.agency_project_id}`);
-      }
-
       if (filterFields.agency_id) {
         sqlStatement.append(SQL` AND a.agency_id = ${filterFields.agency_id}`);
       }
@@ -282,12 +117,14 @@ export class ProjectRepository extends BaseRepository {
         p.name,
         p.start_date,
         p.end_date,
-        p.coordinator_agency_name
+        p.coordinator_agency_name,
+        p.uuid,
+        p.revision_count
     `);
 
-    /* 
+    /*
       this is placed after the `group by` to take advantage of the `HAVING` clause
-      by placing the filter in the HAVING clause we are able to properly search 
+      by placing the filter in the HAVING clause we are able to properly search
       on program ids while still returning the full list that is associated to the project
     */
     if (filterFields.project_programs) {
@@ -312,7 +149,7 @@ export class ProjectRepository extends BaseRepository {
 
     sqlStatement.append(';');
 
-    const response = await this.connection.sql<ProjectData>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ProjectListData);
     if (!response.rows) {
       return [];
     }
@@ -345,24 +182,24 @@ export class ProjectRepository extends BaseRepository {
         pp.project_programs,
         pa.project_types
       FROM
-        project p 
+        project p
       LEFT JOIN (
-        SELECT array_remove(array_agg(p.program_id), NULL) as project_programs, pp.project_id 
-        FROM program p, project_program pp 
-        WHERE p.program_id = pp.program_id 
+        SELECT array_remove(array_agg(p.program_id), NULL) as project_programs, pp.project_id
+        FROM program p, project_program pp
+        WHERE p.program_id = pp.program_id
         GROUP BY pp.project_id
       ) as pp on pp.project_id = p.project_id
       LEFT JOIN (
         SELECT array_remove(array_agg(pt.type_id), NULL) as project_types, p.project_id
-        FROM project p 
+        FROM project p
         LEFT JOIN project_type pt on p.project_id = pt.project_id
         GROUP BY p.project_id
-      ) as pa on pa.project_id = p.project_id 
+      ) as pa on pa.project_id = p.project_id
       WHERE
         p.project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql<ProjectData>(getProjectSqlStatement);
+    const response = await this.connection.sql(getProjectSqlStatement, ProjectData);
 
     if (response?.rowCount < 1) {
       throw new ApiExecuteSQLError('Failed to get project data', [
@@ -496,65 +333,6 @@ export class ProjectRepository extends BaseRepository {
     }
 
     return new GetIUCNClassificationData(result);
-  }
-
-  async getFundingData(projectId: number): Promise<GetFundingData> {
-    const sqlStatement = SQL`
-      SELECT
-        pfs.project_funding_source_id as id,
-        a.agency_id,
-        pfs.funding_amount::numeric::int,
-        pfs.funding_start_date as start_date,
-        pfs.funding_end_date as end_date,
-        iac.investment_action_category_id as investment_action_category,
-        iac.name as investment_action_category_name,
-        a.name as agency_name,
-        pfs.funding_source_project_id as agency_project_id,
-        pfs.revision_count as revision_count,
-        pfs.first_nations_id,
-        fn.name as first_nations_name
-      FROM
-        project_funding_source as pfs
-      LEFT OUTER JOIN
-        investment_action_category as iac
-      ON
-        pfs.investment_action_category_id = iac.investment_action_category_id
-      LEFT OUTER JOIN
-        agency as a
-      ON
-        iac.agency_id = a.agency_id
-      LEFT OUTER JOIN 
-        first_nations as fn
-      ON
-        fn.first_nations_id = pfs.first_nations_id
-      WHERE
-        pfs.project_id = ${projectId}
-      GROUP BY
-        pfs.project_funding_source_id,
-        a.agency_id,
-        pfs.funding_source_project_id,
-        pfs.funding_amount,
-        pfs.funding_start_date,
-        pfs.funding_end_date,
-        iac.investment_action_category_id,
-        iac.name,
-        a.name,
-        pfs.revision_count,
-        pfs.first_nations_id,
-        fn.name
-    `;
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project funding data', [
-        'ProjectRepository->getFundingData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return new GetFundingData(result);
   }
 
   async getIndigenousPartnershipsRows(projectId: number): Promise<any[]> {
@@ -738,41 +516,6 @@ export class ProjectRepository extends BaseRepository {
       ]);
     }
 
-    return result.id;
-  }
-
-  async insertFundingSource(fundingSource: PostFundingSource, project_id: number): Promise<number> {
-    const sqlStatement = SQL`
-      INSERT INTO project_funding_source (
-        project_id,
-        investment_action_category_id,
-        funding_source_project_id,
-        funding_amount,
-        funding_start_date,
-        funding_end_date,
-        first_nations_id
-      ) VALUES (
-        ${project_id},
-        ${fundingSource.investment_action_category},
-        ${fundingSource.agency_project_id},
-        ${fundingSource.funding_amount},
-        ${fundingSource.start_date},
-        ${fundingSource.end_date},
-        ${fundingSource.first_nations_id}
-      )
-      RETURNING
-        project_funding_source_id as id;
-    `;
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = response?.rows?.[0];
-    if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert project funding data', [
-        'ProjectRepository->insertFundingSource',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
     return result.id;
   }
 

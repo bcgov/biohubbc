@@ -11,8 +11,6 @@ import { IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
-import ProjectFundingForm from '../components/ProjectFundingForm';
-import { FundingSourceType } from '../components/ProjectFundingItemForm';
 import ProjectIUCNForm from '../components/ProjectIUCNForm';
 import ProjectLocationForm from '../components/ProjectLocationForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
@@ -151,25 +149,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                     Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
                     be exact, please round to the nearest 100.
                   </Typography>
-                  <Box mt={3}>
-                    <ProjectFundingForm
-                      funding_sources={
-                        codes?.agency?.map((item) => {
-                          return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
-                        }) || []
-                      }
-                      investment_action_category={
-                        codes?.investment_action_category?.map((item) => {
-                          return { value: item.id, agency_id: item.agency_id, label: item.name };
-                        }) || []
-                      }
-                      first_nations={
-                        codes?.first_nations.map((item) => {
-                          return { value: item.id, label: item.name, type: FundingSourceType.FIRST_NATIONS };
-                        }) || []
-                      }
-                    />
-                  </Box>
+                  <Box mt={3}></Box>
                 </Box>
                 <Box component="fieldset" mt={5}>
                   <Typography component="legend" variant="h5">

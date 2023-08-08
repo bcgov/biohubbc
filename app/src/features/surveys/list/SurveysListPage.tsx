@@ -8,7 +8,7 @@ import assert from 'assert';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
 import { useHistory } from 'react-router';
@@ -40,7 +40,7 @@ const SurveysListPage = () => {
         buttonOnClick={() => navigateToCreateSurveyPage(projectContext.projectId)}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button {...buttonProps} />
           </ProjectRoleGuard>

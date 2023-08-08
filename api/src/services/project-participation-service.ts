@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { ProjectUserObject } from '../models/user';
+import { ProjectUser } from '../models/user';
 import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
 import { DBService } from './db-service';
 
@@ -16,7 +16,7 @@ export class ProjectParticipationService extends DBService {
     return this.projectParticipationRepository.deleteProjectParticipationRecord(projectParticipationId);
   }
 
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
     return this.projectParticipationRepository.getProjectParticipant(projectId, systemUserId);
   }
 

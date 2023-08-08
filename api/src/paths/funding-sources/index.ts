@@ -3,9 +3,10 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { FundingSourceService } from '../../services/funding-source-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/funding-source/{fundingSourceId}');
+const defaultLog = getLogger('paths/funding-sources/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -18,39 +19,43 @@ export const GET: Operation = [
       ]
     };
   }),
-  getFundingSource()
+  getFundingSources()
 ];
 
 GET.apiDoc = {
-  description: 'Get a single funding source.',
+  description: 'Get all funding sources.',
   tags: ['funding-source'],
   security: [
     {
       Bearer: []
     }
   ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'fundingSourceId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    }
-  ],
   responses: {
     200: {
-      description: 'Funding source response object.',
+      description: 'Funding sources response object.',
       content: {
         'application/json': {
           schema: {
             type: 'array',
             items: {
               type: 'object',
-              required: [],
-              properties: {}
+              required: ['funding_source_id', 'name', 'description', 'revision_count'],
+              properties: {
+                funding_source_id: {
+                  type: 'integer',
+                  minimum: 1
+                },
+                name: {
+                  type: 'string'
+                },
+                description: {
+                  type: 'string'
+                },
+                revision_count: {
+                  type: 'integer',
+                  minimum: 0
+                }
+              }
             }
           }
         }
@@ -75,24 +80,26 @@ GET.apiDoc = {
 };
 
 /**
- * Get a single funding source.
+ * Get a list of funding sources.
  *
  * @returns {RequestHandler}
  */
-export function getFundingSource(): RequestHandler {
+export function getFundingSources(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
-      // TODO
+      const fundingSourceService = new FundingSourceService(connection);
+
+      const response = await fundingSourceService.getFundingSources();
 
       await connection.commit();
 
-      return res.status(200).json();
+      return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getFundingSource', message: 'error', error });
+      defaultLog.error({ label: 'getFundingSources', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -101,7 +108,7 @@ export function getFundingSource(): RequestHandler {
   };
 }
 
-export const PUT: Operation = [
+export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
@@ -112,30 +119,19 @@ export const PUT: Operation = [
       ]
     };
   }),
-  getFundingSource()
+  postFundingSource()
 ];
 
-PUT.apiDoc = {
-  description: 'Update a single funding source.',
+POST.apiDoc = {
+  description: 'Create a funding source.',
   tags: ['funding-source'],
   security: [
     {
       Bearer: []
     }
   ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'fundingSourceId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    }
-  ],
   requestBody: {
-    description: 'Funding source put request object.',
+    description: 'Funding source post request object.',
     content: {
       'application/json': {
         schema: {
@@ -181,11 +177,11 @@ PUT.apiDoc = {
 };
 
 /**
- * Update a single funding source.
+ * Create a new funding source.
  *
  * @returns {RequestHandler}
  */
-export function putFundingSource(): RequestHandler {
+export function postFundingSource(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -198,101 +194,7 @@ export function putFundingSource(): RequestHandler {
 
       return res.status(200).json();
     } catch (error) {
-      defaultLog.error({ label: 'putFundingSource', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
-export const DELETE: Operation = [
-  authorizeRequestHandler(() => {
-    return {
-      and: [
-        {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
-        }
-      ]
-    };
-  }),
-  getFundingSource()
-];
-
-DELETE.apiDoc = {
-  description: 'Delete a single funding source.',
-  tags: ['funding-source'],
-  security: [
-    {
-      Bearer: []
-    }
-  ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'fundingSourceId',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    }
-  ],
-  responses: {
-    200: {
-      description: 'Funding source response object.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: [],
-              properties: {}
-            }
-          }
-        }
-      }
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/403'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
-
-/**
- * Delete a single funding source.
- *
- * @returns {RequestHandler}
- */
-export function deleteFundingSource(): RequestHandler {
-  return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
-
-    try {
-      await connection.open();
-
-      // TODO
-
-      await connection.commit();
-
-      return res.status(200).json();
-    } catch (error) {
-      defaultLog.error({ label: 'deleteFundingSource', message: 'error', error });
+      defaultLog.error({ label: 'createFundingSource', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../openapi/schemas/geoJson';
@@ -15,9 +15,13 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -65,7 +69,6 @@ GET.apiDoc = {
                     'survey_details',
                     'species',
                     'permit',
-                    'funding',
                     'proprietor',
                     'purpose_and_methodology',
                     'location'
@@ -162,49 +165,6 @@ GET.apiDoc = {
                               },
                               permit_type: {
                                 type: 'string'
-                              }
-                            }
-                          }
-                        }
-                      }
-                    },
-                    funding: {
-                      description: 'Survey Funding Sources',
-                      type: 'object',
-                      properties: {
-                        funding_sources: {
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            required: [
-                              'project_funding_source_id',
-                              'agency_name',
-                              'funding_amount',
-                              'funding_start_date',
-                              'funding_end_date'
-                            ],
-                            properties: {
-                              project_funding_source_id: {
-                                type: 'number',
-                                nullable: true
-                              },
-                              agency_name: {
-                                type: 'string',
-                                nullable: true
-                              },
-                              funding_amount: {
-                                type: 'number',
-                                nullable: true
-                              },
-                              funding_start_date: {
-                                type: 'string',
-                                nullable: true,
-                                description: 'ISO 8601 date string'
-                              },
-                              funding_end_date: {
-                                type: 'string',
-                                nullable: true,
-                                description: 'ISO 8601 date string'
                               }
                             }
                           }

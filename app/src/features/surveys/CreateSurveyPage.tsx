@@ -19,12 +19,11 @@ import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
-import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
 import GeneralInformationForm, {
@@ -95,14 +94,6 @@ const CreateSurveyPage = () => {
     [projectContext.projectDataLoader, projectContext.projectId]
   );
   const projectData = projectContext.projectDataLoader.data?.projectData;
-
-  const getSurveyFundingSourcesDataLoader = useDataLoader(() =>
-    biohubApi.survey.getAvailableSurveyFundingSources(projectContext.projectId)
-  );
-  useEffect(() => {
-    getSurveyFundingSourcesDataLoader.load();
-  }, [getSurveyFundingSourcesDataLoader, projectContext.projectId]);
-  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data ?? [];
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
@@ -298,20 +289,6 @@ const CreateSurveyPage = () => {
                   summary=""
                   component={
                     <GeneralInformationForm
-                      funding_sources={
-                        fundingSourcesData?.map((item) => {
-                          return {
-                            value: item.id,
-                            label: `${item.agency_name ?? item.first_nations_name} | ${getFormattedAmount(
-                              item.funding_amount
-                            )} | ${getFormattedDateRangeString(
-                              DATE_FORMAT.ShortMediumDateFormat,
-                              item.start_date,
-                              item.end_date
-                            )}`
-                          };
-                        }) || []
-                      }
                       projectStartDate={projectData.project.start_date}
                       projectEndDate={projectData.project.end_date}
                     />
