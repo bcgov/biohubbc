@@ -15,7 +15,8 @@ import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
-import FundingSourceForm, { FundingSourceData, FundingSourceYupSchema } from '../components/FundingSourceForm';
+import yup from 'utils/YupSchema';
+import FundingSourceForm, { IFundingSourceData } from '../components/FundingSourceForm';
 import FundingSourcesTable from './FundingSourcesTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -59,6 +60,26 @@ const FundingSourcesListPage: React.FC = () => {
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
 
+  // This is placed inside the `FundingSourcesListPage` to make use of an API call to check for used names
+  // The API call would violate the rules of react hooks if placed in an object outside of the component
+  // Reference: https://react.dev/warnings/invalid-hook-call-warning
+  const FundingSourceYupSchema = yup.object().shape({
+    funding_source_id: yup.number().nullable(),
+    name: yup
+      .string()
+      .required('A funding source name is required')
+      .test('nameUsed', 'This name has already been used', async (val) => {
+        let hasBeenUsed = false;
+        if (val) {
+          hasBeenUsed = await biohubApi.funding.hasFundingSourceNameBeenUsed(val);
+        }
+        return !hasBeenUsed;
+      }),
+    description: yup.string().max(200).required('A description is required'),
+    start_date: yup.string().isValidDateString().nullable(),
+    end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').nullable()
+  });
+
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
@@ -78,7 +99,7 @@ const FundingSourcesListPage: React.FC = () => {
   //   });
   // };
 
-  const handleSubmitDraft = async (values: FundingSourceData) => {
+  const handleSubmitDraft = async (values: IFundingSourceData) => {
     try {
       if (values.funding_source_id) {
         // edit the funding source
@@ -106,8 +127,6 @@ const FundingSourcesListPage: React.FC = () => {
       console.log('Show an error dialog');
     }
   };
-
-  // const getFundningSource = async (funding_source_id: number) => {};
 
   if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {
     return (
@@ -155,7 +174,7 @@ const FundingSourcesListPage: React.FC = () => {
             description: '',
             start_date: null,
             end_date: null
-          } as FundingSourceData,
+          },
           validationSchema: FundingSourceYupSchema
         }}
         dialogSaveButtonLabel="Add"
