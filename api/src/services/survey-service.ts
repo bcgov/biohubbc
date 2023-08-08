@@ -28,6 +28,7 @@ import {
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
@@ -48,6 +49,7 @@ export class SurveyService extends DBService {
   surveyRepository: SurveyRepository;
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
+  fundingSourceService: FundingSourceService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -56,6 +58,7 @@ export class SurveyService extends DBService {
     this.surveyRepository = new SurveyRepository(connection);
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
+    this.fundingSourceService = new FundingSourceService(connection);
   }
 
   /**
@@ -364,6 +367,19 @@ export class SurveyService extends DBService {
       )
     );
 
+    // Handle survey funding sources
+    promises.push(
+      Promise.all(
+        postSurveyData.funding_sources.map((fundingSource) =>
+          this.fundingSourceService.postSurveyFundingSource(
+            surveyId,
+            fundingSource.funding_source_id,
+            fundingSource.amount
+          )
+        )
+      )
+    );
+
     // Handle survey proprietor data
     postSurveyData.proprietor && promises.push(this.insertSurveyProprietor(postSurveyData.proprietor, surveyId));
 
@@ -554,6 +570,10 @@ export class SurveyService extends DBService {
       promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
     }
 
+    if (putSurveyData?.funding_sources) {
+      promises.push(this.updateSurveyFundingSourceData(surveyId, putSurveyData));
+    }
+
     if (putSurveyData?.proprietor) {
       promises.push(this.updateSurveyProprietorData(surveyId, putSurveyData));
     }
@@ -660,6 +680,20 @@ export class SurveyService extends DBService {
     });
 
     return Promise.all(promises);
+  }
+
+  /**
+   * Updates survey funding data
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @return {*}
+   * @memberof SurveyService
+   */
+  async updateSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject) {
+    return surveyData.funding_sources.map((fundingSource) =>
+      this.fundingSourceService.putSurveyFundingSource(surveyId, fundingSource.funding_source_id, fundingSource.amount)
+    );
   }
 
   /**
