@@ -177,7 +177,7 @@ const FundingSourcesListPage: React.FC = () => {
             </Toolbar>
             <Divider></Divider>
             <Box py={1} pb={2} px={3}>
-              <FundingSourcesTable fundingSources={[]} />
+              <FundingSourcesTable fundingSources={fundingSourceDataLoader.data || []} />
             </Box>
           </Paper>
         </Box>
