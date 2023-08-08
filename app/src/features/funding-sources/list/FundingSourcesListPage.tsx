@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const FundingSourcesListPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
@@ -100,6 +101,7 @@ const FundingSourcesListPage: React.FC = () => {
   // };
 
   const handleSubmitDraft = async (values: IFundingSourceData) => {
+    setIsSubmitting(true);
     try {
       if (values.funding_source_id) {
         // edit the funding source
@@ -107,7 +109,7 @@ const FundingSourcesListPage: React.FC = () => {
       } else {
         await biohubApi.funding.postFundingSource(values);
       }
-
+      setIsSubmitting(false);
       setIsModalOpen(false);
 
       fundingSourceDataLoader.refresh();
@@ -166,6 +168,7 @@ const FundingSourcesListPage: React.FC = () => {
       <EditDialog
         dialogTitle="Add New Funding Source"
         open={isModalOpen}
+        dialogLoading={isSubmitting}
         component={{
           element: <FundingSourceForm />,
           initialValues: {

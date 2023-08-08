@@ -5,6 +5,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import LoadingButton from 'components/buttons/LoadingButton';
 import { Formik, FormikValues } from 'formik';
 import { PropsWithChildren } from 'react';
 
@@ -50,6 +51,11 @@ export interface IEditDialogProps<T> {
    * Error message to display when an error exists
    */
   dialogError?: string;
+
+  /**
+   * Boolean to track to show a spinner
+   */
+  dialogLoading?: boolean;
 
   /**
    * Callback fired if the 'No' button is clicked.
@@ -103,14 +109,15 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
           <DialogContent>{props.component.element}</DialogContent>
           <DialogActions>
-            <Button
+            <LoadingButton
+              loading={props.dialogLoading || false}
               onClick={formikProps.submitForm}
               color="primary"
               variant="contained"
               autoFocus
               data-testid="edit-dialog-save">
               {props.dialogSaveButtonLabel || 'Save Changes'}
-            </Button>
+            </LoadingButton>
             <Button onClick={props.onCancel} color="primary" variant="outlined" data-testid="edit-dialog-cancel">
               Cancel
             </Button>
