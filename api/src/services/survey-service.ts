@@ -10,6 +10,7 @@ import {
   GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
+  GetSurveyFundingSourceData,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
@@ -84,6 +85,7 @@ export class SurveyService extends DBService {
       surveyData,
       speciesData,
       permitData,
+      fundingData,
       purposeAndMethodologyData,
       proprietorData,
       locationData
@@ -91,6 +93,7 @@ export class SurveyService extends DBService {
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
       this.getPermitData(surveyId),
+      this.getSurveyFundingData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
       this.getSurveyLocationData(surveyId)
@@ -100,10 +103,22 @@ export class SurveyService extends DBService {
       survey_details: surveyData,
       species: speciesData,
       permit: permitData,
+      funding_sources: fundingData,
       purpose_and_methodology: purposeAndMethodologyData,
       proprietor: proprietorData,
       location: locationData
     };
+  }
+
+  /**
+   * Get Survey funding data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SurveyFundingSource[]>}
+   * @memberof SurveyService
+   */
+  async getSurveyFundingData(surveyId: number): Promise<GetSurveyFundingSourceData[]> {
+    return await this.fundingSourceService.getSurveyFundingSources(surveyId);
   }
 
   /**
@@ -571,7 +586,7 @@ export class SurveyService extends DBService {
     }
 
     if (putSurveyData?.funding_sources) {
-      promises.push(this.updateSurveyFundingSourceData(surveyId, putSurveyData));
+      promises.push(this.upsertSurveyFundingSourceData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.proprietor) {
@@ -690,10 +705,32 @@ export class SurveyService extends DBService {
    * @return {*}
    * @memberof SurveyService
    */
-  async updateSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject) {
-    return surveyData.funding_sources.map((fundingSource) =>
-      this.fundingSourceService.putSurveyFundingSource(surveyId, fundingSource.funding_source_id, fundingSource.amount)
-    );
+  async upsertSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject) {
+    //loop for all funding source data
+    surveyData.funding_sources.forEach(async (fundingSource) => {
+      //check if funding exists
+      const checkFunding = await this.fundingSourceService.getSurveyFundingSourceByFundingSourceId(
+        surveyId,
+        fundingSource.funding_source_id
+      );
+
+      if (!checkFunding) {
+        //create funding source
+        return this.fundingSourceService.postSurveyFundingSource(
+          surveyId,
+          fundingSource.funding_source_id,
+          fundingSource.amount
+        );
+      } else {
+        //update funding source
+        return this.fundingSourceService.putSurveyFundingSource(
+          surveyId,
+          fundingSource.funding_source_id,
+          fundingSource.amount,
+          fundingSource.revision_count
+        );
+      }
+    });
   }
 
   /**

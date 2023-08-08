@@ -25,10 +25,12 @@ export class PutSurveyObject {
 export class PutFundingSourceData {
   funding_source_id: number;
   amount: number;
+  revision_count: number;
 
   constructor(obj?: any) {
     this.funding_source_id = obj?.funding_source_id || null;
     this.amount = obj?.amount || null;
+    this.revision_count = obj?.revision_count || null;
   }
 }
 

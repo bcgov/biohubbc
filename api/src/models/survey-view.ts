@@ -6,6 +6,7 @@ export type SurveyObject = {
   survey_details: GetSurveyData;
   species: GetFocalSpeciesData & GetAncillarySpeciesData;
   permit: GetPermitData;
+  funding_sources: GetSurveyFundingSourceData[];
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
@@ -35,6 +36,26 @@ export class GetSurveyData {
     this.biologist_first_name = obj?.lead_first_name || '';
     this.biologist_last_name = obj?.lead_last_name || '';
     this.survey_area_name = obj?.location_name || '';
+    this.revision_count = obj?.revision_count || 0;
+  }
+}
+
+export class GetSurveyFundingSourceData {
+  survey_funding_source_id: number;
+  survey_id: number;
+  funding_source_id: number;
+  amount: number;
+  start_date: string;
+  end_date: string;
+  revision_count?: number;
+
+  constructor(obj?: any) {
+    this.survey_funding_source_id = obj?.survey_funding_source_id || null;
+    this.funding_source_id = obj?.funding_source_id || null;
+    this.survey_id = obj?.survey_id || null;
+    this.amount = obj?.amount || null;
+    this.start_date = obj?.start_date || null;
+    this.end_date = obj?.end_date || null;
     this.revision_count = obj?.revision_count || 0;
   }
 }

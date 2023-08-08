@@ -126,6 +126,22 @@ POST.apiDoc = {
                 }
               }
             },
+            funding_sources: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['funding_source_id', 'amount'],
+                properties: {
+                  funding_source_id: {
+                    type: 'number',
+                    minimum: 1
+                  },
+                  amount: {
+                    type: 'number'
+                  }
+                }
+              }
+            },
             proprietor: {
               type: 'object',
               properties: {

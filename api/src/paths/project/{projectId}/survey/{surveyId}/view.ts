@@ -166,6 +166,50 @@ GET.apiDoc = {
                       }
                     }
                   },
+                  funding_sources: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: [
+                        'survey_funding_source_id',
+                        'survey_id',
+                        'funding_source_id',
+                        'amount',
+                        'start_date',
+                        'end_date',
+                        'revision_count'
+                      ],
+                      properties: {
+                        survey_funding_source_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        survey_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        funding_source_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        amount: {
+                          type: 'number'
+                        },
+                        start_date: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          description: 'ISO 8601 date string for the funding start_date'
+                        },
+                        end_date: {
+                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                          nullable: true,
+                          description: 'ISO 8601 date string for the funding end_date'
+                        },
+                        revision_count: {
+                          type: 'number'
+                        }
+                      }
+                    }
+                  },
                   purpose_and_methodology: {
                     description: 'Survey Details',
                     type: 'object',
