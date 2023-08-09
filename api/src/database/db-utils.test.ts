@@ -61,12 +61,12 @@ describe('getZodQueryResult', () => {
   });
 });
 
-describe('updateSystemUserInformation', () => {
+describe('getGenericizedKeycloakUserInformation', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  it('identifies a database user information object and does nothing and returns null', () => {
+  it('identifies a database user information object and returns null', () => {
     const keycloakUserInformation: DatabaseUserInformation = {
       database_user_guid: '123456789',
       identity_provider: 'database',
@@ -78,7 +78,7 @@ describe('updateSystemUserInformation', () => {
     expect(result).to.be.null;
   });
 
-  it('identifies an idir user information object and updates the user', () => {
+  it('identifies an idir user information object and returns a genericized object', () => {
     const keycloakUserInformation: IdirUserInformation = {
       idir_user_guid: '123456789',
       identity_provider: 'idir',
@@ -105,7 +105,7 @@ describe('updateSystemUserInformation', () => {
     });
   });
 
-  it('identifies a bceid business user information object and updates the user', () => {
+  it('identifies a bceid business user information object and returns a genericized object', () => {
     const keycloakUserInformation: BceidBusinessUserInformation = {
       bceid_business_guid: '1122334455',
       bceid_business_name: 'Business Name',
@@ -135,7 +135,7 @@ describe('updateSystemUserInformation', () => {
     });
   });
 
-  it('identifies a bceid basic user information object and updates the user', () => {
+  it('identifies a bceid basic user information object and returns a genericized object', () => {
     const keycloakUserInformation: BceidBasicUserInformation = {
       bceid_user_guid: '123456789',
       identity_provider: 'bceidbasic',
