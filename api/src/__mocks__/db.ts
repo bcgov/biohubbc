@@ -35,12 +35,6 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
     knex: async () => {
       return (undefined as unknown) as QueryResult<any>;
     },
-    _setUserContext: async () => {
-      // do nothing
-    },
-    _updateSystemUserInformation: async () => {
-      // do nothing
-    },
     ...config
   };
 };

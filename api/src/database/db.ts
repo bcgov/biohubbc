@@ -8,13 +8,15 @@ import {
   getKeycloakUserInformationFromKeycloakToken,
   getUserGuid,
   getUserIdentitySource,
-  isBceidBusinessUserInformation,
-  isDatabaseUserInformation,
-  isIdirUserInformation,
   KeycloakUserInformation
 } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { asyncErrorWrapper, GenericizedKeycloakUserInformation, getZodQueryResult, syncErrorWrapper } from './db-utils';
+import {
+  asyncErrorWrapper,
+  getGenericizedKeycloakUserInformation,
+  getZodQueryResult,
+  syncErrorWrapper
+} from './db-utils';
 
 const defaultLog = getLogger('database/db');
 
@@ -171,21 +173,6 @@ export interface IDBConnection {
    * @memberof IDBConnection
    */
   systemUserId: () => number;
-  /**
-   * For testing purposes only. Should not be called directly.
-   *
-   * @private
-   * @memberof IDBConnection
-   */
-  _setUserContext: () => Promise<void>;
-  /**
-   * For testing purposes only. Should not be called directly.
-   *
-   * @private
-   * @param {KeycloakUserInformation} keycloakUserInformation
-   * @memberof IDBConnection
-   */
-  _updateSystemUserInformation: (keycloakUserInformation: KeycloakUserInformation) => Promise<void>;
 }
 
 /**
@@ -415,53 +402,14 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * @return {*}  {Promise<void>}
    */
   const _updateSystemUserInformation = async (keycloakUserInformation: KeycloakUserInformation): Promise<void> => {
-    let data:
-      | GenericizedKeycloakUserInformation
-      | Pick<GenericizedKeycloakUserInformation, 'user_guid' | 'user_identifier' | 'user_identity_source'>;
+    const data = getGenericizedKeycloakUserInformation(keycloakUserInformation);
 
-    if (isDatabaseUserInformation(keycloakUserInformation)) {
-      // Don't patch internal database user records
+    if (!data) {
       return;
     }
 
-    // We don't yet know at this point what kind of token was used (idir vs bceid basic, etc).
-    // Determine which type it is, and parse the information into a generic structure that is supported by the
-    // database patch function
-    if (isIdirUserInformation(keycloakUserInformation)) {
-      data = {
-        user_guid: keycloakUserInformation.idir_user_guid,
-        user_identifier: keycloakUserInformation.idir_username,
-        user_identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
-        display_name: keycloakUserInformation.display_name,
-        email: keycloakUserInformation.email,
-        given_name: keycloakUserInformation.given_name,
-        family_name: keycloakUserInformation.family_name
-      };
-    } else if (isBceidBusinessUserInformation(keycloakUserInformation)) {
-      data = {
-        user_guid: keycloakUserInformation.bceid_user_guid,
-        user_identifier: keycloakUserInformation.bceid_username,
-        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS,
-        display_name: keycloakUserInformation.display_name,
-        email: keycloakUserInformation.email,
-        given_name: keycloakUserInformation.given_name,
-        family_name: keycloakUserInformation.family_name,
-        agency: keycloakUserInformation.bceid_business_name
-      };
-    } else {
-      data = {
-        user_guid: keycloakUserInformation.bceid_user_guid,
-        user_identifier: keycloakUserInformation.bceid_username,
-        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
-        display_name: keycloakUserInformation.display_name,
-        email: keycloakUserInformation.email,
-        given_name: keycloakUserInformation.given_name,
-        family_name: keycloakUserInformation.family_name
-      };
-    }
-
     const patchSystemUserSQLStatement = SQL`
-      select api_patch_system_user(
+      SELECT api_patch_system_user(
         ${data.user_guid},
         ${data.user_identifier},
         ${data.user_identity_source},
@@ -506,9 +454,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     release: syncErrorWrapper(_release),
     commit: asyncErrorWrapper(_commit),
     rollback: asyncErrorWrapper(_rollback),
-    systemUserId: syncErrorWrapper(_getSystemUserID),
-    _setUserContext: _setUserContext,
-    _updateSystemUserInformation: _updateSystemUserInformation
+    systemUserId: syncErrorWrapper(_getSystemUserID)
   };
 };
 
