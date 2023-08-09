@@ -88,7 +88,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
         },
         500
       ),
-    []
+    [biohubApi.taxonomy]
   );
 
   return (
