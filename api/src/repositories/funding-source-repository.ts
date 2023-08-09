@@ -66,7 +66,7 @@ export class FundingSourceRepository extends BaseRepository {
 
   async postFundingSource(data: ICreateFundingSource): Promise<Pick<FundingSource, 'funding_source_id'>> {
     const sql = SQL`
-      INSERT INTO funding_source (
+      INSERT INTO funding_sources (
         name, 
         description, 
         start_date, 

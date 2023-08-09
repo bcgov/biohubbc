@@ -56,14 +56,9 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
   const handleSubmitFundingService = async (values: IFundingSourceData) => {
     setIsSubmitting(true);
     try {
-      if (values.funding_source_id) {
-        // edit the funding source
-        await biohubApi.funding.putFundingSource(values);
-      } else {
-        await biohubApi.funding.postFundingSource(values);
-      }
+      await biohubApi.funding.postFundingSource(values);
 
-      // callback to parent to update
+      // creation was a success, tell parent to refresh
       props.closeModal(true);
 
       showSnackBar({
