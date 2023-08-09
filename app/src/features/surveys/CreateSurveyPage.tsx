@@ -39,6 +39,8 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
+import { mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -322,6 +324,47 @@ const CreateSurveyPage = () => {
                         }) || []
                       }
                     />
+                  }></HorizontalSplitFormComponent>
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Funding and Partnerships"
+                  summary="Specify project funding sources and additional partnerships."
+                  component={
+                    <>
+                      <Box component="fieldset">
+                        <Typography component="legend" variant="h5">
+                          Funding Sources
+                        </Typography>
+                        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
+                          Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
+                          be exact, please round to the nearest 100.
+                        </Typography>
+                        <Box mt={3}>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<Icon path={mdiPlus} size={1} />}
+                            onClick={() => {
+                              // setIsModalOpen(true);
+                            }}>
+                            Add Funding Source
+                          </Button>
+                        </Box>
+                      </Box>
+                      <Box component="fieldset" mt={5}>
+                        <Typography component="legend" variant="h5">
+                          Partnerships
+                        </Typography>
+                        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
+                          Additional partnerships that have not been previously identified as a funding sources.
+                        </Typography>
+                        <Box mt={4}>
+                          <p>Hello world</p>
+                        </Box>
+                      </Box>
+                    </>
                   }></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
