@@ -20,7 +20,9 @@ const MeasurementAnimalForm = () => {
 
   const { data: measurements, load } = useDataLoader(api.lookup.getTaxonMeasurements);
 
-  load(values.general.taxon_id);
+  if (values.general.taxon_id) {
+    load(values.general.taxon_id);
+  }
 
   const newMeasurement: IAnimalMeasurement = {
     taxon_measurement_id: '',
@@ -91,7 +93,10 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
   return (
     <Fragment key={`marking-inputs-${index}`}>
       <Grid item xs={6}>
-        <FormikSelectWrapper label="Measurement Type" name={tmIDName} controlProps={{ size: 'small', required: true }}>
+        <FormikSelectWrapper
+          label="Measurement Type"
+          name={tmIDName}
+          controlProps={{ size: 'small', required: true, disabled: !measurements?.length }}>
           {measurements?.map((m) => (
             <MenuItem key={m.taxon_measurement_id} value={m.taxon_measurement_id}>
               {m.measurement_name}
@@ -110,14 +115,14 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             controlProps={{ size: 'small', required: true, disabled: !taxonMeasurementId }}
           />
         ) : (
-          <Field
-            as={CustomTextField}
-            name={valName}
-            label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
-            other={{ required: true, size: 'small', disabled: !taxonMeasurementId }}
-            validate={validateValue}
-          />
-        )}
+            <Field
+              as={CustomTextField}
+              name={valName}
+              label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
+              other={{ required: true, size: 'small', disabled: !taxonMeasurementId }}
+              validate={validateValue}
+            />
+          )}
       </Grid>
       <Grid item xs={6}>
         <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Measurement')}>

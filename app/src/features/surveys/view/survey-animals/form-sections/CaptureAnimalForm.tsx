@@ -77,8 +77,8 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
       <>
         <Grid item xs={6}>
           <CustomTextField
-            other={{ required: true, size: 'small' }}
-            label="Temp Capture Timestamp"
+            other={{ required: true, size: 'small', type: 'date', InputLabelProps: { shrink: true } }}
+            label="Capture Date"
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
           />
         </Grid>

@@ -92,8 +92,8 @@ const MortalityAnimalFormContent = ({ name, index, setFieldValue, value }: Morta
       <>
         <Grid item xs={6}>
           <CustomTextField
-            other={{ required: true, size: 'small' }}
-            label="Temp Mortality Timestamp"
+            other={{ required: true, size: 'small', type: 'date', InputLabelProps: { shrink: true } }}
+            label="Mortality Date"
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
           />
         </Grid>
