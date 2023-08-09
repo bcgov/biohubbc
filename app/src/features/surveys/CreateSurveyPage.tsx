@@ -1,4 +1,4 @@
-import { Autocomplete, TextField, Theme } from '@mui/material';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -39,9 +39,7 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
-import { mdiPlus } from '@mdi/js';
-import Icon from '@mdi/react';
-import DollarAmountField from 'components/fields/DollarAmountField';
+import FundingSourceForm from './components/FundingSourceForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -86,8 +84,6 @@ const CreateSurveyPage = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
-
-  const [loadingFundingSources, setLoadingFundingSources] = useState<boolean>(true);
 
   const codesContext = useContext(CodesContext);
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
@@ -251,11 +247,6 @@ const CreateSurveyPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const _tempFundingSources = [
-    0,
-    1
-  ]
-
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -340,83 +331,18 @@ const CreateSurveyPage = () => {
                   title="Funding and Partnerships"
                   summary="Specify project funding sources and additional partnerships."
                   component={
-                    <>
-                      <Box component="fieldset">
-                        <Typography component="legend" variant="h5">
-                          Funding Sources
-                        </Typography>
-                        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-                          Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
-                          be exact, please round to the nearest 100.
-                        </Typography>
-                        <Box mt={3}>
-                        {_tempFundingSources.map((fundingSource) => {
-                          return (
-                            <Box mb={3} display='flex' gap={2}>
-                              <Autocomplete
-                                // id="asynchronous-demo"
-                                sx={{ flex: 6 }}
-                                //isOptionEqualToValue={(option, value) => option.title === value.title}
-                                //getOptionLabel={(option) => option.title}
-                                options={[]}
-                                loading={loadingFundingSources}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Funding Source"
-                                    InputProps={{
-                                      ...params.InputProps,
-                                      endAdornment: (
-                                        <>
-                                          {loadingFundingSources ? <CircularProgress color="inherit" size={20} /> : null}
-                                          {params.InputProps.endAdornment}
-                                        </>
-                                      ),
-                                    }}
-                                  />
-                                )}
-                              />
-                              <DollarAmountField
-                                id="funding_amount"
-                                name="funding_amount"
-                                label="Funding Amount"
-                                sx={{ flex: 4 }}
-                              />
-                            </Box>
-                          )
-                        })}
-                        <Button
-                          data-testid="funding-form-add-button"
-                          variant="outlined"
-                          color="primary"
-                          title="Add Funding Source"
-                          aria-label="Add Funding Source"
-                          startIcon={<Icon path={mdiPlus} size={1} />}
-                          onClick={() => {
-                            /*
-                            setCurrentProjectFundingFormArrayItem({
-                              index: values.funding.fundingSources.length,
-                              values: ProjectFundingFormArrayItemInitialValues
-                            });
-                            setIsModalOpen(true);
-                            */
-                          }}>
-                          Add Funding Source
-                        </Button>
-                        </Box>
+                    <Box component="fieldset">
+                      <Typography component="legend" variant="h5">
+                        Add Funding Sources
+                      </Typography>
+                      <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
+                        Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
+                        be exact, please round to the nearest 100.
+                      </Typography>
+                      <Box mt={3}>
+                        <FundingSourceForm />
                       </Box>
-                      <Box component="fieldset" mt={5}>
-                        <Typography component="legend" variant="h5">
-                          Partnerships
-                        </Typography>
-                        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-                          Additional partnerships that have not been previously identified as a funding sources.
-                        </Typography>
-                        <Box mt={4}>
-                          <p>Hello world</p>
-                        </Box>
-                      </Box>
-                    </>
+                    </Box>
                   }></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
