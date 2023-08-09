@@ -94,9 +94,10 @@ const FundingSourcesListPage: React.FC = () => {
                 <Button
                   variant="contained"
                   color="primary"
+                  aria-label="Add Funding Source"
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   onClick={() => setIsCreateModalOpen(true)}>
-                  Add Funding Source
+                  Add
                 </Button>
               </Box>
             </Box>

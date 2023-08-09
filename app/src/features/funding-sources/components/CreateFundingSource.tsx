@@ -26,15 +26,15 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
   const FundingSourceYupSchema = yup.object().shape({
     name: yup
       .string()
-      .required('A funding source name is required')
-      .test('nameUsed', 'This name has already been used', async (val) => {
+      .required('Name is required')
+      .test('nameUsed', 'Name has already been used', async (val) => {
         let hasBeenUsed = false;
         if (val) {
           hasBeenUsed = await biohubApi.funding.hasFundingSourceNameBeenUsed(val);
         }
         return !hasBeenUsed;
       }),
-    description: yup.string().max(200).required('A description is required'),
+    description: yup.string().max(200).required('Description is required'),
     start_date: yup.string().isValidDateString().nullable(),
     end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').nullable()
   });

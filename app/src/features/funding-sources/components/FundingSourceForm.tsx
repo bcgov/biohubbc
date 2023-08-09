@@ -12,53 +12,40 @@ export interface IFundingSourceData {
   start_date: string | null;
   end_date: string | null;
 }
-/*
-  TODO:
-  - replace existing StartEndDateFields, not sure if this is possible
-  - make UI better
-  - look into fieldset child relationship
-  - display errors from api
-*/
 const FundingSourceForm: React.FC = (props) => {
   const formikProps = useFormikContext<IFundingSourceData>();
   const { handleSubmit } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>
-      <Box component={'fieldset'} mt={3}>
-        <Box>
-          <Box sx={{ mb: 3 }}>
-            <Typography component="legend">Name and description</Typography>
+      <Box mt={3}>
+        <Box component={'fieldset'} mb={4}>
+          <Typography component="legend">Name and description</Typography>
+          <Box mb={3} mt={1}>
             <CustomTextField name="name" label="Name" other={{ required: true }} />
           </Box>
-          <Box sx={{ mb: 3 }}>
-            <CustomTextField
-              name="description"
-              label="Description"
-              other={{ multiline: true, required: true, rows: 4 }}
-            />
-          </Box>
+          <CustomTextField
+            name="description"
+            label="Description"
+            other={{ multiline: true, required: true, rows: 4 }}
+          />
         </Box>
-        <Box component={'fieldset'} sx={{ mb: 8 }}>
-          <Box sx={{ mb: 3 }}>
-            <Typography component="legend" variant="h5">
-              Effective Dates
-            </Typography>
+
+        <Box component={'fieldset'}>
+          <Typography component="legend">Effective Dates</Typography>
+          <Box mb={4}>
             <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-              Effective date description
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             </Typography>
           </Box>
-          <Box>
-            <StartEndDateFields
-              formikProps={formikProps}
-              startName="start_date"
-              endName="end_date"
-              startRequired={false}
-              endRequired={false}
-            />
-          </Box>
+          <StartEndDateFields
+            formikProps={formikProps}
+            startName="start_date"
+            endName="end_date"
+            startRequired={false}
+            endRequired={false}
+          />
         </Box>
-        <hr />
       </Box>
     </form>
   );
