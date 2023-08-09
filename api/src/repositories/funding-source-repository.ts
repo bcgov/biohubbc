@@ -18,9 +18,7 @@ const SurveyFundingSource = z.object({
   survey_funding_source_id: z.number(),
   survey_id: z.number(),
   funding_source_id: z.number(),
-  amount: z.number(),
-  start_date: z.string(),
-  end_date: z.string(),
+  amount: z.string(),
   revision_count: z.number().optional()
 });
 
@@ -67,9 +65,9 @@ export class FundingSourceRepository extends BaseRepository {
   async postFundingSource(data: ICreateFundingSource): Promise<Pick<FundingSource, 'funding_source_id'>> {
     const sql = SQL`
       INSERT INTO funding_source (
-        name, 
-        description, 
-        start_date, 
+        name,
+        description,
+        start_date,
         end_date,
         record_effective_date
       ) VALUES (
