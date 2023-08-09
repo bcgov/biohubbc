@@ -19,7 +19,7 @@ import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
 const IndividualAnimalForm = () => {
   return (
     <Form>
-      <Typography variant="h5">Add New Individual</Typography>
+      <Typography variant="h4">Add New Individual</Typography>
       <Box component="fieldset">
         <GeneralAnimalForm />
         <CaptureAnimalForm />

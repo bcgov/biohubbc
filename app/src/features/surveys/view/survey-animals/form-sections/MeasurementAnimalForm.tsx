@@ -2,7 +2,8 @@ import { Grid, MenuItem } from '@mui/material';
 import CbSelectField, { FormikSelectWrapper } from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { has } from 'lodash-es';
@@ -11,32 +12,15 @@ import { getAnimalFieldName, IAnimal, IAnimalMeasurement } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
-const NAME: keyof IAnimal = 'measurement';
+const NAME: keyof IAnimal = 'measurements';
 
-interface IMeasurement {
-  taxon_measurement_id: string;
-  measurement_name: string;
-  min_value?: number;
-  max_value?: number;
-  unit?: string;
-}
 const MeasurementAnimalForm = () => {
   const api = useCritterbaseApi();
   const { values } = useFormikContext<IAnimal>();
 
-  const { data: measurements, load } = useDataLoader(async () =>
-    api.lookup.getSelectOptions<IMeasurement>({
-      route: 'taxon_measurements',
-      query: `taxon_id=${values.general.taxon_id}`,
-      asSelect: false
-    })
-  );
+  const { data: measurements, load } = useDataLoader(api.lookup.getTaxonMeasurements);
 
-  const canLoadData = !measurements && values.measurement.length > 0 && values.general.taxon_id;
-
-  if (canLoadData) {
-    load();
-  }
+  load(values.general.taxon_id);
 
   const newMeasurement: IAnimalMeasurement = {
     taxon_measurement_id: '',
@@ -56,7 +40,7 @@ const MeasurementAnimalForm = () => {
             btnLabel={SurveyAnimalsI18N.animalMeasurementAddBtn}
             handleAddSection={() => push(newMeasurement)}
             handleRemoveSection={remove}>
-            {values.measurement.map((_cap, index) => (
+            {values.measurements.map((_cap, index) => (
               <MeasurementFormContent key={`measurement-form-${index}`} index={index} measurements={measurements} />
             ))}
           </FormSectionWrapper>
@@ -68,29 +52,46 @@ const MeasurementAnimalForm = () => {
 
 interface MeasurementFormContentProps {
   index: number;
-  measurements?: IMeasurement[];
+  measurements?: IMeasurementStub[];
 }
 
 const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
   const { values, setFieldValue } = useFormikContext<IAnimal>();
-  const taxonMeasurementId = values.measurement[index].taxon_measurement_id;
-  const [measurement, setMeasurement] = useState<IMeasurement>();
+  const [measurement, setMeasurement] = useState<IMeasurementStub>();
+
+  const taxonMeasurementId = values.measurements[index].taxon_measurement_id;
   const isQuantMeasurement = has(measurement, 'unit');
 
+  const tmIDName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'taxon_measurement_id', index);
+  const valName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index);
+  const opIDName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'option_id', index);
+
   useEffect(() => {
-    setFieldValue(getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index), '');
-    setFieldValue(getAnimalFieldName<IAnimalMeasurement>(NAME, 'option_id', index), '');
+    setFieldValue(valName, '');
+    setFieldValue(opIDName, '');
     const m = measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId);
     setMeasurement(m);
   }, [taxonMeasurementId]);
 
+  const validateValue = async (val: '' | number) => {
+    const min = measurement?.min_value ?? 0;
+    const max = measurement?.max_value;
+    const unit = measurement?.unit ? ` ${measurement.unit}'s` : ``;
+    if (val === '') {
+      return;
+    }
+    if (val < min) {
+      return `Measurement must be greater than ${min}${unit}`;
+    }
+    if (max && val > max) {
+      return `Measurement must be less than ${max}${unit}`;
+    }
+  };
+
   return (
     <Fragment key={`marking-inputs-${index}`}>
       <Grid item xs={6}>
-        <FormikSelectWrapper
-          label="Measurement Type"
-          name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'taxon_measurement_id', index)}
-          controlProps={{ size: 'small', required: true }}>
+        <FormikSelectWrapper label="Measurement Type" name={tmIDName} controlProps={{ size: 'small', required: true }}>
           {measurements?.map((m) => (
             <MenuItem key={m.taxon_measurement_id} value={m.taxon_measurement_id}>
               {m.measurement_name}
@@ -101,20 +102,22 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
       <Grid item xs={6}>
         {!isQuantMeasurement && taxonMeasurementId ? (
           <CbSelectField
-            label="Measurement Option"
-            name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'option_id', index)}
+            label="Value"
+            name={opIDName}
             id="qualitative_option"
             route="taxon_qualitative_measurement_options"
             query={`taxon_measurement_id=${taxonMeasurementId}`}
-            controlProps={{ size: 'small', disabled: !taxonMeasurementId }}
+            controlProps={{ size: 'small', required: true, disabled: !taxonMeasurementId }}
           />
         ) : (
-            <CustomTextField
-              label={`Measurement Value${measurement?.unit ? ` (${measurement?.unit}'s)` : ``}`}
-              name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index)}
-              other={{ required: true, size: 'small' }}
-            />
-          )}
+          <Field
+            as={CustomTextField}
+            name={valName}
+            label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
+            other={{ required: true, size: 'small', disabled: !taxonMeasurementId }}
+            validate={validateValue}
+          />
+        )}
       </Grid>
       <Grid item xs={6}>
         <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Measurement')}>

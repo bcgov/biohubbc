@@ -90,6 +90,17 @@ const AnimalTelemetryDeviceSchema = yup.object({}).shape({
 
 const AnimalImageSchema = yup.object({}).shape({});
 
+export const AnimalSchema = yup.object({}).shape({
+  general: AnimalGeneralSchema.required(),
+  captures: yup.array().of(AnimalCaptureSchema).required(),
+  markings: yup.array().of(AnimalMarkingSchema).required(),
+  measurements: yup.array().of(AnimalMeasurementSchema).required(),
+  mortality: yup.array().of(AnimalMortalitySchema).required(),
+  family: yup.array().of(AnimalRelationshipSchema).required(),
+  images: yup.array().of(AnimalImageSchema).required(),
+  device: AnimalTelemetryDeviceSchema.default(undefined)
+});
+
 export type IAnimalGeneral = InferType<typeof AnimalGeneralSchema>;
 
 export type IAnimalCapture = InferType<typeof AnimalCaptureSchema>;
@@ -106,17 +117,74 @@ export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchem
 
 export type IAnimalImage = InferType<typeof AnimalImageSchema>;
 
-export const AnimalSchema = yup.object({}).shape({
-  general: AnimalGeneralSchema.required(),
-  capture: yup.array().of(AnimalCaptureSchema).required(),
-  marking: yup.array().of(AnimalMarkingSchema).required(),
-  measurement: yup.array().of(AnimalMeasurementSchema).required(),
-  mortality: yup.array().of(AnimalMortalitySchema).required(),
-  family: yup.array().of(AnimalRelationshipSchema).required(),
-  image: yup.array().of(AnimalImageSchema).required(),
-  device: AnimalTelemetryDeviceSchema.default(undefined)
-});
-
 export type IAnimal = InferType<typeof AnimalSchema>;
 
 export type IAnimalKey = keyof IAnimal;
+
+type IAnimalCapturePayload = Omit<
+  IAnimalCapture,
+  'capture_utm_easting' | 'capture_utm_northing' | 'release_utm_easting' | 'release_utm_northing' | 'projection_mode'
+>;
+
+type IAnimalMortalityPayload = Omit<IAnimalMortality, 'utm_easting' | 'utm_northing' | 'projection_mode'>;
+
+//Converts IAnimal(Form data) to a Critterbase Critter
+
+export class Critter {
+  critter_id?: string;
+  taxon_id: string;
+  animal_id?: string;
+  captures: IAnimalCapturePayload[];
+  markings: IAnimalMarking[];
+  measurements: {
+    qualitative: Omit<IAnimalMeasurement, 'value'>[];
+    quantitative: Omit<IAnimalMeasurement, 'option_id'>[];
+  };
+  mortality: IAnimalMortalityPayload[];
+  family: IAnimalRelationship[]; //This type probably needs to change;
+  constructor(animal: IAnimal) {
+    this.critter_id = undefined;
+    this.taxon_id = animal.general.taxon_id;
+    this.animal_id = animal.general.animal_id;
+    this.captures = animal.captures.map((c) => {
+      delete c.projection_mode;
+      delete c.capture_utm_northing;
+      delete c.capture_utm_easting;
+      delete c.release_utm_northing;
+      delete c.release_utm_easting;
+      return c;
+    });
+    this.mortality = animal.mortality.map((m) => {
+      delete m.mortality_utm_northing;
+      delete m.mortality_utm_easting;
+      delete m.projection_mode;
+      return m;
+    });
+    this.markings = animal.markings;
+    this.family = animal.family;
+    this.measurements = {
+      qualitative: animal.measurements.filter((m) => {
+        if (m.option_id && m.value) {
+          console.log('Qualitative measurement must only contain option_id and no value.');
+          return false;
+        }
+        if (m.option_id) {
+          delete m.value;
+          return true;
+        }
+        return false;
+      }),
+      quantitative: animal.measurements.filter((m) => {
+        if (m.option_id && m.value) {
+          console.log('Quantitative measurement must only contain a value and no option_id');
+          return false;
+        }
+        if (m.value != null) {
+          delete m.option_id;
+          return true;
+        }
+        return false;
+      })
+    };
+  }
+}

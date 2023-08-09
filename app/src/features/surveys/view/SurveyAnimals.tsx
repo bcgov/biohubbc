@@ -6,27 +6,33 @@ import React, { useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import EditDialog from 'components/dialog/EditDialog';
-import { AnimalSchema, IAnimal } from './survey-animals/animal';
+import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 
 const SurveyAnimals: React.FC = () => {
+  const cbApi = useCritterbaseApi();
   const [openDialog, setOpenDialog] = useState(false);
 
   const toggleDialog = () => {
     setOpenDialog((d) => !d);
   };
 
-  const AnimalFormValues: Partial<IAnimal> = {
+  const AnimalFormValues: IAnimal = {
     general: { taxon_id: '', taxon_label: '' },
-    capture: [],
-    marking: [],
+    captures: [],
+    markings: [],
     mortality: [],
-    measurement: [],
+    measurements: [],
     family: [],
-    image: []
+    images: [],
+    device: undefined
   };
 
-  const handleOnSave = (a: Partial<IAnimal>) => {
-    console.log(a);
+  const handleOnSave = async (animal: IAnimal) => {
+    const critter = new Critter(animal);
+    const res = await cbApi.critters.createCritter(critter);
+    console.log(res);
+
     toggleDialog();
   };
 

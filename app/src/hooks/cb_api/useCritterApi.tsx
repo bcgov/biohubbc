@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { Critter } from 'features/surveys/view/survey-animals/animal';
 
 const useCritterApi = (axios: AxiosInstance) => {
   const getAllCritters = async (): Promise<Record<string, unknown>[]> => {
@@ -25,9 +26,15 @@ const useCritterApi = (axios: AxiosInstance) => {
     return {};
   };
 
+  const createCritter = async (critter: Critter): Promise<Critter> => {
+    const { data } = await axios.post('/api/bulk', critter);
+    return data;
+  };
+
   return {
     getCritterByID,
-    getAllCritters
+    getAllCritters,
+    createCritter
   };
 };
 

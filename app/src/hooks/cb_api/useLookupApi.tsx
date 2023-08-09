@@ -6,38 +6,11 @@ export interface ICbSelectRows {
   value: string;
 }
 
-export type ICbRouteKey =
-  | 'region_env'
-  | 'region_nr'
-  | 'colours'
-  | 'wmu'
-  | 'cod'
-  | 'sex'
-  | 'marking_materials'
-  | 'marking_type'
-  | 'collection_category'
-  | 'critter_status'
-  | 'cause_of_death_confidence'
-  | 'coordinate_uncertainty_unit'
-  | 'frequency_units'
-  | 'measurement_units'
-  | 'supported_systems'
-  | 'taxons'
-  | 'species'
-  | 'collection_units'
-  | 'taxon_collection_categories'
-  | 'taxon_marking_body_locations'
-  | 'taxon_measurements'
-  | 'taxon_quantitative_measurements'
-  | 'taxon_qualitative_measurements'
-  | 'taxon_qualitative_measurement_options';
-
-type ICbRoutes = Record<ICbRouteKey, string>;
 const lookups = '/api/lookups';
 const xref = '/api/xref';
 const lookupsEnum = lookups + '/enum';
 const lookupsTaxons = lookups + '/taxons';
-const CbRoutes: ICbRoutes = {
+const CbRoutes = {
   // lookups
   region_env: `${lookups}/region-envs`,
   region_nr: `${lookups}/region-nrs`,
@@ -69,7 +42,9 @@ const CbRoutes: ICbRoutes = {
   taxon_quantitative_measurements: `${xref}/taxon-quantitative-measurements`,
   taxon_collection_categories: `${xref}/taxon-collection-categories`,
   taxon_marking_body_locations: `${xref}/taxon-marking-body-locations`
-};
+} as const;
+
+export type ICbRouteKey = keyof typeof CbRoutes;
 
 interface SelectOptionsProps {
   route: ICbRouteKey;
@@ -77,23 +52,38 @@ interface SelectOptionsProps {
   query?: string;
   asSelect?: boolean;
 }
+
+export interface IMeasurementStub {
+  taxon_measurement_id: string;
+  measurement_name: string;
+  min_value?: number;
+  max_value?: number;
+  unit?: string;
+}
 const useLookupApi = (axios: AxiosInstance) => {
-  const getSelectOptions = async <T,>({
+  const getSelectOptions = async ({
     route,
     param,
-    query,
-    asSelect = true
-  }: SelectOptionsProps): Promise<Array<T>> => {
+    query
+  }: SelectOptionsProps): Promise<Array<ICbSelectRows | string>> => {
     const _param = param ? `/${param}` : ``;
-    const format = asSelect ? `format=asSelect` : ``;
-    const _query = query ? query : ``;
+    const _query = query ? `&${query}` : ``;
 
-    const { data } = await axios.get(`${CbRoutes[route]}${_param}?${format}${format ? `&${_query}` : _query}`);
+    const { data } = await axios.get(`${CbRoutes[route]}${_param}?format=asSelect${_query}`);
     return data;
   };
 
+  const getTaxonMeasurements = async (taxon_id?: string): Promise<Array<IMeasurementStub> | undefined> => {
+    if (taxon_id) {
+      const { data } = await axios.get(`${CbRoutes.taxon_measurements}?taxon_id=${taxon_id}`);
+      return data;
+    }
+    return;
+  };
+
   return {
-    getSelectOptions
+    getSelectOptions,
+    getTaxonMeasurements
   };
 };
 

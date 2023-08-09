@@ -1,7 +1,8 @@
 import { Grid } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { FieldArray, FieldArrayRenderProps, FormikErrors, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import React from 'react';
 import { getAnimalFieldName, IAnimal, IAnimalCapture } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
@@ -21,9 +22,9 @@ import LocationEntryForm from './LocationEntryForm';
 
 type ProjectionMode = 'wgs' | 'utm';
 const CaptureAnimalForm = () => {
-  const { values, setFieldValue } = useFormikContext<IAnimal>();
+  const { values } = useFormikContext<IAnimal>();
 
-  const name: keyof IAnimal = 'capture';
+  const name: keyof IAnimal = 'captures';
   const newCapture: IAnimalCapture = {
     capture_latitude: '' as unknown as number,
     capture_longitude: '' as unknown as number,
@@ -52,14 +53,8 @@ const CaptureAnimalForm = () => {
             btnLabel={SurveyAnimalsI18N.animalCaptureAddBtn}
             handleAddSection={() => push(newCapture)}
             handleRemoveSection={remove}>
-            {values.capture.map((_cap, index) => (
-              <CaptureAnimalFormContent
-                key={`${name}-${index}-inputs`}
-                name={name}
-                index={index}
-                setFieldValue={setFieldValue}
-                value={_cap}
-              />
+            {values.captures.map((_cap, index) => (
+              <CaptureAnimalFormContent key={`${name}-${index}-inputs`} name={name} index={index} value={_cap} />
             ))}
           </FormSectionWrapper>
         </>
@@ -71,11 +66,12 @@ const CaptureAnimalForm = () => {
 interface CaptureAnimalFormContentProps {
   name: keyof IAnimal;
   index: number;
-  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => Promise<void | FormikErrors<any>>;
   value: IAnimalCapture;
 }
 
-const CaptureAnimalFormContent = ({ name, index, setFieldValue, value }: CaptureAnimalFormContentProps) => {
+const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormContentProps) => {
+  const { setFieldValue } = useFormikContext<IAnimal>();
+
   const renderCaptureFields = (): JSX.Element => {
     return (
       <>

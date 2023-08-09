@@ -11,7 +11,7 @@ import FormSectionWrapper from './FormSectionWrapper';
 const MarkingAnimalForm = () => {
   const { values } = useFormikContext<IAnimal>();
 
-  const name: keyof IAnimal = 'marking';
+  const name: keyof IAnimal = 'markings';
   const newMarking: IAnimalMarking = {
     marking_type_id: '',
     marking_body_location_id: '',
@@ -30,7 +30,7 @@ const MarkingAnimalForm = () => {
             btnLabel={SurveyAnimalsI18N.animalMarkingAddBtn}
             handleAddSection={() => push(newMarking)}
             handleRemoveSection={remove}>
-            {values?.marking?.map((_cap, index) => (
+            {values?.markings?.map((_cap, index) => (
               <Fragment key={`marking-inputs-${index}`}>
                 <Grid item xs={6}>
                   <CbSelectField

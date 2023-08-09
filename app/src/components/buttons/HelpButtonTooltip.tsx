@@ -29,8 +29,9 @@ const HelpButtonTooltip = ({ content, children }: HelpButtonTooltipProps) => {
             '& .MuiTooltip-tooltip': {
               backgroundColor: 'white',
               color: 'text.primary',
+              fontSize: 14,
               elevation: 10,
-              padding: 1,
+              padding: 2,
               boxShadow: 3
             }
           }
