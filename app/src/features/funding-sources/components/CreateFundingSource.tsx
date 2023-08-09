@@ -20,7 +20,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
 
   const biohubApi = useBiohubApi();
 
-  // This is placed inside the `FundingSourcesListPage` to make use of an API call to check for used names
+  // This is placed inside the `CreateFundingSource` component to make use of an API call to check for used names
   // The API call would violate the rules of react hooks if placed in an object outside of the component
   // Reference: https://react.dev/warnings/invalid-hook-call-warning
   const FundingSourceYupSchema = yup.object().shape({
