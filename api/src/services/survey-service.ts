@@ -93,7 +93,7 @@ export class SurveyService extends DBService {
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
       this.getPermitData(surveyId),
-      this.getSurveyFundingData(surveyId),
+      this.getSurveyFundingSourceData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
       this.getSurveyLocationData(surveyId)
@@ -117,8 +117,8 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<SurveyFundingSource[]>}
    * @memberof SurveyService
    */
-  async getSurveyFundingData(surveyId: number): Promise<GetSurveyFundingSourceData[]> {
-    return this.fundingSourceService.getSurveyFundingSources(surveyId);
+  async getSurveyFundingSourceData(surveyId: number): Promise<GetSurveyFundingSourceData[]> {
+    return await this.fundingSourceService.getSurveyFundingSources(surveyId);
   }
 
   /**

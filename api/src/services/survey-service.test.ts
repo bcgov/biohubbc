@@ -59,6 +59,9 @@ describe('SurveyService', () => {
       const getPermitDataStub = sinon
         .stub(SurveyService.prototype, 'getPermitData')
         .resolves(({ data: 'permitData' } as unknown) as any);
+      const getSurveyFundingSourceDataStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyFundingSourceData')
+        .resolves(({ data: 'fundingSourceData' } as unknown) as any);
       const getSurveyPurposeAndMethodologyStub = sinon
         .stub(SurveyService.prototype, 'getSurveyPurposeAndMethodology')
         .resolves(({ data: 'purposeAndMethodologyData' } as unknown) as any);
@@ -74,6 +77,7 @@ describe('SurveyService', () => {
       expect(getSurveyDataStub).to.be.calledOnce;
       expect(getSpeciesDataStub).to.be.calledOnce;
       expect(getPermitDataStub).to.be.calledOnce;
+      expect(getSurveyFundingSourceDataStub).to.be.calledOnce;
       expect(getSurveyPurposeAndMethodologyStub).to.be.calledOnce;
       expect(getSurveyProprietorDataForViewStub).to.be.calledOnce;
       expect(getSurveyLocationDataStub).to.be.calledOnce;
@@ -82,6 +86,7 @@ describe('SurveyService', () => {
         survey_details: { data: 'surveyData' },
         species: { data: 'speciesData' },
         permit: { data: 'permitData' },
+        funding_sources: { data: 'fundingSourceData' },
         purpose_and_methodology: { data: 'purposeAndMethodologyData' },
         proprietor: { data: 'proprietorData' },
         location: { data: 'locationData' }

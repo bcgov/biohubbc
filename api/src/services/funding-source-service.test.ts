@@ -24,7 +24,7 @@ describe('FundingSourceService', () => {
         .stub(FundingSourceRepository.prototype, 'getFundingSources')
         .resolves(expectedResult);
 
-      const response = await fundingSourceService.getFundingSources();
+      const response = await fundingSourceService.getFundingSources({ name: 'mame' });
 
       expect(getFundingSourcesStub).to.be.calledOnce;
       expect(response).to.eql(expectedResult);

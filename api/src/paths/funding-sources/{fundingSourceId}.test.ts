@@ -7,7 +7,7 @@ import { HTTPError } from '../../errors/http-error';
 import { FundingSource } from '../../repositories/funding-source-repository';
 import { FundingSourceService } from '../../services/funding-source-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
-import { getFundingSource, putFundingSource } from './{fundingSourceId}';
+import { deleteFundingSource, getFundingSource, putFundingSource } from './{fundingSourceId}';
 
 chai.use(sinonChai);
 
@@ -121,8 +121,6 @@ describe('deleteFundingSource', () => {
   });
 
   it('deletes a funding source', async () => {
-    const fundingSourceId = 1;
-
     const mockFundingSource: Pick<FundingSource, 'funding_source_id'> = {
       funding_source_id: 1
     };
@@ -135,7 +133,7 @@ describe('deleteFundingSource', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    const requestHandler = deleteFundingSource(fundingSourceId);
+    const requestHandler = deleteFundingSource();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -154,7 +152,7 @@ describe('deleteFundingSource', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    const requestHandler = deleteFundingSource(fundingSourceId);
+    const requestHandler = deleteFundingSource();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);

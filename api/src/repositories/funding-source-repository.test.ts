@@ -20,11 +20,11 @@ describe('FundingSourceRepository', () => {
 
       const mockResponse = ({ rowCount: 1, rows: expectedResult } as unknown) as Promise<QueryResult<any>>;
 
-      const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
+      const dbConnection = getMockDBConnection({ knex: async () => mockResponse });
 
       const fundingSourceRepository = new FundingSourceRepository(dbConnection);
 
-      const response = await fundingSourceRepository.getFundingSources();
+      const response = await fundingSourceRepository.getFundingSources({ name: 'mame' });
 
       expect(response).to.eql(expectedResult);
     });
@@ -34,11 +34,11 @@ describe('FundingSourceRepository', () => {
 
       const mockResponse = ({ rowCount: 1, rows: expectedResult } as unknown) as Promise<QueryResult<any>>;
 
-      const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
+      const dbConnection = getMockDBConnection({ knex: async () => mockResponse });
 
       const fundingSourceRepository = new FundingSourceRepository(dbConnection);
 
-      const response = await fundingSourceRepository.getFundingSources();
+      const response = await fundingSourceRepository.getFundingSources({ name: 'mame' });
 
       expect(response).to.eql(expectedResult);
     });
