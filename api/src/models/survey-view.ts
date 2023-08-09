@@ -44,9 +44,7 @@ export class GetSurveyFundingSourceData {
   survey_funding_source_id: number;
   survey_id: number;
   funding_source_id: number;
-  amount: number;
-  start_date: string;
-  end_date: string;
+  amount: string;
   revision_count?: number;
 
   constructor(obj?: any) {
@@ -54,8 +52,6 @@ export class GetSurveyFundingSourceData {
     this.funding_source_id = obj?.funding_source_id || null;
     this.survey_id = obj?.survey_id || null;
     this.amount = obj?.amount || null;
-    this.start_date = obj?.start_date || null;
-    this.end_date = obj?.end_date || null;
     this.revision_count = obj?.revision_count || 0;
   }
 }
