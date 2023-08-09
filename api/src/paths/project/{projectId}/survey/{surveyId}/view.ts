@@ -175,8 +175,6 @@ GET.apiDoc = {
                         'survey_id',
                         'funding_source_id',
                         'amount',
-                        'start_date',
-                        'end_date',
                         'revision_count'
                       ],
                       properties: {
@@ -193,16 +191,7 @@ GET.apiDoc = {
                           minimum: 1
                         },
                         amount: {
-                          type: 'number'
-                        },
-                        start_date: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the funding start_date'
-                        },
-                        end_date: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          nullable: true,
-                          description: 'ISO 8601 date string for the funding end_date'
+                          type: 'string'
                         },
                         revision_count: {
                           type: 'number'
