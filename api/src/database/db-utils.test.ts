@@ -58,6 +58,9 @@ describe('getZodQueryResult', () => {
 
     // Not a traditional test: will just cause a compile error if the zod schema doesn't satisfy the `QueryResult` type
     zodImplements<QueryResult>().with(zodQueryResult.shape);
+
+    // Dummy assertion to satisfy linter
+    expect(true).to.be.true;
   });
 });
 

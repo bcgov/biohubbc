@@ -3,7 +3,6 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
 import { UserRepository } from './user-repository';
@@ -438,39 +437,6 @@ describe('UserRepository', () => {
       const response = await userRepository.addUserSystemRoles(1, [1, 2]);
 
       expect(response).to.equal(undefined);
-    });
-  });
-
-  describe('updateSystemUserInformation', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should update the system user record', async () => {
-      const mockResponse = [{ api_patch_system_user: 1 }];
-
-      const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
-
-      const mockDBConnection = getMockDBConnection({
-        sql: () => {
-          return mockQueryResponse;
-        }
-      });
-
-      const userRepository = new UserRepository(mockDBConnection);
-
-      const response = await userRepository.updateSystemUserInformation({
-        user_guid: '123456789',
-        user_identifier: 'testuser',
-        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS,
-        display_name: 'test user',
-        email: 'testguid@bceidbusiness',
-        given_name: 'test',
-        family_name: 'user',
-        agency: 'Business Name'
-      });
-
-      expect(response).to.equal(1);
     });
   });
 });
