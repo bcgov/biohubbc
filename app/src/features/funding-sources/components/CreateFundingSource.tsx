@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { CreateFundingSourceI18N } from 'constants/i18n';
+import { FundingSourceI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -44,8 +44,8 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
   };
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: CreateFundingSourceI18N.createErrorTitle,
-      dialogText: CreateFundingSourceI18N.createErrorText,
+      dialogTitle: FundingSourceI18N.createErrorTitle,
+      dialogText: FundingSourceI18N.createErrorText,
       onClose: () => dialogContext.setErrorDialog({ open: false }),
       onOk: () => dialogContext.setErrorDialog({ open: false }),
       ...textDialogProps,
@@ -83,8 +83,8 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
   return (
     <>
       <EditDialog
-        dialogTitle="Add New Funding Source"
-        dialogText="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed."
+        dialogTitle={FundingSourceI18N.createFundingSourceDialogTitle}
+        dialogText={FundingSourceI18N.createFundingSourceDialogText}
         open={props.isModalOpen}
         dialogLoading={isSubmitting}
         component={{

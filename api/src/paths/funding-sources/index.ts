@@ -204,11 +204,7 @@ export function postFundingSource(): RequestHandler {
     const data = req.body;
     try {
       await connection.open();
-      console.log('_________________');
-      console.log('_________________');
-      console.log('_________________');
-      console.log('_________________');
-      console.log(data);
+
       const response = await service.postFundingSource(data);
       await connection.commit();
 

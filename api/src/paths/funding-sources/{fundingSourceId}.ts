@@ -129,7 +129,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  getFundingSource()
+  putFundingSource()
 ];
 
 PUT.apiDoc = {
@@ -257,7 +257,7 @@ export const DELETE: Operation = [
       ]
     };
   }),
-  getFundingSource()
+  deleteFundingSource()
 ];
 
 DELETE.apiDoc = {
