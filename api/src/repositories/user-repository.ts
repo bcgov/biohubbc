@@ -42,7 +42,6 @@ export class UserRepository extends BaseRepository {
   /**
    * Fetch a single system user by their system user ID.
    *
-   *
    * @param {number} systemUserId
    * @return {*}  {Promise<User>}
    * @memberof UserRepository

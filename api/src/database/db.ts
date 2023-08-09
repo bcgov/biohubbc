@@ -8,10 +8,13 @@ import {
   getKeycloakUserInformationFromKeycloakToken,
   getUserGuid,
   getUserIdentitySource,
+  isBceidBusinessUserInformation,
+  isDatabaseUserInformation,
+  isIdirUserInformation,
   KeycloakUserInformation
 } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { asyncErrorWrapper, getZodQueryResult, syncErrorWrapper } from './db-utils';
+import { asyncErrorWrapper, GenericizedKeycloakUserInformation, getZodQueryResult, syncErrorWrapper } from './db-utils';
 
 const defaultLog = getLogger('database/db');
 
@@ -169,14 +172,20 @@ export interface IDBConnection {
    */
   systemUserId: () => number;
   /**
-   * Get the currently logged in user's keycloak information.
+   * For testing purposes only. Should not be called directly.
    *
-   * Note: This is only a subset of the full token, specifically the fields that hold user details (name, email, etc).
-   *
-   * @throws If the connection is not open.
+   * @private
    * @memberof IDBConnection
    */
-  keycloakUserInformation: () => KeycloakUserInformation;
+  _setUserContext: () => Promise<void>;
+  /**
+   * For testing purposes only. Should not be called directly.
+   *
+   * @private
+   * @param {KeycloakUserInformation} keycloakUserInformation
+   * @memberof IDBConnection
+   */
+  _updateSystemUserInformation: (keycloakUserInformation: KeycloakUserInformation) => Promise<void>;
 }
 
 /**
@@ -213,8 +222,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   let _isReleased = false;
 
   let _systemUserId: number | null = null;
-
-  let _keycloakUserInformation: KeycloakUserInformation | null;
 
   const _token = keycloakToken;
 
@@ -320,14 +327,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     return _systemUserId as number;
   };
 
-  const _getKeycloakUserInformation = (): KeycloakUserInformation => {
-    if (!_client || !_isOpen) {
-      throw Error('DBConnection is not open');
-    }
-
-    return _keycloakUserInformation as KeycloakUserInformation;
-  };
-
   /**
    * Performs a query against this connection, returning the results.
    *
@@ -379,31 +378,114 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   /**
    * Set the user context.
    *
-   * Sets the _systemUserId if successful.
+   * Sets the `_systemUserId` if successful.
+   *
+   * @return {*}  {Promise<void>}
    */
-  const _setUserContext = async () => {
-    _keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(_token);
+  const _setUserContext = async (): Promise<void> => {
+    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(_token);
 
-    if (!_keycloakUserInformation) {
+    if (!keycloakUserInformation) {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
-    defaultLog.debug({ label: '_setUserContext', _keycloakUserInformation });
+    defaultLog.debug({ label: '_setUserContext', keycloakUserInformation });
 
-    const userGuid = getUserGuid(_keycloakUserInformation);
-    const userIdentitySource = getUserIdentitySource(_keycloakUserInformation);
+    // Update the logged in user with their latest information from Keyclaok (if it has changed)
+    await _updateSystemUserInformation(keycloakUserInformation);
 
     try {
       // Set the user context in the database, so database queries are aware of the calling user when writing to audit
       // tables, etc.
-      _systemUserId = await _setSystemUserContext(userGuid, userIdentitySource);
+      _systemUserId = await _setSystemUserContext(
+        getUserGuid(keycloakUserInformation),
+        getUserIdentitySource(keycloakUserInformation)
+      );
     } catch (error) {
       throw new ApiExecuteSQLError('Failed to set user context', [error as object]);
     }
   };
 
+  /**
+   * Update a system user's record with the latest information from a verified Keycloak token.
+   *
+   * Note: Does nothing if the user is an internal database user.
+   *
+   * @param {KeycloakUserInformation} keycloakUserInformation
+   * @return {*}  {Promise<void>}
+   */
+  const _updateSystemUserInformation = async (keycloakUserInformation: KeycloakUserInformation): Promise<void> => {
+    let data:
+      | GenericizedKeycloakUserInformation
+      | Pick<GenericizedKeycloakUserInformation, 'user_guid' | 'user_identifier' | 'user_identity_source'>;
+
+    if (isDatabaseUserInformation(keycloakUserInformation)) {
+      // Don't patch internal database user records
+      return;
+    }
+
+    // We don't yet know at this point what kind of token was used (idir vs bceid basic, etc).
+    // Determine which type it is, and parse the information into a generic structure that is supported by the
+    // database patch function
+    if (isIdirUserInformation(keycloakUserInformation)) {
+      data = {
+        user_guid: keycloakUserInformation.idir_user_guid,
+        user_identifier: keycloakUserInformation.idir_username,
+        user_identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        display_name: keycloakUserInformation.display_name,
+        email: keycloakUserInformation.email,
+        given_name: keycloakUserInformation.given_name,
+        family_name: keycloakUserInformation.family_name
+      };
+    } else if (isBceidBusinessUserInformation(keycloakUserInformation)) {
+      data = {
+        user_guid: keycloakUserInformation.bceid_user_guid,
+        user_identifier: keycloakUserInformation.bceid_username,
+        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS,
+        display_name: keycloakUserInformation.display_name,
+        email: keycloakUserInformation.email,
+        given_name: keycloakUserInformation.given_name,
+        family_name: keycloakUserInformation.family_name,
+        agency: keycloakUserInformation.bceid_business_name
+      };
+    } else {
+      data = {
+        user_guid: keycloakUserInformation.bceid_user_guid,
+        user_identifier: keycloakUserInformation.bceid_username,
+        user_identity_source: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+        display_name: keycloakUserInformation.display_name,
+        email: keycloakUserInformation.email,
+        given_name: keycloakUserInformation.given_name,
+        family_name: keycloakUserInformation.family_name
+      };
+    }
+
+    const patchSystemUserSQLStatement = SQL`
+      select api_patch_system_user(
+        ${data.user_guid},
+        ${data.user_identifier},
+        ${data.user_identity_source},
+        ${data.email},
+        ${data.display_name},
+        ${data.given_name || null},
+        ${data.family_name || null},
+        ${data.agency || null}
+      )
+    `;
+
+    await _client.query(patchSystemUserSQLStatement.text, patchSystemUserSQLStatement.values);
+  };
+
+  /**
+   * Set the user context for all queries made using this connection.
+   *
+   * This is necessary in order for the database audit triggers to function properly.
+   *
+   * @param {string} userGuid
+   * @param {SYSTEM_IDENTITY_SOURCE} userIdentitySource
+   * @return {*}
+   */
   const _setSystemUserContext = async (userGuid: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE) => {
-    // Set the user context for all queries made using this connection
     const setSystemUserContextSQLStatement = SQL`
       SELECT api_set_context(${userGuid}, ${userIdentitySource});
     `;
@@ -425,7 +507,8 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     commit: asyncErrorWrapper(_commit),
     rollback: asyncErrorWrapper(_rollback),
     systemUserId: syncErrorWrapper(_getSystemUserID),
-    keycloakUserInformation: syncErrorWrapper(_getKeycloakUserInformation)
+    _setUserContext: _setUserContext,
+    _updateSystemUserInformation: _updateSystemUserInformation
   };
 };
 

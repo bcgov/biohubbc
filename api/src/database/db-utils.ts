@@ -1,5 +1,17 @@
 import { z } from 'zod';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
+
+export type GenericizedKeycloakUserInformation = {
+  user_guid: string;
+  user_identifier: string;
+  user_identity_source: SYSTEM_IDENTITY_SOURCE;
+  display_name: string;
+  email: string;
+  given_name: string;
+  family_name: string;
+  agency?: string;
+};
 
 /**
  * An asynchronous wrapper function that will catch any exceptions thrown by the wrapped function

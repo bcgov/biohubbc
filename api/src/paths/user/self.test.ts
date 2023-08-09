@@ -16,20 +16,7 @@ describe('getUser', () => {
   });
 
   it('should throw a 400 error when no system user id', async () => {
-    const dbConnectionObj = getMockDBConnection({
-      keycloakUserInformation: () => ({
-        idir_user_guid: '123456789',
-        identity_provider: 'idir',
-        idir_username: 'testuser',
-        email_verified: false,
-        name: 'test user',
-        preferred_username: 'testguid@idir',
-        display_name: 'test user',
-        given_name: 'test',
-        family_name: 'user',
-        email: 'email@email.com'
-      })
-    });
+    const dbConnectionObj = getMockDBConnection();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -46,39 +33,9 @@ describe('getUser', () => {
     }
   });
 
-  it('should throw a 400 error when no valid keycloak information', async () => {
-    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const requestHandler = self.getUser();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to identify system user');
-    }
-  });
-
   it('should return the user row on success', async () => {
     const dbConnectionObj = getMockDBConnection({
-      systemUserId: () => 1,
-      keycloakUserInformation: () => ({
-        idir_user_guid: '123456789',
-        identity_provider: 'idir',
-        idir_username: 'testuser',
-        email_verified: false,
-        name: 'test user',
-        preferred_username: 'testguid@idir',
-        display_name: 'test user',
-        given_name: 'test',
-        family_name: 'user',
-        email: 'email@email.com'
-      })
+      systemUserId: () => 1
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -107,19 +64,7 @@ describe('getUser', () => {
 
   it('should throw an error when a failure occurs', async () => {
     const dbConnectionObj = getMockDBConnection({
-      systemUserId: () => 1,
-      keycloakUserInformation: () => ({
-        idir_user_guid: '123456789',
-        identity_provider: 'idir',
-        idir_username: 'testuser',
-        email_verified: false,
-        name: 'test user',
-        preferred_username: 'testguid@idir',
-        display_name: 'test user',
-        given_name: 'test',
-        family_name: 'user',
-        email: 'email@email.com'
-      })
+      systemUserId: () => 1
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

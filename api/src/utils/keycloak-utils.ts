@@ -86,11 +86,11 @@ export type KeycloakUserInformation = z.infer<typeof KeycloakUserInformation>;
  */
 export const getUserGuid = (keycloakUserInformation: KeycloakUserInformation): string => {
   if (isIdirUserInformation(keycloakUserInformation)) {
-    return keycloakUserInformation.idir_user_guid.toLowerCase();
+    return keycloakUserInformation.idir_user_guid;
   }
 
   if (isBceidBusinessUserInformation(keycloakUserInformation) || isBceidBasicUserInformation(keycloakUserInformation)) {
-    return keycloakUserInformation.bceid_user_guid.toLowerCase();
+    return keycloakUserInformation.bceid_user_guid;
   }
 
   return keycloakUserInformation.database_user_guid;

@@ -114,16 +114,7 @@ export function getUser(): RequestHandler {
         throw new HTTP400('Failed to identify system user ID');
       }
 
-      const keycloakUserInformation = connection.keycloakUserInformation();
-
-      if (!keycloakUserInformation) {
-        throw new HTTP400('Failed to identify system user');
-      }
-
       const userService = new UserService(connection);
-
-      // Update system user information with the latest information from their verified Keycloak token
-      await userService.updateSystemUserInformation(keycloakUserInformation);
 
       // Fetch system user record
       const userObject = await userService.getUserById(userId);
