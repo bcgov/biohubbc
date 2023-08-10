@@ -20,6 +20,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 import FundingSourceForm, { IFundingSourceData } from '../components/FundingSourceForm';
+import FundingSourcePage from '../details/FundingSourcePage';
 import FundingSourcesTable from './FundingSourcesTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -63,6 +64,9 @@ const FundingSourcesListPage: React.FC = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
+
+  const [openFundingSourceModal, setOpenFundingSourceModal] = useState(false);
+  const [fundingSourceId, setFundingSourceId] = useState<number>();
 
   // This is placed inside the `FundingSourcesListPage` to make use of an API call to check for used names
   // The API call would violate the rules of react hooks if placed in an object outside of the component
@@ -150,6 +154,11 @@ const FundingSourcesListPage: React.FC = () => {
 
   return (
     <>
+      <FundingSourcePage
+        fundingSourceId={fundingSourceId}
+        open={openFundingSourceModal}
+        onClose={() => setOpenFundingSourceModal(false)}
+      />
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
@@ -209,7 +218,15 @@ const FundingSourcesListPage: React.FC = () => {
             </Toolbar>
             <Divider></Divider>
             <Box py={1} pb={2} px={3}>
-              <FundingSourcesTable fundingSources={fundingSourceDataLoader.data || []} />
+              <FundingSourcesTable
+                fundingSources={fundingSourceDataLoader.data || []}
+                onView={(fundingSourceId) => {
+                  setFundingSourceId(fundingSourceId);
+                  setOpenFundingSourceModal(true);
+                }}
+                onEdit={() => {}}
+                onDelete={() => {}}
+              />
             </Box>
           </Paper>
         </Box>

@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IFundingSourcesTableTableProps {
   fundingSources: IGetFundingSourcesResponse[];
+  onView: (fundingSourceId: number) => void;
+  onEdit: (fundingSourceId: number) => void;
+  onDelete: (fundingSourceId: number) => void;
 }
 
 interface IFundingSourcesTableEntry {
@@ -64,18 +67,6 @@ const NoRowsOverlay = (props: { className: string }) => (
 
 const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
   const classes = useStyles();
-
-  const handleViewDetails = (row: IFundingSourcesTableEntry) => {
-    // TOOD
-  };
-
-  const handleEdit = (row: IFundingSourcesTableEntry) => {
-    // TOOD
-  };
-
-  const handleDelete = (row: IFundingSourcesTableEntry) => {
-    // TOOD
-  };
 
   const columns: GridColDef<IFundingSourcesTableEntry>[] = [
     {
@@ -116,19 +107,19 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
           <GridActionsCellItem
             icon={<Icon path={mdiInformationOutline} size={1} />}
             label="View Details"
-            onClick={() => handleViewDetails(params.row)}
+            onClick={() => props.onView(params.row.funding_source_id)}
             showInMenu
           />,
           <GridActionsCellItem
             icon={<Icon path={mdiPencilOutline} size={1} />}
             label="Edit"
-            onClick={() => handleEdit(params.row)}
+            onClick={() => props.onEdit(params.row.funding_source_id)}
             showInMenu
           />,
           <GridActionsCellItem
             icon={<Icon path={mdiTrashCanOutline} size={1} />}
             label="Delete"
-            onClick={() => handleDelete(params.row)}
+            onClick={() => props.onDelete(params.row.funding_source_id)}
             showInMenu
           />
         ];
