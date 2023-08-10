@@ -13,7 +13,7 @@ import FundingSourcesListPage from './list/FundingSourcesListPage';
 const FundingSourcesRouter: React.FC = () => {
   return (
     <Switch>
-      <RouteWithTitle exact path="/admin/funding-sources" title={getTitle('Manage Users')}>
+      <RouteWithTitle exact path="/admin/funding-sources" title={getTitle('Manage Funding Sources')}>
         <FundingSourcesLayout>
           <FundingSourcesListPage />
         </FundingSourcesLayout>
