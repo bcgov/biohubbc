@@ -57,6 +57,13 @@ export class FundingSourceRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Check if funding source name exists
+   *
+   * @param {string} name
+   * @return {*}  {Promise<boolean>}
+   * @memberof FundingSourceRepository
+   */
   async hasFundingSourceNameBeenUsed(name: string): Promise<boolean> {
     const sqlStatement = SQL`
       SELECT
@@ -71,6 +78,13 @@ export class FundingSourceRepository extends BaseRepository {
     return response.rowCount > 0;
   }
 
+  /**
+   * Create a new Funding Source record.
+   *
+   * @param {ICreateFundingSource} data
+   * @return {*}  {Promise<Pick<FundingSource, 'funding_source_id'>>}
+   * @memberof FundingSourceRepository
+   */
   async postFundingSource(data: ICreateFundingSource): Promise<Pick<FundingSource, 'funding_source_id'>> {
     const sql = SQL`
       INSERT INTO funding_source (
@@ -204,14 +218,14 @@ export class FundingSourceRepository extends BaseRepository {
    */
   async getFundingSourceBasicSupplementaryData(fundingSourceId: number): Promise<FundingSourceBasicSupplementaryData> {
     const sqlStatement = SQL`
-      SELECT 
-        COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count, 
+      SELECT
+        COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count,
         COALESCE(SUM(survey_funding_source.amount)::numeric::int, 0) as survey_reference_amount_total
       FROM
-        funding_source 
-      LEFT JOIN 
-        survey_funding_source 
-      ON 
+        funding_source
+      LEFT JOIN
+        survey_funding_source
+      ON
         funding_source.funding_source_id = survey_funding_source.funding_source_id
       WHERE
         funding_source.funding_source_id = ${fundingSourceId};

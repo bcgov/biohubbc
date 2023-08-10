@@ -20,6 +20,8 @@ describe('getFundingSource', () => {
     const mockFundingSource: FundingSource = {
       funding_source_id: 1,
       name: 'name',
+      start_date: '2020-01-01',
+      end_date: '2020-01-01',
       description: 'description'
     };
 

@@ -7,7 +7,7 @@ import { HTTPError } from '../../errors/http-error';
 import { FundingSource } from '../../repositories/funding-source-repository';
 import { FundingSourceService } from '../../services/funding-source-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
-import { getFundingSources } from '../funding-sources';
+import { getFundingSources, postFundingSource } from '../funding-sources';
 
 chai.use(sinonChai);
 
@@ -21,11 +21,15 @@ describe('getFundingSources', () => {
       {
         funding_source_id: 1,
         name: 'name',
+        start_date: '2020-01-01',
+        end_date: '2020-01-01',
         description: 'description'
       },
       {
         funding_source_id: 2,
         name: 'name2',
+        start_date: '2020-01-01',
+        end_date: '2020-01-01',
         description: 'description2'
       }
     ];
@@ -77,10 +81,62 @@ describe('postFundingSource', () => {
   });
 
   it('creates a funding source', async () => {
-    // TODO
+    const mockFundingSources: FundingSource[] = [
+      {
+        funding_source_id: 1,
+        name: 'name',
+        start_date: '2020-01-01',
+        end_date: '2020-01-01',
+        description: 'description'
+      },
+      {
+        funding_source_id: 2,
+        name: 'name2',
+        start_date: '2020-01-01',
+        end_date: '2020-01-01',
+        description: 'description2'
+      }
+    ];
+
+    const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub() });
+
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    sinon.stub(FundingSourceService.prototype, 'postFundingSource').resolves({ funding_source_id: 1 });
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.body = mockFundingSources;
+
+    const requestHandler = postFundingSource();
+
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(mockRes.jsonValue).to.eql({ funding_source_id: 1 });
+
+    expect(mockDBConnection.open).to.have.been.calledOnce;
+    expect(mockDBConnection.commit).to.have.been.calledOnce;
   });
 
   it('catches and re-throws error', async () => {
-    // TODO
+    const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
+
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    sinon.stub(FundingSourceService.prototype, 'postFundingSource').rejects(new Error('a test error'));
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    const requestHandler = postFundingSource();
+
+    try {
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect(mockDBConnection.rollback).to.have.been.calledOnce;
+      expect(mockDBConnection.release).to.have.been.calledOnce;
+
+      expect((actualError as HTTPError).message).to.equal('a test error');
+    }
   });
 });
