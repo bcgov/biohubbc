@@ -62,15 +62,15 @@ export const getTitle = (pageName?: string) => {
  * Formats a date range into a formatted string.
  *
  * @param {DATE_FORMAT} dateFormat
- * @param {string} startDate ISO 8601 date string
- * @param {string} [endDate] ISO 8601 date string
+ * @param {(string | null)} [startDate] ISO 8601 date string
+ * @param {(string | null)} [endDate] ISO 8601 date string
  * @param {string} [dateSeparator='-'] specify date range separator
  * @return {string} formatted date string, or an empty string if unable to parse the startDate and/or endDate
  */
 export const getFormattedDateRangeString = (
   dateFormat: DATE_FORMAT,
-  startDate?: string,
-  endDate?: string,
+  startDate?: string | null,
+  endDate?: string | null,
   dateSeparator = '-'
 ): string => {
   const startDateFormatted = getFormattedDate(dateFormat, startDate ?? '');
