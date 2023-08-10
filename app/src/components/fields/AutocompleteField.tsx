@@ -21,6 +21,7 @@ export interface IAutocompleteField<T extends string | number> {
   required?: boolean;
   filterLimit?: number;
   optionFilter?: 'value' | 'label'; // used to filter existing/ set data for the AutocompleteField, defaults to value in getExistingValue function
+  getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
   onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
 }
 
@@ -65,6 +66,7 @@ const AutocompleteField: React.FC<React.PropsWithChildren<IAutocompleteField<str
       options={props.options}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={handleGetOptionSelected}
+      getOptionDisabled={props.getOptionDisabled}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       sx={props.sx}
       loading={props.loading}

@@ -705,32 +705,31 @@ export class SurveyService extends DBService {
    * @return {*}
    * @memberof SurveyService
    */
-  async upsertSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject) {
-    //loop for all funding source data
-    surveyData.funding_sources.forEach(async (fundingSource) => {
-      //check if funding exists
-      const checkFunding = await this.fundingSourceService.getSurveyFundingSourceByFundingSourceId(
-        surveyId,
-        fundingSource.funding_source_id
-      );
-
-      if (!checkFunding) {
-        //create funding source
-        return this.fundingSourceService.postSurveyFundingSource(
+  async upsertSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
+    await Promise.all(surveyData.funding_sources.map(async (fundingSource) => {
+      // Check if funding exists
+      try {
+        await this.fundingSourceService.getSurveyFundingSourceByFundingSourceId(
           surveyId,
-          fundingSource.funding_source_id,
-          fundingSource.amount
+          fundingSource.funding_source_id
         );
-      } else {
-        //update funding source
+
+        // Update funding source
         return this.fundingSourceService.putSurveyFundingSource(
           surveyId,
           fundingSource.funding_source_id,
           fundingSource.amount,
           fundingSource.revision_count
         );
+      } catch {
+        // Create funding source
+        return this.fundingSourceService.postSurveyFundingSource(
+          surveyId,
+          fundingSource.funding_source_id,
+          fundingSource.amount
+        );
       }
-    });
+    }));
   }
 
   /**

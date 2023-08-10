@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 
 /**
@@ -23,21 +24,19 @@ const SurveyFundingSources = () => {
 
   const { surveyData: { funding_sources } } = surveyForViewData;
 
+  return (<></>)
+
   return (
     <>
       <List disablePadding>
         {funding_sources.length > 0 ? (
           <>
-            {funding_sources.map((item) => (
-              <ListItem disableGutters divider key={item.id}>
+            {funding_sources.map((surveyFundingSource) => (
+              <ListItem disableGutters divider key={surveyFundingSource.funding_source_id}>
                 <Box flex="1 1 auto">
                   <Box pb={1.25}>
-                    <Typography component="span">
-                      {item.agency_name ?? item.first_nations_name}
-                      {item.investment_action_category_name &&
-                        item.investment_action_category_name !== 'Not Applicable' && (
-                          <Typography component="span">&nbsp;({item.investment_action_category_name})</Typography>
-                        )}
+                    <Typography component={Link} to='/'>
+                      {surveyFundingSource.name}
                     </Typography>
                   </Box>
                   <Box component="dl" m={0}>
