@@ -1,4 +1,4 @@
-import { Box, Divider } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
@@ -8,6 +8,7 @@ import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import EditDialog from 'components/dialog/EditDialog';
 import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 
 const SurveyAnimals: React.FC = () => {
   const cbApi = useCritterbaseApi();
@@ -33,14 +34,22 @@ const SurveyAnimals: React.FC = () => {
     const res = await cbApi.critters.createCritter(critter);
     console.log(res);
     console.log(critter.name);
-
     toggleDialog();
   };
 
   return (
     <Box>
       <EditDialog
-        dialogTitle={'Individual Animals'}
+        dialogTitle={
+          <Box>
+            <HelpButtonTooltip content={'temp help'}>
+              <Typography variant="h3">Individuals</Typography>
+            </HelpButtonTooltip>
+            <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
+              No individuals were captured or reported in this survey
+            </Typography>
+          </Box>
+        }
         open={openDialog}
         onSave={(values) => handleOnSave(values)}
         onCancel={toggleDialog}

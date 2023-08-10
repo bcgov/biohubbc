@@ -1,4 +1,4 @@
-import { mdiClose, mdiPlus } from '@mdi/js';
+import { mdiTrashCanOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Grid, IconButton, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
@@ -36,6 +36,7 @@ const FormSectionWrapper = ({
   const { values } = useFormikContext<IAnimal>();
   //For convienence, vs rendering duplicated components for children and children[]
   const childs = Array.isArray(children) ? children : [children];
+  const showBtn = btnLabel && handleAddSection && (maxSections === undefined || childs.length < maxSections);
 
   const getTitle = (titleIndex: number) => (
     <Box display="flex" flexDirection="row">
@@ -46,14 +47,14 @@ const FormSectionWrapper = ({
       </Typography>
       {handleRemoveSection && childs.length >= 1 ? (
         <IconButton sx={{ ml: 'auto', height: 40, width: 40 }} onClick={() => handleRemoveSection(titleIndex)}>
-          <Icon path={mdiClose} size={1} />
+          <Icon path={mdiTrashCanOutline} size={1} />
         </IconButton>
       ) : null}
     </Box>
   );
 
   return (
-    <Box mb={2}>
+    <Box mt={2}>
       {childs.length < 2 ? getTitle(0) : null}
       {childs.map((child, idx) => (
         <div key={`fs-section-wrapper-${idx}`}>
@@ -63,7 +64,7 @@ const FormSectionWrapper = ({
           </Grid>
         </div>
       ))}
-      {btnLabel && handleAddSection && (maxSections === undefined || childs.length < maxSections) ? (
+      {showBtn ? (
         <Button
           onClick={handleAddSection}
           startIcon={<Icon path={mdiPlus} size={1} />}

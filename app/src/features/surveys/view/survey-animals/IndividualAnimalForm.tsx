@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Form } from 'formik';
 import React from 'react';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
@@ -10,8 +10,7 @@ import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
 
 /**
  * Renders The 'Individual Animals' Form displayed in Survey view
- * Note: Data handled by useAnimalFormData hook.
- * Lots of conditionally rendered sections.
+ * Note: Lots of conditionally rendered sections.
  *
  * returns {*}
  */
@@ -20,14 +19,12 @@ const IndividualAnimalForm = () => {
   return (
     <Form>
       <Typography variant="h4">Add New Individual</Typography>
-      <Box component="fieldset">
-        <GeneralAnimalForm />
-        <CaptureAnimalForm />
-        <MortalityAnimalForm />
-        <MarkingAnimalForm />
-        <MeasurementAnimalForm />
-        <FamilyAnimalForm />
-      </Box>
+      <GeneralAnimalForm />
+      <CaptureAnimalForm />
+      <MortalityAnimalForm />
+      <MarkingAnimalForm />
+      <MeasurementAnimalForm />
+      <FamilyAnimalForm />
     </Form>
   );
 };

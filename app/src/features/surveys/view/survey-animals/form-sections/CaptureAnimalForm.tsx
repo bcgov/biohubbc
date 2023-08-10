@@ -82,7 +82,6 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
           />
         </Grid>
-        <Grid item />
         <Grid item xs={6}>
           <TextInputToggle label="Add comment about this Capture">
             <CustomTextField

@@ -21,7 +21,7 @@ export interface IEditDialogProps<T> {
    * @type {string}
    * @memberof IEditDialogProps
    */
-  dialogTitle: string;
+  dialogTitle: string | JSX.Element;
 
   /**
    * The label of the `onSave` button.
