@@ -39,6 +39,7 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
+import FundingSourceForm from './components/FundingSourceForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -322,6 +323,26 @@ const CreateSurveyPage = () => {
                         }) || []
                       }
                     />
+                  }></HorizontalSplitFormComponent>
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Funding and Partnerships"
+                  summary="Specify project funding sources and additional partnerships."
+                  component={
+                    <Box component="fieldset">
+                      <Typography component="legend" variant="h5">
+                        Add Funding Sources
+                      </Typography>
+                      <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
+                        Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
+                        be exact, please round to the nearest 100.
+                      </Typography>
+                      <Box mt={3}>
+                        <FundingSourceForm />
+                      </Box>
+                    </Box>
                   }></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />

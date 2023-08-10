@@ -204,8 +204,8 @@ export class FundingSourceRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT 
         COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count, 
-        SUM(survey_funding_source.amount)::numeric::int as survey_reference_amount_total 
-      FROM 
+        COALESCE(SUM(survey_funding_source.amount)::numeric::int, 0) as survey_reference_amount_total
+      FROM
         funding_source 
       LEFT JOIN 
         survey_funding_source 
@@ -245,7 +245,8 @@ export class FundingSourceRepository extends BaseRepository {
   ): Promise<SurveyFundingSource> {
     const sqlStatement = SQL`
       SELECT
-        *
+        *,
+        amount::numeric::int
       FROM
         survey_funding_source
       WHERE
@@ -273,7 +274,8 @@ export class FundingSourceRepository extends BaseRepository {
   async getSurveyFundingSources(surveyId: number): Promise<SurveyFundingSource[]> {
     const sqlStatement = SQL`
       SELECT
-        *
+        *,
+        amount::numeric::int
       FROM
         survey_funding_source
       WHERE

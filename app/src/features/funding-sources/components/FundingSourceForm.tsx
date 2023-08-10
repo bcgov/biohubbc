@@ -22,7 +22,7 @@ const FundingSourceForm: React.FC = (props) => {
     <form onSubmit={handleSubmit}>
       <Box mt={3}>
         <Box component={'fieldset'} mb={4}>
-          <Typography component="legend">Name and description</Typography>
+          <Typography component="legend">Name and Description</Typography>
           <Box mb={3} mt={1}>
             <CustomTextField name="name" label="Name" other={{ required: true }} />
           </Box>

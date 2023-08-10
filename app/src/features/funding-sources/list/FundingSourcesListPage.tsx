@@ -15,6 +15,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
 import CreateFundingSource from '../components/CreateFundingSource';
 import EditFundingSource from '../components/EditFundingSource';
+import FundingSourcePage from '../details/FundingSourcePage';
 import FundingSourcesTable from './FundingSourcesTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -55,7 +56,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const FundingSourcesListPage: React.FC = () => {
   const [isCreateModelOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModelOpen, setIsEditModalOpen] = useState(false);
-  const [editFundingSourceId, setEditFundingSourceId] = useState<number | null>(null);
+  const [openFundingSourceModal, setOpenFundingSourceModal] = useState(false);
+  const [fundingSourceId, setFundingSourceId] = useState<number | null>();
 
   const classes = useStyles();
   const biohubApi = useBiohubApi();
@@ -82,11 +84,6 @@ const FundingSourcesListPage: React.FC = () => {
     setIsEditModalOpen(false);
   };
 
-  const openEditModal = (fundingSourceId: number) => {
-    setIsEditModalOpen(true);
-    setEditFundingSourceId(fundingSourceId);
-  };
-
   if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {
     return (
       <>
@@ -98,6 +95,21 @@ const FundingSourcesListPage: React.FC = () => {
 
   return (
     <>
+      <CreateFundingSource isModalOpen={isCreateModelOpen} closeModal={closeCreateModal} />
+      {fundingSourceId && (
+        <FundingSourcePage
+          fundingSourceId={fundingSourceId}
+          open={openFundingSourceModal}
+          onClose={() => setOpenFundingSourceModal(false)}
+        />
+      )}
+      {fundingSourceId && (
+        <EditFundingSource
+          funding_source_id={fundingSourceId}
+          isModalOpen={isEditModelOpen}
+          closeModal={closeEditModal}
+        />
+      )}
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
@@ -121,14 +133,6 @@ const FundingSourcesListPage: React.FC = () => {
           </Box>
         </Container>
       </Paper>
-      <CreateFundingSource isModalOpen={isCreateModelOpen} closeModal={closeCreateModal} />
-      {editFundingSourceId && (
-        <EditFundingSource
-          funding_source_id={editFundingSourceId}
-          isModalOpen={isEditModelOpen}
-          closeModal={closeEditModal}
-        />
-      )}
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>
@@ -142,7 +146,18 @@ const FundingSourcesListPage: React.FC = () => {
             </Toolbar>
             <Divider></Divider>
             <Box py={1} pb={2} px={3}>
-              <FundingSourcesTable openEditModal={openEditModal} fundingSources={fundingSourceDataLoader.data || []} />
+              <FundingSourcesTable
+                fundingSources={fundingSourceDataLoader.data || []}
+                onView={(fundingSourceId) => {
+                  setFundingSourceId(fundingSourceId);
+                  setOpenFundingSourceModal(true);
+                }}
+                onEdit={(fundingSourceId) => {
+                  setIsEditModalOpen(true);
+                  setFundingSourceId(fundingSourceId);
+                }}
+                onDelete={() => {}}
+              />
             </Box>
           </Paper>
         </Box>

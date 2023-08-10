@@ -1,15 +1,15 @@
-import TextField from '@mui/material/TextField';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
 import NumberFormat, { NumberFormatProps } from 'react-number-format';
 
-export interface IDollarAmountFieldProps {
+export type IDollarAmountFieldProps = (TextFieldProps & {
   required?: boolean;
   id: string;
   label: string;
   name: string;
-}
+});
 
 interface NumberFormatCustomProps {
   onChange: (event: { target: { name: string; value: number } }) => void;
@@ -44,15 +44,12 @@ const NumberFormatCustom = React.forwardRef<NumberFormatProps, NumberFormatCusto
 const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
   const { values, handleChange, touched, errors } = useFormikContext<IDollarAmountFieldProps>();
 
-  const { required, id, name, label } = props;
+  const { name, ...rest } = props;
 
   return (
     <TextField
-      fullWidth
-      required={required}
-      id={id}
+      {...rest}
       name={name}
-      label={label}
       variant="outlined"
       value={get(values, name)}
       onChange={handleChange}

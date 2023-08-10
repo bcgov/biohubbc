@@ -59,7 +59,8 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
                 },
                 InputLabelProps: {
                   shrink: true
-                }
+                },
+                fullWidth: true
               }
             }}
             label="Start Date"
@@ -87,7 +88,8 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
                 },
                 InputLabelProps: {
                   shrink: true
-                }
+                },
+                fullWidth: true
               }
             }}
             label="End Date"

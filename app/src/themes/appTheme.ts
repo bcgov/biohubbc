@@ -55,55 +55,6 @@ const appTheme = createTheme({
     }
   },
   components: {
-    MuiAlert: {
-      styleOverrides: {
-        root: {
-          padding: '12px 16px',
-          fontSize: '1rem'
-        },
-        icon: {
-          marginRight: '1rem'
-        },
-        outlinedInfo: {
-          color: '#313132',
-          borderColor: '#afd3ee',
-          backgroundColor: 'rgb(232, 244, 253)',
-          '& .MuiAlert-icon': {
-            color: 'inherit'
-          }
-        },
-        outlinedSuccess: {
-          color: '#1e4620',
-          borderColor: '#4caf50',
-          backgroundColor: 'rgb(223 240 216)',
-          '& .MuiAlert-icon': {
-            color: 'inherit'
-          }
-        },
-        standardError: {
-          color: '#a12622',
-          borderColor: '#ebccd1',
-          '& .MuiAlert-icon': {
-            color: '#a12622'
-          }
-        },
-        standardSuccess: {
-          color: '#2d4821',
-          backgroundColor: '#dff0d8',
-          borderColor: '#c0dcb3',
-          '& .MuiAlert-icon': {
-            color: '#2d4821'
-          }
-        }
-      }
-    },
-    MuiAlertTitle: {
-      styleOverrides: {
-        root: {
-          fontWeight: 700
-        }
-      }
-    },
     MuiAutocomplete: {
       styleOverrides: {
         tag: {
