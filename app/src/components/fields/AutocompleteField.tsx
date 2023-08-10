@@ -1,5 +1,7 @@
+import { CircularProgress } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import { SxProps } from '@mui/system';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { SyntheticEvent } from 'react';
@@ -14,6 +16,8 @@ export interface IAutocompleteField<T extends string | number> {
   label: string;
   name: string;
   options: IAutocompleteFieldOption<T>[];
+  loading?: boolean;
+  sx?: SxProps;
   required?: boolean;
   filterLimit?: number;
   optionFilter?: 'value' | 'label'; // used to filter existing/ set data for the AutocompleteField, defaults to value in getExistingValue function
@@ -62,6 +66,8 @@ const AutocompleteField: React.FC<React.PropsWithChildren<IAutocompleteField<str
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={handleGetOptionSelected}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
+      sx={props.sx}
+      loading={props.loading}
       onChange={(event, option) => {
         if (props.onChange) {
           props.onChange(event, option);
@@ -79,6 +85,15 @@ const AutocompleteField: React.FC<React.PropsWithChildren<IAutocompleteField<str
           fullWidth
           error={get(touched, props.name) && Boolean(get(errors, props.name))}
           helperText={get(touched, props.name) && get(errors, props.name)}
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {props.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
+          }}
         />
       )}
     />

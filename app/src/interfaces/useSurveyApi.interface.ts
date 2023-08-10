@@ -1,5 +1,6 @@
 import { PublishStatus } from 'constants/attachments';
 import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
+import { ISurveyFundingSourceForm } from 'features/surveys/components/FundingSourceForm';
 import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
 import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
@@ -269,9 +270,10 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
 }
 
-export interface IEditSurveyRequest
-  extends IGeneralInformationForm,
-    IPurposeAndMethodologyForm,
-    IStudyAreaForm,
-    IProprietaryDataForm,
-    IUpdateAgreementsForm {}
+export type IEditSurveyRequest =
+  & IGeneralInformationForm
+  & IPurposeAndMethodologyForm
+  & ISurveyFundingSourceForm
+  & IStudyAreaForm
+  & IProprietaryDataForm
+  & IUpdateAgreementsForm
