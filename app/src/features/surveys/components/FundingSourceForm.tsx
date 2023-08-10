@@ -1,15 +1,13 @@
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import AutocompleteField from 'components/fields/AutocompleteField';
 import DollarAmountField from 'components/fields/DollarAmountField';
-import { IFundingSourceData } from 'features/funding-sources/components/FundingSourceForm';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import yup from 'utils/YupSchema';
 
@@ -63,7 +61,7 @@ export const SurveyFundingSourceYupSchema = yup.object().shape(
  */
 const FundingSourceForm = () => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { values, handleChange, setFieldValue, handleSubmit } = formikProps;
+  const { values, handleChange, handleSubmit } = formikProps;
 
   const biohubApi = useBiohubApi();
   const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
@@ -75,51 +73,25 @@ const FundingSourceForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-  
       <FieldArray
         name="funding_sources"
         render={(arrayHelpers: FieldArrayRenderProps) => (
           <Box>
             {values.funding_sources.map((surveyFundingSource, index) => {
-              const value = fundingSources.find((fundingSource) => fundingSource.funding_source_id === surveyFundingSource.funding_source_id)
-              console.log('value=', value)
               return (
-                <Box mb={3} display='flex' gap={2} alignItems='center'>
-                  <Autocomplete<IGetFundingSourcesResponse>
+                <Box mb={3} display='flex' gap={2} alignItems='center' key={surveyFundingSource.survey_funding_source_id}>
+                  <AutocompleteField // <IGetFundingSourcesResponse>
                     id={`funding_sources.[${index}].funding_source_id`}
-                    value={value}
-                    onChange={(_event, option) => {
-                      setFieldValue(`funding_sources.[${index}].funding_source_id`, option?.funding_source_id)
-                    }}
+                    name={`funding_sources.[${index}].funding_source_id`}
+                    label='Funding Source'
                     sx={{ flex: 6 }}
-                    isOptionEqualToValue={(option, value) => option.funding_source_id === value.funding_source_id}
-                    getOptionLabel={(option) => option.name}
-                    
-                    options={fundingSources}
-
-                    /*
                     options={fundingSources.map((fundingSource) => ({
                       value: fundingSource.funding_source_id,
                       label: fundingSource.name
                     }))}
-                    */
+                    
                     loading={fundingSourcesDataLoader.isLoading}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        required
-                        label="Funding Source"
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {fundingSourcesDataLoader.isLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
-                        }}
-                      />
-                    )}
+                    required
                   />
                   <DollarAmountField
                     label="Funding Amount"
