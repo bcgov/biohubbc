@@ -68,7 +68,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
             maxDate={moment(DATE_LIMIT.max)}
             value={formattedStartDateValue}
             onChange={(value) => {
-              setFieldValue('start_date', moment(value).format(DATE_FORMAT.ShortDateFormat));
+              setFieldValue(startName, moment(value).format(DATE_FORMAT.ShortDateFormat));
             }}
           />
         </Grid>
@@ -96,7 +96,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
             maxDate={moment(DATE_LIMIT.max)}
             value={formattedEndDateValue}
             onChange={(value) => {
-              setFieldValue('end_date', moment(value).format(DATE_FORMAT.ShortDateFormat));
+              setFieldValue(endName, moment(value).format(DATE_FORMAT.ShortDateFormat));
             }}
           />
         </Grid>
