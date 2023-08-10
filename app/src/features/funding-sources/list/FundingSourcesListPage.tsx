@@ -14,6 +14,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
 import CreateFundingSource from '../components/CreateFundingSource';
+import EditFundingSource from '../components/EditFundingSource';
 import FundingSourcesTable from './FundingSourcesTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -53,6 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const FundingSourcesListPage: React.FC = () => {
   const [isCreateModelOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModelOpen, setIsEditModalOpen] = useState(false);
 
   const classes = useStyles();
   const biohubApi = useBiohubApi();
@@ -68,6 +70,15 @@ const FundingSourcesListPage: React.FC = () => {
       fundingSourceDataLoader.refresh();
     }
     setIsCreateModalOpen(false);
+    setIsEditModalOpen(false);
+  };
+
+  const closeEditModal = (refresh?: boolean) => {
+    if (refresh) {
+      fundingSourceDataLoader.refresh();
+    }
+    setIsCreateModalOpen(false);
+    setIsEditModalOpen(false);
   };
 
   if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {
@@ -96,7 +107,7 @@ const FundingSourcesListPage: React.FC = () => {
                   color="primary"
                   aria-label="Add Funding Source"
                   startIcon={<Icon path={mdiPlus} size={1} />}
-                  onClick={() => setIsCreateModalOpen(true)}>
+                  onClick={() => setIsEditModalOpen(true)}>
                   Add
                 </Button>
               </Box>
@@ -105,6 +116,7 @@ const FundingSourcesListPage: React.FC = () => {
         </Container>
       </Paper>
       <CreateFundingSource isModalOpen={isCreateModelOpen} closeModal={closeCreateModal} />
+      <EditFundingSource funding_source_id={1} isModalOpen={isEditModelOpen} closeModal={closeEditModal} />
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>

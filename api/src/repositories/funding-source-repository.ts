@@ -144,7 +144,7 @@ export class FundingSourceRepository extends BaseRepository {
         name = ${fundingSource.name},
         description = ${fundingSource.description}
       WHERE
-        funding_source_id = ${fundingSource}
+        funding_source_id = ${fundingSource.funding_source_id}
       AND
         revision_count = ${fundingSource.revision_count || 0}
       RETURNING

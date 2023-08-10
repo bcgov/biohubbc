@@ -184,15 +184,12 @@ PUT.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['funding_source_id'],
-              properties: {
-                funding_source_id: {
-                  type: 'integer',
-                  minimum: 1
-                }
+            type: 'object',
+            required: ['funding_source_id'],
+            properties: {
+              funding_source_id: {
+                type: 'integer',
+                minimum: 1
               }
             }
           }

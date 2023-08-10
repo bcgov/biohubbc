@@ -311,7 +311,7 @@ export const FundingSourceI18N = {
   updateFundingSourceDialogTitle: 'Update Funding Source',
   updateFundingSourceDialogText:
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.',
-  updateErrorTitle: 'Error Creating Funding Source',
+  updateErrorTitle: 'Error Updating Funding Source',
   updateErrorText:
     'An error has occurred while attempting to update your Funding Source, please try again. If the error persists, please contact your system administrator.'
 };

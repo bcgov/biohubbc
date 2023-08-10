@@ -11,6 +11,7 @@ export interface IFundingSourceData {
   description: string;
   start_date: string | null;
   end_date: string | null;
+  revision_count: number | null;
 }
 
 const FundingSourceForm: React.FC = (props) => {

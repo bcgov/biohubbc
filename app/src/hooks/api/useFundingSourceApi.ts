@@ -36,6 +36,16 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
     return data.length > 0;
   };
 
+  const getFundingSources = async (name: string): Promise<IGetFundingSourcesResponse[]> => {
+    const { data } = await axios.get('/api/funding-sources', {
+      params: {
+        name
+      }
+    });
+
+    return data;
+  };
+
   /**
    * Get a single funding source.
    *
@@ -95,7 +105,8 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
     getFundingSource,
     deleteFundingSourceById,
     putFundingSource,
-    postFundingSource
+    postFundingSource,
+    getFundingSources
   };
 };
 
