@@ -9,16 +9,25 @@ const FundingSource = z.object({
   funding_source_id: z.number(),
   name: z.string(),
   description: z.string(),
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable(),
   revision_count: z.number().optional()
 });
 
 export type FundingSource = z.infer<typeof FundingSource>;
 
+const FundingSourceBasicSupplementaryData = z.object({
+  survey_reference_count: z.number(),
+  survey_reference_amount_total: z.number()
+});
+
+export type FundingSourceBasicSupplementaryData = z.infer<typeof FundingSourceBasicSupplementaryData>;
+
 const SurveyFundingSource = z.object({
   survey_funding_source_id: z.number(),
   survey_id: z.number(),
   funding_source_id: z.number(),
-  amount: z.string(),
+  amount: z.number(),
   revision_count: z.number().optional()
 });
 
@@ -177,6 +186,40 @@ export class FundingSourceRepository extends BaseRepository {
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to delete funding source', [
         'FundingSourceRepository->deleteFundingSource',
+        'rowCount was != 1, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
+   * Fetch basic supplementary data for a single funding source.
+   *
+   * @param {number} fundingSourceId
+   * @return {*}  {Promise<FundingSourceBasicSupplementaryData>}
+   * @memberof FundingSourceRepository
+   */
+  async getFundingSourceBasicSupplementaryData(fundingSourceId: number): Promise<FundingSourceBasicSupplementaryData> {
+    const sqlStatement = SQL`
+      SELECT 
+        COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count, 
+        SUM(survey_funding_source.amount)::numeric::int as survey_reference_amount_total 
+      FROM 
+        funding_source 
+      LEFT JOIN 
+        survey_funding_source 
+      ON 
+        funding_source.funding_source_id = survey_funding_source.funding_source_id
+      WHERE
+        funding_source.funding_source_id = ${fundingSourceId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, FundingSourceBasicSupplementaryData);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get funding source basic supplementary data', [
+        'FundingSourceRepository->getFundingSourceBasicSupplementaryData',
         'rowCount was != 1, expected rowCount = 1'
       ]);
     }

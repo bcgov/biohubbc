@@ -44,7 +44,7 @@ export class GetSurveyFundingSourceData {
   survey_funding_source_id: number;
   survey_id: number;
   funding_source_id: number;
-  amount: string;
+  amount: number;
   revision_count?: number;
 
   constructor(obj?: any) {

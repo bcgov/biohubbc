@@ -154,7 +154,7 @@ PUT.apiDoc = {
                     minimum: 1
                   },
                   amount: {
-                    type: 'string'
+                    type: 'number'
                   },
                   revision_count: {
                     type: 'number'

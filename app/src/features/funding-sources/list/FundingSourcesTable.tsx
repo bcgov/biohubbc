@@ -1,12 +1,15 @@
+import { mdiInformationOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import { Theme } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridColDef, GridOverlay } from '@mui/x-data-grid';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { getFormattedAmount } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectsTable: {
@@ -47,7 +50,8 @@ export interface IFundingSourcesTableTableProps {
 interface IFundingSourcesTableEntry {
   funding_source_id: number;
   name: string;
-  description: string;
+  survey_reference_count: number;
+  survey_reference_amount_total: number;
 }
 
 const NoRowsOverlay = (props: { className: string }) => (
@@ -60,6 +64,18 @@ const NoRowsOverlay = (props: { className: string }) => (
 
 const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
   const classes = useStyles();
+
+  const handleViewDetails = (row: IFundingSourcesTableEntry) => {
+    // TOOD
+  };
+
+  const handleEdit = (row: IFundingSourcesTableEntry) => {
+    // TOOD
+  };
+
+  const handleDelete = (row: IFundingSourcesTableEntry) => {
+    // TOOD
+  };
 
   const columns: GridColDef<IFundingSourcesTableEntry>[] = [
     {
@@ -80,9 +96,43 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
       )
     },
     {
-      field: 'description',
-      headerName: 'Description',
+      field: 'survey_reference_amount_total',
+      headerName: 'Amount Distributed',
+      flex: 1,
+      valueGetter: (params) => {
+        return getFormattedAmount(params.value, { maximumFractionDigits: 2 });
+      }
+    },
+    {
+      field: 'survey_reference_count',
+      headerName: 'Surveys',
       flex: 1
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={<Icon path={mdiInformationOutline} size={1} />}
+            label="View Details"
+            onClick={() => handleViewDetails(params.row)}
+            showInMenu
+          />,
+          <GridActionsCellItem
+            icon={<Icon path={mdiPencilOutline} size={1} />}
+            label="Edit"
+            onClick={() => handleEdit(params.row)}
+            showInMenu
+          />,
+          <GridActionsCellItem
+            icon={<Icon path={mdiTrashCanOutline} size={1} />}
+            label="Delete"
+            onClick={() => handleDelete(params.row)}
+            showInMenu
+          />
+        ];
+      }
     }
   ];
 
@@ -104,8 +154,8 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
       disableColumnFilter
       disableColumnMenu
       sortingOrder={['asc', 'desc']}
-      components={{
-        NoRowsOverlay: NoRowsOverlayStyled
+      slots={{
+        noRowsOverlay: NoRowsOverlayStyled
       }}
     />
   );
