@@ -245,7 +245,8 @@ export class FundingSourceRepository extends BaseRepository {
   ): Promise<SurveyFundingSource> {
     const sqlStatement = SQL`
       SELECT
-        *
+        *,
+        amount::numeric::int
       FROM
         survey_funding_source
       WHERE
@@ -273,7 +274,8 @@ export class FundingSourceRepository extends BaseRepository {
   async getSurveyFundingSources(surveyId: number): Promise<SurveyFundingSource[]> {
     const sqlStatement = SQL`
       SELECT
-        *
+        *,
+        amount::numeric::int
       FROM
         survey_funding_source
       WHERE
