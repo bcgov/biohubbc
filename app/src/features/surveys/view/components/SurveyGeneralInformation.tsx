@@ -117,11 +117,6 @@ const SurveyGeneralInformation = () => {
           })}
         </List>
       </Box>
-
-      <Box component="section">
-        <Typography component="h4">Funding Sources</Typography>
-        <Divider></Divider>
-      </Box>
     </>
   );
 };
