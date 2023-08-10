@@ -8,6 +8,7 @@ import Footer from 'components/layout/Footer';
 import Header from 'components/layout/Header';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { PropsWithChildren } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 interface IBaseLayoutProps {
   className?: string;
@@ -57,7 +58,17 @@ const BaseLayout = (props: PropsWithChildren<IBaseLayoutProps>) => {
         <Header />
 
         <Box component="main" flex="1 1 auto">
-          {props.children}
+          <ErrorBoundary
+            onError={(err, info) => {
+              console.log('======== ERROR BOUNDARY ========');
+              console.log(err);
+              console.log('------------');
+              console.log(info);
+              console.log('------------');
+            }}
+            fallback={<div>Error Boundary: Something went wrong</div>}>
+            {props.children}
+          </ErrorBoundary>
         </Box>
 
         <Footer />
