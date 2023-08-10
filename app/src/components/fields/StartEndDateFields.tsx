@@ -48,27 +48,27 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           <DatePicker
             slotProps={{
               textField: {
-                inputProps: {
-                  'data-testid': 'start_date'
-                },
-                required: startRequired,
                 id: 'start_date',
                 name: startName,
+                required: startRequired,
                 variant: 'outlined',
                 error: get(touched, startName) && Boolean(get(errors, startName)),
                 helperText: (get(touched, startName) && get(errors, startName)) || startDateHelperText,
+                inputProps: {
+                  'data-testid': 'start_date'
+                },
                 InputLabelProps: {
                   shrink: true
                 }
               }
             }}
-            label="End Date"
+            label="Start Date"
             format={DATE_FORMAT.ShortDateFormat}
             minDate={moment(DATE_LIMIT.min)}
             maxDate={moment(DATE_LIMIT.max)}
             value={formattedStartDateValue}
             onChange={(value) => {
-              setFieldValue('start)date', moment(value).format(DATE_FORMAT.ShortDateFormat));
+              setFieldValue('start_date', moment(value).format(DATE_FORMAT.ShortDateFormat));
             }}
           />
         </Grid>
@@ -76,15 +76,15 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           <DatePicker
             slotProps={{
               textField: {
-                inputProps: {
-                  'data-testid': 'end_date'
-                },
-                required: endRequired,
                 id: 'end_date',
                 name: endName,
+                required: endRequired,
                 variant: 'outlined',
                 error: get(touched, endName) && Boolean(get(errors, endName)),
                 helperText: (get(touched, endName) && get(errors, endName)) || endDateHelperText,
+                inputProps: {
+                  'data-testid': 'end_date'
+                },
                 InputLabelProps: {
                   shrink: true
                 }
