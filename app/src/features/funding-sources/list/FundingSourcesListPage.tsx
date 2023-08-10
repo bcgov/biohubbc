@@ -14,6 +14,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
 import CreateFundingSource from '../components/CreateFundingSource';
+import FundingSourcePage from '../details/FundingSourcePage';
 import FundingSourcesTable from './FundingSourcesTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -53,6 +54,8 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const FundingSourcesListPage: React.FC = () => {
   const [isCreateModelOpen, setIsCreateModalOpen] = useState(false);
+  const [openFundingSourceModal, setOpenFundingSourceModal] = useState(false);
+  const [fundingSourceId, setFundingSourceId] = useState<number>();
 
   const classes = useStyles();
   const biohubApi = useBiohubApi();
@@ -81,6 +84,11 @@ const FundingSourcesListPage: React.FC = () => {
 
   return (
     <>
+      <FundingSourcePage
+        fundingSourceId={fundingSourceId}
+        open={openFundingSourceModal}
+        onClose={() => setOpenFundingSourceModal(false)}
+      />
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
@@ -118,7 +126,15 @@ const FundingSourcesListPage: React.FC = () => {
             </Toolbar>
             <Divider></Divider>
             <Box py={1} pb={2} px={3}>
-              <FundingSourcesTable fundingSources={fundingSourceDataLoader.data || []} />
+              <FundingSourcesTable
+                fundingSources={fundingSourceDataLoader.data || []}
+                onView={(fundingSourceId) => {
+                  setFundingSourceId(fundingSourceId);
+                  setOpenFundingSourceModal(true);
+                }}
+                onEdit={() => {}}
+                onDelete={() => {}}
+              />
             </Box>
           </Paper>
         </Box>
