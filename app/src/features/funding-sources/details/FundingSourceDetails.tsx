@@ -39,8 +39,6 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
     return null;
   };
 
-  console.log(props.fundingSource);
-
   return (
     <Box component="section">
       <Box component="dl" mb={4}>

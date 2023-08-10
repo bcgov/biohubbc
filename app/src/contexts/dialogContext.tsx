@@ -1,4 +1,6 @@
-import { Alert, AlertProps } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { Color } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
@@ -7,6 +9,8 @@ import React, { createContext, ReactNode, useState } from 'react';
 export interface IDialogContext {
   /**
    * Set the yes no dialog props.
+   *
+   * Note: Any props that are not provided, will default to whatever value was previously set (or the default value)
    *
    * @memberof IDialogContext
    */
@@ -21,6 +25,8 @@ export interface IDialogContext {
   /**
    * Set the error dialog props.
    *
+   * Note: Any props that are not provided, will default to whatever value was previously set (or the default value)
+   *
    * @memberof IDialogContext
    */
   setErrorDialog: (props: Partial<IErrorDialogProps>) => void;
@@ -33,6 +39,8 @@ export interface IDialogContext {
   errorDialogProps: IErrorDialogProps;
   /**
    * Set the snackbar props.
+   *
+   * Note: Any props that are not provided, will default to whatever value was previously set (or the default value)
    *
    * @memberof IDialogContext
    */
@@ -48,16 +56,10 @@ export interface IDialogContext {
 
 export interface ISnackbarProps {
   open: boolean;
-  color: AlertProps['color'];
+  onClose: () => void;
+  severity?: Color;
+  color?: Color;
   snackbarMessage: ReactNode;
-  /**
-   * Callback fired when the snackbar is closed.
-   *
-   * Note: this callback will be fired once (when either the snackbar times out or is manually closed by the user).
-   *
-   * @memberof ISnackbarProps
-   */
-  onClose: (() => void) | (() => Promise<void>);
 }
 
 export const defaultYesNoDialogProps: IYesNoDialogProps = {
@@ -90,7 +92,6 @@ export const defaultErrorDialogProps: IErrorDialogProps = {
 export const defaultSnackbarProps: ISnackbarProps = {
   snackbarMessage: '',
   open: false,
-  color: 'success',
   onClose: () => {
     // default do nothing
   }
@@ -125,60 +126,15 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
   const [snackbarProps, setSnackbarProps] = useState<ISnackbarProps>(defaultSnackbarProps);
 
   const setYesNoDialog = function (partialProps: Partial<IYesNoDialogProps>) {
-    setYesNoDialogProps({
-      ...defaultYesNoDialogProps,
-      ...partialProps,
-      onClose: () => {
-        partialProps?.onClose?.();
-        closeYesNoDialog();
-      },
-      onYes: () => {
-        partialProps?.onYes?.();
-        closeYesNoDialog();
-      },
-      onNo: () => {
-        partialProps?.onNo?.();
-        closeYesNoDialog();
-      }
-    });
-  };
-
-  const closeYesNoDialog = function () {
-    setYesNoDialogProps({ ...defaultYesNoDialogProps, open: false });
-  };
-
-  const setErrorDialog = function (partialProps: Partial<IErrorDialogProps>) {
-    setErrorDialogProps({
-      ...defaultErrorDialogProps,
-      ...partialProps,
-      onClose: () => {
-        partialProps?.onClose?.();
-        closeErrorDialog();
-      },
-      onOk: () => {
-        partialProps?.onOk?.();
-        closeErrorDialog();
-      }
-    });
-  };
-
-  const closeErrorDialog = function () {
-    setErrorDialogProps({ ...defaultErrorDialogProps, open: false });
+    setYesNoDialogProps({ ...yesNoDialogProps, ...partialProps });
   };
 
   const setSnackbar = function (partialProps: Partial<ISnackbarProps>) {
-    setSnackbarProps({
-      ...defaultSnackbarProps,
-      ...partialProps,
-      onClose: () => {
-        partialProps?.onClose?.();
-        closeSnackbarDialog();
-      }
-    });
+    setSnackbarProps({ ...snackbarProps, ...partialProps });
   };
 
-  const closeSnackbarDialog = function () {
-    setSnackbarProps({ ...defaultSnackbarProps, open: false });
+  const setErrorDialog = function (partialProps: Partial<IErrorDialogProps>) {
+    setErrorDialogProps({ ...errorDialogProps, ...partialProps });
   };
 
   return (
@@ -201,11 +157,16 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
         }}
         open={snackbarProps.open}
         autoHideDuration={6000}
-        onClose={snackbarProps.onClose}>
-        <Alert color={snackbarProps.color || 'info'} onClose={snackbarProps.onClose}>
-          {snackbarProps.snackbarMessage}
-        </Alert>
-      </Snackbar>
+        onClose={() => setSnackbar({ open: false })}
+        message={snackbarProps.snackbarMessage}
+        action={
+          <React.Fragment>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={() => setSnackbar({ open: false })}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </DialogContext.Provider>
   );
 };
