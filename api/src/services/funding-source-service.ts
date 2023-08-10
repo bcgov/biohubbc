@@ -76,7 +76,7 @@ export class FundingSourceService extends DBService {
    * @param newFundingSource
    * @returns
    */
-  async postFundingSource(newFundingSource: ICreateFundingSource): Promise<{ funding_source_id: number }> {
+  async postFundingSource(newFundingSource: ICreateFundingSource): Promise<Pick<FundingSource, 'funding_source_id'>>{
     return this.fundingSourceRepository.postFundingSource(newFundingSource);
   }
 

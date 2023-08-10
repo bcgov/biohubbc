@@ -88,8 +88,8 @@ const FundingSourceForm = () => {
                     options={fundingSources.map((fundingSource) => ({
                       value: fundingSource.funding_source_id,
                       label: fundingSource.name
-                    }))}
-                    
+                    }))}         
+                    // getOptionDisabled={(option) => values.funding_sources.some((source) => source.funding_source_id === option.value)}
                     loading={fundingSourcesDataLoader.isLoading}
                     required
                   />
