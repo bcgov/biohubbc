@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -6,7 +7,6 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import LoadingButton from 'components/buttons/LoadingButton';
 import { SubmitBiohubI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps, FormikValues } from 'formik';

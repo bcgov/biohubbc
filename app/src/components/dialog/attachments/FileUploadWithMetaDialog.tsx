@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -6,7 +7,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
-import LoadingButton from 'components/buttons/LoadingButton';
 import { IFileHandler, IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { AttachmentType } from 'constants/attachments';
 import { Formik, FormikProps } from 'formik';
