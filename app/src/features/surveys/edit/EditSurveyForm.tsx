@@ -24,7 +24,7 @@ import GeneralInformationForm, {
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from '../components/StudyAreaForm';
-import FundingSourceForm from '../components/FundingSourceForm';
+import FundingSourceForm, { SurveyFundingSourceFormInitialValues } from '../components/FundingSourceForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -69,6 +69,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
       }
     },
     ...StudyAreaInitialValues,
+    ...SurveyFundingSourceFormInitialValues,
     ...{
       proprietor: {
         survey_data_proprietary: '' as unknown as StringBoolean,

@@ -5,11 +5,12 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import DollarAmountField from 'components/fields/DollarAmountField';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { IFundingSourceData } from 'features/funding-sources/components/FundingSourceForm';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
-import { useState } from 'react';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyFundingSource {
@@ -24,24 +25,23 @@ export interface ISurveyFundingSourceForm {
   funding_sources: ISurveyFundingSource[]
 }
 
-export const FundingSourceFormInitialValues: ISurveyFundingSourceForm = {
+export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {
   funding_sources: []
 };
 
-export const FundingSourceFormYupSchema = yup.object().shape({
+export const SurveyFundingSourceFormYupSchema = yup.object().shape({
   funding_sources: yup.array()
 });
 
-
-export const FundingSourceInitialValues: ISurveyFundingSource = {
-  funding_source_id: 0,
+export const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
+  funding_source_id: undefined as unknown as number,
   amount: undefined,
   revision_count: 0,
   survey_funding_source_id: 0,
   survey_id: 0
 };
 
-export const FundingSourceYupSchema = yup.object().shape(
+export const SurveyFundingSourceYupSchema = yup.object().shape(
   {
     funding_source_id: yup
       .number()
@@ -63,35 +63,57 @@ export const FundingSourceYupSchema = yup.object().shape(
  */
 const FundingSourceForm = () => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { values, handleSubmit } = formikProps;
-  const [loadingFundingSources, setLoadingFundingSources] = useState<boolean>(true);
+  const { values, handleChange, setFieldValue, handleSubmit } = formikProps;
+
+  const biohubApi = useBiohubApi();
+  const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
+  fundingSourcesDataLoader.load();
+
+  const fundingSources = fundingSourcesDataLoader.data ?? [];
+
+  console.log({ values, fundingSources })
 
   return (
     <form onSubmit={handleSubmit}>
   
       <FieldArray
-        name="funding.fundingSources"
+        name="funding_sources"
         render={(arrayHelpers: FieldArrayRenderProps) => (
           <Box>
             {values.funding_sources.map((surveyFundingSource, index) => {
+              const value = fundingSources.find((fundingSource) => fundingSource.funding_source_id === surveyFundingSource.funding_source_id)
+              console.log('value=', value)
               return (
                 <Box mb={3} display='flex' gap={2} alignItems='center'>
-                  <Autocomplete
-                    id={`survey-funding-form-funding-source-${index}`}
+                  <Autocomplete<IGetFundingSourcesResponse>
+                    id={`funding_sources.[${index}].funding_source_id`}
+                    value={value}
+                    onChange={(_event, option) => {
+                      setFieldValue(`funding_sources.[${index}].funding_source_id`, option?.funding_source_id)
+                    }}
                     sx={{ flex: 6 }}
-                    //isOptionEqualToValue={(option, value) => option.title === value.title}
-                    //getOptionLabel={(option) => option.title}
-                    options={[]}
-                    loading={loadingFundingSources}
+                    isOptionEqualToValue={(option, value) => option.funding_source_id === value.funding_source_id}
+                    getOptionLabel={(option) => option.name}
+                    
+                    options={fundingSources}
+
+                    /*
+                    options={fundingSources.map((fundingSource) => ({
+                      value: fundingSource.funding_source_id,
+                      label: fundingSource.name
+                    }))}
+                    */
+                    loading={fundingSourcesDataLoader.isLoading}
                     renderInput={(params) => (
                       <TextField
                         {...params}
+                        required
                         label="Funding Source"
                         InputProps={{
                           ...params.InputProps,
                           endAdornment: (
                             <>
-                              {loadingFundingSources ? <CircularProgress color="inherit" size={20} /> : null}
+                              {fundingSourcesDataLoader.isLoading ? <CircularProgress color="inherit" size={20} /> : null}
                               {params.InputProps.endAdornment}
                             </>
                           ),
@@ -100,9 +122,11 @@ const FundingSourceForm = () => {
                     )}
                   />
                   <DollarAmountField
-                    id={`survey-funding-form-dollar-amount-${index}`}
-                    name="funding_amount"
                     label="Funding Amount"
+                    id={`funding_sources.[${index}].amount`}
+                    name={`funding_sources.[${index}].amount`}
+                    value={surveyFundingSource.amount}
+                    onChange={handleChange}
                     sx={{ flex: 4 }}
                   />
                   <Box>
@@ -126,15 +150,7 @@ const FundingSourceForm = () => {
               title="Add Funding Source"
               aria-label="Add Funding Source"
               startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => {
-                /*
-                setCurrentProjectFundingFormArrayItem({
-                  index: values.funding.fundingSources.length,
-                  values: ProjectFundingFormArrayItemInitialValues
-                });
-                setIsModalOpen(true);
-                */
-              }}>
+              onClick={() => arrayHelpers.push(SurveyFundingSourceInitialValues)}>
               Add Funding Source
             </Button>
           </Box>    
