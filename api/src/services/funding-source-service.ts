@@ -1,5 +1,10 @@
 import { IDBConnection } from '../database/db';
-import { FundingSource, FundingSourceRepository, SurveyFundingSource } from '../repositories/funding-source-repository';
+import {
+  FundingSource,
+  FundingSourceBasicSupplementaryData,
+  FundingSourceRepository,
+  SurveyFundingSource
+} from '../repositories/funding-source-repository';
 import { DBService } from './db-service';
 
 export interface IFundingSourceSearchParams {
@@ -25,11 +30,22 @@ export class FundingSourceService extends DBService {
   /**
    * Get all funding sources.
    *
-   * @return {*}  {Promise<FundingSource[]>}
+   * @return {*}  {(Promise<(FundingSource | FundingSourceBasicSupplementaryData)[]>)}
    * @memberof FundingSourceService
    */
-  async getFundingSources(searchParams: IFundingSourceSearchParams): Promise<FundingSource[]> {
-    return this.fundingSourceRepository.getFundingSources(searchParams);
+  async getFundingSources(
+    searchParams: IFundingSourceSearchParams
+  ): Promise<(FundingSource | FundingSourceBasicSupplementaryData)[]> {
+    const fundingSources = await this.fundingSourceRepository.getFundingSources(searchParams);
+
+    return Promise.all(
+      fundingSources.map(async (fundingSource) => {
+        const basicSupplementalData = await this.fundingSourceRepository.getFundingSourceBasicSupplementaryData(
+          fundingSource.funding_source_id
+        );
+        return { ...fundingSource, ...basicSupplementalData };
+      })
+    );
   }
 
   /**

@@ -39,7 +39,14 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
-              required: ['funding_source_id', 'name', 'description', 'revision_count'],
+              required: [
+                'funding_source_id',
+                'name',
+                'description',
+                'revision_count',
+                'survey_reference_count',
+                'survey_reference_amount_total'
+              ],
               properties: {
                 funding_source_id: {
                   type: 'integer',
@@ -51,9 +58,27 @@ GET.apiDoc = {
                 description: {
                   type: 'string'
                 },
+                start_date: {
+                  type: 'string',
+                  nullable: true
+                },
+                end_date: {
+                  type: 'string',
+                  nullable: true
+                },
                 revision_count: {
                   type: 'integer',
                   minimum: 0
+                },
+                survey_reference_count: {
+                  type: 'number',
+                  minimum: 0,
+                  description: 'The number of surveys that reference this funding source.'
+                },
+                survey_reference_amount_total: {
+                  type: 'number',
+                  minimum: 0,
+                  description: 'The total amount from all references to this funding source by all surveys.'
                 }
               }
             }

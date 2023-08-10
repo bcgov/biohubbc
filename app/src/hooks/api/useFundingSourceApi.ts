@@ -78,11 +78,12 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
   /**
    * Update a single funding source.
    *
-   *
    * @param {number} fundingSourceId
-   * @return {*}  {Promise<unknown>}
+   * @return {*}  {Promise<Pick<IGetFundingSourcesResponse, 'funding_source_id'>>}
    */
-  const putFundingSource = async (fundingSource: IFundingSourceData): Promise<IGetFundingSourcesResponse[]> => {
+  const putFundingSource = async (
+    fundingSource: IFundingSourceData
+  ): Promise<Pick<IGetFundingSourcesResponse, 'funding_source_id'>> => {
     const { data } = await axios.put(`/api/funding-sources/${fundingSource.funding_source_id}`, fundingSource);
 
     return data;

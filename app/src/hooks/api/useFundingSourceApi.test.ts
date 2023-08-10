@@ -20,7 +20,12 @@ describe('useFundingSourceApi', () => {
         {
           funding_source_id: 1,
           name: 'name',
-          description: 'description'
+          description: 'description',
+          start_date: null,
+          end_date: null,
+          revision_count: 0,
+          survey_reference_count: 1,
+          survey_reference_amount_total: 1000
         }
       ];
 
