@@ -42,7 +42,7 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
           // no name matches return false
 
           fundingSources.forEach((item) => {
-            if (item.name === val && item.funding_source_id !== props.funding_source_id) {
+            if (item.name.toLowerCase() === val.toLowerCase() && item.funding_source_id !== props.funding_source_id) {
               hasBeenUsed = true;
             }
           });

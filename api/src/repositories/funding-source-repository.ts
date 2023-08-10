@@ -49,7 +49,7 @@ export class FundingSourceRepository extends BaseRepository {
       .from('funding_source');
 
     if (searchParams.name) {
-      queryBuilder.andWhere('name', searchParams.name);
+      queryBuilder.andWhereRaw('LOWER(name) = ?', searchParams.name.toLowerCase());
     }
 
     const response = await this.connection.knex(queryBuilder, FundingSource);
@@ -142,7 +142,9 @@ export class FundingSourceRepository extends BaseRepository {
         funding_source
       SET
         name = ${fundingSource.name},
-        description = ${fundingSource.description}
+        description = ${fundingSource.description},
+        start_date = ${fundingSource.start_date},
+        end_date = ${fundingSource.end_date}
       WHERE
         funding_source_id = ${fundingSource.funding_source_id}
       AND

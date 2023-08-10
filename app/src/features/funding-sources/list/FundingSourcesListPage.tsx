@@ -74,6 +74,7 @@ const FundingSourcesListPage: React.FC = () => {
     }
     setIsCreateModalOpen(false);
     setIsEditModalOpen(false);
+    setFundingSourceId(null);
   };
 
   const closeEditModal = (refresh?: boolean) => {
@@ -82,6 +83,7 @@ const FundingSourcesListPage: React.FC = () => {
     }
     setIsCreateModalOpen(false);
     setIsEditModalOpen(false);
+    setFundingSourceId(null);
   };
 
   if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {

@@ -34,7 +34,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
           // name matches return true
 
           fundingSources.forEach((item) => {
-            if (item.name === val) {
+            if (item.name.toLowerCase() === val.toLowerCase()) {
               hasBeenUsed = true;
             }
           });
