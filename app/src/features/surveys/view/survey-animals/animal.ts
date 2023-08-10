@@ -21,7 +21,9 @@ const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).ty
 
 const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
-  animal_id: yup.string()
+  animal_id: yup.string().required(req),
+
+  taxon_name: yup.string()
 });
 
 const AnimalCaptureSchema = yup.object({}).shape({
@@ -131,9 +133,9 @@ type IAnimalMortalityPayload = Omit<IAnimalMortality, 'utm_easting' | 'utm_north
 //Converts IAnimal(Form data) to a Critterbase Critter
 
 export class Critter {
-  critter_id?: string;
   taxon_id: string;
-  animal_id?: string;
+  taxon_name: string;
+  animal_id: string;
   captures: IAnimalCapturePayload[];
   markings: IAnimalMarking[];
   measurements: {
@@ -142,9 +144,14 @@ export class Critter {
   };
   mortality: IAnimalMortalityPayload[];
   family: IAnimalRelationship[]; //This type probably needs to change;
+
+  get name(): string {
+    return `${this.animal_id}-[${this.taxon_name}]`;
+  }
+
   constructor(animal: IAnimal) {
-    this.critter_id = undefined;
     this.taxon_id = animal.general.taxon_id;
+    this.taxon_name = animal.general.taxon_name;
     this.animal_id = animal.general.animal_id;
     this.captures = animal.captures.map((c) => {
       delete c.projection_mode;

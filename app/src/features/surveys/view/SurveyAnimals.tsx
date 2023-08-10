@@ -32,6 +32,7 @@ const SurveyAnimals: React.FC = () => {
     const critter = new Critter(animal);
     const res = await cbApi.critters.createCritter(critter);
     console.log(res);
+    console.log(critter.name);
 
     toggleDialog();
   };

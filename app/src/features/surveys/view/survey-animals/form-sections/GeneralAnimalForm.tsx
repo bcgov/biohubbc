@@ -16,11 +16,17 @@ import FormSectionWrapper from './FormSectionWrapper';
  */
 
 const GeneralAnimalForm = () => {
-  const { values } = useFormikContext<IAnimal>();
+  const { values, setFieldValue } = useFormikContext<IAnimal>();
   const name: keyof IAnimal = 'general';
+
   useEffect(() => {
     console.log(values);
   }, [JSON.stringify(values)]);
+
+  const handleTaxonName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalGeneral>(name, 'taxon_name'), label);
+  };
+
   return (
     <FormSectionWrapper title={SurveyAnimalsI18N.animalGeneralTitle} titleHelp={SurveyAnimalsI18N.animalGeneralHelp}>
       <Grid item xs={6}>
@@ -32,12 +38,13 @@ const GeneralAnimalForm = () => {
               label={'Taxon'}
               id={'taxon'}
               route={'taxons'}
+              handleChangeSideEffect={handleTaxonName}
             />
           </HelpButtonTooltip>
         </Box>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
           <CustomTextField
-            other={{ size: 'small' }}
+            other={{ required: true, size: 'small' }}
             label="Individual's Label"
             name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
           />
