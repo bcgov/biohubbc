@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IFundingSourcesTableTableProps {
   fundingSources: IGetFundingSourcesResponse[];
+  openEditModal: (fundingSourceId: number) => void;
 }
 
 interface IFundingSourcesTableEntry {
@@ -70,7 +71,7 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
   };
 
   const handleEdit = (row: IFundingSourcesTableEntry) => {
-    // TOOD
+    props.openEditModal(row.funding_source_id);
   };
 
   const handleDelete = (row: IFundingSourcesTableEntry) => {

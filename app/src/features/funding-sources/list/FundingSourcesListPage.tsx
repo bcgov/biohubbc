@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const FundingSourcesListPage: React.FC = () => {
   const [isCreateModelOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModelOpen, setIsEditModalOpen] = useState(false);
+  const [editFundingSourceId, setEditFundingSourceId] = useState<number | null>(null);
 
   const classes = useStyles();
   const biohubApi = useBiohubApi();
@@ -79,6 +80,11 @@ const FundingSourcesListPage: React.FC = () => {
     }
     setIsCreateModalOpen(false);
     setIsEditModalOpen(false);
+  };
+
+  const openEditModal = (fundingSourceId: number) => {
+    setIsEditModalOpen(true);
+    setEditFundingSourceId(fundingSourceId);
   };
 
   if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {
@@ -107,7 +113,7 @@ const FundingSourcesListPage: React.FC = () => {
                   color="primary"
                   aria-label="Add Funding Source"
                   startIcon={<Icon path={mdiPlus} size={1} />}
-                  onClick={() => setIsEditModalOpen(true)}>
+                  onClick={() => setIsCreateModalOpen(true)}>
                   Add
                 </Button>
               </Box>
@@ -116,7 +122,13 @@ const FundingSourcesListPage: React.FC = () => {
         </Container>
       </Paper>
       <CreateFundingSource isModalOpen={isCreateModelOpen} closeModal={closeCreateModal} />
-      <EditFundingSource funding_source_id={1} isModalOpen={isEditModelOpen} closeModal={closeEditModal} />
+      {editFundingSourceId && (
+        <EditFundingSource
+          funding_source_id={editFundingSourceId}
+          isModalOpen={isEditModelOpen}
+          closeModal={closeEditModal}
+        />
+      )}
       <Container maxWidth="xl">
         <Box py={3}>
           <Paper elevation={0}>
@@ -130,7 +142,7 @@ const FundingSourcesListPage: React.FC = () => {
             </Toolbar>
             <Divider></Divider>
             <Box py={1} pb={2} px={3}>
-              <FundingSourcesTable fundingSources={fundingSourceDataLoader.data || []} />
+              <FundingSourcesTable openEditModal={openEditModal} fundingSources={fundingSourceDataLoader.data || []} />
             </Box>
           </Paper>
         </Box>
