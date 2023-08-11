@@ -27,7 +27,15 @@ const useCritterApi = (axios: AxiosInstance) => {
   };
 
   const createCritter = async (critter: Critter): Promise<Critter> => {
-    const { data } = await axios.post('/api/bulk', critter);
+    const payload = {
+      critters: [
+        { critter_id: critter.critter_id, animal_id: critter.animal_id, sex: 'Unknown', taxon_id: critter.taxon_id },
+      ],
+      qualitative_measurements: critter.measurements.qualitative,
+      quantitative_measurements: critter.measurements.quantitative,
+      ...critter
+    };
+    const { data } = await axios.post('/api/bulk', payload);
     return data;
   };
 
