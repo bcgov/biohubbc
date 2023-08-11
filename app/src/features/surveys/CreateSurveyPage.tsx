@@ -26,7 +26,7 @@ import { Prompt, useHistory } from 'react-router';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
-import FundingSourceForm from './components/FundingSourceForm';
+import SurveyFundingSourceForm, { SurveyFundingSourceFormInitialValues, SurveyFundingSourceFormYupSchema } from './components/SurveyFundingSourceForm';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema
@@ -124,6 +124,7 @@ const CreateSurveyPage = () => {
     ...GeneralInformationInitialValues,
     ...PurposeAndMethodologyInitialValues,
     ...StudyAreaInitialValues,
+    ...SurveyFundingSourceFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues
   });
@@ -166,6 +167,7 @@ const CreateSurveyPage = () => {
     .concat(StudyAreaYupSchema)
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
+    .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema);
 
   const handleCancel = () => {
@@ -340,7 +342,7 @@ const CreateSurveyPage = () => {
                         to be exact, please round to the nearest 100.
                       </Typography>
                       <Box mt={3}>
-                        <FundingSourceForm />
+                        <SurveyFundingSourceForm />
                       </Box>
                     </Box>
                   }></HorizontalSplitFormComponent>

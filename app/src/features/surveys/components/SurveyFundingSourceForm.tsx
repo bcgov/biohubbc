@@ -58,7 +58,7 @@ export const SurveyFundingSourceYupSchema = yup.object().shape({
  *
  * @return {*}
  */
-const FundingSourceForm = () => {
+const SurveyFundingSourceForm = () => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
   const { values, handleChange, handleSubmit } = formikProps;
 
@@ -135,4 +135,4 @@ const FundingSourceForm = () => {
   );
 };
 
-export default FundingSourceForm;
+export default SurveyFundingSourceForm;

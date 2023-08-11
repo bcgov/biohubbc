@@ -1,6 +1,6 @@
 import { PublishStatus } from 'constants/attachments';
 import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
-import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/FundingSourceForm';
+import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
 import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
 import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';

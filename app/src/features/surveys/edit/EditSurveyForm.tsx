@@ -24,7 +24,7 @@ import GeneralInformationForm, {
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from '../components/StudyAreaForm';
-import FundingSourceForm, { SurveyFundingSourceFormInitialValues } from '../components/FundingSourceForm';
+import SurveyFundingSourceForm, { SurveyFundingSourceFormInitialValues } from '../components/SurveyFundingSourceForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -196,7 +196,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                   be exact, please round to the nearest 100.
                 </Typography>
                 <Box mt={3}>
-                  <FundingSourceForm />
+                  <SurveyFundingSourceForm />
                 </Box>
               </Box>
             }></HorizontalSplitFormComponent>
