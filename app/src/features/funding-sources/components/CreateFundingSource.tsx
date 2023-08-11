@@ -26,6 +26,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
   const FundingSourceYupSchema = yup.object().shape({
     name: yup
       .string()
+      .trim()
       .required('Name is required')
       .test('nameUsed', 'Name has already been used', async (val) => {
         let hasBeenUsed = false;

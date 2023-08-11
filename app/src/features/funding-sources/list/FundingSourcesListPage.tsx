@@ -119,7 +119,6 @@ const FundingSourcesListPage: React.FC = () => {
           openViewModal={openViewModal}
         />
       )}
-
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
@@ -159,8 +158,7 @@ const FundingSourcesListPage: React.FC = () => {
               <FundingSourcesTable
                 fundingSources={fundingSourceDataLoader.data || []}
                 onView={(fundingSourceId) => {
-                  setFundingSourceId(fundingSourceId);
-                  setIsViewModalOpen(true);
+                  openViewModal(fundingSourceId);
                 }}
                 onEdit={(fundingSourceId) => {
                   setFundingSourceId(fundingSourceId);
