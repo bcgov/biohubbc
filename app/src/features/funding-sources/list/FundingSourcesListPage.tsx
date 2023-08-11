@@ -1,8 +1,9 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Skeleton, Theme } from '@mui/material';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const FundingSourcesListPage: React.FC = () => {
   const [isCreateModelOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModelOpen, setIsEditModalOpen] = useState(false);
-  const [openFundingSourceModal, setOpenFundingSourceModal] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [fundingSourceId, setFundingSourceId] = useState<number | null>();
 
   const classes = useStyles();
@@ -87,30 +88,21 @@ const FundingSourcesListPage: React.FC = () => {
   };
 
   if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {
-    return (
-      <>
-        <Skeleton variant="rectangular" animation="wave" />
-        <Skeleton variant="rectangular" animation="wave" />
-      </>
-    );
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <CreateFundingSource isModalOpen={isCreateModelOpen} closeModal={closeCreateModal} />
+      <CreateFundingSource open={isCreateModelOpen} onClose={closeCreateModal} />
       {fundingSourceId && (
         <FundingSourcePage
           fundingSourceId={fundingSourceId}
-          open={openFundingSourceModal}
-          onClose={() => setOpenFundingSourceModal(false)}
+          open={isViewModalOpen}
+          onClose={() => setIsViewModalOpen(false)}
         />
       )}
       {fundingSourceId && (
-        <EditFundingSource
-          funding_source_id={fundingSourceId}
-          isModalOpen={isEditModelOpen}
-          closeModal={closeEditModal}
-        />
+        <EditFundingSource fundingSourceId={fundingSourceId} open={isEditModelOpen} onClose={closeEditModal} />
       )}
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
@@ -152,7 +144,7 @@ const FundingSourcesListPage: React.FC = () => {
                 fundingSources={fundingSourceDataLoader.data || []}
                 onView={(fundingSourceId) => {
                   setFundingSourceId(fundingSourceId);
-                  setOpenFundingSourceModal(true);
+                  setIsViewModalOpen(true);
                 }}
                 onEdit={(fundingSourceId) => {
                   setIsEditModalOpen(true);
