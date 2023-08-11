@@ -190,6 +190,9 @@ GET.apiDoc = {
                           type: 'number',
                           minimum: 1
                         },
+                        funding_source_name: {
+                          type: 'string'
+                        },
                         amount: {
                           type: 'number'
                         },
@@ -389,6 +392,7 @@ export function getSurvey(): RequestHandler {
       const surveyService = new SurveyService(connection);
 
       const surveyData = await surveyService.getSurveyById(surveyId);
+      console.log('surveyData', surveyData);
 
       const surveySupplementaryData = await surveyService.getSurveySupplementaryDataById(Number(req.params.surveyId));
 

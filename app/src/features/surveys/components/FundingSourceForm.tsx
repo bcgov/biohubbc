@@ -13,14 +13,18 @@ import yup from 'utils/YupSchema';
 
 export interface ISurveyFundingSource {
   funding_source_id: number;
-  amount: string | undefined;
+  amount: number;
   revision_count: number;
   survey_funding_source_id: number;
   survey_id: number;
+  funding_source_name?: string;
+  start_date?: string;
+  end_date?: string;
+  description?: string;
 }
 
 export interface ISurveyFundingSourceForm {
-  funding_sources: ISurveyFundingSource[]
+  funding_sources: ISurveyFundingSource[];
 }
 
 export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {
@@ -33,26 +37,21 @@ export const SurveyFundingSourceFormYupSchema = yup.object().shape({
 
 export const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
   funding_source_id: undefined as unknown as number,
-  amount: undefined,
+  amount: 0,
   revision_count: 0,
   survey_funding_source_id: 0,
   survey_id: 0
 };
 
-export const SurveyFundingSourceYupSchema = yup.object().shape(
-  {
-    funding_source_id: yup
-      .number()
-      .required('Must select a Funding Source')
-      .min(1, 'Must select a valid Funding Source'), // TODO confirm that this is not triggered when the autocomplete is empty.
-    funding_amount: yup
-      .number()
-      .transform((value) => (isNaN(value) && null) || value)
-      .typeError('Must be a number')
-      .min(0, 'Must be a positive number')
-      .max(9999999999, 'Cannot exceed $9,999,999,999'),
-  }
-);
+export const SurveyFundingSourceYupSchema = yup.object().shape({
+  funding_source_id: yup.number().required('Must select a Funding Source').min(1, 'Must select a valid Funding Source'), // TODO confirm that this is not triggered when the autocomplete is empty.
+  funding_amount: yup
+    .number()
+    .transform((value) => (isNaN(value) && null) || value)
+    .typeError('Must be a number')
+    .min(0, 'Must be a positive number')
+    .max(9999999999, 'Cannot exceed $9,999,999,999')
+});
 
 /**
  * Create/edit survey - Funding section
@@ -69,7 +68,7 @@ const FundingSourceForm = () => {
 
   const fundingSources = fundingSourcesDataLoader.data ?? [];
 
-  console.log({ values, fundingSources })
+  console.log({ values, fundingSources });
 
   return (
     <form onSubmit={handleSubmit}>
@@ -79,16 +78,21 @@ const FundingSourceForm = () => {
           <Box>
             {values.funding_sources.map((surveyFundingSource, index) => {
               return (
-                <Box mb={3} display='flex' gap={2} alignItems='center' key={surveyFundingSource.survey_funding_source_id}>
+                <Box
+                  mb={3}
+                  display="flex"
+                  gap={2}
+                  alignItems="center"
+                  key={surveyFundingSource.survey_funding_source_id}>
                   <AutocompleteField // <IGetFundingSourcesResponse>
                     id={`funding_sources.[${index}].funding_source_id`}
                     name={`funding_sources.[${index}].funding_source_id`}
-                    label='Funding Source'
+                    label="Funding Source"
                     sx={{ flex: 6 }}
                     options={fundingSources.map((fundingSource) => ({
                       value: fundingSource.funding_source_id,
                       label: fundingSource.name
-                    }))}         
+                    }))}
                     // getOptionDisabled={(option) => values.funding_sources.some((source) => source.funding_source_id === option.value)}
                     loading={fundingSourcesDataLoader.isLoading}
                     required
@@ -107,13 +111,12 @@ const FundingSourceForm = () => {
                       title="Remove Funding Source"
                       aria-label="Remove Funding Source"
                       onClick={() => arrayHelpers.remove(index)}
-                      sx={{ ml: -1 }}
-                      >
+                      sx={{ ml: -1 }}>
                       <Icon path={mdiTrashCanOutline} size={1} />
                     </IconButton>
                   </Box>
                 </Box>
-              )
+              );
             })}
             <Button
               data-testid="funding-form-add-button"
@@ -125,7 +128,7 @@ const FundingSourceForm = () => {
               onClick={() => arrayHelpers.push(SurveyFundingSourceInitialValues)}>
               Add Funding Source
             </Button>
-          </Box>    
+          </Box>
         )}
       />
     </form>

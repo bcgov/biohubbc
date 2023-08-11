@@ -22,9 +22,9 @@ const SurveyFundingSources = () => {
     return <></>;
   }
 
-  const { surveyData: { funding_sources } } = surveyForViewData;
-
-  return (<></>)
+  const {
+    surveyData: { funding_sources }
+  } = surveyForViewData;
 
   return (
     <>
@@ -35,8 +35,8 @@ const SurveyFundingSources = () => {
               <ListItem disableGutters divider key={surveyFundingSource.funding_source_id}>
                 <Box flex="1 1 auto">
                   <Box pb={1.25}>
-                    <Typography component={Link} to='/'>
-                      {surveyFundingSource.name}
+                    <Typography component={Link} to="/">
+                      {surveyFundingSource.funding_source_name}
                     </Typography>
                   </Box>
                   <Box component="dl" m={0}>
@@ -45,10 +45,12 @@ const SurveyFundingSources = () => {
                         <Typography component="dt" variant="subtitle2" color="textSecondary">
                           Project ID
                         </Typography>
-                        <Typography component="dd">{item.agency_project_id || 'No Agency Project ID'}</Typography>
+                        <Typography component="dd">
+                          {surveyFundingSource.funding_source_id || 'No Agency Project ID'}
+                        </Typography>
                       </Grid>
                       <Grid item sm={6}>
-                        {item.start_date && item.end_date && (
+                        {surveyFundingSource.start_date && surveyFundingSource.end_date && (
                           <>
                             <Typography component="dt" variant="subtitle2" color="textSecondary">
                               Timeline
@@ -56,20 +58,20 @@ const SurveyFundingSources = () => {
                             <Typography component="dd">
                               {getFormattedDateRangeString(
                                 DATE_FORMAT.ShortMediumDateFormat,
-                                item.start_date,
-                                item.end_date
+                                surveyFundingSource.start_date,
+                                surveyFundingSource.end_date
                               )}
                             </Typography>
                           </>
                         )}
                       </Grid>
                       <Grid item sm={12}>
-                        {item.funding_amount && (
+                        {surveyFundingSource.amount && (
                           <>
                             <Typography component="dt" variant="subtitle2" color="textSecondary">
                               Funding Amount
                             </Typography>
-                            <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
+                            <Typography component="dd">{getFormattedAmount(surveyFundingSource.amount)}</Typography>
                           </>
                         )}
                       </Grid>

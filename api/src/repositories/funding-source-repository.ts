@@ -28,7 +28,11 @@ const SurveyFundingSource = z.object({
   survey_id: z.number(),
   funding_source_id: z.number(),
   amount: z.number(),
-  revision_count: z.number().optional()
+  revision_count: z.number().optional(),
+  funding_source_name: z.string().optional(),
+  start_date: z.string().optional().nullable(),
+  end_date: z.string().optional().nullable(),
+  description: z.string().optional()
 });
 
 export type SurveyFundingSource = z.infer<typeof SurveyFundingSource>;
@@ -345,12 +349,23 @@ export class FundingSourceRepository extends BaseRepository {
   async getSurveyFundingSources(surveyId: number): Promise<SurveyFundingSource[]> {
     const sqlStatement = SQL`
       SELECT
-        *,
-        amount::numeric::int
+        sfs.survey_funding_source_id,
+        sfs.survey_id,
+        sfs.funding_source_id,
+        sfs.amount::numeric::int,
+        sfs.revision_count,
+        fs.name as funding_source_name,
+        fs.start_date,
+        fs.end_date,
+        fs.description
       FROM
-        survey_funding_source
+        survey_funding_source sfs
+      LEFT JOIN
+        funding_source fs
+      ON
+        sfs.funding_source_id = fs.funding_source_id
       WHERE
-        survey_id = ${surveyId};
+        sfs.survey_id = ${surveyId};
     `;
     const response = await this.connection.sql(sqlStatement, SurveyFundingSource);
     return response.rows;

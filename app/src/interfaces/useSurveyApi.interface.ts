@@ -271,10 +271,9 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
 }
 
-export type IEditSurveyRequest =
-  & IGeneralInformationForm
-  & IPurposeAndMethodologyForm
-  & ISurveyFundingSourceForm
-  & IStudyAreaForm
-  & IProprietaryDataForm
-  & IUpdateAgreementsForm
+export type IEditSurveyRequest = IGeneralInformationForm &
+  IPurposeAndMethodologyForm &
+  ISurveyFundingSourceForm &
+  IStudyAreaForm &
+  IProprietaryDataForm &
+  IUpdateAgreementsForm;
