@@ -15,7 +15,7 @@ export interface ISurveyFundingSource {
   funding_source_id: number;
   amount: number;
   revision_count: number;
-  survey_funding_source_id: number;
+  survey_funding_source_id?: number;
   survey_id: number;
   funding_source_name?: string;
   start_date?: string;
@@ -31,7 +31,7 @@ const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
   funding_source_id: undefined as unknown as number,
   amount: 0,
   revision_count: 0,
-  survey_funding_source_id: 0,
+  survey_funding_source_id: undefined,
   survey_id: 0
 };
 
@@ -72,8 +72,6 @@ const SurveyFundingSourceForm = () => {
   fundingSourcesDataLoader.load();
 
   const fundingSources = fundingSourcesDataLoader.data ?? [];
-
-  console.log({ values, fundingSources });
 
   return (
     <form onSubmit={handleSubmit}>
