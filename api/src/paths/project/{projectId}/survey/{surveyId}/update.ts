@@ -147,8 +147,13 @@ PUT.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['funding_source_id', 'amount', 'revision_count'],
+                required: ['funding_source_id', 'amount'],
                 properties: {
+                  survey_funding_source_id: {
+                    type: 'number',
+                    minimum: 1,
+                    nullable: true
+                  },
                   funding_source_id: {
                     type: 'number',
                     minimum: 1
