@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interface';
-import { getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 
 export interface IFundingSourceDetailsProps {
   fundingSource: IGetFundingSourceResponse['funding_source'];
@@ -53,7 +53,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
               Total Amount
             </Typography>
             <Typography component="dd" data-testid="funding_source_total_amount">
-              {props.fundingSource.survey_reference_amount_total}
+              {getFormattedAmount(props.fundingSource.survey_reference_amount_total)}
             </Typography>
           </Grid>
           <Grid item sm={6}>

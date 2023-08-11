@@ -4,7 +4,12 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { FundingSource } from '../../repositories/funding-source-repository';
+import {
+  FundingSource,
+  FundingSourceSupplementaryData,
+  SurveyFundingSource,
+  SurveyFundingSourceSupplementaryData
+} from '../../repositories/funding-source-repository';
 import { FundingSourceService } from '../../services/funding-source-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { deleteFundingSource, getFundingSource, putFundingSource } from './{fundingSourceId}';
@@ -17,12 +22,30 @@ describe('getFundingSource', () => {
   });
 
   it('gets a funding source', async () => {
-    const mockFundingSource: FundingSource = {
-      funding_source_id: 1,
-      name: 'name',
-      start_date: '2020-01-01',
-      end_date: '2020-01-01',
-      description: 'description'
+    const mockFundingSource: {
+      funding_source: FundingSource | FundingSourceSupplementaryData;
+      funding_source_survey_references: (SurveyFundingSource | SurveyFundingSourceSupplementaryData)[];
+    } = {
+      funding_source: {
+        funding_source_id: 1,
+        name: 'name',
+        start_date: '2020-01-01',
+        end_date: '2020-01-01',
+        description: 'description',
+        revision_count: 1,
+        survey_reference_amount_total: 100000,
+        survey_reference_count: 2
+      },
+      funding_source_survey_references: [
+        {
+          survey_funding_source_id: 1,
+          survey_id: 2,
+          funding_source_id: 3,
+          amount: 500,
+          survey_name: 'survey name',
+          revision_count: 0
+        }
+      ]
     };
 
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub() });

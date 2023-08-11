@@ -2,7 +2,13 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { FundingSource, FundingSourceRepository } from '../repositories/funding-source-repository';
+import {
+  FundingSource,
+  FundingSourceRepository,
+  FundingSourceSupplementaryData,
+  SurveyFundingSource,
+  SurveyFundingSourceSupplementaryData
+} from '../repositories/funding-source-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { FundingSourceService, ICreateFundingSource } from './funding-source-service';
 
@@ -33,7 +39,7 @@ describe('FundingSourceService', () => {
         .resolves(expectedResult);
 
       const getFundingSourcesSupplementaryDataStub = sinon
-        .stub(FundingSourceRepository.prototype, 'getFundingSourceBasicSupplementaryData')
+        .stub(FundingSourceRepository.prototype, 'getFundingSourceSupplementaryData')
         .resolves({ survey_reference_count: 2, survey_reference_amount_total: 1 });
 
       const response = await fundingSourceService.getFundingSources({ name: 'name' });
@@ -59,24 +65,43 @@ describe('FundingSourceService', () => {
       const dbConnection = getMockDBConnection();
       const fundingSourceService = new FundingSourceService(dbConnection);
 
-      const expectedResult = {
+      const expectedResult1: FundingSource | FundingSourceSupplementaryData = {
         funding_source_id: 1,
         name: 'name',
         start_date: '2020-01-01',
         end_date: '2020-01-01',
-        description: 'description'
+        description: 'description',
+        revision_count: 0,
+        survey_reference_amount_total: 1,
+        survey_reference_count: 500
       };
 
-      const getFundingSourceByIdStub = sinon
+      const expectedResult2: (SurveyFundingSource | SurveyFundingSourceSupplementaryData)[] = [
+        {
+          survey_funding_source_id: 1,
+          survey_id: 2,
+          funding_source_id: 3,
+          amount: 500,
+          survey_name: 'survey name',
+          revision_count: 0
+        }
+      ];
+
+      const getFundingSourceStub = sinon
         .stub(FundingSourceRepository.prototype, 'getFundingSource')
-        .resolves(expectedResult);
+        .resolves(expectedResult1);
+
+      const getFundingSourceSurveyReferencesStub = sinon
+        .stub(FundingSourceRepository.prototype, 'getFundingSourceSurveyReferences')
+        .resolves(expectedResult2);
 
       const fundingSourceId = 1;
 
       const response = await fundingSourceService.getFundingSource(fundingSourceId);
 
-      expect(getFundingSourceByIdStub).to.be.calledOnce;
-      expect(response).to.eql(expectedResult);
+      expect(getFundingSourceStub).to.be.calledOnceWith(fundingSourceId);
+      expect(getFundingSourceSurveyReferencesStub).to.be.calledOnceWith(fundingSourceId);
+      expect(response).to.eql({ funding_source: expectedResult1, funding_source_survey_references: expectedResult2 });
     });
   });
 
