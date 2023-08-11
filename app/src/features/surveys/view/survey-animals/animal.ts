@@ -48,8 +48,8 @@ const AnimalCaptureSchema = yup.object({}).shape({
 export const AnimalMarkingSchema = yup.object({}).shape({
   marking_type_id: yup.string().required(req),
   taxon_marking_body_location_id: yup.string().required(req),
-  primary_colour_id: yup.string(),
-  secondary_colour_id: yup.string(),
+  primary_colour_id: yup.string().optional(),
+  secondary_colour_id: yup.string().optional(),
   marking_comment: yup.string()
 });
 
