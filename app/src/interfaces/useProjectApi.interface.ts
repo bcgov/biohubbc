@@ -361,6 +361,8 @@ export interface IGetProjectParticipantsResponse {
 
 export interface IAddProjectParticipant {
   userIdentifier: string;
+  displayName: string;
+  email: string;
   identitySource: string;
   roleId: number;
 }

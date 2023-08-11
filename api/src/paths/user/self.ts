@@ -97,7 +97,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get a user by its user identifier.
+ * Get the currently logged in user.
  *
  * @returns {RequestHandler}
  */
@@ -116,6 +116,7 @@ export function getUser(): RequestHandler {
 
       const userService = new UserService(connection);
 
+      // Fetch system user record
       const userObject = await userService.getUserById(userId);
 
       await connection.commit();

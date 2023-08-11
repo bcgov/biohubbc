@@ -22,9 +22,20 @@ type BCEIDBusinessAttributes = BCEIDBasicAttributes & {
   display_name: [string];
 };
 
-interface KeycloakGetUserResponse {
-  users: KeycloakUser[];
-  roles: Record<string, string>[];
+interface KeycloakIDIRUserRecord {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  attributes: {
+    idir_user_guid: string[];
+    idir_username: string[];
+    display_name: string[];
+  };
+}
+
+interface KeycloakIDIRUserResponse {
+  data: KeycloakIDIRUserRecord[];
 }
 
 export type KeycloakUser = {
@@ -38,22 +49,29 @@ export type KeycloakUser = {
 const defaultLog = getLogger('services/keycloak-service');
 
 /**
- * Service for calling the keycloak admin API.
+ * Service for calling the Keycloak Gold Standard CSS API.
  *
- * Keycloak Documentation (select version and see `Administration REST API` section):
- * - https://www.keycloak.org/documentation-archive.html
+ * API Swagger Doc: https://api.loginproxy.gov.bc.ca/openapi/swagger#/Users/get__environment__basic_business_bceid_users
  *
  * @export
  * @class KeycloakService
  */
 export class KeycloakService {
-  keycloakTokenHost: string;
+  // Used to authenticate with the CSS API using the SIMS API credentials
+  keycloakApiTokenUrl: string;
+  keycloakApiClientId: string;
+  keycloakApiClientSecret: string;
+
+  // Used to query the CSS API
   keycloakApiHost: string;
   keycloakIntegrationId: string;
   keycloakEnvironment: string;
 
   constructor() {
-    this.keycloakTokenHost = `${process.env.KEYCLOAK_HOST}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/token`;
+    this.keycloakApiTokenUrl = `${process.env.KEYCLOAK_API_TOKEN_URL}`;
+    this.keycloakApiClientId = `${process.env.KEYCLOAK_API_CLIENT_ID}`;
+    this.keycloakApiClientSecret = `${process.env.KEYCLOAK_API_CLIENT_SECRET}`;
+
     this.keycloakApiHost = `${process.env.KEYCLOAK_API_HOST}`;
     this.keycloakIntegrationId = `${process.env.KEYCLOAK_INTEGRATION_ID}`;
     this.keycloakEnvironment = `${process.env.KEYCLOAK_ENVIRONMENT}`;
@@ -66,15 +84,13 @@ export class KeycloakService {
    * @memberof KeycloakService
    */
   async getKeycloakToken(): Promise<string> {
-    defaultLog.debug({ label: 'getKeycloakToken', keycloakTokenHost: this.keycloakTokenHost });
-
     try {
       const { data } = await axios.post(
-        this.keycloakTokenHost,
+        this.keycloakApiTokenUrl,
         qs.stringify({
           grant_type: 'client_credentials',
-          client_id: process.env.KEYCLOAK_ADMIN_USERNAME,
-          client_secret: process.env.KEYCLOAK_ADMIN_PASSWORD
+          client_id: this.keycloakApiClientId,
+          client_secret: this.keycloakApiClientSecret
         }),
         {
           headers: {
@@ -85,49 +101,41 @@ export class KeycloakService {
 
       return data.access_token as string;
     } catch (error) {
+      defaultLog.debug({ label: 'getKeycloakToken', message: 'error', error: error });
       throw new ApiGeneralError('Failed to authenticate with keycloak', [(error as Error).message]);
     }
   }
 
   /**
-   * Fetch keycloak user data by the keycloak username.
-   *
-   * Note on IDIR and BCEID usernames:
-   * - Format is `<username>@idir` or `<username>@bceid`
+   * Search for keycloak IDIR users based on provided criteria.
    *
    * @param {string} username
-   * @return {*}  {Promise<KeycloakUser>}
+   * @return {*}  {Promise<KeycloakIDIRUserRecord[]>}
    * @memberof KeycloakService
    */
-  async getUserByUsername(username: string): Promise<KeycloakUser> {
+  async findIDIRUsers(criteria: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    guid?: string;
+  }): Promise<KeycloakIDIRUserRecord[]> {
     const token = await this.getKeycloakToken();
 
     try {
-      const { data } = await axios.get<KeycloakGetUserResponse>(
-        `${this.keycloakApiHost}/integrations/${this.keycloakIntegrationId}/${
-          this.keycloakEnvironment
-        }/user-role-mappings?${qs.stringify({ username })}`,
+      const { data } = await axios.get<KeycloakIDIRUserResponse>(
+        `${this.keycloakApiHost}/${this.keycloakEnvironment}/idir/users?${qs.stringify({ guid: criteria.guid })}`,
         {
           headers: { authorization: `Bearer ${token}` }
         }
       );
 
-      if (!data.users.length) {
-        throw new ApiGeneralError('Found no matching keycloak users');
+      if (!data) {
+        throw new ApiGeneralError('Found no matching keycloak idir users');
       }
 
-      if (data.users.length !== 1) {
-        throw new ApiGeneralError('Found too many matching keycloak users');
-      }
-
-      return {
-        username: data.users[0].username,
-        email: data.users[0].email,
-        firstName: data.users[0].firstName,
-        lastName: data.users[0].lastName,
-        attributes: data.users[0].attributes
-      };
+      return data.data;
     } catch (error) {
+      defaultLog.debug({ label: 'getUserByUsername', message: 'error', error: error });
       throw new ApiGeneralError('Failed to get user info from keycloak', [(error as Error).message]);
     }
   }

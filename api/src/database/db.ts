@@ -2,10 +2,21 @@ import knex, { Knex } from 'knex';
 import * as pg from 'pg';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
-import { getUserGuid, getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
+import {
+  getKeycloakUserInformationFromKeycloakToken,
+  getUserGuid,
+  getUserIdentitySource,
+  KeycloakUserInformation
+} from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { asyncErrorWrapper, getZodQueryResult, syncErrorWrapper } from './db-utils';
+import {
+  asyncErrorWrapper,
+  getGenericizedKeycloakUserInformation,
+  getZodQueryResult,
+  syncErrorWrapper
+} from './db-utils';
 
 const defaultLog = getLogger('database/db');
 
@@ -157,8 +168,6 @@ export interface IDBConnection {
   ) => Promise<pg.QueryResult<T>>;
   /**
    * Get the ID of the system user in context.
-   *
-   * Note: will always return `null` if the connection is not open.
    *
    * @throws If the connection is not open.
    * @memberof IDBConnection
@@ -356,61 +365,85 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   /**
    * Set the user context.
    *
-   * Sets the _systemUserId if successful.
+   * Sets the `_systemUserId` if successful.
+   *
+   * @return {*}  {Promise<void>}
    */
-  const _setUserContext = async () => {
-    const userGuid = getUserGuid(_token);
-    const userIdentifier = getUserIdentifier(_token);
-    const userIdentitySource = getUserIdentitySource(_token);
-    defaultLog.debug({ label: '_setUserContext', userGuid, userIdentifier, userIdentitySource });
+  const _setUserContext = async (): Promise<void> => {
+    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(_token);
 
-    if (!userGuid || !userIdentifier || !userIdentitySource) {
+    if (!keycloakUserInformation) {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
-    // Patch user GUID
-    const patchUserGuidSqlStatement = SQL`
-      UPDATE
-        system_user
-      SET
-        user_guid = ${userGuid.toLowerCase()}
-      WHERE
-        system_user_id
-      IN (
-        SELECT
-          su.system_user_id
-        FROM
-          system_user su
-        LEFT JOIN
-          user_identity_source uis
-        ON
-          uis.user_identity_source_id = su.user_identity_source_id
-        WHERE
-          su.user_identifier ILIKE ${userIdentifier}
-        AND
-          uis.name ILIKE ${userIdentitySource}
-        AND
-          user_guid IS NULL
+    defaultLog.debug({ label: '_setUserContext', keycloakUserInformation });
+
+    // Update the logged in user with their latest information from Keyclaok (if it has changed)
+    await _updateSystemUserInformation(keycloakUserInformation);
+
+    try {
+      // Set the user context in the database, so database queries are aware of the calling user when writing to audit
+      // tables, etc.
+      _systemUserId = await _setSystemUserContext(
+        getUserGuid(keycloakUserInformation),
+        getUserIdentitySource(keycloakUserInformation)
       );
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to set user context', [error as object]);
+    }
+  };
+
+  /**
+   * Update a system user's record with the latest information from a verified Keycloak token.
+   *
+   * Note: Does nothing if the user is an internal database user.
+   *
+   * @param {KeycloakUserInformation} keycloakUserInformation
+   * @return {*}  {Promise<void>}
+   */
+  const _updateSystemUserInformation = async (keycloakUserInformation: KeycloakUserInformation): Promise<void> => {
+    const data = getGenericizedKeycloakUserInformation(keycloakUserInformation);
+
+    if (!data) {
+      return;
+    }
+
+    const patchSystemUserSQLStatement = SQL`
+      SELECT api_patch_system_user(
+        ${data.user_guid},
+        ${data.user_identifier},
+        ${data.user_identity_source},
+        ${data.email},
+        ${data.display_name},
+        ${data.given_name || null},
+        ${data.family_name || null},
+        ${data.agency || null}
+      )
     `;
 
-    // Set the user context for all queries made using this connection
+    await _client.query(patchSystemUserSQLStatement.text, patchSystemUserSQLStatement.values);
+  };
+
+  /**
+   * Set the user context for all queries made using this connection.
+   *
+   * This is necessary in order for the database audit triggers to function properly.
+   *
+   * @param {string} userGuid
+   * @param {SYSTEM_IDENTITY_SOURCE} userIdentitySource
+   * @return {*}
+   */
+  const _setSystemUserContext = async (userGuid: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE) => {
     const setSystemUserContextSQLStatement = SQL`
       SELECT api_set_context(${userGuid}, ${userIdentitySource});
     `;
 
-    try {
-      await _client.query(patchUserGuidSqlStatement.text, patchUserGuidSqlStatement.values);
+    const response = await _client.query(
+      setSystemUserContextSQLStatement.text,
+      setSystemUserContextSQLStatement.values
+    );
 
-      const response = await _client.query(
-        setSystemUserContextSQLStatement.text,
-        setSystemUserContextSQLStatement.values
-      );
-
-      _systemUserId = response?.rows?.[0].api_set_context;
-    } catch (error) {
-      throw new ApiExecuteSQLError('Failed to set user context', [error as object]);
-    }
+    return response?.rows?.[0].api_set_context;
   };
 
   return {
@@ -435,9 +468,9 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({
-    preferred_username: `${getDbUsername()}@database`,
-    sims_system_username: getDbUsername(),
-    identity_provider: 'database'
+    database_user_guid: getDbUsername(),
+    identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
+    username: getDbUsername()
   });
 };
 
