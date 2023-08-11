@@ -2,13 +2,11 @@ import { mdiInformationOutline, mdiPencilOutline, mdiTrashCanOutline } from '@md
 import Icon from '@mdi/react';
 import { Theme } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridActionsCellItem, GridColDef, GridOverlay } from '@mui/x-data-grid';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { useCallback } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedAmount } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -72,19 +70,7 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
     {
       field: 'name',
       headerName: 'Name',
-      flex: 1,
-      disableColumnMenu: true,
-      renderCell: (params) => (
-        <Link
-          style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-          data-testid={params.row.name}
-          underline="always"
-          title={params.row.name}
-          component={RouterLink}
-          to={`/admin/funding-sources/edit?fundingSourceId=${params.row.funding_source_id}`}
-          children={params.row.name}
-        />
-      )
+      flex: 1
     },
     {
       field: 'survey_reference_amount_total',

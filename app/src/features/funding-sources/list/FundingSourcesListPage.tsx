@@ -40,15 +40,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: theme.spacing(0.75),
     paddingBottom: theme.spacing(0.75)
   },
-  actionButton: {
-    marginLeft: theme.spacing(1),
-    minWidth: '6rem'
-  },
   toolbarCount: {
     fontWeight: 400
-  },
-  filtersBox: {
-    background: '#f7f8fa'
   }
 }));
 

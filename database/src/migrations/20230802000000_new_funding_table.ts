@@ -79,6 +79,7 @@ export async function up(knex: Knex): Promise<void> {
   COMMENT ON COLUMN survey_funding_source.survey_funding_source_id            IS 'System generated surrogate primary key identifier.';
   COMMENT ON COLUMN survey_funding_source.funding_source_id                   IS 'The id of the funding source.';
   COMMENT ON COLUMN survey_funding_source.survey_id                           IS 'The id of the survey.';
+  COMMENT ON COLUMN survey_funding_source.amount                              IS 'The amount of money from the funding source being used by the survey.';
   COMMENT ON COLUMN survey_funding_source.create_date                         IS 'the datetime the record was created';
   COMMENT ON COLUMN survey_funding_source.create_user                         IS 'The id of the user who created the record as identified in the system user table.';
   COMMENT ON COLUMN survey_funding_source.update_date                         IS 'The datetime the record was updated.';
