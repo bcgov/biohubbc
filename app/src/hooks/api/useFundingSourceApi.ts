@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IFundingSourceData } from 'features/funding-sources/components/FundingSourceForm';
-import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
+import { IGetFundingSourceResponse, IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 
 /**
  * Returns a set of supported api methods for working with funding sources.
@@ -47,12 +47,12 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get a single funding source.
+   * Get a single funding source and its survey references.
    *
    * @param {number} fundingSourceId
-   * @return {*}  {Promise<IGetFundingSourcesResponse>}
+   * @return {*}  {Promise<IGetFundingSourceResponse>}
    */
-  const getFundingSource = async (fundingSourceId: number): Promise<IGetFundingSourcesResponse> => {
+  const getFundingSource = async (fundingSourceId: number): Promise<IGetFundingSourceResponse> => {
     const { data } = await axios.get(`/api/funding-sources/${fundingSourceId}`);
 
     return data;

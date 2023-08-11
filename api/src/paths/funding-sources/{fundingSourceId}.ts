@@ -48,21 +48,75 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['funding_source_id', 'name', 'description', 'revision_count'],
+            required: ['funding_source', 'funding_source_survey_references'],
             properties: {
-              funding_source_id: {
-                type: 'integer',
-                minimum: 1
+              funding_source: {
+                type: 'object',
+                required: [
+                  'funding_source_id',
+                  'name',
+                  'description',
+                  'revision_count',
+                  'survey_reference_count',
+                  'survey_reference_amount_total'
+                ],
+                properties: {
+                  funding_source_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
+                    type: 'string'
+                  },
+                  revision_count: {
+                    type: 'integer',
+                    minimum: 0
+                  },
+                  survey_reference_count: {
+                    type: 'number',
+                    minimum: 0,
+                    description: 'The number of surveys that reference this funding source.'
+                  },
+                  survey_reference_amount_total: {
+                    type: 'number',
+                    minimum: 0,
+                    description: 'The total amount from all references to this funding source by all surveys.'
+                  }
+                }
               },
-              name: {
-                type: 'string'
-              },
-              description: {
-                type: 'string'
-              },
-              revision_count: {
-                type: 'integer',
-                minimum: 0
+              funding_source_survey_references: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['survey_funding_source_id', 'survey_id', 'funding_source_id', 'amount', 'revision_count'],
+                  properties: {
+                    survey_funding_source_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    survey_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    funding_source_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    amount: {
+                      type: 'number'
+                    },
+                    revision_count: {
+                      type: 'integer',
+                      minimum: 0
+                    },
+                    survey_name: {
+                      type: 'string'
+                    }
+                  }
+                }
               }
             }
           }

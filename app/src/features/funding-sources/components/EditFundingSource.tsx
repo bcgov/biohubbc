@@ -95,36 +95,34 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
     }
   };
 
-  if (!fundingSourceDataLoader.isReady && !fundingSourceDataLoader.data) {
+  if (!fundingSourceDataLoader.isReady || !fundingSourceDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
-    <>
-      <EditDialog
-        dialogTitle={FundingSourceI18N.updateFundingSourceDialogTitle}
-        dialogText={FundingSourceI18N.updateFundingSourceDialogText}
-        open={props.isModalOpen}
-        dialogLoading={isSubmitting}
-        component={{
-          element: <FundingSourceForm />,
-          initialValues: {
-            funding_source_id: fundingSourceDataLoader.data!.funding_source_id,
-            name: fundingSourceDataLoader.data!.name,
-            description: fundingSourceDataLoader.data!.description,
-            start_date: fundingSourceDataLoader.data!.start_date,
-            end_date: fundingSourceDataLoader.data!.end_date,
-            revision_count: fundingSourceDataLoader.data!.revision_count
-          },
-          validationSchema: FundingSourceYupSchema
-        }}
-        dialogSaveButtonLabel="Update"
-        onCancel={() => props.closeModal()}
-        onSave={(formValues) => {
-          handleSubmitFundingService(formValues);
-        }}
-      />
-    </>
+    <EditDialog
+      dialogTitle={FundingSourceI18N.updateFundingSourceDialogTitle}
+      dialogText={FundingSourceI18N.updateFundingSourceDialogText}
+      open={props.isModalOpen}
+      dialogLoading={isSubmitting}
+      component={{
+        element: <FundingSourceForm />,
+        initialValues: {
+          funding_source_id: fundingSourceDataLoader.data.funding_source.funding_source_id,
+          name: fundingSourceDataLoader.data.funding_source.name,
+          description: fundingSourceDataLoader.data.funding_source.description,
+          start_date: fundingSourceDataLoader.data.funding_source.start_date,
+          end_date: fundingSourceDataLoader.data.funding_source.end_date,
+          revision_count: fundingSourceDataLoader.data.funding_source.revision_count
+        },
+        validationSchema: FundingSourceYupSchema
+      }}
+      dialogSaveButtonLabel="Update"
+      onCancel={() => props.closeModal()}
+      onSave={(formValues) => {
+        handleSubmitFundingService(formValues);
+      }}
+    />
   );
 };
 

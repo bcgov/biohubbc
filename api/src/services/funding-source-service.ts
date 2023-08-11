@@ -3,7 +3,8 @@ import {
   FundingSource,
   FundingSourceBasicSupplementaryData,
   FundingSourceRepository,
-  SurveyFundingSource
+  SurveyFundingSource,
+  SurveyFundingSourceBasicSupplementaryData
 } from '../repositories/funding-source-repository';
 import { DBService } from './db-service';
 
@@ -49,14 +50,27 @@ export class FundingSourceService extends DBService {
   }
 
   /**
-   * Fetch a single funding source.
+   * Fetch a single funding source and its survey references.
    *
    * @param {number} fundingSourceId
-   * @return {*}  {Promise<FundingSource>}
+   * @return {*}  {(Promise<{
+   *     funding_source: FundingSource | FundingSourceBasicSupplementaryData;
+   *     funding_source_survey_references: (SurveyFundingSource | SurveyFundingSourceBasicSupplementaryData)[];
+   *   }>)}
    * @memberof FundingSourceService
    */
-  async getFundingSource(fundingSourceId: number): Promise<FundingSource> {
-    return this.fundingSourceRepository.getFundingSource(fundingSourceId);
+  async getFundingSource(
+    fundingSourceId: number
+  ): Promise<{
+    funding_source: FundingSource | FundingSourceBasicSupplementaryData;
+    funding_source_survey_references: (SurveyFundingSource | SurveyFundingSourceBasicSupplementaryData)[];
+  }> {
+    const results = await Promise.all([
+      this.fundingSourceRepository.getFundingSource(fundingSourceId),
+      this.fundingSourceRepository.getFundingSourceSurveyReferences(fundingSourceId)
+    ]);
+
+    return { funding_source: results[0], funding_source_survey_references: results[1] };
   }
 
   /**
@@ -76,7 +90,7 @@ export class FundingSourceService extends DBService {
    * @param newFundingSource
    * @returns
    */
-  async postFundingSource(newFundingSource: ICreateFundingSource): Promise<Pick<FundingSource, 'funding_source_id'>>{
+  async postFundingSource(newFundingSource: ICreateFundingSource): Promise<Pick<FundingSource, 'funding_source_id'>> {
     return this.fundingSourceRepository.postFundingSource(newFundingSource);
   }
 
