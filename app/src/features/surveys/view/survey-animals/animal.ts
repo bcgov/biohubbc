@@ -21,7 +21,7 @@ const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).ty
 
 const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
-  animal_id: yup.string().required(req),
+  animal_id: yup.string(),
 
   taxon_name: yup.string()
 });
@@ -56,7 +56,7 @@ const AnimalMeasurementSchema = yup.object({}).shape({
   taxon_measurement_id: yup.string().required(req),
   value: numSchema,
   option_id: yup.string(),
-  measured_timestamp: yup.date(),
+  measured_timestamp: yup.date().required(req),
   measurement_comment: yup.string()
 });
 
@@ -79,7 +79,7 @@ const AnimalMortalitySchema = yup.object({}).shape({
 
 const AnimalRelationshipSchema = yup.object({}).shape({
   critter_id: yup.string().uuid('Must be a UUID').required(req),
-  relationship: yup.mixed().oneOf(['Parent', 'Child']).required(req)
+  relationship: yup.mixed().oneOf(['Parent', 'Child', 'Sibling']).required(req)
 });
 
 const AnimalTelemetryDeviceSchema = yup.object({}).shape({
@@ -135,7 +135,7 @@ type IAnimalMortalityPayload = Omit<IAnimalMortality, 'utm_easting' | 'utm_north
 export class Critter {
   taxon_id: string;
   taxon_name: string;
-  animal_id: string;
+  animal_id?: string;
   captures: IAnimalCapturePayload[];
   markings: IAnimalMarking[];
   measurements: {

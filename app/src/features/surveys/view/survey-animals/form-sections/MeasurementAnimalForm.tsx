@@ -92,7 +92,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
 
   return (
     <Fragment key={`marking-inputs-${index}`}>
-      <Grid item xs={6}>
+      <Grid item xs={4}>
         <FormikSelectWrapper
           label="Measurement Type"
           name={tmIDName}
@@ -104,7 +104,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
           ))}
         </FormikSelectWrapper>
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={4}>
         {!isQuantMeasurement && taxonMeasurementId ? (
           <CbSelectField
             label="Value"
@@ -123,6 +123,13 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
               validate={validateValue}
             />
           )}
+      </Grid>
+      <Grid item xs={4}>
+        <CustomTextField
+          other={{ required: true, size: 'small', type: 'date', InputLabelProps: { shrink: true } }}
+          label="Measured Date"
+          name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measured_timestamp', index)}
+        />
       </Grid>
       <Grid item xs={6}>
         <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Measurement')}>

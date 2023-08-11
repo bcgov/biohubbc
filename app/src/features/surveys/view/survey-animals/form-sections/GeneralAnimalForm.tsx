@@ -44,7 +44,7 @@ const GeneralAnimalForm = () => {
         </Box>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
           <CustomTextField
-            other={{ required: true, size: 'small' }}
+            other={{ size: 'small' }}
             label="Individual's Label"
             name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
           />
