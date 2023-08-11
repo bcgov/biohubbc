@@ -187,26 +187,32 @@ export class FundingSourceRepository extends BaseRepository {
    * @memberof FundingSourceRepository
    */
   async deleteFundingSource(fundingSourceId: number): Promise<Pick<FundingSource, 'funding_source_id'>> {
-    const sqlStatement = SQL`
-      DELETE
-      FROM
-        funding_source
-      WHERE
-        funding_source_id = ${fundingSourceId}
-      RETURNING
-        funding_source_id;
-    `;
+    try {
+      const sqlStatement = SQL`
+        DELETE
+        FROM
+          funding_source
+        WHERE
+          funding_source_id = ${fundingSourceId}
+        RETURNING
+          funding_source_id;
+      `;
 
-    const response = await this.connection.sql(sqlStatement, FundingSource.pick({ funding_source_id: true }));
+      const response = await this.connection.sql(sqlStatement, FundingSource.pick({ funding_source_id: true }));
 
-    if (response.rowCount !== 1) {
+      if (response.rowCount !== 1) {
+        throw new ApiExecuteSQLError('Failed to delete funding source', [
+          'FundingSourceRepository->deleteFundingSource',
+          'rowCount was != 1, expected rowCount = 1'
+        ]);
+      }
+
+      return response.rows[0];
+    } catch (error) {
       throw new ApiExecuteSQLError('Failed to delete funding source', [
-        'FundingSourceRepository->deleteFundingSource',
-        'rowCount was != 1, expected rowCount = 1'
+        'This funding source has been referenced by one or more surveys. To delete this record, you will first need to remove it from all related surveys.'
       ]);
     }
-
-    return response.rows[0];
   }
 
   /**

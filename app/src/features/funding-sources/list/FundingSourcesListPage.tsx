@@ -14,6 +14,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
 import CreateFundingSource from '../components/CreateFundingSource';
+import DeleteFundingSource from '../components/DeleteFundingSource';
 import EditFundingSource from '../components/EditFundingSource';
 import FundingSourcePage from '../details/FundingSourcePage';
 import FundingSourcesTable from './FundingSourcesTable';
@@ -54,8 +55,10 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const FundingSourcesListPage: React.FC = () => {
-  const [isCreateModelOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModelOpen, setIsEditModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const [openFundingSourceModal, setOpenFundingSourceModal] = useState(false);
   const [fundingSourceId, setFundingSourceId] = useState<number | null>();
 
@@ -68,21 +71,13 @@ const FundingSourcesListPage: React.FC = () => {
   const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
   fundingSourceDataLoader.load();
 
-  const closeCreateModal = (refresh?: boolean) => {
+  const closeModal = (refresh?: boolean) => {
     if (refresh) {
       fundingSourceDataLoader.refresh();
     }
     setIsCreateModalOpen(false);
     setIsEditModalOpen(false);
-    setFundingSourceId(null);
-  };
-
-  const closeEditModal = (refresh?: boolean) => {
-    if (refresh) {
-      fundingSourceDataLoader.refresh();
-    }
-    setIsCreateModalOpen(false);
-    setIsEditModalOpen(false);
+    setIsDeleteModalOpen(false);
     setFundingSourceId(null);
   };
 
@@ -97,19 +92,26 @@ const FundingSourcesListPage: React.FC = () => {
 
   return (
     <>
-      <CreateFundingSource isModalOpen={isCreateModelOpen} closeModal={closeCreateModal} />
-      {fundingSourceId && (
+      {/* CREATE FUNDING SOURCE */}
+      <CreateFundingSource isModalOpen={isCreateModalOpen} closeModal={closeModal} />
+      {/* FUNDING SOURCE DETAILS MODAL */}
+      {fundingSourceId && openFundingSourceModal && (
         <FundingSourcePage
           fundingSourceId={fundingSourceId}
           open={openFundingSourceModal}
           onClose={() => setOpenFundingSourceModal(false)}
         />
       )}
-      {fundingSourceId && (
-        <EditFundingSource
+      {/* EDIT FUNDING SOURCE MODAL */}
+      {fundingSourceId && isEditModalOpen && (
+        <EditFundingSource funding_source_id={fundingSourceId} isModalOpen={isEditModalOpen} closeModal={closeModal} />
+      )}
+      {/* DELETE FUNDING SOURCE MODAL */}
+      {fundingSourceId && isDeleteModalOpen && (
+        <DeleteFundingSource
           funding_source_id={fundingSourceId}
-          isModalOpen={isEditModelOpen}
-          closeModal={closeEditModal}
+          isModalOpen={isDeleteModalOpen}
+          closeModal={closeModal}
         />
       )}
       <Paper square={true} elevation={0}>
@@ -155,10 +157,13 @@ const FundingSourcesListPage: React.FC = () => {
                   setOpenFundingSourceModal(true);
                 }}
                 onEdit={(fundingSourceId) => {
-                  setIsEditModalOpen(true);
                   setFundingSourceId(fundingSourceId);
+                  setIsEditModalOpen(true);
                 }}
-                onDelete={() => {}}
+                onDelete={(fundingSourceId) => {
+                  setFundingSourceId(fundingSourceId);
+                  setIsDeleteModalOpen(true);
+                }}
               />
             </Box>
           </Paper>
