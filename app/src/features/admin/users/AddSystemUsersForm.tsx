@@ -17,6 +17,8 @@ import yup from 'utils/YupSchema';
 
 export interface IAddSystemUsersFormArrayItem {
   userIdentifier: string;
+  displayName: string;
+  email: string;
   identitySource: string;
   systemRole: number;
 }
@@ -27,6 +29,8 @@ export interface IAddSystemUsersForm {
 
 export const AddSystemUsersFormArrayItemInitialValues: IAddSystemUsersFormArrayItem = {
   userIdentifier: '',
+  displayName: '',
+  email: '',
   identitySource: '',
   systemRole: '' as unknown as number
 };
@@ -39,6 +43,8 @@ export const AddSystemUsersFormYupSchema = yup.object().shape({
   systemUsers: yup.array().of(
     yup.object().shape({
       userIdentifier: yup.string().required('Username is required'),
+      displayName: yup.string().required('Display Name is required'),
+      email: yup.string().email('Must be a valid email').required('Email is required'),
       identitySource: yup.string().required('Login Method is required'),
       systemRole: yup.number().required('Role is required')
     })
@@ -61,6 +67,8 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
             <Grid container direction="row" spacing={2}>
               {values.systemUsers?.map((systemUser: IAddSystemUsersFormArrayItem, index: number) => {
                 const userIdentifierMeta = getFieldMeta(`systemUsers.[${index}].userIdentifier`);
+                const displayNameMeta = getFieldMeta(`systemUsers.[${index}].displayName`);
+                const emailMeta = getFieldMeta(`systemUsers.[${index}].email`);
                 const identitySourceMeta = getFieldMeta(`systemUsers.[${index}].identitySource`);
                 const systemRoleMeta = getFieldMeta(`systemUsers.[${index}].roleId`);
 
@@ -77,6 +85,30 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                               value: systemUser.userIdentifier,
                               error: userIdentifierMeta.touched && Boolean(userIdentifierMeta.error),
                               helperText: userIdentifierMeta.touched && userIdentifierMeta.error
+                            }}
+                          />
+                        </Box>
+                        <Box pl={1} width={220}>
+                          <CustomTextField
+                            name={`systemUsers.[${index}].displayName`}
+                            label="Display Name"
+                            other={{
+                              required: true,
+                              value: systemUser.displayName,
+                              error: displayNameMeta.touched && Boolean(displayNameMeta.error),
+                              helperText: displayNameMeta.touched && displayNameMeta.error
+                            }}
+                          />
+                        </Box>
+                        <Box pl={1} width={220}>
+                          <CustomTextField
+                            name={`systemUsers.[${index}].email`}
+                            label="Email"
+                            other={{
+                              required: true,
+                              value: systemUser.email,
+                              error: emailMeta.touched && Boolean(emailMeta.error),
+                              helperText: emailMeta.touched && emailMeta.error
                             }}
                           />
                         </Box>

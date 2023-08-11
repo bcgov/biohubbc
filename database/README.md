@@ -131,40 +131,16 @@ Important things to consider when making any migrations (not all will apply ever
 
 ## Naming conventions
 
-#### primary id column
-
-- `<table_name>_id`
-
-#### primary key
-
-- `<table_name>_pk`
-
-#### unique key constraint
-
-- `<table_name>_uk1`
-
-#### unique end-date key constraint
-
-- `<table_name>_nuk1`  
-  See [Adding a unique end-date key constraint](#adding-a-unique-end-date-key-constraint)
-
-#### foreign key constraint
-
-- `<table_name>_fk1`
-
-#### index
-
-- `<table_name>_idx1`
-
-#### trigger
-
-- `tr_<table_name>`
-- `tr_<column_name>`
-- `tr_<name>`
-
-#### functions used by the api
-
-- `api_<name_of_function>`
+| Type | Naming Convention | More Info |
+| --- | --- | --- |
+| surrogate id column | `<table_name>_id` |  |
+| primary key | `<table_name>_pk` |  |
+| unique key constraint | `<table_name>_uk1` |  |
+| unique end-date key constraint | `<table_name>_nuk1` | [Adding a unique end-date key constraint](#adding-a-unique-end-date-key-constraint) |
+| foreign key constraint | `<table_name>_fk1` |  |
+| index | `<table_name>_idx1` |  |
+| trigger | `tr_<table_name>` <br> `tr_<column_name>` <br> `tr_<name>` |  |
+| functions used by the api | `api_<name_of_function>` |  |
 
 ## Schemas
 
@@ -280,17 +256,17 @@ CREATE TABLE <table_name_1>(
   CONSTRAINT <table_name_1>_pk PRIMARY KEY (<table_name_1>_id)
 );
 
-COMMENT ON COLUMN <table_name_1>.<table_name_1>_id IS 'System generated surrogate primary key identifier.';
-COMMENT ON COLUMN <table_name_1>.<column_name_1> IS '<column_name_1_comment>';
-COMMENT ON COLUMN <table_name_1>.<column_name_2> IS '<column_name_2_comment>';
-COMMENT ON COLUMN <table_name_1>.<record_effective_date> IS 'Record level effective date.';
-COMMENT ON COLUMN <table_name_1>.<record_end_date> IS 'Record level end date.';
-COMMENT ON COLUMN <table_name_1>.create_date IS 'The datetime the record was created.';
-COMMENT ON COLUMN <table_name_1>.create_user IS 'The id of the user who created the record as identified in the system user table.';
-COMMENT ON COLUMN <table_name_1>.update_date IS 'The datetime the record was updated.';
-COMMENT ON COLUMN <table_name_1>.update_user IS 'The id of the user who updated the record as identified in the system user table.';
-COMMENT ON COLUMN <table_name_1>.revision_count IS 'Revision count used for concurrency control.';
-COMMENT ON TABLE <table_name_1> IS '<table_name_1_comment>';
+COMMENT ON COLUMN <table_name_1>.<table_name_1>_id        IS 'System generated surrogate primary key identifier.';
+COMMENT ON COLUMN <table_name_1>.<column_name_1>          IS '<column_name_1_comment>';
+COMMENT ON COLUMN <table_name_1>.<column_name_2>          IS '<column_name_2_comment>';
+COMMENT ON COLUMN <table_name_1>.<record_effective_date>  IS 'Record level effective date.';
+COMMENT ON COLUMN <table_name_1>.<record_end_date>        IS 'Record level end date.';
+COMMENT ON COLUMN <table_name_1>.create_date              IS 'The datetime the record was created.';
+COMMENT ON COLUMN <table_name_1>.create_user              IS 'The id of the user who created the record as identified in the system user table.';
+COMMENT ON COLUMN <table_name_1>.update_date              IS 'The datetime the record was updated.';
+COMMENT ON COLUMN <table_name_1>.update_user              IS 'The id of the user who updated the record as identified in the system user table.';
+COMMENT ON COLUMN <table_name_1>.revision_count           IS 'Revision count used for concurrency control.';
+COMMENT ON TABLE  <table_name_1>                          IS '<table_name_1_comment>';
 
 -- Add unique end-date key constraint (assuming the table has a record_end_date column and handles deletions as soft deletes by setting the record_end_date column)
 CREATE UNIQUE INDEX <table_name_1>_nuk1 ON <table_name_1>(<column_name_1>, (<record_end_date> is NULL)) where <record_end_date> is null;
@@ -316,17 +292,17 @@ CREATE TABLE <table_name_2>(
   CONSTRAINT <table_name_2>_pk PRIMARY KEY (<table_name_2>_id)
 );
 
-COMMENT ON COLUMN <table_name_2>.<table_name_2>_id IS 'System generated surrogate primary key identifier.';
-COMMENT ON COLUMN <table_name_2>.<column_name_1> IS '<column_name_1_comment>';
-COMMENT ON COLUMN <table_name_2>.<column_name_2> IS '<column_name_2_comment>';
-COMMENT ON COLUMN <table_name_2>.<record_effective_date> IS 'Record level effective date.';
-COMMENT ON COLUMN <table_name_2>.<record_end_date> IS 'Record level end date.';
-COMMENT ON COLUMN <table_name_2>.create_date IS 'The datetime the record was created.';
-COMMENT ON COLUMN <table_name_2>.create_user IS 'The id of the user who created the record as identified in the system user table.';
-COMMENT ON COLUMN <table_name_2>.update_date IS 'The datetime the record was updated.';
-COMMENT ON COLUMN <table_name_2>.update_user IS 'The id of the user who updated the record as identified in the system user table.';
-COMMENT ON COLUMN <table_name_2>.revision_count IS 'Revision count used for concurrency control.';
-COMMENT ON TABLE <table_name_2> IS '<table_name_2_comment>';
+COMMENT ON COLUMN <table_name_2>.<table_name_2>_id        IS 'System generated surrogate primary key identifier.';
+COMMENT ON COLUMN <table_name_2>.<column_name_1>          IS '<column_name_1_comment>';
+COMMENT ON COLUMN <table_name_2>.<column_name_2>          IS '<column_name_2_comment>';
+COMMENT ON COLUMN <table_name_2>.<record_effective_date>  IS 'Record level effective date.';
+COMMENT ON COLUMN <table_name_2>.<record_end_date>        IS 'Record level end date.';
+COMMENT ON COLUMN <table_name_2>.create_date              IS 'The datetime the record was created.';
+COMMENT ON COLUMN <table_name_2>.create_user              IS 'The id of the user who created the record as identified in the system user table.';
+COMMENT ON COLUMN <table_name_2>.update_date              IS 'The datetime the record was updated.';
+COMMENT ON COLUMN <table_name_2>.update_user              IS 'The id of the user who updated the record as identified in the system user table.';
+COMMENT ON COLUMN <table_name_2>.revision_count           IS 'Revision count used for concurrency control.';
+COMMENT ON TABLE  <table_name_2>                          IS '<table_name_2_comment>';
 
 -- Add foreign key constraint from child table to parent table on <column_name_2>
 ALTER TABLE <table_name_2> ADD CONSTRAINT <table_name_2>_fk1
@@ -353,6 +329,68 @@ set search_path=biohub_dapi_v1;
 
 create or replace view <table_name_1> as select * from biohub.<table_name_1>;
 create or replace view <table_name_2> as select * from biohub.<table_name_2>;
+```
+
+### Create new join table
+
+Creating a 'join' table (<table_name_1>) that connects 2 tables (<foreign_table_1>, <foreign_table_2>).
+
+_Note: The example below does not include the creation of the foreign tables (assumes they have already been accounted for)._
+
+_Note: Indexes must be created separately, as foreign keys do not automatically create an index._
+
+```
+----------------------------------------------------------------------------------------
+-- Create join table
+----------------------------------------------------------------------------------------
+set search_path=biohub;
+
+CREATE TABLE <table_name_1>(
+  <table_name_1>_id       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+  <foreign_column_1>      integer           NOT NULL,
+  <foreign_column_2>      integer           NOT NULL,
+  create_date             timestamptz(6)    DEFAULT now() NOT NULL,
+  create_user             integer           NOT NULL,
+  update_date             timestamptz(6),
+  update_user             integer,
+  revision_count          integer           DEFAULT 0 NOT NULL,
+  CONSTRAINT <table_name_1>_pk PRIMARY KEY (<table_name_1>_id)
+);
+
+COMMENT ON COLUMN <table_name_1>.<table_name_1>_id     IS 'System generated surrogate primary key identifier.';
+COMMENT ON COLUMN <table_name_1>.<foreign_column_1>    IS 'System generated surrogate primary key identifier.';
+COMMENT ON COLUMN <table_name_1>.<foreign_column_2>    IS 'System generated surrogate primary key identifier.';
+COMMENT ON COLUMN <table_name_1>.create_date           IS 'The datetime the record was created.';
+COMMENT ON COLUMN <table_name_1>.create_user           IS 'The id of the user who created the record as identified in the system user table.';
+COMMENT ON COLUMN <table_name_1>.update_date           IS 'The datetime the record was updated.';
+COMMENT ON COLUMN <table_name_1>.update_user           IS 'The id of the user who updated the record as identified in the system user table.';
+COMMENT ON COLUMN <table_name_1>.revision_count        IS 'Revision count used for concurrency control.';
+COMMENT ON TABLE  <table_name_1>                       IS 'A associative entity that joins system user and system role.';
+
+-- Add unique key constraint
+CREATE UNIQUE INDEX <table_name_1>_uk1 ON <table_name_1>(<foreign_column_1>, <foreign_column_2>);
+
+-- Add foreign key constraint
+ALTER TABLE <table_name_1> ADD CONSTRAINT <table_name_1>_fk1
+    FOREIGN KEY (<foreign_column_1>)
+    REFERENCES <foreign_table_1>(<foreign_column_1>);
+
+ALTER TABLE <table_name_1> ADD CONSTRAINT <table_name_1>_fk2
+    FOREIGN KEY (<foreign_column_2>)
+    REFERENCES <foreign_table_2>(<foreign_column_2>);
+
+-- Add indexes on key columns
+CREATE INDEX <table_name_1>_idx1 ON <table_name_1>(<foreign_column_1>);
+
+CREATE INDEX <table_name_1>_idx2 ON <table_name_1>(<foreign_column_2>);
+
+----------------------------------------------------------------------------------------
+-- Create views
+----------------------------------------------------------------------------------------
+set search_path=biohub_dapi_v1;
+
+create or replace view <table_name_1> as select * from biohub.<table_name_1>;
+
 ```
 
 ## Miscellaneous Migration Snippets
@@ -390,11 +428,11 @@ CREATE INDEX <table_name_2>_idx1 ON <table_name_2>(<column_name_2>);
 Should be added to every table.
 
 ```
-create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-create_user              integer           NOT NULL,
-update_date              timestamptz(6),
-update_user              integer,
-revision_count           integer           DEFAULT 0 NOT NULL,
+create_date      timestamptz(6)    DEFAULT now() NOT NULL,
+create_user      integer           NOT NULL,
+update_date      timestamptz(6),
+update_user      integer,
+revision_count   integer           DEFAULT 0 NOT NULL,
 ```
 
 ### Create Audit/Journal Triggers
