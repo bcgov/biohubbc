@@ -4,12 +4,12 @@ import get from 'lodash-es/get';
 import React from 'react';
 import NumberFormat, { NumberFormatProps } from 'react-number-format';
 
-export type IDollarAmountFieldProps = (TextFieldProps & {
+export type IDollarAmountFieldProps = TextFieldProps & {
   required?: boolean;
   id: string;
   label: string;
   name: string;
-});
+};
 
 interface NumberFormatCustomProps {
   onChange: (event: { target: { name: string; value: number } }) => void;

@@ -7,7 +7,7 @@ import { useContext } from 'react';
 import { getFormattedAmount } from 'utils/Utils';
 
 /**
- * Funding source content for a project.
+ * Funding source content for a survey.
  *
  * @return {*}
  */
@@ -34,9 +34,9 @@ const SurveyFundingSources = () => {
                   <Box>
                     <Typography>
                       {surveyFundingSource.funding_source_name}
-                      <Typography component='span'>
+                      <Typography component="span">
                         &nbsp;&ndash; {getFormattedAmount(surveyFundingSource.amount)}
-                    </Typography>
+                      </Typography>
                     </Typography>
                   </Box>
                 </Box>

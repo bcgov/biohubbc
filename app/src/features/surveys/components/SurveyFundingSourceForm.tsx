@@ -36,18 +36,15 @@ const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
 };
 
 export const SurveyFundingSourceYupSchema = yup.object().shape({
-  funding_source_id: yup
-    .number()
-    .required('Must select a Funding Source')
-    .min(1, 'Must select a valid Funding Source'), // TODO confirm that this is not triggered when the autocomplete is empty.
+  funding_source_id: yup.number().required('Must select a Funding Source').min(1, 'Must select a valid Funding Source'), // TODO confirm that this is not triggered when the autocomplete is empty.
   amount: yup
     .number()
     .min(0, 'Must be a positive number')
     .max(9999999999, 'Cannot exceed $9,999,999,999')
-    .transform((value) => isNaN(value) ? null : Number(value))
+    .transform((value) => (isNaN(value) ? null : Number(value)))
     .nullable(true)
 
-    // .typeError('Must be a number')
+  // .typeError('Must be a number')
 });
 
 export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {

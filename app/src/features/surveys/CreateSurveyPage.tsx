@@ -26,7 +26,6 @@ import { Prompt, useHistory } from 'react-router';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
-import SurveyFundingSourceForm, { SurveyFundingSourceFormInitialValues, SurveyFundingSourceFormYupSchema } from './components/SurveyFundingSourceForm';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema
@@ -40,6 +39,10 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
+import SurveyFundingSourceForm, {
+  SurveyFundingSourceFormInitialValues,
+  SurveyFundingSourceFormYupSchema
+} from './components/SurveyFundingSourceForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {

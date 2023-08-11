@@ -94,7 +94,7 @@ const AutocompleteField: React.FC<React.PropsWithChildren<IAutocompleteField<str
                 {props.loading ? <CircularProgress color="inherit" size={20} /> : null}
                 {params.InputProps.endAdornment}
               </>
-            ),
+            )
           }}
         />
       )}

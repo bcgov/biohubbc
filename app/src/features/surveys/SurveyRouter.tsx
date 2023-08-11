@@ -4,9 +4,9 @@ import SurveyPage from 'features/surveys/view/SurveyPage';
 import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Route, Switch } from 'react-router';
-import EditSurveyPage from './edit/EditSurveyPage';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import EditSurveyPage from './edit/EditSurveyPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
