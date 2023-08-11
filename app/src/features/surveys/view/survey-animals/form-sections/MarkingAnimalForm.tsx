@@ -26,6 +26,7 @@ const MarkingAnimalForm = () => {
         <>
           <FormSectionWrapper
             title={SurveyAnimalsI18N.animalMarkingTitle}
+            addedSectionTitle={SurveyAnimalsI18N.animalMarkingTitle2}
             titleHelp={SurveyAnimalsI18N.animalMarkingHelp}
             btnLabel={SurveyAnimalsI18N.animalMarkingAddBtn}
             handleAddSection={() => push(newMarking)}

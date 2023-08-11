@@ -304,23 +304,28 @@ export const SurveyAnimalsI18N = {
   animalGeneralTitle: 'General',
   animalGeneralHelp: 'General help placeholder',
   animalCaptureTitle: 'Capture Information',
+  animalCaptureTitle2: 'Capture Event',
   animalCaptureHelp:
     'Capture Events are when animals have been deliberately handled or immobilized. All capture events should be reported by adding a Capture Event to a new or existing individual.',
   animalCaptureAddBtn: 'Add Capture Event',
   animalCaptureReleaseRadio: 'This individual was released at a different location than where it was captured',
   animalMarkingTitle: 'Markings',
+  animalMarkingTitle2: 'Animal Marking',
   animalMarkingHelp:
     'Markings are physical, chemical, or electronic tags or characteristics that uniquely identify individuals.',
   animalMarkingAddBtn: 'Add Marking',
   animalMeasurementTitle: 'Measurements',
+  animalMeasurementTitle2: 'Animal Measurement',
   animalMeasurementHelp:
     'Measurements are quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
   animalMeasurementAddBtn: 'Add Measurement',
   animalFamilyTitle: 'Family',
+  animalFamilyTitle2: 'Animal Relationship',
   animalFamilyHelp:
     'Family Relationships describe how multiple individuals are related to one another. You must add an individual before it can be referenced as a parent or child of another individual.',
   animalFamilyAddBtn: 'Add Relationship',
   animalMortalityTitle: 'Mortality',
+  animalMortalityTitle2: 'Mortality Event',
   animalMortalityHelp:
     "Mortality Events describe an individual's death, including the suspected location, date, and cause of death. An individual can only have one Mortality Event.",
   animalMortalityAddBtn: 'Add Mortality',

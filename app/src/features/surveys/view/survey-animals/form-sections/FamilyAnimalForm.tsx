@@ -53,6 +53,7 @@ const FamilyAnimalForm = () => {
         <>
           <FormSectionWrapper
             title={SurveyAnimalsI18N.animalFamilyTitle}
+            addedSectionTitle={SurveyAnimalsI18N.animalFamilyTitle2}
             titleHelp={SurveyAnimalsI18N.animalFamilyHelp}
             btnLabel={SurveyAnimalsI18N.animalFamilyAddBtn}
             handleAddSection={() => push(newRelationship)}

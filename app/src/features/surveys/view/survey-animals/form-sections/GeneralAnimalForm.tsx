@@ -28,7 +28,10 @@ const GeneralAnimalForm = () => {
   };
 
   return (
-    <FormSectionWrapper title={SurveyAnimalsI18N.animalGeneralTitle} titleHelp={SurveyAnimalsI18N.animalGeneralHelp}>
+    <FormSectionWrapper
+      title={SurveyAnimalsI18N.animalGeneralTitle}
+      titleHelp={SurveyAnimalsI18N.animalGeneralHelp}
+      innerPaperProps={{ elevation: 0, variant: 'elevation', sx: { p: 0, mb: 0 } }}>
       <Grid item xs={6}>
         <Box mb={2}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>

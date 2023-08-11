@@ -49,6 +49,7 @@ const CaptureAnimalForm = () => {
         <>
           <FormSectionWrapper
             title={SurveyAnimalsI18N.animalCaptureTitle}
+            addedSectionTitle={SurveyAnimalsI18N.animalCaptureTitle2}
             titleHelp={SurveyAnimalsI18N.animalCaptureHelp}
             btnLabel={SurveyAnimalsI18N.animalCaptureAddBtn}
             handleAddSection={() => push(newCapture)}
@@ -85,9 +86,9 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <TextInputToggle label="Add comment about this Capture">
             <CustomTextField
-              other={{ required: true, size: 'small' }}
-              label="Capture Coordinate Uncertainty"
-              name={getAnimalFieldName<IAnimalCapture>(name, 'capture_coordinate_uncertainty', index)}
+              other={{ size: 'small' }}
+              label="Capture Comment"
+              name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
             />
           </TextInputToggle>
         </Grid>
@@ -105,11 +106,10 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
           />
         </Grid>
-        <Grid item />
         <Grid item xs={6}>
           <TextInputToggle label="Add comment about this Release">
             <CustomTextField
-              other={{ required: true, size: 'small' }}
+              other={{ size: 'small' }}
               label="Release Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
             />

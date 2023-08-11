@@ -38,6 +38,7 @@ const MeasurementAnimalForm = () => {
         <>
           <FormSectionWrapper
             title={SurveyAnimalsI18N.animalMeasurementTitle}
+            addedSectionTitle={SurveyAnimalsI18N.animalMarkingTitle2}
             titleHelp={SurveyAnimalsI18N.animalMeasurementHelp}
             btnLabel={SurveyAnimalsI18N.animalMeasurementAddBtn}
             handleAddSection={() => push(newMeasurement)}

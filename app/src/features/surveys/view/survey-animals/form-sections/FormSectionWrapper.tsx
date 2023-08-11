@@ -1,19 +1,19 @@
 import { mdiTrashCanOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Grid, IconButton, Typography } from '@mui/material';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import { Box, Button, Grid, IconButton, Paper, PaperProps, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import { IAnimal } from '../animal';
 
 interface FormSectionWrapperProps {
-  title: string; // Section title ie: General / Capture etc
-  titleHelp: string; // Text for help toolip
+  title: string; // Title ie: General / Capture Information etc
+  titleHelp: string; // Text to display under title, subtitle text
+  addedSectionTitle?: string; // Header to display inside added section
   btnLabel?: string; // Add section btn label ie: 'Add Capture Event'
   handleAddSection?: () => void; // function to call when add btn selected
   handleRemoveSection?: (index: number) => void; // function to call when "X" btn selected
+  innerPaperProps?: PaperProps;
   children: JSX.Element[] | JSX.Element;
-  inlineChildren?: JSX.Element[]; //Additional elements to display in between title and X button (ie. like toggles),
   maxSections?: number;
 }
 /**
@@ -26,10 +26,12 @@ interface FormSectionWrapperProps {
 
 const FormSectionWrapper = ({
   title,
+  addedSectionTitle,
   titleHelp,
   children,
   handleAddSection,
   handleRemoveSection,
+  innerPaperProps,
   btnLabel,
   maxSections
 }: FormSectionWrapperProps) => {
@@ -38,44 +40,47 @@ const FormSectionWrapper = ({
   const childs = Array.isArray(children) ? children : [children];
   const showBtn = btnLabel && handleAddSection && (maxSections === undefined || childs.length < maxSections);
 
-  const getTitle = (titleIndex: number) => (
-    <Box display="flex" flexDirection="row">
-      <Typography component="legend">
-        <HelpButtonTooltip content={titleHelp}>
-          {childs.length > 1 ? `${title} (${titleIndex + 1})` : `${title}`}
-        </HelpButtonTooltip>
-      </Typography>
-      {handleRemoveSection && childs.length >= 1 ? (
-        <IconButton sx={{ ml: 'auto', height: 40, width: 40 }} onClick={() => handleRemoveSection(titleIndex)}>
-          <Icon path={mdiTrashCanOutline} size={1} />
-        </IconButton>
-      ) : null}
-    </Box>
-  );
-
   return (
-    <Box mt={2}>
-      {childs.length < 2 ? getTitle(0) : null}
-      {childs.map((child, idx) => (
-        <div key={`fs-section-wrapper-${idx}`}>
-          {childs.length >= 2 && getTitle(idx)}
-          <Grid container spacing={2} mb={2}>
-            {child}
-          </Grid>
-        </div>
-      ))}
-      {showBtn ? (
-        <Button
-          onClick={handleAddSection}
-          startIcon={<Icon path={mdiPlus} size={1} />}
-          variant="outlined"
-          size="small"
-          disabled={!values.general.taxon_id}
-          color="primary">
-          {btnLabel}
-        </Button>
-      ) : null}
-    </Box>
+    <Paper sx={{ p: 2, mt: 2 }} variant="outlined">
+      <Box component="fieldset">
+        <Typography component="legend">
+          {title}
+          <br />
+          <Typography component="span" variant="subtitle2" color="textSecondary">
+            {titleHelp}
+          </Typography>
+        </Typography>
+        {childs.map((child, idx) => (
+          <Paper key={`fs-section-wrapper-${idx}`} variant="outlined" sx={{ p: 2, mb: 2 }} {...innerPaperProps}>
+            <Box display="flex" alignItems="center">
+              {addedSectionTitle ? (
+                <Typography fontWeight="bold">{`${addedSectionTitle}${childs.length > 1 ? ` (${idx + 1})` : ''
+                  }`}</Typography>
+              ) : null}
+              {handleRemoveSection && childs.length >= 1 ? (
+                <IconButton sx={{ ml: 'auto', height: 40, width: 40 }} onClick={() => handleRemoveSection(idx)}>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </IconButton>
+              ) : null}
+            </Box>
+            <Grid container spacing={2}>
+              {child}
+            </Grid>
+          </Paper>
+        ))}
+        {showBtn ? (
+          <Button
+            onClick={handleAddSection}
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            variant="outlined"
+            size="small"
+            disabled={!values.general.taxon_id}
+            color="primary">
+            {btnLabel}
+          </Button>
+        ) : null}
+      </Box>
+    </Paper>
   );
 };
 

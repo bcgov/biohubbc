@@ -2,7 +2,7 @@ import { Grid } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { FieldArray, FieldArrayRenderProps, FormikErrors, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useState } from 'react';
 import { getAnimalFieldName, IAnimal, IAnimalMortality } from '../animal';
 import TextInputToggle from '../TextInputToggle';
@@ -29,7 +29,7 @@ import LocationEntryForm from './LocationEntryForm';
 
 type ProjectionMode = 'wgs' | 'utm';
 const MortalityAnimalForm = () => {
-  const { values, setFieldValue } = useFormikContext<IAnimal>();
+  const { values } = useFormikContext<IAnimal>();
 
   const name: keyof IAnimal = 'mortality';
   const newMortality: IAnimalMortality = {
@@ -55,19 +55,14 @@ const MortalityAnimalForm = () => {
         <>
           <FormSectionWrapper
             title={SurveyAnimalsI18N.animalMortalityTitle}
+            addedSectionTitle={SurveyAnimalsI18N.animalMortalityTitle2}
             titleHelp={SurveyAnimalsI18N.animalMortalityHelp}
             btnLabel={SurveyAnimalsI18N.animalMortalityAddBtn}
             maxSections={1}
             handleAddSection={() => push(newMortality)}
             handleRemoveSection={remove}>
             {values.mortality.map((_cap, index) => (
-              <MortalityAnimalFormContent
-                key={`${name}-${index}-inputs`}
-                name={name}
-                index={index}
-                setFieldValue={setFieldValue}
-                value={_cap}
-              />
+              <MortalityAnimalFormContent key={`${name}-${index}-inputs`} name={name} index={index} value={_cap} />
             ))}
           </FormSectionWrapper>
         </>
@@ -79,11 +74,12 @@ const MortalityAnimalForm = () => {
 interface MortalityAnimalFormContentProps {
   name: keyof IAnimal;
   index: number;
-  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => Promise<void | FormikErrors<any>>;
   value: IAnimalMortality;
 }
 
-const MortalityAnimalFormContent = ({ name, index, setFieldValue, value }: MortalityAnimalFormContentProps) => {
+const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormContentProps) => {
+  const { setFieldValue } = useFormikContext<IAnimal>();
+
   const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
   const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
 
@@ -97,7 +93,7 @@ const MortalityAnimalFormContent = ({ name, index, setFieldValue, value }: Morta
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={5}>
           <CbSelectField
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_reason', index)}
             handleChangeSideEffect={(value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
@@ -107,7 +103,7 @@ const MortalityAnimalFormContent = ({ name, index, setFieldValue, value }: Morta
             route={'cod'}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <CbSelectField
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_confidence', index)}
             label={'PCOD Confidence'}
@@ -125,7 +121,7 @@ const MortalityAnimalFormContent = ({ name, index, setFieldValue, value }: Morta
             route={'taxons'}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={5}>
           <CbSelectField
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_reason', index)}
             handleChangeSideEffect={(value, label) => {
@@ -137,7 +133,7 @@ const MortalityAnimalFormContent = ({ name, index, setFieldValue, value }: Morta
             route={'cod'}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <CbSelectField
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_confidence', index)}
             label={'UCOD Confidence'}
