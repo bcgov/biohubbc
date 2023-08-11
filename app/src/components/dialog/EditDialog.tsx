@@ -114,7 +114,6 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
             <Button onClick={props.onCancel} color="primary" variant="outlined" data-testid="edit-dialog-cancel">
               Cancel
             </Button>
-            {formikProps.isValid == false && <p>{JSON.stringify(formikProps.errors)}</p>}
           </DialogActions>
           {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
         </Dialog>

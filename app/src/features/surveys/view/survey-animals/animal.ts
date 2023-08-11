@@ -23,7 +23,6 @@ const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).ty
 const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
   animal_id: yup.string().required(req),
-  critter_id: yup.string().optional(),
   taxon_name: yup.string()
 });
 
@@ -112,6 +111,8 @@ export const LocationSchema = yup.object({}).shape({
   coordinate_uncertainty_unit: yup.string()
 });
 
+//Animal form related types
+
 export type IAnimalGeneral = InferType<typeof AnimalGeneralSchema>;
 
 export type IAnimalCapture = InferType<typeof AnimalCaptureSchema>;
@@ -132,17 +133,27 @@ export type IAnimal = InferType<typeof AnimalSchema>;
 
 export type IAnimalKey = keyof IAnimal;
 
-type ILocationPayload = InferType<typeof LocationSchema>;
+//Critterbase related types
+type ICritterID = { critter_id: string };
 
-type IAnimalCapturePayload = Omit<
-  IAnimalCapture,
-  'capture_utm_easting' | 'capture_utm_northing' | 'release_utm_easting' | 'release_utm_northing' | 'projection_mode'
-> & { critter_id: string; capture_location_id: string; release_location_id: string | undefined };
+type ICritterLocation = InferType<typeof LocationSchema>;
 
-type IAnimalMortalityPayload = Omit<IAnimalMortality, 'utm_easting' | 'utm_northing' | 'projection_mode'> & {
-  critter_id: string;
-  location_id: string;
-};
+type ICritterMortality = ICritterID &
+  Omit<IAnimalMortality, 'utm_easting' | 'utm_northing' | 'projection_mode'> & {
+    location_id: string;
+  };
+
+type ICritterCapture = ICritterID &
+  Omit<
+    IAnimalCapture,
+    'capture_utm_easting' | 'capture_utm_northing' | 'release_utm_easting' | 'release_utm_northing' | 'projection_mode'
+  > & { capture_location_id: string; release_location_id: string | undefined };
+
+type ICritterMarking = ICritterID & IAnimalMarking;
+
+type ICritterQualitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'value'>;
+
+type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'option_id'>;
 
 //Converts IAnimal(Form data) to a Critterbase Critter
 
@@ -151,25 +162,26 @@ export class Critter {
   taxon_id: string;
   taxon_name: string;
   animal_id?: string;
-  captures: IAnimalCapturePayload[];
-  markings: IAnimalMarking[];
+  captures: ICritterCapture[];
+  markings: ICritterMarking[];
   measurements: {
-    qualitative: Omit<IAnimalMeasurement, 'value'>[];
-    quantitative: Omit<IAnimalMeasurement, 'option_id'>[];
+    qualitative: ICritterQualitativeMeasurement[];
+    quantitative: ICritterQuantitativeMeasurement[];
   };
-  mortality: IAnimalMortalityPayload[];
+  mortality: ICritterMortality[];
   family: IAnimalRelationship[]; //This type probably needs to change;
-  locations: ILocationPayload[];
+  locations: ICritterLocation[];
 
   get name(): string {
     return `${this.animal_id}-[${this.taxon_name}]`;
   }
 
   constructor(animal: IAnimal) {
-    this.critter_id = animal.general.critter_id ?? v4();
+    this.critter_id = v4();
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;
     this.animal_id = animal.general.animal_id;
+
     this.captures = [];
     this.locations = [];
     animal.captures.forEach((c) => {
@@ -204,6 +216,7 @@ export class Critter {
         release_location_id: r_loc_id
       });
     });
+
     this.mortality = [];
     animal.mortality.forEach((m) => {
       const loc_id = v4();
@@ -219,8 +232,11 @@ export class Critter {
       delete m.projection_mode;
       this.mortality.push({ ...m, critter_id: this.critter_id, location_id: loc_id });
     });
+
     this.markings = animal.markings.map((m) => ({ ...m, critter_id: this.critter_id }));
+
     this.family = animal.family.map((f) => ({ ...f, critter_id: this.critter_id }));
+
     this.measurements = {
       qualitative: animal.measurements
         .filter((m) => {
