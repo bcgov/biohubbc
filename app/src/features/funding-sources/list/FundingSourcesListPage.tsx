@@ -92,13 +92,20 @@ const FundingSourcesListPage: React.FC = () => {
     setFundingSourceId(null);
   };
 
+  const openViewModal = (fundingSourceId: number) => {
+    setFundingSourceId(fundingSourceId);
+    setIsViewModalOpen(true);
+  };
+
   if (!fundingSourceDataLoader.isReady) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
+      {/* CREATE FUNDING SOURCE MODAL */}
       <CreateFundingSource open={isCreateModalOpen} onClose={closeModal} />
+      {/* VIEW FUNDING SOURCE MODAL */}
       {fundingSourceId && isViewModalOpen && (
         <FundingSourcePage
           fundingSourceId={fundingSourceId}
@@ -106,12 +113,18 @@ const FundingSourcesListPage: React.FC = () => {
           onClose={() => setIsViewModalOpen(false)}
         />
       )}
+      {/* EDIT FUNDING SOURCE MODAL */}
       {fundingSourceId && isEditModalOpen && (
         <EditFundingSource fundingSourceId={fundingSourceId} open={isEditModalOpen} onClose={closeModal} />
       )}
       {/* DELETE FUNDING SOURCE MODAL */}
       {fundingSourceId && isDeleteModalOpen && (
-        <DeleteFundingSource funding_source_id={fundingSourceId} open={isDeleteModalOpen} closeModal={closeModal} />
+        <DeleteFundingSource
+          funding_source_id={fundingSourceId}
+          open={isDeleteModalOpen}
+          closeModal={closeModal}
+          openViewModal={openViewModal}
+        />
       )}
 
       <Paper square={true} elevation={0}>

@@ -7,10 +7,11 @@ interface IDeleteFundingSource {
   funding_source_id: number;
   open: boolean;
   closeModal: (refresh?: boolean) => void;
+  openViewModal: (fundingSourceId: number) => void;
 }
 
 const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
-  const { funding_source_id, open, closeModal } = props;
+  const { funding_source_id, open, closeModal, openViewModal } = props;
   const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();
 
@@ -24,7 +25,10 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
       noButtonProps: { color: 'primary', variant: 'outlined' },
       noButtonLabel: 'Close',
       open: true,
-      onYes: async () => dialogContext.setYesNoDialog({ open: false }),
+      onYes: async () => {
+        dialogContext.setYesNoDialog({ open: false });
+        openViewModal(funding_source_id);
+      },
       onClose: () => dialogContext.setYesNoDialog({ open: false }),
       onNo: () => dialogContext.setYesNoDialog({ open: false })
     });
