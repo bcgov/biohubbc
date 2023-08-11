@@ -5,6 +5,8 @@ import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Route, Switch } from 'react-router';
 import EditSurveyPage from './edit/EditSurveyPage';
+import RouteWithTitle from 'utils/RouteWithTitle';
+import { getTitle } from 'utils/Utils';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -20,7 +22,7 @@ const SurveyRouter: React.FC = () => {
         </ProjectsLayout>
       </Route>
 
-      <Route exact path="/admin/projects/:id/surveys/:survey_id/edit">
+      <RouteWithTitle title={getTitle('Edit Survey')} exact path="/admin/projects/:id/surveys/:survey_id/edit">
         <ProjectsLayout>
           <ProjectRoleRouteGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
@@ -28,7 +30,7 @@ const SurveyRouter: React.FC = () => {
             <EditSurveyPage />
           </ProjectRoleRouteGuard>
         </ProjectsLayout>
-      </Route>
+      </RouteWithTitle>
     </Switch>
   );
 };

@@ -27,15 +27,7 @@ export interface ISurveyFundingSourceForm {
   funding_sources: ISurveyFundingSource[];
 }
 
-export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {
-  funding_sources: []
-};
-
-export const SurveyFundingSourceFormYupSchema = yup.object().shape({
-  funding_sources: yup.array()
-});
-
-export const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
+const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
   funding_source_id: undefined as unknown as number,
   amount: 0,
   revision_count: 0,
@@ -44,13 +36,26 @@ export const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
 };
 
 export const SurveyFundingSourceYupSchema = yup.object().shape({
-  funding_source_id: yup.number().required('Must select a Funding Source').min(1, 'Must select a valid Funding Source'), // TODO confirm that this is not triggered when the autocomplete is empty.
-  funding_amount: yup
+  funding_source_id: yup
     .number()
-    .transform((value) => (isNaN(value) && null) || value)
-    .typeError('Must be a number')
+    .required('Must select a Funding Source')
+    .min(1, 'Must select a valid Funding Source'), // TODO confirm that this is not triggered when the autocomplete is empty.
+  amount: yup
+    .number()
     .min(0, 'Must be a positive number')
     .max(9999999999, 'Cannot exceed $9,999,999,999')
+    .transform((value) => isNaN(value) ? null : value)
+    .nullable(true)
+
+    // .typeError('Must be a number')
+});
+
+export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {
+  funding_sources: []
+};
+
+export const SurveyFundingSourceFormYupSchema = yup.object().shape({
+  funding_sources: yup.array(SurveyFundingSourceYupSchema)
 });
 
 /**
