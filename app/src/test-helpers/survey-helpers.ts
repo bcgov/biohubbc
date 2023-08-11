@@ -29,15 +29,6 @@ export const surveyObject: SurveyViewObject = {
     vantage_code_ids: [1, 2],
     surveyed_all_areas: 'true'
   },
-  funding_sources: [
-    {
-      survey_funding_source_id: 1,
-      funding_source_id: 1,
-      survey_id: 1,
-      amount: '2150.66',
-      revision_count: 0
-    }
-  ],
   proprietor: {
     proprietary_data_category_name: 'proprietor type',
     first_nations_name: 'first nations name',
