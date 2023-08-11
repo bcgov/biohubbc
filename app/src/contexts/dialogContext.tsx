@@ -160,11 +160,9 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
         onClose={() => setSnackbar({ open: false })}
         message={snackbarProps.snackbarMessage}
         action={
-          <React.Fragment>
-            <IconButton size="small" aria-label="close" color="inherit" onClick={() => setSnackbar({ open: false })}>
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </React.Fragment>
+          <IconButton size="small" aria-label="close" color="inherit" onClick={() => setSnackbar({ open: false })}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
         }
       />
     </DialogContext.Provider>

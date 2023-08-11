@@ -14,7 +14,7 @@ import {
   ProjectData,
   ProjectListData
 } from '../models/project-view';
-import { queries } from '../queries/queries';
+import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -480,7 +480,7 @@ export class ProjectRepository extends BaseRepository {
     `;
 
     if (postProjectData?.location?.geometry?.length) {
-      const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(postProjectData.location.geometry);
+      const geometryCollectionSQL = generateGeometryCollectionSQL(postProjectData.location.geometry);
 
       sqlStatement.append(SQL`
         ,public.geography(
@@ -748,7 +748,7 @@ export class ProjectRepository extends BaseRepository {
       const geometrySQLStatement = SQL`geography = `;
 
       if (location?.geometry?.length) {
-        const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(location.geometry);
+        const geometryCollectionSQL = generateGeometryCollectionSQL(location.geometry);
 
         geometrySQLStatement.append(SQL`
         public.geography(

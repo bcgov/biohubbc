@@ -6,12 +6,13 @@ import { coordEach } from '@turf/meta';
 import jsonpatch from 'fast-json-patch';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import _ from 'lodash';
+import SQL from 'sql-template-strings';
 import xml2js from 'xml2js';
 import { IDBConnection } from '../database/db';
 import { IGetProject } from '../models/project-view';
 import { SurveyObject } from '../models/survey-view';
-import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-constant-queries';
-import { CodeService, IAllCodeSets } from './code-service';
+import { IAllCodeSets } from '../repositories/code-repository';
+import { CodeService } from './code-service';
 import { DBService } from './db-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
@@ -409,12 +410,24 @@ export class EmlService extends DBService {
       intellectualRights,
       taxonomicProviderURL
     ] = await Promise.all([
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('ORGANIZATION_URL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('ORGANIZATION_NAME_FULL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('PROVIDER_URL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('SECURITY_PROVIDER_URL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('INTELLECTUAL_RIGHTS')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('TAXONOMIC_PROVIDER_URL'))
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'ORGANIZATION_URL'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'ORGANIZATION_NAME_FULL'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'PROVIDER_URL'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'SECURITY_PROVIDER_URL'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'INTELLECTUAL_RIGHTS'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'TAXONOMIC_PROVIDER_URL'}') as constant;`
+      )
     ]);
 
     this._constants.EML_ORGANIZATION_URL = organizationUrl.rows[0]?.constant || NOT_SUPPLIED;

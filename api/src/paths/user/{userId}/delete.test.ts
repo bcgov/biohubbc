@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
-import user_queries from '../../../queries/users';
 import { ProjectParticipationService } from '../../../services/project-participation-service';
 import { UserService } from '../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
@@ -102,43 +101,6 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for `deleteAllProjectRolesSql`', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = { userId: '1' };
-    mockReq.body = { roles: [1, 2] };
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
-
-    sinon.stub(UserService.prototype, 'getUserById').resolves({
-      system_user_id: 1,
-      user_identifier: 'testname',
-      user_guid: 'aaaa',
-      identity_source: 'idir',
-      record_end_date: null,
-      role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
-    });
-
-    sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(null);
-
-    try {
-      const requestHandler = delete_endpoint.removeSystemUser();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal(
-        'Failed to build SQL delete statement for deleting project roles'
-      );
-    }
-  });
-
   it('should catch and re-throw an error if the database fails to delete all project roles', async () => {
     const dbConnectionObj = getMockDBConnection();
 
@@ -162,7 +124,7 @@ describe('removeSystemUser', () => {
     });
 
     const expectedError = new Error('A database error');
-    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').rejects(expectedError);
+    sinon.stub(UserService.prototype, 'deleteAllProjectRoles').rejects(expectedError);
 
     try {
       const requestHandler = delete_endpoint.removeSystemUser();
@@ -196,7 +158,7 @@ describe('removeSystemUser', () => {
       role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
+    sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();
 
     const expectedError = new Error('A database error');
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').rejects(expectedError);
@@ -233,7 +195,7 @@ describe('removeSystemUser', () => {
       role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
+    sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
 
     const expectedError = new Error('A database error');
@@ -271,7 +233,7 @@ describe('removeSystemUser', () => {
       role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
+    sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
     sinon.stub(UserService.prototype, 'deactivateSystemUser').resolves();
 

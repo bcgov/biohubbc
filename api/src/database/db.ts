@@ -376,7 +376,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
-    defaultLog.debug({ label: '_setUserContext', keycloakUserInformation });
+    defaultLog.silly({ label: '_setUserContext', keycloakUserInformation });
 
     // Update the logged in user with their latest information from Keyclaok (if it has changed)
     await _updateSystemUserInformation(keycloakUserInformation);
