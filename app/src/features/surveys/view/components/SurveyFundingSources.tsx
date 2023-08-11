@@ -1,13 +1,10 @@
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedAmount } from 'utils/Utils';
 
 /**
  * Funding source content for a project.
@@ -32,50 +29,15 @@ const SurveyFundingSources = () => {
         {funding_sources.length > 0 ? (
           <>
             {funding_sources.map((surveyFundingSource) => (
-              <ListItem disableGutters divider key={surveyFundingSource.funding_source_id}>
+              <ListItem disableGutters key={surveyFundingSource.funding_source_id}>
                 <Box flex="1 1 auto">
-                  <Box pb={1.25}>
-                    <Typography component={Link} to="/">
+                  <Box>
+                    <Typography>
                       {surveyFundingSource.funding_source_name}
+                      <Typography component='span'>
+                        , {getFormattedAmount(surveyFundingSource.amount)}
                     </Typography>
-                  </Box>
-                  <Box component="dl" m={0}>
-                    <Grid container spacing={1}>
-                      <Grid item sm={6}>
-                        <Typography component="dt" variant="subtitle2" color="textSecondary">
-                          Project ID
-                        </Typography>
-                        <Typography component="dd">
-                          {surveyFundingSource.funding_source_id || 'No Agency Project ID'}
-                        </Typography>
-                      </Grid>
-                      <Grid item sm={6}>
-                        {surveyFundingSource.start_date && surveyFundingSource.end_date && (
-                          <>
-                            <Typography component="dt" variant="subtitle2" color="textSecondary">
-                              Timeline
-                            </Typography>
-                            <Typography component="dd">
-                              {getFormattedDateRangeString(
-                                DATE_FORMAT.ShortMediumDateFormat,
-                                surveyFundingSource.start_date,
-                                surveyFundingSource.end_date
-                              )}
-                            </Typography>
-                          </>
-                        )}
-                      </Grid>
-                      <Grid item sm={12}>
-                        {surveyFundingSource.amount && (
-                          <>
-                            <Typography component="dt" variant="subtitle2" color="textSecondary">
-                              Funding Amount
-                            </Typography>
-                            <Typography component="dd">{getFormattedAmount(surveyFundingSource.amount)}</Typography>
-                          </>
-                        )}
-                      </Grid>
-                    </Grid>
+                    </Typography>
                   </Box>
                 </Box>
               </ListItem>
