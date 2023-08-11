@@ -120,9 +120,9 @@ const FundingSourcesListPage: React.FC = () => {
       {/* DELETE FUNDING SOURCE MODAL */}
       {fundingSourceId && isDeleteModalOpen && (
         <DeleteFundingSource
-          funding_source_id={fundingSourceId}
+          fundingSourceId={fundingSourceId}
           open={isDeleteModalOpen}
-          closeModal={closeModal}
+          onClose={closeModal}
           openViewModal={openViewModal}
         />
       )}

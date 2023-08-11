@@ -4,14 +4,14 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext } from 'react';
 
 interface IDeleteFundingSource {
-  funding_source_id: number;
+  fundingSourceId: number;
   open: boolean;
-  closeModal: (refresh?: boolean) => void;
+  onClose: (refresh?: boolean) => void;
   openViewModal: (fundingSourceId: number) => void;
 }
 
 const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
-  const { funding_source_id, open, closeModal, openViewModal } = props;
+  const { fundingSourceId, open, onClose, openViewModal } = props;
   const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();
 
@@ -27,7 +27,7 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
       open: true,
       onYes: async () => {
         dialogContext.setYesNoDialog({ open: false });
-        openViewModal(funding_source_id);
+        openViewModal(fundingSourceId);
       },
       onClose: () => dialogContext.setYesNoDialog({ open: false }),
       onNo: () => dialogContext.setYesNoDialog({ open: false })
@@ -36,12 +36,12 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
 
   const deleteFundingSource = async () => {
     try {
-      await biohubApi.funding.deleteFundingSourceById(funding_source_id);
+      await biohubApi.funding.deleteFundingSourceById(fundingSourceId);
       // delete was a success, tell parent to refresh
-      closeModal(true);
+      onClose(true);
     } catch (error) {
       // error deleting, show dialog that says you need to remove references
-      closeModal(false);
+      onClose(false);
       showDeleteErrorDialog();
     }
   };
@@ -60,7 +60,7 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
           deleteFundingSource();
         }}
         onClose={() => {}}
-        onNo={() => closeModal()}
+        onNo={() => onClose()}
       />
     </>
   );
