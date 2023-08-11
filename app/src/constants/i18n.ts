@@ -314,6 +314,20 @@ export const FundingSourceI18N = {
   updateErrorTitle: 'Error Updating Funding Source',
   updateErrorText:
     'An error has occurred while attempting to update your Funding Source, please try again. If the error persists, please contact your system administrator.',
+  // DELETE FUNDING SOURCE
+  deleteFundingSourceErrorTitle: 'Error Deleting a Funding Source',
+  deleteFundingSourceErrorText:
+    'An error has occurred while attempting to delete the Funding Sources, please try again. If the error persists, please contact your system administrator.',
+
+  deleteFundingSourceDialogTitle: 'Delete Funding Source?',
+  deleteFundingSourceDialogText:
+    'Are you sure you want to permanently delete this funding source? This action cannot be undone.',
+
+  cannotDeleteFundingSourceTitle: "You can't delete this Funding Source",
+  cannotDeleteFundingSourceText:
+    'This funding source has been referenced by one or more surveys. To delete this record, you will first have to remove it from all related surveys.',
+
+  // FETCH FUNDING SOURCE
   fetchFundingSourcesErrorTitle: 'Error Fetching Funding Sources',
   fetchFundingSourcesErrorText:
     'An error has occurred while attempting to fetch the Funding Sources, please try again. If the error persists, please contact your system administrator.',

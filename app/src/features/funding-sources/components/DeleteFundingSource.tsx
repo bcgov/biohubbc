@@ -1,6 +1,9 @@
+import CircularProgress from '@mui/material/CircularProgress';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import { FundingSourceI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { useContext } from 'react';
 
 interface IDeleteFundingSource {
@@ -15,22 +18,16 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
   const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();
 
+  const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getFundingSource(fundingSourceId));
+  fundingSourceDataLoader.load();
+
   const showDeleteErrorDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: "You can't delete this record",
-      dialogText:
-        'This funding source has been referenced by one or more surveys. To delete this record, you will first have to remove it from all related surveys.',
-      yesButtonProps: { color: 'primary' },
-      yesButtonLabel: 'View Details',
-      noButtonProps: { color: 'primary', variant: 'outlined' },
-      noButtonLabel: 'Close',
+      dialogTitle: FundingSourceI18N.deleteFundingSourceErrorTitle,
+      dialogText: FundingSourceI18N.deleteFundingSourceErrorText,
       open: true,
-      onYes: async () => {
-        dialogContext.setYesNoDialog({ open: false });
-        openViewModal(fundingSourceId);
-      },
-      onClose: () => dialogContext.setYesNoDialog({ open: false }),
-      onNo: () => dialogContext.setYesNoDialog({ open: false })
+      onYes: async () => dialogContext.setYesNoDialog({ open: false }),
+      onClose: () => dialogContext.setYesNoDialog({ open: false })
     });
   };
 
@@ -46,22 +43,59 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
     }
   };
 
+  if (!fundingSourceDataLoader.isReady || !fundingSourceDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
+  // Checks if the funding source has any associated surveys to see if it can be deleted
+  const canDeleteFundingSource = () => {
+    // if no survey data is found the funding source can be deleted
+    // so the default response is true
+    let canDelete = true;
+
+    if (fundingSourceDataLoader.data) {
+      canDelete = !(fundingSourceDataLoader.data.funding_source_survey_references.length !== 0);
+    }
+
+    return canDelete;
+  };
+
   return (
     <>
-      <YesNoDialog
-        dialogTitle={'Delete Funding Source?'}
-        dialogText={'Are you sure you want to permanently delete this funding source? This action cannot be undone.'}
-        yesButtonProps={{ color: 'error' }}
-        yesButtonLabel={'Delete'}
-        noButtonProps={{ color: 'primary', variant: 'outlined' }}
-        noButtonLabel={'Cancel'}
-        open={open}
-        onYes={() => {
-          deleteFundingSource();
-        }}
-        onClose={() => {}}
-        onNo={() => onClose()}
-      />
+      {canDeleteFundingSource() ? (
+        <YesNoDialog
+          dialogTitle={FundingSourceI18N.deleteFundingSourceDialogTitle}
+          dialogText={FundingSourceI18N.deleteFundingSourceDialogText}
+          yesButtonProps={{ color: 'error' }}
+          yesButtonLabel={'Delete'}
+          noButtonProps={{ color: 'primary', variant: 'outlined' }}
+          noButtonLabel={'Cancel'}
+          open={open}
+          onYes={() => {
+            deleteFundingSource();
+          }}
+          onClose={() => {}}
+          onNo={() => onClose()}
+        />
+      ) : (
+        <>
+          <YesNoDialog
+            dialogTitle={FundingSourceI18N.cannotDeleteFundingSourceTitle}
+            dialogText={FundingSourceI18N.cannotDeleteFundingSourceText}
+            yesButtonProps={{ color: 'primary' }}
+            yesButtonLabel={'View Details'}
+            noButtonProps={{ color: 'primary', variant: 'outlined' }}
+            noButtonLabel={'Close'}
+            open={open}
+            onYes={() => {
+              onClose(false);
+              openViewModal(fundingSourceId);
+            }}
+            onClose={() => {}}
+            onNo={() => onClose()}
+          />
+        </>
+      )}
     </>
   );
 };
