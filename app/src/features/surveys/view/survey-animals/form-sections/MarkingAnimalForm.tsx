@@ -14,7 +14,7 @@ const MarkingAnimalForm = () => {
   const name: keyof IAnimal = 'markings';
   const newMarking: IAnimalMarking = {
     marking_type_id: '',
-    marking_body_location_id: '',
+    taxon_marking_body_location_id: '',
     primary_colour_id: '',
     secondary_colour_id: '',
     marking_comment: ''
@@ -44,7 +44,7 @@ const MarkingAnimalForm = () => {
                 <Grid item xs={6}>
                   <CbSelectField
                     label="Marking Body Location"
-                    name={getAnimalFieldName<IAnimalMarking>(name, 'marking_body_location_id', index)}
+                    name={getAnimalFieldName<IAnimalMarking>(name, 'taxon_marking_body_location_id', index)}
                     id="marking_body_location"
                     route="taxon_marking_body_locations"
                     query={`taxon_id=${values.general.taxon_id}`}
