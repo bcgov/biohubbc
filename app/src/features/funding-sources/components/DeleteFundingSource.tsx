@@ -5,12 +5,12 @@ import { useContext } from 'react';
 
 interface IDeleteFundingSource {
   funding_source_id: number;
-  isModalOpen: boolean;
+  open: boolean;
   closeModal: (refresh?: boolean) => void;
 }
 
 const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
-  const { funding_source_id, isModalOpen, closeModal } = props;
+  const { funding_source_id, open, closeModal } = props;
   const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();
 
@@ -51,7 +51,7 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
         yesButtonLabel={'Delete'}
         noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
-        open={isModalOpen}
+        open={open}
         onYes={() => {
           deleteFundingSource();
         }}

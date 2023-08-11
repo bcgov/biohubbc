@@ -17,6 +17,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import React, { useState } from 'react';
 import CreateFundingSource from '../components/CreateFundingSource';
+import DeleteFundingSource from '../components/DeleteFundingSource';
 import EditFundingSource from '../components/EditFundingSource';
 import FundingSourcePage from '../details/FundingSourcePage';
 import FundingSourcesTable from './FundingSourcesTable';
@@ -87,6 +88,7 @@ const FundingSourcesListPage: React.FC = () => {
     setIsCreateModalOpen(false);
     setIsEditModalOpen(false);
     setIsDeleteModalOpen(false);
+    setIsViewModalOpen(false);
     setFundingSourceId(null);
   };
 
@@ -96,24 +98,20 @@ const FundingSourcesListPage: React.FC = () => {
 
   return (
     <>
-      <CreateFundingSource open={isCreateModelOpen} onClose={closeCreateModal} />
-      {fundingSourceId && (
+      <CreateFundingSource open={isCreateModalOpen} onClose={closeModal} />
+      {fundingSourceId && isViewModalOpen && (
         <FundingSourcePage
           fundingSourceId={fundingSourceId}
           open={isViewModalOpen}
           onClose={() => setIsViewModalOpen(false)}
         />
       )}
-      {fundingSourceId && (
-        <EditFundingSource fundingSourceId={fundingSourceId} open={isEditModelOpen} onClose={closeEditModal} />
+      {fundingSourceId && isEditModalOpen && (
+        <EditFundingSource fundingSourceId={fundingSourceId} open={isEditModalOpen} onClose={closeModal} />
       )}
       {/* DELETE FUNDING SOURCE MODAL */}
       {fundingSourceId && isDeleteModalOpen && (
-        <DeleteFundingSource
-          funding_source_id={fundingSourceId}
-          isModalOpen={isDeleteModalOpen}
-          closeModal={closeModal}
-        />
+        <DeleteFundingSource funding_source_id={fundingSourceId} open={isDeleteModalOpen} closeModal={closeModal} />
       )}
 
       <Paper square={true} elevation={0}>
