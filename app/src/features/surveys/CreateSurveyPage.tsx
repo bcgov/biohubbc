@@ -26,6 +26,7 @@ import { Prompt, useHistory } from 'react-router';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
+import FundingSourceForm from './components/FundingSourceForm';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema
@@ -39,7 +40,6 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
-import FundingSourceForm from './components/FundingSourceForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -336,8 +336,8 @@ const CreateSurveyPage = () => {
                         Add Funding Sources
                       </Typography>
                       <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-                        Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
-                        be exact, please round to the nearest 100.
+                        Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended
+                        to be exact, please round to the nearest 100.
                       </Typography>
                       <Box mt={3}>
                         <FundingSourceForm />
