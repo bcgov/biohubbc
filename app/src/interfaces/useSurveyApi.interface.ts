@@ -92,6 +92,13 @@ export interface SurveyUpdateObject {
       permit_type: string;
     }[];
   };
+  funding_sources?: [
+    {
+      funding_source_id?: number;
+      amount: number;
+      revision_count: number;
+    }
+  ];
   purpose_and_methodology?: {
     intended_outcome_id: number;
     additional_details: string;
@@ -271,10 +278,9 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
 }
 
-export type IEditSurveyRequest =
-  & IGeneralInformationForm
-  & IPurposeAndMethodologyForm
-  & ISurveyFundingSourceForm
-  & IStudyAreaForm
-  & IProprietaryDataForm
-  & IUpdateAgreementsForm
+export type IEditSurveyRequest = IGeneralInformationForm &
+  IPurposeAndMethodologyForm &
+  ISurveyFundingSourceForm &
+  IStudyAreaForm &
+  IProprietaryDataForm &
+  IUpdateAgreementsForm;

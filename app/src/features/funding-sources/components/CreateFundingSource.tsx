@@ -10,8 +10,8 @@ import yup from 'utils/YupSchema';
 import FundingSourceForm, { IFundingSourceData } from './FundingSourceForm';
 
 interface ICreateFundingSourceProps {
-  isModalOpen: boolean;
-  closeModal: (refresh?: boolean) => void;
+  open: boolean;
+  onClose: (refresh?: boolean) => void;
 }
 
 const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
@@ -66,7 +66,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
       await biohubApi.funding.postFundingSource(values);
 
       // creation was a success, tell parent to refresh
-      props.closeModal(true);
+      props.onClose(true);
 
       showSnackBar({
         snackbarMessage: (
@@ -92,7 +92,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
       <EditDialog
         dialogTitle={FundingSourceI18N.createFundingSourceDialogTitle}
         dialogText={FundingSourceI18N.createFundingSourceDialogText}
-        open={props.isModalOpen}
+        open={props.open}
         dialogLoading={isSubmitting}
         component={{
           element: <FundingSourceForm />,
@@ -107,7 +107,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
           validationSchema: FundingSourceYupSchema
         }}
         dialogSaveButtonLabel="Add"
-        onCancel={() => props.closeModal()}
+        onCancel={() => props.onClose()}
         onSave={(formValues) => {
           handleSubmitFundingService(formValues);
         }}

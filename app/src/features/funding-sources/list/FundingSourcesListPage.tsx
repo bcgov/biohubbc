@@ -1,20 +1,22 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Skeleton, Theme } from '@mui/material';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { CodesContext } from 'contexts/codesContext';
+import { FundingSourceI18N } from 'constants/i18n';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect, useState } from 'react';
+import useDataLoaderError from 'hooks/useDataLoaderError';
+import React, { useState } from 'react';
 import CreateFundingSource from '../components/CreateFundingSource';
-import DeleteFundingSource from '../components/DeleteFundingSource';
 import EditFundingSource from '../components/EditFundingSource';
 import FundingSourcePage from '../details/FundingSourcePage';
 import FundingSourcesTable from './FundingSourcesTable';
@@ -58,17 +60,24 @@ const FundingSourcesListPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  const [openFundingSourceModal, setOpenFundingSourceModal] = useState(false);
   const [fundingSourceId, setFundingSourceId] = useState<number | null>();
 
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const codesContext = useContext(CodesContext);
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
-
   const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
+
+  useDataLoaderError(fundingSourceDataLoader, (dataLoader) => {
+    return {
+      dialogTitle: FundingSourceI18N.fetchFundingSourcesErrorTitle,
+      dialogText: FundingSourceI18N.fetchFundingSourcesErrorText,
+      dialogError: (dataLoader.error as APIError).message,
+      dialogErrorDetails: (dataLoader.error as APIError).errors
+    };
+  });
+
   fundingSourceDataLoader.load();
 
   const closeModal = (refresh?: boolean) => {
@@ -81,30 +90,22 @@ const FundingSourcesListPage: React.FC = () => {
     setFundingSourceId(null);
   };
 
-  if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {
-    return (
-      <>
-        <Skeleton variant="rectangular" animation="wave" />
-        <Skeleton variant="rectangular" animation="wave" />
-      </>
-    );
+  if (!fundingSourceDataLoader.isReady) {
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      {/* CREATE FUNDING SOURCE */}
-      <CreateFundingSource isModalOpen={isCreateModalOpen} closeModal={closeModal} />
-      {/* FUNDING SOURCE DETAILS MODAL */}
-      {fundingSourceId && openFundingSourceModal && (
+      <CreateFundingSource open={isCreateModelOpen} onClose={closeCreateModal} />
+      {fundingSourceId && (
         <FundingSourcePage
           fundingSourceId={fundingSourceId}
-          open={openFundingSourceModal}
-          onClose={() => setOpenFundingSourceModal(false)}
+          open={isViewModalOpen}
+          onClose={() => setIsViewModalOpen(false)}
         />
       )}
-      {/* EDIT FUNDING SOURCE MODAL */}
-      {fundingSourceId && isEditModalOpen && (
-        <EditFundingSource funding_source_id={fundingSourceId} isModalOpen={isEditModalOpen} closeModal={closeModal} />
+      {fundingSourceId && (
+        <EditFundingSource fundingSourceId={fundingSourceId} open={isEditModelOpen} onClose={closeEditModal} />
       )}
       {/* DELETE FUNDING SOURCE MODAL */}
       {fundingSourceId && isDeleteModalOpen && (
@@ -114,6 +115,7 @@ const FundingSourcesListPage: React.FC = () => {
           closeModal={closeModal}
         />
       )}
+
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
@@ -154,7 +156,7 @@ const FundingSourcesListPage: React.FC = () => {
                 fundingSources={fundingSourceDataLoader.data || []}
                 onView={(fundingSourceId) => {
                   setFundingSourceId(fundingSourceId);
-                  setOpenFundingSourceModal(true);
+                  setIsViewModalOpen(true);
                 }}
                 onEdit={(fundingSourceId) => {
                   setFundingSourceId(fundingSourceId);

@@ -16,22 +16,32 @@ const FundingSource = z.object({
 
 export type FundingSource = z.infer<typeof FundingSource>;
 
-const FundingSourceBasicSupplementaryData = z.object({
+const FundingSourceSupplementaryData = z.object({
   survey_reference_count: z.number(),
   survey_reference_amount_total: z.number()
 });
 
-export type FundingSourceBasicSupplementaryData = z.infer<typeof FundingSourceBasicSupplementaryData>;
+export type FundingSourceSupplementaryData = z.infer<typeof FundingSourceSupplementaryData>;
 
 const SurveyFundingSource = z.object({
   survey_funding_source_id: z.number(),
   survey_id: z.number(),
   funding_source_id: z.number(),
   amount: z.number(),
-  revision_count: z.number().optional()
+  revision_count: z.number().optional(),
+  funding_source_name: z.string().optional(),
+  start_date: z.string().optional().nullable(),
+  end_date: z.string().optional().nullable(),
+  description: z.string().optional()
 });
 
 export type SurveyFundingSource = z.infer<typeof SurveyFundingSource>;
+
+const SurveyFundingSourceSupplementaryData = z.object({
+  survey_name: z.string()
+});
+
+export type SurveyFundingSourceSupplementaryData = z.infer<typeof SurveyFundingSourceSupplementaryData>;
 
 export class FundingSourceRepository extends BaseRepository {
   /**
@@ -118,20 +128,36 @@ export class FundingSourceRepository extends BaseRepository {
    * Fetch a single funding source.
    *
    * @param {number} fundingSourceId
-   * @return {*}  {Promise<FundingSource>}
+   * @return {*}  {(Promise<FundingSource | FundingSourceSupplementaryData>)}
    * @memberof FundingSourceRepository
    */
-  async getFundingSource(fundingSourceId: number): Promise<FundingSource> {
+  async getFundingSource(fundingSourceId: number): Promise<FundingSource | FundingSourceSupplementaryData> {
     const sqlStatement = SQL`
+      WITH 
+        w_references as (
+          SELECT
+            COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count,
+            COALESCE(SUM(survey_funding_source.amount)::numeric::int, 0) as survey_reference_amount_total
+          FROM
+            survey_funding_source
+          WHERE
+            survey_funding_source.funding_source_id = ${fundingSourceId}
+        )
       SELECT
-        *
+        funding_source.*,
+        w_references.survey_reference_count,
+        w_references.survey_reference_amount_total
       FROM
-        funding_source
+        funding_source,
+        w_references
       WHERE
-        funding_source_id = ${fundingSourceId};
+        funding_source.funding_source_id = ${fundingSourceId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, FundingSource);
+    const response = await this.connection.sql(
+      sqlStatement,
+      FundingSource.extend(FundingSourceSupplementaryData.shape)
+    );
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get funding source', [
@@ -141,6 +167,39 @@ export class FundingSourceRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Fetch all survey references to a single funding source.
+   *
+   * @param {number} fundingSourceId
+   * @return {*}  {(Promise<(SurveyFundingSource | SurveyFundingSourceSupplementaryData)[]>)}
+   * @memberof FundingSourceRepository
+   */
+  async getFundingSourceSurveyReferences(
+    fundingSourceId: number
+  ): Promise<(SurveyFundingSource | SurveyFundingSourceSupplementaryData)[]> {
+    const sqlStatement = SQL`
+      SELECT
+        survey_funding_source.*,
+        survey_funding_source.amount::numeric::int,
+        survey.name as survey_name
+      FROM
+        survey_funding_source
+      LEFT JOIN
+        survey
+      ON
+        survey_funding_source.survey_id = survey.survey_id
+      WHERE
+        funding_source_id = ${fundingSourceId};
+    `;
+
+    const response = await this.connection.sql(
+      sqlStatement,
+      SurveyFundingSource.extend(SurveyFundingSourceSupplementaryData.shape)
+    );
+
+    return response.rows;
   }
 
   /**
@@ -219,10 +278,10 @@ export class FundingSourceRepository extends BaseRepository {
    * Fetch basic supplementary data for a single funding source.
    *
    * @param {number} fundingSourceId
-   * @return {*}  {Promise<FundingSourceBasicSupplementaryData>}
+   * @return {*}  {Promise<FundingSourceSupplementaryData>}
    * @memberof FundingSourceRepository
    */
-  async getFundingSourceBasicSupplementaryData(fundingSourceId: number): Promise<FundingSourceBasicSupplementaryData> {
+  async getFundingSourceSupplementaryData(fundingSourceId: number): Promise<FundingSourceSupplementaryData> {
     const sqlStatement = SQL`
       SELECT
         COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count,
@@ -237,11 +296,11 @@ export class FundingSourceRepository extends BaseRepository {
         funding_source.funding_source_id = ${fundingSourceId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, FundingSourceBasicSupplementaryData);
+    const response = await this.connection.sql(sqlStatement, FundingSourceSupplementaryData);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get funding source basic supplementary data', [
-        'FundingSourceRepository->getFundingSourceBasicSupplementaryData',
+        'FundingSourceRepository->getFundingSourceSupplementaryData',
         'rowCount was != 1, expected rowCount = 1'
       ]);
     }
@@ -296,12 +355,23 @@ export class FundingSourceRepository extends BaseRepository {
   async getSurveyFundingSources(surveyId: number): Promise<SurveyFundingSource[]> {
     const sqlStatement = SQL`
       SELECT
-        *,
-        amount::numeric::int
+        sfs.survey_funding_source_id,
+        sfs.survey_id,
+        sfs.funding_source_id,
+        sfs.amount::numeric::int,
+        sfs.revision_count,
+        fs.name as funding_source_name,
+        fs.start_date,
+        fs.end_date,
+        fs.description
       FROM
-        survey_funding_source
+        survey_funding_source sfs
+      LEFT JOIN
+        funding_source fs
+      ON
+        sfs.funding_source_id = fs.funding_source_id
       WHERE
-        survey_id = ${surveyId};
+        sfs.survey_id = ${surveyId};
     `;
     const response = await this.connection.sql(sqlStatement, SurveyFundingSource);
     return response.rows;

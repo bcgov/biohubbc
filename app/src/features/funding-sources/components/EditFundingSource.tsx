@@ -12,9 +12,9 @@ import yup from 'utils/YupSchema';
 import FundingSourceForm, { IFundingSourceData } from './FundingSourceForm';
 
 interface IEditFundingSourceProps {
-  funding_source_id: number;
-  isModalOpen: boolean;
-  closeModal: (refresh?: boolean) => void;
+  fundingSourceId: number;
+  open: boolean;
+  onClose: (refresh?: boolean) => void;
 }
 
 const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
@@ -23,7 +23,7 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
 
   const biohubApi = useBiohubApi();
 
-  const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getFundingSource(props.funding_source_id));
+  const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getFundingSource(props.fundingSourceId));
   fundingSourceDataLoader.load();
 
   // This is placed inside the `EditFundingSource` component to make use of an API call to check for used names
@@ -42,7 +42,7 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
           // no name matches return false
 
           fundingSources.forEach((item) => {
-            if (item.name.toLowerCase() === val.toLowerCase() && item.funding_source_id !== props.funding_source_id) {
+            if (item.name.toLowerCase() === val.toLowerCase() && item.funding_source_id !== props.fundingSourceId) {
               hasBeenUsed = true;
             }
           });
@@ -74,7 +74,7 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
       await biohubApi.funding.putFundingSource(values);
 
       // creation was a success, tell parent to refresh
-      props.closeModal(true);
+      props.onClose(true);
 
       showSnackBar({
         snackbarMessage: (
@@ -95,36 +95,34 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
     }
   };
 
-  if (!fundingSourceDataLoader.isReady && !fundingSourceDataLoader.data) {
+  if (!fundingSourceDataLoader.isReady || !fundingSourceDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
-    <>
-      <EditDialog
-        dialogTitle={FundingSourceI18N.updateFundingSourceDialogTitle}
-        dialogText={FundingSourceI18N.updateFundingSourceDialogText}
-        open={props.isModalOpen}
-        dialogLoading={isSubmitting}
-        component={{
-          element: <FundingSourceForm />,
-          initialValues: {
-            funding_source_id: fundingSourceDataLoader.data!.funding_source_id,
-            name: fundingSourceDataLoader.data!.name,
-            description: fundingSourceDataLoader.data!.description,
-            start_date: fundingSourceDataLoader.data!.start_date,
-            end_date: fundingSourceDataLoader.data!.end_date,
-            revision_count: fundingSourceDataLoader.data!.revision_count
-          },
-          validationSchema: FundingSourceYupSchema
-        }}
-        dialogSaveButtonLabel="Update"
-        onCancel={() => props.closeModal()}
-        onSave={(formValues) => {
-          handleSubmitFundingService(formValues);
-        }}
-      />
-    </>
+    <EditDialog
+      dialogTitle={FundingSourceI18N.updateFundingSourceDialogTitle}
+      dialogText={FundingSourceI18N.updateFundingSourceDialogText}
+      open={props.open}
+      dialogLoading={isSubmitting}
+      component={{
+        element: <FundingSourceForm />,
+        initialValues: {
+          funding_source_id: fundingSourceDataLoader.data.funding_source.funding_source_id,
+          name: fundingSourceDataLoader.data.funding_source.name,
+          description: fundingSourceDataLoader.data.funding_source.description,
+          start_date: fundingSourceDataLoader.data.funding_source.start_date,
+          end_date: fundingSourceDataLoader.data.funding_source.end_date,
+          revision_count: fundingSourceDataLoader.data.funding_source.revision_count
+        },
+        validationSchema: FundingSourceYupSchema
+      }}
+      dialogSaveButtonLabel="Update"
+      onCancel={() => props.onClose()}
+      onSave={(formValues) => {
+        handleSubmitFundingService(formValues);
+      }}
+    />
   );
 };
 

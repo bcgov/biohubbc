@@ -190,6 +190,9 @@ GET.apiDoc = {
                           type: 'number',
                           minimum: 1
                         },
+                        funding_source_name: {
+                          type: 'string'
+                        },
                         amount: {
                           type: 'number'
                         },

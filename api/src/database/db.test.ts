@@ -52,9 +52,16 @@ describe('db', () => {
       const sinonSandbox = Sinon.createSandbox();
 
       const mockKeycloakToken = {
-        preferred_username: 'testguid@idir',
+        idir_user_guid: 'testguid',
+        identity_provider: 'idir',
         idir_username: 'testuser',
-        identity_provider: SYSTEM_IDENTITY_SOURCE.IDIR
+        email_verified: false,
+        name: 'test user',
+        preferred_username: 'testguid@idir',
+        display_name: 'test user',
+        given_name: 'test',
+        family_name: 'user',
+        email: 'email@email.com'
       };
 
       const queryStub = sinonSandbox.stub().resolves();
@@ -371,9 +378,9 @@ describe('db', () => {
       const DB_USERNAME = process.env.DB_USER_API;
 
       expect(getDBConnectionStub).to.have.been.calledWith({
-        preferred_username: `${DB_USERNAME}@database`,
-        sims_system_username: DB_USERNAME,
-        identity_provider: 'database'
+        database_user_guid: DB_USERNAME,
+        identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
+        username: DB_USERNAME
       });
     });
   });

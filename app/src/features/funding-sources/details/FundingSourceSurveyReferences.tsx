@@ -7,6 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interface';
 import { debounce } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
 import { getFormattedAmount } from 'utils/Utils';
@@ -41,11 +42,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IFundingSourceSurveyReferencesProps {
-  fundingSourceSurveyReferences: { name: string; amount: number }[];
+  fundingSourceSurveyReferences: IGetFundingSourceResponse['funding_source_survey_references'];
 }
 
 interface IFundingSourceSurveyReferencesTableEntry {
-  name: string;
+  survey_id: number;
+  survey_name: string;
   amount: number;
 }
 
@@ -66,7 +68,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
 
   const columns: GridColDef<IFundingSourceSurveyReferencesTableEntry>[] = [
     {
-      field: 'name',
+      field: 'survey_name',
       headerName: 'Name',
       flex: 1
     },
@@ -86,7 +88,9 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
     () =>
       debounce((searchString: string) => {
         const regex = new RegExp(searchString, 'i');
-        setFundingSourceSurveyReferences(props.fundingSourceSurveyReferences.filter((item) => regex.test(item.name)));
+        setFundingSourceSurveyReferences(
+          props.fundingSourceSurveyReferences.filter((item) => regex.test(item.survey_name))
+        );
       }, 300),
     [props.fundingSourceSurveyReferences]
   );
@@ -120,7 +124,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
               className={classes.dataGrid}
               autoHeight
               rows={fundingSourceSurveyReferences}
-              getRowId={(row) => `funding-source-survey-reference-${row.name}`}
+              getRowId={(row) => `funding-source-survey-reference-${row.survey_id}`}
               columns={columns}
               pageSizeOptions={[5]}
               rowSelection={false}

@@ -272,7 +272,7 @@ const Header: React.FC = () => {
               </SystemRoleGuard>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
-                  Manage Funding Sources
+                  Funding Sources
                 </RouterLink>
               </SystemRoleGuard>
             </Toolbar>

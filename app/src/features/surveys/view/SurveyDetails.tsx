@@ -7,8 +7,8 @@ import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
-import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 import SurveyFundingSources from './components/SurveyFundingSources';
+import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyMetadataContainer: {

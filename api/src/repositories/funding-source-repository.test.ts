@@ -315,7 +315,7 @@ describe('FundingSourceRepository', () => {
     });
   });
 
-  describe('getFundingSourceBasicSupplementaryData', () => {
+  describe('getFundingSourceSupplementaryData', () => {
     it('returns a single funding source basic supplementary data', async () => {
       const expectedResult = { survey_reference_count: 1, survey_reference_amount_total: 1 };
 
@@ -327,7 +327,7 @@ describe('FundingSourceRepository', () => {
 
       const fundingSourceId = 1;
 
-      const response = await fundingSourceRepository.getFundingSourceBasicSupplementaryData(fundingSourceId);
+      const response = await fundingSourceRepository.getFundingSourceSupplementaryData(fundingSourceId);
 
       expect(response).to.eql(expectedResult);
     });
@@ -342,7 +342,7 @@ describe('FundingSourceRepository', () => {
       const fundingSourceId = 1;
 
       try {
-        await fundingSourceRepository.getFundingSourceBasicSupplementaryData(fundingSourceId);
+        await fundingSourceRepository.getFundingSourceSupplementaryData(fundingSourceId);
 
         expect.fail();
       } catch (error) {

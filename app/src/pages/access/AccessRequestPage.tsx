@@ -91,7 +91,8 @@ export const AccessRequestPage: React.FC = () => {
         name: keycloakWrapper?.displayName as string,
         username: keycloakWrapper?.getUserIdentifier() as string,
         email: keycloakWrapper?.email as string,
-        identitySource: keycloakWrapper?.getIdentitySource() as string
+        identitySource: keycloakWrapper?.getIdentitySource() as string,
+        displayName: keycloakWrapper?.displayName as string
       });
 
       if (!response?.id) {
