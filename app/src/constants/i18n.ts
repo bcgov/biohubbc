@@ -314,6 +314,9 @@ export const FundingSourceI18N = {
   updateErrorTitle: 'Error Updating Funding Source',
   updateErrorText:
     'An error has occurred while attempting to update your Funding Source, please try again. If the error persists, please contact your system administrator.',
+  fetchFundingSourcesErrorTitle: 'Error Fetching Funding Sources',
+  fetchFundingSourcesErrorText:
+    'An error has occurred while attempting to fetch the Funding Sources, please try again. If the error persists, please contact your system administrator.',
   fetchFundingSourceErrorTitle: 'Error Fetching Funding Source',
   fetchFundingSourceErrorText:
     'An error has occurred while attempting to fetch the Funding Source, please try again. If the error persists, please contact your system administrator.'

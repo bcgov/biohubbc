@@ -10,10 +10,12 @@ import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { CodesContext } from 'contexts/codesContext';
+import { FundingSourceI18N } from 'constants/i18n';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect, useState } from 'react';
+import useDataLoaderError from 'hooks/useDataLoaderError';
+import React, { useState } from 'react';
 import CreateFundingSource from '../components/CreateFundingSource';
 import EditFundingSource from '../components/EditFundingSource';
 import FundingSourcePage from '../details/FundingSourcePage';
@@ -63,10 +65,17 @@ const FundingSourcesListPage: React.FC = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const codesContext = useContext(CodesContext);
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
-
   const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
+
+  useDataLoaderError(fundingSourceDataLoader, (dataLoader) => {
+    return {
+      dialogTitle: FundingSourceI18N.fetchFundingSourcesErrorTitle,
+      dialogText: FundingSourceI18N.fetchFundingSourcesErrorText,
+      dialogError: (dataLoader.error as APIError).message,
+      dialogErrorDetails: (dataLoader.error as APIError).errors
+    };
+  });
+
   fundingSourceDataLoader.load();
 
   const closeCreateModal = (refresh?: boolean) => {
@@ -87,7 +96,7 @@ const FundingSourcesListPage: React.FC = () => {
     setFundingSourceId(null);
   };
 
-  if (!codesContext.codesDataLoader.isReady || !fundingSourceDataLoader.isReady) {
+  if (!fundingSourceDataLoader.isReady) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
