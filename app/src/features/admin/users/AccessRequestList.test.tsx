@@ -61,6 +61,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },
@@ -97,6 +98,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },
@@ -133,6 +135,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },
@@ -196,6 +199,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },
@@ -224,6 +228,8 @@ describe('AccessRequestList', () => {
         'aaaa',
         'testusername',
         SYSTEM_IDENTITY_SOURCE.IDIR,
+        'email@email.com',
+        'test user',
         [2]
       );
     });
@@ -249,6 +255,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 1,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },

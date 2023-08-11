@@ -84,7 +84,13 @@ describe('useAdminApi', () => {
   it('addSystemUser works as expected', async () => {
     mock.onPost(`/api/user/add`).reply(200, true);
 
-    const result = await useAdminApi(axios).addSystemUser('userIdentifier', 'identitySource', 1);
+    const result = await useAdminApi(axios).addSystemUser(
+      'userIdentifier',
+      'identitySource',
+      'displayName',
+      'email',
+      1
+    );
 
     expect(result).toEqual(true);
   });

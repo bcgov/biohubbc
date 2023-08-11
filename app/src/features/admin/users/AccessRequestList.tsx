@@ -102,6 +102,8 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
         updatedRequest.data.userGuid,
         updatedRequest.data.username,
         updatedRequest.data.identitySource,
+        updatedRequest.data.email,
+        updatedRequest.data.displayName,
         (values.system_role && [values.system_role]) || []
       );
 

@@ -26,6 +26,7 @@ describe('ReviewAccessRequestForm', () => {
           userGuid: 'aaaa',
           email: 'test data email',
           identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+          displayName: 'test user',
           role: 2,
           reason: 'reason for request'
         }
@@ -76,6 +77,7 @@ describe('ReviewAccessRequestForm', () => {
           userGuid: 'aaaa',
           email: 'test data email',
           identitySource: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+          displayName: 'test user',
           company: 'test company',
           reason: 'reason for request'
         }
