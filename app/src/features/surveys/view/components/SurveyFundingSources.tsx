@@ -29,13 +29,13 @@ const SurveyFundingSources = () => {
         {funding_sources.length > 0 ? (
           <>
             {funding_sources.map((surveyFundingSource) => (
-              <ListItem disableGutters key={surveyFundingSource.funding_source_id}>
+              <ListItem disableGutters divider key={surveyFundingSource.funding_source_id}>
                 <Box flex="1 1 auto">
                   <Box>
                     <Typography>
                       {surveyFundingSource.funding_source_name}
                       <Typography component='span'>
-                        , {getFormattedAmount(surveyFundingSource.amount)}
+                        &nbsp;&ndash; {getFormattedAmount(surveyFundingSource.amount)}
                     </Typography>
                     </Typography>
                   </Box>
