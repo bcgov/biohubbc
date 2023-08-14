@@ -12,8 +12,8 @@ import {
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
-import { queries } from '../queries/queries';
 import { getLogger } from '../utils/logger';
+import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
@@ -586,7 +586,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     if (surveyData?.location?.geometry?.length) {
-      const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(surveyData.location.geometry);
+      const geometryCollectionSQL = generateGeometryCollectionSQL(surveyData.location.geometry);
 
       sqlStatement.append(SQL`
         ,public.geography(
@@ -898,7 +898,7 @@ export class SurveyRepository extends BaseRepository {
             public.ST_SetSRID(
       `);
 
-        const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(surveyData.location.geometry);
+        const geometryCollectionSQL = generateGeometryCollectionSQL(surveyData.location.geometry);
         geometrySqlStatement.append(geometryCollectionSQL);
 
         geometrySqlStatement.append(SQL`

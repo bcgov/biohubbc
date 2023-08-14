@@ -108,9 +108,13 @@ describe('SurveyService', () => {
         .resolves();
       const updateSurveySpeciesDataStub = sinon.stub(SurveyService.prototype, 'updateSurveySpeciesData').resolves();
       const updateSurveyPermitDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyPermitData').resolves();
+      const upsertSurveyFundingSourceDataStub = sinon
+        .stub(SurveyService.prototype, 'upsertSurveyFundingSourceData')
+        .resolves();
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
+      const insertRegionStub = sinon.stub(SurveyService.prototype, 'insertRegion').resolves();
 
       const surveyService = new SurveyService(dbConnectionObj);
 
@@ -123,7 +127,9 @@ describe('SurveyService', () => {
       expect(updateSurveyVantageCodesDataStub).not.to.have.been.called;
       expect(updateSurveySpeciesDataStub).not.to.have.been.called;
       expect(updateSurveyPermitDataStub).not.to.have.been.called;
+      expect(upsertSurveyFundingSourceDataStub).not.to.have.been.called;
       expect(updateSurveyProprietorDataStub).not.to.have.been.called;
+      expect(insertRegionStub).not.to.have.been.called;
     });
 
     it('updates everything when all data provided', async () => {
@@ -135,6 +141,9 @@ describe('SurveyService', () => {
         .resolves();
       const updateSurveySpeciesDataStub = sinon.stub(SurveyService.prototype, 'updateSurveySpeciesData').resolves();
       const updateSurveyPermitDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyPermitData').resolves();
+      const upsertSurveyFundingSourceDataStub = sinon
+        .stub(SurveyService.prototype, 'upsertSurveyFundingSourceData')
+        .resolves();
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
@@ -147,6 +156,7 @@ describe('SurveyService', () => {
         survey_details: {},
         species: {},
         permit: {},
+        funding_sources: [{}],
         proprietor: {},
         purpose_and_methodology: {},
         location: {}
@@ -158,6 +168,7 @@ describe('SurveyService', () => {
       expect(updateSurveyVantageCodesDataStub).to.have.been.calledOnce;
       expect(updateSurveySpeciesDataStub).to.have.been.calledOnce;
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
+      expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
       expect(updateSurveyRegionStub).to.have.been.calledOnce;
     });

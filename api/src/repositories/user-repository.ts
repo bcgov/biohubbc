@@ -300,19 +300,20 @@ export class UserRepository extends BaseRepository {
    */
   async activateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
-    UPDATE
-      system_user
-    SET
-      record_end_date = NULL
-    WHERE
-      system_user_id = ${systemUserId}
-    RETURNING
-      system_user_id,
-      user_identity_source_id,
-      user_identifier,
-      record_effective_date,
-      record_end_date;
-  `;
+      UPDATE
+        system_user
+      SET
+        record_end_date = NULL
+      WHERE
+        system_user_id = ${systemUserId}
+      RETURNING
+        system_user_id,
+        user_identity_source_id,
+        user_identifier,
+        record_effective_date,
+        record_end_date;
+    `;
+
     const response = await this.connection.sql(sqlStatement);
 
     if (response.rowCount !== 1) {
@@ -331,15 +332,15 @@ export class UserRepository extends BaseRepository {
    */
   async deactivateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
-    UPDATE
-      system_user
-    SET
-      record_end_date = now()
-    WHERE
-      system_user_id = ${systemUserId}
-    RETURNING
-      *;
-  `;
+      UPDATE
+        system_user
+      SET
+        record_end_date = now()
+      WHERE
+        system_user_id = ${systemUserId}
+      RETURNING
+        *;
+    `;
 
     const response = await this.connection.sql(sqlStatement);
 
@@ -404,5 +405,18 @@ export class UserRepository extends BaseRepository {
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
+  }
+
+  async deleteAllProjectRoles(systemUserId: number) {
+    const sqlStatement = SQL`
+      DELETE FROM
+        project_participation
+      WHERE
+        system_user_id = ${systemUserId}
+      RETURNING
+        *;
+    `;
+
+    return this.connection.sql(sqlStatement);
   }
 }

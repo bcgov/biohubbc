@@ -585,7 +585,7 @@ export class SurveyService extends DBService {
       promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
     }
 
-    if (putSurveyData?.funding_sources) {
+    if (putSurveyData?.funding_sources?.length) {
       promises.push(this.upsertSurveyFundingSourceData(surveyId, putSurveyData));
     }
 
