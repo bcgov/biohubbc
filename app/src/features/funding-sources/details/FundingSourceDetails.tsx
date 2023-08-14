@@ -46,7 +46,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
       <Box mt={3} mb={0} component="dl"
         sx={{
           '& dt': {
-            flex: '0 0 10rem'
+            flex: '0 0 12rem'
           },
           '& dd': {
             flex: '1 1 auto'
@@ -55,7 +55,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
       >
         <Box display="flex">
           <Typography component="dt" color="textSecondary">
-            Total Amount:
+            Amount Distributed:
           </Typography>
           <Typography component="dd" data-testid="funding_source_total_amount">
             {getFormattedAmount(props.fundingSource.survey_reference_amount_total)}
