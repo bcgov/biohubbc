@@ -29,7 +29,7 @@ const FundingSourceForm: React.FC = () => {
             name="description"
             label="Description"
             maxLength={200}
-            other={{ multiline: true, required: true, rows: 4 }}
+            other={{ multiline: true, placeholder: 'Maximum 200 characters', required: true, rows: 3 }}
           />
         </Box>
 

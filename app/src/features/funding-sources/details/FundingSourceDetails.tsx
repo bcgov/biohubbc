@@ -1,8 +1,11 @@
 import Box from '@mui/material/Box';
+import { mdiHelpCircle } from '@mdi/js';
+import Icon from '@mdi/react';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interface';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
+import Tooltip from '@mui/material/Tooltip';
 
 export interface IFundingSourceDetailsProps {
   fundingSource: IGetFundingSourceResponse['funding_source'];
@@ -49,7 +52,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
         component="dl"
         sx={{
           '& dt': {
-            flex: '0 0 12rem'
+            flex: '0 0 15rem'
           },
           '& dd': {
             flex: '1 1 auto'
@@ -57,7 +60,14 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
         }}>
         <Box display="flex">
           <Typography component="dt" color="textSecondary">
-            Amount Distributed:
+            <Box display="flex" alignItems="center" gap="4px">
+              <span>Amount Distributed</span>
+              <Tooltip
+                title="Known amount of funding that has been distributed to one or more surveys."
+              >
+                <Icon path={mdiHelpCircle} size={0.875} />
+              </Tooltip>
+            </Box>
           </Typography>
           <Typography component="dd" data-testid="funding_source_total_amount">
             {getFormattedAmount(props.fundingSource.survey_reference_amount_total)}
@@ -65,7 +75,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
         </Box>
         <Box display="flex">
           <Typography component="dt" color="textSecondary">
-            Effective Dates:
+            Effective Dates
           </Typography>
           <Typography component="dd" data-testid="funding_source_timeline">
             <EffectiveDate />

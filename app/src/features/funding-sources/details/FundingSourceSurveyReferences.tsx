@@ -102,26 +102,33 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
             fontWeight: 700,
             textTransform: 'uppercase'
           }}>
-          REFERENCES &zwnj;
+          SURVEYS &zwnj;
           <Typography component="span" variant="inherit" color="textSecondary">
             ({fundingSourceSurveyReferences.length || 0})
           </Typography>
         </Typography>
       </Box>
 
+      <Box mt={3}>
       {fundingSourceSurveyReferences.length === 0 ? (
         <>
-          <Box mt={3} mb={1}>
-            <Paper elevation={0} variant="outlined">
+          <Box>
+            <Paper elevation={0} variant="outlined"
+              sx={{
+                padding: '24px',
+                textAlign: 'center',
+                background: grey[100]
+              }}
+            >
               <Typography variant="body1" color="textSecondary">
-                This funding source has not been referenced.
+                No surveys are currently referencing this funding source.
               </Typography>
             </Paper>
           </Box>
         </>
       ) : (
         <>
-          <Box mt={3} mb={1}>
+          <Box mb={1}>
             <TextField
               name={'funding-source-survey-references-search'}
               id={'funding-source-survey-references-search'}
@@ -170,6 +177,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
           </Paper>
         </>
       )}
+      </Box>
     </>
   );
 };

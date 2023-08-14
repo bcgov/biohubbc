@@ -50,7 +50,7 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
         }
         return !hasBeenUsed;
       }),
-    description: yup.string().max(200, 'Maximum 200 characters').required('Description is required'),
+    description: yup.string().max(200, 'Description cannot exceed 200 characters').required('Description is required'),
     start_date: yup.string().isValidDateString().nullable(),
     end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').nullable()
   });
