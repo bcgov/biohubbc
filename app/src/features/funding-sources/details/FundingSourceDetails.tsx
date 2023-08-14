@@ -43,7 +43,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
       <Typography variant='body1' color="textSecondary" data-testid="funding_source_description">
         {props.fundingSource.description}
       </Typography>
-      <Box mt={3} component="dl"
+      <Box mt={3} mb={0} component="dl"
         sx={{
           '& dt': {
             flex: '0 0 10rem'

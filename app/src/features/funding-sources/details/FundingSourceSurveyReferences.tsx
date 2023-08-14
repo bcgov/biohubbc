@@ -18,8 +18,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   filtersBox: {},
   noDataText: {
     fontFamily: 'inherit !important',
-    fontSize: '0.875rem',
-    fontWeight: 700
   },
   dataGrid: {
     border: 'none !important',
@@ -53,7 +51,7 @@ interface IFundingSourceSurveyReferencesTableEntry {
 const NoRowsOverlay = (props: { className: string }) => (
   <GridOverlay>
     <Typography className={props.className} color="textSecondary">
-      No funding source references found
+      No surveys have referenced this funding source
     </Typography>
   </GridOverlay>
 );
@@ -96,69 +94,67 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
 
   return (
     <>
-      <Box py={3}>
-        <Box>
+      <Box>
         <Typography variant="h4"
           sx={{
-            fontSize: '14px',
+            fontSize: '16px',
             fontWeight: 700,
             textTransform: 'uppercase'
           }}
         >
-          Surveys &zwnj;
+          Referenced Surveys &zwnj;
           <Typography component="span" variant="inherit" color="textSecondary">
             ({fundingSourceSurveyReferences.length || 0})
           </Typography>
         </Typography>
-        </Box>
-        <Box my={3}>
-          <TextField
-            name={'funding-source-survey-references-search'}
-            id={'funding-source-survey-references-search'}
-            aria-label="Search Referenced Surveys"
-            placeholder="Search"
-            InputProps={{ 
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Icon path={mdiMagnify} size={1} />
-                </InputAdornment>
-              ),
+      </Box>
+      <Box mt={3} mb={1}>
+        <TextField
+          name={'funding-source-survey-references-search'}
+          id={'funding-source-survey-references-search'}
+          aria-label="Search Referenced Surveys"
+          placeholder="Search"
+          InputProps={{ 
+            startAdornment: (
+              <InputAdornment position="start">
+                <Icon path={mdiMagnify} size={1} />
+              </InputAdornment>
+            ),
+          }}
+          inputProps={{
+            'data-testid': 'funding-source-survey-references-search',
+          }}
+          className={classes.filtersBox}
+          onChange={(event) => {
+            onSearch(event.target.value);
+          }}
+          variant="outlined"
+          fullWidth={true}
+        />
+      </Box>
+      <Paper elevation={0} variant="outlined">
+        <Box>
+          <DataGrid
+            className={classes.dataGrid}
+            autoHeight
+            rows={fundingSourceSurveyReferences}
+            getRowId={(row) => `funding-source-survey-reference-${row.survey_id}`}
+            columns={columns}
+            pageSizeOptions={[5]}
+            rowSelection={false}
+            checkboxSelection={false}
+            hideFooter
+            disableRowSelectionOnClick
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            sortingOrder={['asc', 'desc']}
+            slots={{
+              noRowsOverlay: NoRowsOverlayStyled
             }}
-            inputProps={{
-              'data-testid': 'funding-source-survey-references-search',
-            }}
-            className={classes.filtersBox}
-            onChange={(event) => {
-              onSearch(event.target.value);
-            }}
-            variant="outlined"
-            fullWidth={true}
           />
         </Box>
-        <Paper elevation={0} variant="outlined">
-          <Box>
-            <DataGrid
-              className={classes.dataGrid}
-              autoHeight
-              rows={fundingSourceSurveyReferences}
-              getRowId={(row) => `funding-source-survey-reference-${row.survey_id}`}
-              columns={columns}
-              pageSizeOptions={[5]}
-              rowSelection={false}
-              checkboxSelection={false}
-              hideFooter
-              disableRowSelectionOnClick
-              disableColumnSelector
-              disableColumnFilter
-              disableColumnMenu
-              sortingOrder={['asc', 'desc']}
-              slots={{
-                noRowsOverlay: NoRowsOverlayStyled
-              }}
-            />
-          </Box>
-        </Paper>
-      </Box>
+      </Paper>
     </>
   );
 };
