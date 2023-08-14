@@ -1,10 +1,11 @@
+import { LoadingButton } from '@mui/lab';
 import Button, { ButtonProps } from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 
 export interface IYesNoDialogProps {
   /**
@@ -85,6 +86,14 @@ export interface IYesNoDialogProps {
    * @memberof IYesNoDialogProps
    */
   noButtonProps?: Partial<ButtonProps>;
+
+  /**
+   * Optional Boolean to state if button should be loading
+   *
+   * @type {boolean}
+   * @memberof IYesNoDialogProps
+   */
+  isLoading?: boolean;
 }
 
 /**
@@ -95,6 +104,8 @@ export interface IYesNoDialogProps {
  * @return {*}
  */
 const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
+  const [isLoading, setIsLoading] = useState(props.isLoading || false);
+
   if (!props.open) {
     return <></>;
   }
@@ -113,14 +124,20 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
         {props.dialogContent}
       </DialogContent>
       <DialogActions>
-        <Button
+        <LoadingButton
+          loading={isLoading}
           data-testid="yes-button"
-          onClick={props.onYes}
+          onClick={async () => {
+            // loading state is set before submission to reflect user action immediately
+            setIsLoading(true);
+            await props.onYes();
+            setIsLoading(false);
+          }}
           color="primary"
           variant="contained"
           {...props.yesButtonProps}>
           {props.yesButtonLabel ? props.yesButtonLabel : 'Yes'}
-        </Button>
+        </LoadingButton>
 
         <Button
           data-testid="no-button"
