@@ -133,7 +133,7 @@ export class FundingSourceRepository extends BaseRepository {
    */
   async getFundingSource(fundingSourceId: number): Promise<FundingSource | FundingSourceSupplementaryData> {
     const sqlStatement = SQL`
-      WITH 
+      WITH
         w_references as (
           SELECT
             COUNT(survey_funding_source.funding_source_id)::int as survey_reference_count,
