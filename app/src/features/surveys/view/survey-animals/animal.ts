@@ -1,6 +1,6 @@
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { InferType, reach } from 'yup';
+import { AnyObjectSchema, InferType, reach } from 'yup';
 
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
@@ -18,9 +18,12 @@ export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) 
   if (!lastValue) {
     return true;
   }
-  const schema = reach(AnimalSchema, `markings[${lastIndex}]`);
-  console.log(schema.describe());
+  const schema = reach(AnimalSchema, `${animalKey}[${lastIndex}]`);
   return schema.isValidSync(lastValue);
+};
+
+export const isReq = <T extends AnyObjectSchema>(schema: T, key: keyof T['fields']) => {
+  return schema.fields[key].exclusiveTests.required;
 };
 
 const req = 'Required';

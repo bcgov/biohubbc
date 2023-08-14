@@ -3,9 +3,15 @@ import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { get } from 'lodash-es';
 import React, { Fragment } from 'react';
-import { AnimalMarkingSchema, getAnimalFieldName, IAnimal, IAnimalMarking, lastAnimalValueValid } from '../animal';
+import {
+  AnimalMarkingSchema,
+  getAnimalFieldName,
+  IAnimal,
+  IAnimalMarking,
+  isReq,
+  lastAnimalValueValid
+} from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
@@ -20,8 +26,6 @@ const MarkingAnimalForm = () => {
     secondary_colour_id: undefined,
     marking_comment: ''
   };
-  const test = get(AnimalMarkingSchema.describe(), 'fields.marking_type_id.tests[0].name') == 'required';
-  console.log(test);
 
   return (
     <FieldArray name={name}>
@@ -45,7 +49,7 @@ const MarkingAnimalForm = () => {
                     route="marking_type"
                     controlProps={{
                       size: 'small',
-                      required: true
+                      required: isReq(AnimalMarkingSchema, 'marking_type_id')
                     }}
                   />
                 </Grid>
@@ -56,7 +60,10 @@ const MarkingAnimalForm = () => {
                     id="marking_body_location"
                     route="taxon_marking_body_locations"
                     query={`taxon_id=${values.general.taxon_id}`}
-                    controlProps={{ size: 'small' }}
+                    controlProps={{
+                      size: 'small',
+                      required: isReq(AnimalMarkingSchema, 'taxon_marking_body_location_id')
+                    }}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -65,7 +72,7 @@ const MarkingAnimalForm = () => {
                     name={getAnimalFieldName<IAnimalMarking>(name, 'primary_colour_id', index)}
                     id="primary_colour_id"
                     route="colours"
-                    controlProps={{ size: 'small' }}
+                    controlProps={{ size: 'small', required: isReq(AnimalMarkingSchema, 'primary_colour_id') }}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -74,15 +81,15 @@ const MarkingAnimalForm = () => {
                     name={getAnimalFieldName<IAnimalMarking>(name, 'secondary_colour_id', index)}
                     id="secondary_colour_id"
                     route="colours"
-                    controlProps={{ size: 'small' }}
+                    controlProps={{ size: 'small', required: isReq(AnimalMarkingSchema, 'secondary_colour_id') }}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Marking')}>
                     <CustomTextField
-                      other={{ size: 'small' }}
                       label="Marking Comment"
                       name={getAnimalFieldName<IAnimalMarking>(name, 'marking_comment', index)}
+                      other={{ size: 'small', required: isReq(AnimalMarkingSchema, 'marking_comment') }}
                     />
                   </TextInputToggle>
                 </Grid>
