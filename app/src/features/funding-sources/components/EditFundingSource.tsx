@@ -81,7 +81,7 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
-              Funding source '<strong>{values.name}</strong>' saved.
+              Funding source '<strong>{values.name}</strong>' saved
             </Typography>
           </>
         ),
