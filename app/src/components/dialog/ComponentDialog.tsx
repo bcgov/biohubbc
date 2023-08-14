@@ -29,6 +29,14 @@ export interface IComponentDialogProps {
    */
   onClose: () => void;
   /**
+   * The close button label.
+   *
+   * @default 'Ok'
+   * @type {string}
+   * @memberof IComponentDialogProps
+   */
+  closeButtonLabel?: string;
+  /**
    * `Dialog` props passthrough.
    *
    * @type {Partial<DialogProps>}
@@ -66,7 +74,7 @@ const ComponentDialog: React.FC<PropsWithChildren<IComponentDialogProps>> = (pro
       <DialogContent>{props.children}</DialogContent>
       <DialogActions>
         <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
-          Ok
+          {props.closeButtonLabel ? props.closeButtonLabel : 'Ok'}
         </Button>
       </DialogActions>
     </Dialog>
