@@ -1,6 +1,6 @@
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { InferType } from 'yup';
+import { InferType, reach } from 'yup';
 
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
@@ -9,6 +9,18 @@ import { InferType } from 'yup';
 
 export const getAnimalFieldName = <T>(animalKey: keyof IAnimal, fieldKey: keyof T, idx?: number) => {
   return idx === undefined ? `${animalKey}.${String(fieldKey)}` : `${animalKey}.${idx}.${String(fieldKey)}`;
+};
+
+export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) => {
+  const section = values[animalKey];
+  const lastIndex = section.length - 1;
+  const lastValue = section[lastIndex];
+  if (!lastValue) {
+    return true;
+  }
+  const schema = reach(AnimalSchema, `markings[${lastIndex}]`);
+  console.log(schema.describe());
+  return schema.isValidSync(lastValue);
 };
 
 const req = 'Required';
@@ -22,7 +34,7 @@ const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).ty
 
 const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
-  animal_id: yup.string().required(req),
+  animal_id: yup.string(),
   taxon_name: yup.string()
 });
 

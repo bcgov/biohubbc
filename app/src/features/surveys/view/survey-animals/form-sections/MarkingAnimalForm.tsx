@@ -3,8 +3,9 @@ import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { get } from 'lodash-es';
 import React, { Fragment } from 'react';
-import { getAnimalFieldName, IAnimal, IAnimalMarking } from '../animal';
+import { AnimalMarkingSchema, getAnimalFieldName, IAnimal, IAnimalMarking, lastAnimalValueValid } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
@@ -19,6 +20,8 @@ const MarkingAnimalForm = () => {
     secondary_colour_id: undefined,
     marking_comment: ''
   };
+  const test = get(AnimalMarkingSchema.describe(), 'fields.marking_type_id.tests[0].name') == 'required';
+  console.log(test);
 
   return (
     <FieldArray name={name}>
@@ -29,6 +32,7 @@ const MarkingAnimalForm = () => {
             addedSectionTitle={SurveyAnimalsI18N.animalMarkingTitle2}
             titleHelp={SurveyAnimalsI18N.animalMarkingHelp}
             btnLabel={SurveyAnimalsI18N.animalMarkingAddBtn}
+            disableAddBtn={!lastAnimalValueValid('markings', values)}
             handleAddSection={() => push(newMarking)}
             handleRemoveSection={remove}>
             {values?.markings?.map((_cap, index) => (
@@ -39,7 +43,10 @@ const MarkingAnimalForm = () => {
                     name={getAnimalFieldName<IAnimalMarking>(name, 'marking_type_id', index)}
                     id="marking_type"
                     route="marking_type"
-                    controlProps={{ size: 'small', required: true }}
+                    controlProps={{
+                      size: 'small',
+                      required: true
+                    }}
                   />
                 </Grid>
                 <Grid item xs={6}>
