@@ -29,7 +29,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
     if (props.fundingSource.start_date) {
       return (
         <>
-          <span>Start Date:</span>
+          <span>Start Date: </span>
           {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, props.fundingSource.start_date)}
         </>
       );
@@ -40,10 +40,13 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
 
   return (
     <Box component="section">
-      <Typography variant='body1' color="textSecondary" data-testid="funding_source_description">
+      <Typography variant="body1" color="textSecondary" data-testid="funding_source_description">
         {props.fundingSource.description}
       </Typography>
-      <Box mt={3} mb={0} component="dl"
+      <Box
+        mt={3}
+        mb={0}
+        component="dl"
         sx={{
           '& dt': {
             flex: '0 0 12rem'
@@ -51,8 +54,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
           '& dd': {
             flex: '1 1 auto'
           }
-        }}
-      >
+        }}>
         <Box display="flex">
           <Typography component="dt" color="textSecondary">
             Amount Distributed:

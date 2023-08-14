@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { FundingSourceI18N } from 'constants/i18n';
 import { APIError } from 'hooks/api/useAxios';
@@ -45,7 +45,7 @@ const FundingSourcePage = (props: IFundingSourceDetailsProps) => {
   return (
     <ComponentDialog
       open={props.open}
-      closeButtonLabel='Close'
+      closeButtonLabel="Close"
       dialogTitle={fundingSourceDataLoader.data.funding_source.name}
       onClose={props.onClose}>
       <Box mb={3}>
