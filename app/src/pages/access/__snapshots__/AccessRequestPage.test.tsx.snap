@@ -183,19 +183,16 @@ exports[`AccessRequestPage renders correctly 1`] = `
             <div
               class="MuiBox-root css-1vfa8p7"
             >
-              <div
-                class="makeStyles-wrapper-2 MuiBox-root css-0"
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiLoadingButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiLoadingButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-9ctt33-MuiButtonBase-root-MuiButton-root-MuiLoadingButton-root"
+                id="mui-1"
+                tabindex="0"
+                type="submit"
               >
-                <button
-                  class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-1e8o90c-MuiButtonBase-root-MuiButton-root"
-                  tabindex="0"
-                  type="submit"
-                >
-                  <strong>
-                    Submit Request
-                  </strong>
-                </button>
-              </div>
+                <strong>
+                  Submit Request
+                </strong>
+              </button>
               <a
                 class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-disableElevation makeStyles-actionButton-1 css-ok5xf-MuiButtonBase-root-MuiButton-root"
                 data-testid="logout-button"

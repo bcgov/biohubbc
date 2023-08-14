@@ -78,7 +78,7 @@ describe('CreateProjectPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    const { getByText } = renderContainer();
+    const { getByText, getAllByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Create New Project')).toBeVisible();
@@ -87,7 +87,7 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('Project Coordinator')).toBeVisible();
 
-      expect(getByText('Funding and Partnerships')).toBeVisible();
+      expect(getAllByText('Partnerships')[0]).toBeVisible();
 
       expect(getByText('Location and Boundary')).toBeVisible();
     });
