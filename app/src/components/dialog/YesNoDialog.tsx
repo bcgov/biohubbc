@@ -1,11 +1,10 @@
-import { LoadingButton } from '@mui/lab';
 import Button, { ButtonProps } from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 
 export interface IYesNoDialogProps {
   /**
@@ -104,8 +103,6 @@ export interface IYesNoDialogProps {
  * @return {*}
  */
 const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
-  const [isLoading, setIsLoading] = useState(props.isLoading || false);
-
   if (!props.open) {
     return <></>;
   }
@@ -124,20 +121,14 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
         {props.dialogContent}
       </DialogContent>
       <DialogActions>
-        <LoadingButton
-          loading={isLoading}
+        <Button
           data-testid="yes-button"
-          onClick={async () => {
-            // loading state is set before submission to reflect user action immediately
-            setIsLoading(true);
-            await props.onYes();
-            setIsLoading(false);
-          }}
+          onClick={props.onYes}
           color="primary"
           variant="contained"
           {...props.yesButtonProps}>
           {props.yesButtonLabel ? props.yesButtonLabel : 'Yes'}
-        </LoadingButton>
+        </Button>
 
         <Button
           data-testid="no-button"
