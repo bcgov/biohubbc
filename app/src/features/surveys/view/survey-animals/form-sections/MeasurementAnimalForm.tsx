@@ -27,7 +27,7 @@ const MeasurementAnimalForm = () => {
   const newMeasurement: IAnimalMeasurement = {
     taxon_measurement_id: '',
     value: '' as unknown as number,
-    option_id: '',
+    qualitative_option_id: '',
     measured_timestamp: '' as unknown as Date,
     measurement_comment: ''
   };
@@ -67,7 +67,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
 
   const tmIDName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'taxon_measurement_id', index);
   const valName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index);
-  const opIDName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'option_id', index);
+  const opIDName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'qualitative_option_id', index);
 
   useEffect(() => {
     setFieldValue(valName, '');
