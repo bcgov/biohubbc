@@ -41,10 +41,8 @@ export const SurveyFundingSourceYupSchema = yup.object().shape({
     .number()
     .min(0, 'Must be a positive number')
     .max(9999999999, 'Cannot exceed $9,999,999,999')
-    .transform((value) => (isNaN(value) ? null : Number(value)))
     .nullable(true)
-
-  // .typeError('Must be a number')
+    .transform((value) => (isNaN(value) ? null : Number(value)))
 });
 
 export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {

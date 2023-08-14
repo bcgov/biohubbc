@@ -5,18 +5,16 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { GridRenderCellParams, GridTreeNodeWithRender } from '@mui/x-data-grid';
 import { useState } from 'react';
-import { IFundingSourcesTableEntry } from './FundingSourcesTable';
 
-const TableActionsMenu = (
-  props:
-    | GridRenderCellParams<IFundingSourcesTableEntry, any, any, GridTreeNodeWithRender> & {
-        onView: (fundingSourceId: number) => void;
-        onEdit: (fundingSourceId: number) => void;
-        onDelete: (fundingSourceId: number) => void;
-      }
-) => {
+export interface ITableActionsMenuProps {
+  fundingSourceId: number;
+  onView: (fundingSourceId: number) => void;
+  onEdit: (fundingSourceId: number) => void;
+  onDelete: (fundingSourceId: number) => void;
+}
+
+const TableActionsMenu = (props: ITableActionsMenuProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -56,7 +54,7 @@ const TableActionsMenu = (
         <MenuItem
           onClick={() => {
             handleClose();
-            props.onView(props.row.funding_source_id);
+            props.onView(props.fundingSourceId);
           }}
           data-testid="funding-source-table-row-view">
           <ListItemIcon>
@@ -67,7 +65,7 @@ const TableActionsMenu = (
         <MenuItem
           onClick={() => {
             handleClose();
-            props.onEdit(props.row.funding_source_id);
+            props.onEdit(props.fundingSourceId);
           }}
           data-testid="funding-source-table-row-edit">
           <ListItemIcon>
@@ -78,7 +76,7 @@ const TableActionsMenu = (
         <MenuItem
           onClick={() => {
             handleClose();
-            props.onDelete(props.row.funding_source_id);
+            props.onDelete(props.fundingSourceId);
           }}
           data-testid="funding-source-table-row-delete">
           <ListItemIcon>

@@ -80,7 +80,12 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
       type: 'actions',
       sortable: false,
       renderCell: (params) => (
-        <TableActionsMenu {...params} onView={props.onView} onEdit={props.onEdit} onDelete={props.onDelete} />
+        <TableActionsMenu
+          fundingSourceId={params.row.funding_source_id}
+          onView={props.onView}
+          onEdit={props.onEdit}
+          onDelete={props.onDelete}
+        />
       )
     }
   ];
