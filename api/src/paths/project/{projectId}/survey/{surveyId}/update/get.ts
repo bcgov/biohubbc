@@ -72,7 +72,15 @@ GET.apiDoc = {
             properties: {
               surveyData: {
                 type: 'object',
-                required: ['survey_details', 'species', 'permit', 'proprietor', 'purpose_and_methodology', 'location'],
+                required: [
+                  'survey_details',
+                  'species',
+                  'permit',
+                  'funding_sources',
+                  'proprietor',
+                  'purpose_and_methodology',
+                  'location'
+                ],
                 properties: {
                   survey_details: {
                     description: 'Survey Details',
@@ -162,6 +170,42 @@ GET.apiDoc = {
                               type: 'string'
                             }
                           }
+                        }
+                      }
+                    }
+                  },
+                  funding_sources: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: [
+                        'survey_funding_source_id',
+                        'survey_id',
+                        'funding_source_id',
+                        'amount',
+                        'revision_count'
+                      ],
+                      properties: {
+                        survey_funding_source_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        survey_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        funding_source_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        funding_source_name: {
+                          type: 'string'
+                        },
+                        amount: {
+                          type: 'number'
+                        },
+                        revision_count: {
+                          type: 'number'
                         }
                       }
                     }

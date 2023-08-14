@@ -72,7 +72,15 @@ GET.apiDoc = {
             properties: {
               surveyData: {
                 type: 'object',
-                required: ['survey_details', 'species', 'permit', 'proprietor', 'purpose_and_methodology', 'location'],
+                required: [
+                  'survey_details',
+                  'species',
+                  'permit',
+                  'funding_sources',
+                  'proprietor',
+                  'purpose_and_methodology',
+                  'location'
+                ],
                 properties: {
                   survey_details: {
                     description: 'Survey Details',

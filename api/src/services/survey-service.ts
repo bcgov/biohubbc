@@ -706,11 +706,8 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async upsertSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
-    console.log('surveyId', surveyId);
-    console.log('surveyData', surveyData);
     // Get any existing survey funding sources
     const existingSurveyFundingSources = await this.fundingSourceService.getSurveyFundingSources(surveyId);
-    console.log('existingSurveyFundingSources', existingSurveyFundingSources);
 
     //Compare input and existing for fundings to delete
     const existingSurveyFundingToDelete = existingSurveyFundingSources.filter((existingSurveyFunding) => {
@@ -718,7 +715,6 @@ export class SurveyService extends DBService {
         (incomingFunding) => incomingFunding.survey_funding_source_id === existingSurveyFunding.survey_funding_source_id
       );
     });
-    console.log('existingSurveyFundingToDelete', existingSurveyFundingToDelete);
 
     // Delete any no existing fundings
     if (existingSurveyFundingToDelete.length) {

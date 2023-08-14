@@ -426,7 +426,7 @@ export class EmlService extends DBService {
         SQL`SELECT api_get_character_system_metadata_constant(${'INTELLECTUAL_RIGHTS'}) as constant;`
       ),
       this.connection.sql<{ constant: string }>(
-        SQL`SELECT api_get_character_system_metadata_constant(${'TAXONOMIC_PROVIDER_URL'}') as constant;`
+        SQL`SELECT api_get_character_system_metadata_constant(${'TAXONOMIC_PROVIDER_URL'}) as constant;`
       )
     ]);
 
