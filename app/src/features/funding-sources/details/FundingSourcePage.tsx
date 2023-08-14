@@ -45,13 +45,14 @@ const FundingSourcePage = (props: IFundingSourceDetailsProps) => {
   return (
     <ComponentDialog
       open={props.open}
+      closeButtonLabel='Close'
       dialogTitle={fundingSourceDataLoader.data.funding_source.name}
       onClose={props.onClose}>
-      <Box>
+      <Box mb={3}>
         <FundingSourceDetails fundingSource={fundingSourceDataLoader.data.funding_source} />
       </Box>
       <Divider></Divider>
-      <Box>
+      <Box mt={3}>
         <FundingSourceSurveyReferences
           fundingSourceSurveyReferences={fundingSourceDataLoader.data.funding_source_survey_references}
         />
