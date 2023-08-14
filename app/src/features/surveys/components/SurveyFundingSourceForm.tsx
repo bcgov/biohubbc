@@ -122,11 +122,11 @@ const SurveyFundingSourceForm = () => {
               data-testid="funding-form-add-button"
               variant="outlined"
               color="primary"
-              title="Add Funding Source"
-              aria-label="Add Funding Source"
+              title="Create Funding Source"
+              aria-label="Create Funding Source"
               startIcon={<Icon path={mdiPlus} size={1} />}
               onClick={() => arrayHelpers.push(SurveyFundingSourceInitialValues)}>
-              Add Funding Source
+              Create
             </Button>
           </Box>
         )}
