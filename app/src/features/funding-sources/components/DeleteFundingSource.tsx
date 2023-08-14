@@ -1,7 +1,8 @@
 import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { FundingSourceI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
+import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext } from 'react';
@@ -21,6 +22,7 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
   const fundingSourceDataLoader = useDataLoader(() => biohubApi.funding.getFundingSource(fundingSourceId));
   fundingSourceDataLoader.load();
 
+  // API Error dialog
   const showDeleteErrorDialog = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: FundingSourceI18N.deleteFundingSourceErrorTitle,
@@ -31,11 +33,27 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
     });
   };
 
+  // Success snack bar
+  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
+
   const deleteFundingSource = async () => {
     try {
       await biohubApi.funding.deleteFundingSourceById(fundingSourceId);
       // delete was a success, tell parent to refresh
       onClose(true);
+
+      showSnackBar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              Funding Source has been deleted.
+            </Typography>
+          </>
+        ),
+        open: true
+      });
     } catch (error) {
       // error deleting, show dialog that says you need to remove references
       onClose(false);
