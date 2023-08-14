@@ -19,7 +19,7 @@ const FundingSourceForm: React.FC = () => {
 
   return (
     <form>
-      <Box mt={3}>
+      <Box>
         <Box component={'fieldset'} mb={4}>
           <Typography component="legend">Name and Description</Typography>
           <Box mt={0.5} mb={3}>

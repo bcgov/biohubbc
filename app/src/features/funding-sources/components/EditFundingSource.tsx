@@ -81,7 +81,7 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
-              Funding Source: <strong>{values.name}</strong> has been updated.
+              <strong>{values.name}</strong> has saved successfully.
             </Typography>
           </>
         ),
@@ -103,7 +103,6 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
   return (
     <EditDialog
       dialogTitle={FundingSourceI18N.updateFundingSourceDialogTitle}
-      dialogText={FundingSourceI18N.updateFundingSourceDialogText}
       open={props.open}
       dialogLoading={isSubmitting}
       component={{
@@ -118,7 +117,7 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
         },
         validationSchema: FundingSourceYupSchema
       }}
-      dialogSaveButtonLabel="Update"
+      dialogSaveButtonLabel="Save"
       onCancel={() => props.onClose()}
       onSave={(formValues) => {
         handleSubmitFundingService(formValues);

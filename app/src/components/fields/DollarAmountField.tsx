@@ -1,4 +1,5 @@
 import TextField, { TextFieldProps } from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
@@ -35,7 +36,6 @@ const NumberFormatCustom = React.forwardRef<NumberFormatProps, NumberFormatCusto
         });
       }}
       thousandSeparator
-      prefix="$"
       decimalScale={0}
     />
   );
@@ -56,6 +56,9 @@ const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
       error={get(touched, name) && Boolean(get(errors, name))}
       helperText={get(touched, name) && (get(errors, name) as string)}
       InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">$</InputAdornment>
+        ),
         inputComponent: NumberFormatCustom as any
       }}
       inputProps={{ 'data-testid': name }}
