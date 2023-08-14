@@ -28,6 +28,7 @@ const FundingSourceForm: React.FC = () => {
           <CustomTextField
             name="description"
             label="Description"
+            maxLength={200}
             other={{ multiline: true, required: true, rows: 4 }}
           />
         </Box>
