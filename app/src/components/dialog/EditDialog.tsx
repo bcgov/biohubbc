@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Formik, FormikValues } from 'formik';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useState } from 'react';
 
 export interface IEditDialogComponentProps<T> {
   element: any;
@@ -90,6 +90,7 @@ export interface IEditDialogProps<T> {
  */
 export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEditDialogProps<T>>) => {
   const theme = useTheme();
+  const [isLoading, setIsLoading] = useState(props.dialogLoading || false);
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -122,8 +123,13 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           </DialogContent>
           <DialogActions>
             <LoadingButton
-              loading={props.dialogLoading || false}
-              onClick={formikProps.submitForm}
+              sx={{ marginX: 1 }}
+              loading={isLoading}
+              onClick={() => {
+                // loading state is set before submission to reflect user action immediately
+                setIsLoading(true);
+                formikProps.submitForm();
+              }}
               color="primary"
               variant="contained"
               autoFocus

@@ -14,13 +14,12 @@ export interface IFundingSourceData {
   revision_count: number | null;
 }
 
-const FundingSourceForm: React.FC = (props) => {
+const FundingSourceForm: React.FC = () => {
   const formikProps = useFormikContext<IFundingSourceData>();
-  const { handleSubmit } = formikProps;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Box mt={4}>
+    <form>
+      <Box mt={3}>
         <Box component={'fieldset'} mb={4}>
           <Typography component="legend">Name and Description</Typography>
           <Box mt={0.5} mb={3}>
