@@ -88,6 +88,7 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
     {
       field: 'actions',
       type: 'actions',
+      sortable: false,
       getActions: (params) => {
         return [
           <GridActionsCellItem

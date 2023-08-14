@@ -20,10 +20,10 @@ const FundingSourceForm: React.FC = (props) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Box mt={3}>
+      <Box mt={4}>
         <Box component={'fieldset'} mb={4}>
           <Typography component="legend">Name and Description</Typography>
-          <Box mb={3} mt={1}>
+          <Box mt={0.5} mb={3}>
             <CustomTextField name="name" label="Name" other={{ required: true }} />
           </Box>
           <CustomTextField
@@ -35,18 +35,15 @@ const FundingSourceForm: React.FC = (props) => {
 
         <Box component={'fieldset'}>
           <Typography component="legend">Effective Dates</Typography>
-          <Box mb={4}>
-            <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            </Typography>
+          <Box mt={0.5}>
+            <StartEndDateFields
+              formikProps={formikProps}
+              startName="start_date"
+              endName="end_date"
+              startRequired={false}
+              endRequired={false}
+            />
           </Box>
-          <StartEndDateFields
-            formikProps={formikProps}
-            startName="start_date"
-            endName="end_date"
-            startRequired={false}
-            endRequired={false}
-          />
         </Box>
       </Box>
     </form>

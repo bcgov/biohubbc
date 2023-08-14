@@ -72,8 +72,8 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
       showSnackBar({
         snackbarMessage: (
           <>
-            <Typography variant="body2" component="div">
-              Funding Source: <strong>{values.name}</strong> has been created.
+            <Typography variant="body2" component="span">
+              <strong>{values.name}</strong> successfully added.
             </Typography>
           </>
         ),
@@ -107,7 +107,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
           },
           validationSchema: FundingSourceYupSchema
         }}
-        dialogSaveButtonLabel="Add"
+        dialogSaveButtonLabel="Create"
         onCancel={() => props.onClose()}
         onSave={(formValues) => {
           handleSubmitFundingService(formValues);
