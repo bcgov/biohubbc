@@ -8,7 +8,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { has } from 'lodash-es';
 import React, { Fragment, useEffect, useState } from 'react';
-import { getAnimalFieldName, IAnimal, IAnimalMeasurement } from '../animal';
+import { getAnimalFieldName, IAnimal, IAnimalMeasurement, lastAnimalValueValid } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
@@ -38,9 +38,10 @@ const MeasurementAnimalForm = () => {
         <>
           <FormSectionWrapper
             title={SurveyAnimalsI18N.animalMeasurementTitle}
-            addedSectionTitle={SurveyAnimalsI18N.animalMarkingTitle2}
+            addedSectionTitle={SurveyAnimalsI18N.animalMeasurementTitle2}
             titleHelp={SurveyAnimalsI18N.animalMeasurementHelp}
             btnLabel={SurveyAnimalsI18N.animalMeasurementAddBtn}
+            disableAddBtn={!lastAnimalValueValid('measurements', values)}
             handleAddSection={() => push(newMeasurement)}
             handleRemoveSection={remove}>
             {values.measurements.map((_cap, index) => (
@@ -116,14 +117,14 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             controlProps={{ size: 'small', required: true, disabled: !taxonMeasurementId }}
           />
         ) : (
-            <Field
-              as={CustomTextField}
-              name={valName}
-              label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
-              other={{ required: true, size: 'small', disabled: !taxonMeasurementId }}
-              validate={validateValue}
-            />
-          )}
+          <Field
+            as={CustomTextField}
+            name={valName}
+            label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
+            other={{ required: true, size: 'small', disabled: !taxonMeasurementId }}
+            validate={validateValue}
+          />
+        )}
       </Grid>
       <Grid item xs={4}>
         <CustomTextField
@@ -132,7 +133,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
           name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measured_timestamp', index)}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Measurement')}>
           <CustomTextField
             other={{ size: 'small' }}

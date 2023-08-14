@@ -5,7 +5,7 @@ import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'form
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { Fragment } from 'react';
 import { validate as uuidValidate } from 'uuid';
-import { getAnimalFieldName, IAnimal, IAnimalRelationship } from '../animal';
+import { getAnimalFieldName, IAnimal, IAnimalRelationship, lastAnimalValueValid } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
 
 /**
@@ -56,6 +56,7 @@ const FamilyAnimalForm = () => {
             addedSectionTitle={SurveyAnimalsI18N.animalFamilyTitle2}
             titleHelp={SurveyAnimalsI18N.animalFamilyHelp}
             btnLabel={SurveyAnimalsI18N.animalFamilyAddBtn}
+            disableAddBtn={!lastAnimalValueValid('family', values)}
             handleAddSection={() => push(newRelationship)}
             handleRemoveSection={remove}>
             {values.family.map((_cap, index) => (

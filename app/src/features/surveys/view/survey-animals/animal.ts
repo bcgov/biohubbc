@@ -19,6 +19,7 @@ export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) 
     return true;
   }
   const schema = reach(AnimalSchema, `${animalKey}[${lastIndex}]`);
+  console.log(schema.isValidSync(lastValue));
   return schema.isValidSync(lastValue);
 };
 
@@ -35,13 +36,13 @@ const numSchema = yup.number().typeError(mustBeNum);
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
 
-const AnimalGeneralSchema = yup.object({}).shape({
+export const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
   animal_id: yup.string(),
   taxon_name: yup.string()
 });
 
-const AnimalCaptureSchema = yup.object({}).shape({
+export const AnimalCaptureSchema = yup.object({}).shape({
   capture_longitude: lonSchema.required(req),
   capture_latitude: latSchema.required(req),
   capture_utm_northing: numSchema,
@@ -67,7 +68,7 @@ export const AnimalMarkingSchema = yup.object({}).shape({
   marking_comment: yup.string()
 });
 
-const AnimalMeasurementSchema = yup.object({}).shape({
+export const AnimalMeasurementSchema = yup.object({}).shape({
   taxon_measurement_id: yup.string().required(req),
   value: numSchema,
   option_id: yup.string(),
@@ -75,7 +76,7 @@ const AnimalMeasurementSchema = yup.object({}).shape({
   measurement_comment: yup.string()
 });
 
-const AnimalMortalitySchema = yup.object({}).shape({
+export const AnimalMortalitySchema = yup.object({}).shape({
   mortality_longitude: lonSchema.required(req),
   mortality_latitude: latSchema.required(req),
   mortality_utm_northing: numSchema,

@@ -84,7 +84,7 @@ const MarkingAnimalForm = () => {
                     controlProps={{ size: 'small', required: isReq(AnimalMarkingSchema, 'secondary_colour_id') }}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12}>
                   <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Marking')}>
                     <CustomTextField
                       label="Marking Comment"
