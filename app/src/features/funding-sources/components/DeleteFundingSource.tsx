@@ -48,7 +48,7 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
-              Funding Source has been deleted.
+              Funding Source: {fundingSourceDataLoader.data?.funding_source.name} has been deleted.
             </Typography>
           </>
         ),
