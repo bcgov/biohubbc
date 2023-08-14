@@ -33,31 +33,82 @@ describe('useFundingSourceApi', () => {
 
       const result = await useFundingSourceApi(axios).getAllFundingSources();
 
-      expect(result).toEql(res);
+      expect(result).toEqual(res);
     });
   });
 
   describe('getFundingSource', () => {
     it('works as expected', async () => {
-      // TODO
+      mock.onGet('/api/funding-sources/1').reply(200, {
+        funding_source_id: 1,
+        name: 'Some Name',
+        description: 'Some Description',
+        start_date: null,
+        end_date: null,
+        revision_count: 1
+      });
+
+      const result = await useFundingSourceApi(axios).getFundingSource(1);
+      expect(result).toEqual({
+        funding_source_id: 1,
+        name: 'Some Name',
+        description: 'Some Description',
+        start_date: null,
+        end_date: null,
+        revision_count: 1
+      });
     });
   });
 
   describe('postFundingSource', () => {
     it('works as expected', async () => {
-      // TODO
+      const putObject = {
+        funding_source_id: 1,
+        name: 'Some Name',
+        description: 'Some Description',
+        start_date: null,
+        end_date: null,
+        revision_count: 1
+      };
+      mock.onPost('/api/funding-sources').reply(200, [
+        {
+          funding_source_id: 1,
+          name: 'Some Name',
+          description: 'Some Description',
+          start_date: null,
+          end_date: null,
+          revision_count: 1
+        }
+      ]);
+
+      const result = await useFundingSourceApi(axios).postFundingSource(putObject);
+      expect(result).toEqual([putObject]);
     });
   });
 
   describe('deleteFundingSourceById', () => {
     it('works as expected', async () => {
-      // TODO
+      mock.onDelete('/api/funding-sources/1').reply(200, { funding_source_id: 1 });
+
+      const result = await useFundingSourceApi(axios).deleteFundingSourceById(1);
+      expect(result).toEqual({ funding_source_id: 1 });
     });
   });
 
   describe('putFundingSourceById', () => {
     it('works as expected', async () => {
-      // TODO
+      const putObject = {
+        funding_source_id: 1,
+        name: '',
+        description: '',
+        start_date: '',
+        end_date: '',
+        revision_count: 1
+      };
+      mock.onPut('/api/funding-sources/1').reply(200, { funding_source_id: 1 });
+
+      const result = await useFundingSourceApi(axios).putFundingSource(putObject);
+      expect(result).toEqual({ funding_source_id: 1 });
     });
   });
 });
