@@ -1,9 +1,11 @@
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
+import { mdiMagnify } from '@mdi/js';
+import Icon from '@mdi/react';
 import { grey } from '@mui/material/colors';
+import InputAdornment from '@mui/material/InputAdornment';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
@@ -13,9 +15,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { getFormattedAmount } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  toolbarCount: {
-    fontWeight: 400
-  },
   filtersBox: {},
   noDataText: {
     fontFamily: 'inherit !important',
@@ -98,28 +97,46 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
   return (
     <>
       <Box py={3}>
-        <Paper elevation={0}>
-          <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Typography variant="h4" component="h2">
-              References &zwnj;
-              <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
-                ({fundingSourceSurveyReferences.length || 0})
-              </Typography>
-            </Typography>
-          </Toolbar>
-          <Box py={1} pb={2} px={3}>
-            <TextField
-              name={'funding-source-survey-references-search'}
-              id={'funding-source-survey-references-search'}
-              label="Search"
-              inputProps={{ 'data-testid': 'funding-source-survey-references-search' }}
-              className={classes.filtersBox}
-              onChange={(event) => {
-                onSearch(event.target.value);
-              }}
-              variant="outlined"
-              fullWidth={true}
-            />
+        <Box>
+        <Typography variant="h4"
+          sx={{
+            fontSize: '14px',
+            fontWeight: 700,
+            textTransform: 'uppercase'
+          }}
+        >
+          Surveys &zwnj;
+          <Typography component="span" variant="inherit" color="textSecondary">
+            ({fundingSourceSurveyReferences.length || 0})
+          </Typography>
+        </Typography>
+        </Box>
+        <Box my={3}>
+          <TextField
+            name={'funding-source-survey-references-search'}
+            id={'funding-source-survey-references-search'}
+            aria-label="Search Referenced Surveys"
+            placeholder="Search"
+            InputProps={{ 
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Icon path={mdiMagnify} size={1} />
+                </InputAdornment>
+              ),
+            }}
+            inputProps={{
+              'data-testid': 'funding-source-survey-references-search',
+            }}
+            className={classes.filtersBox}
+            onChange={(event) => {
+              onSearch(event.target.value);
+            }}
+            variant="outlined"
+            fullWidth={true}
+          />
+        </Box>
+        <Paper elevation={0} variant="outlined">
+          <Box>
             <DataGrid
               className={classes.dataGrid}
               autoHeight

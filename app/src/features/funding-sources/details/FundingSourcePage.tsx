@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { FundingSourceI18N } from 'constants/i18n';
@@ -49,6 +50,7 @@ const FundingSourcePage = (props: IFundingSourceDetailsProps) => {
       <Box>
         <FundingSourceDetails fundingSource={fundingSourceDataLoader.data.funding_source} />
       </Box>
+      <Divider></Divider>
       <Box>
         <FundingSourceSurveyReferences
           fundingSourceSurveyReferences={fundingSourceDataLoader.data.funding_source_survey_references}

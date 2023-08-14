@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interface';
@@ -41,30 +40,35 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
 
   return (
     <Box component="section">
-      <Box component="dl" mb={4}>
-        <Typography component="dd" data-testid="funding_source_description">
-          {props.fundingSource.description}
-        </Typography>
-      </Box>
-      <Box>
-        <Grid container spacing={1}>
-          <Grid item sm={12}>
-            <Typography component="dt" color="textSecondary" variant="subtitle2">
-              Total Amount
-            </Typography>
-            <Typography component="dd" data-testid="funding_source_total_amount">
-              {getFormattedAmount(props.fundingSource.survey_reference_amount_total)}
-            </Typography>
-          </Grid>
-          <Grid item sm={6}>
-            <Typography component="dt" color="textSecondary" variant="subtitle2">
-              Timeline
-            </Typography>
-            <Typography component="dd" data-testid="funding_source_timeline">
-              <EffectiveDate />
-            </Typography>
-          </Grid>
-        </Grid>
+      <Typography variant='body1' color="textSecondary" data-testid="funding_source_description">
+        {props.fundingSource.description}
+      </Typography>
+      <Box mt={3} component="dl"
+        sx={{
+          '& dt': {
+            flex: '0 0 10rem'
+          },
+          '& dd': {
+            flex: '1 1 auto'
+          }
+        }}
+      >
+        <Box display="flex">
+          <Typography component="dt" color="textSecondary">
+            Total Amount:
+          </Typography>
+          <Typography component="dd" data-testid="funding_source_total_amount">
+            {getFormattedAmount(props.fundingSource.survey_reference_amount_total)}
+          </Typography>
+        </Box>
+        <Box display="flex">
+          <Typography component="dt" color="textSecondary">
+            Effective Dates:
+          </Typography>
+          <Typography component="dd" data-testid="funding_source_timeline">
+            <EffectiveDate />
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );

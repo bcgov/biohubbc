@@ -323,7 +323,7 @@ export const FundingSourceI18N = {
   deleteFundingSourceDialogText:
     'Are you sure you want to permanently delete this funding source? This action cannot be undone.',
 
-  cannotDeleteFundingSourceTitle: "You can't delete this Funding Source",
+  cannotDeleteFundingSourceTitle: "You can't delete this funding source",
   cannotDeleteFundingSourceText:
     'This funding source has been referenced by one or more surveys. To delete this record, you will first have to remove it from all related surveys.',
 
