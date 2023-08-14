@@ -149,8 +149,8 @@ export const EditObservationI18N = {
 };
 
 export const AddFundingI18N = {
-  addTitle: 'Add Funding Source',
-  addErrorTitle: 'Error Adding Funding Source',
+  addTitle: 'Create Funding Source',
+  addErrorTitle: 'Error Creating Funding Source',
   addErrorText:
     'An error has occurred while attempting to add your funding source details, please try again. If the error persists, please contact your system administrator.'
 };
@@ -301,9 +301,9 @@ export const FundingSourceI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   // CREATE FUNDING SOURCE
-  createFundingSourceDialogTitle: 'Add New Funding Source',
+  createFundingSourceDialogTitle: 'Create Funding Source',
   createFundingSourceDialogText:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.',
+    'Specify the name, description and effective dates for this funding source.',
   createErrorTitle: 'Error Creating Funding Source',
   createErrorText:
     'An error has occurred while attempting to create your funding source, please try again. If the error persists, please contact your system administrator.',

@@ -122,7 +122,6 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           </DialogContent>
           <DialogActions>
             <LoadingButton
-              sx={{ marginX: 1 }}
               loading={props.dialogLoading || false}
               onClick={formikProps.submitForm}
               color="primary"

@@ -78,6 +78,7 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
     {
       field: 'actions',
       type: 'actions',
+      sortable: false,
       renderCell: (params) => (
         <TableActionsMenu {...params} onView={props.onView} onEdit={props.onEdit} onDelete={props.onDelete} />
       )
