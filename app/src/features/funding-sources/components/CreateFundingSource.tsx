@@ -42,7 +42,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
         }
         return !hasBeenUsed;
       }),
-    description: yup.string().max(200).required('Description is required'),
+    description: yup.string().max(200, 'Maximum 200 characters').required('Description is required'),
     start_date: yup.string().isValidDateString().nullable(),
     end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').nullable()
   });
