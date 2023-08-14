@@ -38,6 +38,7 @@ describe('survey/{surveyId}/view', () => {
               permit_number: '123',
               permit_type: 'type'
             },
+            funding_sources: [],
             purpose_and_methodology: {
               field_method_id: 1,
               additional_details: 'details',
@@ -102,6 +103,7 @@ describe('survey/{surveyId}/view', () => {
               permit_number: null,
               permit_type: null
             },
+            funding_sources: [],
             purpose_and_methodology: {
               field_method_id: 1,
               additional_details: null,

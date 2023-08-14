@@ -6,7 +6,7 @@ import sinonChai from 'sinon-chai';
 import { ApiError } from '../errors/api-error';
 import { ICreateFundingSource } from '../services/funding-source-service';
 import { getMockDBConnection } from '../__mocks__/db';
-import { FundingSource, FundingSourceRepository } from './funding-source-repository';
+import { FundingSource, FundingSourceRepository, SurveyFundingSource } from './funding-source-repository';
 
 chai.use(sinonChai);
 
@@ -180,6 +180,30 @@ describe('FundingSourceRepository', () => {
       } catch (error) {
         expect((error as ApiError).message).to.equal('Failed to get funding source');
       }
+    });
+  });
+
+  describe('getFundingSourceSurveyReferences', () => {
+    it('returns an array of funding sources with reference', async () => {
+      const expectedResult: SurveyFundingSource = ({
+        funding_source_id: 1,
+        funding_source_name: 'name',
+        start_date: '2020-01-01',
+        end_date: '2020-01-01',
+        description: 'description'
+      } as unknown) as SurveyFundingSource;
+
+      const mockResponse = ({ rowCount: 1, rows: [expectedResult] } as unknown) as Promise<QueryResult<any>>;
+
+      const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
+
+      const fundingSourceRepository = new FundingSourceRepository(dbConnection);
+
+      const fundingSourceId = 1;
+
+      const response = await fundingSourceRepository.getFundingSourceSurveyReferences(fundingSourceId);
+
+      expect(response).to.eql([expectedResult]);
     });
   });
 
