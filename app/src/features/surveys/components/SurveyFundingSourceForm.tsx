@@ -29,14 +29,14 @@ export interface ISurveyFundingSourceForm {
 
 const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
   funding_source_id: undefined as unknown as number,
-  amount: 0,
+  amount: undefined as unknown as number,
   revision_count: 0,
   survey_funding_source_id: undefined,
   survey_id: 0
 };
 
 export const SurveyFundingSourceYupSchema = yup.object().shape({
-  funding_source_id: yup.number().required('Must select a Funding Source').min(1, 'Must select a valid Funding Source'), // TODO confirm that this is not triggered when the autocomplete is empty.
+  funding_source_id: yup.number().required('Must select a funding source').min(1, 'Must select a funding source'), // TODO confirm that this is not triggered when the autocomplete is empty.
   amount: yup
     .number()
     .min(0, 'Must be a positive number')
@@ -80,7 +80,7 @@ const SurveyFundingSourceForm = () => {
                   mb={3}
                   display="flex"
                   gap={2}
-                  alignItems="center"
+                  alignItems="flex-start"
                   key={surveyFundingSource.survey_funding_source_id}>
                   <AutocompleteField // <IGetFundingSourcesResponse>
                     id={`funding_sources.[${index}].funding_source_id`}
@@ -96,14 +96,14 @@ const SurveyFundingSourceForm = () => {
                     required
                   />
                   <DollarAmountField
-                    label="Funding Amount"
+                    label="Amount (Optional)"
                     id={`funding_sources.[${index}].amount`}
                     name={`funding_sources.[${index}].amount`}
                     value={surveyFundingSource.amount}
                     onChange={handleChange}
                     sx={{ flex: 4 }}
                   />
-                  <Box>
+                  <Box mt={1}>
                     <IconButton
                       data-testid={`funding-form-delete-button-${index}`}
                       title="Remove Funding Source"
@@ -124,7 +124,7 @@ const SurveyFundingSourceForm = () => {
               aria-label="Create Funding Source"
               startIcon={<Icon path={mdiPlus} size={1} />}
               onClick={() => arrayHelpers.push(SurveyFundingSourceInitialValues)}>
-              Create
+              Add Funding Source
             </Button>
           </Box>
         )}

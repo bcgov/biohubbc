@@ -79,6 +79,7 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
       field: 'actions',
       type: 'actions',
       sortable: false,
+      width: 55,
       renderCell: (params) => (
         <TableActionsMenu
           fundingSourceId={params.row.funding_source_id}

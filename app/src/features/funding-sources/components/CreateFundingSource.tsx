@@ -73,7 +73,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="span">
-              <strong>{values.name}</strong> successfully added.
+              Funding source '<strong>{values.name}</strong>' created.
             </Typography>
           </>
         ),
