@@ -307,10 +307,10 @@ export const FundingSourceI18N = {
   createErrorTitle: 'Error Creating Funding Source',
   createErrorText:
     'An error has occurred while attempting to create your funding source, please try again. If the error persists, please contact your system administrator.',
-  // UPDATE FUNDING SOURCE
-  updateFundingSourceDialogTitle: 'Update Funding Source',
+  // EDIT FUNDING SOURCE
+  updateFundingSourceDialogTitle: 'Edit Funding Source Details',
   updateFundingSourceDialogText:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.',
+    'Edit the name, description and effective dates for this funding source.',
   updateErrorTitle: 'Error Updating Funding Source',
   updateErrorText:
     'An error has occurred while attempting to update your Funding Source, please try again. If the error persists, please contact your system administrator.',

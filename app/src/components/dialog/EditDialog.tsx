@@ -117,12 +117,11 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           aria-describedby="edit-dialog-description">
           <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
           <DialogContent>
-            <DialogContentText>{props.dialogText}</DialogContentText>
+            {props.dialogText && <DialogContentText sx={{mb: 4}}>{props.dialogText}</DialogContentText>}
             {props.component.element}
           </DialogContent>
           <DialogActions>
             <LoadingButton
-              sx={{ marginX: 1 }}
               loading={props.dialogLoading || formikProps.isValidating || false}
               onClick={formikProps.submitForm}
               color="primary"

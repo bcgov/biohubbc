@@ -333,16 +333,15 @@ const CreateSurveyPage = () => {
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
-                  title="Funding and Partnerships"
-                  summary="Specify project funding sources and additional partnerships."
+                  title="Funding Sources"
+                  summary="Specify funding sources for this survey."
                   component={
                     <Box component="fieldset">
-                      <Typography component="legend" variant="h5">
+                      <Typography component="legend">
                         Add Funding Sources
                       </Typography>
                       <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-                        Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended
-                        to be exact, please round to the nearest 100.
+                        Specify the funding sources and amounts each source provided for this survey.
                       </Typography>
                       <Box mt={3}>
                         <SurveyFundingSourceForm />
