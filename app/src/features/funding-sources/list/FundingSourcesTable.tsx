@@ -1,15 +1,13 @@
-import { mdiInformationOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { DataGrid, GridActionsCellItem, GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { useCallback } from 'react';
 import { getFormattedAmount } from 'utils/Utils';
+import TableActionsMenu from './FundingSourcesTableActionsMenu';
+import NoRowsOverlay from './FundingSourcesTableNoRowsOverlay';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   projectsTable: {
     tableLayout: 'fixed'
   },
@@ -48,20 +46,12 @@ export interface IFundingSourcesTableTableProps {
   onDelete: (fundingSourceId: number) => void;
 }
 
-interface IFundingSourcesTableEntry {
+export interface IFundingSourcesTableEntry {
   funding_source_id: number;
   name: string;
   survey_reference_count: number;
   survey_reference_amount_total: number;
 }
-
-const NoRowsOverlay = (props: { className: string }) => (
-  <GridOverlay>
-    <Typography className={props.className} color="textSecondary">
-      No funding sources found
-    </Typography>
-  </GridOverlay>
-);
 
 const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
   const classes = useStyles();
@@ -88,28 +78,9 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
     {
       field: 'actions',
       type: 'actions',
-      getActions: (params) => {
-        return [
-          <GridActionsCellItem
-            icon={<Icon path={mdiInformationOutline} size={1} />}
-            label="View Details"
-            onClick={() => props.onView(params.row.funding_source_id)}
-            showInMenu
-          />,
-          <GridActionsCellItem
-            icon={<Icon path={mdiPencilOutline} size={1} />}
-            label="Edit"
-            onClick={() => props.onEdit(params.row.funding_source_id)}
-            showInMenu
-          />,
-          <GridActionsCellItem
-            icon={<Icon path={mdiTrashCanOutline} size={1} />}
-            label="Delete"
-            onClick={() => props.onDelete(params.row.funding_source_id)}
-            showInMenu
-          />
-        ];
-      }
+      renderCell: (params) => (
+        <TableActionsMenu {...params} onView={props.onView} onEdit={props.onEdit} onDelete={props.onDelete} />
+      )
     }
   ];
 
@@ -134,6 +105,7 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
       slots={{
         noRowsOverlay: NoRowsOverlayStyled
       }}
+      data-testid="funding-source-table"
     />
   );
 };
