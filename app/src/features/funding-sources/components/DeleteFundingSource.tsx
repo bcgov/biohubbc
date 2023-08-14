@@ -102,7 +102,7 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
             dialogText={FundingSourceI18N.cannotDeleteFundingSourceText}
             yesButtonProps={{ color: 'primary' }}
             yesButtonLabel={'View Details'}
-            noButtonProps={{ color: 'primary', variant: 'outlined' }}
+            noButtonProps={{ color: 'primary', variant: 'contained' }}
             noButtonLabel={'Close'}
             open={open}
             onYes={() => {
