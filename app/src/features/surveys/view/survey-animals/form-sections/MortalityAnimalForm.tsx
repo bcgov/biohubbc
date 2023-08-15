@@ -3,7 +3,7 @@ import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { AnimalMortalitySchema, getAnimalFieldName, IAnimal, IAnimalMortality, isReq } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
@@ -85,7 +85,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
 
   const renderFields = (): JSX.Element => {
     return (
-      <>
+      <Fragment key={'mortality-fields'}>
         <Grid item xs={6}>
           <CustomTextField
             other={{
@@ -182,7 +182,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             />
           </TextInputToggle>
         </Grid>
-      </>
+      </Fragment>
     );
   };
 

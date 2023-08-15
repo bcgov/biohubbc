@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash-es';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
@@ -155,15 +154,23 @@ type ICritterID = { critter_id: string };
 type ICritterLocation = InferType<typeof LocationSchema>;
 
 type ICritterMortality = ICritterID &
-  Omit<IAnimalMortality, 'utm_easting' | 'utm_northing' | 'projection_mode'> & {
+  Omit<
+    IAnimalMortality,
+    | 'mortality_utm_easting'
+    | 'mortality_utm_northing'
+    | 'projection_mode'
+    | 'mortality_latitude'
+    | 'mortality_longitude'
+    | 'mortality_coordinate_uncertainty'
+  > & {
     location_id: string;
   };
 
 type ICritterCapture = ICritterID &
-  Omit<
-    IAnimalCapture,
-    'capture_utm_easting' | 'capture_utm_northing' | 'release_utm_easting' | 'release_utm_northing' | 'projection_mode'
-  > & { capture_location_id: string; release_location_id: string | undefined };
+  Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
+    capture_location_id: string;
+    release_location_id: string | undefined;
+  };
 
 type ICritterMarking = ICritterID & IAnimalMarking;
 
@@ -176,7 +183,7 @@ type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'qu
 export class Critter {
   critter_id: string;
   taxon_id: string;
-  animal_id?: string;
+  animal_id: string;
   captures: ICritterCapture[];
   markings: ICritterMarking[];
   measurements: {
@@ -193,9 +200,8 @@ export class Critter {
     return `${this.animal_id}-[${this.taxon_name}]`;
   }
 
-  constructor(_animal: IAnimal) {
+  constructor(animal: IAnimal) {
     //prevent mutatation on original animal object
-    const animal = cloneDeep(_animal);
     this.critter_id = v4();
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;
@@ -206,6 +212,7 @@ export class Critter {
     animal.captures.forEach((c) => {
       const c_loc_id = v4();
       let r_loc_id: string | undefined = undefined;
+
       this.locations.push({
         location_id: c_loc_id,
         latitude: Number(c.capture_latitude),
@@ -213,8 +220,10 @@ export class Critter {
         coordinate_uncertainty: Number(c.capture_coordinate_uncertainty),
         coordinate_uncertainty_unit: 'm'
       });
+
       if (c.release_latitude && c.release_longitude) {
         r_loc_id = v4();
+
         this.locations.push({
           location_id: r_loc_id,
           latitude: Number(c.release_latitude),
@@ -223,22 +232,22 @@ export class Critter {
           coordinate_uncertainty_unit: 'm'
         });
       }
-      delete c.projection_mode;
-      delete c.capture_utm_northing;
-      delete c.capture_utm_easting;
-      delete c.release_utm_northing;
-      delete c.release_utm_easting;
+
       this.captures.push({
-        ...c,
         critter_id: this.critter_id,
         capture_location_id: c_loc_id,
-        release_location_id: r_loc_id
+        release_location_id: r_loc_id,
+        capture_timestamp: c.capture_timestamp,
+        release_timestamp: c.release_timestamp,
+        capture_comment: c.capture_comment || undefined,
+        release_comment: c.release_comment || undefined
       });
     });
 
     this.mortalities = [];
     animal.mortality.forEach((m) => {
       const loc_id = v4();
+
       this.locations.push({
         location_id: loc_id,
         latitude: Number(m.mortality_latitude),
@@ -246,10 +255,14 @@ export class Critter {
         coordinate_uncertainty: Number(m.mortality_latitude),
         coordinate_uncertainty_unit: 'm'
       });
-      delete m.mortality_utm_northing;
-      delete m.mortality_utm_easting;
-      delete m.projection_mode;
-      this.mortalities.push({ ...m, critter_id: this.critter_id, location_id: loc_id });
+
+      const { mortality_longitude, mortality_latitude, mortality_utm_easting, mortality_utm_northing, ...rest } = m;
+      this.mortalities.push({
+        ...rest,
+        critter_id: this.critter_id,
+        location_id: loc_id,
+        mortality_comment: m.mortality_comment || undefined
+      });
     });
 
     this.markings = animal.markings.map((m) => ({ ...m, critter_id: this.critter_id }));
@@ -264,12 +277,14 @@ export class Critter {
             return false;
           }
           if (m.qualitative_option_id) {
-            delete m.value;
             return true;
           }
           return false;
         })
-        .map((m) => ({ ...m, critter_id: this.critter_id })),
+        .map((m) => {
+          const { value, ...rest } = m;
+          return { ...rest, critter_id: this.critter_id };
+        }),
       quantitative: animal.measurements
         .filter((m) => {
           if (m.qualitative_option_id && m.value) {
@@ -277,12 +292,14 @@ export class Critter {
             return false;
           }
           if (m.value != null) {
-            delete m.qualitative_option_id;
             return true;
           }
           return false;
         })
-        .map((m) => ({ ...m, critter_id: this.critter_id }))
+        .map((m) => {
+          const { qualitative_option_id, ...rest } = m;
+          return { ...rest, critter_id: this.critter_id };
+        })
     };
   }
 }
