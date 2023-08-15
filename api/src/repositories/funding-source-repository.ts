@@ -38,6 +38,7 @@ const SurveyFundingSource = z.object({
 export type SurveyFundingSource = z.infer<typeof SurveyFundingSource>;
 
 const SurveyFundingSourceSupplementaryData = z.object({
+  project_id: z.number(),
   survey_name: z.string()
 });
 
@@ -183,6 +184,7 @@ export class FundingSourceRepository extends BaseRepository {
       SELECT
         survey_funding_source.*,
         survey_funding_source.amount::numeric::int,
+        survey.project_id,
         survey.name as survey_name
       FROM
         survey_funding_source

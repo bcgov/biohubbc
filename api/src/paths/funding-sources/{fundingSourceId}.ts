@@ -91,7 +91,15 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  required: ['survey_funding_source_id', 'survey_id', 'funding_source_id', 'amount', 'revision_count'],
+                  required: [
+                    'survey_funding_source_id',
+                    'survey_id',
+                    'funding_source_id',
+                    'amount',
+                    'revision_count',
+                    'project_id',
+                    'survey_name'
+                  ],
                   properties: {
                     survey_funding_source_id: {
                       type: 'integer',
@@ -111,6 +119,10 @@ GET.apiDoc = {
                     revision_count: {
                       type: 'integer',
                       minimum: 0
+                    },
+                    project_id: {
+                      type: 'integer',
+                      minimum: 1
                     },
                     survey_name: {
                       type: 'string'

@@ -117,7 +117,7 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           aria-describedby="edit-dialog-description">
           <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
           <DialogContent>
-            {props.dialogText && <DialogContentText sx={{mb: 4}}>{props.dialogText}</DialogContentText>}
+            {props.dialogText && <DialogContentText sx={{ mb: 4 }}>{props.dialogText}</DialogContentText>}
             {props.component.element}
           </DialogContent>
           <DialogActions>

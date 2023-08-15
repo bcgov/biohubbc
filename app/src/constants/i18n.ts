@@ -302,15 +302,13 @@ export const FundingSourceI18N = {
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   // CREATE FUNDING SOURCE
   createFundingSourceDialogTitle: 'Create Funding Source',
-  createFundingSourceDialogText:
-    'Specify the name, description and effective dates for this funding source.',
+  createFundingSourceDialogText: 'Specify the name, description and effective dates for this funding source.',
   createErrorTitle: 'Error Creating Funding Source',
   createErrorText:
     'An error has occurred while attempting to create your funding source, please try again. If the error persists, please contact your system administrator.',
   // EDIT FUNDING SOURCE
   updateFundingSourceDialogTitle: 'Edit Funding Source Details',
-  updateFundingSourceDialogText:
-    'Edit the name, description and effective dates for this funding source.',
+  updateFundingSourceDialogText: 'Edit the name, description and effective dates for this funding source.',
   updateErrorTitle: 'Error Updating Funding Source',
   updateErrorText:
     'An error has occurred while attempting to update your Funding Source, please try again. If the error persists, please contact your system administrator.',

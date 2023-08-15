@@ -127,7 +127,7 @@ describe('SurveyService', () => {
       expect(updateSurveyVantageCodesDataStub).not.to.have.been.called;
       expect(updateSurveySpeciesDataStub).not.to.have.been.called;
       expect(updateSurveyPermitDataStub).not.to.have.been.called;
-      expect(upsertSurveyFundingSourceDataStub).not.to.have.been.called;
+      expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).not.to.have.been.called;
       expect(insertRegionStub).not.to.have.been.called;
     });

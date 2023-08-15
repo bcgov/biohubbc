@@ -1,11 +1,11 @@
-import Box from '@mui/material/Box';
 import { mdiHelpCircle } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interface';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
-import Tooltip from '@mui/material/Tooltip';
 
 export interface IFundingSourceDetailsProps {
   fundingSource: IGetFundingSourceResponse['funding_source'];
@@ -62,9 +62,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
           <Typography component="dt" color="textSecondary">
             <Box display="flex" alignItems="center" gap="4px">
               <span>Amount Distributed</span>
-              <Tooltip
-                title="Known amount of funding that has been distributed to one or more surveys."
-              >
+              <Tooltip title="Known amount of funding that has been distributed to one or more surveys.">
                 <Icon path={mdiHelpCircle} size={0.875} />
               </Tooltip>
             </Box>

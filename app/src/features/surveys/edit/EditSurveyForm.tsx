@@ -192,9 +192,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             summary="Specify funding sources for this survey."
             component={
               <Box component="fieldset">
-                <Typography component="legend">
-                  Add Funding Sources
-                </Typography>
+                <Typography component="legend">Add Funding Sources</Typography>
                 <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
                   Specify the funding sources and amounts each source provided for this survey.
                 </Typography>
