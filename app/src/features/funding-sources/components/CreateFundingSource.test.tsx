@@ -17,7 +17,7 @@ const mockUseApi = {
   }
 };
 const history = createMemoryHistory();
-describe('CreateFundingsource', () => {
+describe('CreateFundingSource', () => {
   beforeEach(() => {
     mockBioHubApi.mockImplementation(() => mockUseApi);
     mockUseApi.funding.getFundingSources.mockClear();
