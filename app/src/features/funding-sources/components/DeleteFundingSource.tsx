@@ -72,7 +72,7 @@ const DeleteFundingSource: React.FC<IDeleteFundingSource> = (props) => {
     let canDelete = true;
 
     if (fundingSourceDataLoader.data) {
-      canDelete = !(fundingSourceDataLoader.data.funding_source_survey_references.length !== 0);
+      canDelete = fundingSourceDataLoader.data.funding_source_survey_references.length === 0;
     }
 
     return canDelete;
