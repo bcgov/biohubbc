@@ -90,8 +90,8 @@ const AnimalMortalitySchema = yup.object({}).shape({
 });
 
 const AnimalRelationshipSchema = yup.object({}).shape({
-  critter_id: yup.string().uuid('Must be a UUID').required(req),
-  relationship: yup.mixed().oneOf(['Parent', 'Child', 'Sibling']).required(req)
+  family_id: yup.string().required(req),
+  relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });
 
 const AnimalTelemetryDeviceSchema = yup.object({}).shape({
@@ -167,6 +167,23 @@ type ICritterQualitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'val
 
 type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'qualitative_option_id'>;
 
+export const newFamilyIdPlaceholder = 'New Family';
+
+type ICritterFamilyParent = {
+  family_id: string;
+  parent_critter_id: string;
+};
+
+type ICritterFamilyChild = {
+  family_id: string;
+  child_critter_id: string;
+};
+
+type ICritterFamily = {
+  family_id: string;
+  family_label: string;
+};
+
 //Converts IAnimal(Form data) to a Critterbase Critter
 
 export class Critter {
@@ -181,7 +198,11 @@ export class Critter {
     quantitative: ICritterQuantitativeMeasurement[];
   };
   mortalities: ICritterMortality[];
-  family: IAnimalRelationship[]; //This type probably needs to change;
+  families: {
+    parents: ICritterFamilyParent[];
+    children: ICritterFamilyChild[];
+    families: ICritterFamily[];
+  };
   locations: ICritterLocation[];
 
   get name(): string {
@@ -196,6 +217,8 @@ export class Critter {
 
     this.captures = [];
     this.locations = [];
+    this.families = { parents: [], children: [], families: [] };
+
     animal.captures.forEach((c) => {
       const c_loc_id = v4();
       let r_loc_id: string | undefined = undefined;
@@ -247,7 +270,23 @@ export class Critter {
 
     this.markings = animal.markings.map((m) => ({ ...m, critter_id: this.critter_id }));
 
-    this.family = animal.family.map((f) => ({ ...f, critter_id: this.critter_id }));
+    let newFamily = undefined;
+    for (const f of animal.family) {
+      if (f.family_id === newFamilyIdPlaceholder) {
+        if (!newFamily) {
+          newFamily = { family_id: v4(), family_label: this.name + '_family' };
+          this.families.families.push(newFamily)
+        }
+        f.family_id = newFamily.family_id;
+      }
+    }
+
+    this.families.parents = animal.family
+      .filter((a) => a.relationship === 'parent')
+      .map((a) => ({ family_id: a.family_id, parent_critter_id: this.critter_id }));
+    this.families.children = animal.family
+      .filter((a) => a.relationship === 'child')
+      .map((a) => ({ family_id: a.family_id, child_critter_id: this.critter_id }));
 
     this.measurements = {
       qualitative: animal.measurements

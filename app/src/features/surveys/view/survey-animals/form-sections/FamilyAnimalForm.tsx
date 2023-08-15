@@ -1,11 +1,11 @@
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
-import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { Fragment } from 'react';
-import { validate as uuidValidate } from 'uuid';
-import { getAnimalFieldName, IAnimal, IAnimalRelationship } from '../animal';
+//import { validate as uuidValidate } from 'uuid';
+import { getAnimalFieldName, IAnimal, IAnimalRelationship, newFamilyIdPlaceholder } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
 
 /**
@@ -19,14 +19,19 @@ import FormSectionWrapper from './FormSectionWrapper';
 const FamilyAnimalForm = () => {
   const { values, touched, errors, handleChange } = useFormikContext<IAnimal>();
   const critterbase = useCritterbaseApi();
+  const { data: allFamilies, load } = useDataLoader(critterbase.family.getAllFamilies);
+
+  if (!allFamilies) {
+    load();
+  }
 
   const name: keyof IAnimal = 'family';
   const newRelationship: IAnimalRelationship = {
-    critter_id: '',
+    family_id: '',
     relationship: undefined
   };
 
-  const validateCritterExists = async (critter_id: string) => {
+  /*const validateCritterExists = async (critter_id: string) => {
     let error: string | undefined;
     if (!critter_id) {
       error = 'Required';
@@ -45,7 +50,7 @@ const FamilyAnimalForm = () => {
       error = 'Critter not in critterbase.';
     }
     return error;
-  };
+  };*/
 
   return (
     <FieldArray validateOnChange={true} name={name}>
@@ -57,9 +62,36 @@ const FamilyAnimalForm = () => {
             titleHelp={SurveyAnimalsI18N.animalFamilyHelp}
             btnLabel={SurveyAnimalsI18N.animalFamilyAddBtn}
             handleAddSection={() => push(newRelationship)}
+            maxSections={1}
             handleRemoveSection={remove}>
             {values.family.map((_cap, index) => (
               <Fragment key={`family-inputs-${index}`}>
+                <Grid item xs={6}>
+                  <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
+                    <InputLabel size="small" id={`relationship-family-${index}`}>
+                      Family ID
+                    </InputLabel>
+                    <Select //Doing a raw MUI Select here since we don't enumerate these values in Critterbase
+                      id={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
+                      name={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
+                      label={'family_id'}
+                      size="small"
+                      value={values.family[index]?.family_id ?? ''}
+                      onChange={handleChange}
+                      error={touched.family?.[index]?.relationship && Boolean(errors.family?.[index])}
+                      displayEmpty>
+                      {[
+                        ...(allFamilies ?? []),
+                        { family_id: newFamilyIdPlaceholder, family_label: newFamilyIdPlaceholder }
+                      ]?.map((a) => (
+                        <MenuItem key={a.family_id} value={a.family_id}>
+                          {a.family_label ? a.family_label : a.family_id}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                {/*<Grid item xs={6}></Grid>
                 <Grid item xs={6}>
                   <Field //Using Formik Field here in order to have custom field level validation. Note that you can pass extra props and it will feed it to CustomTextField
                     as={CustomTextField}
@@ -68,7 +100,7 @@ const FamilyAnimalForm = () => {
                     other={{ size: 'small', required: true }}
                     validate={validateCritterExists}
                   />
-                </Grid>
+                      </Grid>*/}
                 <Grid item xs={6}>
                   <Grid item xs={6}>
                     <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
@@ -85,15 +117,16 @@ const FamilyAnimalForm = () => {
                         error={touched.family?.[index]?.relationship && Boolean(errors.family?.[index])}
                         displayEmpty>
                         <MenuItem key={'parent'} value={'parent'}>
-                          Parent
+                          Parent in
                         </MenuItem>
                         <MenuItem key={'child'} value={'child'}>
-                          Child
+                          Child in
                         </MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
                 </Grid>
+                <p>{errors && JSON.stringify(errors, null, 2)}</p>
               </Fragment>
             ))}
           </FormSectionWrapper>

@@ -6,6 +6,7 @@ import { useAuthentication } from './cb_api/useAuthenticationApi';
 import { useCritterApi } from './cb_api/useCritterApi';
 import { useLookupApi } from './cb_api/useLookupApi';
 import { useMarkings } from './cb_api/useMarkings';
+import { useFamilyApi } from './cb_api/useFamilyApi';
 
 /**
  * Returns a set of supported api methods.
@@ -19,10 +20,12 @@ export const useCritterbaseApi = () => {
   const authentication = useAuthentication(apiAxios);
   const lookup = useLookupApi(apiAxios);
   const critters = useCritterApi(apiAxios);
+  const family = useFamilyApi(apiAxios);
   return {
     markings,
     authentication,
     lookup,
-    critters
+    critters,
+    family
   };
 };

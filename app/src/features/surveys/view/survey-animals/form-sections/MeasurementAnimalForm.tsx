@@ -116,14 +116,14 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             controlProps={{ size: 'small', required: true, disabled: !taxonMeasurementId }}
           />
         ) : (
-            <Field
-              as={CustomTextField}
-              name={valName}
-              label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
-              other={{ required: true, size: 'small', disabled: !taxonMeasurementId }}
-              validate={validateValue}
-            />
-          )}
+          <Field
+            as={CustomTextField}
+            name={valName}
+            label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
+            other={{ required: true, size: 'small', disabled: !taxonMeasurementId }}
+            validate={validateValue}
+          />
+        )}
       </Grid>
       <Grid item xs={4}>
         <CustomTextField
