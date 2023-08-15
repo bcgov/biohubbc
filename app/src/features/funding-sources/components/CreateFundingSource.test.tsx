@@ -87,7 +87,7 @@ describe('CreateFundingsource', () => {
       {
         funding_source: {
           funding_source_id: 1,
-          name: '',
+          name: 'Used Name',
           description: '',
           start_date: '',
           end_date: '',
@@ -100,7 +100,7 @@ describe('CreateFundingsource', () => {
     ]);
     const onClose = jest.fn();
 
-    const { findByTestId, getByText } = render(
+    const { findByTestId, getByText, getByTestId } = render(
       <Router history={history}>
         <AuthStateContext.Provider value={authState}>
           <DialogContextProvider>
@@ -110,8 +110,11 @@ describe('CreateFundingsource', () => {
       </Router>
     );
 
+    getByTestId('name');
+    getByTestId('description');
+
     await act(async () => {
-      // submit empty form
+      // submit form
       const saveChangesButton = await findByTestId('edit-dialog-save');
       fireEvent.click(saveChangesButton);
     });
