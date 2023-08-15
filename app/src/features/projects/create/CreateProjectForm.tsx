@@ -158,17 +158,14 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
 
         <HorizontalSplitFormComponent
           title="Partnerships"
-          summary="Specify project additional partnerships."
+          summary="Select partners supporting or participating in this project."
           component={
             <>
               <Box component="fieldset">
                 <Typography component="legend" variant="h5">
-                  Partnerships
+                  Select Partnerships
                 </Typography>
-                <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-                  Additional partnerships that have not been previously identified as a funding sources.
-                </Typography>
-                <Box mt={4}>
+                <Box mt={1}>
                   <ProjectPartnershipsForm
                     first_nations={
                       codes?.first_nations?.map((item) => {
