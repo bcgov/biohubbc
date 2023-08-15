@@ -2,7 +2,7 @@ import { Grid } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
   AnimalCaptureSchema,
   getAnimalFieldName,
@@ -37,7 +37,7 @@ const CaptureAnimalForm = () => {
     capture_longitude: '' as unknown as number,
     capture_utm_northing: '' as unknown as number,
     capture_utm_easting: '' as unknown as number,
-    capture_comment: '',
+    capture_comment: undefined,
     capture_coordinate_uncertainty: 10,
     capture_timestamp: '' as unknown as Date,
     projection_mode: 'wgs' as ProjectionMode,
@@ -83,7 +83,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
 
   const renderCaptureFields = (): JSX.Element => {
     return (
-      <>
+      <Fragment key={'capture-fields'}>
         <Grid item xs={6}>
           <CustomTextField
             other={{
@@ -105,13 +105,13 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             />
           </TextInputToggle>
         </Grid>
-      </>
+      </Fragment>
     );
   };
 
   const renderReleaseFields = (): JSX.Element => {
     return (
-      <>
+      <Fragment key={`capture-release-fields`}>
         <Grid item xs={6}>
           <CustomTextField
             other={{
@@ -133,7 +133,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             />
           </TextInputToggle>
         </Grid>
-      </>
+      </Fragment>
     );
   };
 
