@@ -39,7 +39,7 @@ const MortalityAnimalForm = () => {
     mortality_utm_easting: '' as unknown as number,
     mortality_timestamp: '' as unknown as Date,
     mortality_coordinate_uncertainty: 1,
-    mortality_comment: '',
+    mortality_comment: undefined,
     mortality_pcod_reason: '',
     mortality_pcod_confidence: undefined,
     mortality_pcod_taxon_id: undefined,

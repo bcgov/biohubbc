@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash-es';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
@@ -37,7 +38,7 @@ const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).ty
 
 export const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
-  animal_id: yup.string(),
+  animal_id: yup.string().required(req),
   taxon_name: yup.string()
 });
 
@@ -49,14 +50,14 @@ export const AnimalCaptureSchema = yup.object({}).shape({
   capture_timestamp: yup.date().required(req),
   capture_coordinate_uncertainty: numSchema,
   capture_comment: yup.string(),
+  projection_mode: yup.mixed().oneOf(['wgs', 'utm']),
   release_longitude: lonSchema.optional(),
   release_latitude: latSchema.optional(),
   release_utm_northing: numSchema.optional(),
   release_utm_easting: numSchema.optional(),
   release_coordinate_uncertainty: numSchema.optional(),
   release_timestamp: yup.date().optional(),
-  release_comment: yup.string().optional(),
-  projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
+  release_comment: yup.string().optional()
 });
 
 export const AnimalMarkingSchema = yup.object({}).shape({
@@ -175,7 +176,6 @@ type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'qu
 export class Critter {
   critter_id: string;
   taxon_id: string;
-  taxon_name?: string;
   animal_id?: string;
   captures: ICritterCapture[];
   markings: ICritterMarking[];
@@ -187,11 +187,15 @@ export class Critter {
   family: IAnimalRelationship[]; //This type probably needs to change;
   locations: ICritterLocation[];
 
+  private taxon_name?: string;
+
   get name(): string {
     return `${this.animal_id}-[${this.taxon_name}]`;
   }
 
-  constructor(animal: IAnimal) {
+  constructor(_animal: IAnimal) {
+    //prevent mutatation on original animal object
+    const animal = cloneDeep(_animal);
     this.critter_id = v4();
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;

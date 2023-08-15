@@ -33,10 +33,10 @@ const MeasurementAnimalForm = () => {
 
   const newMeasurement: IAnimalMeasurement = {
     taxon_measurement_id: '',
-    value: '' as unknown as number,
+    value: undefined,
     qualitative_option_id: '',
     measured_timestamp: '' as unknown as Date,
-    measurement_comment: ''
+    measurement_comment: undefined
   };
 
   return (

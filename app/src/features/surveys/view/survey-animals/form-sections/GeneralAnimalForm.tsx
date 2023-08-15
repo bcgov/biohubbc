@@ -5,8 +5,8 @@ import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
-import React, { useEffect } from 'react';
-import { getAnimalFieldName, IAnimal, IAnimalGeneral } from '../animal';
+import React from 'react';
+import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isReq } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
 
 /**
@@ -16,12 +16,8 @@ import FormSectionWrapper from './FormSectionWrapper';
  */
 
 const GeneralAnimalForm = () => {
-  const { values, setFieldValue } = useFormikContext<IAnimal>();
+  const { setFieldValue } = useFormikContext<IAnimal>();
   const name: keyof IAnimal = 'general';
-
-  useEffect(() => {
-    console.log(values);
-  }, [JSON.stringify(values)]);
 
   const handleTaxonName = (_value: string, label: string) => {
     setFieldValue(getAnimalFieldName<IAnimalGeneral>(name, 'taxon_name'), label);
@@ -37,7 +33,7 @@ const GeneralAnimalForm = () => {
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
             <CbSelectField
               name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
-              controlProps={{ required: true, size: 'small' }}
+              controlProps={{ required: isReq(AnimalGeneralSchema, 'taxon_id'), size: 'small' }}
               label={'Taxon'}
               id={'taxon'}
               route={'taxons'}
@@ -47,7 +43,7 @@ const GeneralAnimalForm = () => {
         </Box>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
           <CustomTextField
-            other={{ size: 'small' }}
+            other={{ size: 'small', required: isReq(AnimalGeneralSchema, 'animal_id') }}
             label="Individual's Label"
             name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
           />
