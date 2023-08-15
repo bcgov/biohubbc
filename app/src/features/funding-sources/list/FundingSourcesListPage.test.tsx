@@ -70,7 +70,7 @@ describe('FundingSourcesListPage', () => {
         survey_reference_count: 2
       },
       {
-        funding_source_id: 1,
+        funding_source_id: 2,
         name: 'funding source name 2',
         description: 'description 2',
         start_date: null,
