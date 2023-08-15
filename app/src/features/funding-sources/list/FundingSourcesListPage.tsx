@@ -134,7 +134,8 @@ const FundingSourcesListPage: React.FC = () => {
                   color="primary"
                   aria-label="Create Funding Source"
                   startIcon={<Icon path={mdiPlus} size={1} />}
-                  onClick={() => setIsCreateModalOpen(true)}>
+                  onClick={() => setIsCreateModalOpen(true)}
+                  data-testid="funding-source-list-create-button">
                   Create Funding Source
                 </Button>
               </Box>
@@ -146,7 +147,7 @@ const FundingSourcesListPage: React.FC = () => {
         <Box py={3}>
           <Paper elevation={0}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography variant="h4" component="h2">
+              <Typography variant="h4" component="h2" data-testid="funding-source-list-found">
                 Records Found &zwnj;
                 <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
                   ({fundingSourceDataLoader.data?.length || 0})
@@ -156,7 +157,7 @@ const FundingSourcesListPage: React.FC = () => {
             <Divider></Divider>
             <Box pt={0} pb={1} px={3}>
               <FundingSourcesTable
-                fundingSources={fundingSourceDataLoader.data || []}
+                fundingSources={fundingSourceDataLoader.data ?? []}
                 onView={(fundingSourceId) => {
                   openViewModal(fundingSourceId);
                 }}

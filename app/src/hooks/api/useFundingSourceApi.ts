@@ -83,7 +83,6 @@ const useFundingSourceApi = (axios: AxiosInstance) => {
     fundingSourceId: number
   ): Promise<Pick<IGetFundingSourcesResponse, 'funding_source_id'>> => {
     const { data } = await axios.delete(`/api/funding-sources/${fundingSourceId}`);
-    console.log(data);
     return data;
   };
 

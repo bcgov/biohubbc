@@ -5,6 +5,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interface';
+import { useCallback } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 
 export interface IFundingSourceDetailsProps {
@@ -12,7 +13,7 @@ export interface IFundingSourceDetailsProps {
 }
 
 const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
-  const EffectiveDate = () => {
+  const EffectiveDate = useCallback(() => {
     if (!props.fundingSource.end_date && !props.fundingSource.start_date) {
       return <>{'Not specified'}</>;
     }
@@ -39,7 +40,7 @@ const FundingSourceDetails = (props: IFundingSourceDetailsProps) => {
     }
 
     return null;
-  };
+  }, [props.fundingSource.end_date, props.fundingSource.start_date]);
 
   return (
     <Box component="section">

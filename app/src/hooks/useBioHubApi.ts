@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ConfigContext } from 'contexts/configContext';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
@@ -54,20 +54,25 @@ export const useBiohubApi = () => {
 
   const funding = useFundingSourceApi(apiAxios);
 
-  return {
-    project,
-    search,
-    taxonomy,
-    survey,
-    observation,
-    resources,
-    codes,
-    draft,
-    user,
-    admin,
-    external,
-    publish,
-    spatial,
-    funding
-  };
+  return useMemo(
+    () => ({
+      project,
+      search,
+      taxonomy,
+      survey,
+      observation,
+      resources,
+      codes,
+      draft,
+      user,
+      admin,
+      external,
+      publish,
+      spatial,
+      funding
+    }),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiAxios]
+  );
 };

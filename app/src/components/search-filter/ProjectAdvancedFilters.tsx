@@ -11,7 +11,7 @@ import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
-import React, { useCallback, useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 
 export interface IProjectAdvancedFilters {
   coordinator_agency: string;
@@ -68,24 +68,23 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
     return convertOptions(response.searchResponse);
   };
 
-  const handleSearch = useCallback(
-    debounce(
-      async (
-        inputValue: string,
-        existingValues: (string | number)[],
-        callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
-      ) => {
-        const response = await biohubApi.taxonomy.searchSpecies(inputValue.toLowerCase());
-        const newOptions = convertOptions(response.searchResponse).filter(
-          (item) => !existingValues?.includes(item.value)
-        );
-        callback(newOptions);
-      },
-      500
-    ),
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+  const handleSearch = useMemo(
+    () =>
+      debounce(
+        async (
+          inputValue: string,
+          existingValues: (string | number)[],
+          callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
+        ) => {
+          const response = await biohubApi.taxonomy.searchSpecies(inputValue.toLowerCase());
+          const newOptions = convertOptions(response.searchResponse).filter(
+            (item) => !existingValues?.includes(item.value)
+          );
+          callback(newOptions);
+        },
+        500
+      ),
+    [biohubApi.taxonomy]
   );
 
   return (

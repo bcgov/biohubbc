@@ -338,10 +338,7 @@ const CreateSurveyPage = () => {
                   component={
                     <Box component="fieldset">
                       <Typography component="legend">Add Funding Sources</Typography>
-                      <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-                        Specify the funding sources and amounts each source provided for this survey.
-                      </Typography>
-                      <Box mt={3}>
+                      <Box mt={1}>
                         <SurveyFundingSourceForm />
                       </Box>
                     </Box>

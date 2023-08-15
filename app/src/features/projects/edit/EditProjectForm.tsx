@@ -137,28 +137,15 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
-            title="Funding and Partnerships"
-            summary="Specify project funding sources and additional partnerships."
+            title="Partnerships"
+            summary="Select partners supporting or participating in this project."
             component={
               <>
                 <Box component="fieldset">
                   <Typography component="legend" variant="h5">
-                    Funding Sources
+                    Select Partnerships
                   </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-                    Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
-                    be exact, please round to the nearest 100.
-                  </Typography>
-                  <Box mt={3}></Box>
-                </Box>
-                <Box component="fieldset" mt={5}>
-                  <Typography component="legend" variant="h5">
-                    Partnerships
-                  </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-                    Additional partnerships that have not been previously identified as a funding sources.
-                  </Typography>
-                  <Box mt={4}>
+                  <Box mt={1}>
                     <ProjectPartnershipsForm
                       first_nations={
                         codes?.first_nations?.map((item) => {
