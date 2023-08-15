@@ -110,10 +110,13 @@ describe('CreateFundingsource', () => {
       </Router>
     );
 
-    getByTestId('name');
-    getByTestId('description');
-
     await act(async () => {
+      const nameInput = getByTestId('name');
+      fireEvent.change(nameInput, { target: { value: 'Used Name' } });
+
+      const descriptionInput = getByTestId('description');
+      fireEvent.change(descriptionInput, { target: { value: 'description' } });
+
       // submit form
       const saveChangesButton = await findByTestId('edit-dialog-save');
       fireEvent.click(saveChangesButton);
