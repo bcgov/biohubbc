@@ -27,6 +27,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
     name: yup
       .string()
       .trim()
+      .max(50, 'Name cannot exceed 50 characters')
       .required('Name is required')
       .test('nameUsed', 'Name has already been used', async (val) => {
         let hasBeenUsed = false;
@@ -42,7 +43,7 @@ const CreateFundingSource: React.FC<ICreateFundingSourceProps> = (props) => {
         }
         return !hasBeenUsed;
       }),
-    description: yup.string().max(200, 'Description cannot exceed 200 characters').required('Description is required'),
+    description: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is required'),
     start_date: yup.string().isValidDateString().nullable(),
     end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').nullable()
   });
