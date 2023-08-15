@@ -24,7 +24,7 @@ const MarkingAnimalForm = () => {
     taxon_marking_body_location_id: '',
     primary_colour_id: undefined,
     secondary_colour_id: undefined,
-    marking_comment: ''
+    marking_comment: undefined
   };
 
   return (

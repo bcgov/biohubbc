@@ -40,14 +40,14 @@ const CaptureAnimalForm = () => {
     capture_comment: '',
     capture_coordinate_uncertainty: 10,
     capture_timestamp: '' as unknown as Date,
+    projection_mode: 'wgs' as ProjectionMode,
     release_latitude: undefined,
     release_longitude: undefined,
     release_utm_northing: undefined,
     release_utm_easting: undefined,
     release_comment: undefined,
     release_timestamp: undefined,
-    release_coordinate_uncertainty: undefined,
-    projection_mode: 'wgs' as ProjectionMode
+    release_coordinate_uncertainty: undefined
   };
 
   return (
@@ -87,7 +87,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <CustomTextField
             other={{
-              required: isReq(AnimalCaptureSchema, 'release_comment'),
+              required: isReq(AnimalCaptureSchema, 'capture_timestamp'),
               size: 'small',
               type: 'date',
               InputLabelProps: { shrink: true }
@@ -99,7 +99,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={12}>
           <TextInputToggle label="Add comment about this Capture">
             <CustomTextField
-              other={{ size: 'small', required: isReq(AnimalCaptureSchema, 'release_comment') }}
+              other={{ size: 'small', required: isReq(AnimalCaptureSchema, 'capture_comment') }}
               label="Capture Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
             />
