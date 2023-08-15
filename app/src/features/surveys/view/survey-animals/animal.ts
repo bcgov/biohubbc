@@ -70,7 +70,7 @@ export const AnimalMarkingSchema = yup.object({}).shape({
 export const AnimalMeasurementSchema = yup.object({}).shape({
   taxon_measurement_id: yup.string().required(req),
   value: numSchema,
-  option_id: yup.string(),
+  qualitative_option_id: yup.string(),
   measured_timestamp: yup.date().required(req),
   measurement_comment: yup.string()
 });
@@ -168,7 +168,7 @@ type ICritterMarking = ICritterID & IAnimalMarking;
 
 type ICritterQualitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'value'>;
 
-type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'option_id'>;
+type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'qualitative_option_id'>;
 
 //Converts IAnimal(Form data) to a Critterbase Critter
 
@@ -183,7 +183,7 @@ export class Critter {
     qualitative: ICritterQualitativeMeasurement[];
     quantitative: ICritterQuantitativeMeasurement[];
   };
-  mortality: ICritterMortality[];
+  mortalities: ICritterMortality[];
   family: IAnimalRelationship[]; //This type probably needs to change;
   locations: ICritterLocation[];
 
@@ -232,7 +232,7 @@ export class Critter {
       });
     });
 
-    this.mortality = [];
+    this.mortalities = [];
     animal.mortality.forEach((m) => {
       const loc_id = v4();
       this.locations.push({
@@ -245,7 +245,7 @@ export class Critter {
       delete m.mortality_utm_northing;
       delete m.mortality_utm_easting;
       delete m.projection_mode;
-      this.mortality.push({ ...m, critter_id: this.critter_id, location_id: loc_id });
+      this.mortalities.push({ ...m, critter_id: this.critter_id, location_id: loc_id });
     });
 
     this.markings = animal.markings.map((m) => ({ ...m, critter_id: this.critter_id }));
@@ -255,11 +255,11 @@ export class Critter {
     this.measurements = {
       qualitative: animal.measurements
         .filter((m) => {
-          if (m.option_id && m.value) {
+          if (m.qualitative_option_id && m.value) {
             console.log('Qualitative measurement must only contain option_id and no value.');
             return false;
           }
-          if (m.option_id) {
+          if (m.qualitative_option_id) {
             delete m.value;
             return true;
           }
@@ -268,12 +268,12 @@ export class Critter {
         .map((m) => ({ ...m, critter_id: this.critter_id })),
       quantitative: animal.measurements
         .filter((m) => {
-          if (m.option_id && m.value) {
+          if (m.qualitative_option_id && m.value) {
             console.log('Quantitative measurement must only contain a value and no option_id');
             return false;
           }
           if (m.value != null) {
-            delete m.option_id;
+            delete m.qualitative_option_id;
             return true;
           }
           return false;
