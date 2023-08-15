@@ -19,7 +19,6 @@ export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) 
     return true;
   }
   const schema = reach(AnimalSchema, `${animalKey}[${lastIndex}]`);
-  console.log(schema.isValidSync(lastValue));
   return schema.isValidSync(lastValue);
 };
 
@@ -93,7 +92,7 @@ export const AnimalMortalitySchema = yup.object({}).shape({
   projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
 });
 
-const AnimalRelationshipSchema = yup.object({}).shape({
+export const AnimalRelationshipSchema = yup.object({}).shape({
   critter_id: yup.string().uuid('Must be a UUID').required(req),
   relationship: yup.mixed().oneOf(['Parent', 'Child', 'Sibling']).required(req)
 });
@@ -109,7 +108,7 @@ const AnimalTelemetryDeviceSchema = yup.object({}).shape({
 const AnimalImageSchema = yup.object({}).shape({});
 
 export const AnimalSchema = yup.object({}).shape({
-  general: AnimalGeneralSchema.required(),
+  general: AnimalGeneralSchema,
   captures: yup.array().of(AnimalCaptureSchema).required(),
   markings: yup.array().of(AnimalMarkingSchema).required(),
   measurements: yup.array().of(AnimalMeasurementSchema).required(),
@@ -176,7 +175,7 @@ type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'op
 export class Critter {
   critter_id: string;
   taxon_id: string;
-  taxon_name: string;
+  taxon_name?: string;
   animal_id?: string;
   captures: ICritterCapture[];
   markings: ICritterMarking[];

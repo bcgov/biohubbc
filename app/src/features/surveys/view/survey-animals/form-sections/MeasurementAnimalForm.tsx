@@ -8,7 +8,14 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { has } from 'lodash-es';
 import React, { Fragment, useEffect, useState } from 'react';
-import { getAnimalFieldName, IAnimal, IAnimalMeasurement, lastAnimalValueValid } from '../animal';
+import {
+  AnimalMeasurementSchema,
+  getAnimalFieldName,
+  IAnimal,
+  IAnimalMeasurement,
+  isReq,
+  lastAnimalValueValid
+} from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
@@ -26,7 +33,7 @@ const MeasurementAnimalForm = () => {
 
   const newMeasurement: IAnimalMeasurement = {
     taxon_measurement_id: '',
-    value: '' as unknown as number,
+    value: undefined,
     option_id: '',
     measured_timestamp: '' as unknown as Date,
     measurement_comment: ''
@@ -71,7 +78,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
   const opIDName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'option_id', index);
 
   useEffect(() => {
-    setFieldValue(valName, '');
+    setFieldValue(valName, undefined);
     setFieldValue(opIDName, '');
     const m = measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId);
     setMeasurement(m);
@@ -93,12 +100,16 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
   };
 
   return (
-    <Fragment key={`marking-inputs-${index}`}>
+    <Fragment key={`meausurement-inputs-${index}`}>
       <Grid item xs={4}>
         <FormikSelectWrapper
           label="Measurement Type"
           name={tmIDName}
-          controlProps={{ size: 'small', required: true, disabled: !measurements?.length }}>
+          controlProps={{
+            size: 'small',
+            required: isReq(AnimalMeasurementSchema, 'taxon_measurement_id'),
+            disabled: !measurements?.length
+          }}>
           {measurements?.map((m) => (
             <MenuItem key={m.taxon_measurement_id} value={m.taxon_measurement_id}>
               {m.measurement_name}
@@ -114,21 +125,30 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             id="qualitative_option"
             route="taxon_qualitative_measurement_options"
             query={`taxon_measurement_id=${taxonMeasurementId}`}
-            controlProps={{ size: 'small', required: true, disabled: !taxonMeasurementId }}
+            controlProps={{
+              size: 'small',
+              required: isReq(AnimalMeasurementSchema, 'option_id'),
+              disabled: !taxonMeasurementId
+            }}
           />
         ) : (
           <Field
             as={CustomTextField}
             name={valName}
             label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
-            other={{ required: true, size: 'small', disabled: !taxonMeasurementId }}
+            other={{ required: isReq(AnimalMeasurementSchema, 'value'), size: 'small', disabled: !taxonMeasurementId }}
             validate={validateValue}
           />
         )}
       </Grid>
       <Grid item xs={4}>
         <CustomTextField
-          other={{ required: true, size: 'small', type: 'date', InputLabelProps: { shrink: true } }}
+          other={{
+            required: isReq(AnimalMeasurementSchema, 'measured_timestamp'),
+            size: 'small',
+            type: 'date',
+            InputLabelProps: { shrink: true }
+          }}
           label="Measured Date"
           name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measured_timestamp', index)}
         />
@@ -136,7 +156,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
       <Grid item xs={12}>
         <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Measurement')}>
           <CustomTextField
-            other={{ size: 'small' }}
+            other={{ size: 'small', required: isReq(AnimalMeasurementSchema, 'measurement_comment') }}
             label="Measurment Comment"
             name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measurement_comment', index)}
           />
