@@ -15,6 +15,12 @@ import {
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
+/**
+ * Renders the Marking section for the Individual Animal form
+ *
+ * Returns {*}
+ */
+
 const MarkingAnimalForm = () => {
   const { values } = useFormikContext<IAnimal>();
 

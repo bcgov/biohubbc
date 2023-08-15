@@ -21,6 +21,18 @@ import FormSectionWrapper from './FormSectionWrapper';
 
 const NAME: keyof IAnimal = 'measurements';
 
+/**
+ * Renders the Measurement section for the Individual Animal form
+ *
+ * Note a: Requesting the raw unformatted measurement data to allow easier lookups
+ * Displays both qualitative / quantitative measurement options in one dropdown.
+ * The value / option selector needs to change based on the chosen measurement in first select.
+ *
+ * Note b: Custom quantiative measurement validation based on min / max values in database.
+ *
+ * Returns {*}
+ */
+
 const MeasurementAnimalForm = () => {
   const api = useCritterbaseApi();
   const { values } = useFormikContext<IAnimal>();

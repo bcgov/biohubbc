@@ -6,11 +6,15 @@ import { AnyObjectSchema, InferType, reach } from 'yup';
  * Provides an acceptable amount of type security with formik field names for animal forms
  * Returns formatted field name in regular or array format
  */
-
 export const getAnimalFieldName = <T>(animalKey: keyof IAnimal, fieldKey: keyof T, idx?: number) => {
   return idx === undefined ? `${animalKey}.${String(fieldKey)}` : `${animalKey}.${idx}.${String(fieldKey)}`;
 };
 
+/**
+ * Checks if last added value in animal form is valid.
+ * Used to disable add btn.
+ * ie: Added measurement, checks the measurement has no errors.
+ */
 export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) => {
   const section = values[animalKey];
   const lastIndex = section.length - 1;
@@ -22,15 +26,18 @@ export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) 
   return schema.isValidSync(lastValue);
 };
 
+/**
+ * Checks if property in schema is required. Used to keep required fields in sync with schema.
+ * ie: { required: true } -> { required: isReq(Schema, 'property_name') }
+ */
 export const isReq = <T extends AnyObjectSchema>(schema: T, key: keyof T['fields']) => {
   return schema.fields[key].exclusiveTests.required;
 };
 
-const req = 'Required';
-const mustBeNum = 'Must be a number';
-
 const glt = (num: number, greater = true) => `Must be ${greater ? 'greater' : 'less'} than or equal to ${num}`;
 
+const req = 'Required';
+const mustBeNum = 'Must be a number';
 const numSchema = yup.number().typeError(mustBeNum);
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
@@ -201,7 +208,6 @@ export class Critter {
   }
 
   constructor(animal: IAnimal) {
-    //prevent mutatation on original animal object
     this.critter_id = v4();
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;
