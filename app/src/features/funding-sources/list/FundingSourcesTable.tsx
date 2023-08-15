@@ -67,6 +67,8 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
       headerName: 'Amount Distributed',
       description: 'Known amount of funding that has been distributed to one or more surveys.',
       flex: 1,
+      headerAlign: 'right',
+      align: 'right',
       valueGetter: (params) => {
         return getFormattedAmount(params.value, { maximumFractionDigits: 2 });
       }
@@ -75,13 +77,16 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
       field: 'survey_reference_count',
       headerName: 'Surveys',
       description: 'Number of surveys that reference this funding source.',
-      flex: 1
+      flex: 1,
+      headerAlign: 'right',
+      align: 'right'
     },
     {
       field: 'actions',
       type: 'actions',
       sortable: false,
-      width: 55,
+      flex: 1,
+      align: 'right',
       renderCell: (params) => (
         <TableActionsMenu
           fundingSourceId={params.row.funding_source_id}

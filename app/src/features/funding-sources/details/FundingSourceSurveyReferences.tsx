@@ -117,7 +117,7 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
             fontWeight: 700,
             textTransform: 'uppercase'
           }}>
-          SURVEYS &zwnj;
+          Surveys &zwnj;
           <Typography component="span" variant="inherit" color="textSecondary">
             ({fundingSourceSurveyReferences.length || 0})
           </Typography>
