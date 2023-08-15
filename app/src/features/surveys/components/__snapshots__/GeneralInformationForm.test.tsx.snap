@@ -106,14 +106,13 @@ exports[`General Information Form renders correctly the empty component correctl
                   type="button"
                 >
                   <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                      d="M2 14H4V17H9V14L13 18L9 22V19H4V22H2V14M19 19V8H5V12H3L3 5C3 3.89 3.89 3 5 3H6V.998H8V3H16V.998H18V3H19C20.1 3 21 3.89 21 5V19C21 20.1 20.1 21 19 21L12.83 21L14.83 19L19 19Z"
+                      style="fill: currentColor;"
                     />
                   </svg>
                 </button>
@@ -179,14 +178,13 @@ exports[`General Information Form renders correctly the empty component correctl
                   type="button"
                 >
                   <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                      d="M22 14V22H20V18L16 22V19H11V17H16V14L20 18V14H22M5 19L9 19V21L5 21C3.9 21 3 20.1 3 19V5C3 3.89 3.9 3 5 3H6V.998H8V3H16V.998H18V3H19C20.11 3 21 3.89 21 5L21 12H19V8H5V19Z"
+                      style="fill: currentColor;"
                     />
                   </svg>
                 </button>
@@ -643,14 +641,13 @@ exports[`General Information Form renders correctly the filled component correct
                   type="button"
                 >
                   <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                      d="M2 14H4V17H9V14L13 18L9 22V19H4V22H2V14M19 19V8H5V12H3L3 5C3 3.89 3.89 3 5 3H6V.998H8V3H16V.998H18V3H19C20.1 3 21 3.89 21 5V19C21 20.1 20.1 21 19 21L12.83 21L14.83 19L19 19Z"
+                      style="fill: currentColor;"
                     />
                   </svg>
                 </button>
@@ -716,14 +713,13 @@ exports[`General Information Form renders correctly the filled component correct
                   type="button"
                 >
                   <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                      d="M22 14V22H20V18L16 22V19H11V17H16V14L20 18V14H22M5 19L9 19V21L5 21C3.9 21 3 20.1 3 19V5C3 3.89 3.9 3 5 3H6V.998H8V3H16V.998H18V3H19C20.11 3 21 3.89 21 5L21 12H19V8H5V19Z"
+                      style="fill: currentColor;"
                     />
                   </svg>
                 </button>
@@ -1354,14 +1350,13 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                   type="button"
                 >
                   <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                      d="M2 14H4V17H9V14L13 18L9 22V19H4V22H2V14M19 19V8H5V12H3L3 5C3 3.89 3.89 3 5 3H6V.998H8V3H16V.998H18V3H19C20.1 3 21 3.89 21 5V19C21 20.1 20.1 21 19 21L12.83 21L14.83 19L19 19Z"
+                      style="fill: currentColor;"
                     />
                   </svg>
                 </button>
@@ -1427,14 +1422,13 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                   type="button"
                 >
                   <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-                    data-testid="CalendarIcon"
-                    focusable="false"
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                      d="M22 14V22H20V18L16 22V19H11V17H16V14L20 18V14H22M5 19L9 19V21L5 21C3.9 21 3 20.1 3 19V5C3 3.89 3.9 3 5 3H6V.998H8V3H16V.998H18V3H19C20.11 3 21 3.89 21 5L21 12H19V8H5V19Z"
+                      style="fill: currentColor;"
                     />
                   </svg>
                 </button>
