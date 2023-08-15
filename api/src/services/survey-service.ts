@@ -705,7 +705,7 @@ export class SurveyService extends DBService {
    * @return {*}
    * @memberof SurveyService
    */
-  async upsertSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
+  async upsertSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject) {
     // Get any existing survey funding sources
     const existingSurveyFundingSources = await this.fundingSourceService.getSurveyFundingSources(surveyId);
 
@@ -754,7 +754,7 @@ export class SurveyService extends DBService {
       }
     });
 
-    await Promise.all(promises);
+    return Promise.all(promises);
   }
 
   /**
