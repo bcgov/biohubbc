@@ -1,3 +1,5 @@
+import { mdiCalendarEnd, mdiCalendarStart } from '@mdi/js';
+import Icon from '@mdi/react';
 import Grid from '@mui/material/Grid';
 import { DatePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
@@ -41,11 +43,22 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
   const formattedEndDateValue =
     (rawEndDateValue && moment(rawEndDateValue).isValid() && moment(rawEndDateValue)) || null;
 
+  function DateStartIcon() {
+    return <Icon path={mdiCalendarStart} size={1} />;
+  }
+
+  function DateEndIcon() {
+    return <Icon path={mdiCalendarEnd} size={1} />;
+  }
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <Grid container item spacing={3}>
         <Grid item xs={12} md={4}>
           <DatePicker
+            slots={{
+              openPickerIcon: DateStartIcon
+            }}
             slotProps={{
               textField: {
                 id: 'start_date',
@@ -75,6 +88,9 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
         </Grid>
         <Grid item xs={12} md={4}>
           <DatePicker
+            slots={{
+              openPickerIcon: DateEndIcon
+            }}
             slotProps={{
               textField: {
                 id: 'end_date',
