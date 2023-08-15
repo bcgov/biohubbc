@@ -23,13 +23,18 @@ const FundingSourceForm: React.FC = () => {
         <Box component={'fieldset'} mb={4}>
           <Typography component="legend">Name and Description</Typography>
           <Box mt={0.5} mb={3}>
-            <CustomTextField name="name" label="Name" other={{ required: true }} />
+            <CustomTextField
+              name="name"
+              label="Name"
+              maxLength={50}
+              other={{ placeholder: 'Maximum 50 characters', required: true }}
+            />
           </Box>
           <CustomTextField
             name="description"
             label="Description"
-            maxLength={200}
-            other={{ multiline: true, placeholder: 'Maximum 200 characters', required: true, rows: 3 }}
+            maxLength={250}
+            other={{ multiline: true, placeholder: 'Maximum 250 characters', required: true, rows: 3 }}
           />
         </Box>
 
