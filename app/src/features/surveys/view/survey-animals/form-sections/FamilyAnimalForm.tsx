@@ -5,7 +5,13 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { Fragment } from 'react';
 //import { validate as uuidValidate } from 'uuid';
-import { getAnimalFieldName, IAnimal, IAnimalRelationship, newFamilyIdPlaceholder } from '../animal';
+import {
+  getAnimalFieldName,
+  IAnimal,
+  IAnimalRelationship,
+  lastAnimalValueValid,
+  newFamilyIdPlaceholder
+} from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
 
 /**
@@ -61,6 +67,7 @@ const FamilyAnimalForm = () => {
             addedSectionTitle={SurveyAnimalsI18N.animalFamilyTitle2}
             titleHelp={SurveyAnimalsI18N.animalFamilyHelp}
             btnLabel={SurveyAnimalsI18N.animalFamilyAddBtn}
+            disableAddBtn={!lastAnimalValueValid('family', values)}
             handleAddSection={() => push(newRelationship)}
             maxSections={1}
             handleRemoveSection={remove}>

@@ -1,6 +1,6 @@
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { InferType, reach } from 'yup';
+import { AnyObjectSchema, InferType, reach } from 'yup';
 
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
@@ -18,9 +18,12 @@ export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) 
   if (!lastValue) {
     return true;
   }
-  const schema = reach(AnimalSchema, `markings[${lastIndex}]`);
-  console.log(schema.describe());
+  const schema = reach(AnimalSchema, `${animalKey}[${lastIndex}]`);
   return schema.isValidSync(lastValue);
+};
+
+export const isReq = <T extends AnyObjectSchema>(schema: T, key: keyof T['fields']) => {
+  return schema.fields[key].exclusiveTests.required;
 };
 
 const req = 'Required';
@@ -32,13 +35,13 @@ const numSchema = yup.number().typeError(mustBeNum);
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
 
-const AnimalGeneralSchema = yup.object({}).shape({
+export const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
   animal_id: yup.string(),
   taxon_name: yup.string()
 });
 
-const AnimalCaptureSchema = yup.object({}).shape({
+export const AnimalCaptureSchema = yup.object({}).shape({
   capture_longitude: lonSchema.required(req),
   capture_latitude: latSchema.required(req),
   capture_utm_northing: numSchema,
@@ -64,7 +67,7 @@ export const AnimalMarkingSchema = yup.object({}).shape({
   marking_comment: yup.string()
 });
 
-const AnimalMeasurementSchema = yup.object({}).shape({
+export const AnimalMeasurementSchema = yup.object({}).shape({
   taxon_measurement_id: yup.string().required(req),
   value: numSchema,
   qualitative_option_id: yup.string(),
@@ -72,7 +75,7 @@ const AnimalMeasurementSchema = yup.object({}).shape({
   measurement_comment: yup.string()
 });
 
-const AnimalMortalitySchema = yup.object({}).shape({
+export const AnimalMortalitySchema = yup.object({}).shape({
   mortality_longitude: lonSchema.required(req),
   mortality_latitude: latSchema.required(req),
   mortality_utm_northing: numSchema,
@@ -105,7 +108,7 @@ const AnimalTelemetryDeviceSchema = yup.object({}).shape({
 const AnimalImageSchema = yup.object({}).shape({});
 
 export const AnimalSchema = yup.object({}).shape({
-  general: AnimalGeneralSchema.required(),
+  general: AnimalGeneralSchema,
   captures: yup.array().of(AnimalCaptureSchema).required(),
   markings: yup.array().of(AnimalMarkingSchema).required(),
   measurements: yup.array().of(AnimalMeasurementSchema).required(),
@@ -189,7 +192,7 @@ type ICritterFamily = {
 export class Critter {
   critter_id: string;
   taxon_id: string;
-  taxon_name: string;
+  taxon_name?: string;
   animal_id?: string;
   captures: ICritterCapture[];
   markings: ICritterMarking[];
