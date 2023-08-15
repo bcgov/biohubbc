@@ -731,7 +731,7 @@ export class SurveyService extends DBService {
 
     // The remaining funding sources with either update if they have a survey_funding_source_id
     // or insert new record
-    surveyData.funding_sources.forEach(async (fundingSource) => {
+    surveyData.funding_sources.forEach((fundingSource) => {
       if (fundingSource.survey_funding_source_id) {
         // Update funding source
         promises.push(
@@ -754,7 +754,7 @@ export class SurveyService extends DBService {
       }
     });
 
-    return Promise.all(promises);
+    await Promise.all(promises);
   }
 
   /**
