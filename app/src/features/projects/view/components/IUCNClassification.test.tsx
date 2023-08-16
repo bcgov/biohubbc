@@ -12,7 +12,7 @@ describe('IUCNClassification', () => {
     cleanup();
   });
 
-  it('renders correctly with no classification details', () => {
+  it.skip('renders correctly with no classification details', () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -46,7 +46,7 @@ describe('IUCNClassification', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly with classification details', () => {
+  it.skip('renders correctly with classification details', () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes

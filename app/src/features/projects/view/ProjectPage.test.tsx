@@ -54,7 +54,7 @@ describe.skip('ProjectPage', () => {
     cleanup();
   });
 
-  it('renders a spinner if no project is loaded', () => {
+  it.skip('renders a spinner if no project is loaded', () => {
     const { asFragment } = render(
       <DialogContextProvider>
         <Router history={history}>
@@ -66,7 +66,7 @@ describe.skip('ProjectPage', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders project page when project is loaded (project is active)', async () => {
+  it.skip('renders project page when project is loaded (project is active)', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
@@ -88,7 +88,7 @@ describe.skip('ProjectPage', () => {
     });
   });
 
-  it('renders project page when project is loaded (project is completed)', async () => {
+  it.skip('renders project page when project is loaded (project is completed)', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue({
       ...getProjectForViewResponse,
       projectData: {
@@ -116,7 +116,7 @@ describe.skip('ProjectPage', () => {
     });
   });
 
-  it('deletes project and takes user to the projects list page when user is a system administrator', async () => {
+  it.skip('deletes project and takes user to the projects list page when user is a system administrator', async () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
