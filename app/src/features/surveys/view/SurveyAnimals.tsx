@@ -13,6 +13,7 @@ import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 const SurveyAnimals: React.FC = () => {
   const cbApi = useCritterbaseApi();
   const [openDialog, setOpenDialog] = useState(false);
+  const [animalCount, setAnimalCount] = useState(0);
 
   const toggleDialog = () => {
     setOpenDialog((d) => !d);
@@ -46,7 +47,11 @@ const SurveyAnimals: React.FC = () => {
               <Typography variant="h3">Individuals</Typography>
             </HelpButtonTooltip>
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-              No individuals were captured or reported in this survey
+              {`${
+                animalCount
+                  ? `${animalCount} Animal(s) reported in this survey`
+                  : `No individual animals were captured or reported in this survey`
+              }`}
             </Typography>
           </Box>
         }
@@ -54,7 +59,7 @@ const SurveyAnimals: React.FC = () => {
         onSave={(values) => handleOnSave(values)}
         onCancel={toggleDialog}
         component={{
-          element: <IndividualAnimalForm />,
+          element: <IndividualAnimalForm getAnimalCount={setAnimalCount} />,
           initialValues: AnimalFormValues,
           validationSchema: AnimalSchema
         }}

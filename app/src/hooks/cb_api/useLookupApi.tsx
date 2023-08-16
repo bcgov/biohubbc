@@ -70,6 +70,7 @@ const useLookupApi = (axios: AxiosInstance) => {
     const _query = query ? `&${query}` : ``;
 
     const { data } = await axios.get(`${CbRoutes[route]}${_param}?format=asSelect${_query}`);
+
     return data;
   };
 

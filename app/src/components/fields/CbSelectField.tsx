@@ -33,6 +33,12 @@ interface ICbSelectOption {
   value: string | number;
   label: string;
 }
+/*
+ * Critterbase Select Field. Handles data retrieval, formatting and error handling.
+ *
+ * params {ICbSelectField}
+ * returns {*}
+ */
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const { name, label, route, param, query, handleChangeSideEffect, controlProps } = props;
@@ -99,6 +105,13 @@ interface FormikSelectWrapperProps extends ICbSelectSharedProps {
   value?: SelectProps['value'];
 }
 
+/**
+ *
+ * Wrapper for formik selects to handle all errors / onChange / onBlur
+ *
+ * Returns {*}
+ */
+
 export const FormikSelectWrapper = ({
   children,
   name,
@@ -107,7 +120,7 @@ export const FormikSelectWrapper = ({
   onChange,
   value
 }: FormikSelectWrapperProps) => {
-  const { values, touched, errors, handleBlur, handleChange } = useFormikContext<ICbSelectOption>();
+  const { values, touched, errors, handleBlur, handleChange } = useFormikContext();
   const val = get(values, name) ?? '';
   const err = get(touched, name) && get(errors, name);
   return (

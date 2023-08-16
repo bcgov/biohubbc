@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash-es';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
@@ -7,11 +6,15 @@ import { AnyObjectSchema, InferType, reach } from 'yup';
  * Provides an acceptable amount of type security with formik field names for animal forms
  * Returns formatted field name in regular or array format
  */
-
 export const getAnimalFieldName = <T>(animalKey: keyof IAnimal, fieldKey: keyof T, idx?: number) => {
   return idx === undefined ? `${animalKey}.${String(fieldKey)}` : `${animalKey}.${idx}.${String(fieldKey)}`;
 };
 
+/**
+ * Checks if last added value in animal form is valid.
+ * Used to disable add btn.
+ * ie: Added measurement, checks the measurement has no errors.
+ */
 export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) => {
   const section = values[animalKey];
   const lastIndex = section.length - 1;
@@ -23,15 +26,18 @@ export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) 
   return schema.isValidSync(lastValue);
 };
 
+/**
+ * Checks if property in schema is required. Used to keep required fields in sync with schema.
+ * ie: { required: true } -> { required: isReq(Schema, 'property_name') }
+ */
 export const isReq = <T extends AnyObjectSchema>(schema: T, key: keyof T['fields']) => {
   return schema.fields[key].exclusiveTests.required;
 };
 
-const req = 'Required';
-const mustBeNum = 'Must be a number';
-
 const glt = (num: number, greater = true) => `Must be ${greater ? 'greater' : 'less'} than or equal to ${num}`;
 
+const req = 'Required';
+const mustBeNum = 'Must be a number';
 const numSchema = yup.number().typeError(mustBeNum);
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
@@ -155,15 +161,23 @@ type ICritterID = { critter_id: string };
 type ICritterLocation = InferType<typeof LocationSchema>;
 
 type ICritterMortality = ICritterID &
-  Omit<IAnimalMortality, 'utm_easting' | 'utm_northing' | 'projection_mode'> & {
+  Omit<
+    IAnimalMortality,
+    | 'mortality_utm_easting'
+    | 'mortality_utm_northing'
+    | 'projection_mode'
+    | 'mortality_latitude'
+    | 'mortality_longitude'
+    | 'mortality_coordinate_uncertainty'
+  > & {
     location_id: string;
   };
 
 type ICritterCapture = ICritterID &
-  Omit<
-    IAnimalCapture,
-    'capture_utm_easting' | 'capture_utm_northing' | 'release_utm_easting' | 'release_utm_northing' | 'projection_mode'
-  > & { capture_location_id: string; release_location_id: string | undefined };
+  Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
+    capture_location_id: string;
+    release_location_id: string | undefined;
+  };
 
 type ICritterMarking = ICritterID & IAnimalMarking;
 
@@ -193,7 +207,7 @@ type ICritterFamily = {
 export class Critter {
   critter_id: string;
   taxon_id: string;
-  animal_id?: string;
+  animal_id: string;
   captures: ICritterCapture[];
   markings: ICritterMarking[];
   measurements: {
@@ -214,9 +228,7 @@ export class Critter {
     return `${this.animal_id}-[${this.taxon_name}]`;
   }
 
-  constructor(_animal: IAnimal) {
-    //prevent mutatation on original animal object
-    const animal = cloneDeep(_animal);
+  constructor(animal: IAnimal) {
     this.critter_id = v4();
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;
@@ -229,6 +241,7 @@ export class Critter {
     animal.captures.forEach((c) => {
       const c_loc_id = v4();
       let r_loc_id: string | undefined = undefined;
+
       this.locations.push({
         location_id: c_loc_id,
         latitude: Number(c.capture_latitude),
@@ -236,8 +249,10 @@ export class Critter {
         coordinate_uncertainty: Number(c.capture_coordinate_uncertainty),
         coordinate_uncertainty_unit: 'm'
       });
+
       if (c.release_latitude && c.release_longitude) {
         r_loc_id = v4();
+
         this.locations.push({
           location_id: r_loc_id,
           latitude: Number(c.release_latitude),
@@ -246,22 +261,22 @@ export class Critter {
           coordinate_uncertainty_unit: 'm'
         });
       }
-      delete c.projection_mode;
-      delete c.capture_utm_northing;
-      delete c.capture_utm_easting;
-      delete c.release_utm_northing;
-      delete c.release_utm_easting;
+
       this.captures.push({
-        ...c,
         critter_id: this.critter_id,
         capture_location_id: c_loc_id,
-        release_location_id: r_loc_id
+        release_location_id: r_loc_id,
+        capture_timestamp: c.capture_timestamp,
+        release_timestamp: c.release_timestamp,
+        capture_comment: c.capture_comment || undefined,
+        release_comment: c.release_comment || undefined
       });
     });
 
     this.mortalities = [];
     animal.mortality.forEach((m) => {
       const loc_id = v4();
+
       this.locations.push({
         location_id: loc_id,
         latitude: Number(m.mortality_latitude),
@@ -269,10 +284,14 @@ export class Critter {
         coordinate_uncertainty: Number(m.mortality_latitude),
         coordinate_uncertainty_unit: 'm'
       });
-      delete m.mortality_utm_northing;
-      delete m.mortality_utm_easting;
-      delete m.projection_mode;
-      this.mortalities.push({ ...m, critter_id: this.critter_id, location_id: loc_id });
+
+      const { mortality_longitude, mortality_latitude, mortality_utm_easting, mortality_utm_northing, ...rest } = m;
+      this.mortalities.push({
+        ...rest,
+        critter_id: this.critter_id,
+        location_id: loc_id,
+        mortality_comment: m.mortality_comment || undefined
+      });
     });
 
     this.markings = animal.markings.map((m) => ({ ...m, critter_id: this.critter_id }));
@@ -303,12 +322,14 @@ export class Critter {
             return false;
           }
           if (m.qualitative_option_id) {
-            delete m.value;
             return true;
           }
           return false;
         })
-        .map((m) => ({ ...m, critter_id: this.critter_id })),
+        .map((m) => {
+          const { value, ...rest } = m;
+          return { ...rest, critter_id: this.critter_id };
+        }),
       quantitative: animal.measurements
         .filter((m) => {
           if (m.qualitative_option_id && m.value) {
@@ -316,12 +337,14 @@ export class Critter {
             return false;
           }
           if (m.value != null) {
-            delete m.qualitative_option_id;
             return true;
           }
           return false;
         })
-        .map((m) => ({ ...m, critter_id: this.critter_id }))
+        .map((m) => {
+          const { qualitative_option_id, ...rest } = m;
+          return { ...rest, critter_id: this.critter_id };
+        })
     };
   }
 }
