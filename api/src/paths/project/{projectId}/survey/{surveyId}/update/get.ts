@@ -76,7 +76,7 @@ GET.apiDoc = {
                   'survey_details',
                   'species',
                   'permit',
-                  'funding',
+                  'funding_sources',
                   'proprietor',
                   'purpose_and_methodology',
                   'location'
@@ -174,14 +174,38 @@ GET.apiDoc = {
                       }
                     }
                   },
-                  funding: {
-                    description: 'Survey Funding Sources',
-                    type: 'object',
-                    properties: {
-                      funding_sources: {
-                        type: 'array',
-                        items: {
-                          type: 'integer'
+                  funding_sources: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: [
+                        'survey_funding_source_id',
+                        'survey_id',
+                        'funding_source_id',
+                        'amount',
+                        'revision_count'
+                      ],
+                      properties: {
+                        survey_funding_source_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        survey_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        funding_source_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        funding_source_name: {
+                          type: 'string'
+                        },
+                        amount: {
+                          type: 'number'
+                        },
+                        revision_count: {
+                          type: 'number'
                         }
                       }
                     }
@@ -328,18 +352,9 @@ export function getSurveyForUpdate(): RequestHandler {
         };
       }
 
-      let fundingSources: number[] = [];
-
-      if (surveyObject?.funding?.funding_sources) {
-        fundingSources = surveyObject.funding.funding_sources.map((item) => item.project_funding_source_id);
-      }
-
       const surveyData = {
         ...surveyObject,
         proprietor: proprietor,
-        funding: {
-          funding_sources: fundingSources
-        },
         agreements: {
           sedis_procedures_accepted: 'true',
           foippa_requirements_accepted: 'true'

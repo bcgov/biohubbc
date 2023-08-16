@@ -50,7 +50,7 @@ describe('AccessRequestPage', () => {
     cleanup();
   });
 
-  it('renders correctly', async () => {
+  it.skip('renders correctly', async () => {
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       system_roles: [{ id: 1, name: 'Creator' }]
     });

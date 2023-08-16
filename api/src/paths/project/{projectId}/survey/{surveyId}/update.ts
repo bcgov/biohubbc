@@ -143,15 +143,26 @@ PUT.apiDoc = {
                 }
               }
             },
-            funding: {
-              description: 'Survey Funding Sources',
-              type: 'object',
-              required: ['funding_sources'],
-              properties: {
-                funding_sources: {
-                  type: 'array',
-                  items: {
-                    type: 'integer'
+            funding_sources: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['funding_source_id', 'amount'],
+                properties: {
+                  survey_funding_source_id: {
+                    type: 'number',
+                    minimum: 1,
+                    nullable: true
+                  },
+                  funding_source_id: {
+                    type: 'number',
+                    minimum: 1
+                  },
+                  amount: {
+                    type: 'number'
+                  },
+                  revision_count: {
+                    type: 'number'
                   }
                 }
               }

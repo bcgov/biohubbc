@@ -3,7 +3,6 @@ import { describe } from 'mocha';
 import {
   GetAttachmentsData,
   GetCoordinatorData,
-  GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
@@ -342,61 +341,6 @@ describe('GetIUCNClassificationData', () => {
           subClassification2: 'subclass2'
         }
       ]);
-    });
-  });
-});
-
-describe('GetFundingData', () => {
-  describe('No values provided', () => {
-    let projectFundingData: GetFundingData;
-
-    before(() => {
-      projectFundingData = new GetFundingData((null as unknown) as any[]);
-    });
-
-    it('sets funding sources', function () {
-      expect(projectFundingData.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('Empty array as values provided', () => {
-    let projectFundingData: GetFundingData;
-
-    before(() => {
-      projectFundingData = new GetFundingData([]);
-    });
-
-    it('sets funding sources', function () {
-      expect(projectFundingData.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectFundingData: GetFundingData;
-
-    const fundings = [
-      {
-        id: 1,
-        agency_id: 2,
-        investment_action_category: 3,
-        investment_action_category_name: 'Something',
-        agency_name: 'fake',
-        funding_amount: 123456,
-        start_date: Date.now().toString(),
-        end_date: Date.now().toString(),
-        agency_project_id: '12',
-        revision_count: 1,
-        first_nations_name: null,
-        first_nations_id: null
-      }
-    ];
-
-    before(() => {
-      projectFundingData = new GetFundingData(fundings);
-    });
-
-    it('sets funding sources', function () {
-      expect(projectFundingData.fundingSources).to.eql(fundings);
     });
   });
 });

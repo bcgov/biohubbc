@@ -5,6 +5,7 @@ export interface ICustomTextField {
   label: string;
   name: string;
   other?: TextFieldProps;
+  maxLength?: number;
 }
 
 const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
@@ -17,13 +18,13 @@ const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (pr
       name={name}
       label={label}
       id={name}
-      inputProps={{ 'data-testid': name }} // targets the internal input rather than the react component
+      inputProps={{ 'data-testid': name, maxLength: props.maxLength || undefined }} // targets the internal input rather than the react component
       onChange={handleChange}
       variant="outlined"
       value={get(values, name)}
       fullWidth={true}
       error={get(touched, name) && Boolean(get(errors, name))}
-      helperText={get(touched, name) && <>{get(errors, name) as string}</>}
+      helperText={get(touched, name) && (get(errors, name) as string)}
       {...other}
     />
   );

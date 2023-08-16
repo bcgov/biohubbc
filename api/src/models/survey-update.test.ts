@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   PutSurveyDetailsData,
-  PutSurveyFundingData,
   PutSurveyLocationData,
   PutSurveyObject,
   PutSurveyPermitData,
@@ -31,10 +30,6 @@ describe('PutSurveyObject', () => {
       expect(data.permit).to.equal(null);
     });
 
-    it('sets funding', () => {
-      expect(data.funding).to.equal(null);
-    });
-
     it('sets proprietor', () => {
       expect(data.proprietor).to.equal(null);
     });
@@ -55,7 +50,6 @@ describe('PutSurveyObject', () => {
       survey_details: {},
       species: {},
       permit: {},
-      funding: {},
       proprietor: {},
       purpose_and_methodology: {},
       location: {},
@@ -76,10 +70,6 @@ describe('PutSurveyObject', () => {
 
     it('sets permit', () => {
       expect(data.permit).to.instanceOf(PutSurveyPermitData);
-    });
-
-    it('sets funding', () => {
-      expect(data.funding).to.instanceOf(PutSurveyFundingData);
     });
 
     it('sets proprietor', () => {
@@ -250,36 +240,6 @@ describe('PutPermitData', () => {
 
     it('sets permit_type', () => {
       expect(data.permits[0].permit_type).to.equal(obj.permits[0].permit_type);
-    });
-  });
-});
-
-describe('PutFundingData', () => {
-  describe('No values provided', () => {
-    let data: PutSurveyFundingData;
-
-    before(() => {
-      data = new PutSurveyFundingData(null);
-    });
-
-    it('sets permit_number', () => {
-      expect(data.funding_sources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: PutSurveyFundingData;
-
-    const obj = {
-      funding_sources: [1, 2]
-    };
-
-    before(() => {
-      data = new PutSurveyFundingData(obj);
-    });
-
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([1, 2]);
     });
   });
 });

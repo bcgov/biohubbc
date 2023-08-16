@@ -1,7 +1,9 @@
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -22,6 +24,14 @@ export interface IEditDialogProps<T> {
    * @memberof IEditDialogProps
    */
   dialogTitle: string;
+
+  /**
+   * The dialog window content text.
+   *
+   * @type {string}
+   * @memberof IEditDialogProps
+   */
+  dialogText?: string;
 
   /**
    * The label of the `onSave` button.
@@ -50,6 +60,11 @@ export interface IEditDialogProps<T> {
    * Error message to display when an error exists
    */
   dialogError?: string;
+
+  /**
+   * Boolean to track to show a spinner
+   */
+  dialogLoading?: boolean;
 
   /**
    * Callback fired if the 'No' button is clicked.
@@ -101,16 +116,20 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           aria-labelledby="edit-dialog-title"
           aria-describedby="edit-dialog-description">
           <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
-          <DialogContent>{props.component.element}</DialogContent>
+          <DialogContent>
+            {props.dialogText && <DialogContentText sx={{ mb: 4 }}>{props.dialogText}</DialogContentText>}
+            {props.component.element}
+          </DialogContent>
           <DialogActions>
-            <Button
+            <LoadingButton
+              loading={props.dialogLoading || formikProps.isValidating || false}
               onClick={formikProps.submitForm}
               color="primary"
               variant="contained"
               autoFocus
               data-testid="edit-dialog-save">
               {props.dialogSaveButtonLabel || 'Save Changes'}
-            </Button>
+            </LoadingButton>
             <Button onClick={props.onCancel} color="primary" variant="outlined" data-testid="edit-dialog-cancel">
               Cancel
             </Button>

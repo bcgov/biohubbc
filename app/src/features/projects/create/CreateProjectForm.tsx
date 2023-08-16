@@ -18,11 +18,6 @@ import ProjectDetailsForm, {
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
 } from '../components/ProjectDetailsForm';
-import ProjectFundingForm, {
-  ProjectFundingFormInitialValues,
-  ProjectFundingFormYupSchema
-} from '../components/ProjectFundingForm';
-import { FundingSourceType } from '../components/ProjectFundingItemForm';
 import ProjectIUCNForm, { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from '../components/ProjectIUCNForm';
 import ProjectLocationForm, {
   ProjectLocationFormInitialValues,
@@ -58,7 +53,6 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
-  ...ProjectFundingFormInitialValues,
   ...ProjectPartnershipsFormInitialValues
 };
 
@@ -66,7 +60,6 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
   .concat(ProjectObjectivesFormYupSchema)
   .concat(ProjectLocationFormYupSchema)
   .concat(ProjectIUCNFormYupSchema)
-  .concat(ProjectFundingFormYupSchema)
   .concat(ProjectPartnershipsFormYupSchema);
 
 //Function to get the list of coordinator agencies from the code set
@@ -164,46 +157,15 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <Divider className={classes.sectionDivider} />
 
         <HorizontalSplitFormComponent
-          title="Funding and Partnerships"
-          summary="Specify project funding sources and additional partnerships."
+          title="Partnerships"
+          summary="Select partners supporting or participating in this project."
           component={
             <>
               <Box component="fieldset">
                 <Typography component="legend" variant="h5">
-                  Funding Sources
+                  Select Partnerships
                 </Typography>
-                <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-                  Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to be
-                  exact, please round to the nearest 100.
-                </Typography>
-                <Box mt={3}>
-                  <ProjectFundingForm
-                    funding_sources={
-                      codes?.agency?.map((item) => {
-                        return { value: item.id, label: item.name, type: FundingSourceType.FUNDING_SOURCE };
-                      }) || []
-                    }
-                    investment_action_category={
-                      codes?.investment_action_category?.map((item) => {
-                        return { value: item.id, agency_id: item.agency_id, label: item.name };
-                      }) || []
-                    }
-                    first_nations={
-                      codes.first_nations?.map((item) => {
-                        return { value: item.id, label: item.name, type: FundingSourceType.FIRST_NATIONS };
-                      }) || []
-                    }
-                  />
-                </Box>
-              </Box>
-              <Box component="fieldset" mt={5}>
-                <Typography component="legend" variant="h5">
-                  Partnerships
-                </Typography>
-                <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-                  Additional partnerships that have not been previously identified as a funding sources.
-                </Typography>
-                <Box mt={4}>
+                <Box mt={1}>
                   <ProjectPartnershipsForm
                     first_nations={
                       codes?.first_nations?.map((item) => {

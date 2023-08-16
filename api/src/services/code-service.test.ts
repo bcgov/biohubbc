@@ -19,7 +19,7 @@ describe('CodeService', () => {
         rows: [{ id: 1, name: 'codeName' }]
       });
 
-      const mockDBConnection = getMockDBConnection({ query: mockQuery });
+      const mockDBConnection = getMockDBConnection({ sql: mockQuery });
 
       const codeService = new CodeService(mockDBConnection);
 

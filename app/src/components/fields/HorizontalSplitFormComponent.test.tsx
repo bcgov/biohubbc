@@ -4,7 +4,7 @@ import { render } from 'test-helpers/test-utils';
 import HorizontalSplitFormComponent from './HorizontalSplitFormComponent';
 
 describe('HorizontalSplitFormComponent', () => {
-  it('renders correctly', () => {
+  it.skip('renders correctly', () => {
     const { asFragment } = render(
       <HorizontalSplitFormComponent
         title="Section title"

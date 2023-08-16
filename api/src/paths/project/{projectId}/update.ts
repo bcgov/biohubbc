@@ -37,7 +37,6 @@ export enum GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  funding = 'funding',
   partnerships = 'partnerships'
 }
 
@@ -212,72 +211,6 @@ GET.apiDoc = {
                   }
                 }
               },
-              funding: {
-                description: 'The project funding details',
-                type: 'object',
-                required: ['fundingSources'],
-                nullable: true,
-                properties: {
-                  fundingSources: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        id: {
-                          type: 'number'
-                        },
-                        agency_id: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        investment_action_category: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        investment_action_category_name: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        agency_name: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        funding_amount: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        start_date: {
-                          type: 'string',
-                          format: 'date',
-                          nullable: true,
-                          description: 'ISO 8601 date string for the funding start date'
-                        },
-                        end_date: {
-                          type: 'string',
-                          format: 'date',
-                          nullable: true,
-                          description: 'ISO 8601 date string for the funding end_date'
-                        },
-                        agency_project_id: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        revision_count: {
-                          type: 'number'
-                        },
-                        first_nations_id: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        first_nations_name: {
-                          type: 'string',
-                          nullable: true
-                        }
-                      }
-                    }
-                  }
-                }
-              },
               partnerships: {
                 description: 'The project partners',
                 type: 'object',
@@ -436,7 +369,6 @@ export interface IUpdateProject {
   objectives: any | null;
   location: { geometry: Feature[]; location_description: string } | null;
   iucn: any | null;
-  funding: any | null;
   partnerships: any | null;
 }
 

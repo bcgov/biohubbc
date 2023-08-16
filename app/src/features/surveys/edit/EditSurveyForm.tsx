@@ -1,4 +1,4 @@
-import { Theme } from '@mui/material';
+import { Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -9,12 +9,12 @@ import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForUpdateResponseFundingSource, ProjectViewObject } from 'interfaces/useProjectApi.interface';
+import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
-import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/AgreementsForm';
 import GeneralInformationForm, {
@@ -24,6 +24,10 @@ import GeneralInformationForm, {
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from '../components/StudyAreaForm';
+import SurveyFundingSourceForm, {
+  SurveyFundingSourceFormInitialValues,
+  SurveyFundingSourceFormYupSchema
+} from '../components/SurveyFundingSourceForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -42,7 +46,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IEditSurveyForm {
   codes: IGetAllCodeSetsResponse;
   projectData: ProjectViewObject;
-  surveyFundingSources: IGetProjectForUpdateResponseFundingSource[];
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   handleCancel: () => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
@@ -69,6 +72,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
       }
     },
     ...StudyAreaInitialValues,
+    ...SurveyFundingSourceFormInitialValues,
     ...{
       proprietor: {
         survey_data_proprietary: '' as unknown as StringBoolean,
@@ -126,6 +130,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     .concat(StudyAreaYupSchema)
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
+    .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema);
 
   return (
@@ -145,20 +150,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             summary=""
             component={
               <GeneralInformationForm
-                funding_sources={
-                  props.surveyFundingSources?.map((item) => {
-                    return {
-                      value: item.id,
-                      label: `${item.agency_name || item.first_nations_name} | ${getFormattedAmount(
-                        item.funding_amount
-                      )} | ${getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        item.start_date,
-                        item.end_date
-                      )}`
-                    };
-                  }) || []
-                }
                 projectStartDate={props.projectData.project.start_date}
                 projectEndDate={props.projectData.project.end_date}
               />
@@ -192,6 +183,20 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                   }) || []
                 }
               />
+            }></HorizontalSplitFormComponent>
+
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
+            title="Funding Sources"
+            summary="Specify funding sources for this survey."
+            component={
+              <Box component="fieldset">
+                <Typography component="legend">Add Funding Sources</Typography>
+                <Box mt={1}>
+                  <SurveyFundingSourceForm />
+                </Box>
+              </Box>
             }></HorizontalSplitFormComponent>
 
           <Divider className={classes.sectionDivider} />

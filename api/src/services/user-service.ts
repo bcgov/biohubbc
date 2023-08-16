@@ -1,16 +1,12 @@
 import { IDBConnection } from '../database/db';
-import { ApiBuildSQLError, ApiExecuteSQLError } from '../errors/api-error';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { User } from '../models/user';
-import { queries } from '../queries/queries';
 import { UserRepository } from '../repositories/user-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/user-service');
 
-/**
- * @TODO Replace all implementations of `queries/users/user-queries` with appropriate UserRepository methods.
- */
 export class UserService extends DBService {
   userRepository: UserRepository;
 
@@ -170,58 +166,33 @@ export class UserService extends DBService {
    * Activates an existing system user that had been deactivated (soft deleted).
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<User>)}
+   * @return {*}
    * @memberof UserService
    */
   async activateSystemUser(systemUserId: number) {
-    const sqlStatement = queries.users.activateSystemUserSQL(systemUserId);
-
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL update statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to activate system user');
-    }
+    return this.userRepository.activateSystemUser(systemUserId);
   }
 
   /**
    * Deactivates an existing system user (soft delete).
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<User>)}
+   * @return {*}
    * @memberof UserService
    */
   async deactivateSystemUser(systemUserId: number) {
-    const sqlStatement = queries.users.deactivateSystemUserSQL(systemUserId);
-
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL update statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to deactivate system user');
-    }
+    return this.userRepository.deactivateSystemUser(systemUserId);
   }
 
   /**
    * Delete all system roles for the user.
    *
    * @param {number} systemUserId
+   * @return {*}
    * @memberof UserService
    */
   async deleteUserSystemRoles(systemUserId: number) {
-    const sqlStatement = queries.users.deleteAllSystemRolesSQL(systemUserId);
-
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL delete statement');
-    }
-
-    await this.connection.query(sqlStatement.text, sqlStatement.values);
+    return this.userRepository.deleteUserSystemRoles(systemUserId);
   }
 
   /**
@@ -229,19 +200,21 @@ export class UserService extends DBService {
    *
    * @param {number} systemUserId
    * @param {number[]} roleIds
+   * @return {*}
    * @memberof UserService
    */
   async addUserSystemRoles(systemUserId: number, roleIds: number[]) {
-    const sqlStatement = queries.users.postSystemRolesSQL(systemUserId, roleIds);
+    return this.userRepository.addUserSystemRoles(systemUserId, roleIds);
+  }
 
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert user system roles');
-    }
+  /**
+   * Delete all project participation roles for the specified system user.
+   *
+   * @param {number} systemUserId
+   * @return {*}
+   * @memberof UserService
+   */
+  async deleteAllProjectRoles(systemUserId: number) {
+    return this.userRepository.deleteAllProjectRoles(systemUserId);
   }
 }

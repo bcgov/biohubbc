@@ -3,7 +3,6 @@ import MockAdapter from 'axios-mock-adapter';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
-import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
@@ -181,7 +180,6 @@ describe('useProjectApi', () => {
       objectives: null as unknown as IProjectObjectivesForm,
       location: null as unknown as IProjectLocationForm,
       iucn: null as unknown as IProjectIUCNForm,
-      funding: null as unknown as IProjectFundingForm,
       partnerships: null as unknown as IProjectPartnershipsForm
     } as unknown as ICreateProjectRequest;
 

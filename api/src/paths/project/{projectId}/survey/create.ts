@@ -59,7 +59,6 @@ POST.apiDoc = {
             'survey_details',
             'species',
             'permit',
-            'funding',
             'proprietor',
             'purpose_and_methodology',
             'location',
@@ -127,13 +126,18 @@ POST.apiDoc = {
                 }
               }
             },
-            funding: {
-              type: 'object',
-              properties: {
-                funding_sources: {
-                  type: 'array',
-                  items: {
-                    type: 'integer'
+            funding_sources: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['funding_source_id', 'amount'],
+                properties: {
+                  funding_source_id: {
+                    type: 'number',
+                    minimum: 1
+                  },
+                  amount: {
+                    type: 'number'
                   }
                 }
               }

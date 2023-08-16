@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
-import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectParticipationService } from '../../../services/project-participation-service';
 import { UserService } from '../../../services/user-service';
@@ -87,7 +86,7 @@ export function removeSystemUser(): RequestHandler {
         throw new HTTP400('The system user is not active');
       }
 
-      await deleteAllProjectRoles(userId, connection);
+      await userService.deleteAllProjectRoles(userId);
 
       await userService.deleteUserSystemRoles(userId);
 
@@ -123,16 +122,6 @@ export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, c
   if (!onlyProjectLeadResponse) {
     throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);
   }
-};
-
-export const deleteAllProjectRoles = async (userId: number, connection: IDBConnection) => {
-  const sqlStatement = queries.users.deleteAllProjectRolesSQL(userId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete statement for deleting project roles');
-  }
-
-  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**

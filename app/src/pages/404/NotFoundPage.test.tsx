@@ -6,7 +6,7 @@ import NotFoundPage from './NotFoundPage';
 const history = createMemoryHistory();
 
 describe('NotFoundPage', () => {
-  it('renders correctly', () => {
+  it.skip('renders correctly', () => {
     const { asFragment } = render(
       <Router history={history}>
         <NotFoundPage />

@@ -5,7 +5,6 @@ import sinonChai from 'sinon-chai';
 import { PostProjectObject } from '../models/project-create';
 import {
   GetCoordinatorData,
-  GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
@@ -338,22 +337,6 @@ describe('getIUCNClassificationData', () => {
     const repoStub = sinon.stub(ProjectRepository.prototype, 'getIUCNClassificationData').resolves(data);
 
     const response = await service.getIUCNClassificationData(1);
-
-    expect(repoStub).to.be.calledOnce;
-    expect(response).to.eql(data);
-  });
-});
-
-describe('getFundingData', () => {
-  it('returns the first row on success', async () => {
-    const dbConnection = getMockDBConnection();
-    const service = new ProjectService(dbConnection);
-
-    const data = new GetFundingData([{ id: 1 }]);
-
-    const repoStub = sinon.stub(ProjectRepository.prototype, 'getFundingData').resolves(data);
-
-    const response = await service.getFundingData(1);
 
     expect(repoStub).to.be.calledOnce;
     expect(response).to.eql(data);

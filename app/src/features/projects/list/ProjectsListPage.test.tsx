@@ -37,7 +37,7 @@ describe('ProjectsListPage', () => {
     cleanup();
   });
 
-  test('renders with the create project button', async () => {
+  it('renders with the create project button', async () => {
     mockUseApi.project.getProjectsList.mockResolvedValue([]);
     mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
@@ -68,7 +68,7 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test('renders with the open advanced filters button', async () => {
+  it('renders with the open advanced filters button', async () => {
     mockUseApi.project.getProjectsList.mockResolvedValue([]);
     mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
@@ -95,7 +95,7 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test('renders with a list of drafts', async () => {
+  it('renders with a list of drafts', async () => {
     mockUseApi.draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
@@ -125,7 +125,7 @@ describe('ProjectsListPage', () => {
     expect(await findByText('Draft 1')).toBeInTheDocument();
   });
 
-  test('navigating to the project works', async () => {
+  it('navigating to the project works', async () => {
     mockUseApi.project.getProjectsList.mockResolvedValue([
       {
         projectData: {
