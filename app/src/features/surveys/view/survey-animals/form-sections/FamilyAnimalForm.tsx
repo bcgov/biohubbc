@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Theme, Typography } from '@mui/material';
+import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Theme, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -6,7 +6,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { Fragment, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 //import { validate as uuidValidate } from 'uuid';
 import {
   getAnimalFieldName,
@@ -124,16 +124,6 @@ const FamilyAnimalForm = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                {/*<Grid item xs={6}></Grid>
-                <Grid item xs={6}>
-                  <Field //Using Formik Field here in order to have custom field level validation. Note that you can pass extra props and it will feed it to CustomTextField
-                    as={CustomTextField}
-                    name={getAnimalFieldName<IAnimalRelationship>(name, 'critter_id', index)}
-                    label={"Individual's ID"}
-                    other={{ size: 'small', required: true }}
-                    validate={validateCritterExists}
-                  />
-                      </Grid>*/}
                 <Grid item xs={6}>
                   <Grid item xs={6}>
                     <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
@@ -180,36 +170,13 @@ const FamilyAnimalForm = () => {
                     <Typography component="dt" variant="subtitle2" color="textSecondary">
                       Family ID
                     </Typography>
-                    <Typography marginBottom={'16px'} component="dd">
+                    <Typography marginBottom={2} component="dd">
                       {values.family[index]?.family_id}
                     </Typography>
-                    <Typography component="h4">Parents:</Typography>
-                    <ul>
-                      {familyHierarchy?.parents.map((a) => (
-                        <li>
-                          <Grid container>
-                            <Grid item xs={6}>
-                              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                                Critter ID
-                              </Typography>
-                              <Typography>{a.critter_id}</Typography>
-                            </Grid>
-                            <Grid item xs={6}>
-                              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                                Animal ID
-                              </Typography>
-                              <Typography>{a.animal_id}</Typography>
-                            </Grid>
-                          </Grid>
-                        </li>
-                      ))}
-                    </ul>
-                    <Typography component="h4">Children:</Typography>
-                    <ul>
-                      {familyHierarchy?.children.map(
-                        (
-                          a: { critter_id: string; animal_id: string } //I will type this better I promise
-                        ) => (
+                    <Paper variant="outlined" sx={{ p: 1, mb: 2 }}>
+                      <Typography component="h4">Parents:</Typography>
+                      <ul>
+                        {familyHierarchy?.parents.map((a) => (
                           <li>
                             <Grid container>
                               <Grid item xs={6}>
@@ -226,9 +193,36 @@ const FamilyAnimalForm = () => {
                               </Grid>
                             </Grid>
                           </li>
-                        )
-                      )}
-                    </ul>
+                        ))}
+                      </ul>
+                    </Paper>
+                    <Paper variant="outlined" sx={{ p: 1, mb: 2 }}>
+                      <Typography component="h4">Children:</Typography>
+                      <ul>
+                        {familyHierarchy?.children.map(
+                          (
+                            a: { critter_id: string; animal_id: string } //I will type this better I promise
+                          ) => (
+                            <li>
+                              <Grid container>
+                                <Grid item xs={6}>
+                                  <Typography component="dt" variant="subtitle2" color="textSecondary">
+                                    Critter ID
+                                  </Typography>
+                                  <Typography>{a.critter_id}</Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                  <Typography component="dt" variant="subtitle2" color="textSecondary">
+                                    Animal ID
+                                  </Typography>
+                                  <Typography>{a.animal_id}</Typography>
+                                </Grid>
+                              </Grid>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </Paper>
                   </Box>
                 </ComponentDialog>
               </Fragment>
