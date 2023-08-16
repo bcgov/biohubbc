@@ -1,6 +1,6 @@
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { Form, useFormikContext } from 'formik';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Critter, IAnimal } from './animal';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
@@ -23,9 +23,12 @@ interface IndividualAnimalFormProps {
 
 const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => {
   const { values } = useFormikContext<IAnimal>();
+  const [devShow, setDevShow] = useState(false);
 
   useEffect(() => {
-    //placeholder for when the form handles multiple animals.
+    // placeholder for when the form handles multiple animals.
+    // waiting on direction from client, either displays all survey animals count
+    // or count of animals in form
     getAnimalCount(values.general.taxon_id ? 1 : 0);
   }, [values.general.taxon_id]);
 
@@ -38,8 +41,17 @@ const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => 
       <MarkingAnimalForm />
       <MeasurementAnimalForm />
       <FamilyAnimalForm />
-      <pre>{JSON.stringify({ form_values: values }, null, 2)}</pre>
-      <pre>{JSON.stringify({ payload: new Critter(Object.assign({}, values)) }, null, 2)}</pre>
+
+      {/* Temp development testing code -> remove before deployed */}
+      {process.env.NODE_ENV === 'development' ? (
+        <Button onClick={() => setDevShow((d) => !d)}>Display Form Values (Only Dev)</Button>
+      ) : null}
+      {devShow ? (
+        <>
+          <pre>{JSON.stringify({ form_values: values }, null, 2)}</pre>
+          <pre>{JSON.stringify({ payload: new Critter(values) }, null, 2)}</pre>
+        </>
+      ) : null}
     </Form>
   );
 };

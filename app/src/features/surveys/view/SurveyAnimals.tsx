@@ -9,6 +9,7 @@ import EditDialog from 'components/dialog/EditDialog';
 import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 
 const SurveyAnimals: React.FC = () => {
   const cbApi = useCritterbaseApi();
@@ -43,15 +44,14 @@ const SurveyAnimals: React.FC = () => {
       <EditDialog
         dialogTitle={
           <Box>
-            <HelpButtonTooltip content={'temp help'}>
+            <HelpButtonTooltip content={SurveyAnimalsI18N.animalIndividualsHelp}>
               <Typography variant="h3">Individuals</Typography>
             </HelpButtonTooltip>
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-              {`${
-                animalCount
+              {`${animalCount
                   ? `${animalCount} Animal(s) reported in this survey`
                   : `No individual animals were captured or reported in this survey`
-              }`}
+                }`}
             </Typography>
           </Box>
         }

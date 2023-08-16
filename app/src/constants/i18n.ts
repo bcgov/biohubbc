@@ -298,6 +298,8 @@ export const SubmitSurveyBiohubI18N = {
 };
 
 export const SurveyAnimalsI18N = {
+  animalIndividualsHelp:
+    'Individual animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',
   animalDialogTitle: 'Invidividual Animals',
   animalDialogAddNew: 'Add New Individual',
   animalSectionComment: (section: string) => `Add comment about this ${section}`,
@@ -331,6 +333,7 @@ export const SurveyAnimalsI18N = {
   animalMortalityAddBtn: 'Add Mortality',
 
   // Input help strings
-  taxonHelp: 'Taxon help placeholder',
-  taxonLabelHelp: 'Taxon label help placeholder'
+  taxonHelp:
+    'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family',
+  taxonLabelHelp: 'A custom and unique name for you to recognize this individual'
 };
