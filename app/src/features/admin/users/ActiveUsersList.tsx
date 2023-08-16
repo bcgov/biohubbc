@@ -86,11 +86,11 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   };
 
   const deActivateSystemUser = async (user: IGetUserResponse) => {
-    if (!user?.id) {
+    if (!user?.system_user_id) {
       return;
     }
     try {
-      await biohubApi.user.deleteSystemUser(user.id);
+      await biohubApi.user.deleteSystemUser(user.system_user_id);
 
       showSnackBar({
         snackbarMessage: (
@@ -149,13 +149,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   };
 
   const changeSystemUserRole = async (user: IGetUserResponse, roleId: number, roleName: string) => {
-    if (!user?.id) {
+    if (!user?.system_user_id) {
       return;
     }
     const roleIds = [roleId];
 
     try {
-      await biohubApi.user.updateSystemUserRoles(user.id, roleIds);
+      await biohubApi.user.updateSystemUserRoles(user.system_user_id, roleIds);
 
       showSnackBar({
         snackbarMessage: (
@@ -195,6 +195,8 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         await biohubApi.admin.addSystemUser(
           systemUser.userIdentifier,
           systemUser.identitySource,
+          systemUser.displayName,
+          systemUser.email,
           systemUser.systemRole
         );
       }
@@ -277,9 +279,9 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                 )}
                 {activeUsers.length > 0 &&
                   activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                    <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
+                    <TableRow data-testid={`active-user-row-${index}`} key={row.system_user_id}>
                       <TableCell>
-                        <Link underline="always" to={`/admin/users/${row.id}`} component={RouterLink}>
+                        <Link underline="always" to={`/admin/users/${row.system_user_id}`} component={RouterLink}>
                           {row.user_identifier || 'No identifier'}
                         </Link>
                       </TableCell>
@@ -314,7 +316,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                                 menuLabel: 'View Users Details',
                                 menuOnClick: () =>
                                   history.push({
-                                    pathname: `/admin/users/${row.id}`,
+                                    pathname: `/admin/users/${row.system_user_id}`,
                                     state: row
                                   })
                               },

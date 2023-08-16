@@ -62,15 +62,15 @@ export const getTitle = (pageName?: string) => {
  * Formats a date range into a formatted string.
  *
  * @param {DATE_FORMAT} dateFormat
- * @param {string} startDate ISO 8601 date string
- * @param {string} [endDate] ISO 8601 date string
+ * @param {(string | null)} [startDate] ISO 8601 date string
+ * @param {(string | null)} [endDate] ISO 8601 date string
  * @param {string} [dateSeparator='-'] specify date range separator
  * @return {string} formatted date string, or an empty string if unable to parse the startDate and/or endDate
  */
 export const getFormattedDateRangeString = (
   dateFormat: DATE_FORMAT,
-  startDate?: string,
-  endDate?: string,
+  startDate?: string | null,
+  endDate?: string | null,
   dateSeparator = '-'
 ): string => {
   const startDateFormatted = getFormattedDate(dateFormat, startDate ?? '');
@@ -127,20 +127,27 @@ export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string 
 /**
  * Get a formatted amount string.
  *
- * @param {number} amount
+ * @param {number} [amount]
+ * @param {{ minimumFractionDigits: number; maximumFractionDigits: number }} [options]
  * @return {string} formatted amount string (rounded to the nearest integer), or an empty string if unable to parse the amount
  */
-export const getFormattedAmount = (amount?: number): string => {
+export const getFormattedAmount = (
+  amount?: number,
+  options?: {
+    minimumFractionDigits?: number;
+    maximumFractionDigits?: number;
+  }
+): string => {
   if (!amount && amount !== 0) {
     //amount was invalid
     return '';
   }
 
-  const formatter = new Intl.NumberFormat('en-US', {
+  const formatter = new Intl.NumberFormat('en-CA', {
     style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    currency: 'CAD',
+    minimumFractionDigits: options?.minimumFractionDigits ?? 0,
+    maximumFractionDigits: options?.maximumFractionDigits ?? 0
   });
 
   return formatter.format(amount);

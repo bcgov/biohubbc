@@ -14,7 +14,7 @@ import TableRow from '@mui/material/TableRow';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
@@ -78,15 +78,15 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     [biohubApi.project]
   );
 
-  const refresh = () => handleGetUserProjects(userDetails.id);
+  const refresh = () => handleGetUserProjects(userDetails.system_user_id);
 
   useEffect(() => {
     if (assignedProjects) {
       return;
     }
 
-    handleGetUserProjects(userDetails.id);
-  }, [userDetails.id, assignedProjects, handleGetUserProjects]);
+    handleGetUserProjects(userDetails.system_user_id);
+  }, [userDetails.system_user_id, assignedProjects, handleGetUserProjects]);
 
   useEffect(() => {
     const getCodes = async () => {
@@ -126,7 +126,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
         )
       });
 
-      handleGetUserProjects(userDetails.id);
+      handleGetUserProjects(userDetails.system_user_id);
     } catch (error) {
       openErrorDialog({
         dialogTitle: SystemUserI18N.removeUserErrorTitle,
@@ -137,15 +137,21 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     }
   };
 
-  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
-  };
+  const defaultErrorDialogProps: Partial<IErrorDialogProps> = useMemo(
+    () => ({
+      onClose: () => dialogContext.setErrorDialog({ open: false }),
+      onOk: () => dialogContext.setErrorDialog({ open: false })
+    }),
+    [dialogContext]
+  );
 
-  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false })
-  };
+  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = useMemo(
+    () => ({
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      onNo: () => dialogContext.setYesNoDialog({ open: false })
+    }),
+    [dialogContext]
+  );
 
   const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
     dialogContext.setYesNoDialog({

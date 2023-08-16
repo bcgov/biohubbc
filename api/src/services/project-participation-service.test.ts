@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ProjectUserObject } from '../models/user';
+import { ProjectUser } from '../models/user';
 import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectParticipationService } from './project-participation-service';
@@ -46,7 +46,7 @@ describe('ProjectParticipationService', () => {
 
       const repoStub = sinon
         .stub(ProjectParticipationRepository.prototype, 'getProjectParticipant')
-        .resolves(({ project_id: 1, system_user_id: 2 } as unknown) as ProjectUserObject);
+        .resolves(({ project_id: 1, system_user_id: 2 } as unknown) as ProjectUser);
 
       const response = await service.getProjectParticipant(data.projectId, data.systemUserId);
 
@@ -66,7 +66,7 @@ describe('ProjectParticipationService', () => {
 
       const repoStub = sinon
         .stub(ProjectParticipationRepository.prototype, 'getProjectParticipants')
-        .resolves([{ project_id: 1, system_user_id: 2 } as ProjectUserObject]);
+        .resolves([{ project_id: 1, system_user_id: 2 } as ProjectUser]);
 
       const response = await service.getProjectParticipants(data.projectId);
 
@@ -86,7 +86,7 @@ describe('ProjectParticipationService', () => {
 
       const repoStub = sinon
         .stub(ProjectParticipationRepository.prototype, 'getProjectParticipants')
-        .resolves([{ project_id: 1, system_user_id: 2 } as ProjectUserObject]);
+        .resolves([{ project_id: 1, system_user_id: 2 } as ProjectUser]);
 
       const response = await service.getProjectParticipants(data.projectId);
 

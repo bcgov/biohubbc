@@ -1,8 +1,5 @@
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import assert from 'assert';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -14,7 +11,7 @@ import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
-import React, { useCallback, useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 
 export interface IProjectAdvancedFilters {
   coordinator_agency: string;
@@ -43,7 +40,6 @@ export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
 };
 
 export interface IProjectAdvancedFiltersProps {
-  funding_sources: IMultiAutocompleteFieldOption[];
   coordinator_agency: string[];
 }
 
@@ -57,7 +53,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
 
   const biohubApi = useBiohubApi();
 
-  const { handleSubmit, handleChange, values } = formikProps;
+  const { handleSubmit } = formikProps;
 
   const codesContext = useContext(CodesContext);
   assert(codesContext.codesDataLoader.data);
@@ -72,24 +68,23 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
     return convertOptions(response.searchResponse);
   };
 
-  const handleSearch = useCallback(
-    debounce(
-      async (
-        inputValue: string,
-        existingValues: (string | number)[],
-        callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
-      ) => {
-        const response = await biohubApi.taxonomy.searchSpecies(inputValue.toLowerCase());
-        const newOptions = convertOptions(response.searchResponse).filter(
-          (item) => !existingValues?.includes(item.value)
-        );
-        callback(newOptions);
-      },
-      500
-    ),
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+  const handleSearch = useMemo(
+    () =>
+      debounce(
+        async (
+          inputValue: string,
+          existingValues: (string | number)[],
+          callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
+        ) => {
+          const response = await biohubApi.taxonomy.searchSpecies(inputValue.toLowerCase());
+          const newOptions = convertOptions(response.searchResponse).filter(
+            (item) => !existingValues?.includes(item.value)
+          );
+          callback(newOptions);
+        },
+        500
+      ),
+    [biohubApi.taxonomy]
   );
 
   return (
@@ -156,26 +151,6 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
         </Grid>
         <Grid item xs={12} md={3}>
           <CustomTextField name="permit_number" label="Permit Number" />
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <FormControl fullWidth variant="outlined" required={false}>
-            <InputLabel id="agency_id-label">Funding Agency Name</InputLabel>
-            <Select
-              id="agency_id"
-              name="agency_id"
-              labelId="agency_id-label"
-              label="Funding Agency Name"
-              value={values.agency_id}
-              onChange={handleChange}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Funding Agency Name', 'data-testid': 'agency-id' }}>
-              {props.funding_sources.map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
         </Grid>
         <Grid item xs={12} md={3}>
           <CustomTextField name="agency_project_id" label="Funding Agency Project ID" />

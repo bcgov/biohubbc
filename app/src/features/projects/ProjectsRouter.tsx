@@ -1,5 +1,5 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectContextProvider } from 'contexts/projectContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
@@ -44,10 +44,10 @@ const ProjectsRouter: React.FC = () => {
             <RouteWithTitle exact path="/admin/projects/:id/details" title={getTitle('Surveys')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
-                  validProjectRoles={[
-                    PROJECT_ROLE.PROJECT_EDITOR,
-                    PROJECT_ROLE.PROJECT_LEAD,
-                    PROJECT_ROLE.PROJECT_VIEWER
+                  validProjectPermissions={[
+                    PROJECT_PERMISSION.COORDINATOR,
+                    PROJECT_PERMISSION.COLLABORATOR,
+                    PROJECT_PERMISSION.OBSERVER
                   ]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectPage />
@@ -58,7 +58,7 @@ const ProjectsRouter: React.FC = () => {
             <RouteWithTitle exact path="/admin/projects/:id/edit" title={getTitle('Edit Project')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <EditProjectPage />
                 </ProjectRoleRouteGuard>
@@ -68,7 +68,7 @@ const ProjectsRouter: React.FC = () => {
             <RouteWithTitle exact path="/admin/projects/:id/users" title={getTitle('Project Team')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD]}
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectParticipantsPage />
                 </ProjectRoleRouteGuard>
@@ -78,10 +78,10 @@ const ProjectsRouter: React.FC = () => {
             <RouteWithTitle exact path="/admin/projects/:id/surveys" title={getTitle('Surveys')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
-                  validProjectRoles={[
-                    PROJECT_ROLE.PROJECT_EDITOR,
-                    PROJECT_ROLE.PROJECT_LEAD,
-                    PROJECT_ROLE.PROJECT_VIEWER
+                  validProjectPermissions={[
+                    PROJECT_PERMISSION.COORDINATOR,
+                    PROJECT_PERMISSION.COLLABORATOR,
+                    PROJECT_PERMISSION.OBSERVER
                   ]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectPage />
@@ -92,10 +92,10 @@ const ProjectsRouter: React.FC = () => {
             <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
-                  validProjectRoles={[
-                    PROJECT_ROLE.PROJECT_EDITOR,
-                    PROJECT_ROLE.PROJECT_LEAD,
-                    PROJECT_ROLE.PROJECT_VIEWER
+                  validProjectPermissions={[
+                    PROJECT_PERMISSION.COORDINATOR,
+                    PROJECT_PERMISSION.COLLABORATOR,
+                    PROJECT_PERMISSION.OBSERVER
                   ]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <SurveyContextProvider>
@@ -108,7 +108,7 @@ const ProjectsRouter: React.FC = () => {
             <RouteWithTitle exact path="/admin/projects/:id/survey/create" title={getTitle('Create Survey')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <CreateSurveyPage />
                 </ProjectRoleRouteGuard>

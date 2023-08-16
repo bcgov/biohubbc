@@ -9,7 +9,6 @@ import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAttachmentsData,
   GetSurveyData,
-  GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData
@@ -144,33 +143,6 @@ describe('SurveyRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get survey purpose and methodology data');
-      }
-    });
-  });
-
-  describe('getSurveyFundingSourcesData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveyFundingSourcesData(1);
-
-      expect(response).to.eql(new GetSurveyFundingSources([{ id: 1 }]));
-    });
-
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      try {
-        await repository.getSurveyFundingSourcesData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get survey funding sources data');
       }
     });
   });
@@ -626,19 +598,6 @@ describe('SurveyRepository', () => {
     });
   });
 
-  describe('insertSurveyFundingSource', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.insertSurveyFundingSource(1, 1);
-
-      expect(response).to.eql(undefined);
-    });
-  });
-
   describe('deleteSurveySpeciesData', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -660,19 +619,6 @@ describe('SurveyRepository', () => {
       const repository = new SurveyRepository(dbConnection);
 
       const response = await repository.unassociatePermitFromSurvey(1);
-
-      expect(response).to.eql(undefined);
-    });
-  });
-
-  describe('deleteSurveyFundingSourcesData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.deleteSurveyFundingSourcesData(1);
 
       expect(response).to.eql(undefined);
     });

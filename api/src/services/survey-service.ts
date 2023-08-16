@@ -10,7 +10,7 @@ import {
   GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
-  GetSurveyFundingSources,
+  GetSurveyFundingSourceData,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
@@ -29,6 +29,7 @@ import {
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
@@ -49,6 +50,7 @@ export class SurveyService extends DBService {
   surveyRepository: SurveyRepository;
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
+  fundingSourceService: FundingSourceService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -57,6 +59,7 @@ export class SurveyService extends DBService {
     this.surveyRepository = new SurveyRepository(connection);
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
+    this.fundingSourceService = new FundingSourceService(connection);
   }
 
   /**
@@ -90,7 +93,7 @@ export class SurveyService extends DBService {
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
       this.getPermitData(surveyId),
-      this.getSurveyFundingSourcesData(surveyId),
+      this.getSurveyFundingSourceData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
       this.getSurveyLocationData(surveyId)
@@ -100,11 +103,22 @@ export class SurveyService extends DBService {
       survey_details: surveyData,
       species: speciesData,
       permit: permitData,
+      funding_sources: fundingData,
       purpose_and_methodology: purposeAndMethodologyData,
-      funding: fundingData,
       proprietor: proprietorData,
       location: locationData
     };
+  }
+
+  /**
+   * Get Survey funding data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SurveyFundingSource[]>}
+   * @memberof SurveyService
+   */
+  async getSurveyFundingSourceData(surveyId: number): Promise<GetSurveyFundingSourceData[]> {
+    return await this.fundingSourceService.getSurveyFundingSources(surveyId);
   }
 
   /**
@@ -179,17 +193,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get Survey funding sources for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyFundingSources>}
-   * @memberof SurveyService
-   */
-  async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
-    return this.surveyRepository.getSurveyFundingSourcesData(surveyId);
-  }
-
-  /**
    * Gets proprietor data for view or null for a given survey ID
    *
    * @param {number} surveyID
@@ -215,7 +218,7 @@ export class SurveyService extends DBService {
    * Get Occurrence Submission for a given survey id.
    *
    * @param {number} surveyId
-   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}F
+   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}
    * @memberof SurveyService
    */
   async getOccurrenceSubmission(surveyId: number): Promise<{ occurrence_submission_id: number | null }> {
@@ -379,11 +382,15 @@ export class SurveyService extends DBService {
       )
     );
 
-    // Handle inserting any funding sources associated to this survey
+    // Handle survey funding sources
     promises.push(
       Promise.all(
-        postSurveyData.funding.funding_sources.map((project_funding_source_id: number) =>
-          this.insertSurveyFundingSource(project_funding_source_id, surveyId)
+        postSurveyData.funding_sources.map((fundingSource) =>
+          this.fundingSourceService.postSurveyFundingSource(
+            surveyId,
+            fundingSource.funding_source_id,
+            fundingSource.amount
+          )
         )
       )
     );
@@ -523,18 +530,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Inserts new record and associates funding source to a survey
-   *
-   * @param {number} project_funding_source_id
-   * @param {number} surveyID
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async insertSurveyFundingSource(project_funding_source_id: number, surveyId: number) {
-    return this.surveyRepository.insertSurveyFundingSource(project_funding_source_id, surveyId);
-  }
-
-  /**
    * Updates provided survey information and submits affected metadata to BioHub
    *
    * @param {number} projectId
@@ -590,8 +585,8 @@ export class SurveyService extends DBService {
       promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
     }
 
-    if (putSurveyData?.funding) {
-      promises.push(this.updateSurveyFundingData(surveyId, putSurveyData));
+    if (putSurveyData?.funding_sources) {
+      promises.push(this.upsertSurveyFundingSourceData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.proprietor) {
@@ -703,6 +698,66 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Updates survey funding data
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @return {*}
+   * @memberof SurveyService
+   */
+  async upsertSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject) {
+    // Get any existing survey funding sources
+    const existingSurveyFundingSources = await this.fundingSourceService.getSurveyFundingSources(surveyId);
+
+    //Compare input and existing for fundings to delete
+    const existingSurveyFundingToDelete = existingSurveyFundingSources.filter((existingSurveyFunding) => {
+      return !surveyData.funding_sources.find(
+        (incomingFunding) => incomingFunding.survey_funding_source_id === existingSurveyFunding.survey_funding_source_id
+      );
+    });
+
+    // Delete any no existing fundings
+    if (existingSurveyFundingToDelete.length) {
+      const promises: Promise<any>[] = [];
+
+      existingSurveyFundingToDelete.forEach((surveyFunding: any) => {
+        promises.push(this.fundingSourceService.deleteSurveyFundingSource(surveyId, surveyFunding.funding_source_id));
+      });
+
+      await Promise.all(promises);
+    }
+
+    const promises: Promise<any>[] = [];
+
+    // The remaining funding sources with either update if they have a survey_funding_source_id
+    // or insert new record
+    surveyData.funding_sources.forEach((fundingSource) => {
+      if (fundingSource.survey_funding_source_id) {
+        // Update funding source
+        promises.push(
+          this.fundingSourceService.putSurveyFundingSource(
+            surveyId,
+            fundingSource.funding_source_id,
+            fundingSource.amount,
+            fundingSource.revision_count || 0
+          )
+        );
+      } else {
+        // Create new funding source
+        promises.push(
+          this.fundingSourceService.postSurveyFundingSource(
+            surveyId,
+            fundingSource.funding_source_id,
+            fundingSource.amount
+          )
+        );
+      }
+    });
+
+    await Promise.all(promises);
+  }
+
+  /**
    * Breaks link between permit and survey for a given survey ID
    *
    * @param {number} surveyID
@@ -711,36 +766,6 @@ export class SurveyService extends DBService {
    */
   async unassociatePermitFromSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.unassociatePermitFromSurvey(surveyId);
-  }
-
-  /**
-   * Updates a Survey funding source for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<any[]>}
-   * @memberof SurveyService
-   */
-  async updateSurveyFundingData(surveyId: number, surveyData: PutSurveyObject) {
-    await this.deleteSurveyFundingSourcesData(surveyId);
-
-    const promises: Promise<any>[] = [];
-
-    surveyData.funding.funding_sources.forEach((project_funding_source_id: number) =>
-      promises.push(this.insertSurveyFundingSource(project_funding_source_id, surveyId))
-    );
-
-    return Promise.all(promises);
-  }
-
-  /**
-   * Breaks link between a funding source and a survey for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async deleteSurveyFundingSourcesData(surveyId: number): Promise<void> {
-    return this.surveyRepository.deleteSurveyFundingSourcesData(surveyId);
   }
 
   /**

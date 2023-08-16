@@ -1,33 +1,23 @@
-export class UserObject {
-  id: number;
-  user_identifier: string;
-  user_guid: string | null;
-  identity_source: string;
-  record_end_date: string;
-  role_ids: number[];
-  role_names: string[];
+import { z } from 'zod';
 
-  constructor(obj?: any) {
-    this.id = obj?.system_user_id || null;
-    this.user_identifier = obj?.user_identifier || null;
-    this.user_guid = obj?.user_guid || null;
-    this.identity_source = obj?.identity_source || null;
-    this.record_end_date = obj?.record_end_date || null;
-    this.role_ids = (obj?.role_ids?.length && obj.role_ids) || [];
-    this.role_names = (obj?.role_names?.length && obj.role_names) || [];
-  }
-}
+export const User = z.object({
+  system_user_id: z.number(),
+  user_identifier: z.string(),
+  user_guid: z.string().nullable(),
+  identity_source: z.string(),
+  record_end_date: z.string().nullable(),
+  role_ids: z.array(z.number()).default([]),
+  role_names: z.array(z.string()).default([])
+});
 
-export class ProjectUserObject {
-  project_id: number;
-  system_user_id: number;
-  project_role_ids: number[];
-  project_role_names: string[];
+export type User = z.infer<typeof User>;
 
-  constructor(obj?: any) {
-    this.project_id = obj?.project_id || null;
-    this.system_user_id = obj?.system_user_id || null;
-    this.project_role_ids = (obj?.project_role_ids?.length && obj.project_role_ids) || [];
-    this.project_role_names = (obj?.project_role_names?.length && obj.project_role_names) || [];
-  }
-}
+export const ProjectUser = z.object({
+  project_id: z.number(),
+  system_user_id: z.number(),
+  project_role_ids: z.array(z.number()),
+  project_role_names: z.array(z.string()),
+  project_role_permissions: z.array(z.string())
+});
+
+export type ProjectUser = z.infer<typeof ProjectUser>;

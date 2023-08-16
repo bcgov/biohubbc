@@ -9,7 +9,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
@@ -51,9 +51,6 @@ export interface IGeneralInformationForm {
       permit_type: string;
     }[];
   };
-  funding: {
-    funding_sources: number[];
-  };
 }
 
 export const GeneralInformationInitialValues: IGeneralInformationForm = {
@@ -70,9 +67,6 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   },
   permit: {
     permits: []
-  },
-  funding: {
-    funding_sources: []
   }
 };
 
@@ -97,7 +91,6 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
 };
 
 export interface IGeneralInformationFormProps {
-  funding_sources: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
 }
@@ -123,22 +116,23 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
     return convertOptions(response.searchResponse);
   };
 
-  const handleSearch = useCallback(
-    debounce(
-      async (
-        inputValue: string,
-        existingValues: (string | number)[],
-        callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
-      ) => {
-        const response = await biohubApi.taxonomy.searchSpecies(inputValue);
-        const newOptions = convertOptions(response.searchResponse).filter(
-          (item: any) => !existingValues?.includes(item.value)
-        );
-        callback(newOptions);
-      },
-      500
-    ),
-    []
+  const handleSearch = useMemo(
+    () =>
+      debounce(
+        async (
+          inputValue: string,
+          existingValues: (string | number)[],
+          callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
+        ) => {
+          const response = await biohubApi.taxonomy.searchSpecies(inputValue);
+          const newOptions = convertOptions(response.searchResponse).filter(
+            (item: any) => !existingValues?.includes(item.value)
+          );
+          callback(newOptions);
+        },
+        500
+      ),
+    [biohubApi.taxonomy]
   );
 
   return (
@@ -236,18 +230,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         <Box>
           <SurveyPermitForm />
         </Box>
-      </Box>
-
-      <Box component="fieldset" mt={5}>
-        <Typography component="legend" variant="h5">
-          Funding Sources
-        </Typography>
-        <MultiAutocompleteFieldVariableSize
-          id="funding.funding_sources"
-          label="Select Funding Sources"
-          options={props.funding_sources}
-          required={false}
-        />
       </Box>
     </>
   );

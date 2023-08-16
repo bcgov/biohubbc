@@ -39,22 +39,6 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
         }
       ]
     },
-    funding: {
-      fundingSources: [
-        {
-          id: 0,
-          agency_id: 1,
-          agency_name: 'agency name',
-          agency_project_id: 'ABC123',
-          investment_action_category: 1,
-          investment_action_category_name: 'investment action',
-          funding_amount: 333,
-          start_date: '2000-04-14',
-          end_date: '2021-04-13',
-          revision_count: 1
-        }
-      ]
-    },
     partnerships: {
       indigenous_partnerships: [1, 2],
       stakeholder_partnerships: ['partner 3', 'partner 4']

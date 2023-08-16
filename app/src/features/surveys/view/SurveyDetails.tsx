@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
+import SurveyFundingSources from './components/SurveyFundingSources';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -62,6 +63,11 @@ const SurveyDetails = () => {
       <Divider></Divider>
       <Box p={3}>
         <SurveyGeneralInformation />
+        <Box component="section">
+          <Typography component="h4">Funding Sources</Typography>
+          <Divider></Divider>
+          <SurveyFundingSources />
+        </Box>
         <Box component="section">
           <Typography component="h4">Purpose and Methodology</Typography>
           <Divider></Divider>

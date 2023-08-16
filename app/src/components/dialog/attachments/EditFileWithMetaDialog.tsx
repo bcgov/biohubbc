@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -6,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import LoadingButton from 'components/buttons/LoadingButton';
 import { Formik, FormikProps } from 'formik';
 import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React, { useRef, useState } from 'react';

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
@@ -14,9 +14,13 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -59,7 +63,7 @@ GET.apiDoc = {
             properties: {
               projectData: {
                 type: 'object',
-                required: ['project', 'coordinator', 'objectives', 'location', 'iucn', 'funding', 'partnerships'],
+                required: ['project', 'coordinator', 'objectives', 'location', 'iucn', 'partnerships'],
                 properties: {
                   project: {
                     description: 'Basic project metadata',
@@ -70,7 +74,6 @@ GET.apiDoc = {
                       'project_programs',
                       'project_types',
                       'start_date',
-                      'end_date',
                       'comments'
                     ],
                     properties: {
@@ -101,7 +104,8 @@ GET.apiDoc = {
                       end_date: {
                         type: 'string',
                         format: 'date',
-                        description: 'ISO 8601 date string for the project end date'
+                        description: 'ISO 8601 date string for the project end date',
+                        nullable: true
                       },
                       comments: {
                         type: 'string',
@@ -183,71 +187,6 @@ GET.apiDoc = {
                             },
                             subClassification2: {
                               type: 'number'
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  funding: {
-                    description: 'The project funding details',
-                    type: 'object',
-                    required: ['fundingSources'],
-                    properties: {
-                      fundingSources: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          properties: {
-                            id: {
-                              type: 'number'
-                            },
-                            agency_id: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            investment_action_category: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            investment_action_category_name: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            agency_name: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            funding_amount: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            start_date: {
-                              type: 'string',
-                              format: 'date',
-                              description: 'ISO 8601 date string for the funding start date',
-                              nullable: true
-                            },
-                            end_date: {
-                              type: 'string',
-                              format: 'date',
-                              description: 'ISO 8601 date string for the funding end_date',
-                              nullable: true
-                            },
-                            agency_project_id: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            revision_count: {
-                              type: 'number'
-                            },
-                            first_nations_id: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            first_nations_name: {
-                              type: 'string',
-                              nullable: true
                             }
                           }
                         }

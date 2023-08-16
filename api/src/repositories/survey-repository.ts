@@ -8,13 +8,12 @@ import {
   GetAttachmentsData,
   GetReportAttachmentsData,
   GetSurveyData,
-  GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
-import { queries } from '../queries/queries';
 import { getLogger } from '../utils/logger';
+import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
@@ -224,51 +223,6 @@ export class SurveyRepository extends BaseRepository {
     }
 
     return new GetSurveyPurposeAndMethodologyData(result);
-  }
-
-  /**
-   * Get Survey and Funding Source data for a given surveyId
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<GetSurveyFundingSources>
-   * @memberof SurveyRepository
-   */
-  async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
-    const sqlStatement = SQL`
-
-      SELECT
-          sfs.project_funding_source_id,
-          a.agency_id,
-          pfs.funding_source_project_id,
-          pfs.funding_amount::numeric::int,
-          pfs.funding_start_date,
-          pfs.funding_end_date,
-          iac.investment_action_category_id,
-          iac.name as investment_action_category_name,
-          a.name as agency_name,
-          pfs.first_nations_id as first_nations_id,
-          fn."name" as first_nations_name
-      FROM survey_funding_source sfs
-      LEFT JOIN project_funding_source pfs ON sfs.project_funding_source_id = pfs.project_funding_source_id
-      LEFT JOIN investment_action_category iac ON pfs.investment_action_category_id = iac.investment_action_category_id
-      LEFT JOIN agency a ON iac.agency_id = a.agency_id
-      LEFT JOIN first_nations fn ON pfs.first_nations_id = fn.first_nations_id
-      WHERE sfs.survey_id = ${surveyId}
-      ORDER BY pfs.funding_start_date ;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get survey funding sources data', [
-        'SurveyRepository->getSurveyFundingSourcesData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
-    return new GetSurveyFundingSources(result);
   }
 
   /**
@@ -632,7 +586,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     if (surveyData?.location?.geometry?.length) {
-      const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(surveyData.location.geometry);
+      const geometryCollectionSQL = generateGeometryCollectionSQL(surveyData.location.geometry);
 
       sqlStatement.append(SQL`
         ,public.geography(
@@ -899,27 +853,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Links a Survey and a Funding source together
-   *
-   * @param {number} project_funding_source_id
-   * @param {number} surveyId
-   * @returns {*} Promise<void>
-   * @memberof SurveyRepository
-   */
-  async insertSurveyFundingSource(project_funding_source_id: number, surveyId: number) {
-    const sqlStatement = SQL`
-      INSERT INTO survey_funding_source (
-        survey_id,
-        project_funding_source_id
-      ) VALUES (
-        ${surveyId},
-        ${project_funding_source_id}
-      );
-    `;
-    await this.connection.query(sqlStatement.text, sqlStatement.values);
-  }
-
-  /**
    * Updates Survey details
    *
    * @param {number} surveyId
@@ -965,7 +898,7 @@ export class SurveyRepository extends BaseRepository {
             public.ST_SetSRID(
       `);
 
-        const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(surveyData.location.geometry);
+        const geometryCollectionSQL = generateGeometryCollectionSQL(surveyData.location.geometry);
         geometrySqlStatement.append(geometryCollectionSQL);
 
         geometrySqlStatement.append(SQL`
@@ -1029,24 +962,6 @@ export class SurveyRepository extends BaseRepository {
         permit
       SET
         survey_id = ${null}
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    await this.connection.sql(sqlStatement);
-  }
-
-  /**
-   * Deletes Survey vantage codes for a given survey ID
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<void>
-   * @memberof SurveyRepository
-   */
-  async deleteSurveyFundingSourcesData(surveyId: number) {
-    const sqlStatement = SQL`
-      DELETE
-        from survey_funding_source
       WHERE
         survey_id = ${surveyId};
     `;

@@ -7,11 +7,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import {
-  ICreateSurveyResponse,
-  ISurveyAvailableFundingSources,
-  ISurveyPermits
-} from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyResponse, ISurveyPermits } from 'interfaces/useSurveyApi.interface';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
@@ -34,7 +30,6 @@ const mockUseApi = {
   },
   survey: {
     getSurveyPermits: jest.fn<Promise<ISurveyPermits>, []>(),
-    getAvailableSurveyFundingSources: jest.fn<Promise<ISurveyAvailableFundingSources[]>, []>(),
     createSurvey: jest.fn<Promise<ICreateSurveyResponse>, []>()
   },
   taxonomy: {
@@ -80,7 +75,6 @@ describe.skip('CreateSurveyPage', () => {
     mockUseApi.project.getProjectForView.mockClear();
     mockUseApi.codes.getAllCodeSets.mockClear();
     mockUseApi.survey.getSurveyPermits.mockClear();
-    mockUseApi.survey.getAvailableSurveyFundingSources.mockClear();
     mockUseApi.survey.createSurvey.mockClear();
     mockUseApi.taxonomy.getSpeciesFromIds.mockClear();
     mockUseApi.taxonomy.searchSpecies.mockClear();
@@ -97,15 +91,12 @@ describe.skip('CreateSurveyPage', () => {
     cleanup();
   });
 
-  it('renders the initial default page correctly', async () => {
+  it.skip('renders the initial default page correctly', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
     mockUseApi.survey.getSurveyPermits.mockResolvedValue({
       permits: [{ id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
     });
-    mockUseApi.survey.getAvailableSurveyFundingSources.mockResolvedValue(
-      getProjectForViewResponse.projectData.funding.fundingSources
-    );
 
     const { getByText } = renderContainer();
 
@@ -134,7 +125,7 @@ describe.skip('CreateSurveyPage', () => {
     });
   });
 
-  it('renders correctly when codes and project data are loaded', async () => {
+  it.skip('renders correctly when codes and project data are loaded', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
@@ -159,16 +150,6 @@ describe.skip('CreateSurveyPage', () => {
       ]
     });
 
-    mockUseApi.survey.getAvailableSurveyFundingSources.mockResolvedValue([
-      {
-        ...getProjectForViewResponse.projectData.funding.fundingSources[0],
-        funding_amount: 100,
-        start_date: '2000-04-09 11:53:53',
-        end_date: '2000-05-10 11:53:53',
-        agency_project_id: 'agency'
-      }
-    ]);
-
     const { asFragment, getAllByText } = render(
       <MemoryRouter initialEntries={['?id=1']}>
         <CreateSurveyPage />
@@ -191,15 +172,6 @@ describe.skip('CreateSurveyPage', () => {
           { id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
-      mockUseApi.survey.getAvailableSurveyFundingSources.mockResolvedValue([
-        {
-          ...getProjectForViewResponse.projectData.funding.fundingSources[0],
-          funding_amount: 100,
-          start_date: '2000-04-09 11:53:53',
-          end_date: '2000-05-10 11:53:53',
-          agency_project_id: 'agency'
-        }
-      ]);
       mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
         searchResponse: [
           { id: '1', label: 'species 1' },
@@ -247,15 +219,6 @@ describe.skip('CreateSurveyPage', () => {
           { id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
-      mockUseApi.survey.getAvailableSurveyFundingSources.mockResolvedValue([
-        {
-          ...getProjectForViewResponse.projectData.funding.fundingSources[0],
-          funding_amount: 100,
-          start_date: '2000-04-09 11:53:53',
-          end_date: '2000-05-10 11:53:53',
-          agency_project_id: 'agency'
-        }
-      ]);
       mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
         searchResponse: [
           { id: '1', label: 'species 1' },

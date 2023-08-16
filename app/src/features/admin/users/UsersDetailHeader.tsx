@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
 import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
@@ -48,15 +48,21 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
 
-  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
-  };
+  const defaultErrorDialogProps: Partial<IErrorDialogProps> = useMemo(
+    () => ({
+      onClose: () => dialogContext.setErrorDialog({ open: false }),
+      onOk: () => dialogContext.setErrorDialog({ open: false })
+    }),
+    [dialogContext]
+  );
 
-  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false })
-  };
+  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = useMemo(
+    () => ({
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      onNo: () => dialogContext.setYesNoDialog({ open: false })
+    }),
+    [dialogContext]
+  );
 
   const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
     dialogContext.setYesNoDialog({
@@ -78,11 +84,11 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   );
 
   const deActivateSystemUser = async (user: IGetUserResponse) => {
-    if (!user?.id) {
+    if (!user?.system_user_id) {
       return;
     }
     try {
-      await biohubApi.user.deleteSystemUser(user.id);
+      await biohubApi.user.deleteSystemUser(user.system_user_id);
 
       dialogContext.setSnackbar({
         snackbarMessage: (

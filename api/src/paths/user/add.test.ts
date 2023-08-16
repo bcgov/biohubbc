@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { UserObject } from '../../models/user';
+import { User } from '../../models/user';
 import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as user from './add';
@@ -48,6 +48,8 @@ describe('user', () => {
       mockReq.body = {
         userGuid: 'aaaa',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+        displayName: 'display name',
+        email: 'email',
         roleId: 1
       };
 
@@ -72,6 +74,8 @@ describe('user', () => {
       mockReq.body = {
         userGuid: 'aaaa',
         userIdentifier: 'username',
+        displayName: 'display name',
+        email: 'email',
         roleId: 1
       };
 
@@ -96,7 +100,9 @@ describe('user', () => {
       mockReq.body = {
         userGuid: 'aaaa',
         userIdentifier: 'username',
-        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+        displayName: 'display name',
+        email: 'email'
       };
 
       try {
@@ -121,11 +127,13 @@ describe('user', () => {
         userGuid: 'aaaa',
         userIdentifier: 'username',
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+        displayName: 'display name',
+        email: 'email',
         roleId: 1
       };
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: User = {
+        system_user_id: 1,
         user_identifier: '',
         user_guid: '',
         identity_source: '',
@@ -156,13 +164,15 @@ describe('user', () => {
       mockReq.body = {
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         userIdentifier: 'username',
+        displayName: 'display name',
+        email: 'email',
         roleId: 1
       };
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: User = {
+        system_user_id: 1,
         user_identifier: '',
-        user_guid: null,
+        user_guid: '',
         identity_source: '',
         record_end_date: '',
         role_ids: [1],

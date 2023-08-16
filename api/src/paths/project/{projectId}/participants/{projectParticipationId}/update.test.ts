@@ -44,7 +44,7 @@ describe('update a project participant.', () => {
     }
   });
 
-  it('should throw a 400 error when user is only project lead', async () => {
+  it('should throw a 400 error when user is only coordinator', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     const dbConnectionObj = getMockDBConnection();
 
@@ -76,7 +76,7 @@ describe('update a project participant.', () => {
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
       expect((actualError as HTTPError).message).to.equal(
-        'Cannot update project user. User is the only Project Lead for the project.'
+        'Cannot update project user. User is the only Coordinator for the project.'
       );
     }
   });

@@ -42,7 +42,7 @@ describe('createAdministrativeActivity', () => {
     const dbConnectionObj = getMockDBConnection({ systemUserId: () => systemUserId, commit: sinon.stub() });
     sinon.stub(db, 'getAPIUserDBConnection').returns(dbConnectionObj);
 
-    const mockResponse: ICreateAdministrativeActivity = { id: 2, date: new Date() };
+    const mockResponse: ICreateAdministrativeActivity = { id: 2, date: '2023-01-01' };
 
     sinon.stub(AdministrativeActivityService.prototype, 'createPendingAccessRequest').resolves(mockResponse);
     sinon.stub(AdministrativeActivityService.prototype, 'sendAccessRequestNotificationEmailToAdmin').resolves();
@@ -118,7 +118,16 @@ describe('getAdministrativeActivityStanding', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq['keycloak_token'] = {
-      idir_username: 'username'
+      idir_user_guid: 'testguid',
+      identity_provider: 'idir',
+      idir_username: 'testuser',
+      email_verified: false,
+      name: 'test user',
+      preferred_username: 'testguid@idir',
+      display_name: 'test user',
+      given_name: 'test',
+      family_name: 'user',
+      email: 'email@email.com'
     };
     mockReq.body = {
       myData: 'the data'
@@ -150,7 +159,16 @@ describe('getAdministrativeActivityStanding', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq['keycloak_token'] = {
-      idir_username: 'username'
+      idir_user_guid: 'testguid',
+      identity_provider: 'idir',
+      idir_username: 'testuser',
+      email_verified: false,
+      name: 'test user',
+      preferred_username: 'testguid@idir',
+      display_name: 'test user',
+      given_name: 'test',
+      family_name: 'user',
+      email: 'email@email.com'
     };
     mockReq.body = {
       myData: 'the data'

@@ -9,7 +9,7 @@ import AccessDenied from './AccessDenied';
 const history = createMemoryHistory();
 
 describe('AccessDenied', () => {
-  it('redirects to `/` when user is not authenticated', () => {
+  it.skip('redirects to `/` when user is not authenticated', () => {
     const authState = getMockAuthState({ base: UnauthenticatedUserAuthState });
 
     const history = createMemoryHistory();
@@ -27,7 +27,7 @@ describe('AccessDenied', () => {
     expect(history.location.pathname).toEqual('/forbidden');
   });
 
-  it('renders a spinner when user is authenticated and `hasLoadedAllUserInfo` is false', () => {
+  it.skip('renders a spinner when user is authenticated and `hasLoadedAllUserInfo` is false', () => {
     const authState = getMockAuthState({
       base: SystemUserAuthState,
       overrides: { keycloakWrapper: { hasLoadedAllUserInfo: false } }

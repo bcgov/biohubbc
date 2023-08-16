@@ -10,7 +10,8 @@ export enum SYSTEM_IDENTITY_SOURCE {
   BCEID_BUSINESS = 'BCEIDBUSINESS',
   BCEID_BASIC = 'BCEIDBASIC',
   IDIR = 'IDIR',
-  DATABASE = 'DATABASE'
+  DATABASE = 'DATABASE',
+  UNVERIFIED = 'UNVERIFIED'
 }
 
 export interface IUserInfo {
@@ -156,7 +157,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const userDataLoader = useDataLoader(() => biohubApi.user.getUser());
 
   const critterbaseSignupLoader = useDataLoader(async () => {
-    if (userDataLoader?.data?.id) {
+    if (userDataLoader?.data?.system_user_id != null) {
       return cbApi.authentication.signUp();
     }
   });
@@ -255,7 +256,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   }, [keycloakUserDataLoader.data, userDataLoader.data]);
 
   const isSystemUser = (): boolean => {
-    return Boolean(userDataLoader.data?.id);
+    return Boolean(userDataLoader.data?.system_user_id);
   };
 
   const getSystemRoles = (): string[] => {

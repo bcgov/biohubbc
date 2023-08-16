@@ -1,9 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
-import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectParticipationService } from '../../../services/project-participation-service';
 import { UserService } from '../../../services/user-service';
@@ -87,7 +86,7 @@ export function removeSystemUser(): RequestHandler {
         throw new HTTP400('The system user is not active');
       }
 
-      await deleteAllProjectRoles(userId, connection);
+      await userService.deleteAllProjectRoles(userId);
 
       await userService.deleteUserSystemRoles(userId);
 
@@ -113,7 +112,7 @@ export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, c
     userId
   );
 
-  // No projects associated to user, skip Project Lead role check
+  // No projects associated to user, skip coordinator role check
   if (!getAllParticipantsResponse.length) {
     return;
   }
@@ -121,36 +120,26 @@ export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, c
   const onlyProjectLeadResponse = doAllProjectsHaveAProjectLeadIfUserIsRemoved(getAllParticipantsResponse, userId);
 
   if (!onlyProjectLeadResponse) {
-    throw new HTTP400('Cannot remove user. User is the only Project Lead for one or more projects.');
+    throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);
   }
-};
-
-export const deleteAllProjectRoles = async (userId: number, connection: IDBConnection) => {
-  const sqlStatement = queries.users.deleteAllProjectRolesSQL(userId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete statement for deleting project roles');
-  }
-
-  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
- * Given an array of project participation role objects, return false if any project has no Project Lead role. Return
+ * Given an array of project participation role objects, return false if any project has no Coordinator role. Return
  * true otherwise.
  *
  * @param {any[]} rows
  * @return {*}  {boolean}
  */
 export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
-  // No project with project lead
+  // No project with Coordinator
   if (!rows.length) {
     return false;
   }
 
   const projectLeadsPerProject: { [key: string]: any } = {};
 
-  // count how many Project Lead roles there are per project
+  // count how many coordinator roles there are per project
   rows.forEach((row) => {
     const key = row.project_id;
 
@@ -158,27 +147,27 @@ export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
       projectLeadsPerProject[key] = 0;
     }
 
-    if (row.project_role_name === PROJECT_ROLE.PROJECT_LEAD) {
+    if (row.project_role_name === PROJECT_PERMISSION.COORDINATOR) {
       projectLeadsPerProject[key] += 1;
     }
   });
 
   const projectLeadCounts = Object.values(projectLeadsPerProject);
 
-  // check if any projects would be left with no Project Lead
+  // check if any projects would be left with no Coordinator
   for (const count of projectLeadCounts) {
     if (!count) {
-      // found a project with no Project Lead
+      // found a project with no Coordinator
       return false;
     }
   }
 
-  // all projects have a Project Lead
+  // all projects have a Coordinator
   return true;
 };
 
 /**
- * Given an array of project participation role objects, return true if any project has no Project Lead role after
+ * Given an array of project participation role objects, return true if any project has no Coordinator role after
  * removing all rows associated with the provided `userId`. Return false otherwise.
  *
  * @param {any[]} rows
@@ -186,14 +175,14 @@ export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
  * @return {*}  {boolean}
  */
 export const doAllProjectsHaveAProjectLeadIfUserIsRemoved = (rows: any[], userId: number): boolean => {
-  // No project with project lead
+  // No project with coordinator
   if (!rows.length) {
     return false;
   }
 
   const projectLeadsPerProject: { [key: string]: any } = {};
 
-  // count how many Project Lead roles there are per project
+  // count how many Coordinator roles there are per project
   rows.forEach((row) => {
     const key = row.project_id;
 
@@ -201,21 +190,21 @@ export const doAllProjectsHaveAProjectLeadIfUserIsRemoved = (rows: any[], userId
       projectLeadsPerProject[key] = 0;
     }
 
-    if (row.system_user_id !== userId && row.project_role_name === PROJECT_ROLE.PROJECT_LEAD) {
+    if (row.system_user_id !== userId && row.project_role_name === PROJECT_PERMISSION.COORDINATOR) {
       projectLeadsPerProject[key] += 1;
     }
   });
 
   const projectLeadCounts = Object.values(projectLeadsPerProject);
 
-  // check if any projects would be left with no Project Lead
+  // check if any projects would be left with no Coordinator
   for (const count of projectLeadCounts) {
     if (!count) {
-      // found a project with no Project Lead
+      // found a project with no Coordinator
       return false;
     }
   }
 
-  // all projects have a Project Lead
+  // all projects have a Coordinator
   return true;
 };

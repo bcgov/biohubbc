@@ -6,8 +6,8 @@ export type SurveyObject = {
   survey_details: GetSurveyData;
   species: GetFocalSpeciesData & GetAncillarySpeciesData;
   permit: GetPermitData;
+  funding_sources: GetSurveyFundingSourceData[];
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
-  funding: GetSurveyFundingSources;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
 };
@@ -37,6 +37,30 @@ export class GetSurveyData {
     this.biologist_last_name = obj?.lead_last_name || '';
     this.survey_area_name = obj?.location_name || '';
     this.revision_count = obj?.revision_count || 0;
+  }
+}
+
+export class GetSurveyFundingSourceData {
+  survey_funding_source_id: number;
+  survey_id: number;
+  funding_source_id: number;
+  amount: number;
+  revision_count?: number;
+  funding_source_name?: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  description?: string;
+
+  constructor(obj?: any) {
+    this.survey_funding_source_id = obj?.survey_funding_source_id || null;
+    this.funding_source_id = obj?.funding_source_id || null;
+    this.survey_id = obj?.survey_id || null;
+    this.amount = obj?.amount || null;
+    this.revision_count = obj?.revision_count || 0;
+    this.funding_source_name = obj?.funding_source_name || null;
+    this.start_date = obj?.start_date || null;
+    this.end_date = obj?.end_date || null;
+    this.description = obj?.description || null;
   }
 }
 
@@ -103,43 +127,6 @@ export class GetSurveyPurposeAndMethodologyData {
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
     this.revision_count = obj?.revision_count ?? 0;
-  }
-}
-
-interface IGetSurveyFundingSource {
-  project_funding_source_id: number;
-  funding_amount?: number;
-  agency_id: number;
-  funding_start_date: string;
-  funding_end_date: string;
-  investment_action_category_id?: number;
-  investment_action_category_name?: string;
-  agency_name?: string;
-  funding_source_project_id: string;
-  first_nations_id?: number;
-  first_nations_name?: string;
-}
-
-export class GetSurveyFundingSources {
-  funding_sources: IGetSurveyFundingSource[];
-
-  constructor(obj?: any[]) {
-    this.funding_sources =
-      obj?.map((item: any) => {
-        return {
-          project_funding_source_id: item.project_funding_source_id,
-          funding_amount: item.funding_amount,
-          agency_id: item.agency_id,
-          funding_start_date: item.funding_start_date,
-          funding_end_date: item.funding_end_date,
-          investment_action_category_id: item.investment_action_category_id,
-          investment_action_category_name: item.investment_action_category_name,
-          agency_name: item.agency_name,
-          funding_source_project_id: item.funding_source_project_id,
-          first_nations_id: item.first_nations_id,
-          first_nations_name: item.first_nations_name
-        };
-      }) ?? [];
   }
 }
 

@@ -2,8 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   PostCoordinatorData,
-  PostFundingData,
-  PostFundingSource,
   PostIUCNData,
   PostLocationData,
   PostObjectivesData,
@@ -38,10 +36,6 @@ describe('PostProjectObject', () => {
 
     it('sets iucn', function () {
       expect(projectPostObject.iucn).to.equal(null);
-    });
-
-    it('sets funding', function () {
-      expect(projectPostObject.funding).to.equal(null);
     });
 
     it('sets partnerships', function () {
@@ -88,18 +82,6 @@ describe('PostProjectObject', () => {
             properties: {
               name: 'Biohub Islands'
             }
-          }
-        ]
-      },
-      funding: {
-        fundingSources: [
-          {
-            agency_id: 1,
-            investment_action_category: 1,
-            agency_project_id: 'agency project id',
-            funding_amount: 12,
-            start_date: '2020/04/03',
-            end_date: '2020/05/05'
           }
         ]
       },
@@ -338,81 +320,6 @@ describe('PostPartnershipsData', () => {
   });
 });
 
-describe('PostFundingSource', () => {
-  describe('No values provided', () => {
-    let projectFundingData: PostFundingSource;
-
-    before(() => {
-      projectFundingData = new PostFundingSource(null);
-    });
-
-    it('sets agency_id', () => {
-      expect(projectFundingData.agency_id).to.equal(null);
-    });
-
-    it('sets investment_action_category', () => {
-      expect(projectFundingData.investment_action_category).to.equal(null);
-    });
-
-    it('sets agency_project_id', () => {
-      expect(projectFundingData.agency_project_id).to.equal(null);
-    });
-
-    it('sets funding_amount', () => {
-      expect(projectFundingData.funding_amount).to.equal(null);
-    });
-
-    it('sets start_date', () => {
-      expect(projectFundingData.start_date).to.equal(null);
-    });
-
-    it('sets end_date', () => {
-      expect(projectFundingData.end_date).to.equal(null);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectFundingData: PostFundingSource;
-
-    const obj = {
-      agency_id: 1,
-      investment_action_category: 1,
-      agency_project_id: 'agency project id',
-      funding_amount: 20,
-      start_date: '2020/04/04',
-      end_date: '2020/05/05'
-    };
-
-    before(() => {
-      projectFundingData = new PostFundingSource(obj);
-    });
-
-    it('sets agency_id', () => {
-      expect(projectFundingData.agency_id).to.equal(obj.agency_id);
-    });
-
-    it('sets investment_action_category', () => {
-      expect(projectFundingData.investment_action_category).to.equal(obj.investment_action_category);
-    });
-
-    it('sets agency_project_id', () => {
-      expect(projectFundingData.agency_project_id).to.equal(obj.agency_project_id);
-    });
-
-    it('sets funding_amount', () => {
-      expect(projectFundingData.funding_amount).to.equal(obj.funding_amount);
-    });
-
-    it('sets start_date', () => {
-      expect(projectFundingData.start_date).to.equal(obj.start_date);
-    });
-
-    it('sets end_date', () => {
-      expect(projectFundingData.end_date).to.equal(obj.end_date);
-    });
-  });
-});
-
 describe('PostIUCNData', () => {
   describe('No values provided', () => {
     let projectIUCNData: PostIUCNData;
@@ -500,78 +407,6 @@ describe('PostLocationData', () => {
 
     it('sets the geometry', function () {
       expect(projectLocationData.geometry).to.eql(obj.geometry);
-    });
-  });
-});
-
-describe('PostFundingData', () => {
-  describe('No values provided', () => {
-    let data: PostFundingData;
-
-    before(() => {
-      data = new PostFundingData(null);
-    });
-
-    it('sets fundingSources', () => {
-      expect(data.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('Values provided but not valid arrays', () => {
-    let data: PostFundingData;
-
-    const obj = {
-      fundingSources: null
-    };
-
-    before(() => {
-      data = new PostFundingData(obj);
-    });
-
-    it('sets fundingSources', () => {
-      expect(data.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('Values provided but with no length', () => {
-    let data: PostFundingData;
-
-    const obj = {
-      fundingSources: []
-    };
-
-    before(() => {
-      data = new PostFundingData(obj);
-    });
-
-    it('sets fundingSources', () => {
-      expect(data.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: PostFundingData;
-
-    const obj = {
-      fundingSources: [
-        {
-          agency_id: 1,
-          investment_action_category: 1,
-          agency_project_id: 'agency project id',
-          funding_amount: 12,
-          start_date: '2020/04/03',
-          end_date: '2020/05/05',
-          first_nations_id: null
-        }
-      ]
-    };
-
-    before(() => {
-      data = new PostFundingData(obj);
-    });
-
-    it('sets fundingSources', () => {
-      expect(data.fundingSources).to.eql(obj.fundingSources);
     });
   });
 });

@@ -8,7 +8,6 @@ import {
   GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
-  GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData
@@ -210,88 +209,6 @@ describe('GetPermitData', () => {
 
     it('sets permit_type', () => {
       expect(data.permits[0].permit_type).to.equal(obj[0].type);
-    });
-  });
-});
-
-describe('GetSurveyFundingSources', () => {
-  describe('No values provided', () => {
-    let data: GetSurveyFundingSources;
-
-    before(() => {
-      data = new GetSurveyFundingSources();
-    });
-
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: GetSurveyFundingSources;
-
-    const obj = [
-      {
-        project_funding_source_id: 1,
-        funding_amount: 2,
-        agency_id: 3,
-        funding_start_date: '2020/04/04',
-        funding_end_date: '2020/04/05',
-        investment_action_category_id: 4,
-        investment_action_category_name: 'name11',
-        agency_name: 'name1',
-        funding_source_project_id: '5',
-        first_nations_id: null,
-        first_nations_name: null
-      },
-      {
-        project_funding_source_id: 6,
-        funding_amount: 7,
-        agency_id: 8,
-        funding_start_date: '2020/04/06',
-        funding_end_date: '2020/04/07',
-        investment_action_category_id: 9,
-        investment_action_category_name: 'name22',
-        agency_name: 'name2',
-        funding_source_project_id: '10',
-        first_nations_id: null,
-        first_nations_name: null
-      }
-    ];
-
-    before(() => {
-      data = new GetSurveyFundingSources(obj);
-    });
-
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([
-        {
-          project_funding_source_id: 1,
-          funding_amount: 2,
-          agency_id: 3,
-          funding_start_date: '2020/04/04',
-          funding_end_date: '2020/04/05',
-          investment_action_category_id: 4,
-          investment_action_category_name: 'name11',
-          agency_name: 'name1',
-          funding_source_project_id: '5',
-          first_nations_id: null,
-          first_nations_name: null
-        },
-        {
-          project_funding_source_id: 6,
-          funding_amount: 7,
-          agency_id: 8,
-          funding_start_date: '2020/04/06',
-          funding_end_date: '2020/04/07',
-          investment_action_category_id: 9,
-          investment_action_category_name: 'name22',
-          agency_name: 'name2',
-          funding_source_project_id: '10',
-          first_nations_id: null,
-          first_nations_name: null
-        }
-      ]);
     });
   });
 });

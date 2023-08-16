@@ -64,8 +64,8 @@ describe('paths/draft/{draftId}/update', () => {
         webform_draft_id: 1,
         name: 'draft object',
         data: {},
-        create_date: ('2022-10-10' as unknown) as Date,
-        update_date: ('2022-10-11' as unknown) as Date
+        create_date: '2022-10-10',
+        update_date: '2022-10-11'
       });
 
       const requestHandler = update.updateDraft();
@@ -80,8 +80,8 @@ describe('paths/draft/{draftId}/update', () => {
         webform_draft_id: 1,
         name: 'draft object',
         data: {},
-        create_date: ('2022-10-10' as unknown) as Date,
-        update_date: ('2022-10-11' as unknown) as Date
+        create_date: '2022-10-10',
+        update_date: '2022-10-11'
       });
     });
   });

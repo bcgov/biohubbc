@@ -18,7 +18,7 @@ const mockUseApi = {
 };
 
 const mockUser = {
-  id: 1,
+  system_user_id: 1,
   user_record_end_date: 'ending',
   user_guid: '123',
   user_identifier: 'testUser',

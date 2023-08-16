@@ -8,8 +8,8 @@ export const WebformDraft = z.object({
   webform_draft_id: z.number(),
   name: z.string(),
   data: jsonSchema,
-  create_date: z.date(),
-  update_date: z.date().nullable()
+  create_date: z.string(),
+  update_date: z.string().nullable()
 });
 
 export type WebformDraft = z.infer<typeof WebformDraft>;

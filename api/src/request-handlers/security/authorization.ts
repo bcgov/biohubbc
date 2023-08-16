@@ -1,9 +1,9 @@
 import { Request, RequestHandler } from 'express';
 import SQL from 'sql-template-strings';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP403, HTTP500 } from '../../errors/http-error';
-import { ProjectUserObject, UserObject } from '../../models/user';
+import { ProjectUser, User } from '../../models/user';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
 
@@ -25,11 +25,21 @@ export interface AuthorizeByProjectRoles {
   discriminator: 'ProjectRole';
 }
 
+export interface AuthorizeByProjectPermissions {
+  validProjectPermissions: PROJECT_PERMISSION[];
+  projectId: number;
+  discriminator: 'ProjectPermission';
+}
+
 export interface AuthorizeBySystemUser {
   discriminator: 'SystemUser';
 }
 
-export type AuthorizeRule = AuthorizeBySystemRoles | AuthorizeByProjectRoles | AuthorizeBySystemUser;
+export type AuthorizeRule =
+  | AuthorizeBySystemRoles
+  | AuthorizeByProjectRoles
+  | AuthorizeBySystemUser
+  | AuthorizeByProjectPermissions;
 
 export type AuthorizeConfigOr = {
   [AuthorizeOperator.AND]?: never;
@@ -153,6 +163,9 @@ export const executeAuthorizeConfig = async (
       case 'ProjectRole':
         authorizeResults.push(await authorizeByProjectRole(req, authorizeRule, connection).catch(() => false));
         break;
+      case 'ProjectPermission':
+        authorizeResults.push(await authorizeByProjectPermission(req, authorizeRule, connection).catch(() => false));
+        break;
       case 'SystemUser':
         authorizeResults.push(await authorizeBySystemUser(req, connection).catch(() => false));
         break;
@@ -169,7 +182,7 @@ export const executeAuthorizeConfig = async (
  * @return {*}  {boolean} `true` if the user is a system administrator, `false` otherwise.
  */
 export const authorizeSystemAdministrator = async (req: Request, connection: IDBConnection): Promise<boolean> => {
-  const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+  const systemUserObject: User = req['system_user'] || (await getSystemUserObject(connection));
 
   // Add the system_user to the request for future use, if needed
   req['system_user'] = systemUserObject;
@@ -200,7 +213,7 @@ export const authorizeBySystemRole = async (
     return false;
   }
 
-  const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+  const systemUserObject: User = req['system_user'] || (await getSystemUserObject(connection));
 
   // Add the system_user to the request for future use, if needed
   req['system_user'] = systemUserObject;
@@ -219,6 +232,35 @@ export const authorizeBySystemRole = async (
   return userHasValidRole(authorizeSystemRoles.validSystemRoles, systemUserObject?.role_names);
 };
 
+export const authorizeByProjectPermission = async (
+  req: Request,
+  authorizeProjectPermissions: AuthorizeByProjectPermissions,
+  connection: IDBConnection
+): Promise<boolean> => {
+  if (!authorizeProjectPermissions?.projectId) {
+    // No project id to verify roles for
+    return false;
+  }
+
+  if (!authorizeProjectPermissions?.validProjectPermissions.length) {
+    // No valid rules specified
+    return true;
+  }
+
+  const projectUserObject: ProjectUser =
+    req['project_user'] || (await getProjectUserObject(authorizeProjectPermissions.projectId, connection));
+
+  // Add the project_user to the request for future use, if needed
+  req['project_user'] = projectUserObject;
+
+  if (!projectUserObject) {
+    defaultLog.warn({ label: 'getProjectUser', message: 'project user was null' });
+    return false;
+  }
+
+  return userHasValidRole(authorizeProjectPermissions.validProjectPermissions, projectUserObject.project_role_names);
+};
+
 /**
  * Check that the user has at least on of the valid project roles specified in `authorizeProjectRoles.validProjectRoles`.
  *
@@ -233,7 +275,7 @@ export const authorizeByProjectRole = async (
   authorizeProjectRoles: AuthorizeByProjectRoles,
   connection: IDBConnection
 ): Promise<boolean> => {
-  if (!authorizeProjectRoles || !authorizeProjectRoles.projectId) {
+  if (!authorizeProjectRoles?.projectId) {
     // No project id to verify roles for
     return false;
   }
@@ -243,7 +285,7 @@ export const authorizeByProjectRole = async (
     return true;
   }
 
-  const projectUserObject: ProjectUserObject =
+  const projectUserObject: ProjectUser =
     req['project_user'] || (await getProjectUserObject(authorizeProjectRoles.projectId, connection));
 
   // Add the project_user to the request for future use, if needed
@@ -265,7 +307,7 @@ export const authorizeByProjectRole = async (
  * @return {*}  {Promise<boolean>} `Promise<true>` if the user is a valid system user, `Promise<false>` otherwise.
  */
 export const authorizeBySystemUser = async (req: Request, connection: IDBConnection): Promise<boolean> => {
-  const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+  const systemUserObject: User = req['system_user'] || (await getSystemUserObject(connection));
 
   // Add the system_user to the request for future use, if needed
   req['system_user'] = systemUserObject;
@@ -309,7 +351,7 @@ export const userHasValidRole = function (validRoles: string | string[], userRol
   return false;
 };
 
-export const getSystemUserObject = async (connection: IDBConnection): Promise<UserObject> => {
+export const getSystemUserObject = async (connection: IDBConnection): Promise<User> => {
   let systemUserWithRoles;
 
   try {
@@ -332,7 +374,7 @@ export const getSystemUserObject = async (connection: IDBConnection): Promise<Us
  * @return {*}  {(Promise<UserObject | null>)}
  * @return {*}
  */
-export const getSystemUserWithRoles = async (connection: IDBConnection): Promise<UserObject | null> => {
+export const getSystemUserWithRoles = async (connection: IDBConnection): Promise<User | null> => {
   const systemUserId = connection.systemUserId();
 
   if (!systemUserId) {
@@ -344,10 +386,7 @@ export const getSystemUserWithRoles = async (connection: IDBConnection): Promise
   return userService.getUserById(systemUserId);
 };
 
-export const getProjectUserObject = async (
-  projectId: number,
-  connection: IDBConnection
-): Promise<ProjectUserObject> => {
+export const getProjectUserObject = async (projectId: number, connection: IDBConnection): Promise<ProjectUser> => {
   let projectUserWithRoles;
 
   try {
@@ -360,7 +399,7 @@ export const getProjectUserObject = async (
     throw new HTTP500('project user was null');
   }
 
-  return new ProjectUserObject(projectUserWithRoles);
+  return projectUserWithRoles;
 };
 
 /**
@@ -370,7 +409,10 @@ export const getProjectUserObject = async (
  * @param {IDBConnection} connection
  * @return {*}  {Promise<string[]>}
  */
-export const getProjectUserWithRoles = async function (projectId: number, connection: IDBConnection): Promise<any> {
+export const getProjectUserWithRoles = async function (
+  projectId: number,
+  connection: IDBConnection
+): Promise<ProjectUser | null> {
   const systemUserId = connection.systemUserId();
 
   if (!systemUserId || !projectId) {
@@ -383,7 +425,8 @@ export const getProjectUserWithRoles = async function (projectId: number, connec
       pp.system_user_id,
       su.record_end_date,
       array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-      array_remove(array_agg(pr.name), NULL) AS project_role_names
+      array_remove(array_agg(pr.name), NULL) AS project_role_names,
+      array_remove(array_agg(pp2.name), NULL) as project_role_permissions
     FROM
       project_participation pp
     LEFT JOIN
@@ -394,6 +437,10 @@ export const getProjectUserWithRoles = async function (projectId: number, connec
       system_user su
     ON
       pp.system_user_id = su.system_user_id
+    LEFT JOIN project_role_permission prp 
+      ON prp.project_role_id = pp.project_role_id 
+    LEFT JOIN project_permission pp2 
+      ON pp2.project_permission_id = prp.project_permission_id
     WHERE
       pp.project_id = ${projectId}
     AND
@@ -403,14 +450,14 @@ export const getProjectUserWithRoles = async function (projectId: number, connec
     GROUP BY
       pp.project_id,
       pp.system_user_id,
-      su.record_end_date ;
+      su.record_end_date;
     `;
 
   if (!sqlStatement) {
     return null;
   }
 
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const response = await connection.sql(sqlStatement, ProjectUser);
 
   return response.rows[0] || null;
 };

@@ -45,11 +45,6 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
                   return item.name;
                 }) || []
               }
-              funding_sources={
-                codesContext.codesDataLoader.data.agency?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
             />
             <Box mt={3} display="flex" alignItems="center" justifyContent="flex-end">
               <Button

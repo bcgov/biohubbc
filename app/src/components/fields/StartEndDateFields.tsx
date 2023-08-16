@@ -1,5 +1,9 @@
+import { mdiCalendarEnd, mdiCalendarStart } from '@mdi/js';
+import Icon from '@mdi/react';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
+import { DatePicker } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import get from 'lodash-es/get';
 import moment from 'moment';
@@ -15,13 +19,21 @@ interface IStartEndDateFieldsProps {
   endDateHelperText?: string;
 }
 
+const CalendarStartIcon: React.FC = () => {
+  return <Icon path={mdiCalendarStart} size={1} />;
+};
+
+const CalendarEndIcon: React.FC = () => {
+  return <Icon path={mdiCalendarEnd} size={1} />;
+};
+
 /**
  * Start/end date fields - commonly used throughout forms
  *
  */
 const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
   const {
-    formikProps: { values, handleChange, errors, touched },
+    formikProps: { values, errors, touched, setFieldValue },
     startName,
     endName,
     startRequired,
@@ -34,76 +46,79 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
   const rawEndDateValue = get(values, endName);
 
   const formattedStartDateValue =
-    (rawStartDateValue &&
-      moment(rawStartDateValue).isValid() &&
-      moment(rawStartDateValue).format(DATE_FORMAT.ShortDateFormat)) ||
-    '';
+    (rawStartDateValue && moment(rawStartDateValue).isValid() && moment(rawStartDateValue)) || null;
 
   const formattedEndDateValue =
-    (rawEndDateValue &&
-      moment(rawEndDateValue).isValid() &&
-      moment(rawEndDateValue).format(DATE_FORMAT.ShortDateFormat)) ||
-    '';
-
+    (rawEndDateValue && moment(rawEndDateValue).isValid() && moment(rawEndDateValue)) || null;
   return (
-    <Grid container item spacing={3}>
-      <Grid item xs={12} md={6}>
-        <TextField
-          fullWidth
-          id="start_date"
-          name={startName}
-          label="Start Date"
-          variant="outlined"
-          required={startRequired}
-          value={formattedStartDateValue}
-          type="date"
-          InputProps={{
-            // Chrome min/max dates
-            inputProps: { min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'start-date' }
-          }}
-          inputProps={{
-            // Firefox min/max dates
-            min: DATE_LIMIT.min,
-            max: DATE_LIMIT.max,
-            'data-testid': 'start-date'
-          }}
-          onChange={handleChange}
-          error={get(touched, startName) && Boolean(get(errors, startName))}
-          helperText={(get(touched, startName) && get(errors, startName)) || startDateHelperText}
-          InputLabelProps={{
-            shrink: true
-          }}
-        />
+    <LocalizationProvider dateAdapter={AdapterMoment}>
+      <Grid container item spacing={3}>
+        <Grid item xs={12} md={4}>
+          <DatePicker
+            slots={{
+              openPickerIcon: CalendarStartIcon
+            }}
+            slotProps={{
+              textField: {
+                id: 'start_date',
+                name: startName,
+                required: startRequired,
+                variant: 'outlined',
+                error: get(touched, startName) && Boolean(get(errors, startName)),
+                helperText: (get(touched, startName) && get(errors, startName)) || startDateHelperText,
+                inputProps: {
+                  'data-testid': 'start_date'
+                },
+                InputLabelProps: {
+                  shrink: true
+                },
+                fullWidth: true
+              }
+            }}
+            label="Start Date"
+            format={DATE_FORMAT.ShortDateFormat}
+            minDate={moment(DATE_LIMIT.min)}
+            maxDate={moment(DATE_LIMIT.max)}
+            value={formattedStartDateValue}
+            onChange={(value) => {
+              setFieldValue(startName, moment(value).format(DATE_FORMAT.ShortDateFormat));
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <DatePicker
+            slots={{
+              openPickerIcon: CalendarEndIcon
+            }}
+            slotProps={{
+              textField: {
+                id: 'end_date',
+                name: endName,
+                required: endRequired,
+                variant: 'outlined',
+                error: get(touched, endName) && Boolean(get(errors, endName)),
+                helperText: (get(touched, endName) && get(errors, endName)) || endDateHelperText,
+                inputProps: {
+                  'data-testid': 'end_date'
+                },
+                InputLabelProps: {
+                  shrink: true
+                },
+                fullWidth: true
+              }
+            }}
+            label="End Date"
+            format={DATE_FORMAT.ShortDateFormat}
+            minDate={moment(DATE_LIMIT.min)}
+            maxDate={moment(DATE_LIMIT.max)}
+            value={formattedEndDateValue}
+            onChange={(value) => {
+              setFieldValue(endName, moment(value).format(DATE_FORMAT.ShortDateFormat));
+            }}
+          />
+        </Grid>
       </Grid>
-      <Grid item xs={12} md={6}>
-        <TextField
-          fullWidth
-          id="end_date"
-          name={endName}
-          label="End Date"
-          variant="outlined"
-          required={endRequired}
-          value={formattedEndDateValue}
-          type="date"
-          InputProps={{
-            // Chrome min/max dates
-            inputProps: { min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'end-date' }
-          }}
-          inputProps={{
-            // Firefox min/max dates
-            min: DATE_LIMIT.min,
-            max: DATE_LIMIT.max,
-            'data-testid': 'end-date'
-          }}
-          onChange={handleChange}
-          error={get(touched, endName) && Boolean(get(errors, endName))}
-          helperText={(get(touched, endName) && get(errors, endName)) || endDateHelperText}
-          InputLabelProps={{
-            shrink: true
-          }}
-        />
-      </Grid>
-    </Grid>
+    </LocalizationProvider>
   );
 };
 

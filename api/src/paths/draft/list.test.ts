@@ -64,15 +64,15 @@ describe('paths/draft/list', () => {
           webform_draft_id: 1,
           name: 'draft object 1',
           data: {},
-          create_date: ('2022-10-10' as unknown) as Date,
+          create_date: '2022-10-10',
           update_date: null
         },
         {
           webform_draft_id: 2,
           name: 'draft object 2',
           data: {},
-          create_date: ('2022-10-10' as unknown) as Date,
-          update_date: ('2022-10-11' as unknown) as Date
+          create_date: '2022-10-10',
+          update_date: '2022-10-11'
         }
       ]);
 
@@ -85,15 +85,15 @@ describe('paths/draft/list', () => {
           webform_draft_id: 1,
           name: 'draft object 1',
           data: {},
-          create_date: ('2022-10-10' as unknown) as Date,
+          create_date: '2022-10-10',
           update_date: null
         },
         {
           webform_draft_id: 2,
           name: 'draft object 2',
           data: {},
-          create_date: ('2022-10-10' as unknown) as Date,
-          update_date: ('2022-10-11' as unknown) as Date
+          create_date: '2022-10-10',
+          update_date: '2022-10-11'
         }
       ]);
     });

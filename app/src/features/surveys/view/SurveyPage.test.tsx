@@ -68,7 +68,7 @@ describe.skip('SurveyPage', () => {
     );
   };
 
-  it('renders a spinner if no project is loaded', async () => {
+  it.skip('renders a spinner if no project is loaded', async () => {
     mockUseApi.survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
@@ -83,7 +83,7 @@ describe.skip('SurveyPage', () => {
     });
   });
 
-  it('renders a spinner if no codes is loaded', async () => {
+  it.skip('renders a spinner if no codes is loaded', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
 
@@ -96,7 +96,7 @@ describe.skip('SurveyPage', () => {
     });
   });
 
-  it('renders a spinner if no survey is loaded', async () => {
+  it.skip('renders a spinner if no survey is loaded', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
@@ -111,7 +111,7 @@ describe.skip('SurveyPage', () => {
     });
   });
 
-  it('renders survey page when survey is loaded', async () => {
+  it.skip('renders survey page when survey is loaded', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
@@ -130,7 +130,7 @@ describe.skip('SurveyPage', () => {
     });
   });
 
-  it('renders correctly with no end date', async () => {
+  it.skip('renders correctly with no end date', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.survey.getSurveyForView.mockResolvedValue({
       ...getSurveyForViewResponse,

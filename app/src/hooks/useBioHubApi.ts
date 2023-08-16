@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { ConfigContext } from 'contexts/configContext';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
+import useFundingSourceApi from './api/useFundingSourceApi';
 import useObservationApi from './api/useObservationApi';
 import useProjectApi from './api/useProjectApi';
 import usePublishApi from './api/usePublishApi';
@@ -51,19 +52,27 @@ export const useBiohubApi = () => {
 
   const spatial = useSpatialApi(apiAxios);
 
-  return {
-    project,
-    search,
-    taxonomy,
-    survey,
-    observation,
-    resources,
-    codes,
-    draft,
-    user,
-    admin,
-    external,
-    publish,
-    spatial
-  };
+  const funding = useFundingSourceApi(apiAxios);
+
+  return useMemo(
+    () => ({
+      project,
+      search,
+      taxonomy,
+      survey,
+      observation,
+      resources,
+      codes,
+      draft,
+      user,
+      admin,
+      external,
+      publish,
+      spatial,
+      funding
+    }),
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiAxios]
+  );
 };

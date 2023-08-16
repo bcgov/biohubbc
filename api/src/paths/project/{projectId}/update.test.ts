@@ -50,7 +50,6 @@ describe('update', () => {
         objectives: undefined,
         location: undefined,
         iucn: undefined,
-        funding: undefined,
         partnerships: undefined
       };
 
@@ -147,7 +146,6 @@ describe('update', () => {
         },
         iucn: {},
         contact: {},
-        funding: {},
         partnerships: {},
         location: {}
       };

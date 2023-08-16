@@ -6,12 +6,13 @@ import { coordEach } from '@turf/meta';
 import jsonpatch from 'fast-json-patch';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import _ from 'lodash';
+import SQL from 'sql-template-strings';
 import xml2js from 'xml2js';
 import { IDBConnection } from '../database/db';
 import { IGetProject } from '../models/project-view';
 import { SurveyObject } from '../models/survey-view';
-import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-constant-queries';
-import { CodeService, IAllCodeSets } from './code-service';
+import { IAllCodeSets } from '../repositories/code-repository';
+import { CodeService } from './code-service';
 import { DBService } from './db-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
@@ -409,12 +410,24 @@ export class EmlService extends DBService {
       intellectualRights,
       taxonomicProviderURL
     ] = await Promise.all([
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('ORGANIZATION_URL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('ORGANIZATION_NAME_FULL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('PROVIDER_URL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('SECURITY_PROVIDER_URL')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('INTELLECTUAL_RIGHTS')),
-      this.connection.sql<{ constant: string }>(getDbCharacterSystemMetaDataConstantSQL('TAXONOMIC_PROVIDER_URL'))
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'ORGANIZATION_URL'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'ORGANIZATION_NAME_FULL'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'PROVIDER_URL'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'SECURITY_PROVIDER_URL'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'INTELLECTUAL_RIGHTS'}) as constant;`
+      ),
+      this.connection.sql<{ constant: string }>(
+        SQL`SELECT api_get_character_system_metadata_constant(${'TAXONOMIC_PROVIDER_URL'}) as constant;`
+      )
     ]);
 
     this._constants.EML_ORGANIZATION_URL = organizationUrl.rows[0]?.constant || NOT_SUPPLIED;
@@ -502,7 +515,6 @@ export class EmlService extends DBService {
       abstract: {
         section: [{ title: 'Objectives', para: projectData.objectives.objectives }]
       },
-      ...this._getProjectFundingSources(projectData),
       studyAreaDescription: {
         coverage: {
           ...this._getProjectGeographicCoverage(projectData),
@@ -749,68 +761,6 @@ export class EmlService extends DBService {
         role: 'pointOfContact'
       }
     ];
-  }
-
-  /**
-   * Creates an object representing all funding sources for the given project.
-   *
-   * @param {IGetProject} projectData
-   * @return {*}  {Record<string, any>}
-   * @memberof EmlService
-   */
-  _getProjectFundingSources(projectData: IGetProject): Record<string, any> {
-    if (!projectData.funding.fundingSources.length) {
-      return {};
-    }
-
-    return {
-      funding: {
-        section: projectData.funding.fundingSources.map((fundingSource) => {
-          return {
-            title: 'Agency Name',
-            para: fundingSource.agency_name ?? fundingSource.first_nations_name,
-            section: [
-              { title: 'Funding Agency Project ID', para: fundingSource.agency_project_id },
-              { title: 'Investment Action/Category', para: fundingSource.investment_action_category_name },
-              { title: 'Funding Amount', para: fundingSource.funding_amount },
-              { title: 'Funding Start Date', para: this._makeEmlDateString(fundingSource.start_date) },
-              { title: 'Funding End Date', para: this._makeEmlDateString(fundingSource.end_date) }
-            ]
-          };
-        })
-      }
-    };
-  }
-
-  /**
-   * Creates an object representing all funding sources for the given survey.
-   *
-   * @param {SurveyObject} surveyData
-   * @return {*}  {Record<string, any>}
-   * @memberof EmlService
-   */
-  _getSurveyFundingSources(surveyData: SurveyObject): Record<string, any> {
-    if (!surveyData.funding.funding_sources.length) {
-      return {};
-    }
-
-    return {
-      funding: {
-        section: surveyData.funding.funding_sources.map((fundingSource) => {
-          return {
-            title: 'Agency Name',
-            para: fundingSource.agency_name ?? fundingSource.first_nations_name,
-            section: [
-              { title: 'Funding Agency Project ID', para: fundingSource.funding_source_project_id },
-              { title: 'Investment Action/Category', para: fundingSource.investment_action_category_name },
-              { title: 'Funding Amount', para: fundingSource.funding_amount },
-              { title: 'Funding Start Date', para: this._makeEmlDateString(fundingSource.funding_start_date) },
-              { title: 'Funding End Date', para: this._makeEmlDateString(fundingSource.funding_end_date) }
-            ]
-          };
-        })
-      }
-    };
   }
 
   /**
@@ -1088,7 +1038,6 @@ export class EmlService extends DBService {
           }
         ]
       },
-      ...this._getSurveyFundingSources(surveyData),
       studyAreaDescription: {
         coverage: {
           ...this._getSurveyGeographicCoverage(surveyData),

@@ -19,12 +19,11 @@ import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
-import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
 import GeneralInformationForm, {
@@ -40,6 +39,10 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
+import SurveyFundingSourceForm, {
+  SurveyFundingSourceFormInitialValues,
+  SurveyFundingSourceFormYupSchema
+} from './components/SurveyFundingSourceForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -96,14 +99,6 @@ const CreateSurveyPage = () => {
   );
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
-  const getSurveyFundingSourcesDataLoader = useDataLoader(() =>
-    biohubApi.survey.getAvailableSurveyFundingSources(projectContext.projectId)
-  );
-  useEffect(() => {
-    getSurveyFundingSourcesDataLoader.load();
-  }, [getSurveyFundingSourcesDataLoader, projectContext.projectId]);
-  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data ?? [];
-
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -132,6 +127,7 @@ const CreateSurveyPage = () => {
     ...GeneralInformationInitialValues,
     ...PurposeAndMethodologyInitialValues,
     ...StudyAreaInitialValues,
+    ...SurveyFundingSourceFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues
   });
@@ -174,6 +170,7 @@ const CreateSurveyPage = () => {
     .concat(StudyAreaYupSchema)
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
+    .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema);
 
   const handleCancel = () => {
@@ -298,20 +295,6 @@ const CreateSurveyPage = () => {
                   summary=""
                   component={
                     <GeneralInformationForm
-                      funding_sources={
-                        fundingSourcesData?.map((item) => {
-                          return {
-                            value: item.id,
-                            label: `${item.agency_name ?? item.first_nations_name} | ${getFormattedAmount(
-                              item.funding_amount
-                            )} | ${getFormattedDateRangeString(
-                              DATE_FORMAT.ShortMediumDateFormat,
-                              item.start_date,
-                              item.end_date
-                            )}`
-                          };
-                        }) || []
-                      }
                       projectStartDate={projectData.project.start_date}
                       projectEndDate={projectData.project.end_date}
                     />
@@ -345,6 +328,20 @@ const CreateSurveyPage = () => {
                         }) || []
                       }
                     />
+                  }></HorizontalSplitFormComponent>
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Funding Sources"
+                  summary="Specify funding sources for this survey."
+                  component={
+                    <Box component="fieldset">
+                      <Typography component="legend">Add Funding Sources</Typography>
+                      <Box mt={1}>
+                        <SurveyFundingSourceForm />
+                      </Box>
+                    </Box>
                   }></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />

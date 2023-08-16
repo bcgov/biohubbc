@@ -149,8 +149,8 @@ export const EditObservationI18N = {
 };
 
 export const AddFundingI18N = {
-  addTitle: 'Add Funding Source',
-  addErrorTitle: 'Error Adding Funding Source',
+  addTitle: 'Create Funding Source',
+  addErrorTitle: 'Error Creating Funding Source',
   addErrorText:
     'An error has occurred while attempting to add your funding source details, please try again. If the error persists, please contact your system administrator.'
 };
@@ -261,12 +261,12 @@ export const ProjectParticipantsI18N = {
 };
 
 export const SystemUserI18N = {
-  deleteProjectLeadErrorTitle: 'Error Deleting Project Lead',
+  deleteProjectLeadErrorTitle: 'Error Deleting Coordinator',
   deleteProjectLeadErrorText:
-    'An error has occurred while attempting to delete the project lead, please assign a different project lead before removing. Please try again, if the error persists please contact your system administrator.',
-  updateProjectLeadRoleErrorTitle: 'Error Updating Project Lead Role',
+    'An error has occurred while attempting to delete the coordinator, please assign a different coordinator before removing. Please try again, if the error persists please contact your system administrator.',
+  updateProjectLeadRoleErrorTitle: 'Error Updating Coordinator Role',
   updateProjectLeadRoleErrorText:
-    "An error has occurred while attempting to update the user's project lead role, please assign a different project lead before changing. Please try again, if the error persists please contact your system administrator.",
+    "An error has occurred while attempting to update the user's coordinator role, please assign a different coordinator before changing. Please try again, if the error persists please contact your system administrator.",
   removeSystemUserTitle: 'Remove system user?',
   removeUserFromProject: 'Remove user from project?',
   removeUserErrorTitle: 'Error Removing User From Team',
@@ -336,4 +336,41 @@ export const SurveyAnimalsI18N = {
   taxonHelp:
     'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family',
   taxonLabelHelp: 'A custom and unique name for you to recognize this individual'
+};
+
+export const FundingSourceI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  // CREATE FUNDING SOURCE
+  createFundingSourceDialogTitle: 'Create Funding Source',
+  createFundingSourceDialogText: 'Specify the name, description and effective dates for this funding source.',
+  createErrorTitle: 'Error Creating Funding Source',
+  createErrorText:
+    'An error has occurred while attempting to create your funding source, please try again. If the error persists, please contact your system administrator.',
+  // EDIT FUNDING SOURCE
+  updateFundingSourceDialogTitle: 'Edit Funding Source Details',
+  updateFundingSourceDialogText: 'Edit the name, description and effective dates for this funding source.',
+  updateErrorTitle: 'Error Updating Funding Source',
+  updateErrorText:
+    'An error has occurred while attempting to update your Funding Source, please try again. If the error persists, please contact your system administrator.',
+  // DELETE FUNDING SOURCE
+  deleteFundingSourceErrorTitle: 'Error Deleting a Funding Source',
+  deleteFundingSourceErrorText:
+    'An error has occurred while attempting to delete the Funding Sources, please try again. If the error persists, please contact your system administrator.',
+
+  deleteFundingSourceDialogTitle: 'Delete Funding Source?',
+  deleteFundingSourceDialogText:
+    'Are you sure you want to permanently delete this funding source? This action cannot be undone.',
+
+  cannotDeleteFundingSourceTitle: "You can't delete this funding source",
+  cannotDeleteFundingSourceText:
+    'This funding source has been referenced by one or more surveys. To delete this record, you will first have to remove it from all related surveys.',
+
+  // FETCH FUNDING SOURCE
+  fetchFundingSourcesErrorTitle: 'Error Fetching Funding Sources',
+  fetchFundingSourcesErrorText:
+    'An error has occurred while attempting to fetch the Funding Sources, please try again. If the error persists, please contact your system administrator.',
+  fetchFundingSourceErrorTitle: 'Error Fetching Funding Source',
+  fetchFundingSourceErrorText:
+    'An error has occurred while attempting to fetch the Funding Source, please try again. If the error persists, please contact your system administrator.'
 };

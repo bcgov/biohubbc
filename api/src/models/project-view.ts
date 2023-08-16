@@ -20,7 +20,6 @@ export interface IGetProject {
   objectives: GetObjectivesData;
   location: GetLocationData;
   iucn: GetIUCNClassificationData;
-  funding: GetFundingData;
   partnerships: GetPartnershipsData;
 }
 
@@ -30,13 +29,27 @@ export const ProjectData = z.object({
   project_name: z.string(),
   project_programs: z.array(z.number()),
   project_types: z.array(z.number()),
-  start_date: z.date(),
-  end_date: z.date().nullable(),
+  start_date: z.string(),
+  end_date: z.string().nullable(),
   comments: z.string().nullable(),
   revision_count: z.number()
 });
 
 export type ProjectData = z.infer<typeof ProjectData>;
+
+export const ProjectListData = z.object({
+  project_id: z.number(),
+  uuid: z.string(),
+  project_name: z.string(),
+  coordinator_agency: z.string(),
+  project_programs: z.array(z.number()).default([]),
+  project_types: z.array(z.number()).default([]),
+  regions: z.array(z.string()).default([]),
+  start_date: z.string(),
+  end_date: z.string().nullable().optional()
+});
+
+export type ProjectListData = z.infer<typeof ProjectListData>;
 
 /**
  * Pre-processes GET /projects/{id} objectives data
@@ -124,46 +137,6 @@ export class GetIUCNClassificationData {
       }) ?? [];
   }
 }
-
-interface IGetFundingSource {
-  id: number;
-  agency_id?: number;
-  investment_action_category?: number;
-  investment_action_category_name?: string;
-  agency_name: string;
-  funding_amount?: number;
-  start_date: string;
-  end_date: string;
-  agency_project_id: string;
-  first_nations_id?: number;
-  first_nations_name?: string;
-  revision_count: number;
-}
-
-export class GetFundingData {
-  fundingSources: IGetFundingSource[];
-
-  constructor(fundingData?: any[]) {
-    this.fundingSources =
-      fundingData?.map((item: any) => {
-        return {
-          id: item.id,
-          agency_id: item.agency_id,
-          investment_action_category: item.investment_action_category,
-          investment_action_category_name: item.investment_action_category_name,
-          agency_name: item.agency_name,
-          funding_amount: item.funding_amount,
-          start_date: item.start_date,
-          end_date: item.end_date,
-          agency_project_id: item.agency_project_id,
-          revision_count: item.revision_count,
-          first_nations_id: item.first_nations_id,
-          first_nations_name: item.first_nations_name
-        };
-      }) ?? [];
-  }
-}
-
 /**
  * Pre-processes GET /projects/{id} partnerships data
  *

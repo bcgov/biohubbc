@@ -15,7 +15,6 @@ export class PostProjectObject {
   objectives: PostObjectivesData;
   location: PostLocationData;
   iucn: PostIUCNData;
-  funding: PostFundingData;
   partnerships: PostPartnershipsData;
 
   constructor(obj?: any) {
@@ -25,7 +24,6 @@ export class PostProjectObject {
     this.project = (obj?.project && new PostProjectData(obj.project)) || null;
     this.objectives = (obj?.project && new PostObjectivesData(obj.objectives)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
-    this.funding = (obj?.funding && new PostFundingData(obj.funding)) || null;
     this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
   }
@@ -152,54 +150,6 @@ export class PostIUCNData {
           };
         })) ||
       [];
-  }
-}
-
-/**
- * A single project funding agency.
- *
- * @See PostFundingData
- *
- * @export
- * @class PostFundingSource
- */
-export class PostFundingSource {
-  id?: number;
-  agency_id?: number;
-  investment_action_category: number;
-  agency_project_id: string;
-  funding_amount: number;
-  start_date?: string;
-  end_date?: string;
-  first_nations_id?: number;
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostFundingSource', message: 'params', obj });
-
-    this.agency_id = obj?.agency_id || null;
-    this.investment_action_category = obj?.investment_action_category || null;
-    this.agency_project_id = obj?.agency_project_id || null;
-    this.funding_amount = obj?.funding_amount || null;
-    this.start_date = obj?.start_date || null;
-    this.end_date = obj?.end_date || null;
-    this.first_nations_id = obj?.first_nations_id || null;
-  }
-}
-
-/**
- * Processes POST /project funding data
- *
- * @export
- * @class PostFundingData
- */
-export class PostFundingData {
-  fundingSources: PostFundingSource[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostFundingData', message: 'params', obj });
-
-    this.fundingSources =
-      (obj?.fundingSources?.length && obj.fundingSources.map((item: any) => new PostFundingSource(item))) || [];
   }
 }
 

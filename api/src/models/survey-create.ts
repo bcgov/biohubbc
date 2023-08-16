@@ -4,7 +4,7 @@ export class PostSurveyObject {
   survey_details: PostSurveyDetailsData;
   species: PostSpeciesData;
   permit: PostPermitData;
-  funding: PostFundingData;
+  funding_sources: PostFundingSourceData[];
   proprietor: PostProprietorData;
   purpose_and_methodology: PostPurposeAndMethodologyData;
   location: PostLocationData;
@@ -14,7 +14,8 @@ export class PostSurveyObject {
     this.survey_details = (obj?.survey_details && new PostSurveyDetailsData(obj.survey_details)) || null;
     this.species = (obj?.species && new PostSpeciesData(obj.species)) || null;
     this.permit = (obj?.permit && new PostPermitData(obj.permit)) || null;
-    this.funding = (obj?.funding && new PostFundingData(obj.funding)) || null;
+    this.funding_sources =
+      (obj?.funding_sources?.length && obj.funding_sources.map((fs: any) => new PostFundingSourceData(fs))) || [];
     this.proprietor = (obj?.proprietor && new PostProprietorData(obj.proprietor)) || null;
     this.purpose_and_methodology =
       (obj?.purpose_and_methodology && new PostPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
@@ -22,6 +23,17 @@ export class PostSurveyObject {
     this.agreements = (obj?.agreements && new PostAgreementsData(obj.agreements)) || null;
   }
 }
+
+export class PostFundingSourceData {
+  funding_source_id: number;
+  amount: number;
+
+  constructor(obj?: any) {
+    this.funding_source_id = obj?.funding_source_id || null;
+    this.amount = obj?.amount || null;
+  }
+}
+
 export class PostSurveyDetailsData {
   survey_name: string;
   start_date: string;
@@ -55,15 +67,6 @@ export class PostPermitData {
     this.permits = obj?.permits || [];
   }
 }
-
-export class PostFundingData {
-  funding_sources: number[];
-
-  constructor(obj?: any) {
-    this.funding_sources = obj?.funding_sources || [];
-  }
-}
-
 export class PostProprietorData {
   prt_id: number;
   fn_id: number;

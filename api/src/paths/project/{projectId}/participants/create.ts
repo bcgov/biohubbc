@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
@@ -16,9 +16,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -60,7 +60,7 @@ POST.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['userIdentifier', 'identitySource', 'roleId'],
+                required: ['userIdentifier', 'identitySource', 'displayName', 'email', 'roleId'],
                 properties: {
                   userIdentifier: {
                     description: 'A IDIR or BCEID username.',
@@ -73,6 +73,14 @@ POST.apiDoc = {
                       SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
                       SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
                     ]
+                  },
+                  displayName: {
+                    type: 'string',
+                    description: 'The display name for the user.'
+                  },
+                  email: {
+                    type: 'string',
+                    description: 'The email for the user.'
                   },
                   roleId: {
                     description: 'The id of the project role to assign to the participant.',
@@ -108,7 +116,13 @@ POST.apiDoc = {
   }
 };
 
-type Participant = { userIdentifier: string; identitySource: string; roleId: number };
+type Participant = {
+  userIdentifier: string;
+  identitySource: string;
+  roleId: number;
+  displayName: string;
+  email: string;
+};
 
 export function createProjectParticipants(): RequestHandler {
   return async (req, res) => {
@@ -158,11 +172,13 @@ export const ensureSystemUserAndProjectParticipantUser = async (
   const systemUserObject = await userService.ensureSystemUser(
     participant.userGuid,
     participant.userIdentifier,
-    participant.identitySource
+    participant.identitySource,
+    participant.displayName,
+    participant.email
   );
 
   const projectService = new ProjectService(connection);
 
   // Add project role, unless they already have one
-  await projectService.ensureProjectParticipant(projectId, systemUserObject.id, participant.roleId);
+  await projectService.ensureProjectParticipant(projectId, systemUserObject.system_user_id, participant.roleId);
 };
