@@ -1,16 +1,16 @@
-import { Box, Divider, Typography } from '@mui/material';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
-import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-import React, { useContext, useState } from 'react';
-import NoSurveySectionData from '../components/NoSurveySectionData';
-import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
-import EditDialog from 'components/dialog/EditDialog';
-import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { Box, Divider, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import EditDialog from 'components/dialog/EditDialog';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import React, { useContext, useState } from 'react';
+import NoSurveySectionData from '../components/NoSurveySectionData';
+import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
+import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 
 const SurveyAnimals: React.FC = () => {
   const cbApi = useCritterbaseApi();
@@ -59,10 +59,11 @@ const SurveyAnimals: React.FC = () => {
               <Typography variant="h3">Individuals</Typography>
             </HelpButtonTooltip>
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-              {`${animalCount
+              {`${
+                animalCount
                   ? `${pluralize('Animal', animalCount)} reported in this survey`
                   : `No individual animals were captured or reported in this survey`
-                }`}
+              }`}
             </Typography>
           </Box>
         }

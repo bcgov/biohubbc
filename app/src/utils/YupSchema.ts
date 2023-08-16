@@ -7,7 +7,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import moment from 'moment';
 import * as yup from 'yup';
 
-yup.addMethod(yup.array, 'isUniquePermitNumber', function(message: string) {
+yup.addMethod(yup.array, 'isUniquePermitNumber', function (message: string) {
   return this.test('is-unique-permit-number', message, (values) => {
     if (!values || !values.length) {
       return true;
@@ -22,7 +22,7 @@ yup.addMethod(yup.array, 'isUniquePermitNumber', function(message: string) {
   });
 });
 
-yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function(message: string) {
+yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function (message: string) {
   return this.test('is-unique-iucn-classification-detail', message, (values) => {
     if (!values || !values.length) {
       return true;
@@ -40,8 +40,8 @@ yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function(message: s
   });
 });
 
-yup.addMethod(yup.array, 'isUniqueFocalAncillarySpecies', function(message: string) {
-  return this.test('is-unique-focal-ancillary-species', message, function(values) {
+yup.addMethod(yup.array, 'isUniqueFocalAncillarySpecies', function (message: string) {
+  return this.test('is-unique-focal-ancillary-species', message, function (values) {
     if (!values || !values.length) {
       return true;
     }
@@ -61,7 +61,7 @@ yup.addMethod(yup.array, 'isUniqueFocalAncillarySpecies', function(message: stri
 yup.addMethod(
   yup.string,
   'isValidDateString',
-  function(dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat, message = 'Invalid date') {
+  function (dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat, message = 'Invalid date') {
     return this.test('is-valid-date', message, (value) => {
       if (!value) {
         // don't validate date string if it is null
@@ -76,8 +76,8 @@ yup.addMethod(
 yup.addMethod(
   yup.string,
   'isEndTimeAfterStartTime',
-  function(startTimeName: string, message = 'End time must be after start time') {
-    return this.test('is-end-time-after-start-time', message, function(value) {
+  function (startTimeName: string, message = 'End time must be after start time') {
+    return this.test('is-end-time-after-start-time', message, function (value) {
       if (!value) {
         // don't validate end_time if it is null
         return true;
@@ -95,12 +95,12 @@ yup.addMethod(
 yup.addMethod(
   yup.string,
   'isEndDateAfterStartDate',
-  function(
+  function (
     startDateName: string,
     dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
     message = 'End date must be after start date'
   ) {
-    return this.test('is-end-date-after-start-date', message, function(value) {
+    return this.test('is-end-date-after-start-date', message, function (value) {
       if (!value) {
         // don't validate end_date if it is null
         return true;
@@ -120,12 +120,12 @@ yup.addMethod(
 yup.addMethod(
   yup.string,
   'isEndDateSameOrAfterStartDate',
-  function(
+  function (
     startDateName: string,
     dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
     message = 'End date must be on or after start date'
   ) {
-    return this.test('is-end-date-same-or-after-start-date', message, function(value) {
+    return this.test('is-end-date-same-or-after-start-date', message, function (value) {
       if (!value) {
         // don't validate end_date if it is null
         return true;
@@ -145,8 +145,8 @@ yup.addMethod(
 yup.addMethod(
   yup.string,
   'isBeforeDate',
-  function(maxDate: string | undefined, dateFormat: DATE_FORMAT, message: string) {
-    return this.test('is-before-date', message, function(value) {
+  function (maxDate: string | undefined, dateFormat: DATE_FORMAT, message: string) {
+    return this.test('is-before-date', message, function (value) {
       if (!value || !maxDate) {
         // don't validate date if it is null
         return true;
@@ -164,8 +164,8 @@ yup.addMethod(
 yup.addMethod(
   yup.string,
   'isAfterDate',
-  function(minDate: string | undefined, dateFormat: DATE_FORMAT, message: string) {
-    return this.test('is-after-date', message, function(value) {
+  function (minDate: string | undefined, dateFormat: DATE_FORMAT, message: string) {
+    return this.test('is-after-date', message, function (value) {
       if (!value || !minDate) {
         // don't validate date if it is null
         return true;
@@ -180,7 +180,7 @@ yup.addMethod(
   }
 );
 
-yup.addMethod(yup.array, 'isUniqueAuthor', function(message: string) {
+yup.addMethod(yup.array, 'isUniqueAuthor', function (message: string) {
   return this.test('is-unique-author', message, (values) => {
     if (!values || !values.length) {
       return true;

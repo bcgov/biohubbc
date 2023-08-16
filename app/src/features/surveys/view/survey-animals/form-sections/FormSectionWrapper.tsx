@@ -1,4 +1,4 @@
-import { mdiTrashCanOutline, mdiPlus } from '@mdi/js';
+import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Divider, Grid, IconButton, Paper, PaperProps, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
@@ -55,8 +55,9 @@ const FormSectionWrapper = ({
         <Paper key={`fs-section-wrapper-${idx}`} variant="outlined" sx={{ p: 2, mb: 2 }} {...innerPaperProps}>
           <Box display="flex" alignItems="center">
             {addedSectionTitle ? (
-              <Typography fontWeight="bold">{`${addedSectionTitle}${childs.length > 1 ? ` (${idx + 1})` : ''
-                }`}</Typography>
+              <Typography fontWeight="bold">{`${addedSectionTitle}${
+                childs.length > 1 ? ` (${idx + 1})` : ''
+              }`}</Typography>
             ) : null}
             {handleRemoveSection && childs.length >= 1 ? (
               <IconButton sx={{ ml: 'auto', height: 40, width: 40 }} onClick={() => handleRemoveSection(idx)}>

@@ -51,4 +51,4 @@ const getLatLngAsUtm = (lat: number, lng: number) => {
   return proj4(wgs84Projection, utmProjection, [Number(lng), Number(lat)]).map((a) => Number(a.toFixed(3)));
 };
 
-export { getLatLngAsUtm, getUtmAsLatLng, distanceInMetresBetweenCoordinates }
+export { getLatLngAsUtm, getUtmAsLatLng, distanceInMetresBetweenCoordinates };

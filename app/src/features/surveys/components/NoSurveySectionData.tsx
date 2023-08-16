@@ -1,7 +1,7 @@
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper, { PaperProps } from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
-import { Theme } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {

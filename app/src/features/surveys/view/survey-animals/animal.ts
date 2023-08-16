@@ -301,7 +301,7 @@ export class Critter {
       if (f.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };
-          this.families.families.push(newFamily)
+          this.families.families.push(newFamily);
         }
         f.family_id = newFamily.family_id;
       }

@@ -63,7 +63,8 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
     },
     mousemove: (e) => {
       if (!listenForMouseEvents) return;
-      if (holdingMouse) {//If we move mouse between mouse down and mouse up, then change radius of circle
+      if (holdingMouse) {
+        //If we move mouse between mouse down and mouse up, then change radius of circle
         handleResize?.(distanceInMetresBetweenCoordinates(position, e.latlng));
       }
     },
