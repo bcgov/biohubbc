@@ -1,9 +1,12 @@
-import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
+import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Theme, Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
+import { makeStyles } from '@mui/styles';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 //import { validate as uuidValidate } from 'uuid';
 import {
   getAnimalFieldName,
@@ -13,7 +16,27 @@ import {
   newFamilyIdPlaceholder
 } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
-
+const useStyles = makeStyles((theme: Theme) => ({
+  surveyMetadataContainer: {
+    '& dt': {
+      flex: '0 0 40%'
+    },
+    '& dd': {
+      flex: '1 1 auto'
+    },
+    '& h4': {
+      fontSize: '14px',
+      fontWeight: 700,
+      letterSpacing: '0.02rem',
+      textTransform: 'uppercase',
+      color: grey[600],
+      '& + hr': {
+        marginTop: theme.spacing(1.5),
+        marginBottom: theme.spacing(1.5)
+      }
+    }
+  }
+}));
 /**
  * Renders the Family section for the Individual Animal form
  *
@@ -26,10 +49,13 @@ const FamilyAnimalForm = () => {
   const { values, touched, errors, handleChange } = useFormikContext<IAnimal>();
   const critterbase = useCritterbaseApi();
   const { data: allFamilies, load } = useDataLoader(critterbase.family.getAllFamilies);
-
+  const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbase.family.getImmediateFamily);
+  const [showFamilyStructure, setShowFamilyStructure] = useState(false);
   if (!allFamilies) {
     load();
   }
+
+  const classes = useStyles();
 
   const name: keyof IAnimal = 'family';
   const newRelationship: IAnimalRelationship = {
@@ -133,7 +159,78 @@ const FamilyAnimalForm = () => {
                     </FormControl>
                   </Grid>
                 </Grid>
-                <p>{errors && JSON.stringify(errors, null, 2)}</p>
+                <Grid item xs={6}>
+                  <Button
+                    onClick={async () => {
+                      loadHierarchy(values.family[index]?.family_id);
+                      setShowFamilyStructure(true);
+                    }}
+                    disabled={
+                      values.family[index]?.family_id === newFamilyIdPlaceholder || !values.family[index]?.family_id
+                    }
+                    variant="outlined">
+                    View Family Structure
+                  </Button>
+                </Grid>
+                <ComponentDialog
+                  dialogTitle={'Family Structure'}
+                  open={showFamilyStructure}
+                  onClose={() => setShowFamilyStructure(false)}>
+                  <Box className={classes.surveyMetadataContainer}>
+                    <Typography component="dt" variant="subtitle2" color="textSecondary">
+                      Family ID
+                    </Typography>
+                    <Typography marginBottom={'16px'} component="dd">
+                      {values.family[index]?.family_id}
+                    </Typography>
+                    <Typography component="h4">Parents:</Typography>
+                    <ul>
+                      {familyHierarchy?.parents.map((a) => (
+                        <li>
+                          <Grid container>
+                            <Grid item xs={6}>
+                              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                                Critter ID
+                              </Typography>
+                              <Typography>{a.critter_id}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                                Animal ID
+                              </Typography>
+                              <Typography>{a.animal_id}</Typography>
+                            </Grid>
+                          </Grid>
+                        </li>
+                      ))}
+                    </ul>
+                    <Typography component="h4">Children:</Typography>
+                    <ul>
+                      {familyHierarchy?.children.map(
+                        (
+                          a: { critter_id: string; animal_id: string } //I will type this better I promise
+                        ) => (
+                          <li>
+                            <Grid container>
+                              <Grid item xs={6}>
+                                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                                  Critter ID
+                                </Typography>
+                                <Typography>{a.critter_id}</Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                                  Animal ID
+                                </Typography>
+                                <Typography>{a.animal_id}</Typography>
+                              </Grid>
+                            </Grid>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </Box>
+                </ComponentDialog>
               </Fragment>
             ))}
           </FormSectionWrapper>

@@ -28,7 +28,7 @@ const IndividualAnimalForm = () => {
       <MeasurementAnimalForm />
       <FamilyAnimalForm />
       <pre>{JSON.stringify({ form_values: values }, null, 2)}</pre>
-      <pre>{JSON.stringify({ payload: new Critter(values) }, null, 2)}</pre>
+      <pre>{JSON.stringify({ payload: new Critter(Object.assign({}, values)) }, null, 2)}</pre>
     </Form>
   );
 };

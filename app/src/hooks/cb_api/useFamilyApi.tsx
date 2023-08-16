@@ -18,8 +18,14 @@ const useFamilyApi = (axios: AxiosInstance) => {
     return [];
   };
 
+  const getImmediateFamily = async (family_id: string): Promise<{ parents: any[]; siblings: any[]; children: any }> => {
+    const { data } = await axios.get('/api/family/' + family_id);
+    return data;
+  };
+
   return {
     getAllFamilies,
+    getImmediateFamily
   };
 };
 
