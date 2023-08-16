@@ -48,7 +48,7 @@ const getLocalConfig = (): IConfig => {
   const CB_API_PORT = process.env.REACT_APP_CRITTERBASE_API_PORT;
 
   const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'localhost';
-  const CB_API_URL = (API_PORT && `${CB_API_HOST}:${CB_API_PORT}`) || CB_API_HOST || 'localhost';
+  const CB_API_URL = (CB_API_PORT && `${CB_API_HOST}:${CB_API_PORT}`) || CB_API_HOST || 'localhost';
 
   const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
   const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || 'gblhvt';
