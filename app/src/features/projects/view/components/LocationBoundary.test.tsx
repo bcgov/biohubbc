@@ -52,7 +52,7 @@ describe.skip('LocationBoundary', () => {
     cleanup();
   });
 
-  it('matches the snapshot when there is no location description', async () => {
+  it.skip('matches the snapshot when there is no location description', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -86,7 +86,7 @@ describe.skip('LocationBoundary', () => {
     });
   });
 
-  it('matches the snapshot when there is no geometry', async () => {
+  it.skip('matches the snapshot when there is no geometry', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -120,7 +120,7 @@ describe.skip('LocationBoundary', () => {
     });
   });
 
-  it('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
+  it.skip('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes

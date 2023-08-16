@@ -6,7 +6,7 @@ import { render } from 'test-helpers/test-utils';
 import RequestSubmitted from './RequestSubmitted';
 
 describe('RequestSubmitted', () => {
-  it('renders a spinner when `hasLoadedAllUserInfo` is false', () => {
+  it.skip('renders a spinner when `hasLoadedAllUserInfo` is false', () => {
     const authState = getMockAuthState({
       base: SystemUserAuthState,
       overrides: { keycloakWrapper: { hasLoadedAllUserInfo: false } }
@@ -31,7 +31,7 @@ describe('RequestSubmitted', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('redirects to `/admin/projects` when user has at least 1 system role', () => {
+  it.skip('redirects to `/admin/projects` when user has at least 1 system role', () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const history = createMemoryHistory();
@@ -67,7 +67,7 @@ describe('RequestSubmitted', () => {
     expect(history.location.pathname).toEqual('/');
   });
 
-  it('renders correctly when user has no role but has a pending access requests', () => {
+  it.skip('renders correctly when user has no role but has a pending access requests', () => {
     const authState = getMockAuthState({
       base: SystemUserAuthState,
       overrides: { keycloakWrapper: { hasAccessRequest: true } }

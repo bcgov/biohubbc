@@ -91,7 +91,7 @@ describe.skip('CreateSurveyPage', () => {
     cleanup();
   });
 
-  it('renders the initial default page correctly', async () => {
+  it.skip('renders the initial default page correctly', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
     mockUseApi.survey.getSurveyPermits.mockResolvedValue({
@@ -125,7 +125,7 @@ describe.skip('CreateSurveyPage', () => {
     });
   });
 
-  it('renders correctly when codes and project data are loaded', async () => {
+  it.skip('renders correctly when codes and project data are loaded', async () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);

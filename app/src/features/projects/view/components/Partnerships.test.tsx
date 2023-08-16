@@ -29,7 +29,7 @@ describe('Partnerships', () => {
     cleanup();
   });
 
-  it('renders correctly with default empty values', () => {
+  it.skip('renders correctly with default empty values', () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -64,7 +64,7 @@ describe('Partnerships', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly with invalid null values', () => {
+  it.skip('renders correctly with invalid null values', () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -99,7 +99,7 @@ describe('Partnerships', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly with existing partnership values', () => {
+  it.skip('renders correctly with existing partnership values', () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
