@@ -23,6 +23,8 @@ const SurveyAnimals: React.FC = () => {
     setOpenDialog((d) => !d);
   };
 
+  const pluralize = (str: string, count: number) => (count > 1 || count == 0 ? `${count} ${str}'s` : `${count} ${str}`);
+
   const AnimalFormValues: IAnimal = {
     general: { taxon_id: '', taxon_name: '', animal_id: '' },
     captures: [],
@@ -41,7 +43,7 @@ const SurveyAnimals: React.FC = () => {
       open: true,
       snackbarMessage: (
         <Typography variant="body2" component="div">
-          {`${res.count} Animal${res.count > 1 ? `'s` : ''} added to Survey`}
+          {`${pluralize('Animal', res.count)} added to Survey`}
         </Typography>
       )
     });
@@ -58,7 +60,7 @@ const SurveyAnimals: React.FC = () => {
             </HelpButtonTooltip>
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
               {`${animalCount
-                  ? `${animalCount} Animal(s) reported in this survey`
+                  ? `${pluralize('Animal', animalCount)} reported in this survey`
                   : `No individual animals were captured or reported in this survey`
                 }`}
             </Typography>
