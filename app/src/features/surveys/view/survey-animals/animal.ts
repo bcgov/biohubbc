@@ -34,7 +34,7 @@ export const isReq = <T extends AnyObjectSchema>(schema: T, key: keyof T['fields
   return schema.fields[key].exclusiveTests.required;
 };
 
-const glt = (num: number, greater = true) => `Must be ${greater ? 'greater' : 'less'} than or equal to ${num}`;
+export const glt = (num: number, greater = true) => `Must be ${greater ? 'greater' : 'less'} than or equal to ${num}`;
 
 const req = 'Required';
 const mustBeNum = 'Must be a number';
