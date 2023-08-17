@@ -6,7 +6,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
 import React from 'react';
-import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isReq } from '../animal';
+import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isRequiredInSchema } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
 
 /**
@@ -33,7 +33,7 @@ const GeneralAnimalForm = () => {
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
             <CbSelectField
               name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
-              controlProps={{ required: isReq(AnimalGeneralSchema, 'taxon_id'), size: 'small' }}
+              controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'), size: 'small' }}
               label={'Taxon'}
               id={'taxon'}
               route={'taxons'}
@@ -43,7 +43,7 @@ const GeneralAnimalForm = () => {
         </Box>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
           <CustomTextField
-            other={{ size: 'small', required: isReq(AnimalGeneralSchema, 'animal_id') }}
+            other={{ size: 'small', required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
             label="Individual's Label"
             name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
           />

@@ -30,7 +30,7 @@ export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) 
  * Checks if property in schema is required. Used to keep required fields in sync with schema.
  * ie: { required: true } -> { required: isReq(Schema, 'property_name') }
  */
-export const isReq = <T extends AnyObjectSchema>(schema: T, key: keyof T['fields']) => {
+export const isRequiredInSchema = <T extends AnyObjectSchema>(schema: T, key: keyof T['fields']): boolean => {
   return schema.fields[key].exclusiveTests.required;
 };
 
@@ -99,7 +99,7 @@ export const AnimalMortalitySchema = yup.object({}).shape({
   projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
 });
 
-const AnimalRelationshipSchema = yup.object({}).shape({
+export const AnimalRelationshipSchema = yup.object({}).shape({
   family_id: yup.string().required(req),
   relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });

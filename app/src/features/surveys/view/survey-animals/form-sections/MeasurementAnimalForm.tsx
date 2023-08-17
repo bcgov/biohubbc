@@ -13,7 +13,7 @@ import {
   getAnimalFieldName,
   IAnimal,
   IAnimalMeasurement,
-  isReq,
+  isRequiredInSchema,
   lastAnimalValueValid
 } from '../animal';
 import TextInputToggle from '../TextInputToggle';
@@ -119,7 +119,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
           name={tmIDName}
           controlProps={{
             size: 'small',
-            required: isReq(AnimalMeasurementSchema, 'taxon_measurement_id'),
+            required: isRequiredInSchema(AnimalMeasurementSchema, 'taxon_measurement_id'),
             disabled: !measurements?.length
           }}>
           {measurements?.map((m) => (
@@ -139,24 +139,28 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             query={`taxon_measurement_id=${taxonMeasurementId}`}
             controlProps={{
               size: 'small',
-              required: isReq(AnimalMeasurementSchema, 'qualitative_option_id'),
+              required: isRequiredInSchema(AnimalMeasurementSchema, 'qualitative_option_id'),
               disabled: !taxonMeasurementId
             }}
           />
         ) : (
-          <Field
-            as={CustomTextField}
-            name={valName}
-            label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
-            other={{ required: isReq(AnimalMeasurementSchema, 'value'), size: 'small', disabled: !taxonMeasurementId }}
-            validate={validateValue}
-          />
-        )}
+            <Field
+              as={CustomTextField}
+              name={valName}
+              label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
+              other={{
+                required: isRequiredInSchema(AnimalMeasurementSchema, 'value'),
+                size: 'small',
+                disabled: !taxonMeasurementId
+              }}
+              validate={validateValue}
+            />
+          )}
       </Grid>
       <Grid item xs={4}>
         <CustomTextField
           other={{
-            required: isReq(AnimalMeasurementSchema, 'measured_timestamp'),
+            required: isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp'),
             size: 'small',
             type: 'date',
             InputLabelProps: { shrink: true }
@@ -168,7 +172,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
       <Grid item xs={12}>
         <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Measurement')}>
           <CustomTextField
-            other={{ size: 'small', required: isReq(AnimalMeasurementSchema, 'measurement_comment') }}
+            other={{ size: 'small', required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment') }}
             label="Measurment Comment"
             name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measurement_comment', index)}
           />

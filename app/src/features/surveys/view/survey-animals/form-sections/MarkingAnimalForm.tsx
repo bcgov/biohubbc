@@ -9,7 +9,7 @@ import {
   getAnimalFieldName,
   IAnimal,
   IAnimalMarking,
-  isReq,
+  isRequiredInSchema,
   lastAnimalValueValid
 } from '../animal';
 import TextInputToggle from '../TextInputToggle';
@@ -55,7 +55,7 @@ const MarkingAnimalForm = () => {
                     route="marking_type"
                     controlProps={{
                       size: 'small',
-                      required: isReq(AnimalMarkingSchema, 'marking_type_id')
+                      required: isRequiredInSchema(AnimalMarkingSchema, 'marking_type_id')
                     }}
                   />
                 </Grid>
@@ -68,7 +68,7 @@ const MarkingAnimalForm = () => {
                     query={`taxon_id=${values.general.taxon_id}`}
                     controlProps={{
                       size: 'small',
-                      required: isReq(AnimalMarkingSchema, 'taxon_marking_body_location_id')
+                      required: isRequiredInSchema(AnimalMarkingSchema, 'taxon_marking_body_location_id')
                     }}
                   />
                 </Grid>
@@ -78,7 +78,10 @@ const MarkingAnimalForm = () => {
                     name={getAnimalFieldName<IAnimalMarking>(name, 'primary_colour_id', index)}
                     id="primary_colour_id"
                     route="colours"
-                    controlProps={{ size: 'small', required: isReq(AnimalMarkingSchema, 'primary_colour_id') }}
+                    controlProps={{
+                      size: 'small',
+                      required: isRequiredInSchema(AnimalMarkingSchema, 'primary_colour_id')
+                    }}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -87,7 +90,10 @@ const MarkingAnimalForm = () => {
                     name={getAnimalFieldName<IAnimalMarking>(name, 'secondary_colour_id', index)}
                     id="secondary_colour_id"
                     route="colours"
-                    controlProps={{ size: 'small', required: isReq(AnimalMarkingSchema, 'secondary_colour_id') }}
+                    controlProps={{
+                      size: 'small',
+                      required: isRequiredInSchema(AnimalMarkingSchema, 'secondary_colour_id')
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -95,7 +101,7 @@ const MarkingAnimalForm = () => {
                     <CustomTextField
                       label="Marking Comment"
                       name={getAnimalFieldName<IAnimalMarking>(name, 'marking_comment', index)}
-                      other={{ size: 'small', required: isReq(AnimalMarkingSchema, 'marking_comment') }}
+                      other={{ size: 'small', required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment') }}
                     />
                   </TextInputToggle>
                 </Grid>

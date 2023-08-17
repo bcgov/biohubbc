@@ -6,7 +6,7 @@ import {
   IAnimal,
   IAnimalMarking,
   ICritterMarking,
-  isReq,
+  isRequiredInSchema,
   lastAnimalValueValid
 } from './animal';
 
@@ -69,7 +69,7 @@ describe('Animal', () => {
     describe(lastAnimalValueValid.name, () => {
       it('should return true when value empty array', () => {
         const valid = lastAnimalValueValid('captures', animal);
-        expect(!valid);
+        expect(valid).toBe(true);
       });
 
       it('should return true when last value in section parses successfully with yup schema', () => {
@@ -82,7 +82,7 @@ describe('Animal', () => {
             } as IAnimalMarking
           ]
         });
-        expect(!valid);
+        expect(valid).toBe(true);
       });
 
       it('should return false when last value in section parses successfully with yup schema', () => {
@@ -95,11 +95,11 @@ describe('Animal', () => {
             } as IAnimalMarking
           ]
         });
-        expect(valid);
+        expect(valid).toBe(false);
       });
     });
 
-    describe(isReq.name, () => {
+    describe(isRequiredInSchema.name, () => {
       const schema = yup.object({
         prop: yup.string().required()
       });
@@ -109,11 +109,11 @@ describe('Animal', () => {
       });
 
       it('should return true when prop required in yup schema', () => {
-        expect(isReq(schema, 'prop'));
+        expect(isRequiredInSchema(schema, 'prop')).toBe(true);
       });
 
       it('should return false when prop not required in yup schema', () => {
-        expect(isReq(schema2, 'prop'));
+        expect(isRequiredInSchema(schema2, 'prop')).toBe(false);
       });
     });
 

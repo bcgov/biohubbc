@@ -9,9 +9,11 @@ import useDataLoader from 'hooks/useDataLoader';
 import React, { Fragment, useState } from 'react';
 //import { validate as uuidValidate } from 'uuid';
 import {
+  AnimalRelationshipSchema,
   getAnimalFieldName,
   IAnimal,
   IAnimalRelationship,
+  isRequiredInSchema,
   lastAnimalValueValid,
   newFamilyIdPlaceholder
 } from '../animal';
@@ -100,7 +102,11 @@ const FamilyAnimalForm = () => {
             {values.family.map((_cap, index) => (
               <Fragment key={`family-inputs-${index}`}>
                 <Grid item xs={6}>
-                  <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
+                  <FormControl
+                    fullWidth
+                    variant="outlined"
+                    required={isRequiredInSchema(AnimalRelationshipSchema, 'family_id')}
+                    style={{ width: '100%' }}>
                     <InputLabel size="small" id={`relationship-family-${index}`}>
                       Family ID
                     </InputLabel>
@@ -126,7 +132,11 @@ const FamilyAnimalForm = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Grid item xs={6}>
-                    <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
+                    <FormControl
+                      fullWidth
+                      variant="outlined"
+                      required={isRequiredInSchema(AnimalRelationshipSchema, 'relationship')}
+                      style={{ width: '100%' }}>
                       <InputLabel size="small" id={`relationship-family-${index}`}>
                         Relationship
                       </InputLabel>

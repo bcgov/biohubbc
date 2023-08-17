@@ -4,7 +4,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment, useState } from 'react';
-import { AnimalMortalitySchema, getAnimalFieldName, IAnimal, IAnimalMortality, isReq } from '../animal';
+import { AnimalMortalitySchema, getAnimalFieldName, IAnimal, IAnimalMortality, isRequiredInSchema } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 import LocationEntryForm from './LocationEntryForm';
@@ -89,7 +89,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
         <Grid item xs={6}>
           <CustomTextField
             other={{
-              required: isReq(AnimalMortalitySchema, 'mortality_timestamp'),
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp'),
               size: 'small',
               type: 'date',
               InputLabelProps: { shrink: true }
@@ -103,7 +103,10 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_reason', index)}
             handleChangeSideEffect={(_value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
             label={'PCOD Reason'}
-            controlProps={{ size: 'small', required: isReq(AnimalMortalitySchema, 'mortality_pcod_reason') }}
+            controlProps={{
+              size: 'small',
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_reason')
+            }}
             id={`${index}-pcod-reason`}
             route={'cod'}
           />
@@ -112,7 +115,10 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
           <CbSelectField
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_confidence', index)}
             label={'PCOD Confidence'}
-            controlProps={{ size: 'small', required: isReq(AnimalMortalitySchema, 'mortality_pcod_confidence') }}
+            controlProps={{
+              size: 'small',
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_confidence')
+            }}
             id={`${index}-pcod-confidence`}
             route={'cause_of_death_confidence'}
           />
@@ -124,7 +130,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             controlProps={{
               size: 'small',
               disabled: pcodTaxonDisabled,
-              required: isReq(AnimalMortalitySchema, 'mortality_pcod_taxon_id')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_taxon_id')
             }}
             id={`${index}-pcod-taxon`}
             route={'taxons'}
@@ -139,7 +145,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             label={'UCOD Reason'}
             controlProps={{
               size: 'small',
-              required: isReq(AnimalMortalitySchema, 'mortality_ucod_reason')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_reason')
             }}
             id={`${index}-ucod-reason`}
             route={'cod'}
@@ -151,7 +157,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             label={'UCOD Confidence'}
             controlProps={{
               size: 'small',
-              required: isReq(AnimalMortalitySchema, 'mortality_ucod_confidence')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_confidence')
             }}
             id={`${index}-ucod-confidence`}
             route={'cause_of_death_confidence'}
@@ -164,7 +170,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             controlProps={{
               size: 'small',
               disabled: ucodTaxonDisabled,
-              required: isReq(AnimalMortalitySchema, 'mortality_ucod_taxon_id')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_taxon_id')
             }}
             id={`${index}-ucod-taxon`}
             route={'taxons'}
@@ -174,7 +180,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
           <TextInputToggle label="Add comment about this Mortality">
             <CustomTextField
               other={{
-                required: isReq(AnimalMortalitySchema, 'mortality_comment'),
+                required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_comment'),
                 size: 'small'
               }}
               label="Mortality Comment"

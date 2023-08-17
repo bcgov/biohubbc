@@ -8,7 +8,7 @@ import {
   getAnimalFieldName,
   IAnimal,
   IAnimalCapture,
-  isReq,
+  isRequiredInSchema,
   lastAnimalValueValid
 } from '../animal';
 import TextInputToggle from '../TextInputToggle';
@@ -87,7 +87,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <CustomTextField
             other={{
-              required: isReq(AnimalCaptureSchema, 'capture_timestamp'),
+              required: isRequiredInSchema(AnimalCaptureSchema, 'capture_timestamp'),
               size: 'small',
               type: 'date',
               InputLabelProps: { shrink: true }
@@ -99,7 +99,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={12}>
           <TextInputToggle label="Add comment about this Capture">
             <CustomTextField
-              other={{ size: 'small', required: isReq(AnimalCaptureSchema, 'capture_comment') }}
+              other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
               label="Capture Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
             />
@@ -115,7 +115,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <CustomTextField
             other={{
-              required: isReq(AnimalCaptureSchema, 'release_timestamp'),
+              required: isRequiredInSchema(AnimalCaptureSchema, 'release_timestamp'),
               size: 'small',
               type: 'date',
               InputLabelProps: { shrink: true }
@@ -127,7 +127,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={12}>
           <TextInputToggle label="Add comment about this Release">
             <CustomTextField
-              other={{ size: 'small', required: isReq(AnimalCaptureSchema, 'release_comment') }}
+              other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
               label="Release Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
             />
