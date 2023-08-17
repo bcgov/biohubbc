@@ -1,11 +1,12 @@
-import { Box, Typography } from '@mui/material';
-import CustomTextField from 'components/fields/CustomTextField';
+import SearchIcon from '@mui/icons-material/Search';
+import { Autocomplete, Box, CircularProgress, TextField, Typography } from '@mui/material';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
+import { ISearchUserResponse } from 'interfaces/useUserApi.interface';
 import { debounce } from 'lodash';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 
 export const AddProjectUser = yup.object().shape({
@@ -21,26 +22,54 @@ interface IProjectUser {
   users: any[];
   roles: ICode[];
 }
+
+interface IUserCard {
+  name: string;
+  email: string;
+  agency: string;
+  type: string;
+}
+
+const UserCard: React.FC<IUserCard> = (props) => {
+  return (
+    <Box>
+      <Typography variant="h5">{props.name}</Typography>
+      <Box display={'flex'}>
+        <Typography variant="subtitle2">{props.email}</Typography>
+        <Typography sx={{ marginX: 1 }} variant="subtitle2">
+          {props.agency}
+        </Typography>
+        <Typography variant="subtitle2">{props.type}</Typography>
+      </Box>
+    </Box>
+  );
+};
+
 const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const { handleSubmit } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
 
+  const [searchUsers, setSearchUsers] = useState<ISearchUserResponse[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  // const [selectedUsers, setSelectedUsers] = useState<{ system_user_id: number; role_id: number }[]>([]);
+
   const handleSearch = useMemo(
     () =>
-      debounce(async (inputValue: string) => {
+      debounce(async (inputValue: string, existingValues: number[]) => {
+        setIsSearching(true);
         const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase());
         // const newOptions = convertOptions(response.searchResponse).filter(
         //   (item) => !existingValues?.includes(item.value)
         // );
-        console.log(response);
-        // callback([]);
+        setIsSearching(false);
+        setSearchUsers(response);
       }, 500),
     [biohubApi.user]
   );
 
-  const handleNewUser = () => {
-    console.log('Add new user row');
-  };
+  // const handleNewUser = () => {
+  //   console.log('Add new user row');
+  // };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -54,37 +83,54 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         </Typography>
       </Box>
       <Box mt={3}>
-        <CustomTextField
-          label="Search for users"
-          name="user-search"
-          other={{
-            onChange: (event) => {
-              handleSearch(event.target.value);
-            }
+        <Autocomplete
+          autoSelect
+          clearOnBlur
+          blurOnSelect
+          handleHomeEndKeys
+          id=""
+          options={searchUsers}
+          onInputChange={(event, value) => {
+            handleSearch(value, []);
+          }}
+          onChange={(event, option) => {
+            console.log('IS THIS THE SELECT OR THE SEARCH?');
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              placeholder="Find Team Members"
+              fullWidth
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: <SearchIcon />,
+                endAdornment: (
+                  <>
+                    {isSearching ? <CircularProgress color="inherit" size={20} /> : null}
+                    {params.InputProps.endAdornment}
+                  </>
+                )
+              }}
+            />
+          )}
+          renderOption={(renderProps, renderOption, { selected }) => {
+            return (
+              <Box component="li" {...renderProps}>
+                <UserCard
+                  name={renderOption.display_name}
+                  email={renderOption.email}
+                  agency={renderOption.agency}
+                  type={renderOption.identity_source}
+                />
+              </Box>
+            );
           }}
         />
-        {/* <Autocomplete
-          options={[1, 2, 3, 4]}
-          renderInput={(params) => (
-            <Box>
-              <TextField {...params} />
-            </Box>
-          )}
-        /> */}
       </Box>
       {/* <Box> Assign Role Errors</Box> */}
       <FieldArray name="" render={(arrayHelpers: FieldArrayRenderProps) => <Box></Box>} />
       <Box>
-        <Box>
-          <Typography variant="h5">User One</Typography>
-          <Box display={'flex'}>
-            <Typography variant="subtitle2">user1@email.com</Typography>
-            <Typography sx={{ marginX: 1 }} variant="subtitle2">
-              Agency
-            </Typography>
-            <Typography variant="subtitle2">BCId</Typography>
-          </Box>
-        </Box>
         {/* <FormControl required={true} error={false}>
           <InputLabel id="" required={false}>
             Project Role
