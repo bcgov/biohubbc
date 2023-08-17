@@ -31,7 +31,7 @@ export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) 
  * ie: { required: true } -> { required: isReq(Schema, 'property_name') }
  */
 export const isRequiredInSchema = <T extends AnyObjectSchema>(schema: T, key: keyof T['fields']): boolean => {
-  return schema.fields[key].exclusiveTests.required;
+  return Boolean(schema.fields[key].exclusiveTests.required);
 };
 
 export const glt = (num: number, greater = true) => `Must be ${greater ? 'greater' : 'less'} than or equal to ${num}`;

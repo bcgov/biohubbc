@@ -82,6 +82,7 @@ describe('Animal', () => {
           ...animal,
           markings: [
             {
+              _id: 'test',
               marking_type_id: 'a',
               taxon_marking_body_location_id: 'b'
             } as IAnimalMarking
@@ -90,7 +91,7 @@ describe('Animal', () => {
         expect(valid).toBe(true);
       });
 
-      it('should return false when last value in section parses successfully with yup schema', () => {
+      it('should return false when last value in section parses unsuccessfully with yup schema', () => {
         const valid = lastAnimalValueValid('markings', {
           ...animal,
           markings: [
