@@ -64,6 +64,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
       );
       setFieldValue(getAnimalFieldName<T>(name, primaryLocationFields.utm_northing, index), utm_coords[1]);
       setFieldValue(getAnimalFieldName<T>(name, primaryLocationFields.utm_easting, index), utm_coords[0]);
+
       if (
         secondaryLocationFields &&
         (value[secondaryLocationFields.latitude] || value[secondaryLocationFields.longitude])
@@ -72,8 +73,8 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           coerceZero(value[secondaryLocationFields.latitude]),
           coerceZero(value[secondaryLocationFields.longitude])
         );
-        setFieldValue(getAnimalFieldName<T>(name, primaryLocationFields.utm_northing, index), utm_coords_release[1]);
-        setFieldValue(getAnimalFieldName<T>(name, primaryLocationFields.utm_easting, index), utm_coords_release[0]);
+        setFieldValue(getAnimalFieldName<T>(name, secondaryLocationFields.utm_northing, index), utm_coords_release[1]);
+        setFieldValue(getAnimalFieldName<T>(name, secondaryLocationFields.utm_easting, index), utm_coords_release[0]);
       }
     } else {
       const wgs_coords = getUtmAsLatLng(
