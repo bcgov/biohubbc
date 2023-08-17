@@ -68,27 +68,6 @@ const FamilyAnimalForm = () => {
     relationship: undefined
   };
 
-  /*const validateCritterExists = async (critter_id: string) => {
-    let error: string | undefined;
-    if (!critter_id) {
-      error = 'Required';
-    }
-    if (!uuidValidate(critter_id)) {
-      error = 'Not a valid UUID.';
-      return error;
-    }
-    try {
-      //Check the actual critter table here.
-      const critter = await critterbase.critters.getCritterByID(critter_id);
-      if (critter.critter_id !== critter_id) {
-        error = 'Critter not in critterbase.';
-      }
-    } catch {
-      error = 'Critter not in critterbase.';
-    }
-    return error;
-  };*/
-
   return (
     <FieldArray validateOnChange={true} name={name}>
       {({ remove, push }: FieldArrayRenderProps) => (
@@ -190,7 +169,7 @@ const FamilyAnimalForm = () => {
                       <Typography component="h4">Parents:</Typography>
                       <ul>
                         {familyHierarchy?.parents.map((a) => (
-                          <li>
+                          <li key={a.critter_id}>
                             <Grid container>
                               <Grid item xs={6}>
                                 <Typography component="dt" variant="subtitle2" color="textSecondary">
@@ -216,7 +195,7 @@ const FamilyAnimalForm = () => {
                           (
                             a: { critter_id: string; animal_id: string } //I will type this better I promise
                           ) => (
-                            <li>
+                            <li key={a.critter_id}>
                               <Grid container>
                                 <Grid item xs={6}>
                                   <Typography component="dt" variant="subtitle2" color="textSecondary">

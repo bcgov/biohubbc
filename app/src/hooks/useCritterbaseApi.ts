@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import { ConfigContext } from 'contexts/configContext';
 import { useContext } from 'react';
 import useAxios from './api/useAxios';

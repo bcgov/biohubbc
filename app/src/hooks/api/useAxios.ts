@@ -1,7 +1,6 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { useMemo } from 'react';
-//import { ensureProtocol } from 'utils/Utils';
 
 export class APIError extends Error {
   status: number;

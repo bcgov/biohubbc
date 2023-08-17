@@ -150,7 +150,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             <Field
               as={CustomTextField}
               name={valName}
-              label={`Value${measurement?.unit ? ` [${measurement?.unit}'s]` : ``}`}
+              label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
               other={{
                 required: isRequiredInSchema(AnimalMeasurementSchema, 'value'),
                 size: 'small',
