@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-create');
@@ -16,6 +17,7 @@ export class PostProjectObject {
   location: PostLocationData;
   iucn: PostIUCNData;
   partnerships: PostPartnershipsData;
+  participants: PostParticipantsData[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
@@ -26,6 +28,8 @@ export class PostProjectObject {
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
+    this.participants =
+      (obj?.participants && obj.participants.map((item: any) => new PostParticipantsData(item))) || [];
   }
 }
 
@@ -168,6 +172,26 @@ export class PostPartnershipsData {
 
     this.indigenous_partnerships = (obj?.indigenous_partnerships.length && obj.indigenous_partnerships) || [];
     this.stakeholder_partnerships = (obj?.stakeholder_partnerships.length && obj.stakeholder_partnerships) || [];
+  }
+}
+
+export class PostParticipantsData {
+  systemUserId: number;
+  userIdentifier: string;
+  identitySource: SYSTEM_IDENTITY_SOURCE;
+  displayName: string;
+  email: string;
+  roleId: number;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostParticipantsData', message: 'params', obj });
+
+    this.systemUserId = obj?.systemUserId || null;
+    this.userIdentifier = obj?.userIdentifier || null;
+    this.identitySource = obj?.identitySource || null;
+    this.displayName = obj?.displayName || null;
+    this.email = obj?.email || null;
+    this.roleId = obj?.roleId || null;
   }
 }
 

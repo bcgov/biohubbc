@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { ProjectService } from '../../../../services/project-service';
+import { ProjectParticipationService } from '../../../../services/project-participation-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/get');
@@ -133,9 +133,9 @@ export function getParticipants(): RequestHandler {
 
       await connection.open();
 
-      const projectService = new ProjectService(connection);
+      const projectParticipationService = new ProjectParticipationService(connection);
 
-      const result = await projectService.getProjectParticipants(projectId);
+      const result = await projectParticipationService.getProjectParticipants(projectId);
 
       await connection.commit();
 

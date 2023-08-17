@@ -2,11 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../database/db';
+import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
+import { IParticipant } from '../../../../repositories/project-participation-repository';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { ProjectService } from '../../../../services/project-service';
-import { UserService } from '../../../../services/user-service';
+import { ProjectParticipationService } from '../../../../services/project-participation-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/create');
@@ -116,14 +116,6 @@ POST.apiDoc = {
   }
 };
 
-type Participant = {
-  userIdentifier: string;
-  identitySource: string;
-  roleId: number;
-  displayName: string;
-  email: string;
-};
-
 export function createProjectParticipants(): RequestHandler {
   return async (req, res) => {
     const projectId = Number(req.params.projectId);
@@ -139,12 +131,16 @@ export function createProjectParticipants(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const participants: Participant[] = req.body.participants;
+      const participants: IParticipant[] = req.body.participants;
 
       await connection.open();
+      const projectParticipationService = new ProjectParticipationService(connection);
 
       const promises: Promise<any>[] = participants.map((participant) => {
-        return ensureSystemUserAndProjectParticipantUser(projectId, { ...participant, userGuid: null }, connection);
+        return projectParticipationService.ensureSystemUserAndProjectParticipantUser(projectId, {
+          ...participant,
+          userGuid: null
+        });
       });
 
       await Promise.all(promises);
@@ -160,25 +156,3 @@ export function createProjectParticipants(): RequestHandler {
     }
   };
 }
-
-export const ensureSystemUserAndProjectParticipantUser = async (
-  projectId: number,
-  participant: Participant & { userGuid: string | null },
-  connection: IDBConnection
-) => {
-  const userService = new UserService(connection);
-
-  // Create or activate the system user
-  const systemUserObject = await userService.ensureSystemUser(
-    participant.userGuid,
-    participant.userIdentifier,
-    participant.identitySource,
-    participant.displayName,
-    participant.email
-  );
-
-  const projectService = new ProjectService(connection);
-
-  // Add project role, unless they already have one
-  await projectService.ensureProjectParticipant(projectId, systemUserObject.system_user_id, participant.roleId);
-};

@@ -4,9 +4,8 @@ import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../co
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { ProjectService } from '../../../../../services/project-service';
+import { ProjectParticipationService } from '../../../../../services/project-participation-service';
 import { getLogger } from '../../../../../utils/logger';
-import { doAllProjectsHaveAProjectLead } from '../../../../user/{userId}/delete';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/delete');
 
@@ -89,13 +88,15 @@ export function deleteProjectParticipant(): RequestHandler {
     try {
       await connection.open();
 
-      const projectService = new ProjectService(connection);
+      const projectParticipationService = new ProjectParticipationService(connection);
 
       // Check coordinator roles before deleting user
-      const projectParticipantsResponse1 = await projectService.getProjectParticipants(projectId);
-      const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
+      const projectParticipantsResponse1 = await projectParticipationService.getProjectParticipants(projectId);
+      const projectHasLeadResponse1 = projectParticipationService.doAllProjectsHaveAProjectLead(
+        projectParticipantsResponse1
+      );
 
-      const result = await projectService.deleteProjectParticipationRecord(projectParticipationId);
+      const result = await projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
@@ -105,8 +106,10 @@ export function deleteProjectParticipant(): RequestHandler {
       // If coordinator roles are invalid skip check to prevent removal of only coordinator of project
       // (Project is already missing coordinator and is in a bad state)
       if (projectHasLeadResponse1) {
-        const projectParticipantsResponse2 = await projectService.getProjectParticipants(projectId);
-        const projectHasLeadResponse2 = doAllProjectsHaveAProjectLead(projectParticipantsResponse2);
+        const projectParticipantsResponse2 = await projectParticipationService.getProjectParticipants(projectId);
+        const projectHasLeadResponse2 = projectParticipationService.doAllProjectsHaveAProjectLead(
+          projectParticipantsResponse2
+        );
 
         if (!projectHasLeadResponse2) {
           throw new HTTP400(

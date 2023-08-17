@@ -1,10 +1,12 @@
+import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
+
 /**
  * Request Object for project create POST request
  */
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
-  required: ['coordinator', 'project', 'location', 'iucn'],
+  required: ['coordinator', 'project', 'location', 'iucn', 'participants'],
   properties: {
     coordinator: {
       title: 'Project coordinator',
@@ -110,6 +112,40 @@ export const projectCreatePostRequestObject = {
           }
         }
       }
+    },
+    participants: {
+      title: 'Project participants',
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['userIdentifier', 'identitySource', 'displayName', 'email', 'roleId'],
+        properties: {
+          userIdentifier: {
+            description: 'A IDIR or BCEID username.',
+            type: 'string'
+          },
+          identitySource: {
+            type: 'string',
+            enum: [
+              SYSTEM_IDENTITY_SOURCE.IDIR,
+              SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+              SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
+            ]
+          },
+          displayName: {
+            type: 'string',
+            description: 'The display name for the user.'
+          },
+          email: {
+            type: 'string',
+            description: 'The email for the user.'
+          },
+          roleId: {
+            description: 'The id of the project role to assign to the participant.',
+            type: 'number'
+          }
+        }
+      }
     }
   }
 };
@@ -152,7 +188,8 @@ const projectUpdateProperties = {
       }
     }
   },
-  partnerships: { type: 'object', properties: {} }
+  partnerships: { type: 'object', properties: {} },
+  participants: { type: 'array', items: { type: 'object', properties: {} } }
 };
 
 /**

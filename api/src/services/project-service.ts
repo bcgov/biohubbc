@@ -27,7 +27,6 @@ import {
   ProjectData,
   ProjectSupplementaryData
 } from '../models/project-view';
-import { ProjectUser } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectRepository } from '../repositories/project-repository';
@@ -59,72 +58,6 @@ export class ProjectService extends DBService {
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
     this.surveyService = new SurveyService(connection);
-  }
-
-  /**
-   * Gets the project participant, adding them if they do not already exist.
-   *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @return {*}  {Promise<any>}
-   * @memberof ProjectService
-   */
-  async ensureProjectParticipant(
-    projectId: number,
-    systemUserId: number,
-    projectParticipantRoleId: number
-  ): Promise<void> {
-    const projectParticipantRecord = await this.getProjectParticipant(projectId, systemUserId);
-
-    if (projectParticipantRecord) {
-      // project participant already exists, do nothing
-      return;
-    }
-
-    // add new project participant record
-    await this.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-  }
-
-  /**
-   * Get an existing project participant.
-   *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @return {*}  {Promise<any>}
-   * @memberof ProjectService
-   */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
-    return this.projectParticipationService.getProjectParticipant(projectId, systemUserId);
-  }
-
-  /**
-   * Get all project participants for a project.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<object[]>}
-   * @memberof ProjectService
-   */
-  async getProjectParticipants(projectId: number): Promise<object[]> {
-    return this.projectParticipationService.getProjectParticipants(projectId);
-  }
-
-  /**
-   * Adds a new project participant.
-   *
-   * Note: Will fail if the project participant already exists.
-   *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @param {number} projectParticipantRoleId
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async addProjectParticipant(
-    projectId: number,
-    systemUserId: number,
-    projectParticipantRoleId: number
-  ): Promise<void> {
-    return this.projectParticipationService.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
   }
 
   async getProjectList(
@@ -359,6 +292,10 @@ export class ProjectService extends DBService {
 
     // Handle project programs
     promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
+
+    promises.push(
+      this.projectParticipationService.ensureProjectParticipantUsers(projectId, postProjectData.participants)
+    );
 
     await Promise.all(promises);
 
@@ -595,10 +532,6 @@ export class ProjectService extends DBService {
     }
 
     return true;
-  }
-
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
-    return this.projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
   }
 
   /**
