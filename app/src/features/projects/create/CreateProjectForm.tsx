@@ -31,6 +31,7 @@ import ProjectPartnershipsForm, {
   ProjectPartnershipsFormInitialValues,
   ProjectPartnershipsFormYupSchema
 } from '../components/ProjectPartnershipsForm';
+import ProjectUserForm from '../components/ProjectUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   sectionDivider: {
@@ -153,6 +154,15 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           component={
             <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
           }></HorizontalSplitFormComponent>
+
+        <Divider className={classes.sectionDivider} />
+
+        <HorizontalSplitFormComponent
+          title="Project Users"
+          summary="Add some users"
+          // need to auto fill current
+          component={<ProjectUserForm users={[]} />}
+        />
 
         <Divider className={classes.sectionDivider} />
 
