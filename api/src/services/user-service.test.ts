@@ -231,12 +231,15 @@ describe('UserService', () => {
 
       const existingInactiveSystemUser: User = {
         system_user_id: 2,
-        user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
+        user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
         user_guid: '',
         record_end_date: null,
         role_ids: [1],
-        role_names: ['Collaborator']
+        role_names: ['Collaborator'],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const getUserByGuidStub = sinon.stub(UserService.prototype, 'getUserByGuid').resolves(existingInactiveSystemUser);
@@ -268,12 +271,15 @@ describe('UserService', () => {
 
       const existingSystemUser: User = {
         system_user_id: 2,
-        user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
+        user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
         user_guid: '',
         record_end_date: '1900-01-01',
         role_ids: [1],
-        role_names: ['Collaborator']
+        role_names: ['Collaborator'],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const getUserByGuidStub = sinon.stub(UserService.prototype, 'getUserByGuid').resolves(existingSystemUser);
@@ -284,12 +290,15 @@ describe('UserService', () => {
 
       const activatedSystemUser: User = {
         system_user_id: 2,
-        user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
+        user_identifier: 'username',
         identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
         user_guid: '',
         record_end_date: null,
         role_ids: [1],
-        role_names: ['Collaborator']
+        role_names: ['Collaborator'],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(activatedSystemUser);

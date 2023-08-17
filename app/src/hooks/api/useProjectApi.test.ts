@@ -241,7 +241,8 @@ describe('useProjectApi', () => {
         project_id: 1,
         system_user_id: 1,
         project_role_ids: [1],
-        project_role_names: ['RoleA']
+        project_role_names: ['RoleA'],
+        project_role_permissions: ['PermissionA']
       }
     };
     mock.onGet(`/api/project/${projectId}/participants/self`).reply(200, mockResponse);

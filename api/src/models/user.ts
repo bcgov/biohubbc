@@ -7,7 +7,10 @@ export const User = z.object({
   identity_source: z.string(),
   record_end_date: z.string().nullable(),
   role_ids: z.array(z.number()).default([]),
-  role_names: z.array(z.string()).default([])
+  role_names: z.array(z.string()).default([]),
+  email: z.string(),
+  display_name: z.string(),
+  agency: z.string().nullable()
 });
 
 export type User = z.infer<typeof User>;

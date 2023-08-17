@@ -1,7 +1,7 @@
 import { IDBConnection } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { User } from '../models/user';
-import { UserRepository } from '../repositories/user-repository';
+import { UserRepository, UserSearchCriteria } from '../repositories/user-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
@@ -216,5 +216,9 @@ export class UserService extends DBService {
    */
   async deleteAllProjectRoles(systemUserId: number) {
     return this.userRepository.deleteAllProjectRoles(systemUserId);
+  }
+
+  async getUsers(searchCriteria: UserSearchCriteria) {
+    return this.userRepository.getUsers(searchCriteria);
   }
 }

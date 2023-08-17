@@ -139,7 +139,10 @@ describe('user', () => {
         identity_source: '',
         record_end_date: '',
         role_ids: [1],
-        role_names: []
+        role_names: [],
+        email: '',
+        display_name: '',
+        agency: null
       };
 
       const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
@@ -176,7 +179,10 @@ describe('user', () => {
         identity_source: '',
         record_end_date: '',
         role_ids: [1],
-        role_names: []
+        role_names: [],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
