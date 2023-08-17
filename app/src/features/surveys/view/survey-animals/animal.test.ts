@@ -162,7 +162,8 @@ describe('Animal', () => {
       //one for capture one for release
       expect(critter.locations.length).toBe(2);
       critter.locations.forEach((l) => {
-        expect([captureLocationID, releaseLocationID].includes(l.location_id));
+        const hasLocationID = [captureLocationID, releaseLocationID].includes(l.location_id);
+        expect(hasLocationID).toBe(true);
       });
     });
 

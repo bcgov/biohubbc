@@ -8,7 +8,6 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { Fragment, useState } from 'react';
 import { v4 } from 'uuid';
-//import { validate as uuidValidate } from 'uuid';
 import {
   AnimalRelationshipSchema,
   getAnimalFieldName,

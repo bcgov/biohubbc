@@ -79,7 +79,6 @@ const useLookupApi = (axios: AxiosInstance) => {
       const { data } = await axios.get(`${CbRoutes.taxon_measurements}?taxon_id=${taxon_id}`);
       return data;
     }
-    return;
   };
 
   return {
