@@ -4,6 +4,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment } from 'react';
+import { v4 } from 'uuid';
 import {
   AnimalMarkingSchema,
   getAnimalFieldName,
@@ -26,6 +27,8 @@ const MarkingAnimalForm = () => {
 
   const name: keyof IAnimal = 'markings';
   const newMarking: IAnimalMarking = {
+    _id: v4(),
+
     marking_type_id: '',
     taxon_marking_body_location_id: '',
     primary_colour_id: undefined,
@@ -45,8 +48,8 @@ const MarkingAnimalForm = () => {
             disableAddBtn={!lastAnimalValueValid('markings', values)}
             handleAddSection={() => push(newMarking)}
             handleRemoveSection={remove}>
-            {values?.markings?.map((_cap, index) => (
-              <Fragment key={`marking-inputs-${index}`}>
+            {values?.markings?.map((mark, index) => (
+              <Fragment key={mark._id}>
                 <Grid item xs={6}>
                   <CbSelectField
                     label="Marking Type"

@@ -7,6 +7,7 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { Fragment, useState } from 'react';
+import { v4 } from 'uuid';
 //import { validate as uuidValidate } from 'uuid';
 import {
   AnimalRelationshipSchema,
@@ -61,6 +62,8 @@ const FamilyAnimalForm = () => {
 
   const name: keyof IAnimal = 'family';
   const newRelationship: IAnimalRelationship = {
+    _id: v4(),
+
     family_id: '',
     relationship: undefined
   };
@@ -99,8 +102,8 @@ const FamilyAnimalForm = () => {
             handleAddSection={() => push(newRelationship)}
             maxSections={1}
             handleRemoveSection={remove}>
-            {values.family.map((_cap, index) => (
-              <Fragment key={`family-inputs-${index}`}>
+            {values.family.map((fam, index) => (
+              <Fragment key={fam._id}>
                 <Grid item xs={6}>
                   <FormControl
                     fullWidth

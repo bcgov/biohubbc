@@ -4,6 +4,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment, useState } from 'react';
+import { v4 } from 'uuid';
 import { AnimalMortalitySchema, getAnimalFieldName, IAnimal, IAnimalMortality, isRequiredInSchema } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
@@ -33,6 +34,8 @@ const MortalityAnimalForm = () => {
 
   const name: keyof IAnimal = 'mortality';
   const newMortality: IAnimalMortality = {
+    _id: v4(),
+
     mortality_longitude: '' as unknown as number,
     mortality_latitude: '' as unknown as number,
     mortality_utm_northing: '' as unknown as number,
@@ -61,8 +64,8 @@ const MortalityAnimalForm = () => {
             maxSections={1}
             handleAddSection={() => push(newMortality)}
             handleRemoveSection={remove}>
-            {values.mortality.map((_cap, index) => (
-              <MortalityAnimalFormContent key={`${name}-${index}-inputs`} name={name} index={index} value={_cap} />
+            {values.mortality.map((mort, index) => (
+              <MortalityAnimalFormContent key={mort._id} name={name} index={index} value={mort} />
             ))}
           </FormSectionWrapper>
         </>

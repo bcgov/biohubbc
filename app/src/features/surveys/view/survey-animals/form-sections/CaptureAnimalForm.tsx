@@ -3,6 +3,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment } from 'react';
+import { v4 } from 'uuid';
 import {
   AnimalCaptureSchema,
   getAnimalFieldName,
@@ -33,6 +34,8 @@ const CaptureAnimalForm = () => {
 
   const name: keyof IAnimal = 'captures';
   const newCapture: IAnimalCapture = {
+    _id: v4(),
+
     capture_latitude: '' as unknown as number,
     capture_longitude: '' as unknown as number,
     capture_utm_northing: '' as unknown as number,
@@ -62,8 +65,8 @@ const CaptureAnimalForm = () => {
             disableAddBtn={!lastAnimalValueValid('captures', values)}
             handleAddSection={() => push(newCapture)}
             handleRemoveSection={remove}>
-            {values.captures.map((_cap, index) => (
-              <CaptureAnimalFormContent key={`${name}-${index}-inputs`} name={name} index={index} value={_cap} />
+            {values.captures.map((cap, index) => (
+              <CaptureAnimalFormContent key={cap._id} name={name} index={index} value={cap} />
             ))}
           </FormSectionWrapper>
         </>

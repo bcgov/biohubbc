@@ -1,4 +1,5 @@
 import yup from 'utils/YupSchema';
+import { v4 } from 'uuid';
 import {
   Critter,
   getAnimalFieldName,
@@ -14,6 +15,8 @@ const animal: IAnimal = {
   general: { taxon_id: 'a', taxon_name: 'taxon', animal_id: 'animal' },
   captures: [
     {
+      _id: v4(),
+
       capture_latitude: 3,
       capture_longitude: 3,
       capture_utm_northing: 19429156.095,
@@ -33,6 +36,8 @@ const animal: IAnimal = {
   ],
   markings: [
     {
+      _id: v4(),
+
       marking_type_id: '274fe690-e253-4987-b11a-5b762d38adf3',
       taxon_marking_body_location_id: '372020d9-b9ee-4eb3-abdd-b476711bd1aa',
       primary_colour_id: '4aa3cce7-94d0-42d0-a183-078db5fbdd34',

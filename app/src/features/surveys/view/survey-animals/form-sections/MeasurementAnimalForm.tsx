@@ -8,6 +8,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { has } from 'lodash-es';
 import React, { Fragment, useEffect, useState } from 'react';
+import { v4 } from 'uuid';
 import {
   AnimalMeasurementSchema,
   getAnimalFieldName,
@@ -44,6 +45,8 @@ const MeasurementAnimalForm = () => {
   }
 
   const newMeasurement: IAnimalMeasurement = {
+    _id: v4(),
+
     taxon_measurement_id: '',
     value: undefined,
     qualitative_option_id: '',
@@ -63,8 +66,8 @@ const MeasurementAnimalForm = () => {
             disableAddBtn={!lastAnimalValueValid('measurements', values)}
             handleAddSection={() => push(newMeasurement)}
             handleRemoveSection={remove}>
-            {values.measurements.map((_cap, index) => (
-              <MeasurementFormContent key={`measurement-form-${index}`} index={index} measurements={measurements} />
+            {values.measurements.map((measurement, index) => (
+              <MeasurementFormContent key={measurement._id} index={index} measurements={measurements} />
             ))}
           </FormSectionWrapper>
         </>

@@ -49,6 +49,8 @@ export const AnimalGeneralSchema = yup.object({}).shape({
 });
 
 export const AnimalCaptureSchema = yup.object({}).shape({
+  _id: yup.string().required(),
+
   capture_longitude: lonSchema.required(req),
   capture_latitude: latSchema.required(req),
   capture_utm_northing: numSchema,
@@ -67,6 +69,8 @@ export const AnimalCaptureSchema = yup.object({}).shape({
 });
 
 export const AnimalMarkingSchema = yup.object({}).shape({
+  _id: yup.string().required(),
+
   marking_type_id: yup.string().required(req),
   taxon_marking_body_location_id: yup.string().required(req),
   primary_colour_id: yup.string().optional(),
@@ -75,6 +79,8 @@ export const AnimalMarkingSchema = yup.object({}).shape({
 });
 
 export const AnimalMeasurementSchema = yup.object({}).shape({
+  _id: yup.string().required(),
+
   taxon_measurement_id: yup.string().required(req),
   value: numSchema,
   qualitative_option_id: yup.string(),
@@ -83,6 +89,8 @@ export const AnimalMeasurementSchema = yup.object({}).shape({
 });
 
 export const AnimalMortalitySchema = yup.object({}).shape({
+  _id: yup.string().required(),
+
   mortality_longitude: lonSchema.required(req),
   mortality_latitude: latSchema.required(req),
   mortality_utm_northing: numSchema,
@@ -100,6 +108,8 @@ export const AnimalMortalitySchema = yup.object({}).shape({
 });
 
 export const AnimalRelationshipSchema = yup.object({}).shape({
+  _id: yup.string().required(),
+
   family_id: yup.string().required(req),
   relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });
