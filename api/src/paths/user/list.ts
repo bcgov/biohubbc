@@ -40,7 +40,16 @@ GET.apiDoc = {
             items: {
               title: 'User Response Object',
               type: 'object',
-              required: ['system_user_id', 'user_identifier', 'identity_source', 'role_ids', 'role_names'],
+              required: [
+                'system_user_id',
+                'user_identifier',
+                'identity_source',
+                'role_ids',
+                'role_names',
+                'email',
+                'display_name',
+                'agency'
+              ],
               properties: {
                 system_user_id: {
                   type: 'number'
@@ -68,6 +77,16 @@ GET.apiDoc = {
                   items: {
                     type: 'string'
                   }
+                },
+                email: {
+                  type: 'string'
+                },
+                display_name: {
+                  type: 'string'
+                },
+                agency: {
+                  type: 'string',
+                  nullable: true
                 }
               }
             }

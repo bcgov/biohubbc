@@ -105,7 +105,10 @@ describe('UserRepository', () => {
           identity_source: 'idir',
           record_end_date: 'data',
           role_ids: [1],
-          role_names: ['admin']
+          role_names: ['admin'],
+          email: 'email@email.com',
+          display_name: 'test name',
+          agency: null
         }
       ];
       const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
@@ -153,7 +156,10 @@ describe('UserRepository', () => {
           identity_source: 'idir',
           record_end_date: 'data',
           role_ids: [1],
-          role_names: ['admin']
+          role_names: ['admin'],
+          email: 'email@email.com',
+          display_name: 'test name',
+          agency: null
         }
       ];
       const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
@@ -244,7 +250,16 @@ describe('UserRepository', () => {
 
     it('should get user list', async () => {
       const mockResponse = [
-        { system_user_id: 1, user_identifier: 1, record_end_date: 'data', role_ids: [1], role_names: ['admin'] }
+        {
+          system_user_id: 1,
+          user_identifier: 1,
+          record_end_date: 'data',
+          role_ids: [1],
+          role_names: ['admin'],
+          email: 'email@email.com',
+          display_name: 'test name',
+          agency: null
+        }
       ];
       const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 

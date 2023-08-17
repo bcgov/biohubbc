@@ -49,7 +49,10 @@ describe('getUser', () => {
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['role 1', 'role 2'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     const requestHandler = self.getUser();

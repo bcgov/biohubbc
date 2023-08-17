@@ -46,7 +46,10 @@ describe('PermitService', () => {
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const mockDBConnection = getMockDBConnection();
@@ -85,7 +88,10 @@ describe('PermitService', () => {
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const mockDBConnection = getMockDBConnection();
@@ -124,7 +130,10 @@ describe('PermitService', () => {
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: []
+        role_names: [],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const mockDBConnection = getMockDBConnection();

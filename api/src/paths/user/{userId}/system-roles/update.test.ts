@@ -31,12 +31,15 @@ describe('updateSystemRolesHandler', () => {
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
-      user_identifier: 'test name',
-      user_guid: 'aaaa',
+      user_identifier: 'testname',
+      user_guid: '123-456-789',
       identity_source: 'idir',
-      record_end_date: '',
-      role_ids: [11, 22],
-      role_names: ['role 11', 'role 22']
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').rejects(new Error('a delete error'));
@@ -78,12 +81,15 @@ describe('updateSystemRolesHandler', () => {
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
-      user_identifier: 'test name',
-      user_guid: 'aaaa',
+      user_identifier: 'testname',
+      user_guid: '123-456-789',
       identity_source: 'idir',
-      record_end_date: '',
-      role_ids: [11, 22],
-      role_names: ['role 11', 'role 22']
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
@@ -115,12 +121,15 @@ describe('updateSystemRolesHandler', () => {
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
-      user_identifier: 'test name',
-      user_guid: 'aaaa',
+      user_identifier: 'testname',
+      user_guid: '123-456-789',
       identity_source: 'idir',
-      record_end_date: '',
-      role_ids: [11, 22],
-      role_names: ['role 1', 'role 2']
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     const deleteUserSystemRolesStub = sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
@@ -159,12 +168,15 @@ describe('updateSystemRolesHandler', () => {
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
-      user_identifier: 'test name',
-      user_guid: 'aaaa',
+      user_identifier: 'testname',
+      user_guid: '123-456-789',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: null,
       role_ids: [],
-      role_names: []
+      role_names: [],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     const deleteUserSystemRolesStub = sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
