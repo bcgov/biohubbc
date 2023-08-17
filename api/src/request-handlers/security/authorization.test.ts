@@ -654,15 +654,18 @@ describe('getSystemUserObject', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserWithRolesResponse = ({
+    const mockSystemUserWithRolesResponse: User = {
       system_user_id: 1,
       user_identifier: 'identifier',
       user_guid: 'aaaa',
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
-    } as unknown) as User;
+      role_names: ['role 1', 'role 2'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
+    };
     sinon.stub(authorization, 'getSystemUserWithRoles').resolves(mockSystemUserWithRolesResponse);
 
     const systemUserObject = await authorization.getSystemUserObject(mockDBConnection);
@@ -740,15 +743,13 @@ describe('getProjectUserObject', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserWithRolesResponse = {
+    const mockSystemUserWithRolesResponse: ProjectUser = {
+      project_id: 2,
       system_user_id: 1,
-      user_identifier: 'identifier',
-      user_guid: 'aaaa',
-      identity_source: 'idir',
-      record_end_date: null,
-      role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
-    } as any;
+      project_role_ids: [1, 2],
+      project_role_names: ['role 1', 'role 2'],
+      project_role_permissions: ['permission 1', 'permission 2']
+    };
     sinon.stub(authorization, 'getProjectUserWithRoles').resolves(mockSystemUserWithRolesResponse);
 
     const systemUserObject = await authorization.getProjectUserObject(1, mockDBConnection);

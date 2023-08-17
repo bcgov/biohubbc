@@ -82,11 +82,14 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
       user_identifier: 'testname',
-      user_guid: 'aaaa',
+      user_guid: '123-456-789',
       identity_source: 'idir',
       record_end_date: '2010-10-10',
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     try {
@@ -116,11 +119,14 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
       user_identifier: 'testname',
-      user_guid: 'aaaa',
+      user_guid: '123-456-789',
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     const expectedError = new Error('A database error');
@@ -151,11 +157,14 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
       user_identifier: 'testname',
-      user_guid: 'aaaa',
+      user_guid: '123-456-789',
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();
@@ -188,11 +197,14 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
       user_identifier: 'testname',
-      user_guid: 'aaaa',
+      user_guid: '123-456-789',
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();
@@ -226,11 +238,14 @@ describe('removeSystemUser', () => {
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
       user_identifier: 'testname',
-      user_guid: 'aaaa',
+      user_guid: '123-456-789',
       identity_source: 'idir',
       record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      display_name: 'test name',
+      agency: null
     });
 
     sinon.stub(UserService.prototype, 'deleteAllProjectRoles').resolves();

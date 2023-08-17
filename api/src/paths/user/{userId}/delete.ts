@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../database/db';
+import { SYSTEM_ROLE } from '../../../constants/roles';
+import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectParticipationService } from '../../../services/project-participation-service';
@@ -75,8 +75,9 @@ export function removeSystemUser(): RequestHandler {
 
     try {
       await connection.open();
+      const projectParticipationService = new ProjectParticipationService(connection);
 
-      await checkIfUserIsOnlyProjectLeadOnAnyProject(userId, connection);
+      await projectParticipationService.checkIfUserIsOnlyProjectLeadOnAnyProject(userId, connection);
 
       const userService = new UserService(connection);
 
@@ -104,107 +105,3 @@ export function removeSystemUser(): RequestHandler {
     }
   };
 }
-
-export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, connection: IDBConnection) => {
-  const projectParticipationService = new ProjectParticipationService(connection);
-
-  const getAllParticipantsResponse = await projectParticipationService.getParticipantsFromAllProjectsBySystemUserId(
-    userId
-  );
-
-  // No projects associated to user, skip coordinator role check
-  if (!getAllParticipantsResponse.length) {
-    return;
-  }
-
-  const onlyProjectLeadResponse = doAllProjectsHaveAProjectLeadIfUserIsRemoved(getAllParticipantsResponse, userId);
-
-  if (!onlyProjectLeadResponse) {
-    throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);
-  }
-};
-
-/**
- * Given an array of project participation role objects, return false if any project has no Coordinator role. Return
- * true otherwise.
- *
- * @param {any[]} rows
- * @return {*}  {boolean}
- */
-export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
-  // No project with Coordinator
-  if (!rows.length) {
-    return false;
-  }
-
-  const projectLeadsPerProject: { [key: string]: any } = {};
-
-  // count how many coordinator roles there are per project
-  rows.forEach((row) => {
-    const key = row.project_id;
-
-    if (!projectLeadsPerProject[key]) {
-      projectLeadsPerProject[key] = 0;
-    }
-
-    if (row.project_role_name === PROJECT_PERMISSION.COORDINATOR) {
-      projectLeadsPerProject[key] += 1;
-    }
-  });
-
-  const projectLeadCounts = Object.values(projectLeadsPerProject);
-
-  // check if any projects would be left with no Coordinator
-  for (const count of projectLeadCounts) {
-    if (!count) {
-      // found a project with no Coordinator
-      return false;
-    }
-  }
-
-  // all projects have a Coordinator
-  return true;
-};
-
-/**
- * Given an array of project participation role objects, return true if any project has no Coordinator role after
- * removing all rows associated with the provided `userId`. Return false otherwise.
- *
- * @param {any[]} rows
- * @param {number} userId
- * @return {*}  {boolean}
- */
-export const doAllProjectsHaveAProjectLeadIfUserIsRemoved = (rows: any[], userId: number): boolean => {
-  // No project with coordinator
-  if (!rows.length) {
-    return false;
-  }
-
-  const projectLeadsPerProject: { [key: string]: any } = {};
-
-  // count how many Coordinator roles there are per project
-  rows.forEach((row) => {
-    const key = row.project_id;
-
-    if (!projectLeadsPerProject[key]) {
-      projectLeadsPerProject[key] = 0;
-    }
-
-    if (row.system_user_id !== userId && row.project_role_name === PROJECT_PERMISSION.COORDINATOR) {
-      projectLeadsPerProject[key] += 1;
-    }
-  });
-
-  const projectLeadCounts = Object.values(projectLeadsPerProject);
-
-  // check if any projects would be left with no Coordinator
-  for (const count of projectLeadCounts) {
-    if (!count) {
-      // found a project with no Coordinator
-      return false;
-    }
-  }
-
-  // all projects have a Coordinator
-  return true;
-};

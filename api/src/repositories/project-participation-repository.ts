@@ -3,6 +3,15 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { ProjectUser } from '../models/user';
 import { BaseRepository } from './base-repository';
 
+export interface IParticipant {
+  systemUserId: number;
+  userIdentifier: string;
+  identitySource: string;
+  roleId: number;
+  displayName: string;
+  email: string;
+}
+
 /**
  * A repository class for accessing project participants data.
  *
@@ -11,6 +20,13 @@ import { BaseRepository } from './base-repository';
  * @extends {BaseRepository}
  */
 export class ProjectParticipationRepository extends BaseRepository {
+  /**
+   *  Deletes a project participation record.
+   *
+   * @param {number} projectParticipationId
+   * @return {*}  {Promise<any>}
+   * @memberof ProjectParticipationRepository
+   */
   async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
     const sqlStatement = SQL`
       DELETE FROM
@@ -33,6 +49,14 @@ export class ProjectParticipationRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Gets the project participant, adding them if they do not already exist.
+   *
+   * @param {number} projectId
+   * @param {number} systemUserId
+   * @return {*}  {(Promise<ProjectUser | null>)}
+   * @memberof ProjectParticipationRepository
+   */
   async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
     const sqlStatement = SQL`
       SELECT
@@ -46,9 +70,9 @@ export class ProjectParticipationRepository extends BaseRepository {
         project_participation pp
       LEFT JOIN project_role pr
         ON pp.project_role_id = pr.project_role_id
-      LEFT JOIN project_role_permission prp 
+      LEFT JOIN project_role_permission prp
         ON pp.project_role_id = prp.project_role_id
-      LEFT JOIN project_permission pp2 
+      LEFT JOIN project_permission pp2
         ON pp2.project_permission_id = prp.project_permission_id
       LEFT JOIN system_user su
         ON pp.system_user_id = su.system_user_id
@@ -71,6 +95,13 @@ export class ProjectParticipationRepository extends BaseRepository {
     return result;
   }
 
+  /**
+   * Gets a list of project participants for a given project.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<object[]>}
+   * @memberof ProjectParticipationRepository
+   */
   async getProjectParticipants(projectId: number): Promise<object[]> {
     const sqlStatement = SQL`
       SELECT
@@ -91,7 +122,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         pp.system_user_id = su.system_user_id
       LEFT JOIN
         user_identity_source uis
-      ON 
+      ON
         su.user_identity_source_id = uis.user_identity_source_id
       LEFT JOIN
         project_role pr
@@ -115,6 +146,15 @@ export class ProjectParticipationRepository extends BaseRepository {
     return result;
   }
 
+  /**
+   * Adds a project participant to the database.
+   *
+   * @param {number} projectId
+   * @param {number} systemUserId
+   * @param {number} projectParticipantRoleId
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectParticipationRepository
+   */
   async addProjectParticipant(
     projectId: number,
     systemUserId: number,
@@ -144,6 +184,14 @@ export class ProjectParticipationRepository extends BaseRepository {
     }
   }
 
+  /**
+   * Inserts a project participant role into the database.
+   *
+   * @param {number} projectId
+   * @param {string} projectParticipantRole
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectParticipationRepository
+   */
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
     const systemUserId = this.connection.systemUserId();
 

@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
-import { ProjectService } from '../../../../services/project-service';
+import { ProjectParticipationService } from '../../../../services/project-participation-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/self');
@@ -110,8 +110,9 @@ export function getUserRolesForProject(): RequestHandler {
         throw new HTTP400("Failed to get the user's system user ID");
       }
 
-      const projectService = new ProjectService(connection);
-      const result = await projectService.getProjectParticipant(projectId, systemUserId);
+      const projectParticipationService = new ProjectParticipationService(connection);
+
+      const result = await projectParticipationService.getProjectParticipant(projectId, systemUserId);
 
       await connection.commit();
 
