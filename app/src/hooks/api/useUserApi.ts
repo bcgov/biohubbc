@@ -63,12 +63,18 @@ const useUserApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const searchSystemUser = async (filter: string): Promise<IGetUserResponse[]> => {
+    const { data } = await axios.get(`api/user/search?filter=${filter}`);
+    return data;
+  };
+
   return {
     getUser,
     getUserById,
     getUsersList,
     deleteSystemUser,
-    updateSystemUserRoles
+    updateSystemUserRoles,
+    searchSystemUser
   };
 };
 

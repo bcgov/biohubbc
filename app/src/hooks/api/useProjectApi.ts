@@ -383,6 +383,14 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const postUserProjectRoles = async (
+    projectId: number,
+    userRoles: { user_id: number; role_id: number }[]
+  ): Promise<any> => {
+    const { data } = await axios.post(`/api/project/${projectId}/users`, { userRoles });
+    return data;
+  };
+
   return {
     getAllUserProjectsForView,
     getProjectsList,
@@ -403,7 +411,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     addProjectParticipants,
     removeProjectParticipant,
     updateProjectParticipantRole,
-    getUserProjectParticipant
+    getUserProjectParticipant,
+    postUserProjectRoles
   };
 };
 
