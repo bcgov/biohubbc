@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import { debounce } from 'lodash';
 import { useMemo } from 'react';
@@ -18,6 +19,7 @@ export const AddProjectUser = yup.object().shape({
 
 interface IProjectUser {
   users: any[];
+  roles: ICode[];
 }
 const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const { handleSubmit } = useFormikContext<ICreateProjectRequest>();
@@ -35,6 +37,10 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
       }, 500),
     [biohubApi.user]
   );
+
+  const handleNewUser = () => {
+    console.log('Add new user row');
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -79,6 +85,24 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             <Typography variant="subtitle2">BCId</Typography>
           </Box>
         </Box>
+        {/* <FormControl required={true} error={false}>
+          <InputLabel id="" required={false}>
+            Project Role
+          </InputLabel>
+          <Select
+            id={``}
+            name={``}
+            onChange={(event) => {
+              console.log(`Selected: `, event?.target?.value);
+            }}>
+            {props.roles.map((item: ICode) => (
+              <MenuItem key={item.id} value={item.id}>
+                {item.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText></FormHelperText>
+        </FormControl> */}
       </Box>
     </form>
   );

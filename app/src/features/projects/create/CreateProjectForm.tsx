@@ -161,7 +161,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           title="Project Users"
           summary="Add some users"
           // need to auto fill current
-          component={<ProjectUserForm users={[]} />}
+          component={<ProjectUserForm users={[]} roles={codes.project_roles} />}
         />
 
         <Divider className={classes.sectionDivider} />
