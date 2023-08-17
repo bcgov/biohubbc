@@ -1,10 +1,45 @@
 import yup from 'utils/YupSchema';
-import { getAnimalFieldName, glt, IAnimal, IAnimalMarking, isReq, lastAnimalValueValid } from './animal';
+import {
+  Critter,
+  getAnimalFieldName,
+  glt,
+  IAnimal,
+  IAnimalMarking,
+  ICritterMarking,
+  isReq,
+  lastAnimalValueValid
+} from './animal';
 
 const animal: IAnimal = {
-  general: { taxon_id: '', taxon_name: '', animal_id: '' },
-  captures: [],
-  markings: [],
+  general: { taxon_id: 'a', taxon_name: 'taxon', animal_id: 'animal' },
+  captures: [
+    {
+      capture_latitude: 3,
+      capture_longitude: 3,
+      capture_utm_northing: 19429156.095,
+      capture_utm_easting: 7659804.274,
+      capture_comment: 'comment',
+      capture_coordinate_uncertainty: 10,
+      capture_timestamp: new Date(),
+      projection_mode: 'wgs',
+      release_latitude: 3,
+      release_longitude: 3,
+      release_utm_northing: 19429156.095,
+      release_utm_easting: 7659804.274,
+      release_comment: 'comment',
+      release_timestamp: new Date(),
+      release_coordinate_uncertainty: 3
+    }
+  ],
+  markings: [
+    {
+      marking_type_id: '274fe690-e253-4987-b11a-5b762d38adf3',
+      taxon_marking_body_location_id: '372020d9-b9ee-4eb3-abdd-b476711bd1aa',
+      primary_colour_id: '4aa3cce7-94d0-42d0-a183-078db5fbdd34',
+      secondary_colour_id: '0b0dbfaa-fcc9-443f-8ac9-a22106663cba',
+      marking_comment: 'asdf'
+    }
+  ],
   mortality: [],
   measurements: [],
   family: [],
@@ -92,5 +127,55 @@ describe('Animal', () => {
       });
     });
   });
-  describe('Critter Class', () => { });
+  describe('Critter Class', () => {
+    const critter = new Critter(animal);
+    it('should generate a critter name', () => {
+      expect(critter.name).toBe('animal-taxon');
+    });
+
+    it('constructor should generate a critter uuid', () => {
+      expect(critter.critter_id).toBeDefined();
+    });
+
+    it('constructor should create critter captures and locations', () => {
+      const c_capture = critter.captures[0];
+      const a_capture = animal.captures[0];
+
+      const captureLocationID = c_capture.capture_location_id;
+      const releaseLocationID = c_capture.release_location_id;
+
+      expect(critter.captures).toBeDefined();
+      expect(critter.captures.length).toBe(1);
+      expect(c_capture.critter_id).toBe(critter.critter_id);
+      expect(c_capture.release_comment).toBe(a_capture.release_comment);
+      expect(c_capture.capture_comment).toBe(a_capture.capture_comment);
+      expect(c_capture.capture_timestamp).toBe(a_capture.capture_timestamp);
+      expect(c_capture.release_timestamp).toBe(a_capture.release_timestamp);
+      expect(c_capture.capture_location_id).toBeDefined();
+      expect(c_capture.release_location_id).toBeDefined();
+      //one for capture one for release
+      expect(critter.locations.length).toBe(2);
+      critter.locations.forEach((l) => {
+        expect([captureLocationID, releaseLocationID].includes(l.location_id));
+      });
+    });
+
+    it('constructor should create critter markings', () => {
+      const c_marking = critter.markings[0];
+      const a_marking = critter.markings[0];
+      expect(c_marking.critter_id).toBe(critter.critter_id);
+      for (const prop in c_marking) {
+        expect(c_marking[prop as keyof ICritterMarking]).toBe(a_marking[prop as keyof IAnimalMarking]);
+      }
+    });
+
+    it('constructor should create critter markings', () => {
+      const c_marking = critter.markings[0];
+      const a_marking = critter.markings[0];
+      expect(c_marking.critter_id).toBe(critter.critter_id);
+      for (const prop in c_marking) {
+        expect(c_marking[prop as keyof ICritterMarking]).toBe(a_marking[prop as keyof IAnimalMarking]);
+      }
+    });
+  });
 });

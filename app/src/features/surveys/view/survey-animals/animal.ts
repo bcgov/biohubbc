@@ -179,7 +179,7 @@ type ICritterCapture = ICritterID &
     release_location_id: string | undefined;
   };
 
-type ICritterMarking = ICritterID & IAnimalMarking;
+export type ICritterMarking = ICritterID & IAnimalMarking;
 
 type ICritterQualitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'value'>;
 
@@ -225,7 +225,7 @@ export class Critter {
   private taxon_name?: string;
 
   get name(): string {
-    return `${this.animal_id}-[${this.taxon_name}]`;
+    return `${this.animal_id}-${this.taxon_name}`;
   }
 
   constructor(animal: IAnimal) {
