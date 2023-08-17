@@ -5,7 +5,7 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/funding-sources/index');
+const defaultLog = getLogger('paths/user/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
