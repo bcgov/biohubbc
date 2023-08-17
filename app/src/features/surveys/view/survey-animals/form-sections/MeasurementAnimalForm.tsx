@@ -147,18 +147,18 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             }}
           />
         ) : (
-            <Field
-              as={CustomTextField}
-              name={valName}
-              label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
-              other={{
-                required: isRequiredInSchema(AnimalMeasurementSchema, 'value'),
-                size: 'small',
-                disabled: !taxonMeasurementId
-              }}
-              validate={validateValue}
-            />
-          )}
+          <Field
+            as={CustomTextField}
+            name={valName}
+            label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
+            other={{
+              required: isRequiredInSchema(AnimalMeasurementSchema, 'value'),
+              size: 'small',
+              disabled: !taxonMeasurementId
+            }}
+            validate={validateValue}
+          />
+        )}
       </Grid>
       <Grid item xs={4}>
         <CustomTextField
