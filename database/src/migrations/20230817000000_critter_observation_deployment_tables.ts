@@ -6,6 +6,7 @@ import { Knex } from 'knex';
  * @export
  * @param {Knex} knex
  * @return {*}  {Promise<void>}
+ *
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
