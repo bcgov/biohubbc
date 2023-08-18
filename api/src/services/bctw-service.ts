@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { ApiError, ApiErrorType } from '../errors/api-error';
-import { User } from '../models/user';
 import { KeycloakService } from './keycloak-service';
 
 export interface IDeployDevice {
@@ -11,12 +10,17 @@ export interface IDeployDevice {
   critter_id: string;
 }
 
+export interface IBctwUser {
+  keycloak_guid: string;
+  username: string;
+}
+
 const getBctwApiHost = () => process.env.BCTW_API_HOST || '';
 
 export class BctwService {
-  user: User;
+  user: IBctwUser;
 
-  constructor(user: User) {
+  constructor(user: IBctwUser) {
     this.user = user;
   }
 
@@ -42,6 +46,23 @@ export class BctwService {
     });
     if (!response.data) {
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to deploy telemetry device to BCTW');
+    }
+    return response.data;
+  }
+
+  // Get bctw health endpoint
+
+  async getHealth() {
+    const token = await new KeycloakService().getKeycloakToken();
+    const bctwUrl = getBctwApiHost();
+    const response = await axios.get(`${bctwUrl}/health`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+        ...this.getUserHeader()
+      }
+    });
+    if (!response.data) {
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to get BCTW health');
     }
     return response.data;
   }
