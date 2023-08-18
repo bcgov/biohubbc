@@ -1,5 +1,16 @@
+import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import { Autocomplete, Box, CircularProgress, TextField, Typography } from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
+  Typography
+} from '@mui/material';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
@@ -51,7 +62,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
 
   const [searchUsers, setSearchUsers] = useState<ISearchUserResponse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedUsers] = useState<ISearchUserResponse[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<ISearchUserResponse[]>([]);
 
   useEffect(() => {
     // currently logged in user is assumed to be the 'creator'
@@ -74,9 +85,10 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     [biohubApi.user]
   );
 
-  // const handleNewUser = () => {
-  //   console.log('Add new user row');
-  // };
+  const handleRemoveUser = (systemUserId: number) => {
+    const filteredUsers = selectedUsers.filter((item: ISearchUserResponse) => item.system_user_id !== systemUserId);
+    setSelectedUsers(filteredUsers);
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -103,7 +115,6 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             if (option) {
               selectedUsers.push(option);
             }
-            console.log(selectedUsers);
           }}
           renderInput={(params) => (
             <TextField
@@ -141,22 +152,37 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         <FieldArray
           name="projectUsers"
           render={(arrayHelpers: FieldArrayRenderProps) => (
-            <Box>
+            <Grid container direction={'row'} spacing={2}>
               {selectedUsers.map((systemUser: ISearchUserResponse) => (
-                <Box mt={1}>
-                  <UserCard
-                    name={systemUser.display_name}
-                    email={systemUser.email}
-                    agency={systemUser.agency}
-                    type={systemUser.identity_source}
-                  />
-                </Box>
+                <Grid item key={systemUser.system_user_id} xs={12}>
+                  <Grid item xs={6} md={8}>
+                    <UserCard
+                      name={systemUser.display_name}
+                      email={systemUser.email}
+                      agency={systemUser.agency}
+                      type={systemUser.identity_source}
+                    />
+                  </Grid>
+                  <Grid item xs={6} md={3}>
+                    <Select displayEmpty value={6}>
+                      {props.roles.map((item) => (
+                        <MenuItem key={item.id} value={item.name}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </Grid>
+                  <Grid item xs={6} md={1}>
+                    <Button onClick={() => handleRemoveUser(systemUser.system_user_id)}>
+                      <CloseIcon />
+                    </Button>
+                  </Grid>
+                </Grid>
               ))}
-            </Box>
+            </Grid>
           )}
         />
       </Box>
-      {/* <Box> Assign Role Errors</Box> */}
     </form>
   );
 };
