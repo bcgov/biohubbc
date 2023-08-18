@@ -4,9 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/http-error';
-import { ProjectService } from '../../../../../services/project-service';
+import { ProjectParticipationRepository } from '../../../../../repositories/project-participation-repository';
+import { ProjectParticipationService } from '../../../../../services/project-participation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
-import * as doAllProjectsHaveAProjectLead from '../../../../user/{userId}/delete';
 import * as delete_project_participant from './delete';
 
 chai.use(sinonChai);
@@ -22,9 +22,9 @@ describe('Delete a project participant.', () => {
 
     mockReq.params = { projectId: '1', projectParticipationId: '2' };
 
-    sinon.stub(ProjectService.prototype, 'deleteProjectParticipationRecord').resolves();
-    sinon.stub(ProjectService.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
-    sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead').returns(true);
+    sinon.stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord').resolves();
+    sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
+    sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead').returns(true);
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -50,9 +50,11 @@ describe('Delete a project participant.', () => {
 
     mockReq.params = { projectId: '1', projectParticipationId: '2' };
 
-    sinon.stub(ProjectService.prototype, 'deleteProjectParticipationRecord').resolves({ system_user_id: 1 });
-    const getProjectParticipant = sinon.stub(ProjectService.prototype, 'getProjectParticipants');
-    const doAllProjectsHaveLead = sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead');
+    sinon
+      .stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord')
+      .resolves({ system_user_id: 1 });
+    const getProjectParticipant = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants');
+    const doAllProjectsHaveLead = sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead');
 
     getProjectParticipant.onCall(0).resolves([{ id: 1 }]);
     doAllProjectsHaveLead.onCall(0).returns(true);
@@ -85,9 +87,11 @@ describe('Delete a project participant.', () => {
 
     mockReq.params = { projectId: '1', projectParticipationId: '2' };
 
-    sinon.stub(ProjectService.prototype, 'deleteProjectParticipationRecord').resolves({ system_user_id: 1 });
-    const getProjectParticipant = sinon.stub(ProjectService.prototype, 'getProjectParticipants');
-    const doAllProjectsHaveLead = sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead');
+    sinon
+      .stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord')
+      .resolves({ system_user_id: 1 });
+    const getProjectParticipant = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants');
+    const doAllProjectsHaveLead = sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead');
 
     getProjectParticipant.onCall(0).resolves([{ id: 1 }]);
     doAllProjectsHaveLead.onCall(0).returns(true);

@@ -7,7 +7,7 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
 import { ProjectUser } from '../../../../models/user';
-import { ProjectService } from '../../../../services/project-service';
+import { ProjectParticipationService } from '../../../../services/project-participation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import { GET, getUserRolesForProject } from './self';
 
@@ -192,7 +192,9 @@ describe('getUserRolesForProject', () => {
       systemUserId: () => 20
     });
 
-    const projectServiceStub = sinon.stub(ProjectService.prototype, 'getProjectParticipant').resolves(null);
+    const projectParticipationServiceStub = sinon
+      .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
+      .resolves(null);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -203,7 +205,7 @@ describe('getUserRolesForProject', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
-    expect(projectServiceStub).to.be.calledWith(1, 20);
+    expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({ participant: null });
   });
 
@@ -214,13 +216,15 @@ describe('getUserRolesForProject', () => {
       systemUserId: () => 20
     });
 
-    const projectServiceStub = sinon.stub(ProjectService.prototype, 'getProjectParticipant').resolves({
-      project_id: 1,
-      system_user_id: 20,
-      project_role_ids: [1],
-      project_role_names: ['Test-Role-A'],
-      project_role_permissions: ['Test Permission']
-    });
+    const projectParticipationServiceStub = sinon
+      .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
+      .resolves({
+        project_id: 1,
+        system_user_id: 20,
+        project_role_ids: [1],
+        project_role_names: ['Test-Role-A'],
+        project_role_permissions: ['Test Permission']
+      });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -231,7 +235,7 @@ describe('getUserRolesForProject', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
-    expect(projectServiceStub).to.be.calledWith(1, 20);
+    expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
       participant: {
         project_id: 1,
@@ -250,13 +254,15 @@ describe('getUserRolesForProject', () => {
       systemUserId: () => 20
     });
 
-    const projectServiceStub = sinon.stub(ProjectService.prototype, 'getProjectParticipant').resolves({
-      project_id: 1,
-      system_user_id: 20,
-      project_role_ids: [1, 2],
-      project_role_names: ['Test-Role-A', 'Test-Role-B'],
-      project_role_permissions: ['Test Permission']
-    });
+    const projectParticipationServiceStub = sinon
+      .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
+      .resolves({
+        project_id: 1,
+        system_user_id: 20,
+        project_role_ids: [1, 2],
+        project_role_names: ['Test-Role-A', 'Test-Role-B'],
+        project_role_permissions: ['Test Permission']
+      });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -267,7 +273,7 @@ describe('getUserRolesForProject', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
-    expect(projectServiceStub).to.be.calledWith(1, 20);
+    expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
       participant: {
         project_id: 1,
@@ -286,7 +292,7 @@ describe('getUserRolesForProject', () => {
       systemUserId: () => 20
     });
 
-    sinon.stub(ProjectService.prototype, 'getProjectParticipant').rejects(new Error('a test error'));
+    sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipant').rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

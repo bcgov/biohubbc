@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import { ProjectService } from '../../../../services/project-service';
+import { ProjectParticipationService } from '../../../../services/project-participation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import * as get_project_participants from './get';
 
@@ -43,7 +43,7 @@ describe('gets a list of project participants', () => {
       projectId: '1'
     };
 
-    sinon.stub(ProjectService.prototype, 'getProjectParticipants').rejects(new Error('an error'));
+    sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').rejects(new Error('an error'));
 
     try {
       const requestHandler = get_project_participants.getParticipants();
@@ -66,7 +66,7 @@ describe('gets a list of project participants', () => {
       projectId: '1'
     };
 
-    sinon.stub(ProjectService.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
+    sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
 
     const requestHandler = get_project_participants.getParticipants();
 

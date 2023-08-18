@@ -132,7 +132,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         pp.project_id = ${projectId};
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     const result = (response && response.rows) || null;
 
@@ -174,7 +174,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         *;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     if (!response || !response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert project team member', [
@@ -219,7 +219,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         *;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     if (!response || !response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert project team member', [
