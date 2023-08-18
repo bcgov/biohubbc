@@ -1,4 +1,3 @@
-
 import { Knex } from 'knex';
 
 /**
@@ -137,8 +136,8 @@ export async function up(knex: Knex): Promise<void> {
 
   create or replace view observation as select * from biohub.observation;
   create or replace view critter as select * from biohub.critter;
-  `)
-};
+  `);
+}
 
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(``);
