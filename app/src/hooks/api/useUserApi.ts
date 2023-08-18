@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import { IGetUserResponse, ISearchUserResponse } from 'interfaces/useUserApi.interface';
 
 /**
  * Returns a set of supported api methods for working with users.
@@ -63,12 +63,18 @@ const useUserApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const searchSystemUser = async (filter: string): Promise<ISearchUserResponse[]> => {
+    const { data } = await axios.get(`api/user?keyword=${filter}`);
+    return data;
+  };
+
   return {
     getUser,
     getUserById,
     getUsersList,
     deleteSystemUser,
-    updateSystemUserRoles
+    updateSystemUserRoles,
+    searchSystemUser
   };
 };
 
