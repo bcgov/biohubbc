@@ -31,7 +31,10 @@ import ProjectPartnershipsForm, {
   ProjectPartnershipsFormInitialValues,
   ProjectPartnershipsFormYupSchema
 } from '../components/ProjectPartnershipsForm';
-import ProjectUserForm, { ProjectUserRoleFormInitialValues } from '../components/ProjectUserForm';
+import ProjectUserForm, {
+  ProjectUserRoleFormInitialValues,
+  ProjectUserRoleYupSchema
+} from '../components/ProjectUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   sectionDivider: {
@@ -62,7 +65,8 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
   .concat(ProjectObjectivesFormYupSchema)
   .concat(ProjectLocationFormYupSchema)
   .concat(ProjectIUCNFormYupSchema)
-  .concat(ProjectPartnershipsFormYupSchema);
+  .concat(ProjectPartnershipsFormYupSchema)
+  .concat(ProjectUserRoleYupSchema);
 
 //Function to get the list of coordinator agencies from the code set
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {

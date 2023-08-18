@@ -117,9 +117,9 @@ export interface IProjectsListData {
 }
 
 export interface IProjectUserRoles {
-  project_user_roles: {
+  participants: {
     system_user_id: number;
-    role_id: number;
+    role: string;
   }[];
 }
 

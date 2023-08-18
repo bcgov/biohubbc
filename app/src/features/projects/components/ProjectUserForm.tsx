@@ -11,6 +11,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import { PROJECT_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
@@ -20,13 +21,17 @@ import { debounce } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 
-export const AddProjectUser = yup.object().shape({
-  users: yup.array().of(
-    yup.object().shape({
-      user_id: yup.string().required('Username is required'),
-      role_id: yup.string().required('Role is required')
-    })
-  )
+export const ProjectUserRoleYupSchema = yup.object().shape({
+  participants: yup
+    .array()
+    .of(
+      yup.object().shape({
+        system_user_id: yup.string().required('Username is required'),
+        role: yup.string().required('Role is required')
+      })
+    )
+    .min(1)
+    .hasAtLeastOneValue('At least 1 Coordinator needs to exist on a project', 'role', PROJECT_ROLE.COORDINATOR)
 });
 
 interface IProjectUser {
@@ -42,7 +47,7 @@ interface IUserCard {
 }
 
 export const ProjectUserRoleFormInitialValues = {
-  project_user_roles: []
+  participants: []
 };
 
 const UserCard: React.FC<IUserCard> = (props) => {
@@ -89,25 +94,32 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     [biohubApi.user]
   );
 
-  const handleAddUser = (systemUserId: number, roleId: number, index: number) => {
-    setFieldValue(`project_user_roles[${index}]`, {
+  const handleAddUser = (user: ISearchUserResponse) => {
+    selectedUsers.push(user);
+
+    setFieldValue(`participants[${selectedUsers.length - 1}]`, {
+      system_user_id: user.system_user_id,
+      role: ''
+    });
+  };
+
+  const handleAddUserRole = (systemUserId: number, role: string, index: number) => {
+    setFieldValue(`participants[${index}]`, {
       system_user_id: systemUserId,
-      role_id: roleId
+      role: role
     });
   };
 
   const handleRemoveUser = (systemUserId: number) => {
     const filteredUsers = selectedUsers.filter((item: ISearchUserResponse) => item.system_user_id !== systemUserId);
-    const filteredValues = values.project_user_roles.filter((item) => item.system_user_id !== systemUserId);
+    const filteredValues = values.participants.filter((item) => item.system_user_id !== systemUserId);
 
     setSelectedUsers(filteredUsers);
-    setFieldValue(`project_user_roles`, filteredValues);
+    setFieldValue(`participants`, filteredValues);
   };
 
-  console.log('-------------------------');
-  console.log(values);
   const getUserRole = (systemUserId: number) => {
-    const found = values.project_user_roles.filter((item) => item.system_user_id === systemUserId)[0] || null;
+    const found = values.participants.filter((item) => item.system_user_id === systemUserId)[0] || null;
     return found;
   };
   return (
@@ -133,7 +145,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           }}
           onChange={(_, option) => {
             if (option) {
-              selectedUsers.push(option);
+              handleAddUser(option);
             }
           }}
           renderInput={(params) => (
@@ -192,10 +204,11 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                     displayEmpty
                     value={getUserRole(systemUser.system_user_id)?.system_user_id}
                     onChange={(event) => {
-                      handleAddUser(systemUser.system_user_id, Number(event.target.value), index);
+                      console.log(event);
+                      handleAddUserRole(systemUser.system_user_id, String(event.target.value), index);
                     }}>
                     {props.roles.map((item) => (
-                      <MenuItem key={item.id} value={item.id}>
+                      <MenuItem key={item.id} value={item.name}>
                         {item.name}
                       </MenuItem>
                     ))}
