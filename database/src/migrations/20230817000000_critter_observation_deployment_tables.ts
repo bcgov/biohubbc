@@ -101,13 +101,13 @@ export async function up(knex: Knex): Promise<void> {
   );
 
   COMMENT ON COLUMN deployment.deployment_id            IS 'System generated surrogate primary key identifier.';
-  COMMENT ON COLUMN deployment.critter_id              IS 'The id of the critter. Internal Sims id.';
+  COMMENT ON COLUMN deployment.critter_id               IS 'The id of the critter. Internal Sims id.';
   COMMENT ON COLUMN deployment.bctw_deployment_id       IS 'The external system id of a BCTW deployment / collar->animal assignment.';
   COMMENT ON COLUMN deployment.create_date              IS 'The datetime the record was created.';
   COMMENT ON COLUMN deployment.create_user              IS 'The id of the user who created the record as identified in the system user table.';
   COMMENT ON COLUMN deployment.update_date              IS 'The datetime the record was updated.';
   COMMENT ON COLUMN deployment.update_user              IS 'The id of the user who updated the record as identified in the system user table.';
-  COMMENT ON COLUMN deployment.revision_count          IS 'Revision count used for concurrency control.';
+  COMMENT ON COLUMN deployment.revision_count           IS 'Revision count used for concurrency control.';
   COMMENT ON TABLE  deployment                          IS 'Information about individual critters associated to specific bctw deployments.';
 
   -- Add foreign key constraint from child table to parent table on critter_id
