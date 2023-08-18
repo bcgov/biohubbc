@@ -75,10 +75,11 @@ const useLookupApi = (axios: AxiosInstance) => {
   };
 
   const getTaxonMeasurements = async (taxon_id?: string): Promise<Array<IMeasurementStub> | undefined> => {
-    if (taxon_id) {
-      const { data } = await axios.get(`${CbRoutes.taxon_measurements}?taxon_id=${taxon_id}`);
-      return data;
+    if (!taxon_id) {
+      return;
     }
+    const { data } = await axios.get(`${CbRoutes.taxon_measurements}?taxon_id=${taxon_id}`);
+    return data;
   };
 
   return {

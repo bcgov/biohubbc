@@ -19,11 +19,11 @@ import FormSectionWrapper from './FormSectionWrapper';
 /**
  * Renders the Marking section for the Individual Animal form
  *
- * Returns {*}
+ * @return {*}
  */
 
 const MarkingAnimalForm = () => {
-  const { values } = useFormikContext<IAnimal>();
+  const { values, handleBlur } = useFormikContext<IAnimal>();
 
   const name: keyof IAnimal = 'markings';
   const newMarking: IAnimalMarking = {
@@ -105,6 +105,7 @@ const MarkingAnimalForm = () => {
                       label="Marking Comment"
                       name={getAnimalFieldName<IAnimalMarking>(name, 'marking_comment', index)}
                       other={{ size: 'small', required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment') }}
+                      handleBlur={handleBlur}
                     />
                   </TextInputToggle>
                 </Grid>

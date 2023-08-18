@@ -189,11 +189,11 @@ type ICritterCapture = ICritterID &
     release_location_id: string | undefined;
   };
 
-export type ICritterMarking = ICritterID & IAnimalMarking;
+export type ICritterMarking = ICritterID & Omit<IAnimalMarking, '_id'>;
 
-type ICritterQualitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'value'>;
+type ICritterQualitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'value' | '_id'>;
 
-type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'qualitative_option_id'>;
+type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'qualitative_option_id' | '_id'>;
 
 export const newFamilyIdPlaceholder = 'New Family';
 
@@ -224,7 +224,7 @@ export class Critter {
     qualitative: ICritterQualitativeMeasurement[];
     quantitative: ICritterQuantitativeMeasurement[];
   };
-  mortalities: ICritterMortality[];
+  mortalities: Omit<ICritterMortality, '_id'>[];
   families: {
     parents: ICritterFamilyParent[];
     children: ICritterFamilyChild[];
@@ -295,7 +295,8 @@ export class Critter {
         coordinate_uncertainty_unit: 'm'
       });
 
-      const { mortality_longitude, mortality_latitude, mortality_utm_easting, mortality_utm_northing, ...rest } = m;
+      const { _id, mortality_longitude, mortality_latitude, mortality_utm_easting, mortality_utm_northing, ...rest } =
+        m;
       this.mortalities.push({
         ...rest,
         critter_id: this.critter_id,
@@ -304,7 +305,10 @@ export class Critter {
       });
     });
 
-    this.markings = animal.markings.map((m) => ({ ...m, critter_id: this.critter_id }));
+    this.markings = animal.markings.map((m) => {
+      const { _id, ...rest } = m;
+      return { ...rest, critter_id: this.critter_id };
+    });
 
     let newFamily = undefined;
     for (const f of animal.family) {
@@ -337,7 +341,7 @@ export class Critter {
           return false;
         })
         .map((m) => {
-          const { value, ...rest } = m;
+          const { _id, value, ...rest } = m;
           return { ...rest, critter_id: this.critter_id };
         }),
       quantitative: animal.measurements
@@ -352,7 +356,7 @@ export class Critter {
           return false;
         })
         .map((m) => {
-          const { qualitative_option_id, ...rest } = m;
+          const { _id, qualitative_option_id, ...rest } = m;
           return { ...rest, critter_id: this.critter_id };
         })
     };

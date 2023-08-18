@@ -25,7 +25,7 @@ import LocationEntryForm from './LocationEntryForm';
  * To encourage the max of one rule, we use the maxSections prop here to prevent additional copies of the form
  * from rendering.
  *
- * Returns {*}
+ * @return {*}
  */
 
 type ProjectionMode = 'wgs' | 'utm';
@@ -81,7 +81,7 @@ interface MortalityAnimalFormContentProps {
 }
 
 const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormContentProps) => {
-  const { setFieldValue } = useFormikContext<IAnimal>();
+  const { handleBlur } = useFormikContext<IAnimal>();
 
   const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
   const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
@@ -99,6 +99,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             }}
             label="Mortality Date"
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
+            handleBlur={handleBlur}
           />
         </Grid>
         <Grid item xs={5}>
@@ -188,6 +189,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
               }}
               label="Mortality Comment"
               name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_comment', index)}
+              handleBlur={handleBlur}
             />
           </TextInputToggle>
         </Grid>
@@ -200,7 +202,6 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
       <LocationEntryForm
         name={name}
         index={index}
-        setFieldValue={setFieldValue}
         value={value}
         primaryLocationFields={{
           latitude: 'mortality_latitude',

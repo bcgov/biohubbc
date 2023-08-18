@@ -172,16 +172,7 @@ describe('Animal', () => {
       const a_marking = critter.markings[0];
       expect(c_marking.critter_id).toBe(critter.critter_id);
       for (const prop in c_marking) {
-        expect(c_marking[prop as keyof ICritterMarking]).toBe(a_marking[prop as keyof IAnimalMarking]);
-      }
-    });
-
-    it('constructor should create critter markings', () => {
-      const c_marking = critter.markings[0];
-      const a_marking = critter.markings[0];
-      expect(c_marking.critter_id).toBe(critter.critter_id);
-      for (const prop in c_marking) {
-        expect(c_marking[prop as keyof ICritterMarking]).toBe(a_marking[prop as keyof IAnimalMarking]);
+        expect(c_marking[prop as keyof ICritterMarking]).toBe(a_marking[prop as keyof ICritterMarking]);
       }
     });
   });

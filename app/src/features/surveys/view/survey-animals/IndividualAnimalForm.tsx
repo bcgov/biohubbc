@@ -30,7 +30,7 @@ const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => 
     // waiting on direction from client, either displays all survey animals count
     // or count of animals in form
     getAnimalCount(values.general.taxon_id ? 1 : 0);
-  }, [values.general.taxon_id]);
+  }, [values.general.taxon_id, getAnimalCount]);
 
   return (
     <Form>

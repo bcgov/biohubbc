@@ -25,7 +25,7 @@ const MAX_UPLOAD_FILE_SIZE = Number(process.env.MAX_UPLOAD_FILE_SIZE) || 5242880
 const app: express.Express = express();
 
 // Enable CORS
-app.use(function (req: Request, res: Response, next: NextFunction) {
+app.use(function(req: Request, res: Response, next: NextFunction) {
   defaultLog.info({ label: 'req', message: `${req.method} ${req.url}` });
 
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
@@ -52,7 +52,7 @@ const openAPIFramework = initialize({
   docsPath: '/raw-api-docs', // path to view raw openapi spec
   consumesMiddleware: {
     'application/json': express.json({ limit: MAX_REQ_BODY_SIZE }),
-    'multipart/form-data': function (req, res, next) {
+    'multipart/form-data': function(req, res, next) {
       const multerRequestHandler = multer({
         storage: multer.memoryStorage(),
         limits: { fileSize: MAX_UPLOAD_FILE_SIZE }
@@ -76,18 +76,18 @@ const openAPIFramework = initialize({
   },
   securityHandlers: {
     // authenticates the request bearer token, for endpoints that specify `Bearer` security
-    Bearer: async function (req: any) {
+    Bearer: async function(req: any) {
       return authenticateRequest(req);
     }
   },
-  errorTransformer: function (openapiError: object, ajvError: object): object {
+  errorTransformer: function(openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
     defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
   },
   // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  errorMiddleware: function (error, req, res, next) {
+  errorMiddleware: function(error, req, res, next) {
     if (res.headersSent) {
       // response has already been sent
       return;
@@ -128,7 +128,7 @@ try {
  * @param {NextFunction} next
  */
 function validateAllResponses(req: Request, res: Response, next: NextFunction) {
-  const isStrictValidation = !!req['apiDoc']?.['x-express-openapi-validation-strict'] || false;
+  const isStrictValidation = !!req['apiDoc']['x-express-openapi-validation-strict'] || false;
 
   if (typeof res['validateResponse'] === 'function') {
     const json = res.json;

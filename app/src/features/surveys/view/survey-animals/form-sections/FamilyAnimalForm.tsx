@@ -39,14 +39,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   }
 }));
+
 /**
  * Renders the Family section for the Individual Animal form
  *
  * This form needs to validate against the Critterbase critter table, as only critters that have already been
  * added to Critterbase are permissible as family members.
  *
- * Returns {*}
- */
+ * @return {*}
+ **/
 const FamilyAnimalForm = () => {
   const { values, touched, errors, handleChange } = useFormikContext<IAnimal>();
   const critterbase = useCritterbaseApi();

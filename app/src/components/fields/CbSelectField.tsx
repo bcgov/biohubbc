@@ -1,21 +1,13 @@
-import {
-  FormControl,
-  FormControlProps,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  SelectProps
-} from '@mui/material';
+import { FormControlProps, MenuItem, SelectChangeEvent } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { ICbRouteKey, ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';
-import React, { ReactNode, useEffect } from 'react';
+import React from 'react';
+import { CbSelectWrapper } from './CbSelectFieldWrapper';
 
-interface ICbSelectSharedProps {
+export interface ICbSelectSharedProps {
   name: string;
   label: string;
   controlProps?: FormControlProps;
@@ -33,23 +25,29 @@ interface ICbSelectOption {
   value: string | number;
   label: string;
 }
-/*
+/**
  * Critterbase Select Field. Handles data retrieval, formatting and error handling.
  *
- * params {ICbSelectField}
- * returns {*}
- */
+ * @param {ICbSelectField}
+ * @return {*}
+ *
+ **/
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const { name, label, route, param, query, handleChangeSideEffect, controlProps } = props;
 
   const api = useCritterbaseApi();
-  const { data, load, isReady, refresh } = useDataLoader(api.lookup.getSelectOptions);
+  const { data, load, hasLoaded, isReady, refresh } = useDataLoader(api.lookup.getSelectOptions);
   const { values, handleChange, setFieldValue, setFieldTouched } = useFormikContext<ICbSelectOption>();
 
+  const payload = { route, param, query };
   const val = get(values, name) ?? '';
 
-  load({ route, param, query });
+  if (hasLoaded && isReady) {
+    refresh(payload);
+  } else {
+    load(payload);
+  }
 
   const isValueInRange = () => {
     if (val === '') {
@@ -61,18 +59,13 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
     return data.some((d) => (typeof d === 'string' ? d === val : d.id === val));
   };
 
-  const handleInRange = () => {
+  const innerChangeHandler = (e: SelectChangeEvent<any>) => {
     if (!isValueInRange()) {
       setFieldValue(name, '');
       setFieldTouched(name);
+      handleChange(e);
+      return;
     }
-  };
-
-  useEffect(() => refresh({ route, param, query }), [route, param, query]);
-
-  useEffect(handleInRange, [isReady]);
-
-  const innerChangeHandler = (e: SelectChangeEvent<any>) => {
     handleChange(e);
     if (handleChangeSideEffect) {
       const item = data?.find((a) => typeof a !== 'string' && a.id === e.target.value);
@@ -81,7 +74,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   };
 
   return (
-    <FormikSelectWrapper
+    <CbSelectWrapper
       name={name}
       label={label}
       controlProps={{ ...controlProps, disabled: !data?.length }}
@@ -95,49 +88,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
           </MenuItem>
         );
       })}
-    </FormikSelectWrapper>
-  );
-};
-
-interface FormikSelectWrapperProps extends ICbSelectSharedProps {
-  children?: ReactNode;
-  onChange?: SelectProps['onChange'];
-  value?: SelectProps['value'];
-}
-
-/**
- *
- * Wrapper for formik selects to handle all errors / onChange / onBlur
- *
- * Returns {*}
- */
-
-export const FormikSelectWrapper = ({
-  children,
-  name,
-  label,
-  controlProps,
-  onChange,
-  value
-}: FormikSelectWrapperProps) => {
-  const { values, touched, errors, handleBlur, handleChange } = useFormikContext();
-  const val = get(values, name) ?? '';
-  const err = get(touched, name) && get(errors, name);
-  return (
-    <FormControl variant="outlined" fullWidth {...controlProps} error={Boolean(err)}>
-      <InputLabel id={`${name}-label`}>{label}</InputLabel>
-      <Select
-        name={name}
-        labelId="cb-select-wrapper"
-        value={value ?? val}
-        onChange={onChange ?? handleChange}
-        label={label}
-        onBlur={handleBlur}
-        displayEmpty>
-        {children}
-      </Select>
-      <FormHelperText>{err}</FormHelperText>
-    </FormControl>
+    </CbSelectWrapper>
   );
 };
 

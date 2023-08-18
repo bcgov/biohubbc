@@ -12,11 +12,11 @@ import FormSectionWrapper from './FormSectionWrapper';
 /**
  * Renders the General section for the Individual Animal form
  *
- * Returns {*}
+ * @return {*}
  */
 
 const GeneralAnimalForm = () => {
-  const { setFieldValue } = useFormikContext<IAnimal>();
+  const { setFieldValue, handleBlur } = useFormikContext<IAnimal>();
   const name: keyof IAnimal = 'general';
 
   const handleTaxonName = (_value: string, label: string) => {
@@ -46,6 +46,7 @@ const GeneralAnimalForm = () => {
             other={{ size: 'small', required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
             label="Individual's Label"
             name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
+            handleBlur={handleBlur}
           />
         </HelpButtonTooltip>
       </Grid>

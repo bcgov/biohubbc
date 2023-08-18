@@ -17,14 +17,15 @@ interface FormSectionWrapperProps {
   children: JSX.Element[] | JSX.Element;
   maxSections?: number;
 }
+
 /**
  * Wrapper for rendering the section inputs with additional controls for
  * adding deleting form sections/inputs.
  *
- * params { FormSectionWrapperProps }
- * returns {*}
- */
-
+ * @param { FormSectionWrapperProps }
+ * @return {*}
+ *
+ **/
 const FormSectionWrapper = ({
   title,
   addedSectionTitle,
@@ -76,7 +77,7 @@ const FormSectionWrapper = ({
           startIcon={<Icon path={mdiPlus} size={1} />}
           variant="outlined"
           size="small"
-          disabled={disableAddBtn ?? !values.general.taxon_id}
+          disabled={disableAddBtn || !values.general.taxon_id}
           color="primary">
           {btnLabel}
         </Button>

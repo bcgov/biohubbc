@@ -25,7 +25,7 @@ import LocationEntryForm from './LocationEntryForm';
  * Note B: FormSectionWrapper uses a Grid container to render children elements.
  * Children of FormSectionWrapper can use Grid items to organize inputs.
  *
- * Returns {*}
+ * @return {*}
  */
 
 type ProjectionMode = 'wgs' | 'utm';
@@ -82,7 +82,7 @@ interface CaptureAnimalFormContentProps {
 }
 
 const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormContentProps) => {
-  const { setFieldValue } = useFormikContext<IAnimal>();
+  const { handleBlur } = useFormikContext<IAnimal>();
 
   const renderCaptureFields = (): JSX.Element => {
     return (
@@ -97,6 +97,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             }}
             label="Capture Date"
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
+            handleBlur={handleBlur}
           />
         </Grid>
         <Grid item xs={12}>
@@ -105,6 +106,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
               other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
               label="Capture Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
+              handleBlur={handleBlur}
             />
           </TextInputToggle>
         </Grid>
@@ -125,6 +127,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             }}
             label="Release Date"
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
+            handleBlur={handleBlur}
           />
         </Grid>
         <Grid item xs={12}>
@@ -133,6 +136,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
               other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
               label="Release Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
+              handleBlur={handleBlur}
             />
           </TextInputToggle>
         </Grid>
@@ -144,7 +148,6 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
     <LocationEntryForm
       name={name}
       index={index}
-      setFieldValue={setFieldValue}
       value={value}
       primaryLocationFields={{
         latitude: 'capture_latitude',

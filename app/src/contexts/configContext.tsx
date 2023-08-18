@@ -54,7 +54,7 @@ const getLocalConfig = (): IConfig => {
   const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || 'gblhvt';
   return {
     API_HOST: ensureProtocol(API_URL, 'http://'),
-    CB_API_HOST: CB_API_URL,
+    CB_API_HOST: ensureProtocol(CB_API_URL, 'http://'),
     CHANGE_VERSION: process.env.CHANGE_VERSION || 'NA',
     NODE_ENV: process.env.NODE_ENV,
     REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
