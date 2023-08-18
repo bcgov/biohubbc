@@ -137,28 +137,26 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           }}
         />
       </Box>
-      {/* <Box> Assign Role Errors</Box> */}
-      <FieldArray name="" render={(arrayHelpers: FieldArrayRenderProps) => <Box></Box>} />
-      <Box>
-        {/* <FormControl required={true} error={false}>
-          <InputLabel id="" required={false}>
-            Project Role
-          </InputLabel>
-          <Select
-            id={``}
-            name={``}
-            onChange={(event) => {
-              console.log(`Selected: `, event?.target?.value);
-            }}>
-            {props.roles.map((item: ICode) => (
-              <MenuItem key={item.id} value={item.id}>
-                {item.name}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText></FormHelperText>
-        </FormControl> */}
+      <Box mt={3}>
+        <FieldArray
+          name="projectUsers"
+          render={(arrayHelpers: FieldArrayRenderProps) => (
+            <Box>
+              {selectedUsers.map((systemUser: ISearchUserResponse) => (
+                <Box mt={1}>
+                  <UserCard
+                    name={systemUser.display_name}
+                    email={systemUser.email}
+                    agency={systemUser.agency}
+                    type={systemUser.identity_source}
+                  />
+                </Box>
+              ))}
+            </Box>
+          )}
+        />
       </Box>
+      {/* <Box> Assign Role Errors</Box> */}
     </form>
   );
 };
