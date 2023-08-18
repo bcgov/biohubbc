@@ -31,7 +31,7 @@ import ProjectPartnershipsForm, {
   ProjectPartnershipsFormInitialValues,
   ProjectPartnershipsFormYupSchema
 } from '../components/ProjectPartnershipsForm';
-import ProjectUserForm from '../components/ProjectUserForm';
+import ProjectUserForm, { ProjectUserRoleFormInitialValues } from '../components/ProjectUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   sectionDivider: {
@@ -54,7 +54,8 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
-  ...ProjectPartnershipsFormInitialValues
+  ...ProjectPartnershipsFormInitialValues,
+  ...ProjectUserRoleFormInitialValues
 };
 
 export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)

@@ -3,15 +3,15 @@ import SearchIcon from '@mui/icons-material/Search';
 import {
   Autocomplete,
   Box,
-  Button,
   CircularProgress,
   Grid,
+  IconButton,
   MenuItem,
   Select,
   TextField,
   Typography
 } from '@mui/material';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
@@ -24,7 +24,7 @@ export const AddProjectUser = yup.object().shape({
   users: yup.array().of(
     yup.object().shape({
       user_id: yup.string().required('Username is required'),
-      role_id: yup.string().required('Display Name is required')
+      role_id: yup.string().required('Role is required')
     })
   )
 });
@@ -40,6 +40,10 @@ interface IUserCard {
   agency: string;
   type: string;
 }
+
+export const ProjectUserRoleFormInitialValues = {
+  project_user_roles: []
+};
 
 const UserCard: React.FC<IUserCard> = (props) => {
   return (
@@ -57,7 +61,7 @@ const UserCard: React.FC<IUserCard> = (props) => {
 };
 
 const ProjectUserForm: React.FC<IProjectUser> = (props) => {
-  const { handleSubmit } = useFormikContext<ICreateProjectRequest>();
+  const { handleSubmit, values, setFieldValue } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
 
   const [searchUsers, setSearchUsers] = useState<ISearchUserResponse[]>([]);
@@ -85,11 +89,27 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     [biohubApi.user]
   );
 
-  const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = selectedUsers.filter((item: ISearchUserResponse) => item.system_user_id !== systemUserId);
-    setSelectedUsers(filteredUsers);
+  const handleAddUser = (systemUserId: number, roleId: number, index: number) => {
+    setFieldValue(`project_user_roles[${index}]`, {
+      system_user_id: systemUserId,
+      role_id: roleId
+    });
   };
 
+  const handleRemoveUser = (systemUserId: number) => {
+    const filteredUsers = selectedUsers.filter((item: ISearchUserResponse) => item.system_user_id !== systemUserId);
+    const filteredValues = values.project_user_roles.filter((item) => item.system_user_id !== systemUserId);
+
+    setSelectedUsers(filteredUsers);
+    setFieldValue(`project_user_roles`, filteredValues);
+  };
+
+  console.log('-------------------------');
+  console.log(values);
+  const getUserRole = (systemUserId: number) => {
+    const found = values.project_user_roles.filter((item) => item.system_user_id === systemUserId)[0] || null;
+    return found;
+  };
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -149,39 +169,51 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         />
       </Box>
       <Box mt={3}>
-        <FieldArray
-          name="projectUsers"
-          render={(arrayHelpers: FieldArrayRenderProps) => (
-            <Grid container direction={'row'} spacing={2}>
-              {selectedUsers.map((systemUser: ISearchUserResponse) => (
-                <Grid item key={systemUser.system_user_id} xs={12}>
-                  <Grid item xs={6} md={8}>
-                    <UserCard
-                      name={systemUser.display_name}
-                      email={systemUser.email}
-                      agency={systemUser.agency}
-                      type={systemUser.identity_source}
-                    />
-                  </Grid>
-                  <Grid item xs={6} md={3}>
-                    <Select displayEmpty value={6}>
-                      {props.roles.map((item) => (
-                        <MenuItem key={item.id} value={item.name}>
-                          {item.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </Grid>
-                  <Grid item xs={6} md={1}>
-                    <Button onClick={() => handleRemoveUser(systemUser.system_user_id)}>
-                      <CloseIcon />
-                    </Button>
-                  </Grid>
+        {selectedUsers.length > 0 && (
+          <Typography component={'legend'} variant="h5">
+            Team Members ({selectedUsers.length})
+          </Typography>
+        )}
+        <Grid container rowSpacing={1}>
+          {selectedUsers.map((systemUser: ISearchUserResponse, index: number) => {
+            return (
+              <Grid item key={systemUser.system_user_id} spacing={2} container direction={'row'} xs={12}>
+                <Grid item xs={6} md={8}>
+                  <UserCard
+                    name={systemUser.display_name}
+                    email={systemUser.email}
+                    agency={systemUser.agency}
+                    type={systemUser.identity_source}
+                  />
                 </Grid>
-              ))}
-            </Grid>
-          )}
-        />
+                <Grid item xs={6} md={3}>
+                  <Select
+                    sx={{ width: '100%' }}
+                    displayEmpty
+                    value={getUserRole(systemUser.system_user_id)?.system_user_id}
+                    onChange={(event) => {
+                      handleAddUser(systemUser.system_user_id, Number(event.target.value), index);
+                    }}>
+                    {props.roles.map((item) => (
+                      <MenuItem key={item.id} value={item.id}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Grid>
+                <Grid item xs={6} md={1} display={'flex'}>
+                  <IconButton
+                    aria-label="remove user"
+                    onClick={() => {
+                      handleRemoveUser(systemUser.system_user_id);
+                    }}>
+                    <CloseIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            );
+          })}
+        </Grid>
       </Box>
     </form>
   );
