@@ -77,8 +77,11 @@ export async function up(knex: Knex): Promise<void> {
     FOREIGN KEY (observation_id)
     REFERENCES observation(observation_id);
 
+  -- Add foreign key index
+  CREATE INDEX critter_idx1 ON critter(observation_id);
+
   -- Add unique constraint
-  CREATE UNIQUE INDEX critter_uk1 ON critter(critterbase_critter_id);
+  CREATE UNIQUE INDEX critter_uk1 ON critter(observation_id, critterbase_critter_id);
 
   -- Create audit and journal triggers
   create trigger audit_critter before insert or update or delete on critter for each row execute procedure tr_audit_trigger();
@@ -114,6 +117,9 @@ export async function up(knex: Knex): Promise<void> {
   ALTER TABLE deployment ADD CONSTRAINT deployment_fk1
     FOREIGN KEY (critter_id)
     REFERENCES critter(critter_id);
+
+  -- Add foreign key index
+  CREATE INDEX deployment_idx1 ON deployment(critter_id);
 
   -- Add unique constraint
   CREATE UNIQUE INDEX deployment_uk1 ON deployment(critter_id, bctw_deployment_id);

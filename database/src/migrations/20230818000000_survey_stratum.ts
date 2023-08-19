@@ -46,6 +46,9 @@ export async function up(knex: Knex): Promise<void> {
     FOREIGN KEY (survey_id)
     REFERENCES survey(survey_id);
 
+  -- Add foreign key index
+  CREATE INDEX surve_stratum_idx1 ON survey_stratum(survey_id);
+
   -- Add unique constraint
   CREATE UNIQUE INDEX survey_stratum_uk1 ON survey_stratum(survey_id, name);
 
