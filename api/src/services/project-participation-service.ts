@@ -1,8 +1,12 @@
 import { PROJECT_PERMISSION, PROJECT_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
-import { ProjectUser } from '../models/user';
-import { IParticipant, ProjectParticipationRepository } from '../repositories/project-participation-repository';
+import {
+  IParticipant,
+  ProjectParticipationRecord,
+  ProjectParticipationRepository,
+  ProjectUser
+} from '../repositories/project-participation-repository';
 import { DBService } from './db-service';
 import { UserService } from './user-service';
 
@@ -39,7 +43,7 @@ export class ProjectParticipationService extends DBService {
     }
 
     // add new project participant record
-    await this.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
+    await this.postProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
   }
 
   /**
@@ -83,10 +87,10 @@ export class ProjectParticipationService extends DBService {
    * Deletes a project participation record.
    *
    * @param {number} projectParticipationId
-   * @return {*}  {Promise<any>}
+   * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationService
    */
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
+  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<ProjectParticipationRecord> {
     return this.projectParticipationRepository.deleteProjectParticipationRecord(projectParticipationId);
   }
 
@@ -106,10 +110,10 @@ export class ProjectParticipationService extends DBService {
    * Gets the project participants for the given project.
    *
    * @param {number} projectId
-   * @return {*}  {Promise<object[]>}
+   * @return {*}  {Promise<ProjectUser[]>}
    * @memberof ProjectParticipationService
    */
-  async getProjectParticipants(projectId: number): Promise<object[]> {
+  async getProjectParticipants(projectId: number): Promise<ProjectUser[]> {
     return this.projectParticipationRepository.getProjectParticipants(projectId);
   }
 
@@ -122,24 +126,12 @@ export class ProjectParticipationService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof ProjectParticipationService
    */
-  async addProjectParticipant(
+  async postProjectParticipant(
     projectId: number,
     systemUserId: number,
-    projectParticipantRoleId: number
+    projectParticipantRole: number | string
   ): Promise<void> {
-    return this.projectParticipationRepository.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-  }
-
-  /**
-   * Adds a project participant role to the project.
-   *
-   * @param {number} projectId
-   * @param {string} projectParticipantRole
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectParticipationService
-   */
-  async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    return this.projectParticipationRepository.insertParticipantRole(projectId, projectParticipantRole);
+    return this.projectParticipationRepository.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
   }
 
   /**

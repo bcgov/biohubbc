@@ -7,7 +7,7 @@ import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/self');
 
-export const GET: Operation = [getUserRolesForProject()];
+export const GET: Operation = [getSelf()];
 
 GET.apiDoc = {
   description: "Get the user's participant record for the given project.",
@@ -35,33 +35,44 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            nullable: true,
+            required: [
+              'project_participation_id',
+              'project_id',
+              'system_user_id',
+              'project_role_ids',
+              'project_role_names',
+              'project_role_permissions'
+            ],
             properties: {
-              participant: {
-                type: 'object',
-                nullable: true,
-                required: ['project_id', 'system_user_id', 'project_role_ids', 'project_role_names'],
-                properties: {
-                  project_id: {
-                    type: 'integer',
-                    minimum: 1
-                  },
-                  system_user_id: {
-                    type: 'integer',
-                    minimum: 1
-                  },
-                  project_role_ids: {
-                    type: 'array',
-                    items: {
-                      type: 'integer',
-                      minimum: 1
-                    }
-                  },
-                  project_role_names: {
-                    type: 'array',
-                    items: {
-                      type: 'string'
-                    }
-                  }
+              project_participation_id: {
+                type: 'number'
+              },
+              project_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              system_user_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              project_role_ids: {
+                type: 'array',
+                items: {
+                  type: 'integer',
+                  minimum: 1
+                }
+              },
+              project_role_names: {
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
+              },
+              project_role_permissions: {
+                type: 'array',
+                items: {
+                  type: 'string'
                 }
               }
             }
@@ -92,7 +103,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getUserRolesForProject(): RequestHandler {
+export function getSelf(): RequestHandler {
   return async (req, res) => {
     if (!req.params.projectId) {
       throw new HTTP400("Missing required param 'projectId'");
@@ -116,9 +127,7 @@ export function getUserRolesForProject(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json({
-        participant: result
-      });
+      return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getAllProjectParticipantsSQL', message: 'error', error });
       throw error;

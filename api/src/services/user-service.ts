@@ -1,7 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { User } from '../models/user';
-import { UserRepository, UserSearchCriteria } from '../repositories/user-repository';
+import { SystemUser, UserRepository, UserSearchCriteria } from '../repositories/user-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
@@ -20,10 +19,10 @@ export class UserService extends DBService {
    * Fetch a single system user by their system user ID.
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<User>)}
+   * @return {*}  {(Promise<SystemUser>)}
    * @memberof UserService
    */
-  async getUserById(systemUserId: number): Promise<User> {
+  async getUserById(systemUserId: number): Promise<SystemUser> {
     const response = await this.userRepository.getUserById(systemUserId);
 
     return response;
@@ -33,10 +32,10 @@ export class UserService extends DBService {
    * Get an existing system user by their GUID.
    *
    * @param {string} userGuid The user's GUID
-   * @return {*}  {(Promise<User | null>)}
+   * @return {*}  {(Promise<SystemUser | null>)}
    * @memberof UserService
    */
-  async getUserByGuid(userGuid: string): Promise<User | null> {
+  async getUserByGuid(userGuid: string): Promise<SystemUser | null> {
     defaultLog.debug({ label: 'getUserByGuid', userGuid });
 
     const response = await this.userRepository.getUserByGuid(userGuid);
@@ -53,10 +52,10 @@ export class UserService extends DBService {
    *
    * @param userIdentifier the user's identifier
    * @param identitySource the user's identity source, e.g. `'IDIR'`
-   * @return {*}  {(Promise<User | null>)} Promise resolving the User, or `null` if the user wasn't found.
+   * @return {*}  {(Promise<SystemUser | null>)} Promise resolving the User, or `null` if the user wasn't found.
    * @memberof UserService
    */
-  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<User | null> {
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<SystemUser | null> {
     defaultLog.debug({ label: 'getUserByIdentifier', userIdentifier, identitySource });
 
     const response = await this.userRepository.getUserByIdentifier(userIdentifier, identitySource);
@@ -78,7 +77,7 @@ export class UserService extends DBService {
    * @param {string} identitySource
    * @param {string} displayName
    * @param {string} email
-   * @return {*}  {Promise<User>}
+   * @return {*}  {Promise<SystemUser>}
    * @memberof UserService
    */
   async addSystemUser(
@@ -102,10 +101,10 @@ export class UserService extends DBService {
   /**
    * Get a list of all system users.
    *
-   * @return {*}  {Promise<User[]>}
+   * @return {*}  {Promise<SystemUser[]>}
    * @memberof UserService
    */
-  async listSystemUsers(): Promise<User[]> {
+  async listSystemUsers(): Promise<SystemUser[]> {
     const response = await this.userRepository.listSystemUsers();
 
     return response;
@@ -120,7 +119,7 @@ export class UserService extends DBService {
    * @param {string} identitySource
    * @param {string} displayName
    * @param {string} email
-   * @return {*}  {Promise<User>}
+   * @return {*}  {Promise<SystemUser>}
    * @memberof UserService
    */
   async ensureSystemUser(
@@ -129,7 +128,7 @@ export class UserService extends DBService {
     identitySource: string,
     displayName: string,
     email: string
-  ): Promise<User> {
+  ): Promise<SystemUser> {
     // Check if the user exists in SIMS
     const existingUser = userGuid
       ? await this.getUserByGuid(userGuid)

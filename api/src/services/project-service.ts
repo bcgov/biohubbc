@@ -29,6 +29,7 @@ import {
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { PublishStatus } from '../repositories/history-publish-repository';
+import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -82,10 +83,19 @@ export class ProjectService extends DBService {
   }
 
   async getProjectById(projectId: number): Promise<IGetProject> {
-    const [projectData, objectiveData, coordinatorData, locationData, iucnData, partnershipsData] = await Promise.all([
+    const [
+      projectData,
+      objectiveData,
+      coordinatorData,
+      projectParticipantsData,
+      locationData,
+      iucnData,
+      partnershipsData
+    ] = await Promise.all([
       this.getProjectData(projectId),
       this.getObjectivesData(projectId),
       this.getCoordinatorData(projectId),
+      this.getProjectParticipantsData(projectId),
       this.getLocationData(projectId),
       this.getIUCNClassificationData(projectId),
       this.getPartnershipsData(projectId)
@@ -95,6 +105,7 @@ export class ProjectService extends DBService {
       project: projectData,
       objectives: objectiveData,
       coordinator: coordinatorData,
+      participants: projectParticipantsData,
       location: locationData,
       iucn: iucnData,
       partnerships: partnershipsData
@@ -189,6 +200,10 @@ export class ProjectService extends DBService {
 
   async getCoordinatorData(projectId: number): Promise<GetCoordinatorData> {
     return this.projectRepository.getCoordinatorData(projectId);
+  }
+
+  async getProjectParticipantsData(projectId: number): Promise<ProjectUser[]> {
+    return this.projectParticipationService.getProjectParticipants(projectId);
   }
 
   async getLocationData(projectId: number): Promise<GetLocationData> {
@@ -300,7 +315,7 @@ export class ProjectService extends DBService {
     await Promise.all(promises);
 
     // The user that creates a project is automatically assigned a coordinator role, for this project
-    await this.insertParticipantRole(projectId, PROJECT_ROLE.COORDINATOR);
+    await this.postProjectParticipant(projectId, this.connection.systemUserId(), PROJECT_ROLE.COORDINATOR);
 
     return projectId;
   }
@@ -325,8 +340,8 @@ export class ProjectService extends DBService {
     return this.projectRepository.insertType(typeId, projectId);
   }
 
-  async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    return this.projectParticipationService.insertParticipantRole(projectId, projectParticipantRole);
+  async postProjectParticipant(projectId: number, systemUserId: number, projectParticipantRole: string): Promise<void> {
+    return this.projectParticipationService.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
   }
 
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {

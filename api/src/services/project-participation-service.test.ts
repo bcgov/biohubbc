@@ -2,8 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ProjectUser } from '../models/user';
-import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
+import { ProjectParticipationRepository, ProjectUser } from '../repositories/project-participation-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectParticipationService } from './project-participation-service';
 
@@ -26,7 +25,7 @@ describe('ProjectParticipationService', () => {
         .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
         .resolves({} as ProjectUser);
 
-      const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'addProjectParticipant');
+      const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'postProjectParticipant');
 
       const projectId = 1;
       const systemUserId = 1;
@@ -51,7 +50,7 @@ describe('ProjectParticipationService', () => {
         .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
         .resolves(null);
 
-      const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'addProjectParticipant');
+      const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'postProjectParticipant');
 
       const projectId = 1;
       const systemUserId = 1;
@@ -151,7 +150,7 @@ describe('ProjectParticipationService', () => {
     });
   });
 
-  describe('addProjectParticipant', () => {
+  describe('postProjectParticipant', () => {
     it('succeeds with valid data', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
@@ -162,9 +161,9 @@ describe('ProjectParticipationService', () => {
         projectParticipantRoleId: 1
       };
 
-      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'addProjectParticipant').resolves();
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'postProjectParticipant').resolves();
 
-      const response = await service.addProjectParticipant(
+      const response = await service.postProjectParticipant(
         data.projectId,
         data.systemUserId,
         data.projectParticipantRoleId
@@ -175,7 +174,7 @@ describe('ProjectParticipationService', () => {
     });
   });
 
-  describe('insertParticipantRole', () => {
+  describe('postProjectParticipant', () => {
     it('succeeds with valid data', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
@@ -185,9 +184,9 @@ describe('ProjectParticipationService', () => {
         projectParticipantRoleId: 'role'
       };
 
-      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'insertParticipantRole').resolves();
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'postProjectParticipant').resolves();
 
-      const response = await service.insertParticipantRole(data.projectId, data.projectParticipantRoleId);
+      const response = await service.postProjectParticipant(data.projectId, data.projectParticipantRoleId);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);

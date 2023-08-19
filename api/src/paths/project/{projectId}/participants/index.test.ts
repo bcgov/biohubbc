@@ -5,11 +5,79 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
+import { ProjectParticipationService } from '../../../../services/project-participation-service';
 import { UserService } from '../../../../services/user-service';
-import { getMockDBConnection } from '../../../../__mocks__/db';
-import * as create_project_participants from './create';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
+import * as create_project_participants from './index';
+import * as get_project_participants from './index';
 
 chai.use(sinonChai);
+
+describe('getParticipants', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should throw a 400 error when no projectId is provided', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    try {
+      const requestHandler = get_project_participants.getParticipants();
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required param `projectId`');
+    }
+  });
+
+  it('should catch and re-throw an error if ProjectService throws an error', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1'
+    };
+
+    sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').rejects(new Error('an error'));
+
+    try {
+      const requestHandler = get_project_participants.getParticipants();
+
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).message).to.equal('an error');
+    }
+  });
+
+  it('should return participants on success', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1'
+    };
+
+    sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
+
+    const requestHandler = get_project_participants.getParticipants();
+
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(mockRes.jsonValue).to.eql([{ id: 1 }]);
+  });
+});
 
 describe('createProjectParticipants', () => {
   const dbConnectionObj = getMockDBConnection();

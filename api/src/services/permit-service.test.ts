@@ -2,8 +2,8 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { User } from '../models/user';
 import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { PermitService } from './permit-service';
 import { UserService } from './user-service';
@@ -39,7 +39,7 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: User = {
+      const mockUserObject: SystemUser = {
         system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
@@ -81,7 +81,7 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: User = {
+      const mockUserObject: SystemUser = {
         system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
@@ -123,7 +123,7 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: User = {
+      const mockUserObject: SystemUser = {
         system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',

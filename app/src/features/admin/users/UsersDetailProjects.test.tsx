@@ -15,7 +15,9 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   project: {
-    getAllUserProjectsForView: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>(),
+    getAllUserProjectsForView: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>()
+  },
+  projectParticipants: {
     removeProjectParticipant: jest.fn<Promise<boolean>, []>(),
     updateProjectParticipantRole: jest.fn<Promise<boolean>, []>()
   },
@@ -242,7 +244,7 @@ describe('UsersDetailProjects', () => {
         project_roles: [{ id: 1, name: 'Coordinator' }]
       } as any);
 
-      mockUseApi.project.removeProjectParticipant.mockResolvedValue(true);
+      mockUseApi.projectParticipants.removeProjectParticipant.mockResolvedValue(true);
 
       mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
@@ -425,7 +427,7 @@ describe('UsersDetailProjects', () => {
         }
       ]);
 
-      mockUseApi.project.updateProjectParticipantRole.mockResolvedValue(true);
+      mockUseApi.projectParticipants.updateProjectParticipantRole.mockResolvedValue(true);
 
       const { getAllByText, getByText } = render(
         <DialogContextProvider>

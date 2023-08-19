@@ -6,14 +6,14 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import { ProjectUser } from '../../../../models/user';
+import { ProjectUser } from '../../../../repositories/project-participation-repository';
 import { ProjectParticipationService } from '../../../../services/project-participation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
-import { GET, getUserRolesForProject } from './self';
+import { GET, getSelf } from './self';
 
 chai.use(sinonChai);
 
-describe('getUserRolesForProject', () => {
+describe('getSelf', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -66,6 +66,7 @@ describe('getUserRolesForProject', () => {
     describe('response validation', () => {
       const responseValidator = new OpenAPIResponseValidator((GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
       const mockParticipantRecord: ProjectUser = {
+        project_participation_id: 1,
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1, 2],
@@ -155,7 +156,7 @@ describe('getUserRolesForProject', () => {
     mockReq.params = {};
 
     try {
-      const requestHandler = getUserRolesForProject();
+      const requestHandler = getSelf();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -176,7 +177,7 @@ describe('getUserRolesForProject', () => {
     mockReq.params = { projectId: '1' };
 
     try {
-      const requestHandler = getUserRolesForProject();
+      const requestHandler = getSelf();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -200,7 +201,7 @@ describe('getUserRolesForProject', () => {
 
     mockReq.params = { projectId: '1' };
 
-    const requestHandler = getUserRolesForProject();
+    const requestHandler = getSelf();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -219,6 +220,7 @@ describe('getUserRolesForProject', () => {
     const projectParticipationServiceStub = sinon
       .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
       .resolves({
+        project_participation_id: 1,
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1],
@@ -230,7 +232,7 @@ describe('getUserRolesForProject', () => {
 
     mockReq.params = { projectId: '1' };
 
-    const requestHandler = getUserRolesForProject();
+    const requestHandler = getSelf();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -238,6 +240,7 @@ describe('getUserRolesForProject', () => {
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
       participant: {
+        project_participation_id: 1,
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1],
@@ -257,6 +260,7 @@ describe('getUserRolesForProject', () => {
     const projectParticipationServiceStub = sinon
       .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
       .resolves({
+        project_participation_id: 1,
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1, 2],
@@ -268,7 +272,7 @@ describe('getUserRolesForProject', () => {
 
     mockReq.params = { projectId: '1' };
 
-    const requestHandler = getUserRolesForProject();
+    const requestHandler = getSelf();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -276,6 +280,7 @@ describe('getUserRolesForProject', () => {
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
       participant: {
+        project_participation_id: 1,
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1, 2],
@@ -299,7 +304,7 @@ describe('getUserRolesForProject', () => {
     mockReq.params = { projectId: '1' };
 
     try {
-      const requestHandler = getUserRolesForProject();
+      const requestHandler = getSelf();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();

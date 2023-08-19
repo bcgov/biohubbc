@@ -107,7 +107,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const handleRemoveProjectParticipant = async (projectId: number, projectParticipationId: number) => {
     try {
-      const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
+      const response = await biohubApi.projectParticipants.removeProjectParticipant(projectId, projectParticipationId);
 
       if (!response) {
         openErrorDialog({
@@ -329,7 +329,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     }
 
     try {
-      const status = await biohubApi.project.updateProjectParticipantRole(
+      const status = await biohubApi.projectParticipants.updateProjectParticipantRole(
         item.project_id,
         item.project_participation_id,
         newRoleId
