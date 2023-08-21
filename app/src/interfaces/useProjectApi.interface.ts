@@ -116,6 +116,13 @@ export interface IProjectsListData {
   project_programs: number[];
 }
 
+export interface IProjectUserRoles {
+  participants: {
+    system_user_id: number;
+    role: string;
+  }[];
+}
+
 /**
  * Create project post object.
  *
@@ -128,7 +135,8 @@ export interface ICreateProjectRequest
     IProjectObjectivesForm,
     IProjectLocationForm,
     IProjectIUCNForm,
-    IProjectPartnershipsForm {}
+    IProjectPartnershipsForm,
+    IProjectUserRoles {}
 
 /**
  * Create project response object.

@@ -1,6 +1,18 @@
+import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import { Autocomplete, Box, CircularProgress, TextField, Typography } from '@mui/material';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import {
+  Autocomplete,
+  Box,
+  CircularProgress,
+  Grid,
+  IconButton,
+  MenuItem,
+  Select,
+  TextField,
+  Typography
+} from '@mui/material';
+import { PROJECT_ROLE } from 'constants/roles';
+import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
@@ -9,13 +21,17 @@ import { debounce } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 
-export const AddProjectUser = yup.object().shape({
-  users: yup.array().of(
-    yup.object().shape({
-      user_id: yup.string().required('Username is required'),
-      role_id: yup.string().required('Display Name is required')
-    })
-  )
+export const ProjectUserRoleYupSchema = yup.object().shape({
+  participants: yup
+    .array()
+    .of(
+      yup.object().shape({
+        system_user_id: yup.string().required('Username is required'),
+        role: yup.string().required('Role is required')
+      })
+    )
+    .min(1)
+    .hasAtLeastOneValue('At least 1 Coordinator needs to exist on a project', 'role', PROJECT_ROLE.COORDINATOR)
 });
 
 interface IProjectUser {
@@ -29,6 +45,10 @@ interface IUserCard {
   agency: string;
   type: string;
 }
+
+export const ProjectUserRoleFormInitialValues = {
+  participants: []
+};
 
 const UserCard: React.FC<IUserCard> = (props) => {
   return (
@@ -46,12 +66,12 @@ const UserCard: React.FC<IUserCard> = (props) => {
 };
 
 const ProjectUserForm: React.FC<IProjectUser> = (props) => {
-  const { handleSubmit } = useFormikContext<ICreateProjectRequest>();
+  const { handleSubmit, values, setFieldValue } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
 
   const [searchUsers, setSearchUsers] = useState<ISearchUserResponse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedUsers] = useState<ISearchUserResponse[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<ISearchUserResponse[]>([]);
 
   useEffect(() => {
     // currently logged in user is assumed to be the 'creator'
@@ -74,10 +94,34 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     [biohubApi.user]
   );
 
-  // const handleNewUser = () => {
-  //   console.log('Add new user row');
-  // };
+  const handleAddUser = (user: ISearchUserResponse) => {
+    selectedUsers.push(user);
 
+    setFieldValue(`participants[${selectedUsers.length - 1}]`, {
+      system_user_id: user.system_user_id,
+      role: ''
+    });
+  };
+
+  const handleAddUserRole = (systemUserId: number, role: string, index: number) => {
+    setFieldValue(`participants[${index}]`, {
+      system_user_id: systemUserId,
+      role: role
+    });
+  };
+
+  const handleRemoveUser = (systemUserId: number) => {
+    const filteredUsers = selectedUsers.filter((item: ISearchUserResponse) => item.system_user_id !== systemUserId);
+    const filteredValues = values.participants.filter((item) => item.system_user_id !== systemUserId);
+
+    setSelectedUsers(filteredUsers);
+    setFieldValue(`participants`, filteredValues);
+  };
+
+  const getUserRole = (systemUserId: number) => {
+    const found = values.participants.filter((item) => item.system_user_id === systemUserId)[0] || null;
+    return found;
+  };
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -101,9 +145,8 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           }}
           onChange={(_, option) => {
             if (option) {
-              selectedUsers.push(option);
+              handleAddUser(option);
             }
-            console.log(selectedUsers);
           }}
           renderInput={(params) => (
             <TextField
@@ -138,25 +181,53 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         />
       </Box>
       <Box mt={3}>
-        <FieldArray
-          name="projectUsers"
-          render={(arrayHelpers: FieldArrayRenderProps) => (
-            <Box>
-              {selectedUsers.map((systemUser: ISearchUserResponse) => (
-                <Box mt={1}>
+        {selectedUsers.length > 0 && (
+          <Typography component={'legend'} variant="h5">
+            Team Members ({selectedUsers.length})
+          </Typography>
+        )}
+        <Grid container rowSpacing={1}>
+          {selectedUsers.map((systemUser: ISearchUserResponse, index: number) => {
+            return (
+              <Grid item key={systemUser.system_user_id} spacing={2} container direction={'row'} xs={12}>
+                <Grid item xs={6} md={8}>
                   <UserCard
                     name={systemUser.display_name}
                     email={systemUser.email}
                     agency={systemUser.agency}
                     type={systemUser.identity_source}
                   />
-                </Box>
-              ))}
-            </Box>
-          )}
-        />
+                </Grid>
+                <Grid item xs={6} md={3}>
+                  <Select
+                    sx={{ width: '100%' }}
+                    displayEmpty
+                    value={getUserRole(systemUser.system_user_id)?.role}
+                    onChange={(event) => {
+                      console.log(event);
+                      handleAddUserRole(systemUser.system_user_id, String(event.target.value), index);
+                    }}>
+                    {props.roles.map((item) => (
+                      <MenuItem key={item.id} value={item.name}>
+                        {item.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Grid>
+                <Grid item xs={6} md={1} display={'flex'}>
+                  <IconButton
+                    aria-label="remove user"
+                    onClick={() => {
+                      handleRemoveUser(systemUser.system_user_id);
+                    }}>
+                    <CloseIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            );
+          })}
+        </Grid>
       </Box>
-      {/* <Box> Assign Role Errors</Box> */}
     </form>
   );
 };

@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { PROJECT_ROLE } from '../constants/roles';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
@@ -36,6 +37,11 @@ export const ProjectParticipationRecord = z.object({
 });
 
 export type ProjectParticipationRecord = z.infer<typeof ProjectParticipationRecord>;
+
+export interface IInsertProjectParticipant {
+  system_user_id: number;
+  role: PROJECT_ROLE;
+}
 
 /**
  * A repository class for accessing project participants data.

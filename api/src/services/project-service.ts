@@ -308,9 +308,8 @@ export class ProjectService extends DBService {
     // Handle project programs
     promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
 
-    promises.push(
-      this.projectParticipationService.ensureProjectParticipantUsers(projectId, postProjectData.participants)
-    );
+    //Handle project participants
+    promises.push(this.projectParticipationService.insertProjectUsers(projectId, postProjectData.participants));
 
     await Promise.all(promises);
 
