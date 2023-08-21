@@ -1,5 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Grid, IconButton, MenuItem, Select, Typography } from '@mui/material';
+import { Box, IconButton, MenuItem, Select, Typography } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
 import SearchAutocompleteField from 'components/fields/SearchAutocompleteField';
 import UserCard from 'components/user/UserCard';
@@ -175,21 +175,21 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         {errors && errors['participants'] && (
           <AlertBar severity="error" variant="standard" title={alertText().title} text={alertText().text} />
         )}
-        <Grid container rowSpacing={1}>
+        <Box>
           {selectedUsers.map((systemUser: ISearchUserResponse, index: number) => {
             const error = rowItemError(index);
             return (
               <>
-                <Grid item key={systemUser.system_user_id} spacing={2} container direction={'row'} xs={12}>
-                  <Grid item xs={6} md={8}>
+                <Box display={'flex'} mt={2}>
+                  <Box flex={3}>
                     <UserCard
                       name={systemUser.display_name}
                       email={systemUser.email}
                       agency={systemUser.agency}
                       type={systemUser.identity_source}
                     />
-                  </Grid>
-                  <Grid item xs={6} md={3}>
+                  </Box>
+                  <Box flex={1}>
                     <Select
                       sx={{ width: '100%' }}
                       displayEmpty
@@ -204,8 +204,8 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                         </MenuItem>
                       ))}
                     </Select>
-                  </Grid>
-                  <Grid item xs={6} md={1} display={'flex'}>
+                  </Box>
+                  <Box display={'flex'} padding={2}>
                     <IconButton
                       aria-label="remove user"
                       onClick={() => {
@@ -214,13 +214,13 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                       }}>
                       <CloseIcon />
                     </IconButton>
-                  </Grid>
-                </Grid>
+                  </Box>
+                </Box>
                 {error}
               </>
             );
           })}
-        </Grid>
+        </Box>
       </Box>
     </form>
   );
