@@ -69,13 +69,31 @@ describe('getParticipants', () => {
       projectId: '1'
     };
 
-    sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
+    sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
 
     const requestHandler = get_project_participants.getParticipants();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockRes.jsonValue).to.eql([{ id: 1 }]);
+    expect(mockRes.jsonValue).to.eql([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
   });
 });
 
@@ -134,7 +152,7 @@ describe('postProjectParticipants', () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({
-      rows: null
+      rows: []
     });
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);

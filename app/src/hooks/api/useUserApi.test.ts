@@ -13,7 +13,7 @@ describe('useUserApi', () => {
     mock.restore();
   });
 
-  const userId = 123;
+  const systemUserId = 123;
 
   it('getUser works as expected', async () => {
     mock.onGet('/api/user/self').reply(200, {
@@ -30,7 +30,7 @@ describe('useUserApi', () => {
   });
 
   it('getUserById works as expected', async () => {
-    mock.onGet(`/api/user/${userId}/get`).reply(200, {
+    mock.onGet(`/api/user/${systemUserId}/get`).reply(200, {
       system_user_id: 123,
       user_record_end_date: 'test',
       user_identifier: 'myidirboss',

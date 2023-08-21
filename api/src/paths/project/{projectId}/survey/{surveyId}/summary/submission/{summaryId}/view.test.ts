@@ -110,7 +110,7 @@ describe('getSurveySubmissionCSVForView', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
@@ -144,7 +144,7 @@ describe('getSurveySubmissionCSVForView', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
@@ -179,7 +179,7 @@ describe('getSurveySubmissionCSVForView', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');

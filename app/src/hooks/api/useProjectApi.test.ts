@@ -23,7 +23,7 @@ describe('useProjectApi', () => {
     mock.restore();
   });
 
-  const userId = 123;
+  const systemUserId = 123;
   const projectId = 1;
   const attachmentId = 1;
   const attachmentType = 'type';
@@ -37,7 +37,7 @@ describe('useProjectApi', () => {
   };
 
   it('getAllUserProjectsForView works as expected', async () => {
-    mock.onGet(`/api/user/${userId}/projects/get`).reply(200, [
+    mock.onGet(`/api/user/${systemUserId}/projects/get`).reply(200, [
       {
         project_id: 321,
         name: 'test',

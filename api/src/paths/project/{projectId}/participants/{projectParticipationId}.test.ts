@@ -25,7 +25,16 @@ describe('putProjectParticipantRole', () => {
     mockReq.body = { roleId: '1' };
 
     sinon.stub(ProjectParticipationService.prototype, 'deleteProjectParticipationRecord').resolves();
-    sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
+    sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants').resolves([
+      {
+        system_user_id: 1,
+        project_id: 1,
+        project_participation_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
     sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead').returns(true);
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -53,16 +62,42 @@ describe('putProjectParticipantRole', () => {
     mockReq.params = { projectId: '1', projectParticipationId: '2' };
     mockReq.body = { roleId: '1' };
 
-    sinon
-      .stub(ProjectParticipationService.prototype, 'deleteProjectParticipationRecord')
-      .resolves({ system_user_id: 1 });
+    sinon.stub(ProjectParticipationService.prototype, 'deleteProjectParticipationRecord').resolves({
+      project_participation_id: 1,
+      project_id: 1,
+      system_user_id: 1,
+      project_role_id: 1,
+      create_date: '2023-01-01',
+      create_user: 1,
+      update_date: null,
+      update_user: null,
+      revision_count: 0
+    });
     sinon.stub(ProjectParticipationService.prototype, 'postProjectParticipant').resolves();
     const getProjectParticipant = sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants');
     const doAllProjectsHaveLead = sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead');
 
-    getProjectParticipant.onCall(0).resolves([{ id: 1 }]);
+    getProjectParticipant.onCall(0).resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
     doAllProjectsHaveLead.onCall(0).returns(true);
-    getProjectParticipant.onCall(1).resolves([{ id: 2 }]);
+    getProjectParticipant.onCall(1).resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
     doAllProjectsHaveLead.onCall(1).returns(false);
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -92,16 +127,42 @@ describe('putProjectParticipantRole', () => {
     mockReq.params = { projectId: '1', projectParticipationId: '2' };
     mockReq.body = { roleId: '1' };
 
-    sinon
-      .stub(ProjectParticipationService.prototype, 'deleteProjectParticipationRecord')
-      .resolves({ system_user_id: 1 });
+    sinon.stub(ProjectParticipationService.prototype, 'deleteProjectParticipationRecord').resolves({
+      project_participation_id: 1,
+      project_id: 1,
+      system_user_id: 1,
+      project_role_id: 1,
+      create_date: '2023-01-01',
+      create_user: 1,
+      update_date: null,
+      update_user: null,
+      revision_count: 0
+    });
     sinon.stub(ProjectParticipationService.prototype, 'postProjectParticipant').resolves();
     const getProjectParticipant = sinon.stub(ProjectParticipationService.prototype, 'getProjectParticipants');
     const doAllProjectsHaveLead = sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead');
 
-    getProjectParticipant.onCall(0).resolves([{ id: 1 }]);
+    getProjectParticipant.onCall(0).resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
     doAllProjectsHaveLead.onCall(0).returns(true);
-    getProjectParticipant.onCall(1).resolves([{ id: 2 }]);
+    getProjectParticipant.onCall(1).resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
     doAllProjectsHaveLead.onCall(1).returns(true);
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -130,7 +191,16 @@ describe('deleteProjectParticipant', () => {
     mockReq.params = { projectId: '1', projectParticipationId: '2' };
 
     sinon.stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord').resolves();
-    sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
+    sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
     sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead').returns(true);
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -157,16 +227,42 @@ describe('deleteProjectParticipant', () => {
 
     mockReq.params = { projectId: '1', projectParticipationId: '2' };
 
-    sinon
-      .stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord')
-      .resolves({ system_user_id: 1 });
+    sinon.stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord').resolves({
+      project_participation_id: 1,
+      project_id: 1,
+      system_user_id: 1,
+      project_role_id: 1,
+      create_date: '2023-01-01',
+      create_user: 1,
+      update_date: null,
+      update_user: null,
+      revision_count: 0
+    });
     const getProjectParticipant = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants');
     const doAllProjectsHaveLead = sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead');
 
-    getProjectParticipant.onCall(0).resolves([{ id: 1 }]);
-    doAllProjectsHaveLead.onCall(0).returns(true);
-    getProjectParticipant.onCall(1).resolves([{ id: 2 }]);
-    doAllProjectsHaveLead.onCall(1).returns(false);
+    getProjectParticipant.onCall(0).resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
+    doAllProjectsHaveLead.onCall(0).returns(true); // all projects have a coordinator
+    getProjectParticipant.onCall(1).resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
+    doAllProjectsHaveLead.onCall(1).returns(false); // not all projects have a coordinator
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -194,16 +290,42 @@ describe('deleteProjectParticipant', () => {
 
     mockReq.params = { projectId: '1', projectParticipationId: '2' };
 
-    sinon
-      .stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord')
-      .resolves({ system_user_id: 1 });
+    sinon.stub(ProjectParticipationRepository.prototype, 'deleteProjectParticipationRecord').resolves({
+      project_participation_id: 1,
+      project_id: 1,
+      system_user_id: 1,
+      project_role_id: 1,
+      create_date: '2023-01-01',
+      create_user: 1,
+      update_date: null,
+      update_user: null,
+      revision_count: 0
+    });
     const getProjectParticipant = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants');
     const doAllProjectsHaveLead = sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead');
 
-    getProjectParticipant.onCall(0).resolves([{ id: 1 }]);
-    doAllProjectsHaveLead.onCall(0).returns(true);
-    getProjectParticipant.onCall(1).resolves([{ id: 2 }]);
-    doAllProjectsHaveLead.onCall(1).returns(true);
+    getProjectParticipant.onCall(0).resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
+    doAllProjectsHaveLead.onCall(0).returns(true); // all projects have a coordinator
+    getProjectParticipant.onCall(1).resolves([
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
+      }
+    ]);
+    doAllProjectsHaveLead.onCall(1).returns(true); // all projects have a coordinator
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,

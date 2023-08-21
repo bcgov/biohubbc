@@ -43,16 +43,7 @@ export class PermitRepository extends BaseRepository {
 
     const response = await this.connection.sql<IPermitModel>(sqlStatement);
 
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get permit by Id', [
-        'PermitRepository->getPermitBySurveyId',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
+    return response.rows;
   }
 
   /**
@@ -116,15 +107,6 @@ export class PermitRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql<IPermitModel>(sqlStatement);
-
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get all permits', [
-        'PermitRepository->getAllPermits',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
 
     return response.rows;
   }

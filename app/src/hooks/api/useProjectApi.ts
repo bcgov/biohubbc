@@ -26,13 +26,13 @@ import qs from 'qs';
  */
 const useProjectApi = (axios: AxiosInstance) => {
   /**
-   * Get projects from userId
+   * Get projects for a system user id.
    *
-   * @param {number} userId
+   * @param {number} systemUserId
    * @return {*} {Promise<IGetProjectsListResponse[]>}
    */
-  const getAllUserProjectsForView = async (userId: number): Promise<IGetUserProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/user/${userId}/projects/get`);
+  const getAllUserProjectsForView = async (systemUserId: number): Promise<IGetUserProjectsListResponse[]> => {
+    const { data } = await axios.get(`/api/user/${systemUserId}/projects/get`);
     return data;
   };
 

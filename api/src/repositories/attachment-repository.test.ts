@@ -25,22 +25,18 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectAttachments(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }]);
         });
 
-        it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+        it('should return empty rows', async () => {
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          try {
-            await repository.getProjectAttachments(1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get project attachments by projectId');
-          }
+          const response = await repository.getProjectAttachments(1);
+
+          expect(response).to.eql([]);
         });
       });
 
@@ -53,22 +49,7 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectAttachmentById(1, 1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
-        });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.getProjectAttachmentById(1, 1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get project attachment by attachmentId');
-          }
         });
       });
 
@@ -81,8 +62,18 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectAttachmentsByIds(1, [1, 2]);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }, { id: 2 }]);
+        });
+
+        it('should return empty rows', async () => {
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+          const repository = new AttachmentRepository(dbConnection);
+
+          const response = await repository.getProjectAttachmentsByIds(1, [1, 2]);
+
+          expect(response).to.eql([]);
         });
       });
 
@@ -100,12 +91,11 @@ describe('AttachmentRepository', () => {
             'string'
           );
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -133,12 +123,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.updateProjectAttachment('string', 1, 'string');
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -161,8 +150,18 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectAttachmentByFileName(1, 'string');
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
+        });
+
+        it('should return empty rows', async () => {
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+          const repository = new AttachmentRepository(dbConnection);
+
+          const response = await repository.getProjectAttachmentByFileName(1, 'string');
+
+          expect(response).to.eql({ rows: [], rowCount: 0 });
         });
       });
 
@@ -175,12 +174,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectAttachmentS3Key(1, 1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql(1);
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -203,12 +201,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.deleteProjectAttachment(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -233,22 +230,18 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectReportAttachments(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }]);
         });
 
-        it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+        it('should return empty rows', async () => {
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          try {
-            await repository.getProjectReportAttachments(1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get project report attachments by projectId');
-          }
+          const response = await repository.getProjectReportAttachments(1);
+
+          expect(response).to.eql([]);
         });
       });
 
@@ -261,22 +254,7 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectReportAttachmentById(1, 1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
-        });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.getProjectReportAttachmentById(1, 1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get project report attachments by reportAttachmentId');
-          }
         });
       });
 
@@ -289,7 +267,6 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectReportAttachmentsByIds(1, [1, 2]);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }, { id: 2 }]);
         });
       });
@@ -303,24 +280,18 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectReportAttachmentAuthors(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }]);
         });
 
-        it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+        it('should return empty rows', async () => {
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          try {
-            await repository.getProjectReportAttachmentAuthors(1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal(
-              'Failed to get project report attachment authors by reportAttachmentId'
-            );
-          }
+          const response = await repository.getProjectReportAttachmentAuthors(1);
+
+          expect(response).to.eql([]);
         });
       });
 
@@ -339,12 +310,11 @@ describe('AttachmentRepository', () => {
             'string'
           );
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -375,12 +345,11 @@ describe('AttachmentRepository', () => {
             title: 'string'
           } as unknown) as PutReportAttachmentMetadata);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -405,7 +374,6 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectReportAttachmentByFileName(1, 'string');
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
         });
       });
@@ -419,7 +387,6 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.deleteProjectReportAttachmentAuthors(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
         });
       });
@@ -440,7 +407,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -472,7 +439,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -497,12 +464,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getProjectReportAttachmentS3Key(1, 1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql(1);
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -525,12 +491,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.deleteProjectReportAttachment(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -557,22 +522,18 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyAttachments(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }]);
         });
 
-        it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+        it('should return empty rows', async () => {
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          try {
-            await repository.getSurveyAttachments(1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get survey attachments by surveyId');
-          }
+          const response = await repository.getSurveyAttachments(1);
+
+          expect(response).to.eql([]);
         });
       });
 
@@ -585,7 +546,6 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyAttachmentsByIds(1, [1, 2]);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }, { id: 2 }]);
         });
       });
@@ -599,12 +559,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.deleteSurveyAttachment(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -627,12 +586,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyAttachmentS3Key(1, 1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql(1);
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -655,12 +613,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.updateSurveyAttachment(1, 'string', 'string');
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -683,12 +640,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.insertSurveyAttachment('string', 1, 'string', 1, 'string');
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -711,7 +667,6 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyAttachmentByFileName('string', 1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
         });
       });
@@ -727,22 +682,18 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyReportAttachments(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }]);
         });
 
-        it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+        it('should return empty rows', async () => {
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
 
-          try {
-            await repository.getSurveyReportAttachments(1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get survey report attachments by surveyId');
-          }
+          const response = await repository.getSurveyReportAttachments(1);
+
+          expect(response).to.eql([]);
         });
       });
 
@@ -755,22 +706,7 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyReportAttachmentById(1, 1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
-        });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.getSurveyReportAttachmentById(1, 1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal('Failed to get survey report attachments by reportAttachmentId');
-          }
         });
       });
 
@@ -783,7 +719,6 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyReportAttachmentsByIds(1, [1, 2]);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }, { id: 2 }]);
         });
       });
@@ -797,24 +732,7 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyReportAttachmentAuthors(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql([{ id: 1 }]);
-        });
-
-        it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
-          const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-          const repository = new AttachmentRepository(dbConnection);
-
-          try {
-            await repository.getSurveyReportAttachmentAuthors(1);
-            expect.fail();
-          } catch (error) {
-            expect((error as Error).message).to.equal(
-              'Failed to get survey report attachment authors by reportAttachmentId'
-            );
-          }
         });
       });
 
@@ -833,12 +751,11 @@ describe('AttachmentRepository', () => {
             'string'
           );
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -869,12 +786,11 @@ describe('AttachmentRepository', () => {
             title: 'string'
           } as unknown) as PutReportAttachmentMetadata);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rows: undefined } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -899,7 +815,6 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyReportAttachmentByFileName(1, 'string');
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ rows: [{ id: 1 }], rowCount: 1 });
         });
       });
@@ -933,7 +848,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -959,12 +874,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.deleteSurveyReportAttachment(1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql({ id: 1 });
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -987,12 +901,11 @@ describe('AttachmentRepository', () => {
 
           const response = await repository.getSurveyReportAttachmentS3Key(1, 1);
 
-          expect(response).to.not.be.null;
           expect(response).to.eql(1);
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);
@@ -1021,7 +934,7 @@ describe('AttachmentRepository', () => {
         });
 
         it('should throw an error', async () => {
-          const mockResponse = ({ rowCount: null } as any) as Promise<QueryResult<any>>;
+          const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
           const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
           const repository = new AttachmentRepository(dbConnection);

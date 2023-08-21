@@ -75,22 +75,11 @@ describe('getSelf', () => {
       };
 
       describe('should throw an error when', () => {
-        it('returns a null response', async () => {
-          const apiResponse = null;
-          const response = responseValidator.validateResponse(200, apiResponse);
-
-          expect(response.message).to.equal('The response was not valid.');
-          expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].message).to.equal('must be object');
-        });
-
         describe('project_id', () => {
           it('is undefined', async () => {
             const apiResponse = {
-              participant: {
-                ...mockParticipantRecord,
-                project_id: undefined
-              }
+              ...mockParticipantRecord,
+              project_id: undefined
             };
             const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -101,10 +90,8 @@ describe('getSelf', () => {
 
           it('is null', async () => {
             const apiResponse = {
-              participant: {
-                ...mockParticipantRecord,
-                project_id: null
-              }
+              ...mockParticipantRecord,
+              project_id: null
             };
             const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -115,10 +102,8 @@ describe('getSelf', () => {
 
           it('is wrong type', async () => {
             const apiResponse = {
-              participant: {
-                ...mockParticipantRecord,
-                project_id: '1'
-              }
+              ...mockParticipantRecord,
+              project_id: '1'
             };
             const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -138,7 +123,7 @@ describe('getSelf', () => {
         });
 
         it('returns a null participant', async () => {
-          const apiResponse = { participant: null };
+          const apiResponse = null;
 
           const response = responseValidator.validateResponse(200, apiResponse);
           expect(response).to.equal(undefined);
@@ -207,7 +192,7 @@ describe('getSelf', () => {
 
     expect(mockRes.statusValue).to.equal(200);
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
-    expect(mockRes.jsonValue).to.eql({ participant: null });
+    expect(mockRes.jsonValue).to.eql(null);
   });
 
   it('should return a participant record with a single role', async () => {
@@ -239,14 +224,12 @@ describe('getSelf', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
-      participant: {
-        project_participation_id: 1,
-        project_id: 1,
-        system_user_id: 20,
-        project_role_ids: [1],
-        project_role_names: ['Test-Role-A'],
-        project_role_permissions: ['Test Permission']
-      }
+      project_participation_id: 1,
+      project_id: 1,
+      system_user_id: 20,
+      project_role_ids: [1],
+      project_role_names: ['Test-Role-A'],
+      project_role_permissions: ['Test Permission']
     });
   });
 
@@ -279,14 +262,12 @@ describe('getSelf', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
-      participant: {
-        project_participation_id: 1,
-        project_id: 1,
-        system_user_id: 20,
-        project_role_ids: [1, 2],
-        project_role_names: ['Test-Role-A', 'Test-Role-B'],
-        project_role_permissions: ['Test Permission']
-      }
+      project_participation_id: 1,
+      project_id: 1,
+      system_user_id: 20,
+      project_role_ids: [1, 2],
+      project_role_names: ['Test-Role-A', 'Test-Role-B'],
+      project_role_permissions: ['Test Permission']
     });
   });
 

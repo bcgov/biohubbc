@@ -745,6 +745,7 @@ describe('getProjectUserObject', function () {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockSystemUserWithRolesResponse: ProjectUser = {
+      project_participation_id: 1,
       project_id: 2,
       system_user_id: 1,
       project_role_ids: [1, 2],

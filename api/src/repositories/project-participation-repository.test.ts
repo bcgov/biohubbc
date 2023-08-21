@@ -17,7 +17,6 @@ describe('ProjectParticipationRepository', () => {
 
       const response = await repository.deleteProjectParticipationRecord(1);
 
-      expect(response).to.not.be.null;
       expect(response).to.eql({ id: 1 });
     });
 
@@ -52,7 +51,6 @@ describe('ProjectParticipationRepository', () => {
 
       const response = await repository.getProjectParticipant(1, 1);
 
-      expect(response).to.not.be.null;
       expect(response).to.eql({ system_user_id: 1 });
     });
 
@@ -77,12 +75,11 @@ describe('ProjectParticipationRepository', () => {
 
       const response = await repository.getProjectParticipants(1);
 
-      expect(response).to.not.be.null;
       expect(response).to.eql([{ id: 1 }]);
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = ({ rows: null, rowCount: 0 } as any) as Promise<QueryResult<any>>;
+    it('should throw an error when no rows returned', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -106,12 +103,11 @@ describe('ProjectParticipationRepository', () => {
 
         const response = await repository.postProjectParticipant(1, 1, 1);
 
-        expect(response).to.not.be.null;
         expect(response).to.eql(undefined);
       });
 
-      it('should throw an error', async () => {
-        const mockResponse = ({ rows: null, rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      it('should throw an error when no rows returned', async () => {
+        const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
         const repository = new ProjectParticipationRepository(dbConnection);
@@ -136,7 +132,7 @@ describe('ProjectParticipationRepository', () => {
           await repository.postProjectParticipant(1, 1, 'string');
           expect.fail();
         } catch (error) {
-          expect((error as Error).message).to.equal('Failed to identify system user ID');
+          expect((error as Error).message).to.equal('Failed to insert project team member');
         }
       });
 
@@ -148,7 +144,6 @@ describe('ProjectParticipationRepository', () => {
 
         const response = await repository.postProjectParticipant(1, 1, 'string');
 
-        expect(response).to.not.be.null;
         expect(response).to.eql(undefined);
       });
 

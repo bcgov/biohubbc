@@ -107,7 +107,7 @@ export function putProjectParticipantRole(): RequestHandler {
 
       const projectParticipationService = new ProjectParticipationService(connection);
 
-      // Check coordinator roles before updating user
+      // Get project coordinator state before updates are made
       const projectParticipantsResponse1 = await projectParticipationService.getProjectParticipants(
         Number(req.params.projectId)
       );
@@ -129,9 +129,10 @@ export function putProjectParticipantRole(): RequestHandler {
         roleId
       );
 
-      // If coordinator roles are invalid skip check to prevent removal of only coordinator of project
-      // (Project is already missing coordinator and is in a bad state)
+      // If the project coordinator state before the changes was already invalid, then don't bother checking the state
+      // after the changes. This situation should ideally never happen.
       if (projectHasLeadResponse1) {
+        // Get project coordinator state after updates were made
         const projectParticipantsResponse2 = await projectParticipationService.getProjectParticipants(
           Number(req.params.projectId)
         );
@@ -139,6 +140,8 @@ export function putProjectParticipantRole(): RequestHandler {
           projectParticipantsResponse2
         );
 
+        // If any project that the user is on now no longer has a coordinator, then these updates must have been
+        // responsible, and so should not be allowed. A project must always have at least 1 coordinator role.
         if (!projectHasLeadResponse2) {
           throw new HTTP400(
             `Cannot update project user. User is the only ${PROJECT_ROLE.COORDINATOR} for the project.`

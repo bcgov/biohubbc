@@ -71,8 +71,8 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   const [assignedProjects, setAssignedProjects] = useState<IGetUserProjectsListResponse[]>();
 
   const handleGetUserProjects = useCallback(
-    async (userId: number) => {
-      const userProjectsListResponse = await biohubApi.project.getAllUserProjectsForView(userId);
+    async (systemUserId: number) => {
+      const userProjectsListResponse = await biohubApi.project.getAllUserProjectsForView(systemUserId);
       setAssignedProjects(userProjectsListResponse);
     },
     [biohubApi.project]

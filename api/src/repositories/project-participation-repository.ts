@@ -227,7 +227,7 @@ export class ProjectParticipationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert project team member', [
         'ProjectRepository->postProjectParticipant',
         'rows was null or undefined, expected rows != null'
