@@ -4,14 +4,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment } from 'react';
 import { v4 } from 'uuid';
-import {
-  AnimalCaptureSchema,
-  getAnimalFieldName,
-  IAnimal,
-  IAnimalCapture,
-  isRequiredInSchema,
-  lastAnimalValueValid
-} from '../animal';
+import { AnimalCaptureSchema, getAnimalFieldName, IAnimal, IAnimalCapture, isRequiredInSchema } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 import LocationEntryForm from './LocationEntryForm';
@@ -53,6 +46,16 @@ const CaptureAnimalForm = () => {
     release_coordinate_uncertainty: '' as unknown as number
   };
 
+  const canAddNewCapture = () => {
+    const lastCapture = values.captures[values.captures.length - 1];
+    if (!lastCapture) {
+      return true;
+    }
+    const { capture_latitude, capture_longitude, capture_timestamp, capture_coordinate_uncertainty } = lastCapture;
+    return capture_latitude && capture_longitude && capture_timestamp && capture_coordinate_uncertainty;
+  };
+
+  console.log(canAddNewCapture());
   return (
     <FieldArray name={name}>
       {({ remove, push }: FieldArrayRenderProps) => (
@@ -62,7 +65,7 @@ const CaptureAnimalForm = () => {
             addedSectionTitle={SurveyAnimalsI18N.animalCaptureTitle2}
             titleHelp={SurveyAnimalsI18N.animalCaptureHelp}
             btnLabel={SurveyAnimalsI18N.animalCaptureAddBtn}
-            disableAddBtn={!lastAnimalValueValid('captures', values)}
+            disableAddBtn={!canAddNewCapture()}
             handleAddSection={() => push(newCapture)}
             handleRemoveSection={remove}>
             {values.captures.map((cap, index) => (

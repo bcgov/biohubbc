@@ -173,9 +173,9 @@ type ICritterLocation = InferType<typeof LocationSchema>;
 
 type ICritterMortality = Omit<
   ICritterID &
-  IAnimalMortality & {
-    location_id: string;
-  },
+    IAnimalMortality & {
+      location_id: string;
+    },
   | '_id'
   | 'mortality_utm_easting'
   | 'mortality_utm_northing'
@@ -187,10 +187,10 @@ type ICritterMortality = Omit<
 
 type ICritterCapture = Omit<
   ICritterID &
-  Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
-    capture_location_id: string;
-    release_location_id: string | undefined;
-  },
+    Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
+      capture_location_id: string;
+      release_location_id: string | undefined;
+    },
   '_id'
 >;
 
@@ -301,7 +301,7 @@ export class Critter {
       this.mortalities.push({
         critter_id: this.critter_id,
         location_id: loc_id,
-        ...omit(cleanedMortality, '_id')
+        ...omit(cleanedMortality, '')
       });
     });
 

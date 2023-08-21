@@ -53,7 +53,7 @@ const FormSectionWrapper = ({
         </Typography>
       </Typography>
       {childs.map((child, idx) => (
-        <Paper key={`${child}`} variant="outlined" sx={{ p: 2, mb: 2 }} {...innerPaperProps}>
+        <Paper variant="outlined" sx={{ p: 2, mb: 2 }} {...innerPaperProps}>
           <Box display="flex" alignItems="center">
             {addedSectionTitle ? (
               <Typography fontWeight="bold">

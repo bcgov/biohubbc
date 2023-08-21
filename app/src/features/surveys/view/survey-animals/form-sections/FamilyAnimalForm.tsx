@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Theme, Typography } from '@mui/material';
+import { Box, Button, Grid, MenuItem, Paper, Theme, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -10,7 +10,6 @@ import useDataLoader from 'hooks/useDataLoader';
 import React, { Fragment, useState } from 'react';
 import { v4 } from 'uuid';
 import {
-  AnimalMeasurementSchema,
   AnimalRelationshipSchema,
   getAnimalFieldName,
   IAnimal,
@@ -51,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  **/
 const FamilyAnimalForm = () => {
-  const { values, touched, errors, handleChange } = useFormikContext<IAnimal>();
+  const { values, handleChange } = useFormikContext<IAnimal>();
   const critterbase = useCritterbaseApi();
   const { data: allFamilies, load } = useDataLoader(critterbase.family.getAllFamilies);
   const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbase.family.getImmediateFamily);
