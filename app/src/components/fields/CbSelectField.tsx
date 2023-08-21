@@ -4,7 +4,7 @@ import { ICbRouteKey, ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { CbSelectWrapper } from './CbSelectFieldWrapper';
 
 export interface ICbSelectSharedProps {
@@ -37,35 +37,32 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const { name, label, route, param, query, handleChangeSideEffect, controlProps } = props;
 
   const api = useCritterbaseApi();
-  const { data, load, hasLoaded, isReady, refresh } = useDataLoader(api.lookup.getSelectOptions);
+  const { data, load, refresh, hasLoaded } = useDataLoader(api.lookup.getSelectOptions);
   const { values, handleChange, setFieldValue, setFieldTouched } = useFormikContext<ICbSelectOption>();
 
-  const payload = { route, param, query };
   const val = get(values, name) ?? '';
 
-  if (hasLoaded && isReady) {
-    refresh(payload);
-  } else {
-    load(payload);
-  }
+  load({ route, param, query });
 
-  const isValueInRange = () => {
-    if (val === '') {
-      return true;
+  useEffect(() => {
+    if (hasLoaded) {
+      // Only refresh when the query or param changes
+      refresh({ route, param, query });
     }
-    if (!data) {
-      return false;
-    }
-    return data.some((d) => (typeof d === 'string' ? d === val : d.id === val));
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, param]);
 
-  const innerChangeHandler = (e: SelectChangeEvent<any>) => {
-    if (!isValueInRange()) {
+  useMemo(() => {
+    if (val === '') return;
+    if (!data) return;
+    const inRange = data.some((d) => (typeof d === 'string' ? d === val : d.id === val));
+    if (!inRange) {
       setFieldValue(name, '');
       setFieldTouched(name);
-      handleChange(e);
-      return;
     }
+  }, [data, val, setFieldValue, setFieldTouched, name]);
+
+  const innerChangeHandler = (e: SelectChangeEvent<any>) => {
     handleChange(e);
     if (handleChangeSideEffect) {
       const item = data?.find((a) => typeof a !== 'string' && a.id === e.target.value);
@@ -79,7 +76,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
       label={label}
       controlProps={{ ...controlProps, disabled: !data?.length }}
       onChange={innerChangeHandler}
-      value={isValueInRange() ? val : ''}>
+      value={val}>
       {data?.map((a) => {
         const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
         return (
