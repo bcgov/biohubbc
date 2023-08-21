@@ -192,6 +192,50 @@ export class ProjectParticipationRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof ProjectParticipationRepository
    */
+  async insertProjectParticipantRole(
+    projectId: number,
+    systemUserId: number,
+    projectParticipantRole: string
+  ): Promise<void> {
+    const sqlStatement = SQL`
+      INSERT INTO project_participation (
+        project_id,
+        system_user_id,
+        project_role_id
+      )
+      (
+        SELECT
+          ${projectId},
+          ${systemUserId},
+          project_role_id
+        FROM
+          project_role
+        WHERE
+          name = ${projectParticipantRole}
+        AND 
+      )
+      RETURNING
+        *;
+    `;
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to insert project team member', [
+        'ProjectRepository->insertProjectParticipantRole',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+  }
+
+  /**
+   * Inserts a project participant role into the database.
+   *
+   * @param {number} projectId
+   * @param {string} projectParticipantRole
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectParticipationRepository
+   */
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
     const systemUserId = this.connection.systemUserId();
 

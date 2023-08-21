@@ -1,5 +1,6 @@
 import { Feature } from 'geojson';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { PROJECT_ROLE } from '../constants/roles';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-create');
@@ -17,7 +18,7 @@ export class PostProjectObject {
   location: PostLocationData;
   iucn: PostIUCNData;
   partnerships: PostPartnershipsData;
-  participants: PostParticipantsData[];
+  participants: PostParticipantData[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
@@ -28,8 +29,7 @@ export class PostProjectObject {
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
-    this.participants =
-      (obj?.participants && obj.participants.map((item: any) => new PostParticipantsData(item))) || [];
+    this.participants = obj?.participants || [];
   }
 }
 
@@ -193,6 +193,11 @@ export class PostParticipantsData {
     this.email = obj?.email || null;
     this.roleId = obj?.roleId || null;
   }
+}
+
+export interface PostParticipantData {
+  system_user_id: number;
+  role: PROJECT_ROLE;
 }
 
 export class PostDraftData {

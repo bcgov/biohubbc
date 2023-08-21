@@ -1,4 +1,4 @@
-import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
+import { PROJECT_ROLE } from '../../constants/roles';
 
 /**
  * Request Object for project create POST request
@@ -118,31 +118,14 @@ export const projectCreatePostRequestObject = {
       type: 'array',
       items: {
         type: 'object',
-        required: ['userIdentifier', 'identitySource', 'displayName', 'email', 'roleId'],
+        required: ['system_user_id', 'role'],
         properties: {
-          userIdentifier: {
-            description: 'A IDIR or BCEID username.',
-            type: 'string'
-          },
-          identitySource: {
-            type: 'string',
-            enum: [
-              SYSTEM_IDENTITY_SOURCE.IDIR,
-              SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
-              SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
-            ]
-          },
-          displayName: {
-            type: 'string',
-            description: 'The display name for the user.'
-          },
-          email: {
-            type: 'string',
-            description: 'The email for the user.'
-          },
-          roleId: {
-            description: 'The id of the project role to assign to the participant.',
+          system_user_id: {
             type: 'number'
+          },
+          role: {
+            type: 'string',
+            enum: [PROJECT_ROLE.COORDINATOR, PROJECT_ROLE.COLLABORATOR, PROJECT_ROLE.OBSERVER]
           }
         }
       }

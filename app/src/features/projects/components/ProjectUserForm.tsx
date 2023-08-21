@@ -202,7 +202,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                   <Select
                     sx={{ width: '100%' }}
                     displayEmpty
-                    value={getUserRole(systemUser.system_user_id)?.system_user_id}
+                    value={getUserRole(systemUser.system_user_id)?.role}
                     onChange={(event) => {
                       console.log(event);
                       handleAddUserRole(systemUser.system_user_id, String(event.target.value), index);
