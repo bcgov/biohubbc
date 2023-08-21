@@ -55,7 +55,6 @@ const CaptureAnimalForm = () => {
     return capture_latitude && capture_longitude && capture_timestamp && capture_coordinate_uncertainty;
   };
 
-  console.log(canAddNewCapture());
   return (
     <FieldArray name={name}>
       {({ remove, push }: FieldArrayRenderProps) => (
