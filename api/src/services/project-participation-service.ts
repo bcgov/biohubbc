@@ -1,5 +1,6 @@
 import { PROJECT_PERMISSION, PROJECT_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTP400 } from '../errors/http-error';
 import { ProjectUser } from '../models/user';
 import { IParticipant, ProjectParticipationRepository } from '../repositories/project-participation-repository';
@@ -131,7 +132,7 @@ export class ProjectParticipationService extends DBService {
   }
 
   /**
-   * Adds a project participant role to the project.
+   * Adds current logged in user as a participant to a given project
    *
    * @param {number} projectId
    * @param {string} projectParticipantRole
@@ -139,7 +140,23 @@ export class ProjectParticipationService extends DBService {
    * @memberof ProjectParticipationService
    */
   async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    return this.projectParticipationRepository.insertParticipantRole(projectId, projectParticipantRole);
+    const currentUserId = this.connection.systemUserId();
+    if (!currentUserId) {
+      throw new ApiExecuteSQLError('Failed to identify system user ID');
+    }
+    return this.insertProjectParticipantRole(projectId, currentUserId, projectParticipantRole);
+  }
+
+  async insertProjectParticipantRole(
+    projectId: number,
+    systemUserId: number,
+    projectParticipantRole: string
+  ): Promise<void> {
+    return this.projectParticipationRepository.insertProjectParticipantRole(
+      projectId,
+      systemUserId,
+      projectParticipantRole
+    );
   }
 
   /**
