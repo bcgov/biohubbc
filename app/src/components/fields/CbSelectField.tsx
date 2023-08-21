@@ -52,18 +52,25 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, param]);
 
-  useMemo(() => {
-    if (val === '') return;
-    if (!data) return;
+  const isValueInRange = useMemo(() => {
+    if (val === '') {
+      return true;
+    }
+    if (!data) {
+      return false;
+    }
     const inRange = data.some((d) => (typeof d === 'string' ? d === val : d.id === val));
+    // For convenience reset form fields here
     if (!inRange) {
       setFieldValue(name, '');
       setFieldTouched(name);
     }
+    return inRange;
   }, [data, val, setFieldValue, setFieldTouched, name]);
 
   const innerChangeHandler = (e: SelectChangeEvent<any>) => {
     handleChange(e);
+    // useful for when the select item label is needed in parent component
     if (handleChangeSideEffect) {
       const item = data?.find((a) => typeof a !== 'string' && a.id === e.target.value);
       handleChangeSideEffect(e.target.value, (item as ICbSelectRows).value);
@@ -76,7 +83,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
       label={label}
       controlProps={{ ...controlProps, disabled: !data?.length }}
       onChange={innerChangeHandler}
-      value={val}>
+      value={isValueInRange ? val : ''}>
       {data?.map((a) => {
         const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
         return (

@@ -40,17 +40,17 @@ const CaptureAnimalForm = () => {
     capture_longitude: '' as unknown as number,
     capture_utm_northing: '' as unknown as number,
     capture_utm_easting: '' as unknown as number,
-    capture_comment: undefined,
+    capture_comment: '',
     capture_coordinate_uncertainty: 10,
     capture_timestamp: '' as unknown as Date,
     projection_mode: 'wgs' as ProjectionMode,
-    release_latitude: undefined,
-    release_longitude: undefined,
-    release_utm_northing: undefined,
-    release_utm_easting: undefined,
-    release_comment: undefined,
-    release_timestamp: undefined,
-    release_coordinate_uncertainty: undefined
+    release_latitude: '' as unknown as number,
+    release_longitude: '' as unknown as number,
+    release_utm_northing: '' as unknown as number,
+    release_utm_easting: '' as unknown as number,
+    release_comment: '',
+    release_timestamp: '' as unknown as Date,
+    release_coordinate_uncertainty: '' as unknown as number
   };
 
   return (
