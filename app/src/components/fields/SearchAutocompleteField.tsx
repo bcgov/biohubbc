@@ -1,11 +1,10 @@
 import SearchIcon from '@mui/icons-material/Search';
 import { Autocomplete, Box, CircularProgress, TextField } from '@mui/material';
 import { DebouncedFunc } from 'lodash-es';
-import React from 'react';
 
 interface ISearchAutocompleteFieldProps<T> {
   id: string;
-  displayNameKey: string;
+  displayNameKey: keyof T;
   placeholderText: string;
   searchOptions: T[];
   selectedOptions: T[];
@@ -15,7 +14,8 @@ interface ISearchAutocompleteFieldProps<T> {
   renderSearch: (arg0: any) => JSX.Element;
 }
 
-const SearchAutocompleteField: React.FC<ISearchAutocompleteFieldProps<any>> = (props) => {
+// No idea what the comma is for
+const SearchAutocompleteField = <T,>(props: ISearchAutocompleteFieldProps<T>) => {
   const {
     id,
     placeholderText,
@@ -34,7 +34,7 @@ const SearchAutocompleteField: React.FC<ISearchAutocompleteFieldProps<any>> = (p
       handleHomeEndKeys
       id={id}
       options={searchOptions}
-      getOptionLabel={(option) => option[displayNameKey] || ''}
+      getOptionLabel={(option) => String(option[displayNameKey] || '')}
       onInputChange={(_, value) => {
         handleSearch(value, selectedOptions);
       }}

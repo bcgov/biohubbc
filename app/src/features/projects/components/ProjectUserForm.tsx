@@ -1,17 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
-import SearchIcon from '@mui/icons-material/Search';
-import {
-  Autocomplete,
-  Box,
-  CircularProgress,
-  Grid,
-  IconButton,
-  MenuItem,
-  Select,
-  TextField,
-  Typography
-} from '@mui/material';
+import { Box, Grid, IconButton, MenuItem, Select, Typography } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
+import SearchAutocompleteField from 'components/fields/SearchAutocompleteField';
+import UserCard from 'components/user/UserCard';
 import { PROJECT_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -44,30 +35,8 @@ interface IProjectUser {
   roles: ICode[];
 }
 
-interface IUserCard {
-  name: string;
-  email: string;
-  agency: string;
-  type: string;
-}
-
 export const ProjectUserRoleFormInitialValues = {
   participants: []
-};
-
-const UserCard: React.FC<IUserCard> = (props) => {
-  return (
-    <Box>
-      <Typography variant="h5">{props.name}</Typography>
-      <Box display={'flex'}>
-        <Typography variant="subtitle2">{props.email}</Typography>
-        <Typography sx={{ marginX: 1 }} variant="subtitle2">
-          {props.agency}
-        </Typography>
-        <Typography variant="subtitle2">{props.type}</Typography>
-      </Box>
-    </Box>
-  );
 };
 
 const ProjectUserForm: React.FC<IProjectUser> = (props) => {
@@ -106,6 +75,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
       system_user_id: user.system_user_id,
       role: ''
     });
+    clearErrors();
   };
 
   const handleAddUserRole = (systemUserId: number, role: string, index: number) => {
@@ -164,7 +134,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
       );
     }
   };
-  console.log(errors);
+
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -177,51 +147,23 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         </Typography>
       </Box>
       <Box mt={3}>
-        <Autocomplete
-          clearOnBlur
-          handleHomeEndKeys
-          id=""
-          options={searchUsers}
-          getOptionLabel={(option) => option.display_name || ''}
-          onInputChange={(_, value) => {
-            handleSearch(value, selectedUsers);
-          }}
-          onChange={(_, option) => {
-            if (option) {
-              handleAddUser(option);
-              clearErrors();
-            }
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              placeholder="Find Team Members"
-              fullWidth
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: <SearchIcon />,
-                endAdornment: (
-                  <>
-                    {isSearching ? <CircularProgress color="inherit" size={20} /> : null}
-                    {params.InputProps.endAdornment}
-                  </>
-                )
-              }}
+        <SearchAutocompleteField<ISearchUserResponse>
+          id={''}
+          displayNameKey={'display_name'}
+          placeholderText={'Find Team Members'}
+          searchOptions={searchUsers}
+          selectedOptions={selectedUsers}
+          handleSearch={handleSearch}
+          isSearching={isSearching}
+          handleOnChange={handleAddUser}
+          renderSearch={(option) => (
+            <UserCard
+              name={option.display_name}
+              email={option.email}
+              agency={option.agency}
+              type={option.identity_source}
             />
           )}
-          renderOption={(renderProps, renderOption, { selected }) => {
-            return (
-              <Box component="li" {...renderProps}>
-                <UserCard
-                  name={renderOption.display_name}
-                  email={renderOption.email}
-                  agency={renderOption.agency}
-                  type={renderOption.identity_source}
-                />
-              </Box>
-            );
-          }}
         />
       </Box>
       <Box mt={3}>
