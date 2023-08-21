@@ -181,12 +181,17 @@ describe('ProjectParticipationService', () => {
 
       const data = {
         projectId: 1,
+        systemUserId: 1,
         projectParticipantRoleId: 'role'
       };
 
       const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'postProjectParticipant').resolves();
 
-      const response = await service.postProjectParticipant(data.projectId, data.projectParticipantRoleId);
+      const response = await service.postProjectParticipant(
+        data.projectId,
+        data.systemUserId,
+        data.projectParticipantRoleId
+      );
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);

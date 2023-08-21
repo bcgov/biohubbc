@@ -162,7 +162,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  createProjectParticipants()
+  postProjectParticipants()
 ];
 
 POST.apiDoc = {
@@ -251,7 +251,7 @@ POST.apiDoc = {
   }
 };
 
-export function createProjectParticipants(): RequestHandler {
+export function postProjectParticipants(): RequestHandler {
   return async (req, res) => {
     const projectId = Number(req.params.projectId);
 
@@ -284,7 +284,7 @@ export function createProjectParticipants(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
+      defaultLog.error({ label: 'postProjectParticipants', message: 'error', error });
       throw error;
     } finally {
       connection.release();

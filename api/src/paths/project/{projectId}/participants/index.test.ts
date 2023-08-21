@@ -79,7 +79,7 @@ describe('getParticipants', () => {
   });
 });
 
-describe('createProjectParticipants', () => {
+describe('postProjectParticipants', () => {
   const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
@@ -100,7 +100,7 @@ describe('createProjectParticipants', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = create_project_participants.createProjectParticipants();
+      const result = create_project_participants.postProjectParticipants();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
         (null as unknown) as any,
@@ -117,7 +117,7 @@ describe('createProjectParticipants', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = create_project_participants.createProjectParticipants();
+      const result = create_project_participants.postProjectParticipants();
       await result(
         { ...sampleReq, body: { ...sampleReq.body, participants: [] } },
         (null as unknown) as any,
@@ -141,7 +141,7 @@ describe('createProjectParticipants', () => {
     sinon.stub(UserService.prototype, 'ensureSystemUser').rejects(new Error('an error'));
 
     try {
-      const result = create_project_participants.createProjectParticipants();
+      const result = create_project_participants.postProjectParticipants();
       await result({ ...sampleReq }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
