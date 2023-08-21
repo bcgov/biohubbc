@@ -1,18 +1,12 @@
 import { PROJECT_PERMISSION, PROJECT_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
-import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTP400 } from '../errors/http-error';
 import {
+  IInsertProjectParticipant,
   IParticipant,
   ProjectParticipationRecord,
   ProjectParticipationRepository,
   ProjectUser
-} from '../repositories/project-participation-repository';
-import { ProjectUser } from '../models/user';
-import {
-  IInsertProjectParticipant,
-  IParticipant,
-  ProjectParticipationRepository
 } from '../repositories/project-participation-repository';
 import { DBService } from './db-service';
 import { UserService } from './user-service';
@@ -78,16 +72,19 @@ export class ProjectParticipationService extends DBService {
   }
 
   /**
-   * Adds a project participants to the project.
+   * Adds multiple project participants to the project.
    *
    * @param {number} projectId
    * @param {IInsertProjectParticipant[]} participants
+   * @return {*}  {Promise<void[]>}
    * @memberof ProjectParticipationService
    */
-  async insertProjectUsers(projectId: number, participants: IInsertProjectParticipant[]) {
-    for (const participant of participants) {
-      await this.insertProjectParticipantRole(projectId, participant.system_user_id, participant.role);
-    }
+  async postProjectParticipants(projectId: number, participants: IInsertProjectParticipant[]): Promise<void[]> {
+    return Promise.all(
+      participants.map((participant) =>
+        this.postProjectParticipant(projectId, participant.system_user_id, participant.role)
+      )
+    );
   }
 
   /**
