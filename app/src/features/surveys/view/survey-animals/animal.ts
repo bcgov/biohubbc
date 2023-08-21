@@ -1,3 +1,4 @@
+import { omit, omitBy } from 'lodash-es';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
@@ -170,30 +171,34 @@ type ICritterID = { critter_id: string };
 
 type ICritterLocation = InferType<typeof LocationSchema>;
 
-type ICritterMortality = ICritterID &
-  Omit<
-    IAnimalMortality,
-    | 'mortality_utm_easting'
-    | 'mortality_utm_northing'
-    | 'projection_mode'
-    | 'mortality_latitude'
-    | 'mortality_longitude'
-    | 'mortality_coordinate_uncertainty'
-  > & {
+type ICritterMortality = Omit<
+  ICritterID &
+  IAnimalMortality & {
     location_id: string;
-  };
+  },
+  | '_id'
+  | 'mortality_utm_easting'
+  | 'mortality_utm_northing'
+  | 'projection_mode'
+  | 'mortality_latitude'
+  | 'mortality_longitude'
+  | 'mortality_coordinate_uncertainty'
+>;
 
-type ICritterCapture = ICritterID &
+type ICritterCapture = Omit<
+  ICritterID &
   Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
     capture_location_id: string;
     release_location_id: string | undefined;
-  };
+  },
+  '_id'
+>;
 
-export type ICritterMarking = ICritterID & Omit<IAnimalMarking, '_id'>;
+export type ICritterMarking = Omit<ICritterID & IAnimalMarking, '_id'>;
 
-type ICritterQualitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'value' | '_id'>;
+type ICritterQualitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'value' | '_id'>;
 
-type ICritterQuantitativeMeasurement = ICritterID & Omit<IAnimalMeasurement, 'qualitative_option_id' | '_id'>;
+type ICritterQuantitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'qualitative_option_id' | '_id'>;
 
 export const newFamilyIdPlaceholder = 'New Family';
 
@@ -243,12 +248,12 @@ export class Critter {
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;
     this.animal_id = animal.general.animal_id;
-
     this.captures = [];
     this.locations = [];
     this.families = { parents: [], children: [], families: [] };
 
     animal.captures.forEach((c) => {
+      const cleanedCapture = omitBy(c, (v) => v === '') as IAnimalCapture;
       const c_loc_id = v4();
       let r_loc_id: string | undefined = undefined;
 
@@ -276,15 +281,13 @@ export class Critter {
         critter_id: this.critter_id,
         capture_location_id: c_loc_id,
         release_location_id: r_loc_id,
-        capture_timestamp: c.capture_timestamp,
-        release_timestamp: c.release_timestamp,
-        capture_comment: c.capture_comment || undefined,
-        release_comment: c.release_comment || undefined
+        ...omit(cleanedCapture, '_id')
       });
     });
 
     this.mortalities = [];
     animal.mortality.forEach((m) => {
+      const cleanedMortality = omitBy(m, (v) => v === '') as IAnimalMortality;
       const loc_id = v4();
 
       this.locations.push({
@@ -295,19 +298,19 @@ export class Critter {
         coordinate_uncertainty_unit: 'm'
       });
 
-      const { _id, mortality_longitude, mortality_latitude, mortality_utm_easting, mortality_utm_northing, ...rest } =
-        m;
       this.mortalities.push({
-        ...rest,
         critter_id: this.critter_id,
         location_id: loc_id,
-        mortality_comment: m.mortality_comment || undefined
+        ...omit(cleanedMortality, '_id')
       });
     });
 
     this.markings = animal.markings.map((m) => {
-      const { _id, ...rest } = m;
-      return { ...rest, critter_id: this.critter_id };
+      const cleanedMarking = omitBy(m, (v) => v === '') as IAnimalMarking;
+      return {
+        critter_id: this.critter_id,
+        ...omit(cleanedMarking, '_id')
+      };
     });
 
     let newFamily = undefined;
@@ -341,8 +344,13 @@ export class Critter {
           return false;
         })
         .map((m) => {
-          const { _id, value, ...rest } = m;
-          return { ...rest, critter_id: this.critter_id };
+          return {
+            critter_id: this.critter_id,
+            taxon_measurement_id: m.taxon_measurement_id,
+            qualitative_option_id: m.qualitative_option_id,
+            measured_timestamp: m.measured_timestamp || undefined,
+            measurement_comment: m.measurement_comment || undefined
+          };
         }),
       quantitative: animal.measurements
         .filter((m) => {
@@ -356,8 +364,13 @@ export class Critter {
           return false;
         })
         .map((m) => {
-          const { _id, qualitative_option_id, ...rest } = m;
-          return { ...rest, critter_id: this.critter_id };
+          return {
+            critter_id: this.critter_id,
+            taxon_measurement_id: m.taxon_measurement_id,
+            value: m.value,
+            measured_timestamp: m.measured_timestamp || undefined,
+            measurement_comment: m.measurement_comment || undefined
+          };
         })
     };
   }

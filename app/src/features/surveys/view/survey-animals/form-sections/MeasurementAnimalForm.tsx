@@ -49,10 +49,10 @@ const MeasurementAnimalForm = () => {
     _id: v4(),
 
     taxon_measurement_id: '',
-    value: undefined,
+    value: '' as unknown as number,
     qualitative_option_id: '',
     measured_timestamp: '' as unknown as Date,
-    measurement_comment: undefined
+    measurement_comment: ''
   };
 
   return (
@@ -150,19 +150,19 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             }}
           />
         ) : (
-          <Field
-            as={CustomTextField}
-            name={valueName}
-            handleBlur={handleBlur}
-            label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
-            other={{
-              required: isRequiredInSchema(AnimalMeasurementSchema, 'value'),
-              size: 'small',
-              disabled: !taxonMeasurementId
-            }}
-            validate={validateValue}
-          />
-        )}
+            <Field
+              as={CustomTextField}
+              name={valueName}
+              handleBlur={handleBlur}
+              label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
+              other={{
+                required: isRequiredInSchema(AnimalMeasurementSchema, 'value'),
+                size: 'small',
+                disabled: !taxonMeasurementId
+              }}
+              validate={validateValue}
+            />
+          )}
       </Grid>
       <Grid item xs={4}>
         <CustomTextField
