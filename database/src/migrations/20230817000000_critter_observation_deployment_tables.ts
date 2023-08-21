@@ -157,7 +157,7 @@ export async function up(knex: Knex): Promise<void> {
       IF (num_critters >= observation_total_count) THEN
 
 
-        RAISE EXCEPTION 'Can not add more critters than specified in observation';
+        RAISE EXCEPTION 'Can not add more individuals than specified in observation';
       END IF;
 
 
@@ -168,10 +168,10 @@ export async function up(knex: Knex): Promise<void> {
 
   ;
 
-  COMMENT ON FUNCTION biohub.tr_critter_observation_count() IS 'Validates amound of critters of an observation is less than or equal to observation count.';
+  COMMENT ON FUNCTION biohub.tr_critter_observation_count() IS 'Validates amount of individuals in an observation is less than or equal to observation total count.';
 
   -- Create observation count trigger
-  CREATE TRIGGER tr_critter_observation_count BEFORE INSERT OR UPDATE ON critter FOR EACH ROW EXECUTE PROCEDURE tr_critter_observation_count();
+  CREATE TRIGGER tr_critter_observation_count BEFORE INSERT ON critter FOR EACH ROW EXECUTE PROCEDURE tr_critter_observation_count();
 
   ----------------------------------------------------------------------------------------
   -- Create views
