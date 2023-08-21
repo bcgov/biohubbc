@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+import { PROJECT_ROLE } from '../constants/roles';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { ProjectUser } from '../models/user';
 import { BaseRepository } from './base-repository';
@@ -10,6 +11,11 @@ export interface IParticipant {
   roleId: number;
   displayName: string;
   email: string;
+}
+
+export interface IInsertProjectParticipant {
+  system_user_id: number;
+  role: PROJECT_ROLE;
 }
 
 /**
@@ -212,7 +218,6 @@ export class ProjectParticipationRepository extends BaseRepository {
           project_role
         WHERE
           name = ${projectParticipantRole}
-        AND 
       )
       RETURNING
         *;

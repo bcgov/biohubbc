@@ -86,6 +86,7 @@ const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
 
   const handleAddProjectParticipantsSave = async (values: IAddProjectParticipantsForm) => {
     try {
+      //TODO: update to follow new api changes
       const response = await biohubApi.project.addProjectParticipants(projectContext.projectId, values.participants);
 
       if (!response) {

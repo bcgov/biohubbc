@@ -3,7 +3,11 @@ import { IDBConnection } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTP400 } from '../errors/http-error';
 import { ProjectUser } from '../models/user';
-import { IParticipant, ProjectParticipationRepository } from '../repositories/project-participation-repository';
+import {
+  IInsertProjectParticipant,
+  IParticipant,
+  ProjectParticipationRepository
+} from '../repositories/project-participation-repository';
 import { DBService } from './db-service';
 import { UserService } from './user-service';
 
@@ -68,15 +72,15 @@ export class ProjectParticipationService extends DBService {
   }
 
   /**
-   * Ensures that the given project participants exist as system users and project participants.
+   * Adds a project participants to the project.
    *
    * @param {number} projectId
-   * @param {IParticipant[]} participants
+   * @param {IInsertProjectParticipant[]} participants
    * @memberof ProjectParticipationService
    */
-  async ensureProjectParticipantUsers(projectId: number, participants: IParticipant[]) {
+  async insertProjectUsers(projectId: number, participants: IInsertProjectParticipant[]) {
     for (const participant of participants) {
-      await this.ensureSystemUserAndProjectParticipantUser(projectId, { ...participant, userGuid: null });
+      await this.insertProjectParticipantRole(projectId, participant.system_user_id, participant.role);
     }
   }
 
@@ -147,6 +151,15 @@ export class ProjectParticipationService extends DBService {
     return this.insertProjectParticipantRole(projectId, currentUserId, projectParticipantRole);
   }
 
+  /**
+   * Adds a project participant to the project.
+   *
+   * @param {number} projectId
+   * @param {number} systemUserId
+   * @param {string} projectParticipantRole
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectParticipationService
+   */
   async insertProjectParticipantRole(
     projectId: number,
     systemUserId: number,
