@@ -2,6 +2,7 @@ import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Th
 import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -9,6 +10,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import React, { Fragment, useState } from 'react';
 import { v4 } from 'uuid';
 import {
+  AnimalMeasurementSchema,
   AnimalRelationshipSchema,
   getAnimalFieldName,
   IAnimal,
@@ -84,61 +86,41 @@ const FamilyAnimalForm = () => {
             {values.family.map((fam, index) => (
               <Fragment key={fam._id}>
                 <Grid item xs={6}>
-                  <FormControl
-                    fullWidth
-                    variant="outlined"
-                    required={isRequiredInSchema(AnimalRelationshipSchema, 'family_id')}
-                    style={{ width: '100%' }}>
-                    <InputLabel size="small" id={`relationship-family-${index}`}>
-                      Family ID
-                    </InputLabel>
-                    <Select //Doing a raw MUI Select here since we don't enumerate these values in Critterbase
-                      id={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
-                      name={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
-                      label={'family_id'}
-                      size="small"
-                      value={values.family[index]?.family_id ?? ''}
-                      onChange={handleChange}
-                      error={touched.family?.[index]?.relationship && Boolean(errors.family?.[index])}
-                      displayEmpty>
-                      {[
-                        ...(allFamilies ?? []),
-                        { family_id: newFamilyIdPlaceholder, family_label: newFamilyIdPlaceholder }
-                      ]?.map((a) => (
-                        <MenuItem key={a.family_id} value={a.family_id}>
-                          {a.family_label ? a.family_label : a.family_id}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <CbSelectWrapper
+                    label={'Family ID'}
+                    name={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
+                    onChange={handleChange}
+                    controlProps={{
+                      size: 'small',
+                      required: isRequiredInSchema(AnimalRelationshipSchema, 'family_id')
+                    }}>
+                    {[
+                      ...(allFamilies ?? []),
+                      { family_id: newFamilyIdPlaceholder, family_label: newFamilyIdPlaceholder }
+                    ]?.map((a) => (
+                      <MenuItem key={a.family_id} value={a.family_id}>
+                        {a.family_label ? a.family_label : a.family_id}
+                      </MenuItem>
+                    ))}
+                  </CbSelectWrapper>
                 </Grid>
                 <Grid item xs={6}>
                   <Grid item xs={6}>
-                    <FormControl
-                      fullWidth
-                      variant="outlined"
-                      required={isRequiredInSchema(AnimalRelationshipSchema, 'relationship')}
-                      style={{ width: '100%' }}>
-                      <InputLabel size="small" id={`relationship-family-${index}`}>
-                        Relationship
-                      </InputLabel>
-                      <Select //Doing a raw MUI Select here since we don't enumerate these values in Critterbase
-                        id={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
-                        name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
-                        label={'Relationship'}
-                        size="small"
-                        value={values.family[index]?.relationship ?? ''}
-                        onChange={handleChange}
-                        error={touched.family?.[index]?.relationship && Boolean(errors.family?.[index])}
-                        displayEmpty>
-                        <MenuItem key={'parent'} value={'parent'}>
-                          Parent in
-                        </MenuItem>
-                        <MenuItem key={'child'} value={'child'}>
-                          Child in
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
+                    <CbSelectWrapper
+                      label={'Relationship'}
+                      name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
+                      onChange={handleChange}
+                      controlProps={{
+                        size: 'small',
+                        required: isRequiredInSchema(AnimalRelationshipSchema, 'relationship')
+                      }}>
+                      <MenuItem key={'parent'} value={'parent'}>
+                        Parent in
+                      </MenuItem>
+                      <MenuItem key={'child'} value={'child'}>
+                        Child in
+                      </MenuItem>
+                    </CbSelectWrapper>
                   </Grid>
                 </Grid>
                 <Grid item xs={6}>
