@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
@@ -69,7 +69,7 @@ export function removeSystemUser(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'removeSystemUser', message: 'params', req_params: req.params });
 
-    const userId = req.params && Number(req.params.userId);
+    const systemUserId = req.params && Number(req.params.userId);
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -77,21 +77,27 @@ export function removeSystemUser(): RequestHandler {
       await connection.open();
       const projectParticipationService = new ProjectParticipationService(connection);
 
-      await projectParticipationService.checkIfUserIsOnlyProjectLeadOnAnyProject(userId, connection);
+      const isUserTheOnlyCoordinator = await projectParticipationService.isUserTheOnlyProjectCoordinatorOnAnyProject(
+        systemUserId
+      );
+
+      if (isUserTheOnlyCoordinator) {
+        throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);
+      }
 
       const userService = new UserService(connection);
 
-      const usrObject = await userService.getUserById(userId);
+      const usrObject = await userService.getUserById(systemUserId);
 
       if (usrObject.record_end_date) {
         throw new HTTP400('The system user is not active');
       }
 
-      await userService.deleteAllProjectRoles(userId);
+      await userService.deleteAllProjectRoles(systemUserId);
 
-      await userService.deleteUserSystemRoles(userId);
+      await userService.deleteUserSystemRoles(systemUserId);
 
-      await userService.deactivateSystemUser(userId);
+      await userService.deactivateSystemUser(systemUserId);
 
       await connection.commit();
 

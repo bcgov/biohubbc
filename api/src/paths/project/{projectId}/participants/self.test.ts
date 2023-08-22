@@ -6,14 +6,14 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
-import { ProjectUser } from '../../../../models/user';
+import { ProjectUser } from '../../../../repositories/project-participation-repository';
 import { ProjectParticipationService } from '../../../../services/project-participation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
-import { GET, getUserRolesForProject } from './self';
+import { GET, getSelf } from './self';
 
 chai.use(sinonChai);
 
-describe('getUserRolesForProject', () => {
+describe('getSelf', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -66,6 +66,7 @@ describe('getUserRolesForProject', () => {
     describe('response validation', () => {
       const responseValidator = new OpenAPIResponseValidator((GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
       const mockParticipantRecord: ProjectUser = {
+        project_participation_id: 1,
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1, 2],
@@ -74,22 +75,11 @@ describe('getUserRolesForProject', () => {
       };
 
       describe('should throw an error when', () => {
-        it('returns a null response', async () => {
-          const apiResponse = null;
-          const response = responseValidator.validateResponse(200, apiResponse);
-
-          expect(response.message).to.equal('The response was not valid.');
-          expect(response.errors.length).to.equal(1);
-          expect(response.errors[0].message).to.equal('must be object');
-        });
-
         describe('project_id', () => {
           it('is undefined', async () => {
             const apiResponse = {
-              participant: {
-                ...mockParticipantRecord,
-                project_id: undefined
-              }
+              ...mockParticipantRecord,
+              project_id: undefined
             };
             const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -100,10 +90,8 @@ describe('getUserRolesForProject', () => {
 
           it('is null', async () => {
             const apiResponse = {
-              participant: {
-                ...mockParticipantRecord,
-                project_id: null
-              }
+              ...mockParticipantRecord,
+              project_id: null
             };
             const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -114,10 +102,8 @@ describe('getUserRolesForProject', () => {
 
           it('is wrong type', async () => {
             const apiResponse = {
-              participant: {
-                ...mockParticipantRecord,
-                project_id: '1'
-              }
+              ...mockParticipantRecord,
+              project_id: '1'
             };
             const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -137,7 +123,7 @@ describe('getUserRolesForProject', () => {
         });
 
         it('returns a null participant', async () => {
-          const apiResponse = { participant: null };
+          const apiResponse = null;
 
           const response = responseValidator.validateResponse(200, apiResponse);
           expect(response).to.equal(undefined);
@@ -155,7 +141,7 @@ describe('getUserRolesForProject', () => {
     mockReq.params = {};
 
     try {
-      const requestHandler = getUserRolesForProject();
+      const requestHandler = getSelf();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -176,7 +162,7 @@ describe('getUserRolesForProject', () => {
     mockReq.params = { projectId: '1' };
 
     try {
-      const requestHandler = getUserRolesForProject();
+      const requestHandler = getSelf();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
@@ -200,13 +186,13 @@ describe('getUserRolesForProject', () => {
 
     mockReq.params = { projectId: '1' };
 
-    const requestHandler = getUserRolesForProject();
+    const requestHandler = getSelf();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
-    expect(mockRes.jsonValue).to.eql({ participant: null });
+    expect(mockRes.jsonValue).to.eql(null);
   });
 
   it('should return a participant record with a single role', async () => {
@@ -219,6 +205,7 @@ describe('getUserRolesForProject', () => {
     const projectParticipationServiceStub = sinon
       .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
       .resolves({
+        project_participation_id: 1,
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1],
@@ -230,20 +217,19 @@ describe('getUserRolesForProject', () => {
 
     mockReq.params = { projectId: '1' };
 
-    const requestHandler = getUserRolesForProject();
+    const requestHandler = getSelf();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
-      participant: {
-        project_id: 1,
-        system_user_id: 20,
-        project_role_ids: [1],
-        project_role_names: ['Test-Role-A'],
-        project_role_permissions: ['Test Permission']
-      }
+      project_participation_id: 1,
+      project_id: 1,
+      system_user_id: 20,
+      project_role_ids: [1],
+      project_role_names: ['Test-Role-A'],
+      project_role_permissions: ['Test Permission']
     });
   });
 
@@ -257,6 +243,7 @@ describe('getUserRolesForProject', () => {
     const projectParticipationServiceStub = sinon
       .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
       .resolves({
+        project_participation_id: 1,
         project_id: 1,
         system_user_id: 20,
         project_role_ids: [1, 2],
@@ -268,20 +255,19 @@ describe('getUserRolesForProject', () => {
 
     mockReq.params = { projectId: '1' };
 
-    const requestHandler = getUserRolesForProject();
+    const requestHandler = getSelf();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
     expect(projectParticipationServiceStub).to.be.calledWith(1, 20);
     expect(mockRes.jsonValue).to.eql({
-      participant: {
-        project_id: 1,
-        system_user_id: 20,
-        project_role_ids: [1, 2],
-        project_role_names: ['Test-Role-A', 'Test-Role-B'],
-        project_role_permissions: ['Test Permission']
-      }
+      project_participation_id: 1,
+      project_id: 1,
+      system_user_id: 20,
+      project_role_ids: [1, 2],
+      project_role_names: ['Test-Role-A', 'Test-Role-B'],
+      project_role_permissions: ['Test Permission']
     });
   });
 
@@ -299,7 +285,7 @@ describe('getUserRolesForProject', () => {
     mockReq.params = { projectId: '1' };
 
     try {
-      const requestHandler = getUserRolesForProject();
+      const requestHandler = getSelf();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();

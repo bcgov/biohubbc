@@ -2,17 +2,14 @@ import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import {
-  IAddProjectParticipant,
   ICreateProjectRequest,
   ICreateProjectResponse,
   IGetAttachmentDetails,
   IGetProjectAttachmentsResponse,
   IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
-  IGetProjectParticipantsResponse,
   IGetProjectsListResponse,
   IGetReportDetails,
-  IGetUserProjectParticipantResponse,
   IGetUserProjectsListResponse,
   IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
@@ -29,13 +26,13 @@ import qs from 'qs';
  */
 const useProjectApi = (axios: AxiosInstance) => {
   /**
-   * Get projects from userId
+   * Get projects for a system user id.
    *
-   * @param {number} userId
+   * @param {number} systemUserId
    * @return {*} {Promise<IGetProjectsListResponse[]>}
    */
-  const getAllUserProjectsForView = async (userId: number): Promise<IGetUserProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/user/${userId}/projects/get`);
+  const getAllUserProjectsForView = async (systemUserId: number): Promise<IGetUserProjectsListResponse[]> => {
+    const { data } = await axios.get(`/api/user/${systemUserId}/projects/get`);
     return data;
   };
 
@@ -316,81 +313,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Get all project participants.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<IGetProjectParticipantsResponse>}
-   */
-  const getProjectParticipants = async (projectId: number): Promise<IGetProjectParticipantsResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/participants/get`);
-
-    return data;
-  };
-
-  /**
-   * Add new project participants.
-   *
-   * @param {number} projectId
-   * @param {IAddProjectParticipant[]} participants
-   * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
-   */
-  const addProjectParticipants = async (
-    projectId: number,
-    participants: IAddProjectParticipant[]
-  ): Promise<boolean> => {
-    const { status } = await axios.post(`/api/project/${projectId}/participants/create`, { participants });
-
-    return status === 200;
-  };
-
-  /**
-   * Remove existing project participant.
-   *
-   * @param {number} projectId
-   * @param {number} projectParticipationId
-   * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
-   */
-  const removeProjectParticipant = async (projectId: number, projectParticipationId: number): Promise<boolean> => {
-    const { status } = await axios.delete(`/api/project/${projectId}/participants/${projectParticipationId}/delete`);
-
-    return status === 200;
-  };
-
-  /**
-   * Update project participant role.
-   *
-   * @param {number} projectId
-   * @param {number} projectParticipationId
-   * @param {string} role
-   * @return {*}  {Promise<boolean>}
-   */
-  const updateProjectParticipantRole = async (
-    projectId: number,
-    projectParticipationId: number,
-    roleId: number
-  ): Promise<boolean> => {
-    const { status } = await axios.put(`/api/project/${projectId}/participants/${projectParticipationId}/update`, {
-      roleId
-    });
-
-    return status === 200;
-  };
-
-  const getUserProjectParticipant = async (projectId: number): Promise<IGetUserProjectParticipantResponse> => {
-    const { data } = await axios.get<IGetUserProjectParticipantResponse>(`/api/project/${projectId}/participants/self`);
-
-    return data;
-  };
-
-  const postUserProjectRoles = async (
-    projectId: number,
-    userRoles: { user_id: number; role_id: number }[]
-  ): Promise<any> => {
-    const { data } = await axios.post(`/api/project/${projectId}/users`, { userRoles });
-    return data;
-  };
-
   return {
     getAllUserProjectsForView,
     getProjectsList,
@@ -406,13 +328,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteProjectAttachment,
     deleteProject,
     getProjectReportDetails,
-    getProjectAttachmentDetails,
-    getProjectParticipants,
-    addProjectParticipants,
-    removeProjectParticipant,
-    updateProjectParticipantRole,
-    getUserProjectParticipant,
-    postUserProjectRoles
+    getProjectAttachmentDetails
   };
 };
 

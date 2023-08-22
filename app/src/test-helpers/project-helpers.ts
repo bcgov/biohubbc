@@ -42,7 +42,25 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     partnerships: {
       indigenous_partnerships: [1, 2],
       stakeholder_partnerships: ['partner 3', 'partner 4']
-    }
+    },
+    participants: [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1, 2],
+        project_role_names: ['Role 1', 'Role 2'],
+        project_role_permissions: ['Permission 1', 'Permission 2']
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_ids: [1],
+        project_role_names: ['Role 1'],
+        project_role_permissions: ['Permission 1', 'Permission 2']
+      }
+    ]
   },
   projectSupplementaryData: {
     project_metadata_publish: {

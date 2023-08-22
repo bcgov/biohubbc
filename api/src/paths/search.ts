@@ -73,16 +73,9 @@ export function getSearchResults(): RequestHandler {
 
       const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
 
-      const response = await connection.query(
-        getSpatialSearchResultsSQLStatement.text,
-        getSpatialSearchResultsSQLStatement.values
-      );
+      const response = await connection.sql(getSpatialSearchResultsSQLStatement);
 
       await connection.commit();
-
-      if (!response || !response.rows) {
-        return res.status(200).json(null);
-      }
 
       const result: any[] = _extractResults(response.rows);
 

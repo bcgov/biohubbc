@@ -2,8 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ProjectUser } from '../models/user';
-import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
+import { ProjectParticipationRepository, ProjectUser } from '../repositories/project-participation-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectParticipationService } from './project-participation-service';
 
@@ -26,7 +25,7 @@ describe('ProjectParticipationService', () => {
         .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
         .resolves({} as ProjectUser);
 
-      const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'addProjectParticipant');
+      const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'postProjectParticipant');
 
       const projectId = 1;
       const systemUserId = 1;
@@ -51,7 +50,7 @@ describe('ProjectParticipationService', () => {
         .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
         .resolves(null);
 
-      const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'addProjectParticipant');
+      const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'postProjectParticipant');
 
       const projectId = 1;
       const systemUserId = 1;
@@ -151,7 +150,7 @@ describe('ProjectParticipationService', () => {
     });
   });
 
-  describe('addProjectParticipant', () => {
+  describe('postProjectParticipant', () => {
     it('succeeds with valid data', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
@@ -162,9 +161,9 @@ describe('ProjectParticipationService', () => {
         projectParticipantRoleId: 1
       };
 
-      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'addProjectParticipant').resolves();
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'postProjectParticipant').resolves();
 
-      const response = await service.addProjectParticipant(
+      const response = await service.postProjectParticipant(
         data.projectId,
         data.systemUserId,
         data.projectParticipantRoleId
@@ -175,19 +174,24 @@ describe('ProjectParticipationService', () => {
     });
   });
 
-  describe('insertParticipantRole', () => {
+  describe('postProjectParticipant', () => {
     it('succeeds with valid data', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
       const data = {
         projectId: 1,
+        systemUserId: 1,
         projectParticipantRoleId: 'role'
       };
 
-      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'insertParticipantRole').resolves();
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'postProjectParticipant').resolves();
 
-      const response = await service.insertParticipantRole(data.projectId, data.projectParticipantRoleId);
+      const response = await service.postProjectParticipant(
+        data.projectId,
+        data.systemUserId,
+        data.projectParticipantRoleId
+      );
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);
@@ -240,27 +244,29 @@ describe('ProjectParticipationService', () => {
         it('should return false if the user is not the only Coordinator role', () => {
           const userId = 10;
 
-          const rows = [
+          const projectUsers: ProjectUser[] = [
             {
               project_participation_id: 1,
               project_id: 1,
               system_user_id: userId,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 2,
               project_id: 1,
               system_user_id: 20,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             }
           ];
 
           const dbConnection = getMockDBConnection();
           const service = new ProjectParticipationService(dbConnection);
 
-          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(projectUsers, userId);
 
           expect(result).to.equal(true);
         });
@@ -268,27 +274,29 @@ describe('ProjectParticipationService', () => {
         it('should return true if the user is the only Coordinator role', () => {
           const userId = 10;
 
-          const rows = [
+          const projectUsers: ProjectUser[] = [
             {
               project_participation_id: 1,
               project_id: 1,
               system_user_id: userId,
-              project_role_id: 1,
-              project_role_name: 'Coordinator' // Only Coordinator on project 1
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'], // Only Coordinator on project 1
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 2,
               project_id: 1,
               system_user_id: 20,
-              project_role_id: 2,
-              project_role_name: 'Collaborator'
+              project_role_ids: [2],
+              project_role_names: ['Collaborator'],
+              project_role_permissions: ['Permission1']
             }
           ];
 
           const dbConnection = getMockDBConnection();
           const service = new ProjectParticipationService(dbConnection);
 
-          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(projectUsers, userId);
 
           expect(result).to.equal(false);
         });
@@ -298,41 +306,45 @@ describe('ProjectParticipationService', () => {
         it('should return true if the user is not the only Coordinator on all projects', () => {
           const userId = 10;
 
-          const rows = [
+          const projectUsers: ProjectUser[] = [
             {
               project_participation_id: 1,
               project_id: 1,
               system_user_id: userId,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 2,
               project_id: 1,
               system_user_id: 2,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 1,
               project_id: 2,
               system_user_id: userId,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 2,
               project_id: 2,
               system_user_id: 2,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             }
           ];
 
           const dbConnection = getMockDBConnection();
           const service = new ProjectParticipationService(dbConnection);
 
-          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(projectUsers, userId);
 
           expect(result).to.equal(true);
         });
@@ -341,41 +353,45 @@ describe('ProjectParticipationService', () => {
           const userId = 10;
 
           // User is on 1 project, and is not the only Coordinator
-          const rows = [
+          const projectUsers: ProjectUser[] = [
             {
               project_participation_id: 1,
               project_id: 1,
               system_user_id: userId,
-              project_role_id: 1,
-              project_role_name: 'Collaborator'
+              project_role_ids: [1],
+              project_role_names: ['Collaborator'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 2,
               project_id: 1,
               system_user_id: 2,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 1,
               project_id: 2,
               system_user_id: userId,
-              project_role_id: 1,
-              project_role_name: 'Coordinator' // Only Coordinator on project 2
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'], // Only Coordinator on project 2
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 2,
               project_id: 2,
               system_user_id: 2,
-              project_role_id: 1,
-              project_role_name: 'Collaborator'
+              project_role_ids: [1],
+              project_role_names: ['Collaborator'],
+              project_role_permissions: ['Permission1']
             }
           ];
 
           const dbConnection = getMockDBConnection();
           const service = new ProjectParticipationService(dbConnection);
 
-          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(projectUsers, userId);
 
           expect(result).to.equal(false);
         });
@@ -387,27 +403,29 @@ describe('ProjectParticipationService', () => {
         it('should return true', () => {
           const userId = 10;
 
-          const rows = [
+          const projectUsers: ProjectUser[] = [
             {
               project_participation_id: 1,
               project_id: 1,
               system_user_id: userId,
-              project_role_id: 1,
-              project_role_name: 'Collaborator'
+              project_role_ids: [1],
+              project_role_names: ['Collaborator'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 2,
               project_id: 1,
               system_user_id: 20,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             }
           ];
 
           const dbConnection = getMockDBConnection();
           const service = new ProjectParticipationService(dbConnection);
 
-          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(projectUsers, userId);
 
           expect(result).to.equal(true);
         });
@@ -417,41 +435,45 @@ describe('ProjectParticipationService', () => {
         it('should return true', () => {
           const userId = 10;
 
-          const rows = [
+          const projectUsers: ProjectUser[] = [
             {
               project_participation_id: 1,
               project_id: 1,
               system_user_id: userId,
-              project_role_id: 1,
-              project_role_name: 'Collaborator'
+              project_role_ids: [1],
+              project_role_names: ['Collaborator'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 2,
               project_id: 1,
               system_user_id: 2,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 1,
               project_id: 2,
               system_user_id: userId,
-              project_role_id: 1,
-              project_role_name: 'Observer'
+              project_role_ids: [1],
+              project_role_names: ['Observer'],
+              project_role_permissions: ['Permission1']
             },
             {
               project_participation_id: 2,
               project_id: 2,
               system_user_id: 2,
-              project_role_id: 1,
-              project_role_name: 'Coordinator'
+              project_role_ids: [1],
+              project_role_names: ['Coordinator'],
+              project_role_permissions: ['Permission1']
             }
           ];
 
           const dbConnection = getMockDBConnection();
           const service = new ProjectParticipationService(dbConnection);
 
-          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+          const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(projectUsers, userId);
 
           expect(result).to.equal(true);
         });
@@ -462,27 +484,29 @@ describe('ProjectParticipationService', () => {
       it('should return false', () => {
         const userId = 10;
 
-        const rows = [
+        const projectUsers: ProjectUser[] = [
           {
             project_participation_id: 1,
             project_id: 1,
             system_user_id: 20,
-            project_role_id: 1,
-            project_role_name: 'Collaborator'
+            project_role_ids: [1],
+            project_role_names: ['Collaborator'],
+            project_role_permissions: ['Permission1']
           },
           {
             project_participation_id: 2,
             project_id: 1,
             system_user_id: 30,
-            project_role_id: 1,
-            project_role_name: 'Coordinator'
+            project_role_ids: [1],
+            project_role_names: ['Coordinator'],
+            project_role_permissions: ['Permission1']
           }
         ];
 
         const dbConnection = getMockDBConnection();
         const service = new ProjectParticipationService(dbConnection);
 
-        const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+        const result = service.doAllProjectsHaveAProjectLeadIfUserIsRemoved(projectUsers, userId);
 
         expect(result).to.equal(true);
       });
@@ -491,133 +515,145 @@ describe('ProjectParticipationService', () => {
 
   describe('doAllProjectsHaveAProjectLead', () => {
     it('should return false if no user has Coordinator role', () => {
-      const rows = [
+      const projectUsers: ProjectUser[] = [
         {
           project_participation_id: 1,
           project_id: 1,
           system_user_id: 10,
-          project_role_id: 2,
-          project_role_name: 'Collaborator'
+          project_role_ids: [2],
+          project_role_names: ['Collaborator'],
+          project_role_permissions: ['Permission1']
         },
         {
           project_participation_id: 2,
           project_id: 1,
           system_user_id: 20,
-          project_role_id: 2,
-          project_role_name: 'Collaborator'
+          project_role_ids: [2],
+          project_role_names: ['Collaborator'],
+          project_role_permissions: ['Permission1']
         }
       ];
 
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doAllProjectsHaveAProjectLead(rows);
+      const result = service.doAllProjectsHaveAProjectLead(projectUsers);
 
       expect(result).to.equal(false);
     });
 
     it('should return true if one Coordinator role exists per project', () => {
-      const rows = [
+      const projectUsers: ProjectUser[] = [
         {
           project_participation_id: 1,
           project_id: 1,
           system_user_id: 12,
-          project_role_id: 1,
-          project_role_name: 'Coordinator' // Only Coordinator on project 1
+          project_role_ids: [1],
+          project_role_names: ['Coordinator'], // Only Coordinator on project 1
+          project_role_permissions: ['Permission1']
         },
         {
           project_participation_id: 2,
           project_id: 1,
           system_user_id: 20,
-          project_role_id: 2,
-          project_role_name: 'Collaborator'
+          project_role_ids: [2],
+          project_role_names: ['Collaborator'],
+          project_role_permissions: ['Permission1']
         }
       ];
 
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doAllProjectsHaveAProjectLead(rows);
+      const result = service.doAllProjectsHaveAProjectLead(projectUsers);
 
       expect(result).to.equal(true);
     });
 
     it('should return true if one Coordinator exists on all projects', () => {
-      const rows = [
+      const projectUsers: ProjectUser[] = [
         {
           project_participation_id: 1,
           project_id: 1,
           system_user_id: 10,
-          project_role_id: 1,
-          project_role_name: 'Coordinator'
+          project_role_ids: [1],
+          project_role_names: ['Coordinator'],
+          project_role_permissions: ['Permission1']
         },
         {
           project_participation_id: 2,
           project_id: 1,
           system_user_id: 2,
-          project_role_id: 2,
-          project_role_name: 'Collaborator'
+          project_role_ids: [2],
+          project_role_names: ['Collaborator'],
+          project_role_permissions: ['Permission1']
         },
         {
           project_participation_id: 1,
           project_id: 2,
           system_user_id: 10,
-          project_role_id: 1,
-          project_role_name: 'Coordinator'
+          project_role_ids: [1],
+          project_role_names: ['Coordinator'],
+          project_role_permissions: ['Permission1']
         },
         {
           project_participation_id: 2,
           project_id: 2,
           system_user_id: 2,
-          project_role_id: 2,
-          project_role_name: 'Collaborator'
+          project_role_ids: [2],
+          project_role_names: ['Collaborator'],
+          project_role_permissions: ['Permission1']
         }
       ];
 
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doAllProjectsHaveAProjectLead(rows);
+      const result = service.doAllProjectsHaveAProjectLead(projectUsers);
 
       expect(result).to.equal(true);
     });
 
     it('should return false if no Coordinator exists on any one project', () => {
-      const rows = [
+      const projectUsers: ProjectUser[] = [
         {
           project_participation_id: 1,
           project_id: 1,
           system_user_id: 10,
-          project_role_id: 1,
-          project_role_name: 'Coordinator'
+          project_role_ids: [1],
+          project_role_names: ['Coordinator'],
+          project_role_permissions: ['Permission1']
         },
         {
           project_participation_id: 2,
           project_id: 1,
           system_user_id: 20,
-          project_role_id: 2,
-          project_role_name: 'Collaborator'
+          project_role_ids: [2],
+          project_role_names: ['Collaborator'],
+          project_role_permissions: ['Permission1']
         },
         {
           project_participation_id: 1,
           project_id: 2,
           system_user_id: 10,
-          project_role_id: 2,
-          project_role_name: 'Collaborator'
+          project_role_ids: [2],
+          project_role_names: ['Collaborator'],
+          project_role_permissions: ['Permission1']
         },
         {
           project_participation_id: 2,
           project_id: 2,
           system_user_id: 20,
-          project_role_id: 2,
-          project_role_name: 'Collaborator'
+          project_role_ids: [2],
+          project_role_names: ['Collaborator'],
+          project_role_permissions: ['Permission1']
         }
       ];
 
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doAllProjectsHaveAProjectLead(rows);
+      const result = service.doAllProjectsHaveAProjectLead(projectUsers);
 
       expect(result).to.equal(false);
     });

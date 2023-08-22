@@ -68,7 +68,7 @@ describe('updateSystemRolesHandler', () => {
 
     const mockQuery = sinon.stub();
 
-    mockQuery.onCall(0).resolves({ rows: [], rowCount: 1 });
+    mockQuery.onCall(0).resolves({ rows: [], rowCount: 0 });
     mockQuery.onCall(1).resolves(null);
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -76,7 +76,7 @@ describe('updateSystemRolesHandler', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
@@ -163,7 +163,7 @@ describe('updateSystemRolesHandler', () => {
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({

@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { User } from '../../models/user';
+import { SystemUser } from '../../repositories/user-repository';
 import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as user from './add';
@@ -132,7 +132,7 @@ describe('user', () => {
         roleId: 1
       };
 
-      const mockUserObject: User = {
+      const mockUserObject: SystemUser = {
         system_user_id: 1,
         user_identifier: '',
         user_guid: '',
@@ -172,7 +172,7 @@ describe('user', () => {
         roleId: 1
       };
 
-      const mockUserObject: User = {
+      const mockUserObject: SystemUser = {
         system_user_id: 1,
         user_identifier: '',
         user_guid: '',

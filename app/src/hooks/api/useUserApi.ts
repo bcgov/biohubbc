@@ -20,13 +20,13 @@ const useUserApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get user from userId
+   * Get user by their system user id.
    *
-   * @param {number} userId
+   * @param {number} systemUserId
    * @return {*}  {Promise<IGetUserResponse>}
    */
-  const getUserById = async (userId: number): Promise<IGetUserResponse> => {
-    const { data } = await axios.get(`/api/user/${userId}/get`);
+  const getUserById = async (systemUserId: number): Promise<IGetUserResponse> => {
+    const { data } = await axios.get(`/api/user/${systemUserId}/get`);
     return data;
   };
 
@@ -46,8 +46,8 @@ const useUserApi = (axios: AxiosInstance) => {
    *
    * @return {*}  {Promise<IGetUserResponse[]>}
    */
-  const deleteSystemUser = async (userId: number): Promise<number> => {
-    const { data } = await axios.delete(`/api/user/${userId}/delete`);
+  const deleteSystemUser = async (systemUserId: number): Promise<number> => {
+    const { data } = await axios.delete(`/api/user/${systemUserId}/delete`);
 
     return data;
   };
@@ -57,8 +57,8 @@ const useUserApi = (axios: AxiosInstance) => {
    *
    * @return {*}  {Promise<IGetUserResponse[]>}
    */
-  const updateSystemUserRoles = async (userId: number, roleIds: number[]): Promise<IGetUserResponse> => {
-    const { data } = await axios.patch(`/api/user/${userId}/system-roles/update`, { roles: roleIds });
+  const updateSystemUserRoles = async (systemUserId: number, roleIds: number[]): Promise<IGetUserResponse> => {
+    const { data } = await axios.patch(`/api/user/${systemUserId}/system-roles/update`, { roles: roleIds });
 
     return data;
   };

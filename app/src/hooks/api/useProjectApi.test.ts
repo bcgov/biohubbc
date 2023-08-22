@@ -23,7 +23,7 @@ describe('useProjectApi', () => {
     mock.restore();
   });
 
-  const userId = 123;
+  const systemUserId = 123;
   const projectId = 1;
   const attachmentId = 1;
   const attachmentType = 'type';
@@ -37,7 +37,7 @@ describe('useProjectApi', () => {
   };
 
   it('getAllUserProjectsForView works as expected', async () => {
-    mock.onGet(`/api/user/${userId}/projects/get`).reply(200, [
+    mock.onGet(`/api/user/${systemUserId}/projects/get`).reply(200, [
       {
         project_id: 321,
         name: 'test',
@@ -224,65 +224,5 @@ describe('useProjectApi', () => {
     const result = await useProjectApi(axios).getProjectReportDetails(projectId, attachmentId);
 
     expect(result).toEqual('result 1');
-  });
-
-  it('getProjectParticipants works as expected', async () => {
-    const mockResponse = { participants: [] };
-    mock.onGet(`/api/project/${projectId}/participants/get`).reply(200, mockResponse);
-
-    const result = await useProjectApi(axios).getProjectParticipants(projectId);
-
-    expect(result).toEqual(mockResponse);
-  });
-
-  it('getUserProjectParticipant works as expected', async () => {
-    const mockResponse = {
-      participant: {
-        project_id: 1,
-        system_user_id: 1,
-        project_role_ids: [1],
-        project_role_names: ['RoleA'],
-        project_role_permissions: ['PermissionA']
-      }
-    };
-    mock.onGet(`/api/project/${projectId}/participants/self`).reply(200, mockResponse);
-
-    const result = await useProjectApi(axios).getUserProjectParticipant(projectId);
-
-    expect(result).toEqual(mockResponse);
-  });
-
-  it('addProjectParticipants works as expected', async () => {
-    const mockResponse = { participants: [] };
-    mock.onGet(`/api/project/${projectId}/participants/get`).reply(200, mockResponse);
-
-    const result = await useProjectApi(axios).getProjectParticipants(projectId);
-
-    expect(result).toEqual(mockResponse);
-  });
-
-  it('removeProjectParticipant works as expected', async () => {
-    const projectParticipationId = 1;
-
-    mock.onDelete(`/api/project/${projectId}/participants/${projectParticipationId}/delete`).reply(200);
-
-    const result = await useProjectApi(axios).removeProjectParticipant(projectId, projectParticipationId);
-
-    expect(result).toEqual(true);
-  });
-
-  it('removeProjectParticipant works as expected', async () => {
-    const projectParticipationId = 1;
-    const projectRoleId = 1;
-
-    mock.onPut(`/api/project/${projectId}/participants/${projectParticipationId}/update`).reply(200);
-
-    const result = await useProjectApi(axios).updateProjectParticipantRole(
-      projectId,
-      projectParticipationId,
-      projectRoleId
-    );
-
-    expect(result).toEqual(true);
   });
 });

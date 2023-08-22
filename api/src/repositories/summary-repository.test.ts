@@ -23,7 +23,7 @@ describe('SummaryRepository', () => {
         rows: [{ id: 1 }]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -34,7 +34,7 @@ describe('SummaryRepository', () => {
 
     it('should throw a HTTP400 error when the query fails', async () => {
       const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repo = new SummaryRepository(dbConnection);
 
@@ -58,7 +58,7 @@ describe('SummaryRepository', () => {
         ]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -90,7 +90,7 @@ describe('SummaryRepository', () => {
         ]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -122,7 +122,7 @@ describe('SummaryRepository', () => {
         ]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -157,7 +157,7 @@ describe('SummaryRepository', () => {
         ]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -186,7 +186,7 @@ describe('SummaryRepository', () => {
         QueryResult<any>
       >;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -219,7 +219,7 @@ describe('SummaryRepository', () => {
         ]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -252,7 +252,7 @@ describe('SummaryRepository', () => {
         ]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -410,7 +410,7 @@ describe('SummaryRepository', () => {
         rowCount: 1
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);
@@ -428,7 +428,7 @@ describe('SummaryRepository', () => {
         rowCount: 0
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SummaryRepository(dbConnection);

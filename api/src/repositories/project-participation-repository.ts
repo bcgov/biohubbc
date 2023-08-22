@@ -1,7 +1,19 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
+import { PROJECT_ROLE } from '../constants/roles';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { ProjectUser } from '../models/user';
 import { BaseRepository } from './base-repository';
+
+export const ProjectUser = z.object({
+  project_participation_id: z.number(),
+  project_id: z.number(),
+  system_user_id: z.number(),
+  project_role_ids: z.array(z.number()),
+  project_role_names: z.array(z.string()),
+  project_role_permissions: z.array(z.string())
+});
+
+export type ProjectUser = z.infer<typeof ProjectUser>;
 
 export interface IParticipant {
   systemUserId: number;
@@ -10,6 +22,25 @@ export interface IParticipant {
   roleId: number;
   displayName: string;
   email: string;
+}
+
+export const ProjectParticipationRecord = z.object({
+  project_participation_id: z.number(),
+  project_id: z.number(),
+  system_user_id: z.number(),
+  project_role_id: z.number(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type ProjectParticipationRecord = z.infer<typeof ProjectParticipationRecord>;
+
+export interface IInsertProjectParticipant {
+  system_user_id: number;
+  role: PROJECT_ROLE;
 }
 
 /**
@@ -24,10 +55,10 @@ export class ProjectParticipationRepository extends BaseRepository {
    *  Deletes a project participation record.
    *
    * @param {number} projectParticipationId
-   * @return {*}  {Promise<any>}
+   * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationRepository
    */
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
+  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<ProjectParticipationRecord> {
     const sqlStatement = SQL`
       DELETE FROM
         project_participation
@@ -37,7 +68,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         *;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ProjectParticipationRecord);
 
     if (!response || !response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete project participation record', [
@@ -50,7 +81,8 @@ export class ProjectParticipationRepository extends BaseRepository {
   }
 
   /**
-   * Gets the project participant, adding them if they do not already exist.
+   * Get a project user by project and system user id. Returns null if the system user is not a participant of the
+   * project.
    *
    * @param {number} projectId
    * @param {number} systemUserId
@@ -60,6 +92,7 @@ export class ProjectParticipationRepository extends BaseRepository {
   async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
     const sqlStatement = SQL`
       SELECT
+        pp.project_participation_id,
         pp.project_id,
         pp.system_user_id,
         su.record_end_date,
@@ -83,191 +116,120 @@ export class ProjectParticipationRepository extends BaseRepository {
       AND
         su.record_end_date is NULL
       GROUP BY
+        pp.project_participation_id,
         pp.project_id,
         pp.system_user_id,
-        su.record_end_date ;
+        su.record_end_date;
       `;
 
     const response = await this.connection.sql(sqlStatement, ProjectUser);
 
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    return result;
+    return response.rows?.[0] || null;
   }
 
   /**
    * Gets a list of project participants for a given project.
    *
    * @param {number} projectId
-   * @return {*}  {Promise<object[]>}
+   * @return {*}  {Promise<ProjectUser[]>}
    * @memberof ProjectParticipationRepository
    */
-  async getProjectParticipants(projectId: number): Promise<object[]> {
+  async getProjectParticipants(projectId: number): Promise<ProjectUser[]> {
     const sqlStatement = SQL`
       SELECT
         pp.project_participation_id,
         pp.project_id,
         pp.system_user_id,
-        pp.project_role_id,
-        pr.name project_role_name,
-        su.user_identifier,
-        su.user_guid,
-        su.user_identity_source_id,
-        uis.name user_identity_source_name
+        su.record_end_date,
+        array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
+        array_remove(array_agg(pr.name), NULL) AS project_role_names,
+        array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
-      LEFT JOIN
-        system_user su
-      ON
-        pp.system_user_id = su.system_user_id
-      LEFT JOIN
-        user_identity_source uis
-      ON
-        su.user_identity_source_id = uis.user_identity_source_id
-      LEFT JOIN
-        project_role pr
-      ON
-        pr.project_role_id = pp.project_role_id
+      LEFT JOIN project_role pr
+        ON pp.project_role_id = pr.project_role_id
+      LEFT JOIN project_role_permission prp
+        ON pp.project_role_id = prp.project_role_id
+      LEFT JOIN project_permission pp2
+        ON pp2.project_permission_id = prp.project_permission_id
+      LEFT JOIN system_user su
+        ON pp.system_user_id = su.system_user_id
       WHERE
-        pp.project_id = ${projectId};
+        pp.project_id = ${projectId}
+      AND
+        su.record_end_date is NULL
+      GROUP BY
+        pp.project_participation_id,
+        pp.project_id,
+        pp.system_user_id,
+        su.record_end_date;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ProjectUser);
 
-    const result = (response && response.rows) || null;
-
-    if (!result) {
+    if (!response.rows.length) {
       throw new ApiExecuteSQLError('Failed to get project team members', [
         'ProjectRepository->getProjectParticipants',
         'rows was null or undefined, expected rows != null'
       ]);
     }
 
-    return result;
+    return response.rows;
   }
 
   /**
    * Adds a project participant to the database.
    *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @param {number} projectParticipantRoleId
+   * @param {number} projectId The ID of the project.
+   * @param {number} systemUserId The system ID of the user.
+   * @param {(number | string)} projectParticipantRole The ID or Name of the role to assign.
    * @return {*}  {Promise<void>}
    * @memberof ProjectParticipationRepository
    */
-  async addProjectParticipant(
+  async postProjectParticipant(
     projectId: number,
     systemUserId: number,
-    projectParticipantRoleId: number
+    projectParticipantRole: number | string
   ): Promise<void> {
-    const sqlStatement = SQL`
-      INSERT INTO project_participation (
-        project_id,
-        system_user_id,
-        project_role_id
-      ) VALUES (
-        ${projectId},
-        ${systemUserId},
-        ${projectParticipantRoleId}
-      )
-      RETURNING
-        *;
-    `;
+    let sqlStatement;
+
+    if (isNaN(Number(projectParticipantRole))) {
+      sqlStatement = SQL`
+        INSERT INTO project_participation (
+          project_id,
+          system_user_id,
+          project_role_id
+        )
+        (
+          SELECT
+            ${projectId},
+            ${systemUserId},
+            project_role_id
+          FROM
+            project_role
+          WHERE
+            name = ${projectParticipantRole}
+        );
+      `;
+    } else {
+      sqlStatement = SQL`
+        INSERT INTO project_participation (
+          project_id,
+          system_user_id,
+          project_role_id
+        ) VALUES (
+          ${projectId},
+          ${systemUserId},
+          ${projectParticipantRole}
+        );
+      `;
+    }
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert project team member', [
-        'ProjectRepository->getProjectParticipants',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-  }
-
-  /**
-   * Inserts a project participant role into the database.
-   *
-   * @param {number} projectId
-   * @param {string} projectParticipantRole
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectParticipationRepository
-   */
-  async insertProjectParticipantRole(
-    projectId: number,
-    systemUserId: number,
-    projectParticipantRole: string
-  ): Promise<void> {
-    const sqlStatement = SQL`
-      INSERT INTO project_participation (
-        project_id,
-        system_user_id,
-        project_role_id
-      )
-      (
-        SELECT
-          ${projectId},
-          ${systemUserId},
-          project_role_id
-        FROM
-          project_role
-        WHERE
-          name = ${projectParticipantRole}
-        AND 
-      )
-      RETURNING
-        *;
-    `;
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response || !response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert project team member', [
-        'ProjectRepository->insertProjectParticipantRole',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-  }
-
-  /**
-   * Inserts a project participant role into the database.
-   *
-   * @param {number} projectId
-   * @param {string} projectParticipantRole
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectParticipationRepository
-   */
-  async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    const systemUserId = this.connection.systemUserId();
-
-    if (!systemUserId) {
-      throw new ApiExecuteSQLError('Failed to identify system user ID');
-    }
-
-    const sqlStatement = SQL`
-      INSERT INTO project_participation (
-        project_id,
-        system_user_id,
-        project_role_id
-      )
-      (
-        SELECT
-          ${projectId},
-          ${systemUserId},
-          project_role_id
-        FROM
-          project_role
-        WHERE
-          name = ${projectParticipantRole}
-      )
-      RETURNING
-        *;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response || !response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert project team member', [
-        'ProjectRepository->insertParticipantRole',
+        'ProjectRepository->postProjectParticipant',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -277,61 +239,41 @@ export class ProjectParticipationRepository extends BaseRepository {
    * Fetches the project participants for all projects that the given system user is a member of.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<
-   *     {
-   *       project_id: number;
-   *       name: string;
-   *       system_user_id: number;
-   *       project_role_id: number;
-   *       project_participation_id: number;
-   *     }[]
-   *   >}
-   * @memberof UserRepository
+   * @return {*}  {Promise<ProjectUser[]>}
+   * @memberof ProjectParticipationRepository
    */
-  async getParticipantsFromAllProjectsBySystemUserId(
-    systemUserId: number
-  ): Promise<
-    {
-      project_id: number;
-      name: string;
-      system_user_id: number;
-      project_role_id: number;
-      project_participation_id: number;
-    }[]
-  > {
+  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<ProjectUser[]> {
     const sqlStatement = SQL`
       SELECT
         pp.project_participation_id,
         pp.project_id,
         pp.system_user_id,
-        pp.project_role_id,
-        pr.name project_role_name
+        su.record_end_date,
+        array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
+        array_remove(array_agg(pr.name), NULL) AS project_role_names,
+        array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
-      LEFT JOIN
-        project p
-      ON
-        pp.project_id = p.project_id
-      LEFT JOIN
-        project_role pr
-      ON
-        pr.project_role_id = pp.project_role_id
+      LEFT JOIN project_role pr
+        ON pp.project_role_id = pr.project_role_id
+      LEFT JOIN project_role_permission prp
+        ON pp.project_role_id = prp.project_role_id
+      LEFT JOIN project_permission pp2
+        ON pp2.project_permission_id = prp.project_permission_id
+      LEFT JOIN system_user su
+        ON pp.system_user_id = su.system_user_id
       WHERE
-        pp.project_id in (
-          SELECT
-            p.project_id
-          FROM
-            project_participation pp
-          LEFT JOIN
-            project p
-          ON
-            pp.project_id = p.project_id
-          WHERE
-            pp.system_user_id = ${systemUserId}
-        );
-    `;
+        pp.system_user_id = ${systemUserId}
+      AND
+        su.record_end_date is NULL
+      GROUP BY
+        pp.project_participation_id,
+        pp.project_id,
+        pp.system_user_id,
+        su.record_end_date;
+      `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, ProjectUser);
 
     return response.rows;
   }
@@ -379,7 +321,16 @@ export class ProjectParticipationRepository extends BaseRepository {
         pp.system_user_id = ${systemUserId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(
+      sqlStatement,
+      z.object({
+        project_id: z.number(),
+        name: z.string(),
+        system_user_id: z.number(),
+        project_role_id: z.number(),
+        project_participation_id: z.number()
+      })
+    );
 
     return response.rows;
   }

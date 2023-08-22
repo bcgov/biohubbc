@@ -1,9 +1,12 @@
-import { PROJECT_PERMISSION, PROJECT_ROLE } from '../constants/roles';
+import { PROJECT_PERMISSION } from '../constants/roles';
 import { IDBConnection } from '../database/db';
-import { ApiExecuteSQLError } from '../errors/api-error';
-import { HTTP400 } from '../errors/http-error';
-import { ProjectUser } from '../models/user';
-import { IParticipant, ProjectParticipationRepository } from '../repositories/project-participation-repository';
+import {
+  IInsertProjectParticipant,
+  IParticipant,
+  ProjectParticipationRecord,
+  ProjectParticipationRepository,
+  ProjectUser
+} from '../repositories/project-participation-repository';
 import { DBService } from './db-service';
 import { UserService } from './user-service';
 
@@ -40,7 +43,7 @@ export class ProjectParticipationService extends DBService {
     }
 
     // add new project participant record
-    await this.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
+    await this.postProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
   }
 
   /**
@@ -68,26 +71,29 @@ export class ProjectParticipationService extends DBService {
   }
 
   /**
-   * Ensures that the given project participants exist as system users and project participants.
+   * Adds multiple project participants to the project.
    *
    * @param {number} projectId
-   * @param {IParticipant[]} participants
+   * @param {IInsertProjectParticipant[]} participants
+   * @return {*}  {Promise<void[]>}
    * @memberof ProjectParticipationService
    */
-  async ensureProjectParticipantUsers(projectId: number, participants: IParticipant[]) {
-    for (const participant of participants) {
-      await this.ensureSystemUserAndProjectParticipantUser(projectId, { ...participant, userGuid: null });
-    }
+  async postProjectParticipants(projectId: number, participants: IInsertProjectParticipant[]): Promise<void[]> {
+    return Promise.all(
+      participants.map((participant) =>
+        this.postProjectParticipant(projectId, participant.system_user_id, participant.role)
+      )
+    );
   }
 
   /**
    * Deletes a project participation record.
    *
    * @param {number} projectParticipationId
-   * @return {*}  {Promise<any>}
+   * @return {*}  {Promise<ProjectParticipationRecord>}
    * @memberof ProjectParticipationService
    */
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
+  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<ProjectParticipationRecord> {
     return this.projectParticipationRepository.deleteProjectParticipationRecord(projectParticipationId);
   }
 
@@ -107,10 +113,10 @@ export class ProjectParticipationService extends DBService {
    * Gets the project participants for the given project.
    *
    * @param {number} projectId
-   * @return {*}  {Promise<object[]>}
+   * @return {*}  {Promise<ProjectUser[]>}
    * @memberof ProjectParticipationService
    */
-  async getProjectParticipants(projectId: number): Promise<object[]> {
+  async getProjectParticipants(projectId: number): Promise<ProjectUser[]> {
     return this.projectParticipationRepository.getProjectParticipants(projectId);
   }
 
@@ -123,50 +129,22 @@ export class ProjectParticipationService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof ProjectParticipationService
    */
-  async addProjectParticipant(
+  async postProjectParticipant(
     projectId: number,
     systemUserId: number,
-    projectParticipantRoleId: number
+    projectParticipantRole: number | string
   ): Promise<void> {
-    return this.projectParticipationRepository.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-  }
-
-  /**
-   * Adds current logged in user as a participant to a given project
-   *
-   * @param {number} projectId
-   * @param {string} projectParticipantRole
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectParticipationService
-   */
-  async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    const currentUserId = this.connection.systemUserId();
-    if (!currentUserId) {
-      throw new ApiExecuteSQLError('Failed to identify system user ID');
-    }
-    return this.insertProjectParticipantRole(projectId, currentUserId, projectParticipantRole);
-  }
-
-  async insertProjectParticipantRole(
-    projectId: number,
-    systemUserId: number,
-    projectParticipantRole: string
-  ): Promise<void> {
-    return this.projectParticipationRepository.insertProjectParticipantRole(
-      projectId,
-      systemUserId,
-      projectParticipantRole
-    );
+    return this.projectParticipationRepository.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
   }
 
   /**
    * Fetches the project participants for all projects that the given system user is a member of.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<any[]>}
+   * @return {*}  {Promise<ProjectUser[]>}
    * @memberof projectParticipationRepository
    */
-  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<any[]> {
+  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<ProjectUser[]> {
     return this.projectParticipationRepository.getParticipantsFromAllProjectsBySystemUserId(systemUserId);
   }
 
@@ -200,59 +178,62 @@ export class ProjectParticipationService extends DBService {
   }
 
   /**
-   * Checks if the given user is the only coordinator for any project. If so, throw an error.
+   * Check if the given user is the only coordinator on at least 1 project.
    *
-   * @param {number} userId
-   * @param {IDBConnection} connection
-   * @return {*}
+   * Why? All projects must have at least 1 coordinator. If this user is the only coordinator then deleting them or
+   * updating them to not be a coordinator should not be allowed.
+   *
+   * @param {number} systemUserId
+   * @return {*}  {Promise<boolean>} `true` if the user is the only project coordinator on at least 1 project, `false`
+   * otherwise.
    * @memberof ProjectParticipationService
    */
-  async checkIfUserIsOnlyProjectLeadOnAnyProject(userId: number, connection: IDBConnection) {
-    const projectParticipationService = new ProjectParticipationService(connection);
+  async isUserTheOnlyProjectCoordinatorOnAnyProject(systemUserId: number): Promise<boolean> {
+    const projectParticipationService = new ProjectParticipationService(this.connection);
 
     const getAllParticipantsResponse = await projectParticipationService.getParticipantsFromAllProjectsBySystemUserId(
-      userId
+      systemUserId
     );
 
-    // No projects associated to user, skip coordinator role check
     if (!getAllParticipantsResponse.length) {
-      return;
+      // User has no projects, and therefore is not the only coordinator on a project
+      return false;
     }
 
-    const onlyProjectLeadResponse = this.doAllProjectsHaveAProjectLeadIfUserIsRemoved(
+    const doAllProjectsHaveACoordinatorIfUserIsRemoved = this.doAllProjectsHaveAProjectLeadIfUserIsRemoved(
       getAllParticipantsResponse,
-      userId
+      systemUserId
     );
 
-    if (!onlyProjectLeadResponse) {
-      throw new HTTP400(`Cannot remove user. User is the only ${PROJECT_ROLE.COORDINATOR} for one or more projects.`);
-    }
+    // Negate above response, because `false` indicates the user is the only coordinator, and this function returns
+    // `true` in that situation
+    return !doAllProjectsHaveACoordinatorIfUserIsRemoved;
   }
 
   /**
-   * Given an array of project participation role objects, return false if any project has no Coordinator role. Return
-   * true otherwise.
+   * Given an array of project participants, return `false` if any project has no Coordinator role. Return `true`
+   * otherwise.
    *
-   * @param {any[]} rows
+   * @param {ProjectUser[]} projectUsers
    * @return {*}  {boolean}
    */
-  doAllProjectsHaveAProjectLead(rows: any[]): boolean {
+  doAllProjectsHaveAProjectLead(projectUsers: ProjectUser[]): boolean {
     // No project with Coordinator
-    if (!rows.length) {
+    if (!projectUsers.length) {
       return false;
     }
 
     const projectLeadsPerProject: { [key: string]: any } = {};
 
     // count how many coordinator roles there are per project
-    rows.forEach((row) => {
+    projectUsers.forEach((row) => {
       const key = row.project_id;
 
       if (!projectLeadsPerProject[key]) {
         projectLeadsPerProject[key] = 0;
       }
 
-      if (row.project_role_name === PROJECT_PERMISSION.COORDINATOR) {
+      if (row.project_role_names.includes(PROJECT_PERMISSION.COORDINATOR)) {
         projectLeadsPerProject[key] += 1;
       }
     });
@@ -275,27 +256,27 @@ export class ProjectParticipationService extends DBService {
    * Given an array of project participation role objects, return true if any project has no Coordinator role after
    * removing all rows associated with the provided `userId`. Return false otherwise.
    *
-   * @param {any[]} rows
-   * @param {number} userId
+   * @param {ProjectUser[]} projectUsers
+   * @param {number} systemUserId
    * @return {*}  {boolean}
    */
-  doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows: any[], userId: number): boolean {
+  doAllProjectsHaveAProjectLeadIfUserIsRemoved(projectUsers: ProjectUser[], systemUserId: number): boolean {
     // No project with coordinator
-    if (!rows.length) {
+    if (!projectUsers.length) {
       return false;
     }
 
     const projectLeadsPerProject: { [key: string]: any } = {};
 
     // count how many Coordinator roles there are per project
-    rows.forEach((row) => {
+    projectUsers.forEach((row) => {
       const key = row.project_id;
 
       if (!projectLeadsPerProject[key]) {
         projectLeadsPerProject[key] = 0;
       }
 
-      if (row.system_user_id !== userId && row.project_role_name === PROJECT_PERMISSION.COORDINATOR) {
+      if (row.system_user_id !== systemUserId && row.project_role_names.includes(PROJECT_PERMISSION.COORDINATOR)) {
         projectLeadsPerProject[key] += 1;
       }
     });

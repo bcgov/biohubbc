@@ -31,22 +31,25 @@ describe('removeSystemUser', () => {
         project_participation_id: 47,
         project_id: 3,
         system_user_id: 33,
-        project_role_id: 1,
-        project_role_name: 'Coordinator'
+        project_role_ids: [1],
+        project_role_names: ['Coordinator'],
+        project_role_permissions: ['Permission1']
       },
       {
         project_participation_id: 57,
         project_id: 1,
         system_user_id: 33,
-        project_role_id: 3,
-        project_role_name: 'Observer'
+        project_role_ids: [3],
+        project_role_names: ['Observer'],
+        project_role_permissions: ['Permission1']
       },
       {
         project_participation_id: 40,
         project_id: 1,
         system_user_id: 27,
-        project_role_id: 1,
-        project_role_name: 'Coordinator'
+        project_role_ids: [1],
+        project_role_names: ['Coordinator'],
+        project_role_permissions: ['Permission1']
       }
     ];
 
@@ -77,7 +80,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ProjectParticipationService.prototype, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
@@ -114,7 +117,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ProjectParticipationService.prototype, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
@@ -152,7 +155,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ProjectParticipationService.prototype, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
@@ -192,7 +195,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ProjectParticipationService.prototype, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
@@ -233,7 +236,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ProjectParticipationService.prototype, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+    sinon.stub(ProjectParticipationService.prototype, 'isUserTheOnlyProjectCoordinatorOnAnyProject').resolves();
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
       system_user_id: 1,
