@@ -1,16 +1,8 @@
-import CloseIcon from '@mui/icons-material/Close';
-import SearchIcon from '@mui/icons-material/Search';
-import {
-  Autocomplete,
-  Box,
-  CircularProgress,
-  Grid,
-  IconButton,
-  MenuItem,
-  Select,
-  TextField,
-  Typography
-} from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import AlertBar from 'components/alert/AlertBar';
+import SearchAutocompleteField from 'components/fields/SearchAutocompleteField';
+import UserCard from 'components/user/UserCard';
+import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -27,11 +19,15 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
     .of(
       yup.object().shape({
         system_user_id: yup.string().required('Username is required'),
-        role: yup.string().required('Role is required')
+        role: yup.string().required('Select a role for this team member')
       })
     )
-    .min(1)
-    .hasAtLeastOneValue('At least 1 Coordinator needs to exist on a project', 'role', PROJECT_ROLE.COORDINATOR)
+    .min(1, 'At least 1 member needs to be added to manage a project.')
+    .hasAtLeastOneValue(
+      'A minimum of one team member must be assigned the coordinator role.',
+      'role',
+      PROJECT_ROLE.COORDINATOR
+    )
 });
 
 interface IProjectUser {
@@ -39,34 +35,12 @@ interface IProjectUser {
   roles: ICode[];
 }
 
-interface IUserCard {
-  name: string;
-  email: string;
-  agency: string;
-  type: string;
-}
-
 export const ProjectUserRoleFormInitialValues = {
   participants: []
 };
 
-const UserCard: React.FC<IUserCard> = (props) => {
-  return (
-    <Box>
-      <Typography variant="h5">{props.name}</Typography>
-      <Box display={'flex'}>
-        <Typography variant="subtitle2">{props.email}</Typography>
-        <Typography sx={{ marginX: 1 }} variant="subtitle2">
-          {props.agency}
-        </Typography>
-        <Typography variant="subtitle2">{props.type}</Typography>
-      </Box>
-    </Box>
-  );
-};
-
 const ProjectUserForm: React.FC<IProjectUser> = (props) => {
-  const { handleSubmit, values, setFieldValue } = useFormikContext<ICreateProjectRequest>();
+  const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
 
   const [searchUsers, setSearchUsers] = useState<ISearchUserResponse[]>([]);
@@ -101,6 +75,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
       system_user_id: user.system_user_id,
       role: ''
     });
+    clearErrors();
   };
 
   const handleAddUserRole = (systemUserId: number, role: string, index: number) => {
@@ -116,12 +91,47 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
 
     setSelectedUsers(filteredUsers);
     setFieldValue(`participants`, filteredValues);
+    clearErrors();
   };
 
-  const getUserRole = (systemUserId: number) => {
-    const found = values.participants.filter((item) => item.system_user_id === systemUserId)[0] || null;
-    return found;
+  const clearErrors = () => {
+    const tempErrors = errors;
+    tempErrors.participants = undefined;
+    setErrors(tempErrors);
   };
+
+  const alertBarText = (): { title: string; text: string } => {
+    let title = '';
+    let text = '';
+    if (errors && errors.participants) {
+      if (Array.isArray(errors.participants)) {
+        title = 'Missing Roles';
+        text = 'All team members must be assigned a role.';
+      } else {
+        if (selectedUsers.length > 0) {
+          title = 'Coordinator Role is Required';
+        } else {
+          title = 'Missing Team Member';
+        }
+        text = errors.participants;
+      }
+    }
+
+    return { title, text };
+  };
+
+  const rowItemError = (index: number): JSX.Element | undefined => {
+    if (errors && errors.participants && Array.isArray(errors.participants)) {
+      const errorAtIndex = errors.participants[index];
+
+      return (
+        <Typography style={{ fontSize: '12px', color: '#f44336' }}>
+          {errorAtIndex ? 'Select a role for this team member.' : ''}
+        </Typography>
+      );
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -134,50 +144,23 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         </Typography>
       </Box>
       <Box mt={3}>
-        <Autocomplete
-          clearOnBlur
-          handleHomeEndKeys
-          id=""
-          options={searchUsers}
-          getOptionLabel={(option) => option.display_name || ''}
-          onInputChange={(_, value) => {
-            handleSearch(value, selectedUsers);
-          }}
-          onChange={(_, option) => {
-            if (option) {
-              handleAddUser(option);
-            }
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              placeholder="Find Team Members"
-              fullWidth
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: <SearchIcon />,
-                endAdornment: (
-                  <>
-                    {isSearching ? <CircularProgress color="inherit" size={20} /> : null}
-                    {params.InputProps.endAdornment}
-                  </>
-                )
-              }}
+        <SearchAutocompleteField<ISearchUserResponse>
+          id={''}
+          displayNameKey={'display_name'}
+          placeholderText={'Find Team Members'}
+          searchOptions={searchUsers}
+          selectedOptions={selectedUsers}
+          handleSearch={handleSearch}
+          isSearching={isSearching}
+          handleOnChange={handleAddUser}
+          renderSearch={(option) => (
+            <UserCard
+              name={option.display_name}
+              email={option.email}
+              agency={option.agency}
+              type={option.identity_source}
             />
           )}
-          renderOption={(renderProps, renderOption, { selected }) => {
-            return (
-              <Box component="li" {...renderProps}>
-                <UserCard
-                  name={renderOption.display_name}
-                  email={renderOption.email}
-                  agency={renderOption.agency}
-                  type={renderOption.identity_source}
-                />
-              </Box>
-            );
-          }}
         />
       </Box>
       <Box mt={3}>
@@ -186,47 +169,24 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             Team Members ({selectedUsers.length})
           </Typography>
         )}
-        <Grid container rowSpacing={1}>
+        {errors && errors['participants'] && (
+          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+        )}
+        <Box>
           {selectedUsers.map((systemUser: ISearchUserResponse, index: number) => {
+            const error = rowItemError(index);
             return (
-              <Grid item key={systemUser.system_user_id} spacing={2} container direction={'row'} xs={12}>
-                <Grid item xs={6} md={8}>
-                  <UserCard
-                    name={systemUser.display_name}
-                    email={systemUser.email}
-                    agency={systemUser.agency}
-                    type={systemUser.identity_source}
-                  />
-                </Grid>
-                <Grid item xs={6} md={3}>
-                  <Select
-                    sx={{ width: '100%' }}
-                    displayEmpty
-                    value={getUserRole(systemUser.system_user_id)?.role}
-                    onChange={(event) => {
-                      console.log(event);
-                      handleAddUserRole(systemUser.system_user_id, String(event.target.value), index);
-                    }}>
-                    {props.roles.map((item) => (
-                      <MenuItem key={item.id} value={item.name}>
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
-                <Grid item xs={6} md={1} display={'flex'}>
-                  <IconButton
-                    aria-label="remove user"
-                    onClick={() => {
-                      handleRemoveUser(systemUser.system_user_id);
-                    }}>
-                    <CloseIcon />
-                  </IconButton>
-                </Grid>
-              </Grid>
+              <UserRoleSelector
+                index={index}
+                systemUser={systemUser}
+                roles={props.roles}
+                error={error}
+                handleAdd={handleAddUserRole}
+                handleRemove={handleRemoveUser}
+              />
             );
           })}
-        </Grid>
+        </Box>
       </Box>
     </form>
   );
