@@ -68,15 +68,14 @@ POST.apiDoc = {
               items: {
                 type: 'object',
                 nullable: true,
-                required: ['system_user_id', 'survey_job_id'],
+                required: ['system_user_id', 'job'],
                 properties: {
                   system_user_id: {
                     type: 'integer',
                     minimum: 1
                   },
-                  survey_job_id: {
-                    type: 'integer',
-                    minimum: 1
+                  job: {
+                    type: 'string'
                   }
                 }
               }
@@ -133,7 +132,7 @@ export function createSurveyParticipants(): RequestHandler {
         return surveyParticipationService.insertSurveyParticipant(
           surveyId,
           participant.system_user_id,
-          participant.survey_job_id
+          participant.job
         );
       });
 

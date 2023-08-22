@@ -27,8 +27,8 @@ export class SurveyParticipationService extends DBService {
     return this.surveyParticipationRepository.getSurveyParticipants(surveyId);
   }
 
-  async insertSurveyParticipant(surveyId: number, systemUserId: number, surveyJobId: number): Promise<void> {
-    return this.surveyParticipationRepository.insertSurveyParticipant(surveyId, systemUserId, surveyJobId);
+  async insertSurveyParticipant(surveyId: number, systemUserId: number, surveyJobName: string): Promise<void> {
+    return this.surveyParticipationRepository.insertSurveyParticipant(surveyId, systemUserId, surveyJobName);
   }
 
   async deleteSurveyParticipationRecord(surveyParticipationId: number): Promise<any> {

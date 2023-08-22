@@ -201,6 +201,22 @@ POST.apiDoc = {
                   }
                 }
               }
+            },
+            participants: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['system_user_id', 'job'],
+                properties: {
+                  system_user_id: {
+                    type: 'number',
+                    minimum: 1
+                  },
+                  job: {
+                    type: 'string'
+                  }
+                }
+              }
             }
           }
         }

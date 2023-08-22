@@ -43,6 +43,7 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from './components/SurveyFundingSourceForm';
+import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -129,7 +130,8 @@ const CreateSurveyPage = () => {
     ...StudyAreaInitialValues,
     ...SurveyFundingSourceFormInitialValues,
     ...ProprietaryDataInitialValues,
-    ...AgreementsInitialValues
+    ...AgreementsInitialValues,
+    ...SurveyUserJobFormInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -171,7 +173,8 @@ const CreateSurveyPage = () => {
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
-    .concat(AgreementsYupSchema);
+    .concat(AgreementsYupSchema)
+    .concat(SurveyUserJobYupSchema);
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -329,6 +332,15 @@ const CreateSurveyPage = () => {
                       }
                     />
                   }></HorizontalSplitFormComponent>
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Survey Users"
+                  summary="Add some users"
+                  //TODO: need to auto fill current
+                  component={<SurveyUserForm users={[]} jobs={codes.survey_jobs} />}
+                />
 
                 <Divider className={classes.sectionDivider} />
 

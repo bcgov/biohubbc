@@ -40,7 +40,8 @@ export class CodeService extends DBService {
       field_methods,
       ecological_seasons,
       intended_outcomes,
-      vantage_codes
+      vantage_codes,
+      survey_jobs
     ] = await Promise.all([
       await this.codeRepository.getManagementActionType(),
       await this.codeRepository.getFirstNations(),
@@ -58,7 +59,8 @@ export class CodeService extends DBService {
       await this.codeRepository.getFieldMethods(),
       await this.codeRepository.getEcologicalSeasons(),
       await this.codeRepository.getIntendedOutcomes(),
-      await this.codeRepository.getVantageCodes()
+      await this.codeRepository.getVantageCodes(),
+      await this.codeRepository.getSurveyJobs()
     ]);
 
     return {
@@ -79,6 +81,7 @@ export class CodeService extends DBService {
       ecological_seasons: ecological_seasons,
       intended_outcomes: intended_outcomes,
       vantage_codes: vantage_codes,
+      survey_jobs: survey_jobs,
 
       // TODO Temporarily hard coded list of code values below
       region,

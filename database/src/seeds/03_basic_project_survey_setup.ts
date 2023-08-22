@@ -80,11 +80,10 @@ const insertSurveyParticipationData = () => `
             su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
         ), 1)
       ),
-      (SELECT survey_job_id FROM survey_job WHERE name = 'Pilot' LIMIT 1)
+      'Pilot'
     )
   ;
 `;
-
 
 /**
  * SQL to insert Survey Vantage data

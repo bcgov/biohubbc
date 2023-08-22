@@ -36,7 +36,8 @@ export const IAllCodeSets = z.object({
   field_methods: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   ecological_seasons: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   intended_outcomes: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
-  vantage_codes: CodeSet()
+  vantage_codes: CodeSet(),
+  survey_jobs: CodeSet()
 });
 
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
@@ -54,7 +55,7 @@ export class CodeRepository extends BaseRepository {
         management_action_type_id as id,
         name
       FROM
-        management_action_type 
+        management_action_type
       WHERE
         record_end_date is null;
     `;
@@ -76,7 +77,7 @@ export class CodeRepository extends BaseRepository {
         first_nations_id as id,
         name
       FROM
-        first_nations 
+        first_nations
       WHERE
         record_end_date is null ORDER BY name ASC;
     `;
@@ -98,7 +99,7 @@ export class CodeRepository extends BaseRepository {
         agency_id as id,
         name
       FROM
-        agency 
+        agency
       WHERE
         record_end_date is null ORDER BY name ASC;
     `;
@@ -120,7 +121,7 @@ export class CodeRepository extends BaseRepository {
         proprietor_type_id as id,
         name, is_first_nation
       FROM
-        proprietor_type 
+        proprietor_type
       WHERE
         record_end_date is null;
     `;
@@ -142,7 +143,7 @@ export class CodeRepository extends BaseRepository {
         type_id as id,
         name
       FROM
-        type 
+        type
       WHERE
         record_end_date is null;
     `;
@@ -164,7 +165,7 @@ export class CodeRepository extends BaseRepository {
         field_method_id as id,
         name, description
       FROM
-        field_method 
+        field_method
       WHERE
         record_end_date is null;
     `;
@@ -186,7 +187,7 @@ export class CodeRepository extends BaseRepository {
         ecological_season_id as id,
         name, description
       FROM
-        ecological_season 
+        ecological_season
       WHERE
         record_end_date is null;
     `;
@@ -208,7 +209,7 @@ export class CodeRepository extends BaseRepository {
         vantage_id as id,
         name
       FROM
-        vantage 
+        vantage
       WHERE record_end_date is null;
     `;
 
@@ -218,7 +219,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fntended outcomes codes.
+   * Fetch intended outcomes codes.
    *
    */
   async getIntendedOutcomes() {
@@ -227,7 +228,7 @@ export class CodeRepository extends BaseRepository {
         intended_outcome_id as id,
         name, description
       FROM
-        intended_outcome 
+        intended_outcome
       WHERE record_end_date is null;
     `;
 
@@ -248,8 +249,8 @@ export class CodeRepository extends BaseRepository {
         program_id as id,
         name
       FROM
-        program 
-      WHERE 
+        program
+      WHERE
         record_end_date is null;
     `;
 
@@ -267,11 +268,11 @@ export class CodeRepository extends BaseRepository {
   async getInvestmentActionCategory() {
     const sqlStatement = SQL`
       SELECT
-        investment_action_category_id as id, 
-        agency_id, 
+        investment_action_category_id as id,
+        agency_id,
         name
       FROM
-        investment_action_category 
+        investment_action_category
       WHERE record_end_date is null ORDER BY name ASC;
     `;
 
@@ -292,7 +293,7 @@ export class CodeRepository extends BaseRepository {
         iucn_conservation_action_level_1_classification_id as id,
         name
       FROM
-        iucn_conservation_action_level_1_classification 
+        iucn_conservation_action_level_1_classification
       WHERE
         record_end_date is null;
     `;
@@ -311,11 +312,11 @@ export class CodeRepository extends BaseRepository {
   async getIUCNConservationActionLevel2Subclassification() {
     const sqlStatement = SQL`
       SELECT
-        iucn_conservation_action_level_2_subclassification_id as id, 
-        iucn_conservation_action_level_1_classification_id as iucn1_id, 
+        iucn_conservation_action_level_2_subclassification_id as id,
+        iucn_conservation_action_level_1_classification_id as iucn1_id,
         name
-      FROM 
-        iucn_conservation_action_level_2_subclassification 
+      FROM
+        iucn_conservation_action_level_2_subclassification
       WHERE
         record_end_date is null;
     `;
@@ -334,11 +335,11 @@ export class CodeRepository extends BaseRepository {
   async getIUCNConservationActionLevel3Subclassification() {
     const sqlStatement = SQL`
       SELECT
-        iucn_conservation_action_level_3_subclassification_id as id, 
-        iucn_conservation_action_level_2_subclassification_id as iucn2_id, 
+        iucn_conservation_action_level_3_subclassification_id as id,
+        iucn_conservation_action_level_2_subclassification_id as iucn2_id,
         name
       FROM
-        iucn_conservation_action_level_3_subclassification 
+        iucn_conservation_action_level_3_subclassification
       WHERE
         record_end_date is null;
     `;
@@ -360,7 +361,7 @@ export class CodeRepository extends BaseRepository {
         system_role_id as id,
         name
       FROM
-        system_role 
+        system_role
       WHERE
         record_end_date is null;
     `;
@@ -382,7 +383,29 @@ export class CodeRepository extends BaseRepository {
         project_role_id as id,
         name
       FROM
-        project_role 
+        project_role
+      WHERE
+        record_end_date is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch survey job codes.
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getSurveyJobs() {
+    const sqlStatement = SQL`
+      SELECT
+        survey_job_id as id,
+        name
+      FROM
+        survey_job
       WHERE
         record_end_date is null;
     `;
@@ -404,7 +427,7 @@ export class CodeRepository extends BaseRepository {
         administrative_activity_status_type_id as id,
         name
       FROM
-        administrative_activity_status_type 
+        administrative_activity_status_type
       WHERE
         record_end_date is null;
     `;

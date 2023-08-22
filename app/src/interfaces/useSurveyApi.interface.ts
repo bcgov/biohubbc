@@ -19,7 +19,8 @@ export interface ICreateSurveyRequest
     IPurposeAndMethodologyForm,
     IStudyAreaForm,
     IProprietaryDataForm,
-    IAgreementsForm {}
+    IAgreementsForm,
+    IParticipantsJobForm {}
 
 /**
  * Create survey response object.
@@ -30,6 +31,14 @@ export interface ICreateSurveyRequest
 export interface ICreateSurveyResponse {
   id: number;
 }
+
+export interface IParticipantsJobForm {
+  participants: {
+    system_user_id: number;
+    job: string;
+  }[];
+}
+
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   project_id: number;

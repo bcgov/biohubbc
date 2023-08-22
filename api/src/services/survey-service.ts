@@ -34,6 +34,7 @@ import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { RegionService } from './region-service';
+import { SurveyParticipationService } from './survey-participation-service';
 import { TaxonomyService } from './taxonomy-service';
 
 const defaultLog = getLogger('services/survey-service');
@@ -51,6 +52,7 @@ export class SurveyService extends DBService {
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
   fundingSourceService: FundingSourceService;
+  SurveyParticipationService: SurveyParticipationService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -60,6 +62,7 @@ export class SurveyService extends DBService {
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
     this.fundingSourceService = new FundingSourceService(connection);
+    this.SurveyParticipationService = new SurveyParticipationService(connection);
   }
 
   /**
@@ -391,6 +394,15 @@ export class SurveyService extends DBService {
             fundingSource.funding_source_id,
             fundingSource.amount
           )
+        )
+      )
+    );
+
+    // Handle survey participants
+    promises.push(
+      Promise.all(
+        postSurveyData.participants.map((participant) =>
+          this.SurveyParticipationService.insertSurveyParticipant(surveyId, participant.system_user_id, participant.job)
         )
       )
     );

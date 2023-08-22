@@ -43,7 +43,7 @@ export type SurveyParticipantWithJob = z.infer<typeof SurveyParticipantWithJob>;
 
 export interface ISurveyParticipationPostData {
   system_user_id: number;
-  survey_job_id: number;
+  job: string;
 }
 
 /**
@@ -171,11 +171,11 @@ export class SurveyParticipationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} systemUserId
-   * @param {number} surveyJobId
+   * @param {string} surveyJobName
    * @return {*}  {Promise<void>}
    * @memberof SurveyParticipationRepository
    */
-  async insertSurveyParticipant(surveyId: number, systemUserId: number, surveyJobId: number): Promise<void> {
+  async insertSurveyParticipant(surveyId: number, systemUserId: number, surveyJobName: string): Promise<void> {
     const sqlStatement = SQL`
       INSERT INTO survey_participation (
         survey_id,
@@ -184,7 +184,7 @@ export class SurveyParticipationRepository extends BaseRepository {
       ) VALUES (
         ${surveyId},
         ${systemUserId},
-        ${surveyJobId}
+        (SELECT survey_job_id FROM survey_job WHERE name = ${surveyJobName} LIMIT 1)
       );
     `;
 

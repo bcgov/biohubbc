@@ -228,6 +228,20 @@ GET.apiDoc = {
                   }
                 }
               },
+              survey_jobs: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
               regional_offices: {
                 type: 'array',
                 items: {
