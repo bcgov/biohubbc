@@ -23,6 +23,8 @@ export const UnauthenticatedUserAuthState: IAuthState = {
     username: undefined,
     displayName: undefined,
     email: undefined,
+    systemUserId: undefined,
+    user: undefined,
     refresh: () => {
       // do nothing
     },
@@ -54,6 +56,8 @@ export const SystemUserAuthState: IAuthState = {
     username: 'testusername',
     displayName: 'testdisplayname',
     email: 'test@email.com',
+    systemUserId: 1,
+    user: undefined,
     refresh: () => {
       // do nothing
     },
@@ -85,6 +89,8 @@ export const SystemAdminAuthState: IAuthState = {
     username: 'admin-username',
     displayName: 'admin-displayname',
     email: 'admin@email.com',
+    systemUserId: 1,
+    user: undefined,
     refresh: () => {
       // do nothing
     },

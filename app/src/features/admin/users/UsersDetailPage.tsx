@@ -4,7 +4,7 @@ import Container from '@mui/material/Container';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
+import { IUserResponse } from '../../../interfaces/useUserApi.interface';
 import UsersDetailHeader from './UsersDetailHeader';
 import UsersDetailProjects from './UsersDetailProjects';
 
@@ -17,7 +17,7 @@ const UsersDetailPage: React.FC = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const biohubApi = useBiohubApi();
 
-  const [selectedUser, setSelectedUser] = useState<IGetUserResponse | null>(null);
+  const [selectedUser, setSelectedUser] = useState<IUserResponse | null>(null);
 
   useEffect(() => {
     if (selectedUser) {

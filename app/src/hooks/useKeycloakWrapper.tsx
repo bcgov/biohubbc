@@ -1,4 +1,5 @@
 import { useKeycloak } from '@react-keycloak/web';
+import { IUserResponse } from 'interfaces/useUserApi.interface';
 import Keycloak from 'keycloak-js';
 import { useCallback } from 'react';
 import { buildUrl } from 'utils/Utils';
@@ -116,6 +117,7 @@ export interface IKeycloakWrapper {
   username: string | undefined;
   displayName: string | undefined;
   email: string | undefined;
+  systemUserId: number | undefined;
   /**
    * Force this keycloak wrapper to refresh its data.
    *
@@ -129,6 +131,8 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   getLoginUrl: (redirectUri?: string) => string;
+
+  user: IUserResponse | undefined;
 }
 
 /**
@@ -163,10 +167,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     // keycloak user is authenticated, load system user info
     userDataLoader.load();
 
-    if (
-      userDataLoader.isReady &&
-      (!userDataLoader.data?.role_names.length || userDataLoader.data?.user_record_end_date)
-    ) {
+    if (userDataLoader.isReady && (!userDataLoader.data?.role_names.length || userDataLoader.data?.record_end_date)) {
       // Authenticated user either has has no roles or has been deactivated
       // Check if the user has a pending access request
       administrativeActivityStandingDataLoader.load();
@@ -283,8 +284,16 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     administrativeActivityStandingDataLoader.refresh();
   };
 
+  const systemUserId = (): number | undefined => {
+    return userDataLoader.data?.system_user_id;
+  };
+
   const getLoginUrl = (redirectUri = '/admin/projects'): string => {
     return keycloak?.createLoginUrl({ redirectUri: buildUrl(window.location.origin, redirectUri) }) || '/login';
+  };
+
+  const user = (): IUserResponse | undefined => {
+    return userDataLoader?.data;
   };
 
   return {
@@ -300,6 +309,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     getIdentitySource,
     username: username(),
     email: email(),
+    systemUserId: systemUserId(),
+    user: user(),
     displayName: displayName(),
     refresh,
     getLoginUrl

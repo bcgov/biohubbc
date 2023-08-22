@@ -1,6 +1,7 @@
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IUserResponse } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
@@ -26,13 +27,17 @@ const mockUseApi = {
   }
 };
 
-const mockUser = {
+const mockUser: IUserResponse = {
   system_user_id: 1,
-  user_record_end_date: 'ending',
+  record_end_date: 'ending',
   user_identifier: 'testUser',
   role_names: ['system'],
   user_guid: '1111',
-  identity_source: 'idir'
+  identity_source: 'idir',
+  role_ids: [],
+  email: '',
+  display_name: '',
+  agency: ''
 };
 
 describe('UsersDetailProjects', () => {
