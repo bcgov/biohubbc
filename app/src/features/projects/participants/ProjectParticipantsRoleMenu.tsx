@@ -8,11 +8,11 @@ import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { CodeSet } from 'interfaces/useCodesApi.interface';
-import { IGetProjectParticipantsResponseArrayItem } from 'interfaces/useProjectApi.interface';
+import { IGetProjectParticipants } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 
 export interface IChangeProjectRoleMenuProps {
-  participant: IGetProjectParticipantsResponseArrayItem;
+  participant: IGetProjectParticipants;
   projectRoleCodes: CodeSet;
   refresh: () => void;
 }
@@ -38,11 +38,7 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     });
   };
 
-  const handleChangeUserPermissionsClick = (
-    item: IGetProjectParticipantsResponseArrayItem,
-    newRole: string,
-    newRoleId: number
-  ) => {
+  const handleChangeUserPermissionsClick = (item: IGetProjectParticipants, newRole: string, newRoleId: number) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change Project Role?',
       dialogContent: (
@@ -67,17 +63,13 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     });
   };
 
-  const changeProjectParticipantRole = async (
-    item: IGetProjectParticipantsResponseArrayItem,
-    newRole: string,
-    newRoleId: number
-  ) => {
+  const changeProjectParticipantRole = async (item: IGetProjectParticipants, newRole: string, newRoleId: number) => {
     if (!item?.project_participation_id) {
       return;
     }
 
     try {
-      const status = await biohubApi.project.updateProjectParticipantRole(
+      const status = await biohubApi.projectParticipants.updateProjectParticipantRole(
         item.project_id,
         item.project_participation_id,
         newRoleId

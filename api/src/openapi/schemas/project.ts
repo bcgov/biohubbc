@@ -1,10 +1,12 @@
+import { PROJECT_ROLE } from '../../constants/roles';
+
 /**
  * Request Object for project create POST request
  */
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
-  required: ['coordinator', 'project', 'location', 'iucn'],
+  required: ['coordinator', 'project', 'location', 'iucn', 'participants'],
   properties: {
     coordinator: {
       title: 'Project coordinator',
@@ -110,6 +112,23 @@ export const projectCreatePostRequestObject = {
           }
         }
       }
+    },
+    participants: {
+      title: 'Project participants',
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['system_user_id', 'role'],
+        properties: {
+          system_user_id: {
+            type: 'number'
+          },
+          role: {
+            type: 'string',
+            enum: [PROJECT_ROLE.COORDINATOR, PROJECT_ROLE.COLLABORATOR, PROJECT_ROLE.OBSERVER]
+          }
+        }
+      }
     }
   }
 };
@@ -152,7 +171,8 @@ const projectUpdateProperties = {
       }
     }
   },
-  partnerships: { type: 'object', properties: {} }
+  partnerships: { type: 'object', properties: {} },
+  participants: { type: 'array', items: { type: 'object', properties: {} } }
 };
 
 /**

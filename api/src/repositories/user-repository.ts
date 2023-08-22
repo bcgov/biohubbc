@@ -1,8 +1,24 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { User } from '../models/user';
 import { BaseRepository } from './base-repository';
+
+export const SystemUser = z.object({
+  system_user_id: z.number(),
+  user_identifier: z.string(),
+  user_guid: z.string().nullable(),
+  identity_source: z.string(),
+  record_end_date: z.string().nullable(),
+  role_ids: z.array(z.number()).default([]),
+  role_names: z.array(z.string()).default([]),
+  email: z.string(),
+  display_name: z.string(),
+  agency: z.string().nullable()
+});
+
+export type SystemUser = z.infer<typeof SystemUser>;
 
 export interface IInsertUser {
   system_user_id: number;
@@ -15,6 +31,10 @@ export interface IInsertUser {
 export interface IGetRoles {
   system_role_id: number;
   name: string;
+}
+
+export interface UserSearchCriteria {
+  keyword?: 'string';
 }
 
 export class UserRepository extends BaseRepository {
@@ -42,10 +62,10 @@ export class UserRepository extends BaseRepository {
    * Fetch a single system user by their system user ID.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<User>}
+   * @return {*}  {Promise<SystemUser>}
    * @memberof UserRepository
    */
-  async getUserById(systemUserId: number): Promise<User> {
+  async getUserById(systemUserId: number): Promise<SystemUser> {
     const sqlStatement = SQL`
     SELECT
       su.system_user_id,
@@ -54,7 +74,10 @@ export class UserRepository extends BaseRepository {
       su.record_end_date,
       uis.name AS identity_source,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-      array_remove(array_agg(sr.name), NULL) AS role_names
+      array_remove(array_agg(sr.name), NULL) AS role_names,
+      su.email,
+      su.display_name,
+      su.agency
     FROM
       system_user su
     LEFT JOIN
@@ -78,10 +101,13 @@ export class UserRepository extends BaseRepository {
       uis.name,
       su.user_guid,
       su.record_end_date,
-      su.user_identifier;
+      su.user_identifier,
+      su.email,
+      su.display_name,
+      su.agency;
   `;
 
-    const response = await this.connection.sql(sqlStatement, User);
+    const response = await this.connection.sql(sqlStatement, SystemUser);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get user by id', [
@@ -96,10 +122,10 @@ export class UserRepository extends BaseRepository {
    * Get an existing system user by their GUID.
    *
    * @param {string} userGuid the user's GUID
-   * @return {*}  {Promise<IGetUser>}
+   * @return {*}  {Promise<SystemUser>}
    * @memberof UserRepository
    */
-  async getUserByGuid(userGuid: string): Promise<User[]> {
+  async getUserByGuid(userGuid: string): Promise<SystemUser[]> {
     const sqlStatement = SQL`
     SELECT
       su.system_user_id,
@@ -108,7 +134,10 @@ export class UserRepository extends BaseRepository {
       su.record_end_date,
       uis.name AS identity_source,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-      array_remove(array_agg(sr.name), NULL) AS role_names
+      array_remove(array_agg(sr.name), NULL) AS role_names,
+      su.email,
+      su.display_name,
+      su.agency
     FROM
       system_user su
     LEFT JOIN
@@ -130,10 +159,13 @@ export class UserRepository extends BaseRepository {
       su.record_end_date,
       su.user_identifier,
       su.user_guid,
-      uis.name;
+      uis.name,
+      su.email,
+      su.display_name,
+      su.agency;
   `;
 
-    const response = await this.connection.sql(sqlStatement, User);
+    const response = await this.connection.sql(sqlStatement, SystemUser);
 
     return response.rows;
   }
@@ -143,11 +175,11 @@ export class UserRepository extends BaseRepository {
    *
    * @param userIdentifier the user's identifier
    * @param identitySource the user's identity source, e.g. `'IDIR'`
-   * @return {*} {(Promise<IGetUser[]>)} Promise resolving an array containing the user, if they match the
+   * @return {*} {(Promise<SystemUser[]>)} Promise resolving an array containing the user, if they match the
    * search criteria.
    * @memberof UserService
    */
-  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<User[]> {
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<SystemUser[]> {
     const sqlStatement = SQL`
       SELECT
         su.system_user_id,
@@ -156,7 +188,10 @@ export class UserRepository extends BaseRepository {
         su.record_end_date,
         uis.name AS identity_source,
         array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-        array_remove(array_agg(sr.name), NULL) AS role_names
+        array_remove(array_agg(sr.name), NULL) AS role_names,
+        su.email,
+        su.display_name,
+        su.agency
       FROM
         system_user su
       LEFT JOIN
@@ -180,10 +215,13 @@ export class UserRepository extends BaseRepository {
         su.record_end_date,
         su.user_identifier,
         su.user_guid,
-        uis.name;
+        uis.name,
+        su.email,
+        su.display_name,
+        su.agency;
     `;
 
-    const response = await this.connection.sql(sqlStatement, User);
+    const response = await this.connection.sql(sqlStatement, SystemUser);
 
     return response.rows;
   }
@@ -198,7 +236,7 @@ export class UserRepository extends BaseRepository {
    * @param {string} identitySource
    * @param {string} displayName
    * @param {string} email
-   * @return {*}  {Promise<User>}
+   * @return {*}  {Promise<{ system_user_id: number }>}
    * @memberof UserRepository
    */
   async addSystemUser(
@@ -251,10 +289,10 @@ export class UserRepository extends BaseRepository {
   /**
    * Get a list of all system users.
    *
-   * @return {*}  {Promise<IGetUser[]>}
+   * @return {*}  {Promise<SystemUser[]>}
    * @memberof UserRepository
    */
-  async listSystemUsers(): Promise<User[]> {
+  async listSystemUsers(): Promise<SystemUser[]> {
     const sqlStatement = SQL`
     SELECT
       su.system_user_id,
@@ -263,7 +301,10 @@ export class UserRepository extends BaseRepository {
       su.record_end_date,
       uis.name AS identity_source,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-      array_remove(array_agg(sr.name), NULL) AS role_names
+      array_remove(array_agg(sr.name), NULL) AS role_names,
+      su.email,
+      su.display_name,
+      su.agency
     FROM
       system_user su
     LEFT JOIN
@@ -275,9 +316,9 @@ export class UserRepository extends BaseRepository {
     ON
       sur.system_role_id = sr.system_role_id
     LEFT JOIN
-    	user_identity_source uis
+      user_identity_source uis
     ON
-    	su.user_identity_source_id = uis.user_identity_source_id
+      su.user_identity_source_id = uis.user_identity_source_id
     WHERE
       su.record_end_date IS NULL AND uis.name not in (${SYSTEM_IDENTITY_SOURCE.DATABASE})
     GROUP BY
@@ -285,9 +326,12 @@ export class UserRepository extends BaseRepository {
       su.user_guid,
       su.record_end_date,
       su.user_identifier,
-      uis.name;
+      uis.name,
+      su.email,
+      su.display_name,
+      su.agency;
   `;
-    const response = await this.connection.sql(sqlStatement, User);
+    const response = await this.connection.sql(sqlStatement, SystemUser);
 
     return response.rows;
   }
@@ -418,5 +462,69 @@ export class UserRepository extends BaseRepository {
     `;
 
     return this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Get an array of users based on search criteria.
+   *
+   * @param {UserSearchCriteria} searchCriteria
+   * @return {*}  {Promise<SystemUser[]>}
+   * @memberof UserRepository
+   */
+  async getUsers(searchCriteria: UserSearchCriteria): Promise<SystemUser[]> {
+    const knex = getKnex();
+    const queryBuilder = knex.queryBuilder();
+
+    queryBuilder
+      .select(
+        'su.system_user_id',
+        'su.user_guid',
+        'su.user_identifier',
+        'su.record_end_date',
+        'uis.name AS identity_source',
+        knex.raw('array_remove(array_agg(sr.system_role_id), NULL) AS role_ids'),
+        knex.raw('array_remove(array_agg(sr.name), NULL) AS role_names'),
+        'su.email',
+        'su.display_name',
+        'su.agency'
+      )
+      .from('system_user AS su')
+      .leftJoin('system_user_role AS sur', 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin('system_role AS sr', 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('user_identity_source AS uis', 'su.user_identity_source_id', 'uis.user_identity_source_id');
+
+    if (searchCriteria.keyword) {
+      const keywords = searchCriteria.keyword.split(' ');
+
+      keywords.forEach((keyword) => {
+        // Add where clauses to each space delimited string from the keyword string
+        queryBuilder.orWhereRaw(`LOWER(su.email) LIKE LOWER('%${keyword}%')`);
+        queryBuilder.orWhereRaw(`LOWER(su.display_name) LIKE LOWER('%${keyword}%')`);
+        queryBuilder.orWhereRaw(`LOWER(su.agency) LIKE LOWER('%${keyword}%')`);
+
+        // Order by to sort the matches based on most important match to least important
+        // Not as powerful as elastic search, but will at least prioritize email matches over agency matches, for example.
+        queryBuilder.orderByRaw(knex.raw(`LOWER(su.email) LIKE LOWER('%${keyword}%') OR NULL`));
+        queryBuilder.orderByRaw(knex.raw(`LOWER(su.display_name) LIKE LOWER('%${keyword}%') OR NULL`));
+        queryBuilder.orderByRaw(knex.raw(`LOWER(su.agency) LIKE LOWER('%${keyword}%') OR NULL`));
+      });
+    }
+
+    queryBuilder.andWhere('su.record_end_date', null);
+
+    queryBuilder.groupBy('su.system_user_id');
+    queryBuilder.groupBy('uis.name');
+    queryBuilder.groupBy('su.user_guid');
+    queryBuilder.groupBy('su.record_end_date');
+    queryBuilder.groupBy('su.user_identifier');
+    queryBuilder.groupBy('su.email');
+    queryBuilder.groupBy('su.display_name');
+    queryBuilder.groupBy('su.agency');
+
+    queryBuilder.limit(50);
+
+    const response = await this.connection.knex(queryBuilder, SystemUser);
+
+    return response.rows;
   }
 }

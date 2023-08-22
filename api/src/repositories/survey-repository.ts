@@ -107,14 +107,6 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql<{ id: number }>(sqlStatement);
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project survey ids', [
-        'SurveyRepository->getSurveyIdsByProjectId',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
 
     return response.rows;
   }
@@ -170,16 +162,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetSpeciesData>(sqlStatement);
 
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get survey species data', [
-        'SurveyRepository->getSpeciesData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
-    return result;
+    return response.rows;
   }
 
   /**
@@ -440,13 +423,6 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IOccurrenceSubmissionMessagesResponse>(sqlStatement);
 
-    if (!response?.rows) {
-      throw new ApiExecuteSQLError('Failed to get occurrence submission messages', [
-        'SurveyRepository->getOccurrenceSubmissionMessages',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
     return response.rows;
   }
 
@@ -534,16 +510,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get attachments data', [
-        'SurveyRepository->getReportAttachmentsData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
-    return new GetReportAttachmentsData(result);
+    return new GetReportAttachmentsData(response.rows);
   }
 
   /**

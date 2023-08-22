@@ -1,49 +1,151 @@
+import { PROJECT_PERMISSION } from '../constants/roles';
 import { IDBConnection } from '../database/db';
-import { ProjectUser } from '../models/user';
-import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
+import {
+  IInsertProjectParticipant,
+  IParticipant,
+  ProjectParticipationRecord,
+  ProjectParticipationRepository,
+  ProjectUser
+} from '../repositories/project-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { DBService } from './db-service';
+import { UserService } from './user-service';
 
 export class ProjectParticipationService extends DBService {
+  userService: UserService;
   projectParticipationRepository: ProjectParticipationRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
+    this.userService = new UserService(connection);
     this.projectParticipationRepository = new ProjectParticipationRepository(connection);
   }
 
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
-    return this.projectParticipationRepository.deleteProjectParticipationRecord(projectParticipationId);
-  }
-
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
-    return this.projectParticipationRepository.getProjectParticipant(projectId, systemUserId);
-  }
-
-  async getProjectParticipants(projectId: number): Promise<object[]> {
-    return this.projectParticipationRepository.getProjectParticipants(projectId);
-  }
-
-  async addProjectParticipant(
+  /**
+   * Gets the project participant, adding them if they do not already exist.
+   *
+   * @param {number} projectId
+   * @param {number} systemUserId
+   * @param {number} projectParticipantRoleId
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectParticipationService
+   */
+  async ensureProjectParticipant(
     projectId: number,
     systemUserId: number,
     projectParticipantRoleId: number
   ): Promise<void> {
-    return this.projectParticipationRepository.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
+    const projectParticipantRecord = await this.getProjectParticipant(projectId, systemUserId);
+
+    if (projectParticipantRecord) {
+      // project participant already exists, do nothing
+      return;
+    }
+
+    // add new project participant record
+    await this.postProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
   }
 
-  async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    return this.projectParticipationRepository.insertParticipantRole(projectId, projectParticipantRole);
+  /**
+   * Adds a project participant to the project.
+   *
+   * @param {number} projectId
+   * @param {(IParticipant & { userGuid: string | null })} participant
+   * @memberof ProjectParticipationService
+   */
+  async ensureSystemUserAndProjectParticipantUser(
+    projectId: number,
+    participant: IParticipant & { userGuid: string | null }
+  ) {
+    // Create or activate the system user
+    const systemUserObject = await this.userService.ensureSystemUser(
+      participant.userGuid,
+      participant.userIdentifier,
+      participant.identitySource,
+      participant.displayName,
+      participant.email
+    );
+
+    // Add project role, unless they already have one
+    await this.ensureProjectParticipant(projectId, systemUserObject.system_user_id, participant.roleId);
+  }
+
+  /**
+   * Adds multiple project participants to the project.
+   *
+   * @param {number} projectId
+   * @param {IInsertProjectParticipant[]} participants
+   * @return {*}  {Promise<void[]>}
+   * @memberof ProjectParticipationService
+   */
+  async postProjectParticipants(projectId: number, participants: IInsertProjectParticipant[]): Promise<void[]> {
+    return Promise.all(
+      participants.map((participant) =>
+        this.postProjectParticipant(projectId, participant.system_user_id, participant.role)
+      )
+    );
+  }
+
+  /**
+   * Deletes a project participation record.
+   *
+   * @param {number} projectParticipationId
+   * @return {*}  {Promise<ProjectParticipationRecord>}
+   * @memberof ProjectParticipationService
+   */
+  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<ProjectParticipationRecord> {
+    return this.projectParticipationRepository.deleteProjectParticipationRecord(projectParticipationId);
+  }
+
+  /**
+   * Get the project participant for the given project and system user.
+   *
+   * @param {number} projectId
+   * @param {number} systemUserId
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @memberof ProjectParticipationService
+   */
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<(ProjectUser & SystemUser) | null> {
+    return this.projectParticipationRepository.getProjectParticipant(projectId, systemUserId);
+  }
+
+  /**
+   * Gets the project participants for the given project.
+   *
+   * @param {number} projectId
+   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
+   * @memberof ProjectParticipationService
+   */
+  async getProjectParticipants(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
+    return this.projectParticipationRepository.getProjectParticipants(projectId);
+  }
+
+  /**
+   * Adds a project participant to the project.
+   *
+   * @param {number} projectId
+   * @param {number} systemUserId
+   * @param {(number | string)} projectParticipantRole
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectParticipationService
+   */
+  async postProjectParticipant(
+    projectId: number,
+    systemUserId: number,
+    projectParticipantRole: number | string
+  ): Promise<void> {
+    return this.projectParticipationRepository.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
   }
 
   /**
    * Fetches the project participants for all projects that the given system user is a member of.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<any[]>}
+   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
    * @memberof projectParticipationRepository
    */
-  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<any[]> {
+  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<(ProjectUser & SystemUser)[]> {
     return this.projectParticipationRepository.getParticipantsFromAllProjectsBySystemUserId(systemUserId);
   }
 
@@ -53,26 +155,148 @@ export class ProjectParticipationService extends DBService {
    * @param {number} systemUserId
    * @return {*}  {Promise<
    *     {
-   *       project_id: number;
-   *       name: string;
-   *       system_user_id: number;
-   *       project_role_id: number;
    *       project_participation_id: number;
+   *       project_id: number;
+   *       project_name: string;
+   *       system_user_id: number;
+   *       project_role_ids: number[];
+   *       project_role_names: string[];
+   *       project_role_permissions: string[];
    *     }[]
    *   >}
-   * @memberof UserService
+   * @memberof ProjectParticipationService
    */
   async getProjectsBySystemUserId(
     systemUserId: number
   ): Promise<
     {
-      project_id: number;
-      name: string;
-      system_user_id: number;
-      project_role_id: number;
       project_participation_id: number;
+      project_id: number;
+      project_name: string;
+      system_user_id: number;
+      project_role_ids: number[];
+      project_role_names: string[];
+      project_role_permissions: string[];
     }[]
   > {
     return this.projectParticipationRepository.getProjectsBySystemUserId(systemUserId);
+  }
+
+  /**
+   * Check if the given user is the only coordinator on at least 1 project.
+   *
+   * Why? All projects must have at least 1 coordinator. If this user is the only coordinator then deleting them or
+   * updating them to not be a coordinator should not be allowed.
+   *
+   * @param {number} systemUserId
+   * @return {*}  {Promise<boolean>} `true` if the user is the only project coordinator on at least 1 project, `false`
+   * otherwise.
+   * @memberof ProjectParticipationService
+   */
+  async isUserTheOnlyProjectCoordinatorOnAnyProject(systemUserId: number): Promise<boolean> {
+    const projectParticipationService = new ProjectParticipationService(this.connection);
+
+    const getAllParticipantsResponse = await projectParticipationService.getParticipantsFromAllProjectsBySystemUserId(
+      systemUserId
+    );
+
+    if (!getAllParticipantsResponse.length) {
+      // User has no projects, and therefore is not the only coordinator on a project
+      return false;
+    }
+
+    const doAllProjectsHaveACoordinatorIfUserIsRemoved = this.doAllProjectsHaveAProjectLeadIfUserIsRemoved(
+      getAllParticipantsResponse,
+      systemUserId
+    );
+
+    // Negate above response, because `false` indicates the user is the only coordinator, and this function returns
+    // `true` in that situation
+    return !doAllProjectsHaveACoordinatorIfUserIsRemoved;
+  }
+
+  /**
+   * Given an array of project participants, return `false` if any project has no Coordinator role. Return `true`
+   * otherwise.
+   *
+   * @param {ProjectUser[]} projectUsers
+   * @return {*}  {boolean}
+   */
+  doAllProjectsHaveAProjectLead(projectUsers: ProjectUser[]): boolean {
+    // No project with Coordinator
+    if (!projectUsers.length) {
+      return false;
+    }
+
+    const projectLeadsPerProject: { [key: string]: any } = {};
+
+    // count how many coordinator roles there are per project
+    projectUsers.forEach((row) => {
+      const key = row.project_id;
+
+      if (!projectLeadsPerProject[key]) {
+        projectLeadsPerProject[key] = 0;
+      }
+
+      if (row.project_role_names.includes(PROJECT_PERMISSION.COORDINATOR)) {
+        projectLeadsPerProject[key] += 1;
+      }
+    });
+
+    const projectLeadCounts = Object.values(projectLeadsPerProject);
+
+    // check if any projects would be left with no Coordinator
+    for (const count of projectLeadCounts) {
+      if (!count) {
+        // found a project with no Coordinator
+        return false;
+      }
+    }
+
+    // all projects have a Coordinator
+    return true;
+  }
+
+  /**
+   * Given an array of project participation role objects, return true if any project has no Coordinator role after
+   * removing all rows associated with the provided `userId`. Return false otherwise.
+   *
+   * @param {ProjectUser[]} projectUsers
+   * @param {number} systemUserId
+   * @return {*}  {boolean}
+   */
+  doAllProjectsHaveAProjectLeadIfUserIsRemoved(projectUsers: ProjectUser[], systemUserId: number): boolean {
+    // No project with coordinator
+    if (!projectUsers.length) {
+      return false;
+    }
+
+    const projectLeadsPerProject: { [key: string]: any } = {};
+
+    // count how many Coordinator roles there are per project
+    projectUsers.forEach((row) => {
+      const key = row.project_id;
+
+      if (!projectLeadsPerProject[key]) {
+        projectLeadsPerProject[key] = 0;
+      }
+
+      if (row.system_user_id !== systemUserId && row.project_role_names.includes(PROJECT_PERMISSION.COORDINATOR)) {
+        projectLeadsPerProject[key] += 1;
+      }
+    });
+
+    const projectLeadCounts = Object.values(projectLeadsPerProject);
+
+    // check if any projects would be left with no Coordinator
+    for (const count of projectLeadCounts) {
+      if (!count) {
+        // found a project with no Coordinator
+        return false;
+      }
+    }
+
+    // all projects have a Coordinator
+    return true;
   }
 }

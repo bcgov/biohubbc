@@ -31,6 +31,10 @@ import ProjectPartnershipsForm, {
   ProjectPartnershipsFormInitialValues,
   ProjectPartnershipsFormYupSchema
 } from '../components/ProjectPartnershipsForm';
+import ProjectUserForm, {
+  ProjectUserRoleFormInitialValues,
+  ProjectUserRoleYupSchema
+} from '../components/ProjectUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   sectionDivider: {
@@ -53,14 +57,16 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
-  ...ProjectPartnershipsFormInitialValues
+  ...ProjectPartnershipsFormInitialValues,
+  ...ProjectUserRoleFormInitialValues
 };
 
 export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
   .concat(ProjectObjectivesFormYupSchema)
   .concat(ProjectLocationFormYupSchema)
   .concat(ProjectIUCNFormYupSchema)
-  .concat(ProjectPartnershipsFormYupSchema);
+  .concat(ProjectPartnershipsFormYupSchema)
+  .concat(ProjectUserRoleYupSchema);
 
 //Function to get the list of coordinator agencies from the code set
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
@@ -153,6 +159,15 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           component={
             <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
           }></HorizontalSplitFormComponent>
+
+        <Divider className={classes.sectionDivider} />
+
+        <HorizontalSplitFormComponent
+          title="Project Users"
+          summary="Add some users"
+          // need to auto fill current
+          component={<ProjectUserForm users={[]} roles={codes.project_roles} />}
+        />
 
         <Divider className={classes.sectionDivider} />
 

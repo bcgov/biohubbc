@@ -60,8 +60,14 @@ describe('UsersDetailPage', () => {
     });
 
     mockUseApi.project.getAllUserProjectsForView.mockResolvedValue({
-      project: null
-    } as any);
+      project_participation_id: 3,
+      project_id: 321,
+      project_name: 'test',
+      system_user_id: 1,
+      project_role_ids: [2],
+      project_role_names: ['Role1'],
+      project_permission_names: ['Permission1']
+    });
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }]

@@ -440,7 +440,7 @@ describe('HistoryPublishService', () => {
 
       const repositoryStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedObservationRecordId')
-        .resolves(({ rows: [] } as unknown) as QueryResult);
+        .resolves(({ rows: [], rowCount: 0 } as unknown) as QueryResult);
 
       const response = await service.observationPublishStatus(20);
 
