@@ -1,6 +1,5 @@
 import { Feature } from 'geojson';
 import moment from 'moment';
-import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
@@ -312,9 +311,6 @@ export class ProjectService extends DBService {
     promises.push(this.projectParticipationService.postProjectParticipants(projectId, postProjectData.participants));
 
     await Promise.all(promises);
-
-    // The user that creates a project is automatically assigned a coordinator role, for this project
-    await this.postProjectParticipant(projectId, this.connection.systemUserId(), PROJECT_ROLE.COORDINATOR);
 
     return projectId;
   }

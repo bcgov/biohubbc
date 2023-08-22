@@ -104,9 +104,11 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     clearErrors();
   };
 
+  // Clear all errors for any modify action
+  // setting to undefined keeps the formik form from submitting
   const clearErrors = () => {
     const tempErrors = errors;
-    tempErrors.participants = undefined;
+    delete tempErrors.participants;
     setErrors(tempErrors);
   };
 
