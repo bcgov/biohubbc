@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
 import { ProjectParticipationRepository } from '../../../../repositories/project-participation-repository';
@@ -32,7 +33,16 @@ describe('putProjectParticipantRole', () => {
         project_participation_id: 1,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead').returns(true);
@@ -84,7 +94,16 @@ describe('putProjectParticipantRole', () => {
         system_user_id: 1,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     doAllProjectsHaveLead.onCall(0).returns(true);
@@ -95,7 +114,16 @@ describe('putProjectParticipantRole', () => {
         system_user_id: 2,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     doAllProjectsHaveLead.onCall(1).returns(false);
@@ -149,7 +177,16 @@ describe('putProjectParticipantRole', () => {
         system_user_id: 1,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     doAllProjectsHaveLead.onCall(0).returns(true);
@@ -160,7 +197,16 @@ describe('putProjectParticipantRole', () => {
         system_user_id: 2,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     doAllProjectsHaveLead.onCall(1).returns(true);
@@ -198,7 +244,16 @@ describe('deleteProjectParticipant', () => {
         system_user_id: 1,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     sinon.stub(ProjectParticipationService.prototype, 'doAllProjectsHaveAProjectLead').returns(true);
@@ -248,7 +303,16 @@ describe('deleteProjectParticipant', () => {
         system_user_id: 1,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     doAllProjectsHaveLead.onCall(0).returns(true); // all projects have a coordinator
@@ -259,7 +323,16 @@ describe('deleteProjectParticipant', () => {
         system_user_id: 2,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     doAllProjectsHaveLead.onCall(1).returns(false); // not all projects have a coordinator
@@ -311,7 +384,16 @@ describe('deleteProjectParticipant', () => {
         system_user_id: 1,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     doAllProjectsHaveLead.onCall(0).returns(true); // all projects have a coordinator
@@ -322,7 +404,16 @@ describe('deleteProjectParticipant', () => {
         system_user_id: 2,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
     doAllProjectsHaveLead.onCall(1).returns(true); // all projects have a coordinator

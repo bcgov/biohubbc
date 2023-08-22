@@ -39,22 +39,26 @@ describe('useProjectApi', () => {
   it('getAllUserProjectsForView works as expected', async () => {
     mock.onGet(`/api/user/${systemUserId}/projects/get`).reply(200, [
       {
+        project_participation_id: 3,
         project_id: 321,
-        name: 'test',
+        project_name: 'test',
         system_user_id: 1,
-        project_role_id: 2,
-        project_participation_id: 3
+        project_role_ids: [2],
+        project_role_names: ['Role1'],
+        project_permission_names: ['Permission1']
       }
     ]);
 
     const result = await useProjectApi(axios).getAllUserProjectsForView(123);
 
     expect(result[0]).toEqual({
+      project_participation_id: 3,
       project_id: 321,
-      name: 'test',
+      project_name: 'test',
       system_user_id: 1,
-      project_role_id: 2,
-      project_participation_id: 3
+      project_role_ids: [2],
+      project_role_names: ['Role1'],
+      project_permission_names: ['Permission1']
     });
   });
 

@@ -76,7 +76,16 @@ describe('getParticipants', () => {
         system_user_id: 1,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
 
@@ -91,7 +100,16 @@ describe('getParticipants', () => {
         system_user_id: 1,
         project_role_ids: [1],
         project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       }
     ]);
   });

@@ -78,11 +78,13 @@ export interface IGetProjectAttachmentsResponse {
  * @interface IGetUserProjectsListResponse
  */
 export interface IGetUserProjectsListResponse {
-  project_id: number;
-  name: string;
-  system_user_id: number;
-  project_role_id: number;
   project_participation_id: number;
+  project_id: number;
+  project_name: string;
+  system_user_id: number;
+  project_role_ids: number[];
+  project_role_names: string[];
+  project_permission_names: string[];
 }
 
 /**

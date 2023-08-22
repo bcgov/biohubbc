@@ -17,7 +17,7 @@ describe('useProjectParticipationApi', () => {
 
   it('getProjectParticipants works as expected', async () => {
     const mockResponse = { participants: [] };
-    mock.onGet(`/api/project/${projectId}/participants/get`).reply(200, mockResponse);
+    mock.onGet(`/api/project/${projectId}/participants`).reply(200, mockResponse);
 
     const result = await useProjectParticipationApi(axios).getProjectParticipants(projectId);
 
@@ -43,7 +43,7 @@ describe('useProjectParticipationApi', () => {
 
   it('addProjectParticipants works as expected', async () => {
     const mockResponse = { participants: [] };
-    mock.onGet(`/api/project/${projectId}/participants/get`).reply(200, mockResponse);
+    mock.onGet(`/api/project/${projectId}/participants`).reply(200, mockResponse);
 
     const result = await useProjectParticipationApi(axios).getProjectParticipants(projectId);
 
@@ -53,18 +53,18 @@ describe('useProjectParticipationApi', () => {
   it('removeProjectParticipant works as expected', async () => {
     const projectParticipationId = 1;
 
-    mock.onDelete(`/api/project/${projectId}/participants/${projectParticipationId}/delete`).reply(200);
+    mock.onDelete(`/api/project/${projectId}/participants/${projectParticipationId}`).reply(200);
 
     const result = await useProjectParticipationApi(axios).removeProjectParticipant(projectId, projectParticipationId);
 
     expect(result).toEqual(true);
   });
 
-  it('removeProjectParticipant works as expected', async () => {
+  it('updateProjectParticipantRole works as expected', async () => {
     const projectParticipationId = 1;
     const projectRoleId = 1;
 
-    mock.onPut(`/api/project/${projectId}/participants/${projectParticipationId}/update`).reply(200);
+    mock.onPut(`/api/project/${projectId}/participants/${projectParticipationId}`).reply(200);
 
     const result = await useProjectParticipationApi(axios).updateProjectParticipantRole(
       projectId,

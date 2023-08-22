@@ -7,6 +7,7 @@ import {
   ProjectParticipationRepository,
   ProjectUser
 } from '../repositories/project-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { DBService } from './db-service';
 import { UserService } from './user-service';
 
@@ -102,10 +103,10 @@ export class ProjectParticipationService extends DBService {
    *
    * @param {number} projectId
    * @param {number} systemUserId
-   * @return {*}  {(Promise<ProjectUser | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
    * @memberof ProjectParticipationService
    */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<(ProjectUser & SystemUser) | null> {
     return this.projectParticipationRepository.getProjectParticipant(projectId, systemUserId);
   }
 
@@ -113,10 +114,10 @@ export class ProjectParticipationService extends DBService {
    * Gets the project participants for the given project.
    *
    * @param {number} projectId
-   * @return {*}  {Promise<ProjectUser[]>}
+   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
    * @memberof ProjectParticipationService
    */
-  async getProjectParticipants(projectId: number): Promise<ProjectUser[]> {
+  async getProjectParticipants(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
     return this.projectParticipationRepository.getProjectParticipants(projectId);
   }
 
@@ -125,7 +126,7 @@ export class ProjectParticipationService extends DBService {
    *
    * @param {number} projectId
    * @param {number} systemUserId
-   * @param {number} projectParticipantRoleId
+   * @param {(number | string)} projectParticipantRole
    * @return {*}  {Promise<void>}
    * @memberof ProjectParticipationService
    */
@@ -141,10 +142,10 @@ export class ProjectParticipationService extends DBService {
    * Fetches the project participants for all projects that the given system user is a member of.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<ProjectUser[]>}
+   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
    * @memberof projectParticipationRepository
    */
-  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<ProjectUser[]> {
+  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<(ProjectUser & SystemUser)[]> {
     return this.projectParticipationRepository.getParticipantsFromAllProjectsBySystemUserId(systemUserId);
   }
 
@@ -154,24 +155,28 @@ export class ProjectParticipationService extends DBService {
    * @param {number} systemUserId
    * @return {*}  {Promise<
    *     {
-   *       project_id: number;
-   *       name: string;
-   *       system_user_id: number;
-   *       project_role_id: number;
    *       project_participation_id: number;
+   *       project_id: number;
+   *       project_name: string;
+   *       system_user_id: number;
+   *       project_role_ids: number[];
+   *       project_role_names: string[];
+   *       project_role_permissions: string[];
    *     }[]
    *   >}
-   * @memberof UserService
+   * @memberof ProjectParticipationService
    */
   async getProjectsBySystemUserId(
     systemUserId: number
   ): Promise<
     {
-      project_id: number;
-      name: string;
-      system_user_id: number;
-      project_role_id: number;
       project_participation_id: number;
+      project_id: number;
+      project_name: string;
+      system_user_id: number;
+      project_role_ids: number[];
+      project_role_names: string[];
+      project_role_permissions: string[];
     }[]
   > {
     return this.projectParticipationRepository.getProjectsBySystemUserId(systemUserId);

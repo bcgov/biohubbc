@@ -50,21 +50,48 @@ GET.apiDoc = {
             items: {
               title: 'Project Get Response Object',
               type: 'object',
+              required: [
+                'project_participation_id',
+                'project_id',
+                'project_name',
+                'system_user_id',
+                'project_role_ids',
+                'project_role_names',
+                'project_role_permissions'
+              ],
               properties: {
-                project_id: {
+                project_participation_id: {
                   type: 'number'
                 },
-                name: {
+                project_id: {
+                  type: 'integer',
+                  minimum: 1
+                },
+                project_name: {
                   type: 'string'
                 },
                 system_user_id: {
-                  type: 'number'
+                  type: 'integer',
+                  minimum: 1
                 },
-                project_role_id: {
-                  type: 'number'
+                project_role_ids: {
+                  type: 'array',
+                  items: {
+                    type: 'integer',
+                    minimum: 1
+                  }
                 },
-                project_participation_id: {
-                  type: 'number'
+                project_role_names: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                },
+                project_role_permissions: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
                 }
               }
             }

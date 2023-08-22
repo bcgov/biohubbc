@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ProjectParticipationRepository, ProjectUser } from '../repositories/project-participation-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectParticipationService } from './project-participation-service';
@@ -23,7 +24,23 @@ describe('ProjectParticipationService', () => {
 
       const getProjectParticipantStub = sinon
         .stub(ProjectParticipationService.prototype, 'getProjectParticipant')
-        .resolves({} as ProjectUser);
+        .resolves({
+          project_participation_id: 1,
+          project_id: 1,
+          system_user_id: 2,
+          project_role_ids: [1],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1'],
+          agency: null,
+          display_name: 'test user',
+          email: 'email@email.com',
+          identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+          record_end_date: null,
+          role_ids: [1],
+          role_names: ['Role1'],
+          user_guid: '123-456-789',
+          user_identifier: 'testuser'
+        });
 
       const addProjectParticipantStub = sinon.stub(ProjectParticipationService.prototype, 'postProjectParticipant');
 
@@ -99,14 +116,44 @@ describe('ProjectParticipationService', () => {
         systemUserId: 1
       };
 
-      const repoStub = sinon
-        .stub(ProjectParticipationRepository.prototype, 'getProjectParticipant')
-        .resolves(({ project_id: 1, system_user_id: 2 } as unknown) as ProjectUser);
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipant').resolves({
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
+      });
 
       const response = await service.getProjectParticipant(data.projectId, data.systemUserId);
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql({ project_id: 1, system_user_id: 2 });
+      expect(response).to.eql({
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_ids: [1],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
+      });
     });
   });
 
@@ -119,14 +166,48 @@ describe('ProjectParticipationService', () => {
         projectId: 1
       };
 
-      const repoStub = sinon
-        .stub(ProjectParticipationRepository.prototype, 'getProjectParticipants')
-        .resolves([{ project_id: 1, system_user_id: 2 } as ProjectUser]);
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves([
+        {
+          project_participation_id: 1,
+          project_id: 1,
+          system_user_id: 2,
+          project_role_ids: [1],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1'],
+          agency: null,
+          display_name: 'test user',
+          email: 'email@email.com',
+          identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+          record_end_date: null,
+          role_ids: [1],
+          role_names: ['Role1'],
+          user_guid: '123-456-789',
+          user_identifier: 'testuser'
+        }
+      ]);
 
       const response = await service.getProjectParticipants(data.projectId);
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql([{ project_id: 1, system_user_id: 2 }]);
+      expect(response).to.eql([
+        {
+          project_participation_id: 1,
+          project_id: 1,
+          system_user_id: 2,
+          project_role_ids: [1],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1'],
+          agency: null,
+          display_name: 'test user',
+          email: 'email@email.com',
+          identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+          record_end_date: null,
+          role_ids: [1],
+          role_names: ['Role1'],
+          user_guid: '123-456-789',
+          user_identifier: 'testuser'
+        }
+      ]);
     });
   });
 
@@ -139,14 +220,48 @@ describe('ProjectParticipationService', () => {
         projectId: 1
       };
 
-      const repoStub = sinon
-        .stub(ProjectParticipationRepository.prototype, 'getProjectParticipants')
-        .resolves([{ project_id: 1, system_user_id: 2 } as ProjectUser]);
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves([
+        {
+          project_participation_id: 1,
+          project_id: 1,
+          system_user_id: 2,
+          project_role_ids: [1],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1'],
+          agency: null,
+          display_name: 'test user',
+          email: 'email@email.com',
+          identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+          record_end_date: null,
+          role_ids: [1],
+          role_names: ['Role1'],
+          user_guid: '123-456-789',
+          user_identifier: 'testuser'
+        }
+      ]);
 
       const response = await service.getProjectParticipants(data.projectId);
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql([{ project_id: 1, system_user_id: 2 }]);
+      expect(response).to.eql([
+        {
+          project_participation_id: 1,
+          project_id: 1,
+          system_user_id: 2,
+          project_role_ids: [1],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1'],
+          agency: null,
+          display_name: 'test user',
+          email: 'email@email.com',
+          identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+          record_end_date: null,
+          role_ids: [1],
+          role_names: ['Role1'],
+          user_guid: '123-456-789',
+          user_identifier: 'testuser'
+        }
+      ]);
     });
   });
 
@@ -209,12 +324,48 @@ describe('ProjectParticipationService', () => {
 
       const repoStub = sinon
         .stub(ProjectParticipationRepository.prototype, 'getParticipantsFromAllProjectsBySystemUserId')
-        .resolves([{ project_id: 1, system_user_id: 2 } as any]);
+        .resolves([
+          {
+            project_id: 1,
+            system_user_id: 2,
+            project_participation_id: 1,
+            project_role_ids: [1],
+            project_role_names: ['Role1'],
+            project_role_permissions: ['Permission1'],
+            agency: null,
+            display_name: 'test user',
+            email: 'email@email.com',
+            identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+            record_end_date: null,
+            role_ids: [1],
+            role_names: ['Role1'],
+            user_guid: '123-456-789',
+            user_identifier: 'testuser'
+          }
+        ]);
 
       const response = await service.getParticipantsFromAllProjectsBySystemUserId(data.systemUserId);
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql([{ project_id: 1, system_user_id: 2 }]);
+      expect(response).to.eql([
+        {
+          project_id: 1,
+          system_user_id: 2,
+          project_participation_id: 1,
+          project_role_ids: [1],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1'],
+          agency: null,
+          display_name: 'test user',
+          email: 'email@email.com',
+          identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+          record_end_date: null,
+          role_ids: [1],
+          role_names: ['Role1'],
+          user_guid: '123-456-789',
+          user_identifier: 'testuser'
+        }
+      ]);
     });
   });
 
@@ -227,14 +378,32 @@ describe('ProjectParticipationService', () => {
         systemUserId: 1
       };
 
-      const repoStub = sinon
-        .stub(ProjectParticipationRepository.prototype, 'getProjectsBySystemUserId')
-        .resolves([{ project_id: 1, system_user_id: 2 } as any]);
+      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectsBySystemUserId').resolves([
+        {
+          project_id: 1,
+          system_user_id: 2,
+          project_participation_id: 1,
+          project_role_ids: [1],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1'],
+          project_name: 'project name'
+        }
+      ]);
 
       const response = await service.getProjectsBySystemUserId(data.systemUserId);
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql([{ project_id: 1, system_user_id: 2 }]);
+      expect(response).to.eql([
+        {
+          project_id: 1,
+          system_user_id: 2,
+          project_participation_id: 1,
+          project_role_ids: [1],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1'],
+          project_name: 'project name'
+        }
+      ]);
     });
   });
 

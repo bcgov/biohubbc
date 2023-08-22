@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { PROJECT_ROLE } from '../constants/roles';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
+import { SystemUser } from './user-repository';
 
 export const ProjectUser = z.object({
   project_participation_id: z.number(),
@@ -86,16 +87,24 @@ export class ProjectParticipationRepository extends BaseRepository {
    *
    * @param {number} projectId
    * @param {number} systemUserId
-   * @return {*}  {(Promise<ProjectUser | null>)}
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
    * @memberof ProjectParticipationRepository
    */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
+  async getProjectParticipant(projectId: number, systemUserId: number): Promise<(ProjectUser & SystemUser) | null> {
     const sqlStatement = SQL`
       SELECT
+        su.system_user_id,
+        su.user_identifier,
+        su.user_guid,
+        su.record_end_date,
+        uis.name AS identity_source,
+        array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+        array_remove(array_agg(sr.name), NULL) AS role_names,
+        su.email,
+        su.display_name,
+        su.agency,
         pp.project_participation_id,
         pp.project_id,
-        pp.system_user_id,
-        su.record_end_date,
         array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
         array_remove(array_agg(pr.name), NULL) AS project_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
@@ -109,6 +118,15 @@ export class ProjectParticipationRepository extends BaseRepository {
         ON pp2.project_permission_id = prp.project_permission_id
       LEFT JOIN system_user su
         ON pp.system_user_id = su.system_user_id
+      LEFT JOIN
+        system_user_role sur
+        ON su.system_user_id = sur.system_user_id
+      LEFT JOIN
+        system_role sr
+        ON sur.system_role_id = sr.system_role_id
+      LEFT JOIN
+        user_identity_source uis
+        ON uis.user_identity_source_id = su.user_identity_source_id
       WHERE
         pp.project_id = ${projectId}
       AND
@@ -116,13 +134,19 @@ export class ProjectParticipationRepository extends BaseRepository {
       AND
         su.record_end_date is NULL
       GROUP BY
+        su.system_user_id,
+        su.record_end_date,
+        su.user_identifier,
+        su.user_guid,
+        uis.name,
+        su.email,
+        su.display_name,
+        su.agency,
         pp.project_participation_id,
-        pp.project_id,
-        pp.system_user_id,
-        su.record_end_date;
-      `;
+        pp.project_id;
+    `;
 
-    const response = await this.connection.sql(sqlStatement, ProjectUser);
+    const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
 
     return response.rows?.[0] || null;
   }
@@ -131,16 +155,24 @@ export class ProjectParticipationRepository extends BaseRepository {
    * Gets a list of project participants for a given project.
    *
    * @param {number} projectId
-   * @return {*}  {Promise<ProjectUser[]>}
+   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
    * @memberof ProjectParticipationRepository
    */
-  async getProjectParticipants(projectId: number): Promise<ProjectUser[]> {
+  async getProjectParticipants(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
     const sqlStatement = SQL`
       SELECT
+        su.system_user_id,
+        su.user_identifier,
+        su.user_guid,
+        su.record_end_date,
+        uis.name AS identity_source,
+        array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+        array_remove(array_agg(sr.name), NULL) AS role_names,
+        su.email,
+        su.display_name,
+        su.agency,
         pp.project_participation_id,
         pp.project_id,
-        pp.system_user_id,
-        su.record_end_date,
         array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
         array_remove(array_agg(pr.name), NULL) AS project_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
@@ -154,18 +186,33 @@ export class ProjectParticipationRepository extends BaseRepository {
         ON pp2.project_permission_id = prp.project_permission_id
       LEFT JOIN system_user su
         ON pp.system_user_id = su.system_user_id
+      LEFT JOIN
+        system_user_role sur
+        ON su.system_user_id = sur.system_user_id
+      LEFT JOIN
+        system_role sr
+        ON sur.system_role_id = sr.system_role_id
+      LEFT JOIN
+        user_identity_source uis
+        ON uis.user_identity_source_id = su.user_identity_source_id
       WHERE
         pp.project_id = ${projectId}
       AND
         su.record_end_date is NULL
       GROUP BY
+        su.system_user_id,
+        su.record_end_date,
+        su.user_identifier,
+        su.user_guid,
+        uis.name,
+        su.email,
+        su.display_name,
+        su.agency,
         pp.project_participation_id,
-        pp.project_id,
-        pp.system_user_id,
-        su.record_end_date;
+        pp.project_id;
     `;
 
-    const response = await this.connection.sql(sqlStatement, ProjectUser);
+    const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
 
     if (!response.rows.length) {
       throw new ApiExecuteSQLError('Failed to get project team members', [
@@ -239,16 +286,24 @@ export class ProjectParticipationRepository extends BaseRepository {
    * Fetches the project participants for all projects that the given system user is a member of.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<ProjectUser[]>}
+   * @return {*}  {(Promise<(ProjectUser & SystemUser)[]>)}
    * @memberof ProjectParticipationRepository
    */
-  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<ProjectUser[]> {
+  async getParticipantsFromAllProjectsBySystemUserId(systemUserId: number): Promise<(ProjectUser & SystemUser)[]> {
     const sqlStatement = SQL`
       SELECT
+        su.system_user_id,
+        su.user_identifier,
+        su.user_guid,
+        su.record_end_date,
+        uis.name AS identity_source,
+        array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+        array_remove(array_agg(sr.name), NULL) AS role_names,
+        su.email,
+        su.display_name,
+        su.agency,
         pp.project_participation_id,
         pp.project_id,
-        pp.system_user_id,
-        su.record_end_date,
         array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
         array_remove(array_agg(pr.name), NULL) AS project_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
@@ -262,18 +317,33 @@ export class ProjectParticipationRepository extends BaseRepository {
         ON pp2.project_permission_id = prp.project_permission_id
       LEFT JOIN system_user su
         ON pp.system_user_id = su.system_user_id
+      LEFT JOIN
+        system_user_role sur
+        ON su.system_user_id = sur.system_user_id
+      LEFT JOIN
+        system_role sr
+        ON sur.system_role_id = sr.system_role_id
+      LEFT JOIN
+        user_identity_source uis
+        ON uis.user_identity_source_id = su.user_identity_source_id
       WHERE
         pp.system_user_id = ${systemUserId}
       AND
         su.record_end_date is NULL
       GROUP BY
+        su.system_user_id,
+        su.record_end_date,
+        su.user_identifier,
+        su.user_guid,
+        uis.name,
+        su.email,
+        su.display_name,
+        su.agency,
         pp.project_participation_id,
-        pp.project_id,
-        pp.system_user_id,
-        su.record_end_date;
-      `;
+        pp.project_id;
+    `;
 
-    const response = await this.connection.sql(sqlStatement, ProjectUser);
+    const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
 
     return response.rows;
   }
@@ -284,51 +354,71 @@ export class ProjectParticipationRepository extends BaseRepository {
    * @param {number} systemUserId
    * @return {*}  {Promise<
    *     {
-   *       project_id: number;
-   *       name: string;
-   *       system_user_id: number;
-   *       project_role_id: number;
    *       project_participation_id: number;
+   *       project_id: number;
+   *       project_name: string;
+   *       system_user_id: number;
+   *       project_role_ids: number[];
+   *       project_role_names: string[];
+   *       project_role_permissions: string[];
    *     }[]
    *   >}
-   * @memberof UserRepository
+   * @memberof ProjectParticipationRepository
    */
   async getProjectsBySystemUserId(
     systemUserId: number
   ): Promise<
     {
-      project_id: number;
-      name: string;
-      system_user_id: number;
-      project_role_id: number;
       project_participation_id: number;
+      project_id: number;
+      project_name: string;
+      system_user_id: number;
+      project_role_ids: number[];
+      project_role_names: string[];
+      project_role_permissions: string[];
     }[]
   > {
     const sqlStatement = SQL`
       SELECT
         p.project_id,
-        p.name,
+        p.name as project_name,
+        pp.project_participation_id,
         pp.system_user_id,
-        pp.project_role_id,
-        pp.project_participation_id
+        array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
+        array_remove(array_agg(pr.name), NULL) AS project_role_names,
+        array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
+      LEFT JOIN 
+        project_role pr
+        ON pp.project_role_id = pr.project_role_id
+      LEFT JOIN 
+        project_role_permission prp
+        ON pp.project_role_id = prp.project_role_id
+      LEFT JOIN 
+        project_permission pp2
+        ON pp2.project_permission_id = prp.project_permission_id
       LEFT JOIN
         project p
-      ON
-        pp.project_id = p.project_id
+        ON pp.project_id = p.project_id
       WHERE
-        pp.system_user_id = ${systemUserId};
+        pp.system_user_id = ${systemUserId}
+      GROUP BY
+        p.project_id,
+        p.name,
+        pp.system_user_id;
     `;
 
     const response = await this.connection.sql(
       sqlStatement,
       z.object({
         project_id: z.number(),
-        name: z.string(),
+        project_name: z.string(),
+        project_participation_id: z.number(),
         system_user_id: z.number(),
-        project_role_id: z.number(),
-        project_participation_id: z.number()
+        project_role_ids: z.array(z.number()),
+        project_role_names: z.array(z.string()),
+        project_role_permissions: z.array(z.string())
       })
     );
 

@@ -528,6 +528,7 @@ describe('CreateProjectPage', () => {
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
+          participants: [],
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 

@@ -4,6 +4,7 @@ import OpenAPIRequestValidator, { OpenAPIRequestValidatorArgs } from 'openapi-re
 import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
 import { ProjectUser } from '../../../../repositories/project-participation-repository';
@@ -210,7 +211,16 @@ describe('getSelf', () => {
         system_user_id: 20,
         project_role_ids: [1],
         project_role_names: ['Test-Role-A'],
-        project_role_permissions: ['Test Permission']
+        project_role_permissions: ['Test Permission'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -229,7 +239,16 @@ describe('getSelf', () => {
       system_user_id: 20,
       project_role_ids: [1],
       project_role_names: ['Test-Role-A'],
-      project_role_permissions: ['Test Permission']
+      project_role_permissions: ['Test Permission'],
+      agency: null,
+      display_name: 'test user',
+      email: 'email@email.com',
+      identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+      record_end_date: null,
+      role_ids: [1],
+      role_names: ['Role1'],
+      user_guid: '123-456-789',
+      user_identifier: 'testuser'
     });
   });
 
@@ -248,7 +267,16 @@ describe('getSelf', () => {
         system_user_id: 20,
         project_role_ids: [1, 2],
         project_role_names: ['Test-Role-A', 'Test-Role-B'],
-        project_role_permissions: ['Test Permission']
+        project_role_permissions: ['Test Permission'],
+        agency: null,
+        display_name: 'test user',
+        email: 'email@email.com',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        record_end_date: null,
+        role_ids: [1],
+        role_names: ['Role1'],
+        user_guid: '123-456-789',
+        user_identifier: 'testuser'
       });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -267,7 +295,16 @@ describe('getSelf', () => {
       system_user_id: 20,
       project_role_ids: [1, 2],
       project_role_names: ['Test-Role-A', 'Test-Role-B'],
-      project_role_permissions: ['Test Permission']
+      project_role_permissions: ['Test Permission'],
+      agency: null,
+      display_name: 'test user',
+      email: 'email@email.com',
+      identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+      record_end_date: null,
+      role_ids: [1],
+      role_names: ['Role1'],
+      user_guid: '123-456-789',
+      user_identifier: 'testuser'
     });
   });
 

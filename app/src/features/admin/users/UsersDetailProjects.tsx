@@ -180,7 +180,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     <Paper elevation={0}>
       <Toolbar>
         <Typography data-testid="projects_header" variant="h4" component="h2">
-          Assigned Projects{' '}
+          Assigned Projects &zwnj;
           <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
             ({assignedProjects?.length})
           </Typography>
@@ -202,7 +202,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                 <TableRow key={row.project_id}>
                   <TableCell scope="row">
                     <Link component={RouterLink} to={`/admin/projects/${row.project_id}/details`} aria-current="page">
-                      {row.name}
+                      {row.project_name}
                     </Link>
                   </TableCell>
 
@@ -360,11 +360,9 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     }
   };
 
-  const currentProjectRoleName = projectRoleCodes.find((item) => item.id === row.project_role_id)?.name;
-
   return (
     <CustomMenuButton
-      buttonLabel={currentProjectRoleName}
+      buttonLabel={row.project_permission_names[0]}
       buttonTitle={'Change Project Role'}
       buttonProps={{ variant: 'outlined', size: 'small' }}
       menuItems={projectRoleCodes.map((roleCode) => {
