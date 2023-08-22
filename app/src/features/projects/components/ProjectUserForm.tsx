@@ -4,13 +4,14 @@ import SearchAutocompleteField from 'components/fields/SearchAutocompleteField';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import { ISearchUserResponse } from 'interfaces/useUserApi.interface';
+import { IUserResponse } from 'interfaces/useUserApi.interface';
 import { debounce } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 
 export const ProjectUserRoleYupSchema = yup.object().shape({
@@ -42,19 +43,28 @@ export const ProjectUserRoleFormInitialValues = {
 const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
+  const { keycloakWrapper } = useContext(AuthStateContext);
 
-  const [searchUsers, setSearchUsers] = useState<ISearchUserResponse[]>([]);
+  const [searchUsers, setSearchUsers] = useState<IUserResponse[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState<ISearchUserResponse[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<IUserResponse[]>([]);
 
   useEffect(() => {
     // currently logged in user is assumed to be the 'creator'
     // this will need to move out specifically to the create project step because it will be assumed they are a coordinator on the project
+    const loggedInUser = keycloakWrapper?.user;
+    if (loggedInUser) {
+      setSelectedUsers([loggedInUser]);
+      setFieldValue(`participants[0]`, {
+        system_user_id: loggedInUser.system_user_id,
+        role: PROJECT_ROLE.COORDINATOR
+      });
+    }
   }, []);
 
   const handleSearch = useMemo(
     () =>
-      debounce(async (inputValue: string, existingValues: ISearchUserResponse[]) => {
+      debounce(async (inputValue: string, existingValues: IUserResponse[]) => {
         setIsSearching(true);
         const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase());
 
@@ -68,7 +78,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     [biohubApi.user]
   );
 
-  const handleAddUser = (user: ISearchUserResponse) => {
+  const handleAddUser = (user: IUserResponse) => {
     selectedUsers.push(user);
 
     setFieldValue(`participants[${selectedUsers.length - 1}]`, {
@@ -86,7 +96,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = selectedUsers.filter((item: ISearchUserResponse) => item.system_user_id !== systemUserId);
+    const filteredUsers = selectedUsers.filter((item: IUserResponse) => item.system_user_id !== systemUserId);
     const filteredValues = values.participants.filter((item) => item.system_user_id !== systemUserId);
 
     setSelectedUsers(filteredUsers);
@@ -132,6 +142,10 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     }
   };
 
+  const getSelectedRole = (index: number): string | undefined => {
+    return values.participants[index].role;
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -144,7 +158,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         </Typography>
       </Box>
       <Box mt={3}>
-        <SearchAutocompleteField<ISearchUserResponse>
+        <SearchAutocompleteField<IUserResponse>
           id={''}
           displayNameKey={'display_name'}
           placeholderText={'Find Team Members'}
@@ -173,14 +187,16 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         )}
         <Box>
-          {selectedUsers.map((systemUser: ISearchUserResponse, index: number) => {
+          {selectedUsers.map((systemUser: IUserResponse, index: number) => {
             const error = rowItemError(index);
+
             return (
               <UserRoleSelector
                 index={index}
                 systemUser={systemUser}
                 roles={props.roles}
                 error={error}
+                selectedRole={getSelectedRole(index)}
                 handleAdd={handleAddUserRole}
                 handleRemove={handleRemoveUser}
               />

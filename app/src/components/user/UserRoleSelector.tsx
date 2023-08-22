@@ -1,13 +1,13 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, IconButton, MenuItem, Select } from '@mui/material';
 import { ICode } from 'interfaces/useCodesApi.interface';
-import { ISearchUserResponse } from 'interfaces/useUserApi.interface';
-import { useState } from 'react';
+import { IUserResponse } from 'interfaces/useUserApi.interface';
 import UserCard from './UserCard';
 
 interface IUserRoleSelectorProps {
   index: number;
-  systemUser: ISearchUserResponse;
+  systemUser: IUserResponse;
+  selectedRole: string | undefined;
   roles: ICode[];
   error: JSX.Element | undefined;
   handleAdd: (id: number, role: string, index: number) => void;
@@ -15,8 +15,8 @@ interface IUserRoleSelectorProps {
 }
 
 const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
-  const { index, systemUser, roles, error, handleAdd, handleRemove } = props;
-  const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined);
+  const { index, selectedRole, systemUser, roles, error, handleAdd, handleRemove } = props;
+
   return (
     <>
       <Box display={'flex'} mt={2}>
@@ -34,7 +34,6 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
             displayEmpty
             value={selectedRole}
             onChange={(event) => {
-              setSelectedRole(String(event.target.value));
               handleAdd(systemUser.system_user_id, String(event.target.value), index);
             }}>
             {roles.map((item) => (
