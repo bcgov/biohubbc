@@ -6,6 +6,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
 import React from 'react';
+import { v4 } from 'uuid';
 import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isRequiredInSchema } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
 
@@ -28,7 +29,7 @@ const GeneralAnimalForm = () => {
       title={SurveyAnimalsI18N.animalGeneralTitle}
       titleHelp={SurveyAnimalsI18N.animalGeneralHelp}
       innerPaperProps={{ elevation: 0, variant: 'elevation', sx: { p: 0, mb: 0 } }}>
-      <Grid item xs={6}>
+      <Grid item xs={6} key={v4()}>
         <Box mb={2}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
             <CbSelectField

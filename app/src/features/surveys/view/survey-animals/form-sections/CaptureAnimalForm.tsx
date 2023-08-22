@@ -2,7 +2,7 @@ import { Grid } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { v4 } from 'uuid';
 import { AnimalCaptureSchema, getAnimalFieldName, IAnimal, IAnimalCapture, isRequiredInSchema } from '../animal';
 import TextInputToggle from '../TextInputToggle';
@@ -43,7 +43,7 @@ const CaptureAnimalForm = () => {
     release_utm_easting: '' as unknown as number,
     release_comment: '',
     release_timestamp: '' as unknown as Date,
-    release_coordinate_uncertainty: '' as unknown as number
+    release_coordinate_uncertainty: 10
   };
 
   const canAddNewCapture = () => {
@@ -85,6 +85,8 @@ interface CaptureAnimalFormContentProps {
 
 const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormContentProps) => {
   const { handleBlur } = useFormikContext<IAnimal>();
+  const [showCaptureComment, setShowCaptureComment] = useState(false);
+  const [showReleaseComment, setShowReleaseComment] = useState(false);
 
   const renderCaptureFields = (): JSX.Element => {
     return (
@@ -103,7 +105,9 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
           />
         </Grid>
         <Grid item xs={12}>
-          <TextInputToggle label="Add comment about this Capture">
+          <TextInputToggle
+            toggleProps={{ handleToggle: () => setShowCaptureComment((c) => !c), toggleState: showCaptureComment }}
+            label="Add comment about this Capture">
             <CustomTextField
               other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
               label="Capture Comment"
@@ -133,7 +137,9 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
           />
         </Grid>
         <Grid item xs={12}>
-          <TextInputToggle label="Add comment about this Release">
+          <TextInputToggle
+            label="Add comment about this Release"
+            toggleProps={{ handleToggle: () => setShowReleaseComment((c) => !c), toggleState: showReleaseComment }}>
             <CustomTextField
               other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
               label="Release Comment"

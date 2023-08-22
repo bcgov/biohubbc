@@ -41,7 +41,7 @@ const MortalityAnimalForm = () => {
     mortality_utm_northing: '' as unknown as number,
     mortality_utm_easting: '' as unknown as number,
     mortality_timestamp: '' as unknown as Date,
-    mortality_coordinate_uncertainty: 1,
+    mortality_coordinate_uncertainty: 10,
     mortality_comment: '',
     mortality_pcod_reason: '',
     mortality_pcod_confidence: '',
@@ -85,6 +85,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
 
   const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
   const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
+  const [showMortalityComment, setShowMortalityComment] = useState(false);
 
   const renderFields = (): JSX.Element => {
     return (
@@ -181,7 +182,9 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
           />
         </Grid>
         <Grid item xs={12}>
-          <TextInputToggle label="Add comment about this Mortality">
+          <TextInputToggle
+            label="Add comment about this Mortality"
+            toggleProps={{ handleToggle: () => setShowMortalityComment((c) => !c), toggleState: showMortalityComment }}>
             <CustomTextField
               other={{
                 required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_comment'),
