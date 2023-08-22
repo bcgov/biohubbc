@@ -133,12 +133,13 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const rowItemError = (index: number): JSX.Element | undefined => {
     if (errors && errors.participants && Array.isArray(errors.participants)) {
       const errorAtIndex = errors.participants[index];
-
-      return (
-        <Typography style={{ fontSize: '12px', color: '#f44336' }}>
-          {errorAtIndex ? 'Select a role for this team member.' : ''}
-        </Typography>
-      );
+      if (errorAtIndex) {
+        return (
+          <Typography style={{ fontSize: '12px', color: '#f44336' }}>
+            {errorAtIndex ? 'Select a role for this team member.' : ''}
+          </Typography>
+        );
+      }
     }
   };
 

@@ -19,8 +19,15 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
 
   return (
     <>
-      <Box display={'flex'} mt={2}>
-        <Box flex={3}>
+      <Box
+        sx={{
+          border: 1,
+          borderRadius: 1,
+          borderColor: error ? 'error.main' : 'grey.500'
+        }}
+        display={'flex'}
+        mt={2}>
+        <Box padding={2} flex={3}>
           <UserCard
             name={systemUser.display_name}
             email={systemUser.email}
@@ -28,7 +35,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
             type={systemUser.identity_source}
           />
         </Box>
-        <Box flex={1}>
+        <Box padding={2} flex={1}>
           <Select
             sx={{ width: '100%' }}
             displayEmpty
