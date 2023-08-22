@@ -24,13 +24,13 @@ export async function seed(knex: Knex): Promise<void> {
   if (!response?.rows?.[0]) {
     await knex.raw(`
       ${insertProjectData()}
-      ${insertProjectTypeData()}
       ${insertProjectFirstNationData()}
       ${insertProjectIUCNData()}
       ${insertProjectParticipationData()}
       ${insertProjectStakeholderData()}
       ${insertFundingData()}
       ${insertSurveyData()}
+      ${insertSurveyTypeData()}
       ${insertSurveyPermitData()}
       ${insertSurveySpeciesData()}
       ${insertSurveyFundingData()}
@@ -269,9 +269,9 @@ const insertProjectIUCNData = () => `
  * SQL to insert Project Type data
  *
  */
-const insertProjectTypeData = () => `
-  INSERT into project_type
-    ( project_id, type_id )
+const insertSurveyTypeData = () => `
+  INSERT into survey_type
+    ( survey_id, type_id )
   VALUES
     ( 1, 5 )
   ;
