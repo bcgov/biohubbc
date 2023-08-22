@@ -15,8 +15,7 @@ import {
   getAnimalFieldName,
   IAnimal,
   IAnimalMeasurement,
-  isRequiredInSchema,
-  lastAnimalValueValid
+  isRequiredInSchema
 } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
@@ -55,6 +54,16 @@ const MeasurementAnimalForm = () => {
     measurement_comment: ''
   };
 
+  const canAddMeasurement = () => {
+    const lastMeasurement = values.measurements[values.measurements.length - 1];
+    if (!lastMeasurement) {
+      return true;
+    }
+    const { value, qualitative_option_id, taxon_measurement_id, measured_timestamp } = lastMeasurement;
+    const hasValueOrOption = value || qualitative_option_id;
+    return taxon_measurement_id && measured_timestamp && hasValueOrOption;
+  };
+
   return (
     <FieldArray name={NAME}>
       {({ remove, push }: FieldArrayRenderProps) => (
@@ -64,7 +73,7 @@ const MeasurementAnimalForm = () => {
             addedSectionTitle={SurveyAnimalsI18N.animalMeasurementTitle2}
             titleHelp={SurveyAnimalsI18N.animalMeasurementHelp}
             btnLabel={SurveyAnimalsI18N.animalMeasurementAddBtn}
-            disableAddBtn={!lastAnimalValueValid('measurements', values)}
+            disableAddBtn={!canAddMeasurement()}
             handleAddSection={() => push(newMeasurement)}
             handleRemoveSection={remove}>
             {values.measurements.map((measurement, index) => (

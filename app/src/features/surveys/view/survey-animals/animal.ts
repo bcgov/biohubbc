@@ -83,8 +83,14 @@ export const AnimalMeasurementSchema = yup.object({}).shape({
   _id: yup.string().required(),
 
   taxon_measurement_id: yup.string().required(req),
-  value: numSchema,
-  qualitative_option_id: yup.string(),
+  value: numSchema.when('qualitative_option_id', {
+    is: (qual_option: string) => !qual_option,
+    then: numSchema.required(req)
+  }),
+  qualitative_option_id: yup.string().when('val', {
+    is: (val: number | string | undefined) => val === '' || val === undefined,
+    then: yup.string().required(req)
+  }),
   measured_timestamp: yup.date().required(req),
   measurement_comment: yup.string()
 });
