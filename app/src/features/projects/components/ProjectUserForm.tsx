@@ -1,8 +1,8 @@
-import CloseIcon from '@mui/icons-material/Close';
-import { Box, IconButton, MenuItem, Select, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
 import SearchAutocompleteField from 'components/fields/SearchAutocompleteField';
 import UserCard from 'components/user/UserCard';
+import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -91,10 +91,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
 
     setSelectedUsers(filteredUsers);
     setFieldValue(`participants`, filteredValues);
-  };
-
-  const getUserRole = (systemUserId: number) => {
-    return values.participants.filter((item) => item.system_user_id === systemUserId)[0] || null;
+    clearErrors();
   };
 
   const clearErrors = () => {
@@ -103,7 +100,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     setErrors(tempErrors);
   };
 
-  const alertText = (): { title: string; text: string } => {
+  const alertBarText = (): { title: string; text: string } => {
     let title = '';
     let text = '';
     if (errors && errors.participants) {
@@ -173,51 +170,20 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           </Typography>
         )}
         {errors && errors['participants'] && (
-          <AlertBar severity="error" variant="standard" title={alertText().title} text={alertText().text} />
+          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         )}
         <Box>
           {selectedUsers.map((systemUser: ISearchUserResponse, index: number) => {
             const error = rowItemError(index);
             return (
-              <>
-                <Box display={'flex'} mt={2}>
-                  <Box flex={3}>
-                    <UserCard
-                      name={systemUser.display_name}
-                      email={systemUser.email}
-                      agency={systemUser.agency}
-                      type={systemUser.identity_source}
-                    />
-                  </Box>
-                  <Box flex={1}>
-                    <Select
-                      sx={{ width: '100%' }}
-                      displayEmpty
-                      value={getUserRole(systemUser.system_user_id)?.role}
-                      onChange={(event) => {
-                        handleAddUserRole(systemUser.system_user_id, String(event.target.value), index);
-                        clearErrors();
-                      }}>
-                      {props.roles.map((item) => (
-                        <MenuItem key={item.id} value={item.name}>
-                          {item.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </Box>
-                  <Box display={'flex'} padding={2}>
-                    <IconButton
-                      aria-label="remove user"
-                      onClick={() => {
-                        handleRemoveUser(systemUser.system_user_id);
-                        clearErrors();
-                      }}>
-                      <CloseIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-                {error}
-              </>
+              <UserRoleSelector
+                index={index}
+                systemUser={systemUser}
+                roles={props.roles}
+                error={error}
+                handleAdd={handleAddUserRole}
+                handleRemove={handleRemoveUser}
+              />
             );
           })}
         </Box>
