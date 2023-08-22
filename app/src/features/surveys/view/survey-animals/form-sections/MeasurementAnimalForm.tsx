@@ -95,9 +95,9 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
 
   const handleMeasurementTypeChange = (event: SelectChangeEvent<unknown>) => {
     handleChange(event);
-    setFieldValue(valueName, undefined);
+    setFieldValue(valueName, '');
     setFieldValue(optionName, '');
-    const m = measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId);
+    const m = measurements?.find((m) => m.taxon_measurement_id === event.target.value);
     setMeasurement(m);
   };
 

@@ -34,7 +34,7 @@ const TextInputToggle = ({ children, label, toggleProps }: TextInputToggleProps)
       {!canShowInput ? (
         <Button
           onClick={toggleProps?.handleToggle ?? toggleInput}
-          startIcon={<Icon path={mdiPlus} size={0.6} />}
+          startIcon={<Icon path={mdiPlus} size={0.8} />}
           variant="text"
           sx={{ textTransform: 'none' }}>
           {label}
