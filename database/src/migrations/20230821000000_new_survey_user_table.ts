@@ -20,6 +20,7 @@ export async function up(knex: Knex): Promise<void> {
   CREATE TABLE survey_job(
     survey_job_id            integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(50)       NOT NULL,
+    description              varchar(250)      NOT NULL,
     record_effective_date    date              NOT NULL,
     record_end_date          date,
     create_date              timestamptz(6)    DEFAULT now() NOT NULL,
@@ -97,6 +98,15 @@ export async function up(knex: Knex): Promise<void> {
   CREATE INDEX survey_participation_idx1 ON survey_participation(survey_participation_id);
   CREATE INDEX survey_participation_idx2 ON survey_participation(survey_id);
   CREATE INDEX survey_participation_idx3 ON survey_participation(system_user_id);
+
+  ----------------------------------------------------------------------------------------
+  -- Create default data for new tables
+  ----------------------------------------------------------------------------------------
+
+  INSERT INTO survey_job (name, record_effective_date, description)
+  VALUES
+    ('Biologist', NOW(), 'A participant of a survey in a biologist role.'),
+    ('Pilot', NOW(), 'A participant of a survey managing vehicle.');
 
 
   ----------------------------------------------------------------------------------------

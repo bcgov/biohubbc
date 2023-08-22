@@ -1,5 +1,9 @@
 import { IDBConnection } from '../database/db';
-import { ISurveyParticipation, SurveyParticipationRepository } from '../repositories/survey-participation-repository';
+import {
+  SurveyJob,
+  SurveyParticipantWithJob,
+  SurveyParticipationRepository
+} from '../repositories/survey-participation-repository';
 import { DBService } from './db-service';
 
 export class SurveyParticipationService extends DBService {
@@ -11,23 +15,23 @@ export class SurveyParticipationService extends DBService {
     this.surveyParticipationRepository = new SurveyParticipationRepository(connection);
   }
 
-  async deleteSurveyParticipationRecord(surveyParticipationId: number): Promise<any> {
-    return this.surveyParticipationRepository.deleteSurveyParticipationRecord(surveyParticipationId);
+  async getSurveyJobs(): Promise<SurveyJob[]> {
+    return this.surveyParticipationRepository.getSurveyJobs();
   }
 
-  async getSurveyParticipant(surveyId: number, systemUserId: number): Promise<ISurveyParticipation | null> {
+  async getSurveyParticipant(surveyId: number, systemUserId: number): Promise<SurveyParticipantWithJob | null> {
     return this.surveyParticipationRepository.getSurveyParticipant(surveyId, systemUserId);
   }
 
-  async getSurveyParticipants(surveyId: number): Promise<object[]> {
+  async getSurveyParticipants(surveyId: number): Promise<SurveyParticipantWithJob[]> {
     return this.surveyParticipationRepository.getSurveyParticipants(surveyId);
   }
 
-  async addSurveyParticipant(surveyId: number, systemUserId: number, surveyJobId: number): Promise<void> {
-    return this.surveyParticipationRepository.addSurveyParticipant(surveyId, systemUserId, surveyJobId);
+  async insertSurveyParticipant(surveyId: number, systemUserId: number, surveyJobId: number): Promise<void> {
+    return this.surveyParticipationRepository.insertSurveyParticipant(surveyId, systemUserId, surveyJobId);
   }
 
-  async insertSurveyParticipantRole(surveyId: number, surveyJobRole: string): Promise<void> {
-    return this.surveyParticipationRepository.insertSurveyParticipantRole(surveyId, surveyJobRole);
+  async deleteSurveyParticipationRecord(surveyParticipationId: number): Promise<any> {
+    return this.surveyParticipationRepository.deleteSurveyParticipationRecord(surveyParticipationId);
   }
 }

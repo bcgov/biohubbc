@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
-import { ISurveyParticipation } from '../../../../../../repositories/survey-participation-repository';
+import { ISurveyParticipationPostData } from '../../../../../../repositories/survey-participation-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { SurveyParticipationService } from '../../../../../../services/survey-participation-service';
 import { getLogger } from '../../../../../../utils/logger';
@@ -68,12 +68,8 @@ POST.apiDoc = {
               items: {
                 type: 'object',
                 nullable: true,
-                required: ['survey_id', 'system_user_id', 'survey_job_id'],
+                required: ['system_user_id', 'survey_job_id'],
                 properties: {
-                  survey_id: {
-                    type: 'integer',
-                    minimum: 1
-                  },
                   system_user_id: {
                     type: 'integer',
                     minimum: 1
@@ -127,14 +123,14 @@ export function createSurveyParticipants(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const participants: ISurveyParticipation[] = req.body.participants;
+      const participants: ISurveyParticipationPostData[] = req.body.participants;
 
       await connection.open();
 
       const surveyParticipationService = new SurveyParticipationService(connection);
 
-      const promises: Promise<any>[] = participants.map((participant) => {
-        return surveyParticipationService.addSurveyParticipant(
+      const promises: Promise<void>[] = participants.map((participant) => {
+        return surveyParticipationService.insertSurveyParticipant(
           surveyId,
           participant.system_user_id,
           participant.survey_job_id

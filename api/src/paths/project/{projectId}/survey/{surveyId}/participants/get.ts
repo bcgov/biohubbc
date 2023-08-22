@@ -83,20 +83,6 @@ GET.apiDoc = {
                     },
                     survey_job_name: {
                       type: 'string'
-                    },
-                    user_guid: {
-                      type: 'string',
-                      description: 'The GUID for the user.',
-                      nullable: true
-                    },
-                    user_identifier: {
-                      type: 'string'
-                    },
-                    user_identity_source_id: {
-                      type: 'number'
-                    },
-                    user_identity_source_name: {
-                      type: 'string'
                     }
                   }
                 }

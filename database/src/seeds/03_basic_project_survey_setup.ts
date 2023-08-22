@@ -37,6 +37,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyProprietorData()}
       ${insertSurveyVantageData()}
       ${insertProjectProgramData()}
+      ${insertSurveyParticipationData()}
       `);
   }
 }
@@ -62,6 +63,28 @@ const insertProjectProgramData = () => `
     1, 3
   );
 `;
+
+const insertSurveyParticipationData = () => `
+  INSERT into survey_participation
+    ( survey_id, system_user_id, survey_job_id )
+  VALUES
+    (
+      1,
+      (
+        SELECT COALESCE((
+          SELECT
+            system_user_id
+          FROM
+            system_user su
+          WHERE
+            su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
+        ), 1)
+      ),
+      (SELECT survey_job_id FROM survey_job WHERE name = 'Pilot' LIMIT 1)
+    )
+  ;
+`;
+
 
 /**
  * SQL to insert Survey Vantage data
