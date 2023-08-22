@@ -84,6 +84,7 @@ services:
       - BACKBONE_INTAKE_PATH=${BACKBONE_INTAKE_PATH}
       - BACKBONE_ARTIFACT_INTAKE_PATH=${BACKBONE_ARTIFACT_INTAKE_PATH}
       - BACKBONE_INTAKE_ENABLED=${BACKBONE_INTAKE_ENABLED}
+      - BCTW_API_HOST=${BCTW_API_HOST}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
