@@ -37,7 +37,8 @@ export enum GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  partnerships = 'partnerships'
+  partnerships = 'partnerships',
+  participants = 'participants'
 }
 
 export const getAllEntities = (): string[] => Object.values(GET_ENTITIES);
@@ -226,6 +227,67 @@ GET.apiDoc = {
                   stakeholder_partnerships: {
                     type: 'array',
                     items: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              participants: {
+                title: 'Project participants',
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'project_participation_id',
+                    'project_id',
+                    'system_user_id',
+                    'project_role_ids',
+                    'project_role_names',
+                    'project_role_permissions',
+                    'display_name',
+                    'email',
+                    'agency',
+                    'identity_source'
+                  ],
+                  properties: {
+                    project_participation_id: {
+                      type: 'number'
+                    },
+                    project_id: {
+                      type: 'number'
+                    },
+                    system_user_id: {
+                      type: 'number'
+                    },
+                    project_role_ids: {
+                      type: 'array',
+                      items: {
+                        type: 'number'
+                      }
+                    },
+                    project_role_names: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
+                    },
+                    project_role_permissions: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
+                    },
+                    display_name: {
+                      type: 'string'
+                    },
+                    email: {
+                      type: 'string'
+                    },
+                    agency: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    identity_source: {
                       type: 'string'
                     }
                   }

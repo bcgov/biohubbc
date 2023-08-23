@@ -156,7 +156,8 @@ export enum UPDATE_GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  partnerships = 'partnerships'
+  partnerships = 'partnerships',
+  participants = 'participants'
 }
 
 /**
@@ -172,6 +173,7 @@ export interface IGetProjectForUpdateResponse {
   coordinator?: IGetProjectForUpdateResponseCoordinator;
   iucn?: IGetProjectForUpdateResponseIUCN;
   partnerships?: IGetProjectForUpdateResponsePartnerships;
+  participants?: IGetProjectParticipant[];
 }
 
 export interface IGetProjectForUpdateResponseDetails {
@@ -283,6 +285,10 @@ export interface IGetProjectParticipant {
   project_participation_id: number;
   project_id: number;
   system_user_id: number;
+  identity_source: string;
+  email: string | null;
+  display_name: string;
+  agency: string | null;
   project_role_ids: number[];
   project_role_names: string[];
   project_role_permissions: string[];

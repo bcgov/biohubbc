@@ -2,9 +2,9 @@ import { Box, Typography } from '@mui/material';
 
 interface IUserCard {
   name: string;
-  email: string;
-  agency: string;
-  type: string;
+  email: string | null;
+  agency: string | null;
+  type: string | null;
 }
 const UserCard: React.FC<IUserCard> = (props) => {
   return (

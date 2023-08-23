@@ -15,6 +15,7 @@ import ProjectIUCNForm from '../components/ProjectIUCNForm';
 import ProjectLocationForm from '../components/ProjectLocationForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
 import ProjectPartnershipsForm from '../components/ProjectPartnershipsForm';
+import ProjectUserForm from '../components/ProjectUserForm';
 import {
   getCoordinatorAgencyOptions,
   initialProjectFieldData,
@@ -59,7 +60,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
   const handleCancel = () => {
     props.handleCancel();
   };
-
+  console.log(props.projectData);
   return (
     <Box p={5}>
       <Formik
@@ -133,6 +134,14 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
             component={
               <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
             }></HorizontalSplitFormComponent>
+
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
+            title="Project Users"
+            summary="Add some users"
+            component={<ProjectUserForm users={[]} roles={codes.project_roles} />}
+          />
 
           <Divider className={classes.sectionDivider} />
 
