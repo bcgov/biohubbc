@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
 
@@ -76,15 +76,49 @@ export class BctwService {
   }
 
   /**
-   * Send an authorized request to the BCTW API.
+   * Throw an error if the request to the BCTW API fails.
    *
-   * @param {('get' | 'post' | 'patch' | 'delete')} method
+   * @param {AxiosResponse<any>} response
    * @param {string} endpoint
-   * @param {*} [data]
-   * @return {*}
    * @memberof BctwService
    */
-  async makeRequest(method: 'get' | 'post' | 'patch', endpoint: string, data?: any) {
+  handleRequestError(response: AxiosResponse<any>, endpoint: string) {
+    if (!response.data || response.status >= 400) {
+      throw new ApiError(ApiErrorType.UNKNOWN, `API request to ${endpoint} failed with status code ${response.status}`);
+    }
+  }
+
+
+  /**
+   * Send an authorized get request to the BCTW API.
+   *
+   * @param {string} endpoint
+   * @return {*} 
+   * @memberof BctwService
+   */
+  async makeGetRequest(endpoint: string) {
+    const url = `${BCTW_API_HOST}${endpoint}`;
+    const token = await this.getToken();
+    const response = await axios.get(url, {
+      headers: {
+        authorization: `Bearer ${token}`,
+        ...this.getUserHeader()
+      }
+    });
+    this.handleRequestError(response, url);
+    return response.data;
+  }
+
+  /**
+   * Send an authorized post or patch request to the BCTW API.
+   *
+   * @param {('post' | 'patch')} method
+   * @param {string} endpoint
+   * @param {*} [data]
+   * @return {*} 
+   * @memberof BctwService
+   */
+  async makePostPatchRequest(method: 'post' | 'patch', endpoint: string, data?: any) {
     const url = `${BCTW_API_HOST}${endpoint}`;
     const token = await this.getToken();
     const response = await axios[method](url, data, {
@@ -93,9 +127,7 @@ export class BctwService {
         ...this.getUserHeader()
       }
     });
-    if (!response.data || response.status >= 400) {
-      throw new ApiError(ApiErrorType.UNKNOWN, `API request to ${endpoint} failed`);
-    }
+    this.handleRequestError(response, url);
     return response.data;
   }
 
@@ -107,7 +139,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async deployDevice(device: IDeployDevice): Promise<IDeploymentRecord> {
-    return this.makeRequest('post', DEPLOY_DEVICE_ENDPOINT, device);
+    return this.makePostPatchRequest('post', DEPLOY_DEVICE_ENDPOINT, device);
   }
 
   /**
@@ -117,7 +149,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async getDeployments(): Promise<IDeploymentRecord[]> {
-    return this.makeRequest('get', GET_DEPLOYMENTS_ENDPOINT);
+    return this.makeGetRequest(GET_DEPLOYMENTS_ENDPOINT);
   }
 
   /**
@@ -128,7 +160,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async updateDeployment(deployment: IDeploymentUpdate): Promise<IDeploymentRecord> {
-    return this.makeRequest('patch', UPDATE_DEPLOYMENT_ENDPOINT, deployment);
+    return this.makePostPatchRequest('patch', UPDATE_DEPLOYMENT_ENDPOINT, deployment);
   }
 
   /**
@@ -138,7 +170,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async getCollarVendors(): Promise<string[]> {
-    return this.makeRequest('get', GET_COLLAR_VENDORS_ENDPOINT);
+    return this.makeGetRequest(GET_COLLAR_VENDORS_ENDPOINT);
   }
 
   /**
@@ -148,6 +180,6 @@ export class BctwService {
    * @memberof BctwService
    */
   async getHealth(): Promise<string> {
-    return this.makeRequest('get', HEALTH_ENDPOINT);
+    return this.makeGetRequest(HEALTH_ENDPOINT);
   }
 }
