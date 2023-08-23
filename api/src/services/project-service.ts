@@ -184,6 +184,14 @@ export class ProjectService extends DBService {
       );
     }
 
+    if (entities.includes(GET_ENTITIES.participants)) {
+      promises.push(
+        this.getProjectParticipantsData(projectId).then((value) => {
+          results.participants = value;
+        })
+      );
+    }
+
     await Promise.all(promises);
 
     return results;

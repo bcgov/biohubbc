@@ -1,12 +1,13 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, IconButton, MenuItem, Select } from '@mui/material';
 import { ICode } from 'interfaces/useCodesApi.interface';
+import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import UserCard from './UserCard';
 
 interface IUserRoleSelectorProps {
   index: number;
-  systemUser: ISystemUser;
+  user: ISystemUser | IGetProjectParticipant;
   selectedRole: string | undefined;
   roles: ICode[];
   error: JSX.Element | undefined;
@@ -15,10 +16,10 @@ interface IUserRoleSelectorProps {
 }
 
 const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
-  const { index, selectedRole, systemUser, roles, error, handleAdd, handleRemove } = props;
+  const { index, selectedRole, user, roles, error, handleAdd, handleRemove } = props;
 
   return (
-    <>
+    <Box key={`${user.system_user_id}-${index}`}>
       <Box
         sx={{
           border: 1,
@@ -28,12 +29,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
         display={'flex'}
         mt={2}>
         <Box padding={2} flex={3}>
-          <UserCard
-            name={systemUser.display_name}
-            email={systemUser.email}
-            agency={systemUser.agency}
-            type={systemUser.identity_source}
-          />
+          <UserCard name={user.display_name} email={user.email} agency={user.agency} type={user.identity_source} />
         </Box>
         <Box padding={2} flex={1}>
           <Select
@@ -41,7 +37,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
             displayEmpty
             value={selectedRole}
             onChange={(event) => {
-              handleAdd(systemUser.system_user_id, String(event.target.value), index);
+              handleAdd(user.system_user_id, String(event.target.value), index);
             }}>
             {roles.map((item) => (
               <MenuItem key={item.id} value={item.name}>
@@ -54,14 +50,14 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
           <IconButton
             aria-label="remove user"
             onClick={() => {
-              handleRemove(systemUser.system_user_id);
+              handleRemove(user.system_user_id);
             }}>
             <CloseIcon />
           </IconButton>
         </Box>
       </Box>
       {error}
-    </>
+    </Box>
   );
 };
 

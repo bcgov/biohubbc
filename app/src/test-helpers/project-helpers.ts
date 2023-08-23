@@ -50,7 +50,11 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
         system_user_id: 1,
         project_role_ids: [1, 2],
         project_role_names: ['Role 1', 'Role 2'],
-        project_role_permissions: ['Permission 1', 'Permission 2']
+        project_role_permissions: ['Permission 1', 'Permission 2'],
+        identity_source: '',
+        email: 'email@email.com',
+        display_name: 'Tim Taster',
+        agency: ''
       },
       {
         project_participation_id: 2,
@@ -58,7 +62,11 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
         system_user_id: 2,
         project_role_ids: [1],
         project_role_names: ['Role 1'],
-        project_role_permissions: ['Permission 1', 'Permission 2']
+        project_role_permissions: ['Permission 1', 'Permission 2'],
+        identity_source: '',
+        email: 'email@email.com',
+        display_name: 'Tom Tester',
+        agency: ''
       }
     ]
   },
