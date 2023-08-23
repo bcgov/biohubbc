@@ -11,7 +11,6 @@ import { ProjectContext } from 'contexts/projectContext';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
 import { useContext, useEffect } from 'react';
-import LocationBoundary from './components/LocationBoundary';
 import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
 
@@ -66,11 +65,12 @@ const ProjectPage = () => {
                   <ProjectAttachments />
                 </Paper>
               </Box>
-              <Box>
+              {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (map) temporarily, while its decided where exactly project/survey locations should be defined */}
+              {/* <Box>
                 <Paper elevation={0}>
                   <LocationBoundary />
                 </Paper>
-              </Box>
+              </Box> */}
             </Grid>
           </Grid>
         </Box>
