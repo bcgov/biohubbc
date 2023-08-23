@@ -18,6 +18,7 @@ import {
   GetSurveyPurposeAndMethodologyData,
   SurveyObject
 } from '../models/survey-view';
+import { FundingSourceRepository } from '../repositories/funding-source-repository';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
 import {
@@ -223,6 +224,40 @@ describe('SurveyService', () => {
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);
+    });
+  });
+
+  describe('getSurveyFundingSourceData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('fetches and returns an array of funding sources', async () => {
+      const fundingSources = [
+        {
+          survey_funding_source_id: 5,
+          survey_id: 1,
+          funding_source_id: 2,
+          amount: 1000,
+          revision_count: 0,
+          funding_source_name: 'FundingSource1',
+          start_date: '2023-01-02',
+          end_date: null,
+          description: 'Funding Source 1'
+        }
+      ];
+
+      const getSurveyFundingSourcesStub = sinon
+        .stub(FundingSourceRepository.prototype, 'getSurveyFundingSources')
+        .resolves(fundingSources);
+
+      const surveyService = new SurveyService(getMockDBConnection());
+
+      const response = await surveyService.getSurveyFundingSourceData(1);
+
+      expect(getSurveyFundingSourcesStub).to.be.calledOnce;
+
+      expect(response).to.eql(fundingSources);
     });
   });
 
@@ -511,6 +546,23 @@ describe('SurveyService', () => {
     });
   });
 
+  describe('insertSurveyType', () => {
+    it('inserts a survey type and returns nothing', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const typeId = 2;
+      const surveyId = 1;
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyType').resolves();
+
+      const response = await service.insertSurveyType(typeId, surveyId);
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.be.undefined;
+    });
+  });
+
   describe('insertFocalSpecies', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
@@ -637,6 +689,30 @@ describe('SurveyService', () => {
       } as unknown) as PutSurveyObject);
 
       expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('updateSurveyTypesData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('updates survey types and returns nothing', async () => {
+      const deleteSurveyTypesDataStub = sinon.stub(SurveyRepository.prototype, 'deleteSurveyTypesData').resolves();
+      const insertSurveyTypeStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyType').resolves();
+
+      const mockDBConnection = getMockDBConnection();
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const surveyId = 1;
+      const putSurveyObject: PutSurveyObject = new PutSurveyObject({ survey_details: { survey_types: [22, 33, 44] } });
+
+      await surveyService.updateSurveyTypesData(surveyId, putSurveyObject);
+
+      expect(deleteSurveyTypesDataStub).to.have.been.calledOnceWith(surveyId);
+      expect(insertSurveyTypeStub).to.have.been.calledWith(22);
+      expect(insertSurveyTypeStub).to.have.been.calledWith(33);
+      expect(insertSurveyTypeStub).to.have.been.calledWith(44);
     });
   });
 
@@ -960,6 +1036,22 @@ describe('SurveyService', () => {
           messages: [{ id: 4, message: 'message 4' }]
         }
       ]);
+    });
+  });
+
+  describe('deleteSurvey', () => {
+    it('should delete the survey and return nothing', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'deleteSurvey').resolves();
+
+      const surveyId = 1;
+
+      const response = await service.deleteSurvey(surveyId);
+
+      expect(repoStub).to.be.calledOnceWith(surveyId);
+      expect(response).to.be.undefined;
     });
   });
 

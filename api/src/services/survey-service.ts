@@ -114,11 +114,11 @@ export class SurveyService extends DBService {
    * Get Survey funding data for a given survey ID
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<SurveyFundingSource[]>}
+   * @return {*}  {Promise<GetSurveyFundingSourceData[]>}
    * @memberof SurveyService
    */
   async getSurveyFundingSourceData(surveyId: number): Promise<GetSurveyFundingSourceData[]> {
-    return await this.fundingSourceService.getSurveyFundingSources(surveyId);
+    return this.fundingSourceService.getSurveyFundingSources(surveyId);
   }
 
   /**
@@ -647,10 +647,10 @@ export class SurveyService extends DBService {
    *
    * @param {number} surveyID
    * @param {PutSurveyObject} surveyData
-   * @returns {*} {Promise<void>}
+   * @return {*}  {Promise<void[]>}
    * @memberof SurveyService
    */
-  async updateSurveyTypesData(surveyId: number, surveyData: PutSurveyObject) {
+  async updateSurveyTypesData(surveyId: number, surveyData: PutSurveyObject): Promise<void[]> {
     // Delete existing survey types
     await this.surveyRepository.deleteSurveyTypesData(surveyId);
 
