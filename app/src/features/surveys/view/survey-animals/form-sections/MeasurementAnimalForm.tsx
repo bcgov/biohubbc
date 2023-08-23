@@ -9,7 +9,7 @@ import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { has } from 'lodash-es';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { v4 } from 'uuid';
 import {
   AnimalMeasurementSchema,
@@ -39,11 +39,16 @@ const MeasurementAnimalForm = () => {
   const api = useCritterbaseApi();
   const { values } = useFormikContext<IAnimal>();
 
-  const { data: measurements, load } = useDataLoader(api.lookup.getTaxonMeasurements);
+  const { data: measurements, refresh, load } = useDataLoader(api.lookup.getTaxonMeasurements);
 
   if (values.general.taxon_id) {
     load(values.general.taxon_id);
   }
+
+  useEffect(() => {
+    refresh(values.general.taxon_id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.general.taxon_id]);
 
   const newMeasurement: IAnimalMeasurement = {
     _id: v4(),

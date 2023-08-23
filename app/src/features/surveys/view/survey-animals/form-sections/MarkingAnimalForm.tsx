@@ -3,7 +3,9 @@ import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React, { Fragment } from 'react';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import useDataLoader from 'hooks/useDataLoader';
+import React, { Fragment, useEffect } from 'react';
 import { v4 } from 'uuid';
 import {
   AnimalMarkingSchema,
@@ -23,7 +25,18 @@ import FormSectionWrapper from './FormSectionWrapper';
  */
 
 const MarkingAnimalForm = () => {
+  const api = useCritterbaseApi();
   const { values, handleBlur } = useFormikContext<IAnimal>();
+  const { data: bodyLocations, load, refresh } = useDataLoader(api.lookup.getTaxonMarkingBodyLocations);
+
+  if (values.general.taxon_id) {
+    load(values.general.taxon_id);
+  }
+
+  useEffect(() => {
+    refresh(values.general.taxon_id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.general.taxon_id]);
 
   const name: keyof IAnimal = 'markings';
   const newMarking: IAnimalMarking = {
@@ -45,7 +58,7 @@ const MarkingAnimalForm = () => {
             addedSectionTitle={SurveyAnimalsI18N.animalMarkingTitle2}
             titleHelp={SurveyAnimalsI18N.animalMarkingHelp}
             btnLabel={SurveyAnimalsI18N.animalMarkingAddBtn}
-            disableAddBtn={!lastAnimalValueValid('markings', values)}
+            disableAddBtn={!bodyLocations?.length || !lastAnimalValueValid('markings', values)}
             handleAddSection={() => push(newMarking)}
             handleRemoveSection={remove}>
             {values?.markings?.map((mark, index) => (

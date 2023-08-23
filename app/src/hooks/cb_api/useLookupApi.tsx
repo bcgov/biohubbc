@@ -60,6 +60,12 @@ export interface IMeasurementStub {
   max_value?: number;
   unit?: string;
 }
+export interface IMarkingStub {
+  taxon_marking_body_location_id: string;
+  body_location: string;
+  taxon_id: string;
+}
+
 const useLookupApi = (axios: AxiosInstance) => {
   const getSelectOptions = async ({
     route,
@@ -82,9 +88,18 @@ const useLookupApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const getTaxonMarkingBodyLocations = async (taxon_id?: string): Promise<Array<IMarkingStub> | undefined> => {
+    if (!taxon_id) {
+      return;
+    }
+    const { data } = await axios.get(`${CbRoutes.taxon_marking_body_locations}?taxon_id=${taxon_id}`);
+    return data;
+  };
+
   return {
     getSelectOptions,
-    getTaxonMeasurements
+    getTaxonMeasurements,
+    getTaxonMarkingBodyLocations
   };
 };
 
