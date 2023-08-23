@@ -1,17 +1,20 @@
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Theme, Typography } from '@mui/material';
+import { Box, Button, Grid, MenuItem, Paper, Theme, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { Fragment, useState } from 'react';
-//import { validate as uuidValidate } from 'uuid';
+import { v4 } from 'uuid';
 import {
+  AnimalRelationshipSchema,
   getAnimalFieldName,
   IAnimal,
   IAnimalRelationship,
+  isRequiredInSchema,
   lastAnimalValueValid,
   newFamilyIdPlaceholder
 } from '../animal';
@@ -37,16 +40,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   }
 }));
+
 /**
  * Renders the Family section for the Individual Animal form
  *
  * This form needs to validate against the Critterbase critter table, as only critters that have already been
  * added to Critterbase are permissible as family members.
  *
- * Returns {*}
- */
+ * @return {*}
+ **/
 const FamilyAnimalForm = () => {
-  const { values, touched, errors, handleChange } = useFormikContext<IAnimal>();
+  const { values, handleChange } = useFormikContext<IAnimal>();
   const critterbase = useCritterbaseApi();
   const { data: allFamilies, load } = useDataLoader(critterbase.family.getAllFamilies);
   const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbase.family.getImmediateFamily);
@@ -59,30 +63,11 @@ const FamilyAnimalForm = () => {
 
   const name: keyof IAnimal = 'family';
   const newRelationship: IAnimalRelationship = {
+    _id: v4(),
+
     family_id: '',
     relationship: undefined
   };
-
-  /*const validateCritterExists = async (critter_id: string) => {
-    let error: string | undefined;
-    if (!critter_id) {
-      error = 'Required';
-    }
-    if (!uuidValidate(critter_id)) {
-      error = 'Not a valid UUID.';
-      return error;
-    }
-    try {
-      //Check the actual critter table here.
-      const critter = await critterbase.critters.getCritterByID(critter_id);
-      if (critter.critter_id !== critter_id) {
-        error = 'Critter not in critterbase.';
-      }
-    } catch {
-      error = 'Critter not in critterbase.';
-    }
-    return error;
-  };*/
 
   return (
     <FieldArray validateOnChange={true} name={name}>
@@ -97,56 +82,44 @@ const FamilyAnimalForm = () => {
             handleAddSection={() => push(newRelationship)}
             maxSections={1}
             handleRemoveSection={remove}>
-            {values.family.map((_cap, index) => (
-              <Fragment key={`family-inputs-${index}`}>
+            {values.family.map((fam, index) => (
+              <Fragment key={fam._id}>
                 <Grid item xs={6}>
-                  <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                    <InputLabel size="small" id={`relationship-family-${index}`}>
-                      Family ID
-                    </InputLabel>
-                    <Select //Doing a raw MUI Select here since we don't enumerate these values in Critterbase
-                      id={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
-                      name={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
-                      label={'family_id'}
-                      size="small"
-                      value={values.family[index]?.family_id ?? ''}
-                      onChange={handleChange}
-                      error={touched.family?.[index]?.relationship && Boolean(errors.family?.[index])}
-                      displayEmpty>
-                      {[
-                        ...(allFamilies ?? []),
-                        { family_id: newFamilyIdPlaceholder, family_label: newFamilyIdPlaceholder }
-                      ]?.map((a) => (
-                        <MenuItem key={a.family_id} value={a.family_id}>
-                          {a.family_label ? a.family_label : a.family_id}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <CbSelectWrapper
+                    label={'Family ID'}
+                    name={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
+                    onChange={handleChange}
+                    controlProps={{
+                      size: 'small',
+                      required: isRequiredInSchema(AnimalRelationshipSchema, 'family_id')
+                    }}>
+                    {[
+                      ...(allFamilies ?? []),
+                      { family_id: newFamilyIdPlaceholder, family_label: newFamilyIdPlaceholder }
+                    ]?.map((a) => (
+                      <MenuItem key={a.family_id} value={a.family_id}>
+                        {a.family_label ? a.family_label : a.family_id}
+                      </MenuItem>
+                    ))}
+                  </CbSelectWrapper>
                 </Grid>
                 <Grid item xs={6}>
                   <Grid item xs={6}>
-                    <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                      <InputLabel size="small" id={`relationship-family-${index}`}>
-                        Relationship
-                      </InputLabel>
-                      <Select //Doing a raw MUI Select here since we don't enumerate these values in Critterbase
-                        id={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
-                        name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
-                        label={'Relationship'}
-                        size="small"
-                        value={values.family[index]?.relationship ?? ''}
-                        onChange={handleChange}
-                        error={touched.family?.[index]?.relationship && Boolean(errors.family?.[index])}
-                        displayEmpty>
-                        <MenuItem key={'parent'} value={'parent'}>
-                          Parent in
-                        </MenuItem>
-                        <MenuItem key={'child'} value={'child'}>
-                          Child in
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
+                    <CbSelectWrapper
+                      label={'Relationship'}
+                      name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
+                      onChange={handleChange}
+                      controlProps={{
+                        size: 'small',
+                        required: isRequiredInSchema(AnimalRelationshipSchema, 'relationship')
+                      }}>
+                      <MenuItem key={'parent'} value={'parent'}>
+                        Parent in
+                      </MenuItem>
+                      <MenuItem key={'child'} value={'child'}>
+                        Child in
+                      </MenuItem>
+                    </CbSelectWrapper>
                   </Grid>
                 </Grid>
                 <Grid item xs={6}>
@@ -177,7 +150,7 @@ const FamilyAnimalForm = () => {
                       <Typography component="h4">Parents:</Typography>
                       <ul>
                         {familyHierarchy?.parents.map((a) => (
-                          <li>
+                          <li key={a.critter_id}>
                             <Grid container>
                               <Grid item xs={6}>
                                 <Typography component="dt" variant="subtitle2" color="textSecondary">
@@ -203,7 +176,7 @@ const FamilyAnimalForm = () => {
                           (
                             a: { critter_id: string; animal_id: string } //I will type this better I promise
                           ) => (
-                            <li>
+                            <li key={a.critter_id}>
                               <Grid container>
                                 <Grid item xs={6}>
                                   <Typography component="dt" variant="subtitle2" color="textSecondary">

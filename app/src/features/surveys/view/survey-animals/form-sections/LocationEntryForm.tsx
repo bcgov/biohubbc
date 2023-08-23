@@ -2,7 +2,7 @@ import { Box, Checkbox, FormControlLabel, FormGroup, Grid, Switch, Tab, Tabs } f
 import CustomTextField from 'components/fields/CustomTextField';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
 import MapContainer from 'components/map/MapContainer';
-import { FormikErrors } from 'formik';
+import { useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';
 import { ChangeEvent, useState } from 'react';
 import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
@@ -22,7 +22,6 @@ export type LocationEntryFields<T> = {
 type LocationEntryFormProps<T> = {
   name: keyof IAnimal;
   index: number;
-  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => Promise<void | FormikErrors<any>>;
   value: T;
   primaryLocationFields: LocationEntryFields<T>;
   secondaryLocationFields?: LocationEntryFields<T>;
@@ -34,7 +33,6 @@ type LocationEntryFormProps<T> = {
 const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   name,
   index,
-  setFieldValue,
   value,
   primaryLocationFields,
   secondaryLocationFields,
@@ -42,6 +40,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   otherSecondaryFields,
   secondaryCheckboxLabel
 }: LocationEntryFormProps<T>) => {
+  const { handleBlur, setFieldValue } = useFormikContext();
   const [showSecondary, setShowSecondary] = useState(false); //Controls whether fields for the release event are shown or not.
   const [tabState, setTabState] = useState(0); //Controls whether we are on the Forms tab or the Map tab.
   const [placeSecondaryMode, setPlaceSecondary] = useState(false); //Controls whether left clicking on the map will place the capture or release marker.
@@ -120,6 +119,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 other={{ required: true, size: 'small' }}
                 label={formatLabel(fields.latitude as string)}
                 name={getAnimalFieldName<T>(name, fields.latitude, index)}
+                handleBlur={handleBlur}
               />
             </Grid>
             <Grid item xs={6}>
@@ -127,6 +127,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 other={{ required: true, size: 'small' }}
                 label={formatLabel(fields.longitude as string)}
                 name={getAnimalFieldName<T>(name, fields.longitude, index)}
+                handleBlur={handleBlur}
               />
             </Grid>
           </>
@@ -137,6 +138,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 other={{ required: true, size: 'small' }}
                 label={formatLabel(fields.utm_northing as string)}
                 name={getAnimalFieldName<T>(name, fields.utm_northing, index)}
+                handleBlur={handleBlur}
               />
             </Grid>
             <Grid item xs={6}>
@@ -144,6 +146,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 other={{ required: true, size: 'small' }}
                 label={formatLabel(fields.utm_easting as string)}
                 name={getAnimalFieldName<T>(name, fields.utm_easting, index)}
+                handleBlur={handleBlur}
               />
             </Grid>
           </>
@@ -154,6 +157,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             other={{ required: true, size: 'small' }}
             label={formatLabel(fields.coordinate_uncertainty as string)}
             name={getAnimalFieldName<T>(name, fields.coordinate_uncertainty, index)}
+            handleBlur={handleBlur}
           />
         </Grid>
       </>

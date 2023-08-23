@@ -23,7 +23,8 @@ const SurveyAnimals: React.FC = () => {
     setOpenDialog((d) => !d);
   };
 
-  const pluralize = (str: string, count: number) => (count > 1 || count == 0 ? `${count} ${str}'s` : `${count} ${str}`);
+  const pluralize = (str: string, count: number) =>
+    count > 1 || count === 0 ? `${count} ${str}'s` : `${count} ${str}`;
 
   const AnimalFormValues: IAnimal = {
     general: { taxon_id: '', taxon_name: '', animal_id: '' },

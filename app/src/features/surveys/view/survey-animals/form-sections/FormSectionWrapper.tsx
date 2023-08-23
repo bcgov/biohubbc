@@ -17,14 +17,15 @@ interface FormSectionWrapperProps {
   children: JSX.Element[] | JSX.Element;
   maxSections?: number;
 }
+
 /**
  * Wrapper for rendering the section inputs with additional controls for
  * adding deleting form sections/inputs.
  *
- * params { FormSectionWrapperProps }
- * returns {*}
- */
-
+ * @param { FormSectionWrapperProps }
+ * @return {*}
+ *
+ **/
 const FormSectionWrapper = ({
   title,
   addedSectionTitle,
@@ -52,12 +53,12 @@ const FormSectionWrapper = ({
         </Typography>
       </Typography>
       {childs.map((child, idx) => (
-        <Paper key={`fs-section-wrapper-${idx}`} variant="outlined" sx={{ p: 2, mb: 2 }} {...innerPaperProps}>
+        <Paper key={child.key} variant="outlined" sx={{ p: 2, mb: 2 }} {...innerPaperProps}>
           <Box display="flex" alignItems="center">
             {addedSectionTitle ? (
-              <Typography fontWeight="bold">{`${addedSectionTitle}${
-                childs.length > 1 ? ` (${idx + 1})` : ''
-              }`}</Typography>
+              <Typography fontWeight="bold">
+                {childs.length > 1 ? `${addedSectionTitle} (${idx + 1})` : `${addedSectionTitle}`}
+              </Typography>
             ) : null}
             {handleRemoveSection && childs.length >= 1 ? (
               <IconButton sx={{ ml: 'auto', height: 40, width: 40 }} onClick={() => handleRemoveSection(idx)}>

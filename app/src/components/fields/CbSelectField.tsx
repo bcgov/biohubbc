@@ -1,21 +1,14 @@
-import {
-  FormControl,
-  FormControlProps,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  SelectProps
-} from '@mui/material';
+import { FormControlProps, MenuItem, SelectChangeEvent } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { ICbRouteKey, ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import useIsMounted from 'hooks/useIsMounted';
 import get from 'lodash-es/get';
-import React, { ReactNode, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { CbSelectWrapper } from './CbSelectFieldWrapper';
 
-interface ICbSelectSharedProps {
+export interface ICbSelectSharedProps {
   name: string;
   label: string;
   controlProps?: FormControlProps;
@@ -33,47 +26,53 @@ interface ICbSelectOption {
   value: string | number;
   label: string;
 }
-/*
+/**
  * Critterbase Select Field. Handles data retrieval, formatting and error handling.
  *
- * params {ICbSelectField}
- * returns {*}
- */
+ * @param {ICbSelectField}
+ * @return {*}
+ *
+ **/
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const { name, label, route, param, query, handleChangeSideEffect, controlProps } = props;
 
   const api = useCritterbaseApi();
-  const { data, load, isReady, refresh } = useDataLoader(api.lookup.getSelectOptions);
+  const isMounted = useIsMounted();
+  const { data, load, refresh, hasLoaded } = useDataLoader(api.lookup.getSelectOptions);
   const { values, handleChange, setFieldValue, setFieldTouched } = useFormikContext<ICbSelectOption>();
 
   const val = get(values, name) ?? '';
 
   load({ route, param, query });
 
-  const isValueInRange = () => {
+  useEffect(() => {
+    if (hasLoaded) {
+      // Only refresh when the query or param changes
+      isMounted() && refresh({ route, param, query });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, param]);
+
+  const isValueInRange = useMemo(() => {
     if (val === '') {
       return true;
     }
     if (!data) {
       return false;
     }
-    return data.some((d) => (typeof d === 'string' ? d === val : d.id === val));
-  };
-
-  const handleInRange = () => {
-    if (!isValueInRange()) {
+    const inRange = data.some((d) => (typeof d === 'string' ? d === val : d.id === val));
+    // For convenience reset form fields here
+    if (!inRange) {
       setFieldValue(name, '');
       setFieldTouched(name);
     }
-  };
-
-  useEffect(() => refresh({ route, param, query }), [route, param, query]);
-
-  useEffect(handleInRange, [isReady]);
+    return inRange;
+  }, [data, val, setFieldValue, setFieldTouched, name]);
 
   const innerChangeHandler = (e: SelectChangeEvent<any>) => {
     handleChange(e);
+    // useful for when the select item label is needed in parent component
     if (handleChangeSideEffect) {
       const item = data?.find((a) => typeof a !== 'string' && a.id === e.target.value);
       handleChangeSideEffect(e.target.value, (item as ICbSelectRows).value);
@@ -81,12 +80,12 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   };
 
   return (
-    <FormikSelectWrapper
+    <CbSelectWrapper
       name={name}
       label={label}
       controlProps={{ ...controlProps, disabled: !data?.length }}
       onChange={innerChangeHandler}
-      value={isValueInRange() ? val : ''}>
+      value={isValueInRange ? val : ''}>
       {data?.map((a) => {
         const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
         return (
@@ -95,49 +94,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
           </MenuItem>
         );
       })}
-    </FormikSelectWrapper>
-  );
-};
-
-interface FormikSelectWrapperProps extends ICbSelectSharedProps {
-  children?: ReactNode;
-  onChange?: SelectProps['onChange'];
-  value?: SelectProps['value'];
-}
-
-/**
- *
- * Wrapper for formik selects to handle all errors / onChange / onBlur
- *
- * Returns {*}
- */
-
-export const FormikSelectWrapper = ({
-  children,
-  name,
-  label,
-  controlProps,
-  onChange,
-  value
-}: FormikSelectWrapperProps) => {
-  const { values, touched, errors, handleBlur, handleChange } = useFormikContext();
-  const val = get(values, name) ?? '';
-  const err = get(touched, name) && get(errors, name);
-  return (
-    <FormControl variant="outlined" fullWidth {...controlProps} error={Boolean(err)}>
-      <InputLabel id={`${name}-label`}>{label}</InputLabel>
-      <Select
-        name={name}
-        labelId="cb-select-wrapper"
-        value={value ?? val}
-        onChange={onChange ?? handleChange}
-        label={label}
-        onBlur={handleBlur}
-        displayEmpty>
-        {children}
-      </Select>
-      <FormHelperText>{err}</FormHelperText>
-    </FormControl>
+    </CbSelectWrapper>
   );
 };
 

@@ -2,15 +2,9 @@ import { Grid } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React, { Fragment } from 'react';
-import {
-  AnimalCaptureSchema,
-  getAnimalFieldName,
-  IAnimal,
-  IAnimalCapture,
-  isReq,
-  lastAnimalValueValid
-} from '../animal';
+import React, { Fragment, useState } from 'react';
+import { v4 } from 'uuid';
+import { AnimalCaptureSchema, getAnimalFieldName, IAnimal, IAnimalCapture, isRequiredInSchema } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 import LocationEntryForm from './LocationEntryForm';
@@ -24,7 +18,7 @@ import LocationEntryForm from './LocationEntryForm';
  * Note B: FormSectionWrapper uses a Grid container to render children elements.
  * Children of FormSectionWrapper can use Grid items to organize inputs.
  *
- * Returns {*}
+ * @return {*}
  */
 
 type ProjectionMode = 'wgs' | 'utm';
@@ -33,21 +27,32 @@ const CaptureAnimalForm = () => {
 
   const name: keyof IAnimal = 'captures';
   const newCapture: IAnimalCapture = {
+    _id: v4(),
+
     capture_latitude: '' as unknown as number,
     capture_longitude: '' as unknown as number,
     capture_utm_northing: '' as unknown as number,
     capture_utm_easting: '' as unknown as number,
-    capture_comment: undefined,
+    capture_comment: '',
     capture_coordinate_uncertainty: 10,
     capture_timestamp: '' as unknown as Date,
     projection_mode: 'wgs' as ProjectionMode,
-    release_latitude: undefined,
-    release_longitude: undefined,
-    release_utm_northing: undefined,
-    release_utm_easting: undefined,
-    release_comment: undefined,
-    release_timestamp: undefined,
-    release_coordinate_uncertainty: undefined
+    release_latitude: '' as unknown as number,
+    release_longitude: '' as unknown as number,
+    release_utm_northing: '' as unknown as number,
+    release_utm_easting: '' as unknown as number,
+    release_comment: '',
+    release_timestamp: '' as unknown as Date,
+    release_coordinate_uncertainty: 10
+  };
+
+  const canAddNewCapture = () => {
+    const lastCapture = values.captures[values.captures.length - 1];
+    if (!lastCapture) {
+      return true;
+    }
+    const { capture_latitude, capture_longitude, capture_timestamp, capture_coordinate_uncertainty } = lastCapture;
+    return capture_latitude && capture_longitude && capture_timestamp && capture_coordinate_uncertainty;
   };
 
   return (
@@ -59,11 +64,11 @@ const CaptureAnimalForm = () => {
             addedSectionTitle={SurveyAnimalsI18N.animalCaptureTitle2}
             titleHelp={SurveyAnimalsI18N.animalCaptureHelp}
             btnLabel={SurveyAnimalsI18N.animalCaptureAddBtn}
-            disableAddBtn={!lastAnimalValueValid('captures', values)}
+            disableAddBtn={!canAddNewCapture()}
             handleAddSection={() => push(newCapture)}
             handleRemoveSection={remove}>
-            {values.captures.map((_cap, index) => (
-              <CaptureAnimalFormContent key={`${name}-${index}-inputs`} name={name} index={index} value={_cap} />
+            {values.captures.map((cap, index) => (
+              <CaptureAnimalFormContent key={cap._id} name={name} index={index} value={cap} />
             ))}
           </FormSectionWrapper>
         </>
@@ -79,7 +84,9 @@ interface CaptureAnimalFormContentProps {
 }
 
 const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormContentProps) => {
-  const { setFieldValue } = useFormikContext<IAnimal>();
+  const { handleBlur } = useFormikContext<IAnimal>();
+  const [showCaptureComment, setShowCaptureComment] = useState(false);
+  const [showReleaseComment, setShowReleaseComment] = useState(false);
 
   const renderCaptureFields = (): JSX.Element => {
     return (
@@ -87,21 +94,25 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <CustomTextField
             other={{
-              required: isReq(AnimalCaptureSchema, 'capture_timestamp'),
+              required: isRequiredInSchema(AnimalCaptureSchema, 'capture_timestamp'),
               size: 'small',
               type: 'date',
               InputLabelProps: { shrink: true }
             }}
             label="Capture Date"
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
+            handleBlur={handleBlur}
           />
         </Grid>
         <Grid item xs={12}>
-          <TextInputToggle label="Add comment about this Capture">
+          <TextInputToggle
+            toggleProps={{ handleToggle: () => setShowCaptureComment((c) => !c), toggleState: showCaptureComment }}
+            label="Add comment about this Capture">
             <CustomTextField
-              other={{ size: 'small', required: isReq(AnimalCaptureSchema, 'capture_comment') }}
+              other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
               label="Capture Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
+              handleBlur={handleBlur}
             />
           </TextInputToggle>
         </Grid>
@@ -115,21 +126,25 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <CustomTextField
             other={{
-              required: isReq(AnimalCaptureSchema, 'release_timestamp'),
+              required: isRequiredInSchema(AnimalCaptureSchema, 'release_timestamp'),
               size: 'small',
               type: 'date',
               InputLabelProps: { shrink: true }
             }}
             label="Release Date"
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
+            handleBlur={handleBlur}
           />
         </Grid>
         <Grid item xs={12}>
-          <TextInputToggle label="Add comment about this Release">
+          <TextInputToggle
+            label="Add comment about this Release"
+            toggleProps={{ handleToggle: () => setShowReleaseComment((c) => !c), toggleState: showReleaseComment }}>
             <CustomTextField
-              other={{ size: 'small', required: isReq(AnimalCaptureSchema, 'release_comment') }}
+              other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
               label="Release Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
+              handleBlur={handleBlur}
             />
           </TextInputToggle>
         </Grid>
@@ -141,7 +156,6 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
     <LocationEntryForm
       name={name}
       index={index}
-      setFieldValue={setFieldValue}
       value={value}
       primaryLocationFields={{
         latitude: 'capture_latitude',

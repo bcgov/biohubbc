@@ -3,7 +3,6 @@ import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
 import NumberFormat from 'react-number-format';
-// import NumberFormat from 'react-number-format';
 
 export interface IFloatingPointField {
   required?: boolean;

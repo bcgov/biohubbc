@@ -4,7 +4,8 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment, useState } from 'react';
-import { AnimalMortalitySchema, getAnimalFieldName, IAnimal, IAnimalMortality, isReq } from '../animal';
+import { v4 } from 'uuid';
+import { AnimalMortalitySchema, getAnimalFieldName, IAnimal, IAnimalMortality, isRequiredInSchema } from '../animal';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 import LocationEntryForm from './LocationEntryForm';
@@ -24,7 +25,7 @@ import LocationEntryForm from './LocationEntryForm';
  * To encourage the max of one rule, we use the maxSections prop here to prevent additional copies of the form
  * from rendering.
  *
- * Returns {*}
+ * @return {*}
  */
 
 type ProjectionMode = 'wgs' | 'utm';
@@ -33,19 +34,21 @@ const MortalityAnimalForm = () => {
 
   const name: keyof IAnimal = 'mortality';
   const newMortality: IAnimalMortality = {
+    _id: v4(),
+
     mortality_longitude: '' as unknown as number,
     mortality_latitude: '' as unknown as number,
     mortality_utm_northing: '' as unknown as number,
     mortality_utm_easting: '' as unknown as number,
     mortality_timestamp: '' as unknown as Date,
-    mortality_coordinate_uncertainty: 1,
-    mortality_comment: undefined,
+    mortality_coordinate_uncertainty: 10,
+    mortality_comment: '',
     mortality_pcod_reason: '',
-    mortality_pcod_confidence: undefined,
-    mortality_pcod_taxon_id: undefined,
-    mortality_ucod_reason: undefined,
-    mortality_ucod_confidence: undefined,
-    mortality_ucod_taxon_id: undefined,
+    mortality_pcod_confidence: '',
+    mortality_pcod_taxon_id: '',
+    mortality_ucod_reason: '',
+    mortality_ucod_confidence: '',
+    mortality_ucod_taxon_id: '',
     projection_mode: 'wgs' as ProjectionMode
   };
 
@@ -61,8 +64,8 @@ const MortalityAnimalForm = () => {
             maxSections={1}
             handleAddSection={() => push(newMortality)}
             handleRemoveSection={remove}>
-            {values.mortality.map((_cap, index) => (
-              <MortalityAnimalFormContent key={`${name}-${index}-inputs`} name={name} index={index} value={_cap} />
+            {values.mortality.map((mort, index) => (
+              <MortalityAnimalFormContent key={mort._id} name={name} index={index} value={mort} />
             ))}
           </FormSectionWrapper>
         </>
@@ -78,10 +81,11 @@ interface MortalityAnimalFormContentProps {
 }
 
 const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormContentProps) => {
-  const { setFieldValue } = useFormikContext<IAnimal>();
+  const { handleBlur } = useFormikContext<IAnimal>();
 
   const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
   const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
+  const [showMortalityComment, setShowMortalityComment] = useState(false);
 
   const renderFields = (): JSX.Element => {
     return (
@@ -89,13 +93,14 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
         <Grid item xs={6}>
           <CustomTextField
             other={{
-              required: isReq(AnimalMortalitySchema, 'mortality_timestamp'),
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp'),
               size: 'small',
               type: 'date',
               InputLabelProps: { shrink: true }
             }}
             label="Mortality Date"
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
+            handleBlur={handleBlur}
           />
         </Grid>
         <Grid item xs={5}>
@@ -103,7 +108,10 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_reason', index)}
             handleChangeSideEffect={(_value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
             label={'PCOD Reason'}
-            controlProps={{ size: 'small', required: isReq(AnimalMortalitySchema, 'mortality_pcod_reason') }}
+            controlProps={{
+              size: 'small',
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_reason')
+            }}
             id={`${index}-pcod-reason`}
             route={'cod'}
           />
@@ -112,7 +120,10 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
           <CbSelectField
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_confidence', index)}
             label={'PCOD Confidence'}
-            controlProps={{ size: 'small', required: isReq(AnimalMortalitySchema, 'mortality_pcod_confidence') }}
+            controlProps={{
+              size: 'small',
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_confidence')
+            }}
             id={`${index}-pcod-confidence`}
             route={'cause_of_death_confidence'}
           />
@@ -124,7 +135,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             controlProps={{
               size: 'small',
               disabled: pcodTaxonDisabled,
-              required: isReq(AnimalMortalitySchema, 'mortality_pcod_taxon_id')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_taxon_id')
             }}
             id={`${index}-pcod-taxon`}
             route={'taxons'}
@@ -139,7 +150,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             label={'UCOD Reason'}
             controlProps={{
               size: 'small',
-              required: isReq(AnimalMortalitySchema, 'mortality_ucod_reason')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_reason')
             }}
             id={`${index}-ucod-reason`}
             route={'cod'}
@@ -151,7 +162,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             label={'UCOD Confidence'}
             controlProps={{
               size: 'small',
-              required: isReq(AnimalMortalitySchema, 'mortality_ucod_confidence')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_confidence')
             }}
             id={`${index}-ucod-confidence`}
             route={'cause_of_death_confidence'}
@@ -164,21 +175,24 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             controlProps={{
               size: 'small',
               disabled: ucodTaxonDisabled,
-              required: isReq(AnimalMortalitySchema, 'mortality_ucod_taxon_id')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_taxon_id')
             }}
             id={`${index}-ucod-taxon`}
             route={'taxons'}
           />
         </Grid>
         <Grid item xs={12}>
-          <TextInputToggle label="Add comment about this Mortality">
+          <TextInputToggle
+            label="Add comment about this Mortality"
+            toggleProps={{ handleToggle: () => setShowMortalityComment((c) => !c), toggleState: showMortalityComment }}>
             <CustomTextField
               other={{
-                required: isReq(AnimalMortalitySchema, 'mortality_comment'),
+                required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_comment'),
                 size: 'small'
               }}
               label="Mortality Comment"
               name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_comment', index)}
+              handleBlur={handleBlur}
             />
           </TextInputToggle>
         </Grid>
@@ -191,7 +205,6 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
       <LocationEntryForm
         name={name}
         index={index}
-        setFieldValue={setFieldValue}
         value={value}
         primaryLocationFields={{
           latitude: 'mortality_latitude',
