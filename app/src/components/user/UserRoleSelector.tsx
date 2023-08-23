@@ -19,7 +19,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
   const { index, selectedRole, user, roles, error, handleAdd, handleRemove } = props;
 
   return (
-    <>
+    <Box key={`${user.system_user_id}-${index}`}>
       <Box
         sx={{
           border: 1,
@@ -57,7 +57,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
         </Box>
       </Box>
       {error}
-    </>
+    </Box>
   );
 };
 

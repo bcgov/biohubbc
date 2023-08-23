@@ -140,7 +140,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
           <HorizontalSplitFormComponent
             title="Project Users"
             summary="Add some users"
-            component={<ProjectUserForm users={[]} roles={codes.project_roles} />}
+            component={<ProjectUserForm users={props.projectData.participants || []} roles={codes.project_roles} />}
           />
 
           <Divider className={classes.sectionDivider} />

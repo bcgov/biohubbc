@@ -53,17 +53,24 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     // currently logged in user is assumed to be the 'creator'
     // this will need to move out specifically to the create project step because it will be assumed they are a coordinator on the project
 
-    props.users.forEach((user, index) => {
-      selectedUsers.push(user);
-      setFieldValue(`participants[${index}]`, { system_user_id: user.system_user_id, role: PROJECT_ROLE.COORDINATOR });
-    });
-    const loggedInUser = keycloakWrapper?.user;
-    if (loggedInUser) {
-      setSelectedUsers([loggedInUser]);
-      setFieldValue(`participants[0]`, {
-        system_user_id: loggedInUser.system_user_id,
-        role: PROJECT_ROLE.COORDINATOR
+    if (props.users.length > 0) {
+      props.users.forEach((user, index) => {
+        selectedUsers.push(user);
+        setFieldValue(`participants[${index}]`, {
+          system_user_id: user.system_user_id,
+          role: (user as IGetProjectParticipant).project_role_names[0]
+        });
       });
+    } else {
+      // This needs to be moved into project form instead of here
+      const loggedInUser = keycloakWrapper?.user;
+      if (loggedInUser) {
+        setSelectedUsers([loggedInUser]);
+        setFieldValue(`participants[0]`, {
+          system_user_id: loggedInUser.system_user_id,
+          role: PROJECT_ROLE.COORDINATOR
+        });
+      }
     }
   }, []);
 
