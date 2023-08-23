@@ -373,7 +373,7 @@ describe.skip('EmlService', () => {
       sinon.stub(EmlService.prototype, '_buildProjectEmlDatasetSection').resolves({});
       sinon.stub(EmlService.prototype, '_buildProjectEmlProjectSection').returns({});
       sinon.stub(EmlService.prototype, '_getProjectAdditionalMetadata').resolves([]);
-      sinon.stub(EmlService.prototype, '_getSurveyAdditionalMetadata').returns([]);
+      sinon.stub(EmlService.prototype, '_getSurveyAdditionalMetadata').resolves([]);
       sinon.stub(EmlService.prototype, '_buildAllSurveyEmlProjectSections').resolves([]);
 
       const emlPackage = await emlService.buildProjectEmlPackage({ projectId: 1 });
@@ -526,7 +526,7 @@ describe.skip('EmlService', () => {
       ]);
 
       // Build survey additional metadata
-      sinon.stub(EmlService.prototype, '_getSurveyAdditionalMetadata').returns([]);
+      sinon.stub(EmlService.prototype, '_getSurveyAdditionalMetadata').resolves([]);
 
       // Build related project section
       sinon.stub(EmlService.prototype, '_buildAllSurveyEmlProjectSections').resolves([
@@ -881,7 +881,7 @@ describe.skip('EmlService', () => {
       ]);
 
       // Build survey additional metadata
-      sinon.stub(EmlService.prototype, '_getSurveyAdditionalMetadata').returns([]);
+      sinon.stub(EmlService.prototype, '_getSurveyAdditionalMetadata').resolves([]);
 
       // Build related project section
       sinon.stub(EmlService.prototype, '_buildProjectEmlProjectSection').returns({
@@ -1376,12 +1376,12 @@ describe.skip('EmlService', () => {
     });
   });
 
-  describe('_getSurveyAdditionalMetadata', () => {
+  describe('_getSurveyAdditionalMetadata', async () => {
     it('should return an empty array, since there is (currently) no additional metadata for surveys', async () => {
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
 
-      const additionalMeta = emlService._getSurveyAdditionalMetadata([]);
+      const additionalMeta = await emlService._getSurveyAdditionalMetadata([]);
 
       expect(additionalMeta).to.eql([]);
     });
