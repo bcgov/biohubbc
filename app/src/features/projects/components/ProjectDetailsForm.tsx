@@ -14,7 +14,6 @@ export interface IProjectDetailsForm {
   project: {
     project_name: string;
     project_programs: number[];
-    project_types: number[];
     start_date: string;
     end_date: string;
   };
@@ -24,7 +23,6 @@ export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
   project: {
     project_name: '',
     project_programs: [],
-    project_types: [],
     start_date: '',
     end_date: ''
   }
@@ -44,7 +42,6 @@ export const ProjectDetailsFormYupSchema = yup.object().shape({
 
 export interface IProjectDetailsFormProps {
   program: IMultiAutocompleteFieldOption[];
-  type: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -82,14 +79,6 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               required
             />
           </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id={'project.project_types'}
-            label={'Project Types'}
-            options={props.type}
-            required={false}
-          />
         </Grid>
         <Grid item xs={12} md={6}>
           <StartEndDateFields

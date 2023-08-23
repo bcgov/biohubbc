@@ -39,6 +39,7 @@ export interface IGeneralInformationForm {
     end_date: string;
     biologist_first_name: string;
     biologist_last_name: string;
+    survey_types: number[];
   };
   species: {
     focal_species: number[];
@@ -59,7 +60,8 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     start_date: '',
     end_date: '',
     biologist_first_name: '',
-    biologist_last_name: ''
+    biologist_last_name: '',
+    survey_types: []
   },
   species: {
     focal_species: [],
@@ -91,6 +93,7 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
 };
 
 export interface IGeneralInformationFormProps {
+  type: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
 }
@@ -145,6 +148,14 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             other={{
               required: true
             }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <MultiAutocompleteFieldVariableSize
+            id={'survey_details.survey_types'}
+            label={'Type'}
+            options={props.type}
+            required={false}
           />
         </Grid>
         <Grid item xs={12}>

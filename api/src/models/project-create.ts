@@ -62,7 +62,6 @@ export class PostCoordinatorData {
 export class PostProjectData {
   name: string;
   project_programs: number[];
-  project_types: number[];
   start_date: string;
   end_date: string;
   comments: string;
@@ -72,7 +71,6 @@ export class PostProjectData {
 
     this.name = obj?.project_name || null;
     this.project_programs = obj?.project_programs || [];
-    this.project_types = obj?.project_types || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.comments = obj?.comments || null;

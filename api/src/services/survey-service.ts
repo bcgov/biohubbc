@@ -142,7 +142,14 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSurveyData(surveyId: number): Promise<GetSurveyData> {
-    return this.surveyRepository.getSurveyData(surveyId);
+    const [surveyData, surveyTypesData] = await Promise.all([
+      this.surveyRepository.getSurveyData(surveyId),
+      this.surveyRepository.getSurveyTypesData(surveyId)
+    ]);
+
+    const surveyTypeIds = surveyTypesData.map((item) => item.type_id);
+
+    return new GetSurveyData({ ...surveyData, survey_types: surveyTypeIds });
   }
 
   /**
@@ -356,6 +363,13 @@ export class SurveyService extends DBService {
 
     const promises: Promise<any>[] = [];
 
+    // Handle survey types
+    promises.push(
+      Promise.all(
+        postSurveyData.survey_details.survey_types.map((typeId: number) => this.insertSurveyType(typeId, surveyId))
+      )
+    );
+
     // Handle focal species associated to this survey
     promises.push(
       Promise.all(
@@ -454,6 +468,18 @@ export class SurveyService extends DBService {
    */
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
     return this.surveyRepository.insertSurveyData(projectId, surveyData);
+  }
+
+  /**
+   * Inserts a new survey_type record associated to the survey.
+   *
+   * @param {number} typeId
+   * @param {number} surveyID
+   * @returns {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async insertSurveyType(typeId: number, surveyId: number): Promise<void> {
+    return this.surveyRepository.insertSurveyType(typeId, surveyId);
   }
 
   /**
@@ -573,6 +599,10 @@ export class SurveyService extends DBService {
       promises.push(this.updateSurveyDetailsData(surveyId, putSurveyData));
     }
 
+    if (putSurveyData?.survey_details) {
+      promises.push(this.updateSurveyTypesData(surveyId, putSurveyData));
+    }
+
     if (putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyVantageCodesData(surveyId, putSurveyData));
     }
@@ -610,6 +640,24 @@ export class SurveyService extends DBService {
    */
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
     return this.surveyRepository.updateSurveyDetailsData(surveyId, surveyData);
+  }
+
+  /**
+   * Updates Survey types data for a given survey ID.
+   *
+   * @param {number} surveyID
+   * @param {PutSurveyObject} surveyData
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
+  async updateSurveyTypesData(surveyId: number, surveyData: PutSurveyObject) {
+    // Delete existing survey types
+    await this.surveyRepository.deleteSurveyTypesData(surveyId);
+
+    // Add new set of survey types, if any
+    return Promise.all(
+      surveyData.survey_details.survey_types.map((typeId) => this.surveyRepository.insertSurveyType(typeId, surveyId))
+    );
   }
 
   /**

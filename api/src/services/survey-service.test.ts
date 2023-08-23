@@ -24,7 +24,9 @@ import {
   IGetLatestSurveyOccurrenceSubmission,
   IGetSpeciesData,
   ISurveyProprietorModel,
-  SurveyRepository
+  SurveyRecord,
+  SurveyRepository,
+  SurveyTypeRecord
 } from '../repositories/survey-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
@@ -251,14 +253,24 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const data = new GetSurveyData({ id: 1 });
+      const mockSurveyData = ({ survey_id: 1 } as unknown) as SurveyRecord;
+      const mockSurveyTypesData = ([
+        { survey_id: 1, type_id: 2 },
+        { survey_id: 1, type_id: 3 }
+      ] as unknown) as SurveyTypeRecord[];
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyData').resolves(data);
+      const getSurveyDataStub = sinon.stub(SurveyRepository.prototype, 'getSurveyData').resolves(mockSurveyData);
+      const getSurveyTypesDataStub = sinon
+        .stub(SurveyRepository.prototype, 'getSurveyTypesData')
+        .resolves(mockSurveyTypesData);
 
       const response = await service.getSurveyData(1);
 
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(data);
+      const expectedResponse = new GetSurveyData({ ...mockSurveyData, survey_types: [2, 3] });
+
+      expect(getSurveyDataStub).to.be.calledOnce;
+      expect(getSurveyTypesDataStub).to.be.calledOnce;
+      expect(response).to.eql(expectedResponse);
     });
   });
 
