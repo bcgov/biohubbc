@@ -32,15 +32,20 @@ const SearchAutocompleteField = <T,>(props: ISearchAutocompleteFieldProps<T>) =>
     <Autocomplete
       clearOnBlur
       handleHomeEndKeys
+      multiple
+      renderTags={() => null}
       id={id}
       options={searchOptions}
+      filterSelectedOptions
+      isOptionEqualToValue={(option, value) => option[displayNameKey] === value[displayNameKey]}
       getOptionLabel={(option) => String(option[displayNameKey] || '')}
       onInputChange={(_, value) => {
         handleSearch(value, selectedOptions);
       }}
       onChange={(_, option) => {
-        if (option) {
-          handleOnChange(option);
+        const newItem = option.pop();
+        if (newItem) {
+          handleOnChange(newItem);
         }
       }}
       renderInput={(params) => (

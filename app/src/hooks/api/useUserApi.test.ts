@@ -40,7 +40,7 @@ describe('useUserApi', () => {
     const result = await useUserApi(axios).getUserById(123);
 
     expect(result.system_user_id).toEqual(123);
-    expect(result.user_record_end_date).toEqual('test');
+    expect(result.record_end_date).toEqual('test');
     expect(result.user_identifier).toEqual('myidirboss');
     expect(result.role_names).toEqual(['role 1', 'role 2']);
   });

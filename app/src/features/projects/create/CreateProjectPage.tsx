@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -77,6 +78,7 @@ const CreateProjectPage: React.FC = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -161,6 +163,7 @@ const CreateProjectPage: React.FC = () => {
   const handleSubmitDraft = async (values: IProjectDraftForm) => {
     try {
       let response;
+      setIsLoading(true);
 
       // Get the form data for all steps
       // Fetch the data from the formikRef for whichever step is the active step
@@ -178,12 +181,12 @@ const CreateProjectPage: React.FC = () => {
         showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a draft project ID.'
         });
-
+        setIsLoading(false);
         return;
       }
 
       setEnableCancelCheck(false);
-
+      setIsLoading(false);
       history.push(`/admin/projects`);
     } catch (error) {
       setOpenDraftDialog(false);
@@ -193,6 +196,8 @@ const CreateProjectPage: React.FC = () => {
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -222,6 +227,7 @@ const CreateProjectPage: React.FC = () => {
    * @return {*}
    */
   const createProject = async (projectPostObject: ICreateProjectRequest) => {
+    setIsLoading(true);
     const response = await biohubApi.project.createProject(projectPostObject);
 
     if (!response?.id) {
@@ -232,7 +238,7 @@ const CreateProjectPage: React.FC = () => {
     await deleteDraft();
 
     setEnableCancelCheck(false);
-
+    setIsLoading(false);
     history.push(`/admin/projects/${response.id}`);
   };
 
@@ -342,7 +348,8 @@ const CreateProjectPage: React.FC = () => {
                 initialValues={draftDataLoader.data?.data}
               />
               <Box mt={4} display="flex" justifyContent="flex-end">
-                <Button
+                <LoadingButton
+                  loading={isLoading}
                   type="submit"
                   color="primary"
                   variant="contained"
@@ -350,7 +357,7 @@ const CreateProjectPage: React.FC = () => {
                   className={classes.actionButton}
                   data-testid="submit-project-button">
                   Submit Project
-                </Button>
+                </LoadingButton>
                 <Button
                   color="primary"
                   variant="contained"

@@ -1,13 +1,13 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, IconButton, MenuItem, Select } from '@mui/material';
 import { ICode } from 'interfaces/useCodesApi.interface';
-import { ISearchUserResponse } from 'interfaces/useUserApi.interface';
-import { useState } from 'react';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import UserCard from './UserCard';
 
 interface IUserRoleSelectorProps {
   index: number;
-  systemUser: ISearchUserResponse;
+  systemUser: ISystemUser;
+  selectedRole: string | undefined;
   roles: ICode[];
   error: JSX.Element | undefined;
   handleAdd: (id: number, role: string, index: number) => void;
@@ -15,12 +15,19 @@ interface IUserRoleSelectorProps {
 }
 
 const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
-  const { index, systemUser, roles, error, handleAdd, handleRemove } = props;
-  const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined);
+  const { index, selectedRole, systemUser, roles, error, handleAdd, handleRemove } = props;
+
   return (
     <>
-      <Box display={'flex'} mt={2}>
-        <Box flex={3}>
+      <Box
+        sx={{
+          border: 1,
+          borderRadius: 1,
+          borderColor: error ? 'error.main' : 'grey.500'
+        }}
+        display={'flex'}
+        mt={2}>
+        <Box padding={2} flex={3}>
           <UserCard
             name={systemUser.display_name}
             email={systemUser.email}
@@ -28,13 +35,12 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
             type={systemUser.identity_source}
           />
         </Box>
-        <Box flex={1}>
+        <Box padding={2} flex={1}>
           <Select
             sx={{ width: '100%' }}
             displayEmpty
             value={selectedRole}
             onChange={(event) => {
-              setSelectedRole(String(event.target.value));
               handleAdd(systemUser.system_user_id, String(event.target.value), index);
             }}>
             {roles.map((item) => (

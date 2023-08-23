@@ -21,7 +21,7 @@ import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -33,7 +33,7 @@ import AddSystemUsersForm, {
 } from './AddSystemUsersForm';
 
 export interface IActiveUsersListProps {
-  activeUsers: IGetUserResponse[];
+  activeUsers: ISystemUser[];
   codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
@@ -59,7 +59,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
 
-  const handleRemoveUserClick = (row: IGetUserResponse) => {
+  const handleRemoveUserClick = (row: ISystemUser) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Remove User?',
       dialogContent: (
@@ -85,7 +85,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     });
   };
 
-  const deActivateSystemUser = async (user: IGetUserResponse) => {
+  const deActivateSystemUser = async (user: ISystemUser) => {
     if (!user?.system_user_id) {
       return;
     }
@@ -123,7 +123,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     }
   };
 
-  const handleChangeUserPermissionsClick = (row: IGetUserResponse, newRoleName: any, newRoleId: number) => {
+  const handleChangeUserPermissionsClick = (row: ISystemUser, newRoleName: any, newRoleId: number) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change User Role?',
       dialogContent: (
@@ -148,7 +148,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     });
   };
 
-  const changeSystemUserRole = async (user: IGetUserResponse, roleId: number, roleName: string) => {
+  const changeSystemUserRole = async (user: ISystemUser, roleId: number, roleName: string) => {
     if (!user?.system_user_id) {
       return;
     }
