@@ -292,4 +292,5 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   ISurveyFundingSourceForm &
   IStudyAreaForm &
   IProprietaryDataForm &
-  IUpdateAgreementsForm;
+  IUpdateAgreementsForm &
+  IParticipantsJobForm;

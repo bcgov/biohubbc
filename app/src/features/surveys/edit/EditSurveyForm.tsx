@@ -28,6 +28,7 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
+import { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -88,7 +89,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         sedis_procedures_accepted: 'true' as unknown as StringBoolean,
         foippa_requirements_accepted: 'true' as unknown as StringBoolean
       }
-    }
+    },
+    ...SurveyUserJobFormInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -131,7 +133,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
-    .concat(AgreementsYupSchema);
+    .concat(AgreementsYupSchema)
+    .concat(SurveyUserJobYupSchema);
 
   return (
     <Box p={5} component={Paper} display="block">

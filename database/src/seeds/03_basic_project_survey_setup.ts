@@ -80,7 +80,7 @@ const insertSurveyParticipationData = () => `
             su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
         ), 1)
       ),
-      'Pilot'
+      1
     )
   ;
 `;

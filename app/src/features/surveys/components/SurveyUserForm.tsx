@@ -7,9 +7,9 @@ import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
-import { ISearchUserResponse } from 'interfaces/useUserApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { debounce } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 
 export const SurveyUserJobYupSchema = yup.object().shape({
@@ -34,18 +34,13 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
   const biohubApi = useBiohubApi();
 
-  const [searchUsers, setSearchUsers] = useState<ISearchUserResponse[]>([]);
+  const [searchUsers, setSearchUsers] = useState<ISystemUser[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState<ISearchUserResponse[]>([]);
-
-  useEffect(() => {
-    // currently logged in user is assumed to be the 'creator'
-    // this will need to move out specifically to the create project step because it will be assumed they are a coordinator on the project
-  }, []);
+  const [selectedUsers, setSelectedUsers] = useState<ISystemUser[]>([]);
 
   const handleSearch = useMemo(
     () =>
-      debounce(async (inputValue: string, existingValues: ISearchUserResponse[]) => {
+      debounce(async (inputValue: string, existingValues: ISystemUser[]) => {
         setIsSearching(true);
         const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase());
 
@@ -59,7 +54,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
     [biohubApi.user]
   );
 
-  const handleAddUser = (user: ISearchUserResponse) => {
+  const handleAddUser = (user: ISystemUser) => {
     selectedUsers.push(user);
 
     setFieldValue(`participants[${selectedUsers.length - 1}]`, {
@@ -77,7 +72,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = selectedUsers.filter((item: ISearchUserResponse) => item.system_user_id !== systemUserId);
+    const filteredUsers = selectedUsers.filter((item: ISystemUser) => item.system_user_id !== systemUserId);
     const filteredValues = values.participants.filter((item) => item.system_user_id !== systemUserId);
 
     setSelectedUsers(filteredUsers);
@@ -85,9 +80,11 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
     clearErrors();
   };
 
+  // Clear all errors for any modify action
+  // setting to undefined keeps the formik form from submitting
   const clearErrors = () => {
     const tempErrors = errors;
-    tempErrors.participants = undefined;
+    delete tempErrors.participants;
     setErrors(tempErrors);
   };
 
@@ -97,7 +94,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
     if (errors && errors.participants) {
       if (Array.isArray(errors.participants)) {
         title = 'Missing Roles';
-        text = 'All team members must be assigned a role.';
+        text = 'All team members must be assigned a job.';
       } else {
         if (selectedUsers.length > 0) {
           title = 'Coordinator Role is Required';
@@ -114,13 +111,18 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   const rowItemError = (index: number): JSX.Element | undefined => {
     if (errors && errors.participants && Array.isArray(errors.participants)) {
       const errorAtIndex = errors.participants[index];
-
-      return (
-        <Typography style={{ fontSize: '12px', color: '#f44336' }}>
-          {errorAtIndex ? 'Select a role for this team member.' : ''}
-        </Typography>
-      );
+      if (errorAtIndex) {
+        return (
+          <Typography style={{ fontSize: '12px', color: '#f44336' }}>
+            {errorAtIndex ? 'Select a job for this team member.' : ''}
+          </Typography>
+        );
+      }
     }
+  };
+
+  const getSelectedRole = (index: number): string | undefined => {
+    return values.participants[index].job;
   };
 
   return (
@@ -135,7 +137,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
         </Typography>
       </Box>
       <Box mt={3}>
-        <SearchAutocompleteField<ISearchUserResponse>
+        <SearchAutocompleteField<ISystemUser>
           id={''}
           displayNameKey={'display_name'}
           placeholderText={'Find Team Members'}
@@ -164,7 +166,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         )}
         <Box>
-          {selectedUsers.map((systemUser: ISearchUserResponse, index: number) => {
+          {selectedUsers.map((systemUser: ISystemUser, index: number) => {
             const error = rowItemError(index);
             return (
               <UserRoleSelector
@@ -172,6 +174,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
                 systemUser={systemUser}
                 roles={props.jobs}
                 error={error}
+                selectedRole={getSelectedRole(index)}
                 handleAdd={handleAddUserRole}
                 handleRemove={handleRemoveUser}
               />
