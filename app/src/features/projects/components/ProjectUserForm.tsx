@@ -20,13 +20,13 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
     .of(
       yup.object().shape({
         system_user_id: yup.string().required('Username is required'),
-        role: yup.string().required('Select a role for this team member')
+        project_role_names: yup.array(yup.string()).min(1, 'Select a role for this team member')
       })
     )
     .min(1, 'At least 1 member needs to be added to manage a project.')
     .hasAtLeastOneValue(
       'A minimum of one team member must be assigned the coordinator role.',
-      'role',
+      'project_role_names',
       PROJECT_ROLE.COORDINATOR
     )
 });
@@ -50,15 +50,12 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
 
   useEffect(() => {
-    // currently logged in user is assumed to be the 'creator'
-    // this will need to move out specifically to the create project step because it will be assumed they are a coordinator on the project
-
     if (props.users.length > 0) {
       props.users.forEach((user, index) => {
         selectedUsers.push(user);
         setFieldValue(`participants[${index}]`, {
           system_user_id: user.system_user_id,
-          role: (user as IGetProjectParticipant).project_role_names[0]
+          project_role_names: (user as IGetProjectParticipant).project_role_names[0]
         });
       });
     } else {
@@ -68,7 +65,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         setSelectedUsers([loggedInUser]);
         setFieldValue(`participants[0]`, {
           system_user_id: loggedInUser.system_user_id,
-          role: PROJECT_ROLE.COORDINATOR
+          project_role_names: PROJECT_ROLE.COORDINATOR
         });
       }
     }
@@ -95,7 +92,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
 
     setFieldValue(`participants[${selectedUsers.length - 1}]`, {
       system_user_id: user.system_user_id,
-      role: ''
+      project_role_names: []
     });
     clearErrors();
   };
@@ -103,7 +100,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const handleAddUserRole = (systemUserId: number, role: string, index: number) => {
     setFieldValue(`participants[${index}]`, {
       system_user_id: systemUserId,
-      role: role
+      project_role_names: [role]
     });
   };
 
@@ -160,7 +157,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   };
 
   const getSelectedRole = (index: number): string | undefined => {
-    return values.participants[index].role;
+    return values.participants[index].project_role_names[0] || undefined;
   };
 
   return (
