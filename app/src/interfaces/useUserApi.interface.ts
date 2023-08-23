@@ -1,4 +1,4 @@
-export interface IUserResponse {
+export interface ISystemUser {
   system_user_id: number;
   user_identifier: string;
   user_guid: string;

@@ -10,7 +10,7 @@ import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IUserResponse } from 'interfaces/useUserApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import React, { useEffect, useState } from 'react';
 import ActiveUsersList from './ActiveUsersList';
 
@@ -47,7 +47,7 @@ const ManageUsersPage: React.FC = () => {
   const [isLoadingAccessRequests, setIsLoadingAccessRequests] = useState(false);
   const [hasLoadedAccessRequests, setHasLoadedAccessRequests] = useState(false);
 
-  const [activeUsers, setActiveUsers] = useState<IUserResponse[]>([]);
+  const [activeUsers, setActiveUsers] = useState<ISystemUser[]>([]);
   const [isLoadingActiveUsers, setIsLoadingActiveUsers] = useState(false);
   const [hasLoadedActiveUsers, setHasLoadedActiveUsers] = useState(false);
 

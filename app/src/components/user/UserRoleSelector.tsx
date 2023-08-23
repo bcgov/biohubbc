@@ -1,12 +1,12 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, IconButton, MenuItem, Select } from '@mui/material';
 import { ICode } from 'interfaces/useCodesApi.interface';
-import { IUserResponse } from 'interfaces/useUserApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import UserCard from './UserCard';
 
 interface IUserRoleSelectorProps {
   index: number;
-  systemUser: IUserResponse;
+  systemUser: ISystemUser;
   selectedRole: string | undefined;
   roles: ICode[];
   error: JSX.Element | undefined;

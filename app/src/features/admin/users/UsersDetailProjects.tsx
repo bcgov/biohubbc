@@ -26,7 +26,7 @@ import { APIError } from '../../../hooks/api/useAxios';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
-import { IUserResponse } from '../../../interfaces/useUserApi.interface';
+import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -51,7 +51,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface IProjectDetailsProps {
-  userDetails: IUserResponse;
+  userDetails: ISystemUser;
 }
 
 /**

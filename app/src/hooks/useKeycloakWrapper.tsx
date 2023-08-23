@@ -1,5 +1,5 @@
 import { useKeycloak } from '@react-keycloak/web';
-import { IUserResponse } from 'interfaces/useUserApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import Keycloak from 'keycloak-js';
 import { useCallback } from 'react';
 import { buildUrl } from 'utils/Utils';
@@ -132,7 +132,7 @@ export interface IKeycloakWrapper {
    */
   getLoginUrl: (redirectUri?: string) => string;
 
-  user: IUserResponse | undefined;
+  user: ISystemUser | undefined;
 }
 
 /**
@@ -292,7 +292,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     return keycloak?.createLoginUrl({ redirectUri: buildUrl(window.location.origin, redirectUri) }) || '/login';
   };
 
-  const user = (): IUserResponse | undefined => {
+  const user = (): ISystemUser | undefined => {
     return userDataLoader?.data;
   };
 

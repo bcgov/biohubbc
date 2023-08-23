@@ -1,6 +1,6 @@
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
-import { IUserResponse } from 'interfaces/useUserApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
@@ -18,7 +18,7 @@ const mockUseApi = {
   }
 };
 
-const mockUser: IUserResponse = {
+const mockUser: ISystemUser = {
   system_user_id: 1,
   record_end_date: 'ending',
   user_guid: '123',

@@ -9,7 +9,7 @@ import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import { IUserResponse } from 'interfaces/useUserApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
@@ -32,7 +32,7 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
 });
 
 interface IProjectUser {
-  users: any[];
+  users: ISystemUser[];
   roles: ICode[];
 }
 
@@ -45,9 +45,9 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const biohubApi = useBiohubApi();
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  const [searchUsers, setSearchUsers] = useState<IUserResponse[]>([]);
+  const [searchUsers, setSearchUsers] = useState<ISystemUser[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState<IUserResponse[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<ISystemUser[]>([]);
 
   useEffect(() => {
     // currently logged in user is assumed to be the 'creator'
@@ -64,7 +64,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
 
   const handleSearch = useMemo(
     () =>
-      debounce(async (inputValue: string, existingValues: IUserResponse[]) => {
+      debounce(async (inputValue: string, existingValues: ISystemUser[]) => {
         setIsSearching(true);
         const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase());
 
@@ -78,7 +78,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     [biohubApi.user]
   );
 
-  const handleAddUser = (user: IUserResponse) => {
+  const handleAddUser = (user: ISystemUser) => {
     selectedUsers.push(user);
 
     setFieldValue(`participants[${selectedUsers.length - 1}]`, {
@@ -96,7 +96,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = selectedUsers.filter((item: IUserResponse) => item.system_user_id !== systemUserId);
+    const filteredUsers = selectedUsers.filter((item: ISystemUser) => item.system_user_id !== systemUserId);
     const filteredValues = values.participants.filter((item) => item.system_user_id !== systemUserId);
 
     setSelectedUsers(filteredUsers);
@@ -161,7 +161,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         </Typography>
       </Box>
       <Box mt={3}>
-        <SearchAutocompleteField<IUserResponse>
+        <SearchAutocompleteField<ISystemUser>
           id={''}
           displayNameKey={'display_name'}
           placeholderText={'Find Team Members'}
@@ -190,7 +190,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         )}
         <Box>
-          {selectedUsers.map((systemUser: IUserResponse, index: number) => {
+          {selectedUsers.map((systemUser: ISystemUser, index: number) => {
             const error = rowItemError(index);
 
             return (

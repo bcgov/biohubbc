@@ -4,7 +4,7 @@ import { Router } from 'react-router';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
-import { IUserResponse } from '../../../interfaces/useUserApi.interface';
+import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 import UsersDetailPage from './UsersDetailPage';
 
 const history = createMemoryHistory();
@@ -15,7 +15,7 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   user: {
-    getUserById: jest.fn<Promise<IUserResponse>, []>()
+    getUserById: jest.fn<Promise<ISystemUser>, []>()
   },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
