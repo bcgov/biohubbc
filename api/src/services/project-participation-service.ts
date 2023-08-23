@@ -1,7 +1,7 @@
 import { PROJECT_PERMISSION } from '../constants/roles';
 import { IDBConnection } from '../database/db';
+import { PostParticipantData } from '../models/project-create';
 import {
-  IInsertProjectParticipant,
   IParticipant,
   ProjectParticipationRecord,
   ProjectParticipationRepository,
@@ -79,10 +79,10 @@ export class ProjectParticipationService extends DBService {
    * @return {*}  {Promise<void[]>}
    * @memberof ProjectParticipationService
    */
-  async postProjectParticipants(projectId: number, participants: IInsertProjectParticipant[]): Promise<void[]> {
+  async postProjectParticipants(projectId: number, participants: PostParticipantData[]): Promise<void[]> {
     return Promise.all(
       participants.map((participant) =>
-        this.postProjectParticipant(projectId, participant.system_user_id, participant.role)
+        this.postProjectParticipant(projectId, participant.system_user_id, participant.project_role_names[0])
       )
     );
   }
@@ -298,5 +298,46 @@ export class ProjectParticipationService extends DBService {
 
     // all projects have a Coordinator
     return true;
+  }
+
+  async upsertProjectParticipantData(projectId: number, participants: PostParticipantData[]): Promise<void> {
+    // all actions to take
+    const promises: Promise<any>[] = [];
+
+    // get the existing participants for a project
+    const existingParticipants = await this.projectParticipationRepository.getProjectParticipants(projectId);
+
+    // Compare incoming with existing to find any outliers to delete
+    const participantsToDelete = existingParticipants.filter(
+      (item) => !participants.find((incoming) => incoming.system_user_id === item.system_user_id)
+    );
+    console.log(`Participants to delete: ${participantsToDelete.length}`);
+    // delete
+    participantsToDelete.forEach((item) => {
+      promises.push(
+        this.projectParticipationRepository.deleteProjectParticipationRecord(item.project_participation_id)
+      );
+    });
+
+    participants.forEach((item) => {
+      if (item.project_participation_id) {
+        console.log('UPDATE');
+        promises.push(
+          this.projectParticipationRepository.updateProjectParticipationRole(
+            item.project_participation_id,
+            item.project_role_names[0]
+          )
+        );
+      } else {
+        console.log('INSERT');
+        this.projectParticipationRepository.postProjectParticipant(
+          projectId,
+          item.system_user_id,
+          item.project_role_names[0]
+        );
+      }
+    });
+
+    await Promise.all(promises);
   }
 }

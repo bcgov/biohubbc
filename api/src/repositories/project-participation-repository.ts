@@ -81,6 +81,20 @@ export class ProjectParticipationRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  async updateProjectParticipationRole(projectParticipationId: number, role: string): Promise<void> {
+    const sql = SQL`
+      UPDATE project_participation 
+      SET project_role_id = (
+        SELECT project_role_id 
+        FROM project_role 
+        WHERE name = ${role} 
+        AND record_end_date IS NULL
+      ) 
+      WHERE project_participation_id = ${projectParticipationId};
+    `;
+    await this.connection.sql(sql);
+  }
+
   /**
    * Get a project user by project and system user id. Returns null if the system user is not a participant of the
    * project.

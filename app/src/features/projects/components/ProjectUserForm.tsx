@@ -65,11 +65,11 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         setSelectedUsers([loggedInUser]);
         setFieldValue(`participants[0]`, {
           system_user_id: loggedInUser.system_user_id,
-          project_role_names: PROJECT_ROLE.COORDINATOR
+          project_role_names: [PROJECT_ROLE.COORDINATOR]
         });
       }
     }
-  }, []);
+  }, [props.users]);
 
   const handleSearch = useMemo(
     () =>
@@ -98,10 +98,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   };
 
   const handleAddUserRole = (systemUserId: number, role: string, index: number) => {
-    setFieldValue(`participants[${index}]`, {
-      system_user_id: systemUserId,
-      project_role_names: [role]
-    });
+    setFieldValue(`participants[${index}].project_role_names`, [role]);
   };
 
   const handleRemoveUser = (systemUserId: number) => {

@@ -407,11 +407,15 @@ export class ProjectService extends DBService {
     }
 
     if (entities?.location) {
-      promises.push(this.insertRegion(projectId, entities.location.geometry));
+      // promises.push(this.insertRegion(projectId, entities.location.geometry));
     }
 
     if (entities?.project?.project_programs) {
       promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
+    }
+
+    if (entities?.participants) {
+      promises.push(this.projectParticipationService.upsertProjectParticipantData(projectId, entities.participants));
     }
 
     await Promise.all(promises);
