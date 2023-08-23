@@ -6,7 +6,6 @@ import { IProjectDetailsForm } from 'features/projects/components/ProjectDetails
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
-import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { ICreateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { ISurveyPermitForm } from '../../features/surveys/SurveyPermitForm';
@@ -179,8 +178,7 @@ describe('useProjectApi', () => {
       project: null as unknown as IProjectDetailsForm,
       objectives: null as unknown as IProjectObjectivesForm,
       location: null as unknown as IProjectLocationForm,
-      iucn: null as unknown as IProjectIUCNForm,
-      partnerships: null as unknown as IProjectPartnershipsForm
+      iucn: null as unknown as IProjectIUCNForm
     } as unknown as ICreateProjectRequest;
 
     mock.onPost('/api/project/create').reply(200, {

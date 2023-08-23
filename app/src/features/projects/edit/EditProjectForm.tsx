@@ -14,7 +14,7 @@ import ProjectDetailsForm from '../components/ProjectDetailsForm';
 import ProjectIUCNForm from '../components/ProjectIUCNForm';
 import ProjectLocationForm from '../components/ProjectLocationForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
-import ProjectPartnershipsForm from '../components/ProjectPartnershipsForm';
+
 import {
   getCoordinatorAgencyOptions,
   initialProjectFieldData,
@@ -132,35 +132,6 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
             summary="Provide the Project Coordinator's contact and agency information."
             component={
               <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
-            }></HorizontalSplitFormComponent>
-
-          <Divider className={classes.sectionDivider} />
-
-          <HorizontalSplitFormComponent
-            title="Partnerships"
-            summary="Select partners supporting or participating in this project."
-            component={
-              <>
-                <Box component="fieldset">
-                  <Typography component="legend" variant="h5">
-                    Select Partnerships
-                  </Typography>
-                  <Box mt={1}>
-                    <ProjectPartnershipsForm
-                      first_nations={
-                        codes?.first_nations?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      stakeholder_partnerships={
-                        codes?.agency?.map((item) => {
-                          return { value: item.name, label: item.name };
-                        }) || []
-                      }
-                    />
-                  </Box>
-                </Box>
-              </>
             }></HorizontalSplitFormComponent>
 
           <Divider className={classes.sectionDivider} />

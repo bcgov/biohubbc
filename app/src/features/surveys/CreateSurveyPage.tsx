@@ -43,6 +43,7 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from './components/SurveyFundingSourceForm';
+import SurveyPartnershipsForm, { SurveyPartnershipsFormInitialValues, SurveyPartnershipsFormYupSchema } from 'features/projects/components/SurveyPartnershipsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -128,6 +129,7 @@ const CreateSurveyPage = () => {
     ...PurposeAndMethodologyInitialValues,
     ...StudyAreaInitialValues,
     ...SurveyFundingSourceFormInitialValues,
+    ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues
   });
@@ -171,6 +173,7 @@ const CreateSurveyPage = () => {
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
+    .concat(SurveyPartnershipsFormYupSchema)
     .concat(AgreementsYupSchema);
 
   const handleCancel = () => {
@@ -333,16 +336,25 @@ const CreateSurveyPage = () => {
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
-                  title="Funding Sources"
-                  summary="Specify funding sources for this survey."
+                  title="Funding Sources and Partnerships"
+                  summary="Specify survey funding sources and partnerships."
                   component={
-                    <Box component="fieldset">
-                      <Typography component="legend">Add Funding Sources</Typography>
-                      <Box mt={1}>
-                        <SurveyFundingSourceForm />
+                    <Box>
+                      <Box component="fieldset">
+                        <Typography component="legend">Add Funding Sources</Typography>
+                        <Box mt={1}>
+                          <SurveyFundingSourceForm />
+                        </Box>
+                      </Box>
+                      <Box component="fieldset" mt={5}>
+                        <Typography component="legend">Additional Partnerships</Typography>
+                        <Box mt={1}>
+                          <SurveyPartnershipsForm />
+                        </Box>
                       </Box>
                     </Box>
-                  }></HorizontalSplitFormComponent>
+                  }
+                />
 
                 <Divider className={classes.sectionDivider} />
 

@@ -4,7 +4,6 @@ import { ProjectDetailsFormInitialValues } from 'features/projects/components/Pr
 import { ProjectIUCNFormInitialValues } from 'features/projects/components/ProjectIUCNForm';
 import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
-import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
 import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
@@ -173,8 +172,7 @@ describe('CreateProjectPage', () => {
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
-          }
+                      }
         });
 
         const { queryAllByText } = render(
@@ -206,7 +204,6 @@ describe('CreateProjectPage', () => {
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
           }
         });
 
@@ -247,8 +244,7 @@ describe('CreateProjectPage', () => {
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
-          }
+                      }
         });
 
         const { getByText, findAllByText, getByTestId, queryByText } = render(
@@ -295,8 +291,7 @@ describe('CreateProjectPage', () => {
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
-          }
+                      }
         });
 
         const { getByText, findAllByText, getByTestId } = render(
@@ -342,7 +337,7 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          
         }
       });
 
@@ -440,7 +435,7 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          
         }
       });
 
@@ -553,7 +548,7 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          
         }
       });
 

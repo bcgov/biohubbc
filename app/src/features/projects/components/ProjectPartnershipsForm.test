@@ -5,7 +5,7 @@ import ProjectPartnershipsForm, {
   IProjectPartnershipsForm,
   ProjectPartnershipsFormInitialValues,
   ProjectPartnershipsFormYupSchema
-} from './ProjectPartnershipsForm';
+} from './SurveyPartnershipsForm';
 
 const first_nations: IMultiAutocompleteFieldOption[] = [
   {

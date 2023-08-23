@@ -27,10 +27,6 @@ import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
 } from '../components/ProjectObjectivesForm';
-import ProjectPartnershipsForm, {
-  ProjectPartnershipsFormInitialValues,
-  ProjectPartnershipsFormYupSchema
-} from '../components/ProjectPartnershipsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   sectionDivider: {
@@ -53,14 +49,12 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
-  ...ProjectPartnershipsFormInitialValues
 };
 
 export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
   .concat(ProjectObjectivesFormYupSchema)
   .concat(ProjectLocationFormYupSchema)
-  .concat(ProjectIUCNFormYupSchema)
-  .concat(ProjectPartnershipsFormYupSchema);
+  .concat(ProjectIUCNFormYupSchema);
 
 //Function to get the list of coordinator agencies from the code set
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
@@ -152,35 +146,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           summary="Provide the Project Coordinator's contact and agency information."
           component={
             <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
-          }></HorizontalSplitFormComponent>
-
-        <Divider className={classes.sectionDivider} />
-
-        <HorizontalSplitFormComponent
-          title="Partnerships"
-          summary="Select partners supporting or participating in this project."
-          component={
-            <>
-              <Box component="fieldset">
-                <Typography component="legend" variant="h5">
-                  Select Partnerships
-                </Typography>
-                <Box mt={1}>
-                  <ProjectPartnershipsForm
-                    first_nations={
-                      codes?.first_nations?.map((item) => {
-                        return { value: item.id, label: item.name };
-                      }) || []
-                    }
-                    stakeholder_partnerships={
-                      codes?.agency?.map((item) => {
-                        return { value: item.name, label: item.name };
-                      }) || []
-                    }
-                  />
-                </Box>
-              </Box>
-            </>
           }></HorizontalSplitFormComponent>
 
         <Divider className={classes.sectionDivider} />
