@@ -1,6 +1,7 @@
 import { Grid } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
+import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment, useState } from 'react';
@@ -91,16 +92,11 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
     return (
       <Fragment key={'mortality-fields'}>
         <Grid item xs={6}>
-          <CustomTextField
-            other={{
-              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp'),
-              size: 'small',
-              type: 'date',
-              InputLabelProps: { shrink: true }
-            }}
-            label="Mortality Date"
+          <SingleDateField
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
-            handleBlur={handleBlur}
+            required={isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp')}
+            label={'Mortality Date'}
+            other={{ size: 'small' }}
           />
         </Grid>
         <Grid item xs={5}>

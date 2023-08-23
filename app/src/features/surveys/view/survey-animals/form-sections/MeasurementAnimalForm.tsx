@@ -2,6 +2,7 @@ import { Grid, MenuItem, SelectChangeEvent } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import CustomTextField from 'components/fields/CustomTextField';
+import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
@@ -174,16 +175,11 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
         )}
       </Grid>
       <Grid item xs={4}>
-        <CustomTextField
-          other={{
-            required: isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp'),
-            size: 'small',
-            type: 'date',
-            InputLabelProps: { shrink: true }
-          }}
-          label="Measured Date"
+        <SingleDateField
           name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measured_timestamp', index)}
-          handleBlur={handleBlur}
+          required={isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp')}
+          label={'Measured Date'}
+          other={{ size: 'small' }}
         />
       </Grid>
       <Grid item xs={12}>

@@ -1,5 +1,6 @@
 import { Grid } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
+import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment, useState } from 'react';
@@ -92,16 +93,11 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
     return (
       <Fragment key={'capture-fields'}>
         <Grid item xs={6}>
-          <CustomTextField
-            other={{
-              required: isRequiredInSchema(AnimalCaptureSchema, 'capture_timestamp'),
-              size: 'small',
-              type: 'date',
-              InputLabelProps: { shrink: true }
-            }}
-            label="Capture Date"
+          <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
-            handleBlur={handleBlur}
+            required={isRequiredInSchema(AnimalCaptureSchema, 'capture_timestamp')}
+            label={'Capture Date'}
+            other={{ size: 'small' }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -124,16 +120,11 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
     return (
       <Fragment key={`capture-release-fields`}>
         <Grid item xs={6}>
-          <CustomTextField
-            other={{
-              required: isRequiredInSchema(AnimalCaptureSchema, 'release_timestamp'),
-              size: 'small',
-              type: 'date',
-              InputLabelProps: { shrink: true }
-            }}
-            label="Release Date"
+          <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
-            handleBlur={handleBlur}
+            required={isRequiredInSchema(AnimalCaptureSchema, 'release_timestamp')}
+            label={'Release Date'}
+            other={{ size: 'small' }}
           />
         </Grid>
         <Grid item xs={12}>
