@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
+import { URLSearchParams } from 'url';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
-import { URLSearchParams } from 'url';
 
 export interface IDeployDevice {
-  device_id: string;
+  device_id: number;
   frequency: number;
   manufacturer: string;
   model: string;
@@ -40,11 +40,11 @@ export interface IBctwUser {
 }
 
 export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
-const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
-const GET_DEPLOYMENTS_ENDPOINT = '/get-deployments';
-const UPDATE_DEPLOYMENT_ENDPOINT = '/update-deployment';
-const GET_COLLAR_VENDORS_ENDPOINT = '/get-collar-vendors';
-const HEALTH_ENDPOINT = '/health';
+export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
+export const GET_DEPLOYMENTS_ENDPOINT = '/get-deployments';
+export const UPDATE_DEPLOYMENT_ENDPOINT = '/update-deployment';
+export const GET_COLLAR_VENDORS_ENDPOINT = '/get-collar-vendors';
+export const HEALTH_ENDPOINT = '/health';
 
 export class BctwService {
   user: IBctwUser;
