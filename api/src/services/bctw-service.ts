@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
+import { URLSearchParams } from 'url';
 
 export interface IDeployDevice {
   device_id: string;
@@ -38,7 +39,7 @@ export interface IBctwUser {
   username: string;
 }
 
-const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
+export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
 const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
 const GET_DEPLOYMENTS_ENDPOINT = '/get-deployments';
 const UPDATE_DEPLOYMENT_ENDPOINT = '/update-deployment';
@@ -57,11 +58,11 @@ export class BctwService {
   /**
    * Return user information as a JSON string.
    *
-   * @return {*}  {{ user: string }}
+   * @return {*}  {string}
    * @memberof BctwService
    */
-  getUserHeader(): { user: string } {
-    return { user: JSON.stringify(this.user) };
+  getUserHeader(): string {
+    return JSON.stringify(this.user);
   }
 
   /**
@@ -88,23 +89,31 @@ export class BctwService {
     }
   }
 
-
   /**
    * Send an authorized get request to the BCTW API.
    *
    * @param {string} endpoint
-   * @return {*} 
+   * @param {Record<string, string>} [queryParams] - An object containing query parameters as key-value pairs
+   * @return {*}
    * @memberof BctwService
    */
-  async makeGetRequest(endpoint: string) {
-    const url = `${BCTW_API_HOST}${endpoint}`;
+  async makeGetRequest(endpoint: string, queryParams?: Record<string, string>) {
+    let url = `${BCTW_API_HOST}${endpoint}`;
     const token = await this.getToken();
+
+    // If query parameters are provided, append them to the URL
+    if (queryParams) {
+      const params = new URLSearchParams(queryParams);
+      url += `?${params.toString()}`;
+    }
+
     const response = await axios.get(url, {
       headers: {
         authorization: `Bearer ${token}`,
-        ...this.getUserHeader()
+        user: this.getUserHeader()
       }
     });
+
     this.handleRequestError(response, url);
     return response.data;
   }
@@ -115,7 +124,7 @@ export class BctwService {
    * @param {('post' | 'patch')} method
    * @param {string} endpoint
    * @param {*} [data]
-   * @return {*} 
+   * @return {*}
    * @memberof BctwService
    */
   async makePostPatchRequest(method: 'post' | 'patch', endpoint: string, data?: any) {
@@ -124,7 +133,7 @@ export class BctwService {
     const response = await axios[method](url, data, {
       headers: {
         authorization: `Bearer ${token}`,
-        ...this.getUserHeader()
+        user: this.getUserHeader()
       }
     });
     this.handleRequestError(response, url);
