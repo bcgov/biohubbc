@@ -96,6 +96,21 @@ describe('BctwService', () => {
     it('should make an axios get request', async () => {
       const bctwService = new BctwService(mockUser);
       const endpoint = '/endpoint';
+      const mockResponse = { data: 'data' } as AxiosResponse;
+
+      const mockGetToken = sinon.stub(bctwService, 'getToken').resolves('abc123');
+      const mockAxios = sinon.stub(axios, 'get').resolves(mockResponse);
+
+      const result = await bctwService.makeGetRequest(endpoint);
+
+      expect(result).to.equal(mockResponse.data);
+      expect(mockGetToken).to.have.been.calledOnce;
+      expect(mockAxios).to.have.been.calledOnce.with(`${BCTW_API_HOST}${endpoint}`);
+    });
+
+    it('should make an axios get request with params', async () => {
+      const bctwService = new BctwService(mockUser);
+      const endpoint = '/endpoint';
       const queryParams = { param: 'param' };
       const mockResponse = { data: 'data' } as AxiosResponse;
 
