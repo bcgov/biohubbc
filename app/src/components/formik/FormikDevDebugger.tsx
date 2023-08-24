@@ -27,7 +27,7 @@ const FormikDevDebugger = ({ custom_payload }: FormikDevDebuggerProps) => {
       {showFormDebugger ? (
         <pre>
           {JSON.stringify(
-            { FORMIK_ERRORS: errors, FORMIK_TOUCHED: touched, FORMIK_VALUES: values, CUSTOM_PAYLOAD: custom_payload },
+            { FORMIK_ERRORS: errors, FORMIK_VALUES: values, FORMIK_TOUCHED: touched, CUSTOM_PAYLOAD: custom_payload },
             null,
             2
           )}

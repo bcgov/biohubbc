@@ -1,4 +1,6 @@
+import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { omit, omitBy } from 'lodash-es';
+import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
@@ -42,7 +44,11 @@ const mustBeNum = 'Must be a number';
 const numSchema = yup.number().typeError(mustBeNum);
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
-const dateSchema = yup.date().typeError(req);
+const dateSchema = yup
+  .date()
+  .min(moment(DATE_LIMIT.min), `Must be after ${DATE_LIMIT.min}`)
+  .max(moment(DATE_LIMIT.max), `Must be before ${DATE_LIMIT.max}`)
+  .typeError(req);
 
 export type ProjectionMode = 'wgs' | 'utm';
 
