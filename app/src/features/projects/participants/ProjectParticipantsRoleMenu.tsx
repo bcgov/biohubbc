@@ -8,11 +8,11 @@ import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { CodeSet } from 'interfaces/useCodesApi.interface';
-import { IGetProjectParticipants } from 'interfaces/useProjectApi.interface';
+import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 
 export interface IChangeProjectRoleMenuProps {
-  participant: IGetProjectParticipants;
+  participant: IGetProjectParticipant;
   projectRoleCodes: CodeSet;
   refresh: () => void;
 }
@@ -38,7 +38,7 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     });
   };
 
-  const handleChangeUserPermissionsClick = (item: IGetProjectParticipants, newRole: string, newRoleId: number) => {
+  const handleChangeUserPermissionsClick = (item: IGetProjectParticipant, newRole: string, newRoleId: number) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change Project Role?',
       dialogContent: (
@@ -63,7 +63,7 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     });
   };
 
-  const changeProjectParticipantRole = async (item: IGetProjectParticipants, newRole: string, newRoleId: number) => {
+  const changeProjectParticipantRole = async (item: IGetProjectParticipant, newRole: string, newRoleId: number) => {
     if (!item?.project_participation_id) {
       return;
     }
@@ -96,11 +96,9 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     }
   };
 
-  const currentProjectRoleName = projectRoleCodes.find((item) => item.id === participant.project_role_id)?.name;
-
   return (
     <CustomMenuButton
-      buttonLabel={currentProjectRoleName}
+      buttonLabel={participant.project_role_names[0] || ''}
       buttonTitle={'Change Project Role'}
       buttonProps={{ variant: 'outlined', size: 'small' }}
       menuItems={projectRoleCodes.map((roleCode) => {

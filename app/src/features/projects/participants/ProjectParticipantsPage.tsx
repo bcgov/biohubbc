@@ -24,7 +24,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import { IGetProjectParticipants } from 'interfaces/useProjectApi.interface';
+import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect } from 'react';
 import { alphabetizeObjects, getFormattedIdentitySource } from 'utils/Utils';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
@@ -77,7 +77,7 @@ const ProjectParticipantsPage: React.FC = () => {
     [dialogContext]
   );
 
-  const handleDialogRemoveParticipantOpen = (participant: IGetProjectParticipants) => {
+  const handleDialogRemoveParticipantOpen = (participant: IGetProjectParticipant) => {
     dialogContext.setYesNoDialog({
       dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
       dialogContent: (
@@ -138,7 +138,6 @@ const ProjectParticipantsPage: React.FC = () => {
 
   const codes = codesContext.codesDataLoader.data;
 
-  console.log(projectParticipantsDataLoader?.data);
   return (
     <>
       <ProjectParticipantsHeader refresh={projectParticipantsDataLoader.refresh} />
@@ -170,7 +169,7 @@ const ProjectParticipantsPage: React.FC = () => {
                       <TableRow key={participant.project_participation_id}>
                         <TableCell scope="row">{participant.user_identifier}</TableCell>
                         <TableCell scope="row">
-                          {getFormattedIdentitySource(participant.user_identity_source_name as SYSTEM_IDENTITY_SOURCE)}
+                          {getFormattedIdentitySource(participant.identity_source as SYSTEM_IDENTITY_SOURCE)}
                         </TableCell>
                         <TableCell>
                           <Box my={-1}>
