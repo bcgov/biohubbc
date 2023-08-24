@@ -1,7 +1,7 @@
 import { omit, omitBy } from 'lodash-es';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { AnyObjectSchema, AnySchema, InferType, reach } from 'yup';
+import { AnyObjectSchema, InferType, reach } from 'yup';
 
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
@@ -44,12 +44,6 @@ const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeEr
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
 const dateSchema = yup.date().typeError(req);
 
-const genReleaseUtmConditionalSchema = (schema: AnySchema) =>
-  schema.when(['projection_mode', 'show_release'], {
-    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
-    then: schema.required(req)
-  });
-
 export type ProjectionMode = 'wgs' | 'utm';
 
 export const AnimalGeneralSchema = yup.object({}).shape({
@@ -66,16 +60,22 @@ export const AnimalCaptureSchema = yup.object({}).shape({
   capture_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
   capture_utm_easting: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
   capture_timestamp: dateSchema.required(req),
-  capture_coordinate_uncertainty: numSchema.when('projection_mode', { is: 'wgs', then: numSchema.required(req) }),
+  capture_coordinate_uncertainty: numSchema.required(req),
   capture_comment: yup.string(),
   projection_mode: yup.mixed().oneOf(['wgs', 'utm']),
   show_release: yup.boolean().required(), // used for conditional required release fields
   release_longitude: lonSchema.when('show_release', { is: true, then: lonSchema.required(req) }),
   release_latitude: latSchema.when('show_release', { is: true, then: latSchema.required(req) }),
-  release_utm_northing: genReleaseUtmConditionalSchema(numSchema),
-  release_utm_easting: genReleaseUtmConditionalSchema(numSchema),
-  release_coordinate_uncertainty: genReleaseUtmConditionalSchema(numSchema),
-  release_timestamp: genReleaseUtmConditionalSchema(dateSchema),
+  release_utm_northing: numSchema.when(['projection_mode', 'show_release'], {
+    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
+    then: numSchema.required(req)
+  }),
+  release_utm_easting: numSchema.when(['projection_mode', 'show_release'], {
+    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
+    then: numSchema.required(req)
+  }),
+  release_coordinate_uncertainty: numSchema.when('show_release', { is: true, then: numSchema.required(req) }),
+  release_timestamp: dateSchema.when('show_release', { is: true, then: dateSchema.required(req) }),
   release_comment: yup.string().optional()
 });
 
