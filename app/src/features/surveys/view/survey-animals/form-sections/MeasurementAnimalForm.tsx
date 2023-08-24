@@ -150,7 +150,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             label="Value"
             name={optionName}
             id="qualitative_option"
-            route="taxon_qualitative_measurement_options"
+            route="xref/taxon-qualitative-measurement-options"
             query={`taxon_measurement_id=${taxonMeasurementId}`}
             controlProps={{
               size: 'small',

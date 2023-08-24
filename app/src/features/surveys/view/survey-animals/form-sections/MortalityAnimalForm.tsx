@@ -113,7 +113,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
               required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_reason')
             }}
             id={`${index}-pcod-reason`}
-            route={'cod'}
+            route={'lookups/cods'}
           />
         </Grid>
         <Grid item xs={4}>
@@ -125,7 +125,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
               required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_confidence')
             }}
             id={`${index}-pcod-confidence`}
-            route={'cause_of_death_confidence'}
+            route={'lookups/cause-of-death-confidence'}
           />
         </Grid>
         <Grid item xs={3}>
@@ -138,7 +138,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
               required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_taxon_id')
             }}
             id={`${index}-pcod-taxon`}
-            route={'taxons'}
+            route={'lookups/taxons'}
           />
         </Grid>
         <Grid item xs={5}>
@@ -153,7 +153,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
               required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_reason')
             }}
             id={`${index}-ucod-reason`}
-            route={'cod'}
+            route={'lookups/cods'}
           />
         </Grid>
         <Grid item xs={4}>
@@ -165,7 +165,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
               required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_confidence')
             }}
             id={`${index}-ucod-confidence`}
-            route={'cause_of_death_confidence'}
+            route={'lookups/cause-of-death-confidence'}
           />
         </Grid>
         <Grid item xs={3}>
@@ -178,7 +178,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
               required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_taxon_id')
             }}
             id={`${index}-ucod-taxon`}
-            route={'taxons'}
+            route={'lookups/taxons'}
           />
         </Grid>
         <Grid item xs={12}>
