@@ -105,7 +105,7 @@ describe('BctwService', () => {
 
       expect(result).to.equal(mockResponse.data);
       expect(mockGetToken).to.have.been.calledOnce;
-      expect(mockAxios).to.have.been.calledOnce.with(`${BCTW_API_HOST}${endpoint}`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}`);
     });
 
     it('should make an axios get request with params', async () => {
