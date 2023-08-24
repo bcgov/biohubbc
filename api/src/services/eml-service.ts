@@ -331,7 +331,7 @@ export class EmlService extends DBService {
 
         // Build EML->Dataset->Project->AdditionalMetadata field
         .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectData))
-        .withAdditionalMetadata(this._getSurveyAdditionalMetadata(surveysData))
+        .withAdditionalMetadata(await this._getSurveyAdditionalMetadata(surveysData))
 
         // Build EML->Dataset->Project->RelatedProject field
         .withRelatedProjects(await this._buildAllSurveyEmlProjectSections(surveysData))
@@ -374,7 +374,7 @@ export class EmlService extends DBService {
 
         // Build EML->Dataset->Project->AdditionalMetadata field
         .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectData))
-        .withAdditionalMetadata(this._getSurveyAdditionalMetadata([surveyData]))
+        .withAdditionalMetadata(await this._getSurveyAdditionalMetadata([surveyData]))
 
         // Build EML->Dataset->Project->RelatedProject field//
         .withRelatedProjects([this._buildProjectEmlProjectSection(projectData)])
@@ -532,10 +532,10 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): AdditionalMetadata[] {
+  async _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): Promise<AdditionalMetadata[]> {
     const additionalMetadata: AdditionalMetadata[] = [];
 
-    _surveysData.forEach((item) => {
+    await Promise.all(_surveysData.map(async (item) => {
       // add this metadata field so biohub is aware if EML is a project or survey
       additionalMetadata.push({
         describes: item.survey_details.uuid,
@@ -545,7 +545,11 @@ export class EmlService extends DBService {
           }
         }
       });
-    });
+
+      const partnetshipsMetadata = await this._buildPartnershipMetadata(item);
+      additionalMetadata.push(partnetshipsMetadata);
+    }));
+
 
     return additionalMetadata;
   }
@@ -622,8 +626,6 @@ export class EmlService extends DBService {
       });
     }
 
-    additionalMetadata.push(await this._buildPartnershipMetadata(projectData));
-
     // add this metadata field so biohub is aware if EML is a project or survey
     additionalMetadata.push({
       describes: projectData.project.uuid,
@@ -637,10 +639,10 @@ export class EmlService extends DBService {
     return additionalMetadata;
   }
 
-  async _buildPartnershipMetadata(projectData: IGetProject): Promise<any> {
-    const stakeholders = projectData.partnerships.stakeholder_partnerships;
+  async _buildPartnershipMetadata(surveyData: SurveyObject): Promise<any> {
+    const stakeholders = surveyData.partnerships.stakeholder_partnerships;
     const codes = await this.codes();
-    const indigenousPartnerships = projectData.partnerships.indigenous_partnerships;
+    const indigenousPartnerships = surveyData.partnerships.indigenous_partnerships;
     const firstNationsNames = codes.first_nations
       .filter((code) => indigenousPartnerships.includes(code.id))
       .map((code) => code.name);
@@ -648,7 +650,7 @@ export class EmlService extends DBService {
     const sortedPartnerships = _.sortBy([...firstNationsNames, ...stakeholders]);
 
     return {
-      describes: projectData.project.uuid,
+      describes: surveyData.survey_details.uuid,
       metadata: {
         partnerships: {
           partnership: sortedPartnerships.map((name) => {

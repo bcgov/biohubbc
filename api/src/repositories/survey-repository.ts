@@ -6,6 +6,7 @@ import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAttachmentsData,
+  GetPartnershipsData,
   GetReportAttachmentsData,
   GetSurveyData,
   GetSurveyLocationData,
@@ -1098,6 +1099,196 @@ export class SurveyRepository extends BaseRepository {
       ]);
     }
 
+    return response.rowCount;
+  }
+
+  /**
+   * @TODO jdsdoc
+   * 
+   * @TODO should probably simplify this method to use knex? And accept [] as a valid response? ...
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<GetPartnershipsData['indigenous_partnerships'][]>}
+   * @memberof SurveyRepository
+   */
+  async getIndigenousPartnershipsBySurveyId(surveyId: number): Promise<GetPartnershipsData['indigenous_partnerships'][]> {
+    defaultLog.debug({ label: 'getIndigenousPartnershipsBySurveyId', surveyId });
+
+    const sqlStatement = SQL`
+      SELECT
+        fn.first_nations_id as id,
+        fn.name as first_nations_name
+      FROM
+        survey_first_nation_partnership sfnp
+      LEFT OUTER JOIN
+        first_nations fn
+      ON
+      sfnp.first_nations_id = fn.first_nations_id
+      WHERE
+      sfnp.survey_id = ${surveyId}
+      GROUP BY
+        fn.first_nations_id,
+        fn.name;
+    `;
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    const result = response?.rows;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get survey Indigenous Partnerships data', [
+        'SurveyRepository->getIndigenousPartnershipsBySurveyId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return result;
+  }
+
+  /**
+   * @TODO jsdoc
+   * 
+   * @TODO should probably simplify this method to use knex? And accept [] as a valid response? ...
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<GetPartnershipsData['stakeholder_partnerships'][]>}
+   * @memberof SurveyRepository
+   */
+  async getStakeholderPartnershipsBySurveyId(surveyId: number): Promise<GetPartnershipsData['stakeholder_partnerships'][]> {
+    defaultLog.debug({ label: 'getStakeholderPartnershipsBySurveyId', surveyId });
+
+    const sqlStatement = SQL`
+      SELECT
+        name as partnership_name
+      FROM
+        survey_stakeholder_partnership
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    const result = response?.rows;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get survey Stakeholder Partnerships data', [
+        'SurveyRepository->getStakeholderPartnershipsBySurveyId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return result;
+  }
+
+  /**
+   * @TODO jsdoc
+   *
+   * @param {number[]} firstNationsIds
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ survey_first_nation_partnership_id: number }[]>}
+   * @memberof SurveyRepository
+   */
+  async insertIndigenousPartnerships(firstNationsIds: number[], surveyId: number): Promise<{ survey_first_nation_partnership_id: number }[]> {
+    defaultLog.debug({ label: 'insertIndigenousPartnerships', firstNationsIds, surveyId });
+    const queryBuilder = getKnex()
+      .table('survey_first_nation_partnership')
+      .insert(firstNationsIds.map((firstNationsId: number) => ({
+        first_nations_id: firstNationsId,
+        survey_id: surveyId
+      })))
+      .returning('survey_first_nation_partnership_id');
+
+    const response = await this.connection.knex<{ survey_first_nation_partnership_id: number }>(queryBuilder);
+
+    if (!response || response.rowCount === 0) {
+      throw new ApiExecuteSQLError('Failed to insert survey indigenous partnerships', [
+        'ErrorRepository->insertIndigenousPartnerships',
+        'rowCount was null or undefined, expected rowCount != 0'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * @TODO jsdoc
+   *
+   * @param {string[]} stakeholderPartners
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ survey_stakeholder_partnership_id: number }[]>}
+   * @memberof SurveyRepository
+   */
+  async insertStakeholderPartnerships(stakeholderPartners: string[], surveyId: number): Promise<{ survey_stakeholder_partnership_id: number }[]> {
+    defaultLog.debug({ label: 'insertStakeholderPartnerships', stakeholderPartners, surveyId });
+    const queryBuilder = getKnex()
+      .table('survey_stakeholder_partnership')
+      .insert(stakeholderPartners.map((stakeholder: string) => ({
+        name: stakeholder,
+        survey_id: surveyId
+      })))
+      .returning('survey_stakeholder_partnership_id');
+
+    const response = await this.connection.knex<{ survey_stakeholder_partnership_id: number }>(queryBuilder);
+
+    if (!response || response.rowCount === 0) {
+      throw new ApiExecuteSQLError('Failed to insert survey stakeholder partnerships', [
+        'ErrorRepository->insertStakeholderPartnerships',
+        'rowCount was null or undefined, expected rowCount != 0'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * @TODO jsdoc
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>} The number of rows affected
+   * @memberof SurveyRepository
+   */
+  async deleteIndigenousPartnershipsData(surveyId: number): Promise<number> {
+    defaultLog.debug({ label: 'deleteIndigenousPartnershipsData', surveyId });
+    const queryBuilder = getKnex()
+      .table('survey_first_nation_partnership')
+      .delete()
+      .where('survey_id', surveyId);
+    
+    const response = await this.connection.knex(queryBuilder);
+
+    if (!response || response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to delete survey indigenous partnerships', [
+        'ErrorRepository->deleteIndigenousPartnershipsData',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+  
+    return response.rowCount;
+  }
+
+  /**
+   * @TODO jsdoc
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>} The number of rows affected
+   * @memberof SurveyRepository
+   */
+  async deleteStakeholderPartnershipsData(surveyId: number): Promise<number> {
+    defaultLog.debug({ label: 'deleteStakeholderPartnershipsData', surveyId });
+    const queryBuilder = getKnex()
+      .table('survey_stakeholder_partnership')
+      .delete()
+      .where('survey_id', surveyId);
+    
+    const response = await this.connection.knex(queryBuilder);
+
+    if (!response || response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to delete survey stakeholder partnerships', [
+        'ErrorRepository->deleteStakeholderPartnershipsData',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+  
     return response.rowCount;
   }
 }

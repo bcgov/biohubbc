@@ -2,11 +2,12 @@ import { Feature } from 'geojson';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
-import { PutSurveyObject } from '../models/survey-update';
+import { PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
+  GetPartnershipsData,
   GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
@@ -81,33 +82,23 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSurveyById(surveyId: number): Promise<SurveyObject> {
-    const [
-      surveyData,
-      speciesData,
-      permitData,
-      fundingData,
-      purposeAndMethodologyData,
-      proprietorData,
-      locationData
-    ] = await Promise.all([
-      this.getSurveyData(surveyId),
-      this.getSpeciesData(surveyId),
-      this.getPermitData(surveyId),
-      this.getSurveyFundingSourceData(surveyId),
-      this.getSurveyPurposeAndMethodology(surveyId),
-      this.getSurveyProprietorDataForView(surveyId),
-      this.getSurveyLocationData(surveyId)
-    ]);
-
     return {
-      survey_details: surveyData,
-      species: speciesData,
-      permit: permitData,
-      funding_sources: fundingData,
-      purpose_and_methodology: purposeAndMethodologyData,
-      proprietor: proprietorData,
-      location: locationData
+      survey_details:           await this.getSurveyData(surveyId),
+      species:                  await this.getSpeciesData(surveyId),
+      permit:                   await this.getPermitData(surveyId),
+      funding_sources:          await this.getSurveyFundingSourceData(surveyId),
+      partnerships:             await this.getSurveyPartnershipsData(surveyId),
+      purpose_and_methodology:  await this.getSurveyPurposeAndMethodology(surveyId),
+      proprietor:               await this.getSurveyProprietorDataForView(surveyId),
+      location:                 await this.getSurveyLocationData(surveyId)
     };
+  }
+
+  async getSurveyPartnershipsData(surveyId: number): Promise<GetPartnershipsData> {
+    return new GetPartnershipsData(
+      await this.surveyRepository.getIndigenousPartnershipsBySurveyId(surveyId),
+      await this.surveyRepository.getStakeholderPartnershipsBySurveyId(surveyId)
+    );
   }
 
   /**
@@ -372,6 +363,22 @@ export class SurveyService extends DBService {
       )
     );
 
+    // Handle indigenous partners
+    if (postSurveyData.partnerships.indigenous_partnerships) {
+      promises.push(this.insertIndigenousPartnerships(
+        postSurveyData.partnerships.indigenous_partnerships,
+        surveyId
+      ));
+    }
+
+    // Handle stakeholder partners
+    if (postSurveyData.partnerships.stakeholder_partnerships) {
+      promises.push(this.insertStakeholderPartnerships(
+        postSurveyData.partnerships.stakeholder_partnerships,
+        surveyId
+      ))
+    }
+
     // Handle inserting any permit associated to this survey
     const permitService = new PermitService(this.connection);
     promises.push(
@@ -575,6 +582,10 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyVantageCodesData(surveyId, putSurveyData));
+    }
+
+    if (putSurveyData?.partnerships) {
+      promises.push(this.updatePartnershipsData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.species) {
@@ -796,6 +807,55 @@ export class SurveyService extends DBService {
    */
   async deleteSurveyProprietorData(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurveyProprietorData(surveyId);
+  }
+
+  /**
+   * @TODO jsdoc
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async updatePartnershipsData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
+    const putPartnershipsData = (surveyData?.partnerships && new PutPartnershipsData(surveyData.partnerships)) || null;
+
+    // Remove existing partnership records
+    await this.surveyRepository.deleteIndigenousPartnershipsData(surveyId);
+    await this.surveyRepository.deleteStakeholderPartnershipsData(surveyId);
+
+    // Insert new partnership records
+    if (putPartnershipsData?.indigenous_partnerships) {
+      await this.insertIndigenousPartnerships(putPartnershipsData?.indigenous_partnerships, surveyId);
+    }
+
+    if (putPartnershipsData?.stakeholder_partnerships) {
+      await this.insertStakeholderPartnerships(putPartnershipsData?.stakeholder_partnerships, surveyId);
+    }
+  }
+
+  /**
+   * @TODO jsdoc
+   *
+   * @param {number[]} firstNationsIds
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ survey_first_nation_partnership_id: number }[]>}
+   * @memberof SurveyService
+   */
+  async insertIndigenousPartnerships(firstNationsIds: number[], surveyId: number): Promise<{ survey_first_nation_partnership_id: number }[]> {
+    return this.surveyRepository.insertIndigenousPartnerships(firstNationsIds, surveyId);
+  }
+
+  /**
+   * @TODO jsdoc
+   *
+   * @param {string[]} stakeholderPartners
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ survey_stakeholder_partnership_id: number }[]>}
+   * @memberof SurveyService
+   */
+  async insertStakeholderPartnerships(stakeholderPartners: string[], surveyId: number): Promise<{ survey_stakeholder_partnership_id: number }[]> {
+    return this.surveyRepository.insertStakeholderPartnerships(stakeholderPartners, surveyId);
   }
 
   /**

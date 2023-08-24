@@ -10,7 +10,7 @@ export type SurveyObject = {
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
-  partnerships: GetPartnershipsData[];
+  partnerships: GetPartnershipsData;
 };
 
 export class GetSurveyData {

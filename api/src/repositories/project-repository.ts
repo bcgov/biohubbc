@@ -335,62 +335,6 @@ export class ProjectRepository extends BaseRepository {
     return new GetIUCNClassificationData(result);
   }
 
-  async getIndigenousPartnershipsRows(projectId: number): Promise<any[]> {
-    const sqlStatement = SQL`
-      SELECT
-        fn.first_nations_id as id,
-        fn.name as first_nations_name
-      FROM
-        project_first_nation pfn
-      LEFT OUTER JOIN
-        first_nations fn
-      ON
-        pfn.first_nations_id = fn.first_nations_id
-      WHERE
-        pfn.project_id = ${projectId}
-      GROUP BY
-        fn.first_nations_id,
-        fn.name;
-    `;
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project Indigenous Partnerships data', [
-        'ProjectRepository->getIndigenousPartnershipsRows',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
-  }
-
-  async getStakeholderPartnershipsRows(projectId: number): Promise<any[]> {
-    const sqlStatement = SQL`
-      SELECT
-        name as partnership_name
-      FROM
-        stakeholder_partnership
-      WHERE
-        project_id = ${projectId};
-    `;
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project Stakeholder Partnerships data', [
-        'ProjectRepository->getStakeholderPartnershipsRows',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
-  }
-
   async getAttachmentsData(projectId: number): Promise<GetAttachmentsData> {
     const sqlStatement = SQL`
       SELECT
@@ -519,60 +463,6 @@ export class ProjectRepository extends BaseRepository {
     return result.id;
   }
 
-  async insertIndigenousNation(indigenousNationsId: number, project_id: number): Promise<number> {
-    const sqlStatement = SQL`
-      INSERT INTO project_first_nation (
-        project_id,
-        first_nations_id
-      ) VALUES (
-        ${project_id},
-        ${indigenousNationsId}
-      )
-      RETURNING
-        first_nations_id as id;
-    `;
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = response?.rows?.[0];
-
-    if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert project first nations partnership data', [
-        'ProjectRepository->insertIndigenousNation',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result.id;
-  }
-
-  async insertStakeholderPartnership(stakeholderPartner: string, project_id: number): Promise<number> {
-    const sqlStatement = SQL`
-      INSERT INTO stakeholder_partnership (
-        project_id,
-        name
-      ) VALUES (
-        ${project_id},
-        ${stakeholderPartner}
-      )
-      RETURNING
-        stakeholder_partnership_id as id;
-    `;
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = response?.rows?.[0];
-
-    if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert project stakeholder partnership data', [
-        'ProjectRepository->insertStakeholderPartnership',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result.id;
-  }
-
   async insertClassificationDetail(iucn3_id: number, project_id: number): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO project_iucn_action_classification (
@@ -686,28 +576,6 @@ export class ProjectRepository extends BaseRepository {
     const sqlDeleteStatement = SQL`
       DELETE
         from project_iucn_action_classification
-      WHERE
-        project_id = ${projectId};
-    `;
-
-    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-  }
-
-  async deleteIndigenousPartnershipsData(projectId: number): Promise<void> {
-    const sqlDeleteStatement = SQL`
-      DELETE
-        from project_first_nation
-      WHERE
-        project_id = ${projectId};
-    `;
-
-    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-  }
-
-  async deleteStakeholderPartnershipsData(projectId: number): Promise<void> {
-    const sqlDeleteStatement = SQL`
-      DELETE
-        from stakeholder_partnership
       WHERE
         project_id = ${projectId};
     `;
