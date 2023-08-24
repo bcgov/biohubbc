@@ -82,7 +82,11 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
         biologist_last_name: yup.string().required('Last Name is Required'),
         start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Start Date is Required'),
         end_date:
-          customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
+          customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
+        survey_types: yup
+          .array(yup.number())
+          .min(1, 'One or more Types are required')
+          .required('One or more Types are required')
       }),
       species: yup.object().shape({
         focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
@@ -155,7 +159,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             id={'survey_details.survey_types'}
             label={'Type'}
             options={props.type}
-            required={false}
+            required={true}
           />
         </Grid>
         <Grid item xs={12}>
