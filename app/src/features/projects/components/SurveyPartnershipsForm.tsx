@@ -23,7 +23,6 @@ export const SurveyPartnershipsFormInitialValues: ISurveyPartnershipsForm = {
 
 export const SurveyPartnershipsFormYupSchema = yup.object().shape({});
 
-
 /**
  * Create/edit survey - Partnerships section
  *
@@ -31,23 +30,24 @@ export const SurveyPartnershipsFormYupSchema = yup.object().shape({});
  */
 const SurveyPartnershipsForm = () => {
   const formikProps = useFormikContext<ISurveyPartnershipsForm>();
-  console.log(formikProps.values)
-
+  console.log(formikProps.values);
 
   const codesContext = useContext(CodesContext);
-  
+
   const codes = codesContext.codesDataLoader.data;
   codesContext.codesDataLoader.load();
 
   const { handleSubmit } = formikProps;
 
-  const first_nations: IMultiAutocompleteFieldOption[] = codes?.first_nations?.map((item) => {
-    return { value: item.id, label: item.name };
-  }) || [];
+  const first_nations: IMultiAutocompleteFieldOption[] =
+    codes?.first_nations?.map((item) => {
+      return { value: item.id, label: item.name };
+    }) || [];
 
-  const stakeholder_partnerships: IMultiAutocompleteFieldOption[] = codes?.agency?.map((item) => {
-    return { value: item.name, label: item.name };
-  }) || [];
+  const stakeholder_partnerships: IMultiAutocompleteFieldOption[] =
+    codes?.agency?.map((item) => {
+      return { value: item.name, label: item.name };
+    }) || [];
 
   return (
     <form onSubmit={handleSubmit}>

@@ -172,8 +172,8 @@ describe('CreateProjectPage', () => {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-                      }
+            iucn: ProjectIUCNFormInitialValues.iucn
+          }
         });
 
         const { queryAllByText } = render(
@@ -204,7 +204,7 @@ describe('CreateProjectPage', () => {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
+            iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
@@ -244,8 +244,8 @@ describe('CreateProjectPage', () => {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-                      }
+            iucn: ProjectIUCNFormInitialValues.iucn
+          }
         });
 
         const { getByText, findAllByText, getByTestId, queryByText } = render(
@@ -291,8 +291,8 @@ describe('CreateProjectPage', () => {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-                      }
+            iucn: ProjectIUCNFormInitialValues.iucn
+          }
         });
 
         const { getByText, findAllByText, getByTestId } = render(
@@ -337,8 +337,7 @@ describe('CreateProjectPage', () => {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
-          iucn: ProjectIUCNFormInitialValues.iucn,
-          
+          iucn: ProjectIUCNFormInitialValues.iucn
         }
       });
 
@@ -435,8 +434,7 @@ describe('CreateProjectPage', () => {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
-          iucn: ProjectIUCNFormInitialValues.iucn,
-          
+          iucn: ProjectIUCNFormInitialValues.iucn
         }
       });
 
@@ -548,8 +546,7 @@ describe('CreateProjectPage', () => {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
-          iucn: ProjectIUCNFormInitialValues.iucn,
-          
+          iucn: ProjectIUCNFormInitialValues.iucn
         }
       });
 

@@ -7,6 +7,10 @@ import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
+import SurveyPartnershipsForm, {
+  SurveyPartnershipsFormInitialValues,
+  SurveyPartnershipsFormYupSchema
+} from 'features/projects/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
@@ -28,7 +32,6 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
-import SurveyPartnershipsForm, { SurveyPartnershipsFormInitialValues, SurveyPartnershipsFormYupSchema } from 'features/projects/components/SurveyPartnershipsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {

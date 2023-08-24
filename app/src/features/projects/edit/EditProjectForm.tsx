@@ -11,7 +11,6 @@ import React from 'react';
 import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
-
 import {
   getCoordinatorAgencyOptions,
   initialProjectFieldData,

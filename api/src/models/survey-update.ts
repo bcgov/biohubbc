@@ -34,7 +34,6 @@ export class PutPartnershipsData {
   }
 }
 
-
 export class PutFundingSourceData {
   survey_funding_source_id?: number;
   funding_source_id: number;

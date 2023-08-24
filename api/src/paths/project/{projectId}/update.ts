@@ -36,7 +36,7 @@ export enum GET_ENTITIES {
   project = 'project',
   objectives = 'objectives',
   location = 'location',
-  iucn = 'iucn',
+  iucn = 'iucn'
 }
 
 export const getAllEntities = (): string[] => Object.values(GET_ENTITIES);

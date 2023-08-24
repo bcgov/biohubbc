@@ -535,21 +535,22 @@ export class EmlService extends DBService {
   async _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): Promise<AdditionalMetadata[]> {
     const additionalMetadata: AdditionalMetadata[] = [];
 
-    await Promise.all(_surveysData.map(async (item) => {
-      // add this metadata field so biohub is aware if EML is a project or survey
-      additionalMetadata.push({
-        describes: item.survey_details.uuid,
-        metadata: {
-          types: {
-            type: 'SURVEY'
+    await Promise.all(
+      _surveysData.map(async (item) => {
+        // add this metadata field so biohub is aware if EML is a project or survey
+        additionalMetadata.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            types: {
+              type: 'SURVEY'
+            }
           }
-        }
-      });
+        });
 
-      const partnetshipsMetadata = await this._buildPartnershipMetadata(item);
-      additionalMetadata.push(partnetshipsMetadata);
-    }));
-
+        const partnetshipsMetadata = await this._buildPartnershipMetadata(item);
+        additionalMetadata.push(partnetshipsMetadata);
+      })
+    );
 
     return additionalMetadata;
   }

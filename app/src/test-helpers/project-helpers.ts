@@ -38,10 +38,6 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
           subClassification2: 2
         }
       ]
-    },
-    partnerships: {
-      indigenous_partnerships: [1, 2],
-      stakeholder_partnerships: ['partner 3', 'partner 4']
     }
   },
   projectSupplementaryData: {

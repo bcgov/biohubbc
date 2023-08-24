@@ -15,6 +15,10 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
+import SurveyPartnershipsForm, {
+  SurveyPartnershipsFormInitialValues,
+  SurveyPartnershipsFormYupSchema
+} from 'features/projects/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -43,7 +47,6 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from './components/SurveyFundingSourceForm';
-import SurveyPartnershipsForm, { SurveyPartnershipsFormInitialValues, SurveyPartnershipsFormYupSchema } from 'features/projects/components/SurveyPartnershipsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {

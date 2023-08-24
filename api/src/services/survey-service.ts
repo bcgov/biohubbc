@@ -83,14 +83,14 @@ export class SurveyService extends DBService {
    */
   async getSurveyById(surveyId: number): Promise<SurveyObject> {
     return {
-      survey_details:           await this.getSurveyData(surveyId),
-      species:                  await this.getSpeciesData(surveyId),
-      permit:                   await this.getPermitData(surveyId),
-      funding_sources:          await this.getSurveyFundingSourceData(surveyId),
-      partnerships:             await this.getSurveyPartnershipsData(surveyId),
-      purpose_and_methodology:  await this.getSurveyPurposeAndMethodology(surveyId),
-      proprietor:               await this.getSurveyProprietorDataForView(surveyId),
-      location:                 await this.getSurveyLocationData(surveyId)
+      survey_details: await this.getSurveyData(surveyId),
+      species: await this.getSpeciesData(surveyId),
+      permit: await this.getPermitData(surveyId),
+      funding_sources: await this.getSurveyFundingSourceData(surveyId),
+      partnerships: await this.getSurveyPartnershipsData(surveyId),
+      purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
+      proprietor: await this.getSurveyProprietorDataForView(surveyId),
+      location: await this.getSurveyLocationData(surveyId)
     };
   }
 
@@ -365,18 +365,12 @@ export class SurveyService extends DBService {
 
     // Handle indigenous partners
     if (postSurveyData.partnerships.indigenous_partnerships) {
-      promises.push(this.insertIndigenousPartnerships(
-        postSurveyData.partnerships.indigenous_partnerships,
-        surveyId
-      ));
+      promises.push(this.insertIndigenousPartnerships(postSurveyData.partnerships.indigenous_partnerships, surveyId));
     }
 
     // Handle stakeholder partners
     if (postSurveyData.partnerships.stakeholder_partnerships) {
-      promises.push(this.insertStakeholderPartnerships(
-        postSurveyData.partnerships.stakeholder_partnerships,
-        surveyId
-      ))
+      promises.push(this.insertStakeholderPartnerships(postSurveyData.partnerships.stakeholder_partnerships, surveyId));
     }
 
     // Handle inserting any permit associated to this survey
@@ -842,7 +836,10 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<{ survey_first_nation_partnership_id: number }[]>}
    * @memberof SurveyService
    */
-  async insertIndigenousPartnerships(firstNationsIds: number[], surveyId: number): Promise<{ survey_first_nation_partnership_id: number }[]> {
+  async insertIndigenousPartnerships(
+    firstNationsIds: number[],
+    surveyId: number
+  ): Promise<{ survey_first_nation_partnership_id: number }[]> {
     return this.surveyRepository.insertIndigenousPartnerships(firstNationsIds, surveyId);
   }
 
@@ -854,7 +851,10 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<{ survey_stakeholder_partnership_id: number }[]>}
    * @memberof SurveyService
    */
-  async insertStakeholderPartnerships(stakeholderPartners: string[], surveyId: number): Promise<{ survey_stakeholder_partnership_id: number }[]> {
+  async insertStakeholderPartnerships(
+    stakeholderPartners: string[],
+    surveyId: number
+  ): Promise<{ survey_stakeholder_partnership_id: number }[]> {
     return this.surveyRepository.insertStakeholderPartnerships(stakeholderPartners, surveyId);
   }
 

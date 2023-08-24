@@ -44,15 +44,15 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectObjectivesFormInitialValues,
   ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
-  ...ProjectIUCNFormInitialValues,
+  ...ProjectIUCNFormInitialValues
 };
 
-export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
-  .concat(ProjectObjectivesFormYupSchema)
-  // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (yup schema) temporarily, while its decided where exactly project/survey locations should be defined
-  // .concat(ProjectLocationFormYupSchema)
-  // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired
-  // .concat(ProjectIUCNFormYupSchema)
+export const validationProjectYupSchema =
+  ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema).concat(ProjectObjectivesFormYupSchema);
+// TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (yup schema) temporarily, while its decided where exactly project/survey locations should be defined
+// .concat(ProjectLocationFormYupSchema)
+// TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired
+// .concat(ProjectIUCNFormYupSchema)
 
 //Function to get the list of coordinator agencies from the code set
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
