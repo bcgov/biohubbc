@@ -70,8 +70,14 @@ export const AnimalCaptureSchema = yup.object({}).shape({
   capture_comment: yup.string(),
   projection_mode: yup.mixed().oneOf(['wgs', 'utm']),
   show_release: yup.boolean().required(), // used for conditional required release fields
-  release_longitude: lonSchema.when('show_release', { is: true, then: lonSchema.required(req) }),
-  release_latitude: latSchema.when('show_release', { is: true, then: latSchema.required(req) }),
+  release_longitude: lonSchema.when(['projection_mode', 'show_release'], {
+    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'wgs' && show_release,
+    then: lonSchema.required(req)
+  }),
+  release_latitude: latSchema.when(['projection_mode', 'show_release'], {
+    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'wgs' && show_release,
+    then: latSchema.required(req)
+  }),
   release_utm_northing: numSchema.when(['projection_mode', 'show_release'], {
     is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
     then: numSchema.required(req)

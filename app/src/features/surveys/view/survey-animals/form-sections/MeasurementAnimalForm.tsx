@@ -165,19 +165,19 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             }}
           />
         ) : (
-            <Field
-              as={CustomTextField}
-              name={valueName}
-              handleBlur={handleBlur}
-              label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
-              other={{
-                required: true,
-                size: 'small',
-                disabled: !taxonMeasurementId
-              }}
-              validate={validateValue}
-            />
-          )}
+          <Field
+            as={CustomTextField}
+            name={valueName}
+            handleBlur={handleBlur}
+            label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
+            other={{
+              required: true,
+              size: 'small',
+              disabled: !taxonMeasurementId
+            }}
+            validate={validateValue}
+          />
+        )}
       </Grid>
       <Grid item xs={4}>
         <SingleDateField
