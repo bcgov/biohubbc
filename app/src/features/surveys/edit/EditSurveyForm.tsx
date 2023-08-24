@@ -10,7 +10,7 @@ import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormInitialValues,
   SurveyPartnershipsFormYupSchema
-} from 'features/projects/components/SurveyPartnershipsForm';
+} from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ProjectViewObject } from 'interfaces/useProjectApi.interface';

@@ -5,6 +5,7 @@ import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
+  GetPartnershipsData,
   GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
@@ -601,6 +602,97 @@ describe('GetReportAttachmentsData', () => {
           authors: [{ author: 'author' }]
         }
       ]);
+    });
+  });
+});
+
+describe('GetPartnershipsData', () => {
+  describe('No values provided', () => {
+    let data: GetPartnershipsData;
+
+    before(() => {
+      data = new GetPartnershipsData((null as unknown) as any[], (null as unknown) as any[]);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(data.indigenous_partnerships).to.eql([]);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(data.stakeholder_partnerships).to.eql([]);
+    });
+  });
+
+  describe('Empty arrays as values provided', () => {
+    let data: GetPartnershipsData;
+
+    before(() => {
+      data = new GetPartnershipsData([], []);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(data.indigenous_partnerships).to.eql([]);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(data.stakeholder_partnerships).to.eql([]);
+    });
+  });
+
+  describe('indigenous_partnerships values provided', () => {
+    let data: GetPartnershipsData;
+
+    const indigenous_partnerships = [{ id: 1 }, { id: 2 }];
+    const stakeholder_partnerships: string[] = [];
+
+    before(() => {
+      data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(data.indigenous_partnerships).to.eql([1, 2]);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(data.stakeholder_partnerships).to.eql([]);
+    });
+  });
+
+  describe('stakeholder_partnerships values provided', () => {
+    let data: GetPartnershipsData;
+
+    const indigenous_partnerships: number[] = [];
+    const stakeholder_partnerships = [{ partnership_name: 'partner 1' }, { partnership_name: 'partner 2' }];
+
+    before(() => {
+      data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(data.indigenous_partnerships).to.eql([]);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(data.stakeholder_partnerships).to.eql(['partner 1', 'partner 2']);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: GetPartnershipsData;
+
+    const indigenous_partnerships = [{ id: 1 }, { id: 2 }];
+    const stakeholder_partnerships = [{ partnership_name: 'partner 3' }, { partnership_name: 'partner 4' }];
+
+    before(() => {
+      data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(data.indigenous_partnerships).to.eql([1, 2]);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(data.stakeholder_partnerships).to.eql(['partner 3', 'partner 4']);
     });
   });
 });

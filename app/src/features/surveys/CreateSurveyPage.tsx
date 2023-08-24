@@ -18,7 +18,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormInitialValues,
   SurveyPartnershipsFormYupSchema
-} from 'features/projects/components/SurveyPartnershipsForm';
+} from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';

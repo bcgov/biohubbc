@@ -5,7 +5,6 @@ import {
   PutIUCNData,
   PutLocationData,
   PutObjectivesData,
-  PutPartnershipsData,
   PutProjectData
 } from './project-update';
 
@@ -294,45 +293,6 @@ describe('PutIUCNData', () => {
 
     it('sets classification details', () => {
       expect(data.classificationDetails).to.eql(obj.classificationDetails);
-    });
-  });
-});
-
-describe('PutPartnershipsData', () => {
-  describe('No values provided', () => {
-    let data: PutPartnershipsData;
-
-    before(() => {
-      data = new PutPartnershipsData(null);
-    });
-
-    it('sets indigenous_partnerships', () => {
-      expect(data.indigenous_partnerships).to.eql([]);
-    });
-
-    it('sets stakeholder_partnerships', () => {
-      expect(data.stakeholder_partnerships).to.eql([]);
-    });
-  });
-
-  describe('all values provided', () => {
-    const obj = {
-      indigenous_partnerships: [1, 2],
-      stakeholder_partnerships: ['partner 3', 'partner 4']
-    };
-
-    let data: PutPartnershipsData;
-
-    before(() => {
-      data = new PutPartnershipsData(obj);
-    });
-
-    it('sets indigenous_partnerships', () => {
-      expect(data.indigenous_partnerships).to.eql(obj.indigenous_partnerships);
-    });
-
-    it('sets stakeholder_partnerships', () => {
-      expect(data.stakeholder_partnerships).to.eql(obj.stakeholder_partnerships);
     });
   });
 });

@@ -30,7 +30,6 @@ export const SurveyPartnershipsFormYupSchema = yup.object().shape({});
  */
 const SurveyPartnershipsForm = () => {
   const formikProps = useFormikContext<ISurveyPartnershipsForm>();
-  console.log(formikProps.values);
 
   const codesContext = useContext(CodesContext);
 

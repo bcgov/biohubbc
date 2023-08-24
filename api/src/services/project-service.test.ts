@@ -8,7 +8,6 @@ import {
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
-  GetPartnershipsData,
   ProjectData
 } from '../models/project-view';
 import { ProjectUser } from '../models/user';
@@ -343,20 +342,3 @@ describe('getIUCNClassificationData', () => {
   });
 });
 
-describe('getPartnershipsData', () => {
-  it('returns the first row on success', async () => {
-    const dbConnection = getMockDBConnection();
-    const service = new ProjectService(dbConnection);
-
-    const data = new GetPartnershipsData([{ id: 1 }], [{ id: 1 }]);
-
-    const repoStub1 = sinon.stub(ProjectRepository.prototype, 'getIndigenousPartnershipsRows').resolves([{ id: 1 }]);
-    const repoStub2 = sinon.stub(ProjectRepository.prototype, 'getStakeholderPartnershipsRows').resolves([{ id: 1 }]);
-
-    const response = await service.getPartnershipsData(1);
-
-    expect(repoStub1).to.be.calledOnce;
-    expect(repoStub2).to.be.calledOnce;
-    expect(response).to.eql(data);
-  });
-});
