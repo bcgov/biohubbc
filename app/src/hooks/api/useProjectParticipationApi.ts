@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import {
   IAddProjectParticipant,
-  IGetProjectParticipants,
+  IGetProjectParticipant,
   IGetUserProjectParticipantResponse
 } from 'interfaces/useProjectApi.interface';
 
@@ -18,7 +18,7 @@ const useProjectParticipationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @return {*}  {Promise<IGetProjectParticipants[]>}
    */
-  const getProjectParticipants = async (projectId: number): Promise<IGetProjectParticipants[]> => {
+  const getProjectParticipants = async (projectId: number): Promise<IGetProjectParticipant[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/participants`);
 
     return data;
