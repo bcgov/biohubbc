@@ -1,5 +1,6 @@
-import { PROJECT_PERMISSION } from '../constants/roles';
+import { PROJECT_PERMISSION, PROJECT_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
+import { HTTP400 } from '../errors/http-error';
 import { PostParticipantData } from '../models/project-create';
 import {
   IParticipant,
@@ -300,7 +301,15 @@ export class ProjectParticipationService extends DBService {
     return true;
   }
 
+  doProjectParticipantsHaveARole(participants: PostParticipantData[], roleToCheck: PROJECT_ROLE): boolean {
+    return participants.some((item) => item.project_role_names.some((role) => role === roleToCheck));
+  }
+
   async upsertProjectParticipantData(projectId: number, participants: PostParticipantData[]): Promise<void> {
+    if (!this.doProjectParticipantsHaveARole(participants, PROJECT_ROLE.COORDINATOR)) {
+      throw new HTTP400(`Projects require that a single participant has a ${PROJECT_ROLE.COORDINATOR} role.`);
+    }
+
     // all actions to take
     const promises: Promise<any>[] = [];
 
