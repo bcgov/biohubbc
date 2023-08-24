@@ -59,6 +59,8 @@ POST.apiDoc = {
             'survey_details',
             'species',
             'permit',
+            'funding_sources',
+            'partnerships',
             'proprietor',
             'purpose_and_methodology',
             'location',
@@ -138,6 +140,25 @@ POST.apiDoc = {
                   },
                   amount: {
                     type: 'number'
+                  }
+                }
+              }
+            },
+            partnerships: {
+              title: 'Survey partnerships',
+              type: 'object',
+              properties: {
+                indigenous_partnerships: {
+                  type: 'array',
+                  items: {
+                    type: 'integer',
+                    minimum: 1
+                  }
+                },
+                stakeholder_partnerships: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
                   }
                 }
               }

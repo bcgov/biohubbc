@@ -63,7 +63,7 @@ GET.apiDoc = {
             properties: {
               projectData: {
                 type: 'object',
-                required: ['project', 'coordinator', 'objectives', 'location', 'iucn', 'partnerships'],
+                required: ['project', 'coordinator', 'objectives', 'location', 'iucn'],
                 properties: {
                   project: {
                     description: 'Basic project metadata',
@@ -189,25 +189,6 @@ GET.apiDoc = {
                               type: 'number'
                             }
                           }
-                        }
-                      }
-                    }
-                  },
-                  partnerships: {
-                    description: 'The project partners',
-                    type: 'object',
-                    required: ['indigenous_partnerships', 'stakeholder_partnerships'],
-                    properties: {
-                      indigenous_partnerships: {
-                        type: 'array',
-                        items: {
-                          type: 'number'
-                        }
-                      },
-                      stakeholder_partnerships: {
-                        type: 'array',
-                        items: {
-                          type: 'string'
                         }
                       }
                     }

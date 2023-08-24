@@ -15,7 +15,6 @@ export class PostProjectObject {
   objectives: PostObjectivesData;
   location: PostLocationData;
   iucn: PostIUCNData;
-  partnerships: PostPartnershipsData;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
@@ -25,7 +24,6 @@ export class PostProjectObject {
     this.objectives = (obj?.project && new PostObjectivesData(obj.objectives)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
-    this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
   }
 }
 
@@ -150,24 +148,6 @@ export class PostIUCNData {
           };
         })) ||
       [];
-  }
-}
-
-/**
- * Processes POST /project partnerships data
- *
- * @export
- * @class PostPartnershipsData
- */
-export class PostPartnershipsData {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostPartnershipsData', message: 'params', obj });
-
-    this.indigenous_partnerships = (obj?.indigenous_partnerships.length && obj.indigenous_partnerships) || [];
-    this.stakeholder_partnerships = (obj?.stakeholder_partnerships.length && obj.stakeholder_partnerships) || [];
   }
 }
 

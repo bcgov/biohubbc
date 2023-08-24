@@ -9,6 +9,7 @@ export class PostSurveyObject {
   purpose_and_methodology: PostPurposeAndMethodologyData;
   location: PostLocationData;
   agreements: PostAgreementsData;
+  partnerships: PostPartnershipsData;
 
   constructor(obj?: any) {
     this.survey_details = (obj?.survey_details && new PostSurveyDetailsData(obj.survey_details)) || null;
@@ -21,6 +22,23 @@ export class PostSurveyObject {
       (obj?.purpose_and_methodology && new PostPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.agreements = (obj?.agreements && new PostAgreementsData(obj.agreements)) || null;
+    this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
+  }
+}
+
+/**
+ * Processes POST /project partnerships data
+ *
+ * @export
+ * @class PostPartnershipsData
+ */
+export class PostPartnershipsData {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+
+  constructor(obj?: any) {
+    this.indigenous_partnerships = (obj?.indigenous_partnerships.length && obj.indigenous_partnerships) || [];
+    this.stakeholder_partnerships = (obj?.stakeholder_partnerships.length && obj.stakeholder_partnerships) || [];
   }
 }
 

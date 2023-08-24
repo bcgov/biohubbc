@@ -37,7 +37,6 @@ export enum GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  partnerships = 'partnerships'
 }
 
 export const getAllEntities = (): string[] => Object.values(GET_ENTITIES);
@@ -210,26 +209,6 @@ GET.apiDoc = {
                     }
                   }
                 }
-              },
-              partnerships: {
-                description: 'The project partners',
-                type: 'object',
-                required: ['indigenous_partnerships', 'stakeholder_partnerships'],
-                nullable: true,
-                properties: {
-                  indigenous_partnerships: {
-                    type: 'array',
-                    items: {
-                      type: 'number'
-                    }
-                  },
-                  stakeholder_partnerships: {
-                    type: 'array',
-                    items: {
-                      type: 'string'
-                    }
-                  }
-                }
               }
             }
           }
@@ -369,7 +348,6 @@ export interface IUpdateProject {
   objectives: any | null;
   location: { geometry: Feature[]; location_description: string } | null;
   iucn: any | null;
-  partnerships: any | null;
 }
 
 /**

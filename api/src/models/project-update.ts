@@ -103,14 +103,3 @@ export class PutIUCNData {
   }
 }
 
-export class PutPartnershipsData {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutPartnershipsData', message: 'params', obj });
-
-    this.indigenous_partnerships = (obj?.indigenous_partnerships?.length && obj.indigenous_partnerships) || [];
-    this.stakeholder_partnerships = (obj?.stakeholder_partnerships?.length && obj.stakeholder_partnerships) || [];
-  }
-}
