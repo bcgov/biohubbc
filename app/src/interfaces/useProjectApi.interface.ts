@@ -84,7 +84,7 @@ export interface IGetUserProjectsListResponse {
   system_user_id: number;
   project_role_ids: number[];
   project_role_names: string[];
-  project_permission_names: string[];
+  project_role_permissions: string[];
 }
 
 /**

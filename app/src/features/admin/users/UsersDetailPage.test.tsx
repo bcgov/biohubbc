@@ -70,7 +70,7 @@ describe('UsersDetailPage', () => {
       system_user_id: 1,
       project_role_ids: [2],
       project_role_names: ['Role1'],
-      project_permission_names: ['Permission1']
+      project_role_permissions: ['Permission1']
     });
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({

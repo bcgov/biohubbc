@@ -362,7 +362,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
 
   return (
     <CustomMenuButton
-      buttonLabel={row.project_permission_names[0]}
+      buttonLabel={row.project_role_permissions[0]}
       buttonTitle={'Change Project Role'}
       buttonProps={{ variant: 'outlined', size: 'small' }}
       menuItems={projectRoleCodes.map((roleCode) => {

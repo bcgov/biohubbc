@@ -102,7 +102,7 @@ describe('UsersDetailProjects', () => {
         system_user_id: 1,
         project_role_ids: [3],
         project_role_names: ['Role1'],
-        project_permission_names: ['Permission1']
+        project_role_permissions: ['Permission1']
       }
     ]);
 
@@ -134,7 +134,7 @@ describe('UsersDetailProjects', () => {
         system_user_id: 2,
         project_role_ids: [3],
         project_role_names: ['Role1'],
-        project_permission_names: ['Permission1']
+        project_role_permissions: ['Permission1']
       },
       {
         project_participation_id: 8,
@@ -143,7 +143,7 @@ describe('UsersDetailProjects', () => {
         system_user_id: 6,
         project_role_ids: [7],
         project_role_names: ['Role1'],
-        project_permission_names: ['Permission1']
+        project_role_permissions: ['Permission1']
       }
     ]);
 
@@ -176,7 +176,7 @@ describe('UsersDetailProjects', () => {
         system_user_id: 2,
         project_role_ids: [3],
         project_role_names: ['Role1'],
-        project_permission_names: ['Permission1']
+        project_role_permissions: ['Permission1']
       }
     ]);
 
@@ -214,7 +214,7 @@ describe('UsersDetailProjects', () => {
           system_user_id: 2,
           project_role_ids: [3],
           project_role_names: ['Role1'],
-          project_permission_names: ['Permission1']
+          project_role_permissions: ['Permission1']
         }
       ]);
 
@@ -261,7 +261,7 @@ describe('UsersDetailProjects', () => {
           system_user_id: 2,
           project_role_ids: [3],
           project_role_names: ['Role1'],
-          project_permission_names: ['Permission1']
+          project_role_permissions: ['Permission1']
         },
         {
           project_participation_id: 8,
@@ -270,7 +270,7 @@ describe('UsersDetailProjects', () => {
           system_user_id: 6,
           project_role_ids: [7],
           project_role_names: ['Role1'],
-          project_permission_names: ['Permission1']
+          project_role_permissions: ['Permission1']
         }
       ]);
 
@@ -296,7 +296,7 @@ describe('UsersDetailProjects', () => {
           system_user_id: 6,
           project_role_ids: [7],
           project_role_names: ['Role1'],
-          project_permission_names: ['Permission1']
+          project_role_permissions: ['Permission1']
         }
       ]);
 
@@ -336,7 +336,7 @@ describe('UsersDetailProjects', () => {
           system_user_id: 2,
           project_role_ids: [3],
           project_role_names: ['Role1'],
-          project_permission_names: ['Observer']
+          project_role_permissions: ['Observer']
         }
       ]);
 
@@ -380,7 +380,7 @@ describe('UsersDetailProjects', () => {
           system_user_id: 2,
           project_role_ids: [3],
           project_role_names: ['Role1'],
-          project_permission_names: ['Observer']
+          project_role_permissions: ['Observer']
         }
       ]);
 
@@ -438,7 +438,7 @@ describe('UsersDetailProjects', () => {
           system_user_id: 2,
           project_role_ids: [3],
           project_role_names: ['Role1'],
-          project_permission_names: ['Observer']
+          project_role_permissions: ['Observer']
         }
       ]);
 

@@ -420,6 +420,7 @@ export class ProjectParticipationRepository extends BaseRepository {
       GROUP BY
         p.project_id,
         p.name,
+        pp.project_participation_id,
         pp.system_user_id;
     `;
 
