@@ -1,7 +1,7 @@
 import { omit, omitBy } from 'lodash-es';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { AnyObjectSchema, InferType, reach } from 'yup';
+import { AnyObjectSchema, AnySchema, InferType, reach } from 'yup';
 
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
@@ -42,6 +42,15 @@ const mustBeNum = 'Must be a number';
 const numSchema = yup.number().typeError(mustBeNum);
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
+const dateSchema = yup.date().typeError(req);
+
+const genReleaseUtmConditionalSchema = (schema: AnySchema) =>
+  schema.when(['projection_mode', 'show_release'], {
+    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
+    then: schema.required(req)
+  });
+
+export type ProjectionMode = 'wgs' | 'utm';
 
 export const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
@@ -52,20 +61,21 @@ export const AnimalGeneralSchema = yup.object({}).shape({
 export const AnimalCaptureSchema = yup.object({}).shape({
   _id: yup.string().required(),
 
-  capture_longitude: lonSchema.required(req),
-  capture_latitude: latSchema.required(req),
-  capture_utm_northing: numSchema,
-  capture_utm_easting: numSchema,
-  capture_timestamp: yup.date().required(req),
-  capture_coordinate_uncertainty: numSchema,
+  capture_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required(req) }),
+  capture_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required(req) }),
+  capture_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
+  capture_utm_easting: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
+  capture_timestamp: dateSchema.required(req),
+  capture_coordinate_uncertainty: numSchema.when('projection_mode', { is: 'wgs', then: numSchema.required(req) }),
   capture_comment: yup.string(),
   projection_mode: yup.mixed().oneOf(['wgs', 'utm']),
-  release_longitude: lonSchema.optional(),
-  release_latitude: latSchema.optional(),
-  release_utm_northing: numSchema.optional(),
-  release_utm_easting: numSchema.optional(),
-  release_coordinate_uncertainty: numSchema.optional(),
-  release_timestamp: yup.date().optional(),
+  show_release: yup.boolean().required(), // used for conditional required release fields
+  release_longitude: lonSchema.when('show_release', { is: true, then: lonSchema.required(req) }),
+  release_latitude: latSchema.when('show_release', { is: true, then: latSchema.required(req) }),
+  release_utm_northing: genReleaseUtmConditionalSchema(numSchema),
+  release_utm_easting: genReleaseUtmConditionalSchema(numSchema),
+  release_coordinate_uncertainty: genReleaseUtmConditionalSchema(numSchema),
+  release_timestamp: genReleaseUtmConditionalSchema(dateSchema),
   release_comment: yup.string().optional()
 });
 
@@ -78,22 +88,27 @@ export const AnimalMarkingSchema = yup.object({}).shape({
   secondary_colour_id: yup.string().optional(),
   marking_comment: yup.string()
 });
+//proprietaryDataForm
+export const AnimalMeasurementSchema = yup.object({}).shape(
+  {
+    _id: yup.string().required(),
 
-export const AnimalMeasurementSchema = yup.object({}).shape({
-  _id: yup.string().required(),
-
-  taxon_measurement_id: yup.string().required(req),
-  value: numSchema.when('qualitative_option_id', {
-    is: (qual_option: string) => !qual_option,
-    then: numSchema.required(req)
-  }),
-  qualitative_option_id: yup.string().when('val', {
-    is: (val: number | string | undefined) => val === '' || val === undefined,
-    then: yup.string().required(req)
-  }),
-  measured_timestamp: yup.date().required(req),
-  measurement_comment: yup.string()
-});
+    taxon_measurement_id: yup.string().required(req),
+    qualitative_option_id: yup.string().when('value', {
+      is: (value: '' | number) => value === 0 || !value,
+      then: yup.string().required(req),
+      otherwise: yup.string()
+    }),
+    value: numSchema.when('qualitative_option_id', {
+      is: (qualitative_option_id: string) => !qualitative_option_id,
+      then: numSchema.required(req),
+      otherwise: numSchema
+    }),
+    measured_timestamp: dateSchema.required(req),
+    measurement_comment: yup.string()
+  },
+  [['value', 'qualitative_option_id']]
+);
 
 export const AnimalMortalitySchema = yup.object({}).shape({
   _id: yup.string().required(),
@@ -102,7 +117,7 @@ export const AnimalMortalitySchema = yup.object({}).shape({
   mortality_latitude: latSchema.required(req),
   mortality_utm_northing: numSchema,
   mortality_utm_easting: numSchema,
-  mortality_timestamp: yup.date().required(req),
+  mortality_timestamp: dateSchema.required(req),
   mortality_coordinate_uncertainty: numSchema,
   mortality_comment: yup.string(),
   mortality_pcod_reason: yup.string().uuid().required(req),
@@ -179,9 +194,9 @@ type ICritterLocation = InferType<typeof LocationSchema>;
 
 type ICritterMortality = Omit<
   ICritterID &
-    IAnimalMortality & {
-      location_id: string;
-    },
+  IAnimalMortality & {
+    location_id: string;
+  },
   | '_id'
   | 'mortality_utm_easting'
   | 'mortality_utm_northing'
@@ -193,10 +208,10 @@ type ICritterMortality = Omit<
 
 type ICritterCapture = Omit<
   ICritterID &
-    Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
-      capture_location_id: string;
-      release_location_id: string | undefined;
-    },
+  Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
+    capture_location_id: string;
+    release_location_id: string | undefined;
+  },
   '_id'
 >;
 

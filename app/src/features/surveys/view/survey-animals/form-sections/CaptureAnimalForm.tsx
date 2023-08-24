@@ -1,8 +1,8 @@
-import { Grid } from '@mui/material';
+import { Checkbox, FormControlLabel, Grid } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment, useState } from 'react';
 import { v4 } from 'uuid';
 import { AnimalCaptureSchema, getAnimalFieldName, IAnimal, IAnimalCapture, isRequiredInSchema } from '../animal';
@@ -38,6 +38,7 @@ const CaptureAnimalForm = () => {
     capture_coordinate_uncertainty: 10,
     capture_timestamp: '' as unknown as Date,
     projection_mode: 'wgs' as ProjectionMode,
+    show_release: false,
     release_latitude: '' as unknown as number,
     release_longitude: '' as unknown as number,
     release_utm_northing: '' as unknown as number,
@@ -85,9 +86,11 @@ interface CaptureAnimalFormContentProps {
 }
 
 const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormContentProps) => {
-  const { handleBlur } = useFormikContext<IAnimal>();
+  const { handleBlur, values, handleChange } = useFormikContext<IAnimal>();
   const [showCaptureComment, setShowCaptureComment] = useState(false);
   const [showReleaseComment, setShowReleaseComment] = useState(false);
+
+  const showReleaseSection = values.captures[index].show_release;
 
   const renderCaptureFields = (): JSX.Element => {
     return (
@@ -95,7 +98,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
-            required={isRequiredInSchema(AnimalCaptureSchema, 'capture_timestamp')}
+            required={true}
             label={'Capture Date'}
             other={{ size: 'small' }}
           />
@@ -112,6 +115,18 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             />
           </TextInputToggle>
         </Grid>
+        <Grid item xs={12}>
+          <FormControlLabel
+            control={
+              <Field
+                as={Checkbox}
+                handleChange={handleChange}
+                name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
+              />
+            }
+            label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
+          />
+        </Grid>
       </Fragment>
     );
   };
@@ -122,7 +137,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
-            required={isRequiredInSchema(AnimalCaptureSchema, 'release_timestamp')}
+            required={true}
             label={'Release Date'}
             other={{ size: 'small' }}
           />
@@ -155,14 +170,17 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         utm_northing: 'capture_utm_northing',
         utm_easting: 'capture_utm_easting'
       }}
-      secondaryLocationFields={{
-        latitude: 'release_latitude',
-        longitude: 'release_longitude',
-        coordinate_uncertainty: 'release_coordinate_uncertainty',
-        utm_northing: 'release_utm_northing',
-        utm_easting: 'release_utm_easting'
-      }}
-      secondaryCheckboxLabel={SurveyAnimalsI18N.animalCaptureReleaseRadio}
+      secondaryLocationFields={
+        showReleaseSection
+          ? {
+            latitude: 'release_latitude',
+            longitude: 'release_longitude',
+            coordinate_uncertainty: 'release_coordinate_uncertainty',
+            utm_northing: 'release_utm_northing',
+            utm_easting: 'release_utm_easting'
+          }
+          : undefined
+      }
       otherPrimaryFields={[renderCaptureFields()]}
       otherSecondaryFields={[renderReleaseFields()]}
     />

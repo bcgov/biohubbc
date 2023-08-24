@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel, FormGroup, Grid, Switch, Tab, Tabs } from '@mui/material';
+import { Box, FormControlLabel, FormGroup, Grid, Switch, Tab, Tabs } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
 import MapContainer from 'components/map/MapContainer';
@@ -7,9 +7,7 @@ import { LatLng } from 'leaflet';
 import { ChangeEvent, useState } from 'react';
 import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
 import { coerceZero, formatLabel } from 'utils/Utils';
-import { getAnimalFieldName, IAnimal } from '../animal';
-
-type ProjectionMode = 'wgs' | 'utm';
+import { getAnimalFieldName, IAnimal, ProjectionMode } from '../animal';
 
 export type LocationEntryFields<T> = {
   latitude: keyof T;
@@ -27,7 +25,6 @@ type LocationEntryFormProps<T> = {
   secondaryLocationFields?: LocationEntryFields<T>;
   otherPrimaryFields?: JSX.Element[];
   otherSecondaryFields?: JSX.Element[];
-  secondaryCheckboxLabel?: string;
 };
 
 const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
@@ -37,11 +34,9 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   primaryLocationFields,
   secondaryLocationFields,
   otherPrimaryFields,
-  otherSecondaryFields,
-  secondaryCheckboxLabel
+  otherSecondaryFields
 }: LocationEntryFormProps<T>) => {
   const { handleBlur, setFieldValue } = useFormikContext();
-  const [showSecondary, setShowSecondary] = useState(false); //Controls whether fields for the release event are shown or not.
   const [tabState, setTabState] = useState(0); //Controls whether we are on the Forms tab or the Map tab.
   const [placeSecondaryMode, setPlaceSecondary] = useState(false); //Controls whether left clicking on the map will place the capture or release marker.
 
@@ -123,25 +118,25 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             </Grid>
           </>
         ) : (
-          <>
-            <Grid item xs={6}>
-              <CustomTextField
-                other={{ required: true, size: 'small' }}
-                label={formatLabel(fields.utm_northing as string)}
-                name={getAnimalFieldName<T>(name, fields.utm_northing, index)}
-                handleBlur={handleBlur}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <CustomTextField
-                other={{ required: true, size: 'small' }}
-                label={formatLabel(fields.utm_easting as string)}
-                name={getAnimalFieldName<T>(name, fields.utm_easting, index)}
-                handleBlur={handleBlur}
-              />
-            </Grid>
-          </>
-        )}
+            <>
+              <Grid item xs={6}>
+                <CustomTextField
+                  other={{ required: true, size: 'small' }}
+                  label={formatLabel(fields.utm_northing as string)}
+                  name={getAnimalFieldName<T>(name, fields.utm_northing, index)}
+                  handleBlur={handleBlur}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <CustomTextField
+                  other={{ required: true, size: 'small' }}
+                  label={formatLabel(fields.utm_easting as string)}
+                  name={getAnimalFieldName<T>(name, fields.utm_easting, index)}
+                  handleBlur={handleBlur}
+                />
+              </Grid>
+            </>
+          )}
 
         <Grid item xs={6}>
           <CustomTextField
@@ -203,14 +198,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           {renderLocationFields(primaryLocationFields)}
           {otherPrimaryFields}
           {secondaryLocationFields ? (
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox checked={showSecondary} onChange={() => setShowSecondary((s) => !s)} />}
-                label={secondaryCheckboxLabel}
-              />
-            </Grid>
-          ) : null}
-          {showSecondary && secondaryLocationFields ? (
             <>
               {renderLocationFields(secondaryLocationFields)}
               {otherSecondaryFields}
@@ -218,33 +205,33 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           ) : null}
         </>
       ) : (
-        <Grid item xs={12}>
-          {secondaryLocationFields ? (
-            <FormGroup sx={{ alignItems: 'end' }}>
-              <FormControlLabel
-                control={
-                  <Switch checked={placeSecondaryMode} onChange={(e, b) => setPlaceSecondary(b)} size={'small'} />
-                }
-                label={'Place Other Coordinate'}
+          <Grid item xs={12}>
+            {secondaryLocationFields ? (
+              <FormGroup sx={{ alignItems: 'end' }}>
+                <FormControlLabel
+                  control={
+                    <Switch checked={placeSecondaryMode} onChange={(e, b) => setPlaceSecondary(b)} size={'small'} />
+                  }
+                  label={'Place Other Coordinate'}
+                />
+              </FormGroup>
+            ) : null}
+            <Box position="relative" height={400}>
+              <MapContainer
+                mapId={`location-entry-${name}-${index}`}
+                scrollWheelZoom={true}
+                additionalLayers={[
+                  renderResizableMarker(primaryLocationFields, !placeSecondaryMode, 'blue'),
+                  secondaryLocationFields ? (
+                    renderResizableMarker(secondaryLocationFields, placeSecondaryMode, 'green')
+                  ) : (
+                      <></>
+                    )
+                ]}
               />
-            </FormGroup>
-          ) : null}
-          <Box position="relative" height={400}>
-            <MapContainer
-              mapId={`location-entry-${name}-${index}`}
-              scrollWheelZoom={true}
-              additionalLayers={[
-                renderResizableMarker(primaryLocationFields, !placeSecondaryMode, 'blue'),
-                secondaryLocationFields ? (
-                  renderResizableMarker(secondaryLocationFields, placeSecondaryMode, 'green')
-                ) : (
-                  <></>
-                )
-              ]}
-            />
-          </Box>
-        </Grid>
-      )}
+            </Box>
+          </Grid>
+        )}
     </>
   );
 };

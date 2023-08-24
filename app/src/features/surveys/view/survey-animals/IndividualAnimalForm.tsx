@@ -22,7 +22,7 @@ interface IndividualAnimalFormProps {
  */
 
 const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => {
-  const { values } = useFormikContext<IAnimal>();
+  const { values, errors } = useFormikContext<IAnimal>();
   const [devShow, setDevShow] = useState(false);
 
   useEffect(() => {
@@ -48,6 +48,7 @@ const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => 
       ) : null}
       {devShow ? (
         <>
+          <pre>{JSON.stringify({ form_errors: errors }, null, 2)}</pre>
           <pre>{JSON.stringify({ form_values: values }, null, 2)}</pre>
           <pre>{JSON.stringify({ payload: new Critter(values) }, null, 2)}</pre>
         </>
