@@ -9,8 +9,8 @@ export const ProjectUser = z.object({
   project_participation_id: z.number(),
   project_id: z.number(),
   system_user_id: z.number(),
-  project_role_ids: z.array(z.number()),
-  project_role_names: z.array(z.string()),
+  project_role_id: z.number(),
+  project_role_name: z.string(),
   project_role_permissions: z.array(z.string())
 });
 
@@ -187,8 +187,8 @@ export class ProjectParticipationRepository extends BaseRepository {
         su.agency,
         pp.project_participation_id,
         pp.project_id,
-        array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-        array_remove(array_agg(pr.name), NULL) AS project_role_names,
+        pr.project_role_id AS project_role_id,
+        pr.name AS project_role_name,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
@@ -223,7 +223,9 @@ export class ProjectParticipationRepository extends BaseRepository {
         su.display_name,
         su.agency,
         pp.project_participation_id,
-        pp.project_id;
+        pp.project_id,
+        pr.project_role_id,
+        pr.name;
     `;
 
     const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));

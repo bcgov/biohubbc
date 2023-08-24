@@ -82,7 +82,7 @@ export class ProjectParticipationService extends DBService {
   async postProjectParticipants(projectId: number, participants: PostParticipantData[]): Promise<void[]> {
     return Promise.all(
       participants.map((participant) =>
-        this.postProjectParticipant(projectId, participant.system_user_id, participant.project_role_names[0])
+        this.postProjectParticipant(projectId, participant.system_user_id, participant.project_role_name)
       )
     );
   }
@@ -238,7 +238,7 @@ export class ProjectParticipationService extends DBService {
         projectLeadsPerProject[key] = 0;
       }
 
-      if (row.project_role_names.includes(PROJECT_PERMISSION.COORDINATOR)) {
+      if (row.project_role_name.includes(PROJECT_PERMISSION.COORDINATOR)) {
         projectLeadsPerProject[key] += 1;
       }
     });
@@ -281,7 +281,7 @@ export class ProjectParticipationService extends DBService {
         projectLeadsPerProject[key] = 0;
       }
 
-      if (row.system_user_id !== systemUserId && row.project_role_names.includes(PROJECT_PERMISSION.COORDINATOR)) {
+      if (row.system_user_id !== systemUserId && row.project_role_name.includes(PROJECT_PERMISSION.COORDINATOR)) {
         projectLeadsPerProject[key] += 1;
       }
     });
@@ -311,7 +311,7 @@ export class ProjectParticipationService extends DBService {
     const participantsToDelete = existingParticipants.filter(
       (item) => !participants.find((incoming) => incoming.system_user_id === item.system_user_id)
     );
-    console.log(`Participants to delete: ${participantsToDelete.length}`);
+
     // delete
     participantsToDelete.forEach((item) => {
       promises.push(
@@ -321,19 +321,17 @@ export class ProjectParticipationService extends DBService {
 
     participants.forEach((item) => {
       if (item.project_participation_id) {
-        console.log('UPDATE');
         promises.push(
           this.projectParticipationRepository.updateProjectParticipationRole(
             item.project_participation_id,
-            item.project_role_names[0]
+            item.project_role_name
           )
         );
       } else {
-        console.log('INSERT');
         this.projectParticipationRepository.postProjectParticipant(
           projectId,
           item.system_user_id,
-          item.project_role_names[0]
+          item.project_role_name
         );
       }
     });

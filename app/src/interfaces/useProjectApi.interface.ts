@@ -121,7 +121,7 @@ export interface IProjectsListData {
 export interface IProjectUserRoles {
   participants: {
     system_user_id: number;
-    project_role_names: string;
+    project_role_name: string;
   }[];
 }
 
@@ -289,8 +289,8 @@ export interface IGetProjectParticipant {
   email: string | null;
   display_name: string;
   agency: string | null;
-  project_role_ids: number[];
-  project_role_names: string[];
+  project_role_id: number;
+  project_role_name: string;
   project_role_permissions: string[];
 }
 

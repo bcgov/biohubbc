@@ -259,7 +259,7 @@ export const authorizeByProjectPermission = async (
     return false;
   }
 
-  return userHasValidRole(authorizeProjectPermissions.validProjectPermissions, projectUserObject.project_role_names);
+  return userHasValidRole(authorizeProjectPermissions.validProjectPermissions, projectUserObject.project_role_name);
 };
 
 /**
@@ -297,7 +297,7 @@ export const authorizeByProjectRole = async (
     return false;
   }
 
-  return userHasValidRole(authorizeProjectRoles.validProjectRoles, projectUserObject.project_role_names);
+  return userHasValidRole(authorizeProjectRoles.validProjectRoles, projectUserObject.project_role_name);
 };
 
 /**
