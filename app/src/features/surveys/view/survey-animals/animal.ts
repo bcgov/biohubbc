@@ -285,27 +285,27 @@ export class Critter {
     this.locations = [];
     this.families = { parents: [], children: [], families: [] };
 
-    animal.captures.forEach((c) => {
-      const cleanedCapture = omitBy(c, (v) => v === '') as IAnimalCapture;
+    animal.captures.forEach((capture) => {
+      const cleanedCapture = omitBy(capture, (value) => value === '') as IAnimalCapture;
       const c_loc_id = v4();
       let r_loc_id: string | undefined = undefined;
 
       this.locations.push({
         location_id: c_loc_id,
-        latitude: Number(c.capture_latitude),
-        longitude: Number(c.capture_longitude),
-        coordinate_uncertainty: Number(c.capture_coordinate_uncertainty),
+        latitude: Number(capture.capture_latitude),
+        longitude: Number(capture.capture_longitude),
+        coordinate_uncertainty: Number(capture.capture_coordinate_uncertainty),
         coordinate_uncertainty_unit: 'm'
       });
 
-      if (c.release_latitude && c.release_longitude) {
+      if (capture.release_latitude && capture.release_longitude) {
         r_loc_id = v4();
 
         this.locations.push({
           location_id: r_loc_id,
-          latitude: Number(c.release_latitude),
-          longitude: Number(c.release_longitude),
-          coordinate_uncertainty: Number(c.release_coordinate_uncertainty),
+          latitude: Number(capture.release_latitude),
+          longitude: Number(capture.release_longitude),
+          coordinate_uncertainty: Number(capture.release_coordinate_uncertainty),
           coordinate_uncertainty_unit: 'm'
         });
       }
@@ -314,20 +314,20 @@ export class Critter {
         critter_id: this.critter_id,
         capture_location_id: c_loc_id,
         release_location_id: r_loc_id,
-        ...omit(cleanedCapture, '_id')
+        ...omit(cleanedCapture, '_id', 'show_release')
       });
     });
 
     this.mortalities = [];
-    animal.mortality.forEach((m) => {
-      const cleanedMortality = omitBy(m, (v) => v === '') as IAnimalMortality;
+    animal.mortality.forEach((mortality) => {
+      const cleanedMortality = omitBy(mortality, (value) => value === '') as IAnimalMortality;
       const loc_id = v4();
 
       this.locations.push({
         location_id: loc_id,
-        latitude: Number(m.mortality_latitude),
-        longitude: Number(m.mortality_latitude),
-        coordinate_uncertainty: Number(m.mortality_latitude),
+        latitude: Number(mortality.mortality_latitude),
+        longitude: Number(mortality.mortality_latitude),
+        coordinate_uncertainty: Number(mortality.mortality_latitude),
         coordinate_uncertainty_unit: 'm'
       });
 
@@ -338,8 +338,8 @@ export class Critter {
       });
     });
 
-    this.markings = animal.markings.map((m) => {
-      const cleanedMarking = omitBy(m, (v) => v === '') as IAnimalMarking;
+    this.markings = animal.markings.map((marking) => {
+      const cleanedMarking = omitBy(marking, (value) => value === '') as IAnimalMarking;
       return {
         critter_id: this.critter_id,
         ...omit(cleanedMarking, '_id')
@@ -347,62 +347,62 @@ export class Critter {
     });
 
     let newFamily = undefined;
-    for (const f of animal.family) {
-      if (f.family_id === newFamilyIdPlaceholder) {
+    for (const fam of animal.family) {
+      if (fam.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };
           this.families.families.push(newFamily);
         }
-        f.family_id = newFamily.family_id;
+        fam.family_id = newFamily.family_id;
       }
     }
 
     this.families.parents = animal.family
-      .filter((a) => a.relationship === 'parent')
-      .map((a) => ({ family_id: a.family_id, parent_critter_id: this.critter_id }));
+      .filter((parent) => parent.relationship === 'parent')
+      .map((parent_fam) => ({ family_id: parent_fam.family_id, parent_critter_id: this.critter_id }));
     this.families.children = animal.family
-      .filter((a) => a.relationship === 'child')
-      .map((a) => ({ family_id: a.family_id, child_critter_id: this.critter_id }));
+      .filter((children) => children.relationship === 'child')
+      .map((children_fam) => ({ family_id: children_fam.family_id, child_critter_id: this.critter_id }));
 
     this.measurements = {
       qualitative: animal.measurements
-        .filter((m) => {
-          if (m.qualitative_option_id && m.value) {
+        .filter((measurement) => {
+          if (measurement.qualitative_option_id && measurement.value) {
             console.log('Qualitative measurement must only contain option_id and no value.');
             return false;
           }
-          if (m.qualitative_option_id) {
+          if (measurement.qualitative_option_id) {
             return true;
           }
           return false;
         })
-        .map((m) => {
+        .map((qual_measurement) => {
           return {
             critter_id: this.critter_id,
-            taxon_measurement_id: m.taxon_measurement_id,
-            qualitative_option_id: m.qualitative_option_id,
-            measured_timestamp: m.measured_timestamp || undefined,
-            measurement_comment: m.measurement_comment || undefined
+            taxon_measurement_id: qual_measurement.taxon_measurement_id,
+            qualitative_option_id: qual_measurement.qualitative_option_id,
+            measured_timestamp: qual_measurement.measured_timestamp || undefined,
+            measurement_comment: qual_measurement.measurement_comment || undefined
           };
         }),
       quantitative: animal.measurements
-        .filter((m) => {
-          if (m.qualitative_option_id && m.value) {
+        .filter((measurement) => {
+          if (measurement.qualitative_option_id && measurement.value) {
             console.log('Quantitative measurement must only contain a value and no option_id');
             return false;
           }
-          if (m.value != null) {
+          if (measurement.value != null) {
             return true;
           }
           return false;
         })
-        .map((m) => {
+        .map((quant_measurement) => {
           return {
             critter_id: this.critter_id,
-            taxon_measurement_id: m.taxon_measurement_id,
-            value: m.value,
-            measured_timestamp: m.measured_timestamp || undefined,
-            measurement_comment: m.measurement_comment || undefined
+            taxon_measurement_id: quant_measurement.taxon_measurement_id,
+            value: quant_measurement.value,
+            measured_timestamp: quant_measurement.measured_timestamp || undefined,
+            measurement_comment: quant_measurement.measurement_comment || undefined
           };
         })
     };
