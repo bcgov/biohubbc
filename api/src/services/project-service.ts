@@ -414,6 +414,10 @@ export class ProjectService extends DBService {
       promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
     }
 
+    if (entities?.participants) {
+      promises.push(this.projectParticipationService.upsertProjectParticipantData(projectId, entities.participants));
+    }
+
     await Promise.all(promises);
   }
 

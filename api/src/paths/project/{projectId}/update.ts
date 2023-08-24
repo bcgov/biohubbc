@@ -4,6 +4,7 @@ import { Feature } from 'geojson';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
+import { PostParticipantData } from '../../../models/project-create';
 import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
 import { projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
@@ -432,6 +433,7 @@ export interface IUpdateProject {
   location: { geometry: Feature[]; location_description: string } | null;
   iucn: any | null;
   partnerships: any | null;
+  participants: PostParticipantData[] | null;
 }
 
 /**
