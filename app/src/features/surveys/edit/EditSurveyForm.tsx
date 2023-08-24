@@ -28,7 +28,7 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
-import { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
+import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IEditSurveyForm {
   codes: IGetAllCodeSetsResponse;
   projectData: ProjectViewObject;
+  surveyData: IEditSurveyRequest;
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   handleCancel: () => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
@@ -187,6 +188,19 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                 }
               />
             }></HorizontalSplitFormComponent>
+
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
+            title="Survey Users"
+            summary="Add some users"
+            component={
+              <SurveyUserForm
+                users={(props.surveyData && props.surveyData.participants) || []}
+                jobs={props.codes.survey_jobs}
+              />
+            }
+          />
 
           <Divider className={classes.sectionDivider} />
 

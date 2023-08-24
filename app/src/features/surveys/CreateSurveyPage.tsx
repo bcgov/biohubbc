@@ -338,7 +338,6 @@ const CreateSurveyPage = () => {
                 <HorizontalSplitFormComponent
                   title="Survey Users"
                   summary="Add some users"
-                  //TODO: need to auto fill current
                   component={<SurveyUserForm users={[]} jobs={codes.survey_jobs} />}
                 />
 

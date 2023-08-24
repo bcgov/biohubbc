@@ -79,7 +79,8 @@ GET.apiDoc = {
                   'funding_sources',
                   'proprietor',
                   'purpose_and_methodology',
-                  'location'
+                  'location',
+                  'participants'
                 ],
                 properties: {
                   survey_details: {
@@ -304,6 +305,31 @@ GET.apiDoc = {
                         type: 'array',
                         items: {
                           ...(GeoJSONFeature as object)
+                        }
+                      }
+                    }
+                  },
+                  participants: {
+                    description: 'Survey participants Details',
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['survey_participation_id', 'system_user_id', 'survey_job_id', 'survey_job_name'],
+                      properties: {
+                        survey_participation_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        system_user_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        survey_job_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        survey_job_name: {
+                          type: 'string'
                         }
                       }
                     }

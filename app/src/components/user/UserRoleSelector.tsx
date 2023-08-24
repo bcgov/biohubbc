@@ -11,7 +11,7 @@ interface IUserRoleSelectorProps {
   selectedRole: string | undefined;
   roles: ICode[];
   error: JSX.Element | undefined;
-  handleAdd: (id: number, role: string, index: number) => void;
+  handleAdd: (role: string, index: number) => void;
   handleRemove: (id: number) => void;
 }
 
@@ -37,7 +37,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
             displayEmpty
             value={selectedRole}
             onChange={(event) => {
-              handleAdd(user.system_user_id, String(event.target.value), index);
+              handleAdd(String(event.target.value), index);
             }}>
             {roles.map((item) => (
               <MenuItem key={item.id} value={item.name}>

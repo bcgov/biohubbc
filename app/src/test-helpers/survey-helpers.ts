@@ -63,7 +63,18 @@ export const surveyObject: SurveyViewObject = {
     focal_species_names: ['focal species 1'],
     ancillary_species: [2],
     ancillary_species_names: ['ancillary species 2']
-  }
+  },
+  participants: [
+    {
+      system_user_id: 1,
+      identity_source: 'identity source',
+      email: 'email',
+      display_name: 'display name',
+      agency: 'agency',
+      survey_job_id: 1,
+      survey_job_name: 'survey job name'
+    }
+  ]
 };
 
 export const surveySupplementaryData: SurveySupplementaryData = {

@@ -238,6 +238,7 @@ const EditSurveyPage = () => {
           <EditSurveyForm
             codes={codes}
             projectData={projectData}
+            surveyData={editSurveyDL.data?.surveyData as unknown as IEditSurveyRequest}
             handleSubmit={handleSubmit}
             handleCancel={handleCancel}
             formikRef={formikRef}

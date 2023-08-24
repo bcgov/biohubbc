@@ -6,17 +6,17 @@ import UserRoleSelector from 'components/user/UserRoleSelector';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
-import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, IGetSurveyForViewResponseParticipants } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { debounce } from 'lodash';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 
 export const SurveyUserJobYupSchema = yup.object().shape({
   participants: yup.array().of(
     yup.object().shape({
       system_user_id: yup.string().required('Username is required'),
-      job: yup.string().required('Select a job for this team member')
+      survey_job_name: yup.string().required('Select a survey_job_name for this team member')
     })
   )
 });
@@ -37,6 +37,19 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   const [searchUsers, setSearchUsers] = useState<ISystemUser[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<ISystemUser[]>([]);
+
+  useEffect(() => {
+    if (props.users.length > 0) {
+      props.users.forEach((user, index) => {
+        selectedUsers.push(user);
+        setFieldValue(`participants[${index}]`, {
+          system_user_id: user.system_user_id,
+          survey_job_name: (user as IGetSurveyForViewResponseParticipants).survey_job_name
+        });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.users]);
 
   const handleSearch = useMemo(
     () =>
@@ -59,16 +72,13 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
 
     setFieldValue(`participants[${selectedUsers.length - 1}]`, {
       system_user_id: user.system_user_id,
-      job: ''
+      survey_job_name: ''
     });
     clearErrors();
   };
 
-  const handleAddUserRole = (systemUserId: number, job: string, index: number) => {
-    setFieldValue(`participants[${index}]`, {
-      system_user_id: systemUserId,
-      job: job
-    });
+  const handleAddUserRole = (survey_job_name: string, index: number) => {
+    setFieldValue(`participants[${index}].survey_job_name`, survey_job_name);
   };
 
   const handleRemoveUser = (systemUserId: number) => {
@@ -91,18 +101,9 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   const alertBarText = (): { title: string; text: string } => {
     let title = '';
     let text = '';
-    if (errors && errors.participants) {
-      if (Array.isArray(errors.participants)) {
-        title = 'Missing Roles';
-        text = 'All team members must be assigned a job.';
-      } else {
-        if (selectedUsers.length > 0) {
-          title = 'Coordinator Role is Required';
-        } else {
-          title = 'Missing Team Member';
-        }
-        text = errors.participants;
-      }
+    if (errors && errors.participants && Array.isArray(errors.participants)) {
+      title = 'Missing Jobs';
+      text = 'All team members must be assigned a survey_job_name.';
     }
 
     return { title, text };
@@ -114,7 +115,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
       if (errorAtIndex) {
         return (
           <Typography style={{ fontSize: '12px', color: '#f44336' }}>
-            {errorAtIndex ? 'Select a job for this team member.' : ''}
+            {errorAtIndex ? 'Select a survey_job_name for this team member.' : ''}
           </Typography>
         );
       }
@@ -122,7 +123,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   };
 
   const getSelectedRole = (index: number): string | undefined => {
-    return values.participants[index].job;
+    return values.participants[index] && values.participants[index].survey_job_name;
   };
 
   return (
@@ -170,8 +171,9 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
             const error = rowItemError(index);
             return (
               <UserRoleSelector
+                key={`${systemUser.system_user_id}-${index}`}
                 index={index}
-                systemUser={systemUser}
+                user={systemUser}
                 roles={props.jobs}
                 error={error}
                 selectedRole={getSelectedRole(index)}

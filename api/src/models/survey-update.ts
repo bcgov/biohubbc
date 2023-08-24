@@ -8,6 +8,7 @@ export class PutSurveyObject {
   proprietor: PutSurveyProprietorData;
   purpose_and_methodology: PutSurveyPurposeAndMethodologyData;
   location: PutSurveyLocationData;
+  participants: PutSurveyParticipantsData[];
 
   constructor(obj?: any) {
     this.survey_details = (obj?.survey_details && new PutSurveyDetailsData(obj.survey_details)) || null;
@@ -19,6 +20,20 @@ export class PutSurveyObject {
     this.purpose_and_methodology =
       (obj?.purpose_and_methodology && new PutSurveyPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
     this.location = (obj?.location && new PutSurveyLocationData(obj.location)) || null;
+    this.participants =
+      (obj?.participants?.length && obj.participants.map((p: any) => new PutSurveyParticipantsData(p))) || [];
+  }
+}
+
+export class PutSurveyParticipantsData {
+  survey_participation_id?: number;
+  system_user_id: number;
+  survey_job_name: string;
+
+  constructor(obj?: any) {
+    this.survey_participation_id = obj?.survey_participation_id || null;
+    this.system_user_id = obj?.system_user_id || null;
+    this.survey_job_name = obj?.survey_job_name || null;
   }
 }
 

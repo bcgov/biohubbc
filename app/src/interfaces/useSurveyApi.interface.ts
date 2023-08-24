@@ -35,7 +35,7 @@ export interface ICreateSurveyResponse {
 export interface IParticipantsJobForm {
   participants: {
     system_user_id: number;
-    job: string;
+    survey_job_name: string;
   }[];
 }
 
@@ -71,6 +71,15 @@ export interface IGetSurveyForViewResponseProprietor {
   proprietor_type_id?: number;
   proprietor_type_name?: string;
 }
+export interface IGetSurveyForViewResponseParticipants {
+  system_user_id: number;
+  identity_source: string;
+  email: string | null;
+  display_name: string;
+  agency: string | null;
+  survey_job_id: number;
+  survey_job_name: string;
+}
 
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
@@ -79,6 +88,7 @@ export interface SurveyViewObject {
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding_sources: ISurveyFundingSource[];
   proprietor: IGetSurveyForViewResponseProprietor | null;
+  participants: IGetSurveyForViewResponseParticipants[];
 }
 
 export interface SurveyUpdateObject {
@@ -130,6 +140,10 @@ export interface SurveyUpdateObject {
     geometry: Feature[];
     revision_count: number;
   };
+  participants?: {
+    system_user_id: number;
+    survey_job_name: string;
+  }[];
 }
 
 export interface SurveySupplementaryData {

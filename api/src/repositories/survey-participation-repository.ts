@@ -2,6 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
+import { SystemUser } from './user-repository';
 
 const SurveyJob = z.object({
   survey_job_id: z.number().int().positive(),
@@ -31,7 +32,7 @@ const SurveyParticipation = z.object({
 
 export type SurveyParticipation = z.infer<typeof SurveyParticipation>;
 
-const SurveyParticipantWithJob = z.object({
+const SurveyUser = z.object({
   survey_participation_id: z.number().int().positive(),
   survey_id: z.number().int().positive(),
   system_user_id: z.number().int().positive(),
@@ -39,11 +40,11 @@ const SurveyParticipantWithJob = z.object({
   survey_job_name: z.string()
 });
 
-export type SurveyParticipantWithJob = z.infer<typeof SurveyParticipantWithJob>;
+export type SurveyUser = z.infer<typeof SurveyUser>;
 
 export interface ISurveyParticipationPostData {
   system_user_id: number;
-  job: string;
+  survey_job_name: string;
 }
 
 /**
@@ -95,32 +96,62 @@ export class SurveyParticipationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} systemUserId
-   * @return {*}  {(Promise<SurveyParticipantWithJob | null>)}
+   * @return {*}  {(Promise<SurveyUser | null>)}
    * @memberof SurveyParticipationRepository
    */
-  async getSurveyParticipant(surveyId: number, systemUserId: number): Promise<SurveyParticipantWithJob | null> {
+  async getSurveyParticipant(surveyId: number, systemUserId: number): Promise<(SurveyUser & SystemUser) | null> {
     const sqlStatement = SQL`
       SELECT
+        su.system_user_id,
+        su.user_identifier,
+        su.user_guid,
+        su.record_end_date,
+        uis.name AS identity_source,
+        array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+        array_remove(array_agg(sr.name), NULL) AS role_names,
+        su.email,
+        su.display_name,
+        su.agency,
         sp.survey_participation_id,
         sp.survey_id,
-        sp.system_user_id,
         sp.survey_job_id,
         sj.name survey_job_name
       FROM
         survey_participation sp
-      LEFT JOIN survey_job sj
-        ON sp.survey_job_id = sj.survey_job_id
+        LEFT JOIN
+        survey_job sj
+        ON sj.survey_job_id = sp.survey_job_id
+      LEFT JOIN system_user su
+        ON sp.system_user_id = su.system_user_id
+      LEFT JOIN
+        system_user_role sur
+        ON su.system_user_id = sur.system_user_id
+      LEFT JOIN
+        system_role sr
+        ON sur.system_role_id = sr.system_role_id
+      LEFT JOIN
+        user_identity_source uis
+        ON uis.user_identity_source_id = su.user_identity_source_id
       WHERE
         sp.survey_id = ${surveyId}
       AND
         sp.system_user_id = ${systemUserId}
       GROUP BY
+        su.system_user_id,
+        su.record_end_date,
+        su.user_identifier,
+        su.user_guid,
+        uis.name,
+        su.email,
+        su.display_name,
+        su.agency,
+        sp.survey_participation_id,
+        sp.survey_job_id,
         sp.survey_id,
-        sp.system_user_id
-      ;
+        sj.name;
       `;
 
-    const response = await this.connection.sql(sqlStatement, SurveyParticipantWithJob);
+    const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUser));
 
     const result = (response && response.rows && response.rows[0]) || null;
 
@@ -131,28 +162,62 @@ export class SurveyParticipationRepository extends BaseRepository {
    * Get a survey participant record with job name.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<SurveyParticipantWithJob[]>}
+   * @return {*}  {Promise<SurveyUser[]>}
    * @memberof SurveyParticipationRepository
    */
-  async getSurveyParticipants(surveyId: number): Promise<SurveyParticipantWithJob[]> {
+  async getSurveyParticipants(surveyId: number): Promise<(SurveyUser & SystemUser)[]> {
     const sqlStatement = SQL`
       SELECT
+        su.system_user_id,
+        su.user_identifier,
+        su.user_guid,
+        su.record_end_date,
+        uis.name AS identity_source,
+        array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+        array_remove(array_agg(sr.name), NULL) AS role_names,
+        su.email,
+        su.display_name,
+        su.agency,
         sp.survey_participation_id,
         sp.survey_id,
-        sp.system_user_id,
         sp.survey_job_id,
         sj.name survey_job_name
       FROM
         survey_participation sp
       LEFT JOIN
         survey_job sj
-      ON
-        sj.survey_job_id = sp.survey_job_id
+        ON sj.survey_job_id = sp.survey_job_id
+      LEFT JOIN system_user su
+        ON sp.system_user_id = su.system_user_id
+      LEFT JOIN
+        system_user_role sur
+        ON su.system_user_id = sur.system_user_id
+      LEFT JOIN
+        system_role sr
+        ON sur.system_role_id = sr.system_role_id
+      LEFT JOIN
+        user_identity_source uis
+        ON uis.user_identity_source_id = su.user_identity_source_id
       WHERE
-        sp.survey_id = ${surveyId};
+        sp.survey_id = ${surveyId}
+      AND
+        su.record_end_date is NULL
+      GROUP BY
+        su.system_user_id,
+        su.record_end_date,
+        su.user_identifier,
+        su.user_guid,
+        uis.name,
+        su.email,
+        su.display_name,
+        su.agency,
+        sp.survey_participation_id,
+        sp.survey_job_id,
+        sp.survey_id,
+        sj.name;
     `;
 
-    const response = await this.connection.sql(sqlStatement, SurveyParticipantWithJob);
+    const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUser));
 
     const result = (response && response.rows) || null;
 
@@ -198,11 +263,31 @@ export class SurveyParticipationRepository extends BaseRepository {
     }
   }
 
-  async updateSurveyParticipant(surveyId: number, systemUserId: number, surveyJobId: number): Promise<void> {
-    //TODO: Upsert? Or delete and insert? Multiple jobs per user per survey?
-    console.log('surveyJobId', surveyJobId);
-    console.log('systemUserId', systemUserId);
-    console.log('surveyId', surveyId);
+  /**
+   * Update a survey participant record.
+   *
+   * @param {number} surveyParticipationId
+   * @param {string} surveyJobName
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyParticipationRepository
+   */
+  async updateSurveyParticipant(surveyParticipationId: number, surveyJobName: string): Promise<void> {
+    const sqlStatement = SQL`
+      UPDATE survey_participation
+      SET
+        survey_job_id = (SELECT survey_job_id FROM survey_job WHERE name = ${surveyJobName} LIMIT 1)
+      WHERE
+        survey_participation_id = ${surveyParticipationId};
+    `;
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    if (!response || !response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to update survey participant', [
+        'SurveyParticipationRepository->updateSurveyParticipant',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
   }
   /**
    * Delete a survey participation record.

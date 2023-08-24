@@ -100,11 +100,8 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     clearErrors();
   };
 
-  const handleAddUserRole = (systemUserId: number, role: string, index: number) => {
-    setFieldValue(`participants[${index}]`, {
-      system_user_id: systemUserId,
-      role: role
-    });
+  const handleAddUserRole = (role: string, index: number) => {
+    setFieldValue(`participants[${index}].role`, role);
   };
 
   const handleRemoveUser = (systemUserId: number) => {
