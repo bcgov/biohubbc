@@ -13,7 +13,6 @@ import IUCNClassification from './components/IUCNClassification';
 import Partnerships from './components/Partnerships';
 import ProjectCoordinator from './components/ProjectCoordinator';
 import ProjectObjectives from './components/ProjectObjectives';
-import ProjectParticipants from './components/ProjectParticipants';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectMetadata: {
@@ -109,14 +108,6 @@ const ProjectDetails = () => {
           </Typography>
           <Divider></Divider>
           <IUCNClassification />
-        </Box>
-
-        <Box component="section" mb={0}>
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Project Participants
-          </Typography>
-          <Divider></Divider>
-          <ProjectParticipants />
         </Box>
       </Box>
     </Box>
