@@ -198,7 +198,7 @@ export class PostParticipantsData {
 export interface PostParticipantData {
   project_participation_id?: number;
   system_user_id: number;
-  project_role_name: PROJECT_ROLE;
+  project_role_names: PROJECT_ROLE[];
 }
 
 export class PostDraftData {

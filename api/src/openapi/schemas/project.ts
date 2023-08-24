@@ -118,14 +118,17 @@ export const projectCreatePostRequestObject = {
       type: 'array',
       items: {
         type: 'object',
-        required: ['system_user_id', 'project_role_name'],
+        required: ['system_user_id', 'project_role_names'],
         properties: {
           system_user_id: {
             type: 'number'
           },
-          project_role_name: {
-            type: 'string',
-            enum: [PROJECT_ROLE.COORDINATOR, PROJECT_ROLE.COLLABORATOR, PROJECT_ROLE.OBSERVER]
+          project_role_names: {
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: [PROJECT_ROLE.COORDINATOR, PROJECT_ROLE.COLLABORATOR, PROJECT_ROLE.OBSERVER]
+            }
           }
         }
       }

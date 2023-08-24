@@ -152,8 +152,8 @@ GET.apiDoc = {
                         'project_participation_id',
                         'project_id',
                         'system_user_id',
-                        'project_role_id',
-                        'project_role_name',
+                        'project_role_ids',
+                        'project_role_names',
                         'project_role_permissions'
                       ],
                       properties: {
@@ -166,11 +166,17 @@ GET.apiDoc = {
                         system_user_id: {
                           type: 'number'
                         },
-                        project_role_id: {
-                          type: 'number'
+                        project_role_ids: {
+                          type: 'array',
+                          items: {
+                            type: 'number'
+                          }
                         },
-                        project_role_name: {
-                          type: 'string'
+                        project_role_names: {
+                          type: 'array',
+                          items: {
+                            type: 'string'
+                          }
                         },
                         project_role_permissions: {
                           type: 'array',
