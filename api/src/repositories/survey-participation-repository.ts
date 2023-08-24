@@ -80,15 +80,13 @@ export class SurveyParticipationRepository extends BaseRepository {
     `;
     const response = await this.connection.sql(sqlStatement, SurveyJob);
 
-    const result = (response && response.rows) || null;
-
-    if (!result) {
+    if (!response || !response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey jobs', [
         'SurveyParticipationRepository->getSurveyJobs',
         'rows was null or undefined, expected rows != null'
       ]);
     }
-    return result;
+    return response.rows;
   }
 
   /**
@@ -153,9 +151,7 @@ export class SurveyParticipationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUser));
 
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    return result;
+    return response.rows?.[0] || null;
   }
 
   /**
@@ -219,16 +215,14 @@ export class SurveyParticipationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUser));
 
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get survey participant', [
+    if (!response.rows.length) {
+      throw new ApiExecuteSQLError('Failed to get survey participants', [
         'SurveyParticipationRepository->getSurveyParticipants',
         'rows was null or undefined, expected rows != null'
       ]);
     }
 
-    return result;
+    return response.rows;
   }
 
   /**
@@ -253,7 +247,7 @@ export class SurveyParticipationRepository extends BaseRepository {
       );
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     if (!response || !response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert survey participant', [
@@ -280,7 +274,7 @@ export class SurveyParticipationRepository extends BaseRepository {
         survey_participation_id = ${surveyParticipationId};
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     if (!response || !response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update survey participant', [

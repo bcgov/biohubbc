@@ -991,7 +991,8 @@ describe.skip('EmlService', () => {
       ecological_seasons: [],
       field_methods: [],
       intended_outcomes: [],
-      vantage_codes: []
+      vantage_codes: [],
+      survey_jobs: []
     };
 
     it('should retrieve codes if _codes is undefined', async () => {

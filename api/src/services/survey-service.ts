@@ -612,7 +612,7 @@ export class SurveyService extends DBService {
       promises.push(this.insertRegion(surveyId, putSurveyData?.location.geometry));
     }
 
-    if (putSurveyData?.participants) {
+    if (putSurveyData?.participants.length) {
       promises.push(this.upsertSurveyParticipantData(surveyId, putSurveyData));
     }
 

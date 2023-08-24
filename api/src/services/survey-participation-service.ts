@@ -1,5 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { SurveyJob, SurveyParticipationRepository, SurveyUser } from '../repositories/survey-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { DBService } from './db-service';
 
 export class SurveyParticipationService extends DBService {
@@ -15,11 +16,11 @@ export class SurveyParticipationService extends DBService {
     return this.surveyParticipationRepository.getSurveyJobs();
   }
 
-  async getSurveyParticipant(surveyId: number, systemUserId: number): Promise<SurveyUser | null> {
+  async getSurveyParticipant(surveyId: number, systemUserId: number): Promise<(SurveyUser & SystemUser) | null> {
     return this.surveyParticipationRepository.getSurveyParticipant(surveyId, systemUserId);
   }
 
-  async getSurveyParticipants(surveyId: number): Promise<SurveyUser[]> {
+  async getSurveyParticipants(surveyId: number): Promise<(SurveyUser & SystemUser)[]> {
     return this.surveyParticipationRepository.getSurveyParticipants(surveyId);
   }
 
