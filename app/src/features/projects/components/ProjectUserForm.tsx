@@ -24,11 +24,11 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
       })
     )
     .min(1, 'At least 1 member needs to be added to manage a project.')
-    .hasAtLeastOneValue(
-      'A minimum of one team member must be assigned the coordinator role.',
-      'project_role_names',
-      PROJECT_ROLE.COORDINATOR
-    )
+  .hasAtLeastOneValue(
+    'A minimum of one team member must be assigned the coordinator role.',
+    'project_role_names',
+    PROJECT_ROLE.COORDINATOR
+  )
 });
 
 interface IProjectUser {
@@ -53,10 +53,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     if (props.users.length > 0) {
       props.users.forEach((user, index) => {
         selectedUsers.push(user);
-        setFieldValue(`participants[${index}]`, {
-          system_user_id: user.system_user_id,
-          project_role_names: (user as IGetProjectParticipant).project_role_names[0]
-        });
+        setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
       });
     } else {
       // This needs to be moved into project form instead of here
@@ -97,8 +94,9 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     clearErrors();
   };
 
-  const handleAddUserRole = (systemUserId: number, role: string, index: number) => {
+  const handleAddUserRole = (role: string, index: number) => {
     setFieldValue(`participants[${index}].project_role_names`, [role]);
+    clearErrors();
   };
 
   const handleRemoveUser = (systemUserId: number) => {
@@ -154,9 +152,10 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   };
 
   const getSelectedRole = (index: number): string | undefined => {
-    return values.participants[index].project_role_names[0] || undefined;
+    return values.participants[index].project_role_names[0] || '';
   };
-
+  console.log('errors', errors);
+  console.log('values', values);
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -210,6 +209,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                 selectedRole={getSelectedRole(index)}
                 handleAdd={handleAddUserRole}
                 handleRemove={handleRemoveUser}
+                key={`${user.system_user_id}-${user.email}`}
               />
             );
           })}

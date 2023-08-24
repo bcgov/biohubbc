@@ -121,7 +121,7 @@ export interface IProjectsListData {
 export interface IProjectUserRoles {
   participants: {
     system_user_id: number;
-    project_role_names: string;
+    project_role_names: string[];
   }[];
 }
 

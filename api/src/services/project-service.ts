@@ -407,7 +407,7 @@ export class ProjectService extends DBService {
     }
 
     if (entities?.location) {
-      // promises.push(this.insertRegion(projectId, entities.location.geometry));
+      promises.push(this.insertRegion(projectId, entities.location.geometry));
     }
 
     if (entities?.project?.project_programs) {

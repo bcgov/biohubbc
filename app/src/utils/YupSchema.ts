@@ -201,9 +201,7 @@ yup.addMethod(yup.array, 'hasAtLeastOneValue', function (message: string, key: s
     if (!values || !values.length) {
       return true;
     }
-    const found = values.filter((item) => {
-      return item[key].filter((keyItem: any) => keyItem === valueToFind);
-    });
+    const found = values.filter((item) => item[key][0] === valueToFind);
     return found.length > 0 || false;
   });
 });
