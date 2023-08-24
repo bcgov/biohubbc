@@ -159,7 +159,6 @@ export interface IGetProjectForUpdateResponse {
   location?: IGetProjectForUpdateResponseLocation;
   coordinator?: IGetProjectForUpdateResponseCoordinator;
   iucn?: IGetProjectForUpdateResponseIUCN;
-  partnerships?: IGetProjectForUpdateResponsePartnerships;
 }
 
 export interface IGetProjectForUpdateResponseDetails {
@@ -200,11 +199,6 @@ export interface IGetProjectForUpdateResponseIUCN {
   classificationDetails: IGetProjectForUpdateResponseIUCNArrayItem[];
 }
 
-export interface IGetProjectForUpdateResponsePartnerships {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
-}
-
 /**
  * An interface for a single instance of project metadata, for update-only use cases.
  *
@@ -237,7 +231,6 @@ export interface ProjectViewObject {
   location: IGetProjectForViewResponseLocation;
   coordinator: IGetProjectForViewResponseCoordinator;
   iucn: IGetProjectForViewResponseIUCN;
-  partnerships: IGetProjectForViewResponsePartnerships;
 }
 
 export interface IGetProjectForViewResponseDetails {
@@ -274,11 +267,6 @@ interface IGetProjectForViewResponseIUCNArrayItem {
 
 export interface IGetProjectForViewResponseIUCN {
   classificationDetails: IGetProjectForViewResponseIUCNArrayItem[];
-}
-
-export interface IGetProjectForViewResponsePartnerships {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
 }
 
 export interface ProjectSupplementaryData {
