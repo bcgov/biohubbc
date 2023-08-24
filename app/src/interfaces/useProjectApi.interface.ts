@@ -371,17 +371,6 @@ export interface IGetReportAuthors {
   last_name: string;
 }
 
-export interface IGetProjectParticipants {
-  project_participation_id: number;
-  project_id: number;
-  system_user_id: number;
-  project_role_id: number;
-  project_role_name: string;
-  user_identifier: string;
-  user_identity_source_id: number;
-  user_identity_source_name: string;
-}
-
 export interface IAddProjectParticipant {
   userIdentifier: string;
   displayName: string;

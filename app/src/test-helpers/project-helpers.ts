@@ -54,7 +54,8 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
         identity_source: '',
         email: 'email@email.com',
         display_name: 'Tim Taster',
-        agency: ''
+        agency: '',
+        user_identifier: ''
       },
       {
         project_participation_id: 2,
@@ -66,7 +67,8 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
         identity_source: '',
         email: 'email@email.com',
         display_name: 'Tom Tester',
-        agency: ''
+        agency: '',
+        user_identifier: ''
       }
     ]
   },
