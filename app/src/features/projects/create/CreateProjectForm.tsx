@@ -24,10 +24,6 @@ import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
 } from '../components/ProjectObjectivesForm';
-import ProjectPartnershipsForm, {
-  ProjectPartnershipsFormInitialValues,
-  ProjectPartnershipsFormYupSchema
-} from '../components/ProjectPartnershipsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   sectionDivider: {
@@ -50,7 +46,6 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
-  ...ProjectPartnershipsFormInitialValues
 };
 
 export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
@@ -59,7 +54,8 @@ export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(Pro
   // .concat(ProjectLocationFormYupSchema)
   // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired
   // .concat(ProjectIUCNFormYupSchema)
-  .concat(ProjectPartnershipsFormYupSchema);
+  .concat(ProjectLocationFormYupSchema)
+  .concat(ProjectIUCNFormYupSchema);
 
 //Function to get the list of coordinator agencies from the code set
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
@@ -152,35 +148,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           summary="Provide the Project Coordinator's contact and agency information."
           component={
             <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
-          }></HorizontalSplitFormComponent>
-
-        <Divider className={classes.sectionDivider} />
-
-        <HorizontalSplitFormComponent
-          title="Partnerships"
-          summary="Select partners supporting or participating in this project."
-          component={
-            <>
-              <Box component="fieldset">
-                <Typography component="legend" variant="h5">
-                  Select Partnerships
-                </Typography>
-                <Box mt={1}>
-                  <ProjectPartnershipsForm
-                    first_nations={
-                      codes?.first_nations?.map((item) => {
-                        return { value: item.id, label: item.name };
-                      }) || []
-                    }
-                    stakeholder_partnerships={
-                      codes?.agency?.map((item) => {
-                        return { value: item.name, label: item.name };
-                      }) || []
-                    }
-                  />
-                </Box>
-              </Box>
-            </>
           }></HorizontalSplitFormComponent>
 
         {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
