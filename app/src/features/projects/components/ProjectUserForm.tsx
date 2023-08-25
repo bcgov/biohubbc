@@ -1,12 +1,17 @@
 import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Autocomplete, Box, TextField, Typography } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
@@ -44,24 +49,17 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
 
-  const [searchUsers, setSearchUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
+  const searchUserDataLoader = useDataLoader(() => biohubApi.user.searchSystemUser(''));
+  searchUserDataLoader.load();
+
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
 
   useEffect(() => {
     props.users.forEach((user, index) => {
-      selectedUsers.push(user);
       setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
       setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
     });
-  }, [props.users]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const response = await biohubApi.user.searchSystemUser('').catch(() => []);
-
-      setSearchUsers(alphabetizeObjects(response, 'display_name'));
-    };
-    fetchUsers();
+    setSelectedUsers(props.users);
   }, []);
 
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
@@ -131,9 +129,29 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     }
   };
 
-  const getSelectedRole = (index: number): string | undefined => {
-    return values.participants[index].project_role_names[0] || '';
+  const filterSearchOptions = (
+    searchUsers: ISystemUser[],
+    selectedUsers: (ISystemUser | IGetProjectParticipant)[]
+  ): ISystemUser[] => {
+    // filter out any selected users out
+    const filtered = searchUsers.filter(
+      (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
+    );
+    // alphabetize array on display name
+    return alphabetizeObjects(filtered, 'display_name');
   };
+
+  const getSelectedRole = (index: number): string | undefined => {
+    if (values.participants[index]) {
+      // users should only ever have a single role on a project so index: 0 is a safe selection
+      return values.participants[index].project_role_names[0] || '';
+    }
+  };
+
+  if (!searchUserDataLoader.data || !searchUserDataLoader.hasLoaded) {
+    // should probably replace this with a skeleton
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -155,9 +173,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             id={'autocomplete-user-role-search'}
             data-testid={'autocomplete-user-role-search'}
             filterSelectedOptions
-            options={searchUsers.filter(
-              (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
-            )}
+            options={filterSearchOptions(searchUserDataLoader.data, selectedUsers)}
             getOptionLabel={(option) => option.display_name}
             onChange={(_, option) => {
               if (option) {
@@ -209,7 +225,6 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
             const error = rowItemError(index);
 
-            console.log('selected user: ', user);
             return (
               <UserRoleSelector
                 index={index}
