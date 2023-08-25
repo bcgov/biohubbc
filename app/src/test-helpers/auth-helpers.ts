@@ -26,7 +26,8 @@ export const UnauthenticatedUserAuthState: IAuthState = {
     refresh: () => {
       // do nothing
     },
-    getLoginUrl: () => '/login'
+    getLoginUrl: () => '/login',
+    critterbaseUuid: () => undefined
   }
 };
 
@@ -57,7 +58,8 @@ export const SystemUserAuthState: IAuthState = {
     refresh: () => {
       // do nothing
     },
-    getLoginUrl: () => '/login'
+    getLoginUrl: () => '/login',
+    critterbaseUuid: () => 'fakeguid'
   }
 };
 
@@ -88,7 +90,8 @@ export const SystemAdminAuthState: IAuthState = {
     refresh: () => {
       // do nothing
     },
-    getLoginUrl: () => '/login'
+    getLoginUrl: () => '/login',
+    critterbaseUuid: () => 'fakeguid'
   }
 };
 

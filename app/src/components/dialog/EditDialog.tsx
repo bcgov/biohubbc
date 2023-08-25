@@ -20,10 +20,10 @@ export interface IEditDialogProps<T> {
   /**
    * The dialog window title text.
    *
-   * @type {string}
+   * @type {string | JSX.Element}
    * @memberof IEditDialogProps
    */
-  dialogTitle: string;
+  dialogTitle: string | JSX.Element;
 
   /**
    * The dialog window content text.
