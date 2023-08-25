@@ -20,11 +20,8 @@ import ProjectDetailsForm, {
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
 } from '../components/ProjectDetailsForm';
-import ProjectIUCNForm, { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from '../components/ProjectIUCNForm';
-import ProjectLocationForm, {
-  ProjectLocationFormInitialValues,
-  ProjectLocationFormYupSchema
-} from '../components/ProjectLocationForm';
+import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
+import { ProjectLocationFormInitialValues } from '../components/ProjectLocationForm';
 import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
@@ -65,10 +62,12 @@ export const initialProjectFieldData: ICreateProjectRequest = {
 
 export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
   .concat(ProjectObjectivesFormYupSchema)
-  .concat(ProjectLocationFormYupSchema)
-  .concat(ProjectIUCNFormYupSchema)
   .concat(ProjectPartnershipsFormYupSchema)
   .concat(ProjectUserRoleYupSchema);
+// TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (yup schema) temporarily, while its decided where exactly project/survey locations should be defined
+// .concat(ProjectLocationFormYupSchema)
+// TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired
+// .concat(ProjectIUCNFormYupSchema)
 
 //Function to get the list of coordinator agencies from the code set
 export const getCoordinatorAgencyOptions = (codes: IGetAllCodeSetsResponse): string[] => {
@@ -136,7 +135,8 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
               <Box mt={3}>
                 <ProjectObjectivesForm />
               </Box>
-              <Box component="fieldset" mt={5}>
+              {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form temporarily, while its decided if IUCN information is desired */}
+              {/* <Box component="fieldset" mt={5}>
                 <Typography component="legend" variant="h5">
                   IUCN Conservation Actions Classification
                 </Typography>
@@ -164,7 +164,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                     }
                   />
                 </Box>
-              </Box>
+              </Box> */}
             </>
           }></HorizontalSplitFormComponent>
 
@@ -214,12 +214,13 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
             </>
           }></HorizontalSplitFormComponent>
 
-        <Divider className={classes.sectionDivider} />
+        {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
+        {/* <Divider className={classes.sectionDivider} />
 
         <HorizontalSplitFormComponent
           title="Location and Boundary"
           summary="Provide details about the project's location and define the project spatial boundary"
-          component={<ProjectLocationForm />}></HorizontalSplitFormComponent>
+          component={<ProjectLocationForm />}></HorizontalSplitFormComponent> */}
 
         <Divider className={classes.sectionDivider} />
       </>

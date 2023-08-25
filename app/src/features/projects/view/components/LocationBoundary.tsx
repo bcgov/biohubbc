@@ -4,9 +4,7 @@ import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
@@ -215,7 +213,8 @@ const LocationBoundary = () => {
         buttonTitle="Edit Project Location"
         buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
         buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'text' }}
+        // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (edit button) temporarily, while its decided where exactly project/survey locations should be defined
+        buttonProps={{ variant: 'text', disabled: true, sx: { display: 'none' } }}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
@@ -233,7 +232,7 @@ const LocationBoundary = () => {
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
           />
-          {projectData.location.geometry && projectData.location.geometry.length && (
+          {(projectData.location.geometry.length && (
             <Box position="absolute" top="126px" left="10px" zIndex="999">
               <IconButton
                 aria-label="zoom to initial extent"
@@ -243,10 +242,11 @@ const LocationBoundary = () => {
                 <Icon size={1} path={mdiRefresh} />
               </IconButton>
             </Box>
-          )}
+          )) || <></>}
         </Box>
 
-        <Box mt={3}>
+        {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (description) temporarily, while its decided where exactly project/survey locations should be defined */}
+        {/* <Box mt={3}>
           <Typography variant="body2" className={classes.metaSectionHeader}>
             Location Description
           </Typography>
@@ -261,7 +261,7 @@ const LocationBoundary = () => {
           <Box mt={3}>
             <InferredLocationDetails layers={inferredLayersInfo} />
           </Box>
-        </Box>
+        </Box> */}
 
         <Button
           variant="text"

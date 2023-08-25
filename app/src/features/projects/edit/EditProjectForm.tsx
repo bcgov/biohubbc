@@ -11,8 +11,6 @@ import { IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
-import ProjectIUCNForm from '../components/ProjectIUCNForm';
-import ProjectLocationForm from '../components/ProjectLocationForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
 import ProjectPartnershipsForm from '../components/ProjectPartnershipsForm';
 import ProjectUserForm from '../components/ProjectUserForm';
@@ -94,7 +92,8 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                 <Box mt={3}>
                   <ProjectObjectivesForm />
                 </Box>
-                <Box component="fieldset" mt={5}>
+                {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form temporarily, while its decided if IUCN information is desired */}
+                {/* <Box component="fieldset" mt={5}>
                   <Typography component="legend" variant="h5">
                     IUCN Conservation Actions Classification
                   </Typography>
@@ -122,7 +121,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                       }
                     />
                   </Box>
-                </Box>
+                </Box> */}
               </>
             }></HorizontalSplitFormComponent>
 
@@ -172,12 +171,13 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
               </>
             }></HorizontalSplitFormComponent>
 
-          <Divider className={classes.sectionDivider} />
+          {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
+          {/* <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
             title="Location and Boundary"
             summary="Provide details about the project's location and define the project spatial boundary"
-            component={<ProjectLocationForm />}></HorizontalSplitFormComponent>
+            component={<ProjectLocationForm />}></HorizontalSplitFormComponent> */}
 
           <Divider className={classes.sectionDivider} />
         </>
