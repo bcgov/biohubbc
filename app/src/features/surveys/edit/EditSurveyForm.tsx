@@ -10,7 +10,7 @@ import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
-import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IEditSurveyForm {
   codes: IGetAllCodeSetsResponse;
   projectData: ProjectViewObject;
-  surveyData: IEditSurveyRequest;
+  surveyData: SurveyUpdateObject;
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   handleCancel: () => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;

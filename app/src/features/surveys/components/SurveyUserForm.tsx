@@ -6,7 +6,7 @@ import UserRoleSelector from 'components/user/UserRoleSelector';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
-import { ICreateSurveyRequest, IGetSurveyForViewResponseParticipants } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { debounce } from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
@@ -22,7 +22,7 @@ export const SurveyUserJobYupSchema = yup.object().shape({
 });
 
 interface ISurveyUser {
-  users: any[];
+  users: (ISystemUser | IGetSurveyParticipant)[];
   jobs: ICode[];
 }
 
@@ -34,28 +34,31 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
   const biohubApi = useBiohubApi();
 
-  const [searchUsers, setSearchUsers] = useState<ISystemUser[]>([]);
+  const [searchUsers, setSearchUsers] = useState<(ISystemUser | IGetSurveyParticipant)[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState<ISystemUser[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetSurveyParticipant)[]>([]);
 
   useEffect(() => {
     if (props.users.length > 0) {
       props.users.forEach((user, index) => {
         selectedUsers.push(user);
-        setFieldValue(`participants[${index}]`, {
-          system_user_id: user.system_user_id,
-          survey_job_name: (user as IGetSurveyForViewResponseParticipants).survey_job_name
-        });
+        setFieldValue(`participants[${index}].survey_job_name`, (user as IGetSurveyParticipant).survey_job_name);
       });
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.users]);
 
   const handleSearch = useMemo(
     () =>
       debounce(async (inputValue: string, existingValues: ISystemUser[]) => {
+        if (!inputValue) {
+          return;
+        }
+
         setIsSearching(true);
-        const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase());
+
+        const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase()).catch(() => []);
 
         // filter out any selected values from dropdown
         const filteredList = response.filter(
@@ -66,8 +69,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
       }, 500),
     [biohubApi.user]
   );
-
-  const handleAddUser = (user: ISystemUser) => {
+  const handleAddUser = (user: ISystemUser | IGetSurveyParticipant) => {
     selectedUsers.push(user);
 
     setFieldValue(`participants[${selectedUsers.length - 1}]`, {
@@ -79,10 +81,13 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
 
   const handleAddUserRole = (survey_job_name: string, index: number) => {
     setFieldValue(`participants[${index}].survey_job_name`, survey_job_name);
+    clearErrors();
   };
 
   const handleRemoveUser = (systemUserId: number) => {
-    const filteredUsers = selectedUsers.filter((item: ISystemUser) => item.system_user_id !== systemUserId);
+    const filteredUsers = selectedUsers.filter(
+      (item: ISystemUser | IGetSurveyParticipant) => item.system_user_id !== systemUserId
+    );
     const filteredValues = values.participants.filter((item) => item.system_user_id !== systemUserId);
 
     setSelectedUsers(filteredUsers);
@@ -115,7 +120,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
       if (errorAtIndex) {
         return (
           <Typography style={{ fontSize: '12px', color: '#f44336' }}>
-            {errorAtIndex ? 'Select a survey_job_name for this team member.' : ''}
+            {errorAtIndex ? 'Select a survey job for this team member.' : ''}
           </Typography>
         );
       }
@@ -138,7 +143,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
         </Typography>
       </Box>
       <Box mt={3}>
-        <SearchAutocompleteField<ISystemUser>
+        <SearchAutocompleteField<ISystemUser | IGetSurveyParticipant>
           id={''}
           displayNameKey={'display_name'}
           placeholderText={'Find Team Members'}
@@ -167,18 +172,19 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         )}
         <Box>
-          {selectedUsers.map((systemUser: ISystemUser, index: number) => {
+          {selectedUsers.map((user: ISystemUser | IGetSurveyParticipant, index: number) => {
             const error = rowItemError(index);
+
             return (
               <UserRoleSelector
-                key={`${systemUser.system_user_id}-${index}`}
                 index={index}
-                user={systemUser}
+                user={user}
                 roles={props.jobs}
                 error={error}
                 selectedRole={getSelectedRole(index)}
                 handleAdd={handleAddUserRole}
                 handleRemove={handleRemoveUser}
+                key={`${user.system_user_id}-${user.email}`}
               />
             );
           })}

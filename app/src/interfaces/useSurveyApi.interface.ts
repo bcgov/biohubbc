@@ -71,7 +71,7 @@ export interface IGetSurveyForViewResponseProprietor {
   proprietor_type_id?: number;
   proprietor_type_name?: string;
 }
-export interface IGetSurveyForViewResponseParticipants {
+export interface IGetSurveyParticipant {
   system_user_id: number;
   identity_source: string;
   email: string | null;
@@ -88,7 +88,7 @@ export interface SurveyViewObject {
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding_sources: ISurveyFundingSource[];
   proprietor: IGetSurveyForViewResponseProprietor | null;
-  participants: IGetSurveyForViewResponseParticipants[];
+  participants: IGetSurveyParticipant[];
 }
 
 export interface SurveyUpdateObject {
@@ -141,6 +141,11 @@ export interface SurveyUpdateObject {
     revision_count: number;
   };
   participants?: {
+    identity_source: string;
+    email: string | null;
+    display_name: string;
+    agency: string | null;
+    survey_job_id: number;
     system_user_id: number;
     survey_job_name: string;
   }[];

@@ -96,6 +96,7 @@ const EditSurveyPage = () => {
   if (!editSurveyDL.data && surveyId) {
     editSurveyDL.load(projectContext.projectId, surveyId);
   }
+  const surveyData = editSurveyDL.data?.surveyData;
 
   useEffect(() => {
     const setFormikValues = (data: IEditSurveyRequest) => {
@@ -205,7 +206,7 @@ const EditSurveyPage = () => {
     return true;
   };
 
-  if (!codes || !projectData) {
+  if (!codes || !projectData || !surveyData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -238,7 +239,7 @@ const EditSurveyPage = () => {
           <EditSurveyForm
             codes={codes}
             projectData={projectData}
-            surveyData={editSurveyDL.data?.surveyData as unknown as IEditSurveyRequest}
+            surveyData={surveyData}
             handleSubmit={handleSubmit}
             handleCancel={handleCancel}
             formikRef={formikRef}

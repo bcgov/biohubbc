@@ -118,11 +118,11 @@ export class PostPurposeAndMethodologyData {
 
 export class PostParticipationData {
   system_user_id: number;
-  job: string;
+  survey_job_name: string;
 
   constructor(obj?: any) {
     this.system_user_id = obj?.system_user_id || null;
-    this.job = obj?.job || null;
+    this.survey_job_name = obj?.survey_job_name || null;
   }
 }
 

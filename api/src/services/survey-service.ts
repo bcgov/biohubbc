@@ -405,7 +405,11 @@ export class SurveyService extends DBService {
     promises.push(
       Promise.all(
         postSurveyData.participants.map((participant) =>
-          this.surveyParticipationService.insertSurveyParticipant(surveyId, participant.system_user_id, participant.job)
+          this.surveyParticipationService.insertSurveyParticipant(
+            surveyId,
+            participant.system_user_id,
+            participant.survey_job_name
+          )
         )
       )
     );
