@@ -341,4 +341,3 @@ describe('getIUCNClassificationData', () => {
     expect(response).to.eql(data);
   });
 });
-

@@ -1,7 +1,11 @@
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import { render } from 'test-helpers/test-utils';
-import SurveyPartnershipsForm, { ISurveyPartnershipsForm, SurveyPartnershipsFormInitialValues, SurveyPartnershipsFormYupSchema } from './SurveyPartnershipsForm';
+import SurveyPartnershipsForm, {
+  ISurveyPartnershipsForm,
+  SurveyPartnershipsFormInitialValues,
+  SurveyPartnershipsFormYupSchema
+} from './SurveyPartnershipsForm';
 
 const first_nations: IMultiAutocompleteFieldOption[] = [
   {
@@ -48,7 +52,6 @@ describe('ProjectPartnershipsForm', () => {
     }) || [];
     */
 
-
     const { getByLabelText } = render(
       <Formik
         initialValues={SurveyPartnershipsFormInitialValues}
@@ -56,9 +59,7 @@ describe('ProjectPartnershipsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => (
-          <SurveyPartnershipsForm />
-        )}
+        {() => <SurveyPartnershipsForm />}
       </Formik>
     );
 
@@ -81,9 +82,7 @@ describe('ProjectPartnershipsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => (
-          <SurveyPartnershipsForm />
-        )}
+        {() => <SurveyPartnershipsForm />}
       </Formik>
     );
 
