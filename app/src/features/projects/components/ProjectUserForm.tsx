@@ -23,7 +23,7 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
         project_role_names: yup.array(yup.string()).min(1, 'Select a role for this team member')
       })
     )
-    .min(1, 'At least 1 member needs to be added to manage a project.')
+    .min(1)
     .hasAtLeastOneValue(
       'A minimum of one team member must be assigned the coordinator role.',
       'project_role_names',
@@ -139,8 +139,13 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
         <Typography component="legend">Add Team Members</Typography>
-        {errors && errors['participants'] && (
-          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+        {errors && errors['participants'] && !selectedUsers.length && (
+          <AlertBar
+            severity="error"
+            variant="standard"
+            title={'Missing Team Member'}
+            text={'At least 1 member needs to be added to manage a project.'}
+          />
         )}
         <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
           Select team members and assign each member a role for this project.
@@ -192,7 +197,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             Assign Roles ({selectedUsers.length})
           </Typography>
         )}
-        {errors && errors['participants'] && (
+        {errors && errors['participants'] && selectedUsers.length > 0 && (
           <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         )}
         <Box
