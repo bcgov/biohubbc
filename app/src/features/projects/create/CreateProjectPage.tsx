@@ -24,7 +24,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import CreateProjectForm from './CreateProjectForm';
@@ -84,7 +84,7 @@ const CreateProjectPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
 
   const codes = codesContext.codesDataLoader.data;
-  codesContext.codesDataLoader.load();
+  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
   const draftId = Number(queryParams.draftId);
 
