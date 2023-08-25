@@ -9,7 +9,6 @@ import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
 import GeneralInformation from './components/GeneralInformation';
-import IUCNClassification from './components/IUCNClassification';
 import Partnerships from './components/Partnerships';
 import ProjectCoordinator from './components/ProjectCoordinator';
 import ProjectObjectives from './components/ProjectObjectives';
@@ -102,13 +101,14 @@ const ProjectDetails = () => {
           <Partnerships />
         </Box>
 
-        <Box component="section" mb={0}>
+        {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (view) temporarily, while its decided if IUCN information is desired */}
+        {/* <Box component="section" mb={0}>
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             IUCN Classification
           </Typography>
           <Divider></Divider>
           <IUCNClassification />
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );
