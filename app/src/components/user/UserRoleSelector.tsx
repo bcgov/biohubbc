@@ -21,33 +21,37 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
 
   return (
     <Box
-      className='userRoleItemContainer'
+      className="userRoleItemContainer"
       sx={{
         '& .userRoleItem + p': {
           pt: 1,
           pl: 2
         }
-      }}
-    >
-      <Paper variant="outlined"
-        className='userRoleItem'
+      }}>
+      <Paper
+        variant="outlined"
+        className="userRoleItem"
         sx={{
           borderColor: error ? 'error.main' : 'grey.400'
-        }}
-      >
+        }}>
         <Box display="flex" alignItems="center" px={2} py={1.5}>
           <Box flex="1 1 auto">
             <UserCard name={user.display_name} email={user.email} agency={user.agency} type={user.identity_source} />
           </Box>
           <Box flex="0 0 auto">
             <Select
-              placeholder='Select a role'
               size="small"
               sx={{ width: '200px' }}
               displayEmpty
               value={selectedRole}
               onChange={(event) => {
                 handleAdd(String(event.target.value), index);
+              }}
+              renderValue={(selected) => {
+                if (!selected) {
+                  return 'Select a Role';
+                }
+                return selected;
               }}>
               {roles.map((item) => (
                 <MenuItem key={item.id} value={item.name}>
