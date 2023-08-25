@@ -84,7 +84,7 @@ export interface IGetUserProjectsListResponse {
   system_user_id: number;
   project_role_ids: number[];
   project_role_names: string[];
-  project_permission_names: string[];
+  project_role_permissions: string[];
 }
 
 /**
@@ -286,6 +286,7 @@ export interface IGetProjectParticipant {
   project_id: number;
   system_user_id: number;
   identity_source: string;
+  user_identifier: string;
   email: string | null;
   display_name: string;
   agency: string | null;
@@ -368,17 +369,6 @@ export interface IGetReportMetadata {
 export interface IGetReportAuthors {
   first_name: string;
   last_name: string;
-}
-
-export interface IGetProjectParticipants {
-  project_participation_id: number;
-  project_id: number;
-  system_user_id: number;
-  project_role_id: number;
-  project_role_name: string;
-  user_identifier: string;
-  user_identity_source_id: number;
-  user_identity_source_name: string;
 }
 
 export interface IAddProjectParticipant {

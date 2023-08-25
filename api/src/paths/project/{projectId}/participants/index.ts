@@ -68,11 +68,17 @@ GET.apiDoc = {
                 system_user_id: {
                   type: 'number'
                 },
-                project_role_id: {
-                  type: 'number'
+                project_role_ids: {
+                  type: 'array',
+                  items: {
+                    type: 'number'
+                  }
                 },
-                project_role_name: {
-                  type: 'string'
+                project_role_names: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
                 },
                 user_guid: {
                   type: 'string',
@@ -82,10 +88,7 @@ GET.apiDoc = {
                 user_identifier: {
                   type: 'string'
                 },
-                user_identity_source_id: {
-                  type: 'number'
-                },
-                user_identity_source_name: {
+                identity_source: {
                   type: 'string'
                 }
               }

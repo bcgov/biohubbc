@@ -24,11 +24,11 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
       })
     )
     .min(1, 'At least 1 member needs to be added to manage a project.')
-  .hasAtLeastOneValue(
-    'A minimum of one team member must be assigned the coordinator role.',
-    'project_role_names',
-    PROJECT_ROLE.COORDINATOR
-  )
+    .hasAtLeastOneValue(
+      'A minimum of one team member must be assigned the coordinator role.',
+      'project_role_names',
+      PROJECT_ROLE.COORDINATOR
+    )
 });
 
 interface IProjectUser {
@@ -71,8 +71,13 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const handleSearch = useMemo(
     () =>
       debounce(async (inputValue: string, existingValues: ISystemUser[]) => {
+        if (!inputValue) {
+          return;
+        }
+
         setIsSearching(true);
-        const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase());
+
+        const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase()).catch(() => []);
 
         // filter out any selected values from dropdown
         const filteredList = response.filter(

@@ -37,6 +37,7 @@ const SearchAutocompleteField = <T,>(props: ISearchAutocompleteFieldProps<T>) =>
       id={id}
       options={searchOptions}
       filterSelectedOptions
+      filterOptions={(options) => options} // https://mui.com/material-ui/react-autocomplete/#search-as-you-type
       isOptionEqualToValue={(option, value) => option[displayNameKey] === value[displayNameKey]}
       getOptionLabel={(option) => String(option[displayNameKey] || '')}
       onInputChange={(_, value) => {
@@ -66,7 +67,7 @@ const SearchAutocompleteField = <T,>(props: ISearchAutocompleteFieldProps<T>) =>
           }}
         />
       )}
-      renderOption={(renderProps, renderOption, { selected }) => {
+      renderOption={(renderProps, renderOption) => {
         return (
           <Box component="li" {...renderProps}>
             {renderSearch(renderOption)}

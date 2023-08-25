@@ -496,21 +496,24 @@ export class UserRepository extends BaseRepository {
     if (searchCriteria.keyword) {
       const keywords = searchCriteria.keyword.split(' ');
 
-      keywords.forEach((keyword) => {
-        // Add where clauses to each space delimited string from the keyword string
-        queryBuilder.orWhereRaw(`LOWER(su.email) LIKE LOWER('%${keyword}%')`);
-        queryBuilder.orWhereRaw(`LOWER(su.display_name) LIKE LOWER('%${keyword}%')`);
-        queryBuilder.orWhereRaw(`LOWER(su.agency) LIKE LOWER('%${keyword}%')`);
+      queryBuilder.orWhere((qb) => {
+        keywords.forEach((keyword) => {
+          // Add where clauses to each space delimited string from the keyword string
+          qb.orWhereRaw(`LOWER(su.email) LIKE LOWER('%${keyword}%')`);
+          qb.orWhereRaw(`LOWER(su.display_name) LIKE LOWER('%${keyword}%')`);
+          qb.orWhereRaw(`LOWER(su.agency) LIKE LOWER('%${keyword}%')`);
 
-        // Order by to sort the matches based on most important match to least important
-        // Not as powerful as elastic search, but will at least prioritize email matches over agency matches, for example.
-        queryBuilder.orderByRaw(knex.raw(`LOWER(su.email) LIKE LOWER('%${keyword}%') OR NULL`));
-        queryBuilder.orderByRaw(knex.raw(`LOWER(su.display_name) LIKE LOWER('%${keyword}%') OR NULL`));
-        queryBuilder.orderByRaw(knex.raw(`LOWER(su.agency) LIKE LOWER('%${keyword}%') OR NULL`));
+          // Order by to sort the matches based on most important match to least important
+          // Not as powerful as elastic search, but will at least prioritize email matches over agency matches, for example.
+          qb.orderByRaw(knex.raw(`LOWER(su.email) LIKE LOWER('%${keyword}%') OR NULL`));
+          qb.orderByRaw(knex.raw(`LOWER(su.display_name) LIKE LOWER('%${keyword}%') OR NULL`));
+          qb.orderByRaw(knex.raw(`LOWER(su.agency) LIKE LOWER('%${keyword}%') OR NULL`));
+        });
       });
     }
 
     queryBuilder.andWhere('su.record_end_date', null);
+    queryBuilder.whereNotIn('uis.name', [SYSTEM_IDENTITY_SOURCE.DATABASE]);
 
     queryBuilder.groupBy('su.system_user_id');
     queryBuilder.groupBy('uis.name');
