@@ -31,7 +31,11 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
 
   const rawDateValue = get(values, name);
 
-  const formattedDateValue = (rawDateValue && moment(rawDateValue).isValid() && moment(rawDateValue)) || null;
+  const formattedDateValue =
+    (rawDateValue &&
+      moment(rawDateValue, DATE_FORMAT.ShortDateFormat).isValid() &&
+      moment(rawDateValue, DATE_FORMAT.ShortDateFormat)) ||
+    null;
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
