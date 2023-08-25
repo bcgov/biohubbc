@@ -59,7 +59,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
               sx={{
                 ml: 2
               }}
-              aria-label="remove user"
+              aria-label="remove user from project team"
               onClick={() => {
                 handleRemove(user.system_user_id);
               }}>
