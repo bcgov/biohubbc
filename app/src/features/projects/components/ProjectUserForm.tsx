@@ -156,23 +156,36 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
-        <Typography component="legend">Add Team Members</Typography>
-        {errors && errors['participants'] && !selectedUsers.length && (
-          <AlertBar
-            severity="error"
-            variant="standard"
-            title={'Missing Team Member'}
-            text={'At least 1 member needs to be added to manage a project.'}
-          />
-        )}
-        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-          Select team members and assign each member a role for this project.
+        <Typography component="legend">Manage Team Members</Typography>
+        <Typography
+          variant="body1"
+          color="textSecondary"
+          sx={{
+            maxWidth: '72ch'
+          }}>
+          A minimum of one team member must be assigned the coordinator role.
         </Typography>
+        {errors && errors['participants'] && !selectedUsers.length && (
+          <Box mt={3}>
+            <AlertBar
+              severity="error"
+              variant="standard"
+              title={'No team members added'}
+              text={'At least one team member needs to be added to this project.'}
+            />
+          </Box>
+        )}
+        {errors && errors['participants'] && selectedUsers.length > 0 && (
+          <Box mt={3}>
+            <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+          </Box>
+        )}
         <Box mt={3}>
           <Autocomplete
             id={'autocomplete-user-role-search'}
             data-testid={'autocomplete-user-role-search'}
             filterSelectedOptions
+            noOptionsText="No records found"
             options={filterSearchOptions(searchUserDataLoader.data, selectedUsers)}
             getOptionLabel={(option) => option.display_name}
             onChange={(_, option) => {
@@ -184,11 +197,15 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
               <TextField
                 {...params}
                 variant="outlined"
-                placeholder={'Find Team Members'}
+                placeholder={'Find team members'}
                 fullWidth
                 InputProps={{
                   ...params.InputProps,
-                  startAdornment: <Icon path={mdiMagnify} size={1}></Icon>
+                  startAdornment: (
+                    <Box mx={1} mt="6px">
+                      <Icon path={mdiMagnify} size={1}></Icon>
+                    </Box>
+                  )
                 }}
               />
             )}
@@ -206,39 +223,32 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             }}
           />
         </Box>
-      </Box>
-      <Box component="fieldset" mt={4}>
         {selectedUsers.length > 0 && (
-          <Typography component={'legend'} variant="h5">
-            Assign Roles ({selectedUsers.length})
-          </Typography>
+          <Box mt={2}>
+            <Box
+              sx={{
+                '& .userRoleItemContainer + .userRoleItemContainer': {
+                  mt: 1
+                }
+              }}>
+              {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
+                const error = rowItemError(index);
+                return (
+                  <UserRoleSelector
+                    index={index}
+                    user={user}
+                    roles={props.roles}
+                    error={error}
+                    selectedRole={getSelectedRole(index)}
+                    handleAdd={handleAddUserRole}
+                    handleRemove={handleRemoveUser}
+                    key={user.system_user_id}
+                  />
+                );
+              })}
+            </Box>
+          </Box>
         )}
-        {errors && errors['participants'] && selectedUsers.length > 0 && (
-          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
-        )}
-        <Box
-          sx={{
-            '& .userRoleItemContainer + .userRoleItemContainer': {
-              mt: 1
-            }
-          }}>
-          {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
-            const error = rowItemError(index);
-
-            return (
-              <UserRoleSelector
-                index={index}
-                user={user}
-                roles={props.roles}
-                error={error}
-                selectedRole={getSelectedRole(index)}
-                handleAdd={handleAddUserRole}
-                handleRemove={handleRemoveUser}
-                key={user.system_user_id}
-              />
-            );
-          })}
-        </Box>
       </Box>
     </form>
   );

@@ -12,7 +12,7 @@ interface IAlertBarProps {
 
 const AlertBar: React.FC<IAlertBarProps> = (props) => {
   const { severity, variant, title, text } = props;
-  const [forceAlertClose, setForceAlertClose] = useState(false);
+  const [forceAlertClose] = useState(false);
 
   if (forceAlertClose) {
     // User has manually closed the banner
@@ -24,7 +24,6 @@ const AlertBar: React.FC<IAlertBarProps> = (props) => {
       <Alert
         variant={variant}
         severity={severity}
-        onClose={() => setForceAlertClose(true)}
         // action={
         //   <IconButton color="inherit" onClick={() => setForceAlertClose(false)}>
         //     <Icon path={mdiClose} size={1} />
