@@ -48,7 +48,7 @@ const dateSchema = yup
   .date()
   .min(moment(DATE_LIMIT.min), `Must be after ${DATE_LIMIT.min}`)
   .max(moment(DATE_LIMIT.max), `Must be before ${DATE_LIMIT.max}`)
-  .typeError(req);
+  .typeError('Invalid date format');
 
 export type ProjectionMode = 'wgs' | 'utm';
 

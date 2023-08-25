@@ -39,16 +39,27 @@ const SurveyAnimals: React.FC = () => {
 
   const handleOnSave = async (animal: IAnimal) => {
     const critter = new Critter(animal);
-    const res = await cbApi.critters.createCritter(critter);
-    dialogContext.setSnackbar({
-      open: true,
-      snackbarMessage: (
-        <Typography variant="body2" component="div">
-          {`${pluralize('Animal', res.count)} added to Survey`}
-        </Typography>
-      )
-    });
-    toggleDialog();
+    const postCritterPayload = async () => {
+      const res = await cbApi.critters.createCritter(critter);
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            {`${pluralize('Animal', res.count)} added to Survey`}
+          </Typography>
+        )
+      });
+      toggleDialog();
+    };
+    try {
+      await postCritterPayload();
+    } catch (err) {
+      //Temp solution for keycloak timeout bug
+      //TODO fix this in useAxios or higher level component.
+      //This error can occur when keycloak token refresh happens
+      console.log(err);
+      await postCritterPayload();
+    }
   };
 
   return (
@@ -60,11 +71,10 @@ const SurveyAnimals: React.FC = () => {
               <Typography variant="h3">Individuals</Typography>
             </HelpButtonTooltip>
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-              {`${
-                animalCount
+              {`${animalCount
                   ? `${pluralize('Animal', animalCount)} reported in this survey`
                   : `No individual animals were captured or reported in this survey`
-              }`}
+                }`}
             </Typography>
           </Box>
         }
