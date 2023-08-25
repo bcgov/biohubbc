@@ -125,10 +125,10 @@ export const AnimalMeasurementSchema = yup.object({}).shape(
 export const AnimalMortalitySchema = yup.object({}).shape({
   _id: yup.string().required(),
 
-  mortality_longitude: lonSchema.required(req),
-  mortality_latitude: latSchema.required(req),
-  mortality_utm_northing: numSchema,
-  mortality_utm_easting: numSchema,
+  mortality_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required(req) }),
+  mortality_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required(req) }),
+  mortality_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
+  mortality_utm_easting: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
   mortality_timestamp: dateSchema.required(req),
   mortality_coordinate_uncertainty: numSchema,
   mortality_comment: yup.string(),
