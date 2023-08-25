@@ -50,6 +50,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   useEffect(() => {
     props.users.forEach((user, index) => {
       selectedUsers.push(user);
+      setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
       setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
     });
   }, [props.users]);
