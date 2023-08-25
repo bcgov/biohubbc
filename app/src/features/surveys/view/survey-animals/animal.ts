@@ -281,7 +281,7 @@ export class Critter {
     return `${this.animal_id}-${this.taxon_name}`;
   }
 
-  private formatCritterCaptures(animal_captures: IAnimalCapture[]): ICapturesAndLocations {
+  _formatCritterCaptures(animal_captures: IAnimalCapture[]): ICapturesAndLocations {
     const formattedCaptures: ICritterCapture[] = [];
     const formattedLocations: ICritterLocation[] = [];
     animal_captures.forEach((capture) => {
@@ -323,7 +323,7 @@ export class Critter {
     return { captures: formattedCaptures, capture_locations: formattedLocations };
   }
 
-  private formatCritterMortalities(animal_mortalities: IAnimalMortality[]): IMortalityAndLocation {
+  _formatCritterMortalities(animal_mortalities: IAnimalMortality[]): IMortalityAndLocation {
     const formattedMortalities: ICritterMortality[] = [];
     const formattedLocations: ICritterLocation[] = [];
     animal_mortalities.forEach((mortality) => {
@@ -354,7 +354,7 @@ export class Critter {
     return { mortalities: formattedMortalities, mortalities_locations: formattedLocations };
   }
 
-  private formatCritterMarkings(animal_markings: IAnimalMarking[]): ICritterMarking[] {
+  _formatCritterMarkings(animal_markings: IAnimalMarking[]): ICritterMarking[] {
     return animal_markings.map((marking) => {
       const cleanedMarking = omitBy(marking, (value) => value === '') as IAnimalMarking;
       return {
@@ -364,9 +364,7 @@ export class Critter {
     });
   }
 
-  private formatCritterQualitativeMeasurements(
-    animal_measurements: IAnimalMeasurement[]
-  ): ICritterQualitativeMeasurement[] {
+  _formatCritterQualitativeMeasurements(animal_measurements: IAnimalMeasurement[]): ICritterQualitativeMeasurement[] {
     const filteredQualitativeMeasurements = animal_measurements.filter((measurement) => {
       if (measurement.qualitative_option_id && measurement.value) {
         console.log('Qualitative measurement must only contain option_id and no value.');
@@ -384,9 +382,7 @@ export class Critter {
     }));
   }
 
-  private formatCritterQuantitativeMeasurements(
-    animal_measurements: IAnimalMeasurement[]
-  ): ICritterQuantitativeMeasurement[] {
+  _formatCritterQuantitativeMeasurements(animal_measurements: IAnimalMeasurement[]): ICritterQuantitativeMeasurement[] {
     const filteredQuantitativeMeasurements = animal_measurements.filter((measurement) => {
       if (measurement.qualitative_option_id && measurement.value) {
         console.log('Quantitative measurement must only contain a value and no qualitative_option_id');
@@ -405,7 +401,7 @@ export class Critter {
     });
   }
 
-  private formatCritterFamilyRelationships(animal_family: IAnimalRelationship[]): ICritterRelationships {
+  _formatCritterFamilyRelationships(animal_family: IAnimalRelationship[]): ICritterRelationships {
     let newFamily = undefined;
     const families: ICritterFamily[] = [];
     for (const fam of animal_family) {
@@ -434,21 +430,21 @@ export class Critter {
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;
     this.animal_id = animal.general.animal_id;
+    const { captures, capture_locations } = this._formatCritterCaptures(animal.captures);
+    const { mortalities, mortalities_locations } = this._formatCritterMortalities(animal.mortality);
 
-    const { captures, capture_locations } = this.formatCritterCaptures(animal.captures);
-    const { mortalities, mortalities_locations } = this.formatCritterMortalities(animal.mortality);
     this.captures = captures;
     this.mortalities = mortalities;
     this.locations = [...capture_locations, ...mortalities_locations];
 
-    this.markings = this.formatCritterMarkings(animal.markings);
+    this.markings = this._formatCritterMarkings(animal.markings);
 
     this.measurements = {
-      qualitative: this.formatCritterQualitativeMeasurements(animal.measurements),
-      quantitative: this.formatCritterQuantitativeMeasurements(animal.measurements)
+      qualitative: this._formatCritterQualitativeMeasurements(animal.measurements),
+      quantitative: this._formatCritterQuantitativeMeasurements(animal.measurements)
     };
 
-    const { parents, children, families } = this.formatCritterFamilyRelationships(animal.family);
+    const { parents, children, families } = this._formatCritterFamilyRelationships(animal.family);
     this.families = { parents, children, families };
   }
 }
