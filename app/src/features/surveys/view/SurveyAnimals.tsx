@@ -71,11 +71,10 @@ const SurveyAnimals: React.FC = () => {
               <Typography variant="h3">Individuals</Typography>
             </HelpButtonTooltip>
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-              {`${
-                animalCount
+              {`${animalCount
                   ? `${pluralize('Animal', animalCount)} reported in this survey`
                   : `No individual animals were captured or reported in this survey`
-              }`}
+                }`}
             </Typography>
           </Box>
         }
@@ -105,4 +104,5 @@ const SurveyAnimals: React.FC = () => {
     </Box>
   );
 };
+
 export default SurveyAnimals;
