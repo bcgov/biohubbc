@@ -139,6 +139,9 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
         <Typography component="legend">Add Team Members</Typography>
+        {errors && errors['participants'] && (
+          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+        )}
         <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
           Select team members and assign each member a role for this project.
         </Typography>
