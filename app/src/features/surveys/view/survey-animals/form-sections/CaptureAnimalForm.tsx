@@ -120,7 +120,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             control={
               <Field
                 as={Checkbox}
-                handleChange={handleChange}
+                onChange={handleChange}
                 name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
               />
             }
@@ -173,12 +173,12 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
       secondaryLocationFields={
         showReleaseSection
           ? {
-              latitude: 'release_latitude',
-              longitude: 'release_longitude',
-              coordinate_uncertainty: 'release_coordinate_uncertainty',
-              utm_northing: 'release_utm_northing',
-              utm_easting: 'release_utm_easting'
-            }
+            latitude: 'release_latitude',
+            longitude: 'release_longitude',
+            coordinate_uncertainty: 'release_coordinate_uncertainty',
+            utm_northing: 'release_utm_northing',
+            utm_easting: 'release_utm_easting'
+          }
           : undefined
       }
       otherPrimaryFields={[renderCaptureFields()]}

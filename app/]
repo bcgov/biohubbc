@@ -37,10 +37,9 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <DatePicker
         slotProps={{
-          openPickerButton: { id: 'date_input_button' },
           inputAdornment: {
             onBlur: handleBlur,
-            id: 'date_input_adornment'
+            id: 'date_input'
           },
           textField: {
             id: 'date_field',
