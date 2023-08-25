@@ -209,6 +209,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
             const error = rowItemError(index);
 
+            console.log('selected user: ', user);
             return (
               <UserRoleSelector
                 index={index}
