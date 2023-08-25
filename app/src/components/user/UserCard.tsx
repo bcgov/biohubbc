@@ -9,13 +9,21 @@ interface IUserCard {
 const UserCard: React.FC<IUserCard> = (props) => {
   return (
     <Box>
-      <Typography variant="h5">{props.name}</Typography>
-      <Box display={'flex'}>
-        <Typography variant="subtitle2">{props.email}</Typography>
-        <Typography sx={{ marginX: 1 }} variant="subtitle2">
-          {props.agency}
+      <Box>
+        <Typography variant="subtitle1" fontWeight="bold">{props.name}</Typography>
+      </Box>
+      <Box my={0.25}>
+        <Typography variant="subtitle2" color="textSecondary">
+          <Box component="span">
+            {props.email}
+          </Box>
+          <Box component="span">
+            &nbsp;&middot;&nbsp;{props.agency}
+          </Box>
+          <Box component="span">
+            &nbsp;&middot;&nbsp;{props.type}
+          </Box>
         </Typography>
-        <Typography variant="subtitle2">{props.type}</Typography>
       </Box>
     </Box>
   );

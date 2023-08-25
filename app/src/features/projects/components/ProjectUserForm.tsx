@@ -149,44 +149,49 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
-        <Typography component="legend" variant="h5">
+        <Typography component="legend">
           Add Team Members
         </Typography>
         <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat.
-          Donec placerat nisl magna, et faucibus arcu condimentum sed.
+          Select team members and assign each member a role for this project.
         </Typography>
+        <Box mt={3}>
+          <SearchAutocompleteField<ISystemUser | IGetProjectParticipant>
+            id={''}
+            displayNameKey={'display_name'}
+            placeholderText={'Find Team Members'}
+            searchOptions={searchUsers}
+            selectedOptions={selectedUsers}
+            handleSearch={handleSearch}
+            isSearching={isSearching}
+            handleOnChange={handleAddUser}
+            renderSearch={(option) => (
+              <UserCard
+                name={option.display_name}
+                email={option.email}
+                agency={option.agency}
+                type={option.identity_source}
+              />
+            )}
+          />
+        </Box>
       </Box>
-      <Box mt={3}>
-        <SearchAutocompleteField<ISystemUser | IGetProjectParticipant>
-          id={''}
-          displayNameKey={'display_name'}
-          placeholderText={'Find Team Members'}
-          searchOptions={searchUsers}
-          selectedOptions={selectedUsers}
-          handleSearch={handleSearch}
-          isSearching={isSearching}
-          handleOnChange={handleAddUser}
-          renderSearch={(option) => (
-            <UserCard
-              name={option.display_name}
-              email={option.email}
-              agency={option.agency}
-              type={option.identity_source}
-            />
-          )}
-        />
-      </Box>
-      <Box mt={3}>
+      <Box component="fieldset" mt={4}>
         {selectedUsers.length > 0 && (
           <Typography component={'legend'} variant="h5">
-            Team Members ({selectedUsers.length})
+            Assign Roles ({selectedUsers.length})
           </Typography>
         )}
         {errors && errors['participants'] && (
           <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         )}
-        <Box>
+        <Box 
+          sx={{
+            '& .userRoleItemContainer + .userRoleItemContainer': {
+              mt: 1
+            }
+          }}
+        >
           {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
             const error = rowItemError(index);
 
