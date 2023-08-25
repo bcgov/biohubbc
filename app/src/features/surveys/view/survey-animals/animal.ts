@@ -233,6 +233,9 @@ type ICritterQualitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'val
 
 type ICritterQuantitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'qualitative_option_id' | '_id'>;
 
+type ICapturesAndLocations = { captures: ICritterCapture[]; capture_locations: ICritterLocation[] };
+type IMortalityAndLocation = { mortalities: ICritterMortality[]; mortalities_locations: ICritterLocation[] };
+
 export const newFamilyIdPlaceholder = 'New Family';
 
 type ICritterFamilyParent = {
@@ -250,6 +253,12 @@ type ICritterFamily = {
   family_label: string;
 };
 
+type ICritterRelationships = {
+  parents: ICritterFamilyParent[];
+  children: ICritterFamilyChild[];
+  families: ICritterFamily[];
+};
+
 //Converts IAnimal(Form data) to a Critterbase Critter
 
 export class Critter {
@@ -263,11 +272,7 @@ export class Critter {
     quantitative: ICritterQuantitativeMeasurement[];
   };
   mortalities: Omit<ICritterMortality, '_id'>[];
-  families: {
-    parents: ICritterFamilyParent[];
-    children: ICritterFamilyChild[];
-    families: ICritterFamily[];
-  };
+  families: ICritterRelationships;
   locations: ICritterLocation[];
 
   private taxon_name?: string;
@@ -276,21 +281,15 @@ export class Critter {
     return `${this.animal_id}-${this.taxon_name}`;
   }
 
-  constructor(animal: IAnimal) {
-    this.critter_id = v4();
-    this.taxon_id = animal.general.taxon_id;
-    this.taxon_name = animal.general.taxon_name;
-    this.animal_id = animal.general.animal_id;
-    this.captures = [];
-    this.locations = [];
-    this.families = { parents: [], children: [], families: [] };
-
-    animal.captures.forEach((capture) => {
+  private formatCritterCaptures(animal_captures: IAnimalCapture[]): ICapturesAndLocations {
+    const formattedCaptures: ICritterCapture[] = [];
+    const formattedLocations: ICritterLocation[] = [];
+    animal_captures.forEach((capture) => {
       const cleanedCapture = omitBy(capture, (value) => value === '') as IAnimalCapture;
       const c_loc_id = v4();
       let r_loc_id: string | undefined = undefined;
 
-      this.locations.push({
+      formattedLocations.push({
         location_id: c_loc_id,
         latitude: Number(capture.capture_latitude),
         longitude: Number(capture.capture_longitude),
@@ -301,7 +300,7 @@ export class Critter {
       if (capture.release_latitude && capture.release_longitude) {
         r_loc_id = v4();
 
-        this.locations.push({
+        formattedLocations.push({
           location_id: r_loc_id,
           latitude: Number(capture.release_latitude),
           longitude: Number(capture.release_longitude),
@@ -310,20 +309,28 @@ export class Critter {
         });
       }
 
-      this.captures.push({
+      formattedCaptures.push({
         critter_id: this.critter_id,
         capture_location_id: c_loc_id,
         release_location_id: r_loc_id,
-        ...omit(cleanedCapture, '_id', 'show_release')
+        capture_timestamp: cleanedCapture.capture_timestamp,
+        release_timestamp: cleanedCapture.release_timestamp,
+        capture_comment: cleanedCapture.capture_comment,
+        release_comment: cleanedCapture.release_comment
       });
     });
 
-    this.mortalities = [];
-    animal.mortality.forEach((mortality) => {
+    return { captures: formattedCaptures, capture_locations: formattedLocations };
+  }
+
+  private formatCritterMortalities(animal_mortalities: IAnimalMortality[]): IMortalityAndLocation {
+    const formattedMortalities: ICritterMortality[] = [];
+    const formattedLocations: ICritterLocation[] = [];
+    animal_mortalities.forEach((mortality) => {
       const cleanedMortality = omitBy(mortality, (value) => value === '') as IAnimalMortality;
       const loc_id = v4();
 
-      this.locations.push({
+      formattedLocations.push({
         location_id: loc_id,
         latitude: Number(mortality.mortality_latitude),
         longitude: Number(mortality.mortality_latitude),
@@ -331,80 +338,117 @@ export class Critter {
         coordinate_uncertainty_unit: 'm'
       });
 
-      this.mortalities.push({
+      formattedMortalities.push({
         critter_id: this.critter_id,
         location_id: loc_id,
-        ...omit(cleanedMortality, '')
+        mortality_timestamp: cleanedMortality.mortality_timestamp,
+        mortality_comment: cleanedMortality.mortality_comment,
+        mortality_pcod_taxon_id: cleanedMortality.mortality_pcod_taxon_id,
+        mortality_pcod_reason: cleanedMortality.mortality_pcod_reason,
+        mortality_pcod_confidence: cleanedMortality.mortality_pcod_confidence,
+        mortality_ucod_reason: cleanedMortality.mortality_ucod_reason,
+        mortality_ucod_confidence: cleanedMortality.mortality_ucod_confidence,
+        mortality_ucod_taxon_id: cleanedMortality.mortality_ucod_taxon_id
       });
     });
+    return { mortalities: formattedMortalities, mortalities_locations: formattedLocations };
+  }
 
-    this.markings = animal.markings.map((marking) => {
+  private formatCritterMarkings(animal_markings: IAnimalMarking[]): ICritterMarking[] {
+    return animal_markings.map((marking) => {
       const cleanedMarking = omitBy(marking, (value) => value === '') as IAnimalMarking;
       return {
         critter_id: this.critter_id,
         ...omit(cleanedMarking, '_id')
       };
     });
+  }
 
+  private formatCritterQualitativeMeasurements(
+    animal_measurements: IAnimalMeasurement[]
+  ): ICritterQualitativeMeasurement[] {
+    const filteredQualitativeMeasurements = animal_measurements.filter((measurement) => {
+      if (measurement.qualitative_option_id && measurement.value) {
+        console.log('Qualitative measurement must only contain option_id and no value.');
+        return false;
+      }
+      return measurement.qualitative_option_id;
+    });
+
+    return filteredQualitativeMeasurements.map((qual_measurement) => ({
+      critter_id: this.critter_id,
+      taxon_measurement_id: qual_measurement.taxon_measurement_id,
+      qualitative_option_id: qual_measurement.qualitative_option_id,
+      measured_timestamp: qual_measurement.measured_timestamp || undefined,
+      measurement_comment: qual_measurement.measurement_comment || undefined
+    }));
+  }
+
+  private formatCritterQuantitativeMeasurements(
+    animal_measurements: IAnimalMeasurement[]
+  ): ICritterQuantitativeMeasurement[] {
+    const filteredQuantitativeMeasurements = animal_measurements.filter((measurement) => {
+      if (measurement.qualitative_option_id && measurement.value) {
+        console.log('Quantitative measurement must only contain a value and no qualitative_option_id');
+        return false;
+      }
+      return measurement.value;
+    });
+    return filteredQuantitativeMeasurements.map((quant_measurement) => {
+      return {
+        critter_id: this.critter_id,
+        taxon_measurement_id: quant_measurement.taxon_measurement_id,
+        value: Number(quant_measurement.value),
+        measured_timestamp: quant_measurement.measured_timestamp || undefined,
+        measurement_comment: quant_measurement.measurement_comment || undefined
+      };
+    });
+  }
+
+  private formatCritterFamilyRelationships(animal_family: IAnimalRelationship[]): ICritterRelationships {
     let newFamily = undefined;
-    for (const fam of animal.family) {
+    const families: ICritterFamily[] = [];
+    for (const fam of animal_family) {
       if (fam.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };
-          this.families.families.push(newFamily);
+          families.push(newFamily);
         }
         fam.family_id = newFamily.family_id;
       }
     }
 
-    this.families.parents = animal.family
+    const parents = animal_family
       .filter((parent) => parent.relationship === 'parent')
       .map((parent_fam) => ({ family_id: parent_fam.family_id, parent_critter_id: this.critter_id }));
-    this.families.children = animal.family
+
+    const children = animal_family
       .filter((children) => children.relationship === 'child')
       .map((children_fam) => ({ family_id: children_fam.family_id, child_critter_id: this.critter_id }));
+    //Currently not supporting siblings in the UI
+    return { parents, children, families };
+  }
+
+  constructor(animal: IAnimal) {
+    this.critter_id = v4();
+    this.taxon_id = animal.general.taxon_id;
+    this.taxon_name = animal.general.taxon_name;
+    this.animal_id = animal.general.animal_id;
+
+    const { captures, capture_locations } = this.formatCritterCaptures(animal.captures);
+    const { mortalities, mortalities_locations } = this.formatCritterMortalities(animal.mortality);
+    this.captures = captures;
+    this.mortalities = mortalities;
+    this.locations = [...capture_locations, ...mortalities_locations];
+
+    this.markings = this.formatCritterMarkings(animal.markings);
 
     this.measurements = {
-      qualitative: animal.measurements
-        .filter((measurement) => {
-          if (measurement.qualitative_option_id && measurement.value) {
-            console.log('Qualitative measurement must only contain option_id and no value.');
-            return false;
-          }
-          if (measurement.qualitative_option_id) {
-            return true;
-          }
-          return false;
-        })
-        .map((qual_measurement) => {
-          return {
-            critter_id: this.critter_id,
-            taxon_measurement_id: qual_measurement.taxon_measurement_id,
-            qualitative_option_id: qual_measurement.qualitative_option_id,
-            measured_timestamp: qual_measurement.measured_timestamp || undefined,
-            measurement_comment: qual_measurement.measurement_comment || undefined
-          };
-        }),
-      quantitative: animal.measurements
-        .filter((measurement) => {
-          if (measurement.qualitative_option_id && measurement.value) {
-            console.log('Quantitative measurement must only contain a value and no option_id');
-            return false;
-          }
-          if (measurement.value != null) {
-            return true;
-          }
-          return false;
-        })
-        .map((quant_measurement) => {
-          return {
-            critter_id: this.critter_id,
-            taxon_measurement_id: quant_measurement.taxon_measurement_id,
-            value: quant_measurement.value,
-            measured_timestamp: quant_measurement.measured_timestamp || undefined,
-            measurement_comment: quant_measurement.measurement_comment || undefined
-          };
-        })
+      qualitative: this.formatCritterQualitativeMeasurements(animal.measurements),
+      quantitative: this.formatCritterQuantitativeMeasurements(animal.measurements)
     };
+
+    const { parents, children, families } = this.formatCritterFamilyRelationships(animal.family);
+    this.families = { parents, children, families };
   }
 }
