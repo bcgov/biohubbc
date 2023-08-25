@@ -1185,7 +1185,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * @TODO jsdoc
+   * Inserts indegenous partnership records for the given survey
    *
    * @param {number[]} firstNationsIds
    * @param {number} surveyId
@@ -1220,7 +1220,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * @TODO jsdoc
+   * Inserts stakeholder partnership records for the given survey
    *
    * @param {string[]} stakeholderPartners
    * @param {number} surveyId
@@ -1255,7 +1255,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * @TODO jsdoc
+   * Deletes all indgenous partnership records for the given survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<number>} The number of rows affected
@@ -1271,7 +1271,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * @TODO jsdoc
+   * Deletes all stakeholder partnership records for the given survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<number>} The number of rows affected

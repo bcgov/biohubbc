@@ -804,7 +804,9 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Updates all partnership records for the given survey, first by removing all partnership
+   * records for the survey, then inserting new partnership records according to the given
+   * survey object.
    *
    * @param {number} surveyId
    * @param {PutSurveyObject} surveyData
@@ -829,7 +831,7 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Inserts indigenous partnership records for the given survey
    *
    * @param {number[]} firstNationsIds
    * @param {number} surveyId
@@ -844,7 +846,7 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * @TODO jsdoc
+   * Inserts stakeholder partnership records for the given survey
    *
    * @param {string[]} stakeholderPartners
    * @param {number} surveyId
