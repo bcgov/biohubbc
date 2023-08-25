@@ -4,14 +4,13 @@ import SearchAutocompleteField from 'components/fields/SearchAutocompleteField';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { debounce } from 'lodash';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 
 export const ProjectUserRoleYupSchema = yup.object().shape({
@@ -43,29 +42,16 @@ export const ProjectUserRoleFormInitialValues = {
 const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
-  const { keycloakWrapper } = useContext(AuthStateContext);
 
   const [searchUsers, setSearchUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
 
   useEffect(() => {
-    if (props.users.length > 0) {
-      props.users.forEach((user, index) => {
-        selectedUsers.push(user);
-        setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
-      });
-    } else {
-      // This needs to be moved into project form instead of here
-      const loggedInUser = keycloakWrapper?.user;
-      if (loggedInUser) {
-        setSelectedUsers([loggedInUser]);
-        setFieldValue(`participants[0]`, {
-          system_user_id: loggedInUser.system_user_id,
-          project_role_names: [PROJECT_ROLE.COORDINATOR]
-        });
-      }
-    }
+    props.users.forEach((user, index) => {
+      selectedUsers.push(user);
+      setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
+    });
   }, [props.users]);
 
   const handleSearch = useMemo(
@@ -159,8 +145,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const getSelectedRole = (index: number): string | undefined => {
     return values.participants[index].project_role_names[0] || '';
   };
-  console.log('errors', errors);
-  console.log('values', values);
+
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
@@ -214,7 +199,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                 selectedRole={getSelectedRole(index)}
                 handleAdd={handleAddUserRole}
                 handleRemove={handleRemoveUser}
-                key={`${user.system_user_id}-${user.email}`}
+                key={user.system_user_id}
               />
             );
           })}
