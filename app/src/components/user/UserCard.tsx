@@ -7,15 +7,19 @@ interface IUserCard {
   type: string | null;
 }
 const UserCard: React.FC<IUserCard> = (props) => {
+  // combine all text fields and join them with a middot
+  const subTitle = [props.email, props.agency, props.type].filter((item) => item !== null).join(`\u00A0\u00B7\u00A0`);
   return (
     <Box>
-      <Typography variant="h5">{props.name}</Typography>
-      <Box display={'flex'}>
-        <Typography variant="subtitle2">{props.email}</Typography>
-        <Typography sx={{ marginX: 1 }} variant="subtitle2">
-          {props.agency}
+      <Box>
+        <Typography variant="subtitle1" fontWeight="bold">
+          {props.name}
         </Typography>
-        <Typography variant="subtitle2">{props.type}</Typography>
+      </Box>
+      <Box my={0.25}>
+        <Typography variant="subtitle2" color="textSecondary">
+          {subTitle}
+        </Typography>
       </Box>
     </Box>
   );

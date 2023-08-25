@@ -58,7 +58,7 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
   const handleCancel = () => {
     props.handleCancel();
   };
-  console.log(props.projectData);
+
   return (
     <Box p={5}>
       <Formik

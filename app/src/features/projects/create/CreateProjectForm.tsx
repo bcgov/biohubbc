@@ -5,10 +5,12 @@ import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
+import { PROJECT_ROLE } from 'constants/roles';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
+import React, { useContext } from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
 import ProjectCoordinatorForm, {
   ProjectCoordinatorInitialValues,
@@ -86,6 +88,21 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
   const handleSubmit = async (formikData: ICreateProjectRequest) => {
     props.handleSubmit(formikData);
   };
+
+  const { keycloakWrapper } = useContext(AuthStateContext);
+
+  const getLoggedInUserAsParticipant = (): IGetProjectParticipant => {
+    const loggedInUser = keycloakWrapper?.user;
+    return {
+      system_user_id: loggedInUser?.system_user_id,
+      display_name: loggedInUser?.display_name,
+      email: loggedInUser?.email,
+      agency: loggedInUser?.agency,
+      identity_source: loggedInUser?.identity_source,
+      project_role_names: [PROJECT_ROLE.COORDINATOR]
+    } as IGetProjectParticipant;
+  };
+
   return (
     <Formik
       innerRef={formikRef}
@@ -165,8 +182,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <HorizontalSplitFormComponent
           title="Project Users"
           summary="Add some users"
-          // need to auto fill current
-          component={<ProjectUserForm users={[]} roles={codes.project_roles} />}
+          component={<ProjectUserForm users={[getLoggedInUserAsParticipant()]} roles={codes.project_roles} />}
         />
 
         <Divider className={classes.sectionDivider} />

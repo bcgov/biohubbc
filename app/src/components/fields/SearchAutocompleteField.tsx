@@ -1,4 +1,5 @@
-import SearchIcon from '@mui/icons-material/Search';
+import { mdiMagnify } from '@mdi/js';
+import Icon from '@mdi/react';
 import { Autocomplete, Box, CircularProgress, TextField } from '@mui/material';
 import { DebouncedFunc } from 'lodash-es';
 
@@ -14,7 +15,6 @@ interface ISearchAutocompleteFieldProps<T> {
   renderSearch: (arg0: any) => JSX.Element;
 }
 
-// No idea what the comma is for
 const SearchAutocompleteField = <T,>(props: ISearchAutocompleteFieldProps<T>) => {
   const {
     id,
@@ -57,7 +57,7 @@ const SearchAutocompleteField = <T,>(props: ISearchAutocompleteFieldProps<T>) =>
           fullWidth
           InputProps={{
             ...params.InputProps,
-            startAdornment: <SearchIcon />,
+            startAdornment: <Box mx={1} mt={"6px"}><Icon path={mdiMagnify} size={1} /></Box>,
             endAdornment: (
               <>
                 {isSearching ? <CircularProgress color="inherit" size={20} /> : null}

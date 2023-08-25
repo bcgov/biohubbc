@@ -1,17 +1,17 @@
-import { Box, Typography } from '@mui/material';
+import { mdiMagnify } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Autocomplete, Box, TextField, Typography } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
-import SearchAutocompleteField from 'components/fields/SearchAutocompleteField';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { debounce } from 'lodash';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 export const ProjectUserRoleYupSchema = yup.object().shape({
@@ -23,7 +23,7 @@ export const ProjectUserRoleYupSchema = yup.object().shape({
         project_role_names: yup.array(yup.string()).min(1, 'Select a role for this team member')
       })
     )
-    .min(1, 'At least 1 member needs to be added to manage a project.')
+    .min(1)
     .hasAtLeastOneValue(
       'A minimum of one team member must be assigned the coordinator role.',
       'project_role_names',
@@ -43,51 +43,26 @@ export const ProjectUserRoleFormInitialValues = {
 const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateProjectRequest>();
   const biohubApi = useBiohubApi();
-  const { keycloakWrapper } = useContext(AuthStateContext);
 
   const [searchUsers, setSearchUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
 
   useEffect(() => {
-    if (props.users.length > 0) {
-      props.users.forEach((user, index) => {
-        selectedUsers.push(user);
-        setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
-      });
-    } else {
-      // This needs to be moved into project form instead of here
-      const loggedInUser = keycloakWrapper?.user;
-      if (loggedInUser) {
-        setSelectedUsers([loggedInUser]);
-        setFieldValue(`participants[0]`, {
-          system_user_id: loggedInUser.system_user_id,
-          project_role_names: [PROJECT_ROLE.COORDINATOR]
-        });
-      }
-    }
+    props.users.forEach((user, index) => {
+      selectedUsers.push(user);
+      setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
+      setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
+    });
   }, [props.users]);
 
-  const handleSearch = useMemo(
-    () =>
-      debounce(async (inputValue: string, existingValues: ISystemUser[]) => {
-        if (!inputValue) {
-          return;
-        }
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await biohubApi.user.searchSystemUser('').catch(() => []);
 
-        setIsSearching(true);
-
-        const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase()).catch(() => []);
-
-        // filter out any selected values from dropdown
-        const filteredList = response.filter(
-          (item) => !existingValues.some((existing) => existing.system_user_id === item.system_user_id)
-        );
-        setIsSearching(false);
-        setSearchUsers(filteredList);
-      }, 500),
-    [biohubApi.user]
-  );
+      setSearchUsers(alphabetizeObjects(response, 'display_name'));
+    };
+    fetchUsers();
+  }, []);
 
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
     selectedUsers.push(user);
@@ -159,52 +134,82 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const getSelectedRole = (index: number): string | undefined => {
     return values.participants[index].project_role_names[0] || '';
   };
-  console.log('errors', errors);
-  console.log('values', values);
+
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
-        <Typography component="legend" variant="h5">
-          Add Team Members
-        </Typography>
+        <Typography component="legend">Add Team Members</Typography>
+        {errors && errors['participants'] && !selectedUsers.length && (
+          <AlertBar
+            severity="error"
+            variant="standard"
+            title={'Missing Team Member'}
+            text={'At least 1 member needs to be added to manage a project.'}
+          />
+        )}
         <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat.
-          Donec placerat nisl magna, et faucibus arcu condimentum sed.
+          Select team members and assign each member a role for this project.
         </Typography>
+        <Box mt={3}>
+          <Autocomplete
+            id={'autocomplete-user-role-search'}
+            data-testid={'autocomplete-user-role-search'}
+            filterSelectedOptions
+            options={searchUsers.filter(
+              (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
+            )}
+            getOptionLabel={(option) => option.display_name}
+            onChange={(_, option) => {
+              if (option) {
+                handleAddUser(option);
+              }
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                placeholder={'Find Team Members'}
+                fullWidth
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: <Icon path={mdiMagnify} size={1}></Icon>
+                }}
+              />
+            )}
+            renderOption={(renderProps, renderOption) => {
+              return (
+                <Box component="li" {...renderProps}>
+                  <UserCard
+                    name={renderOption.display_name}
+                    email={renderOption.email}
+                    agency={renderOption.agency}
+                    type={renderOption.identity_source}
+                  />
+                </Box>
+              );
+            }}
+          />
+        </Box>
       </Box>
-      <Box mt={3}>
-        <SearchAutocompleteField<ISystemUser | IGetProjectParticipant>
-          id={''}
-          displayNameKey={'display_name'}
-          placeholderText={'Find Team Members'}
-          searchOptions={searchUsers}
-          selectedOptions={selectedUsers}
-          handleSearch={handleSearch}
-          isSearching={isSearching}
-          handleOnChange={handleAddUser}
-          renderSearch={(option) => (
-            <UserCard
-              name={option.display_name}
-              email={option.email}
-              agency={option.agency}
-              type={option.identity_source}
-            />
-          )}
-        />
-      </Box>
-      <Box mt={3}>
+      <Box component="fieldset" mt={4}>
         {selectedUsers.length > 0 && (
           <Typography component={'legend'} variant="h5">
-            Team Members ({selectedUsers.length})
+            Assign Roles ({selectedUsers.length})
           </Typography>
         )}
-        {errors && errors['participants'] && (
+        {errors && errors['participants'] && selectedUsers.length > 0 && (
           <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         )}
-        <Box>
+        <Box
+          sx={{
+            '& .userRoleItemContainer + .userRoleItemContainer': {
+              mt: 1
+            }
+          }}>
           {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
             const error = rowItemError(index);
 
+            console.log('selected user: ', user);
             return (
               <UserRoleSelector
                 index={index}
@@ -214,7 +219,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                 selectedRole={getSelectedRole(index)}
                 handleAdd={handleAddUserRole}
                 handleRemove={handleRemoveUser}
-                key={`${user.system_user_id}-${user.email}`}
+                key={user.system_user_id}
               />
             );
           })}

@@ -55,6 +55,13 @@ const appTheme = createTheme({
     }
   },
   components: {
+    MuiAlertTitle: {
+      styleOverrides: {
+        root: {
+          fontWeight: 700
+        }
+      }
+    },
     MuiAutocomplete: {
       styleOverrides: {
         tag: {
