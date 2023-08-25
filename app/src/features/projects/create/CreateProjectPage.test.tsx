@@ -89,7 +89,8 @@ describe('CreateProjectPage', () => {
 
       expect(getAllByText('Partnerships')[0]).toBeVisible();
 
-      expect(getByText('Location and Boundary')).toBeVisible();
+      // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined
+      // expect(getByText('Location and Boundary')).toBeVisible();
     });
   });
 
