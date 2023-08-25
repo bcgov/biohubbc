@@ -37,7 +37,9 @@ export async function seed(knex: Knex): Promise<void> {
 
   if (!response2.rows.length) {
     // Insert project data
-    const response3 = await knex.raw(`${insertProjectData()}`);
+    const response3 = await knex.raw(`
+      ${insertProjectData()}
+    `);
     const projectId = response3.rows[0].project_id;
     await knex.raw(`
       ${insertProjectFirstNationData(projectId)}
@@ -126,7 +128,7 @@ const insertSurveyProprietorData = (surveyId: number) => `
     )
   VALUES (
     ${surveyId},
-    (select proprietor_type_id from proprietor_type order by random() limit 1),
+    (select proprietor_type_id from proprietor_type where is_first_nation is false order by random() limit 1),
     $$${faker.company.catchPhraseDescriptor()}$$,
     $$${faker.company.name()}$$,
     'Y'

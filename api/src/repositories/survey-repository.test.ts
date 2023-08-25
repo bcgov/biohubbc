@@ -438,35 +438,35 @@ describe('SurveyRepository', () => {
     });
   });
 
-  describe('insertSurveyType', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+  describe('insertSurveyTypes', () => {
+    it('should insert records', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      const typeId = 1;
+      const typeIds = [1, 2];
       const surveyId = 2;
 
-      const response = await repository.insertSurveyType(typeId, surveyId);
+      const response = await repository.insertSurveyTypes(typeIds, surveyId);
 
       expect(response).to.be.undefined;
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+    it('should throw an error if fewer records inserted then expected', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      const typeId = 1;
+      const typeIds = [1, 2, 3]; // expecting 3, but rowCount is 2
       const surveyId = 2;
 
       try {
-        await repository.insertSurveyType(typeId, surveyId);
+        await repository.insertSurveyTypes(typeIds, surveyId);
         expect.fail();
       } catch (error) {
-        expect((error as Error).message).to.equal('Failed to insert survey type data');
+        expect((error as Error).message).to.equal('Failed to insert survey types data');
       }
     });
   });

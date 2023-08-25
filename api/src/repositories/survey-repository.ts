@@ -687,32 +687,29 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Inserts a new survey_type record.
+   * Inserts new survey_type records.
    *
-   * @param {number} focal_species_id
+   * @param {number[]} typeIds
    * @param {number} surveyId
    * @return {*}  {Promise<void>}
    * @memberof SurveyRepository
    */
-  async insertSurveyType(typeId: number, surveyId: number): Promise<void> {
-    const sqlStatement = SQL`
-      INSERT INTO survey_type (
-        type_id,
-        survey_id
-      ) VALUES (
-        ${typeId},
-        ${surveyId}
-      ) 
-      RETURNING 
-        *;
-    `;
+  async insertSurveyTypes(typeIds: number[], surveyId: number): Promise<void> {
+    const queryBuilder = getKnex()
+      .table('survey_type')
+      .insert(
+        typeIds.map((typeId) => ({
+          type_id: typeId,
+          survey_id: surveyId
+        }))
+      );
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.knex(queryBuilder);
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert survey type data', [
-        'SurveyRepository->insertSurveyType',
-        'rowCount was != 1, expected rowCount = 1'
+    if (response.rowCount !== typeIds.length) {
+      throw new ApiExecuteSQLError('Failed to insert survey types data', [
+        'SurveyRepository->insertSurveyTypes',
+        `rowCount was ${response.rowCount}, expected rowCount = ${typeIds.length}`
       ]);
     }
   }

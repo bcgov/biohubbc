@@ -139,6 +139,7 @@ describe('SurveyService', () => {
       const dbConnectionObj = getMockDBConnection();
 
       const updateSurveyDetailsDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyDetailsData').resolves();
+      const updateSurveyTypesDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyTypesData').resolves();
       const updateSurveyVantageCodesDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyVantageCodesData')
         .resolves();
@@ -168,6 +169,7 @@ describe('SurveyService', () => {
       await surveyService.updateSurvey(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).to.have.been.calledOnce;
+      expect(updateSurveyTypesDataStub).to.have.been.calledOnce;
       expect(updateSurveyVantageCodesDataStub).to.have.been.calledOnce;
       expect(updateSurveySpeciesDataStub).to.have.been.calledOnce;
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
@@ -546,19 +548,19 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('insertSurveyType', () => {
+  describe('insertSurveyTypes', () => {
     it('inserts a survey type and returns nothing', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const typeId = 2;
+      const typeIds = [2, 3];
       const surveyId = 1;
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyType').resolves();
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyTypes').resolves();
 
-      const response = await service.insertSurveyType(typeId, surveyId);
+      const response = await service.insertSurveyTypes(typeIds, surveyId);
 
-      expect(repoStub).to.be.calledOnce;
+      expect(repoStub).to.be.calledOnceWith(typeIds, surveyId);
       expect(response).to.be.undefined;
     });
   });
@@ -699,7 +701,7 @@ describe('SurveyService', () => {
 
     it('updates survey types and returns nothing', async () => {
       const deleteSurveyTypesDataStub = sinon.stub(SurveyRepository.prototype, 'deleteSurveyTypesData').resolves();
-      const insertSurveyTypeStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyType').resolves();
+      const insertSurveyTypeStub = sinon.stub(SurveyRepository.prototype, 'insertSurveyTypes').resolves();
 
       const mockDBConnection = getMockDBConnection();
       const surveyService = new SurveyService(mockDBConnection);
@@ -710,9 +712,7 @@ describe('SurveyService', () => {
       await surveyService.updateSurveyTypesData(surveyId, putSurveyObject);
 
       expect(deleteSurveyTypesDataStub).to.have.been.calledOnceWith(surveyId);
-      expect(insertSurveyTypeStub).to.have.been.calledWith(22);
-      expect(insertSurveyTypeStub).to.have.been.calledWith(33);
-      expect(insertSurveyTypeStub).to.have.been.calledWith(44);
+      expect(insertSurveyTypeStub).to.have.been.calledOnceWith([22, 33, 44]);
     });
   });
 

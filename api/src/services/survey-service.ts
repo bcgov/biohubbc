@@ -364,11 +364,7 @@ export class SurveyService extends DBService {
     const promises: Promise<any>[] = [];
 
     // Handle survey types
-    promises.push(
-      Promise.all(
-        postSurveyData.survey_details.survey_types.map((typeId: number) => this.insertSurveyType(typeId, surveyId))
-      )
-    );
+    promises.push(this.insertSurveyTypes(postSurveyData.survey_details.survey_types, surveyId));
 
     // Handle focal species associated to this survey
     promises.push(
@@ -471,15 +467,15 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Inserts a new survey_type record associated to the survey.
+   * Inserts new survey_type records associated to the survey.
    *
-   * @param {number} typeId
+   * @param {number[]} typeIds
    * @param {number} surveyID
    * @returns {*}  {Promise<void>}
    * @memberof SurveyService
    */
-  async insertSurveyType(typeId: number, surveyId: number): Promise<void> {
-    return this.surveyRepository.insertSurveyType(typeId, surveyId);
+  async insertSurveyTypes(typeIds: number[], surveyId: number): Promise<void> {
+    return this.surveyRepository.insertSurveyTypes(typeIds, surveyId);
   }
 
   /**
@@ -647,17 +643,15 @@ export class SurveyService extends DBService {
    *
    * @param {number} surveyID
    * @param {PutSurveyObject} surveyData
-   * @return {*}  {Promise<void[]>}
+   * @return {*}  {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurveyTypesData(surveyId: number, surveyData: PutSurveyObject): Promise<void[]> {
+  async updateSurveyTypesData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
     // Delete existing survey types
     await this.surveyRepository.deleteSurveyTypesData(surveyId);
 
     // Add new set of survey types, if any
-    return Promise.all(
-      surveyData.survey_details.survey_types.map((typeId) => this.surveyRepository.insertSurveyType(typeId, surveyId))
-    );
+    return this.surveyRepository.insertSurveyTypes(surveyData.survey_details.survey_types, surveyId);
   }
 
   /**
