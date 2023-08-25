@@ -157,11 +157,12 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
         <Typography component="legend">Manage Team Members</Typography>
-        <Typography variant="body1" color="textSecondary"
+        <Typography
+          variant="body1"
+          color="textSecondary"
           sx={{
             maxWidth: '72ch'
-          }}
-        >
+          }}>
           A minimum of one team member must be assigned the coordinator role.
         </Typography>
         {errors && errors['participants'] && !selectedUsers.length && (
@@ -200,7 +201,11 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                 fullWidth
                 InputProps={{
                   ...params.InputProps,
-                  startAdornment: <Box mx={1} mt="6px"><Icon path={mdiMagnify} size={1}></Icon></Box>
+                  startAdornment: (
+                    <Box mx={1} mt="6px">
+                      <Icon path={mdiMagnify} size={1}></Icon>
+                    </Box>
+                  )
                 }}
               />
             )}
@@ -228,8 +233,6 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
               }}>
               {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
                 const error = rowItemError(index);
-
-                console.log('selected user: ', user);
                 return (
                   <UserRoleSelector
                     index={index}
@@ -247,7 +250,6 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           </Box>
         )}
       </Box>
-
     </form>
   );
 };
