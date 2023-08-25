@@ -406,10 +406,6 @@ export class ProjectService extends DBService {
       promises.push(this.updateIUCNData(projectId, entities));
     }
 
-    if (entities?.location) {
-      promises.push(this.insertRegion(projectId, entities.location.geometry));
-    }
-
     if (entities?.project?.project_programs) {
       promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
     }
