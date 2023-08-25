@@ -1,22 +1,24 @@
-import { Box, Typography } from '@mui/material';
+import { mdiMagnify } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Autocomplete, Box, CircularProgress, TextField, Typography } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
-import SearchAutocompleteField from 'components/fields/SearchAutocompleteField';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateSurveyRequest, IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { debounce } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 export const SurveyUserJobYupSchema = yup.object().shape({
   participants: yup.array().of(
     yup.object().shape({
       system_user_id: yup.string().required('Username is required'),
-      survey_job_name: yup.string().required('Select a survey_job_name for this team member')
+      survey_job_name: yup.string().required('Select a survey job for this team member')
     })
   )
 });
@@ -34,14 +36,16 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
   const biohubApi = useBiohubApi();
 
-  const [searchUsers, setSearchUsers] = useState<(ISystemUser | IGetSurveyParticipant)[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const searchUserDataLoader = useDataLoader(() => biohubApi.user.searchSystemUser(''));
+  searchUserDataLoader.load();
+
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetSurveyParticipant)[]>([]);
 
   useEffect(() => {
     if (props.users.length > 0) {
       props.users.forEach((user, index) => {
         selectedUsers.push(user);
+        setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
         setFieldValue(`participants[${index}].survey_job_name`, (user as IGetSurveyParticipant).survey_job_name);
       });
     }
@@ -49,26 +53,6 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.users]);
 
-  const handleSearch = useMemo(
-    () =>
-      debounce(async (inputValue: string, existingValues: ISystemUser[]) => {
-        if (!inputValue) {
-          return;
-        }
-
-        setIsSearching(true);
-
-        const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase()).catch(() => []);
-
-        // filter out any selected values from dropdown
-        const filteredList = response.filter(
-          (item) => !existingValues.some((existing) => existing.system_user_id === item.system_user_id)
-        );
-        setIsSearching(false);
-        setSearchUsers(filteredList);
-      }, 500),
-    [biohubApi.user]
-  );
   const handleAddUser = (user: ISystemUser | IGetSurveyParticipant) => {
     selectedUsers.push(user);
 
@@ -108,7 +92,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
     let text = '';
     if (errors && errors.participants && Array.isArray(errors.participants)) {
       title = 'Missing Jobs';
-      text = 'All team members must be assigned a survey_job_name.';
+      text = 'All team members must be assigned a survey job.';
     }
 
     return { title, text };
@@ -127,68 +111,116 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
     }
   };
 
-  const getSelectedRole = (index: number): string | undefined => {
-    return values.participants[index] && values.participants[index].survey_job_name;
+  const filterSearchOptions = (
+    searchUsers: ISystemUser[],
+    selectedUsers: (ISystemUser | IGetSurveyParticipant)[]
+  ): ISystemUser[] => {
+    // filter out any selected users out
+    const filtered = searchUsers.filter(
+      (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
+    );
+    // alphabetize array on display name
+    return alphabetizeObjects(filtered, 'display_name');
   };
+
+  const getSelectedRole = (index: number): string | undefined => {
+    if (values.participants[index]) {
+      // users should only ever have a single role on a project so index: 0 is a safe selection
+      return values.participants[index].survey_job_name || '';
+    }
+  };
+
+  if (!searchUserDataLoader.data || !searchUserDataLoader.hasLoaded) {
+    // should probably replace this with a skeleton
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
-        <Typography component="legend" variant="h5">
-          Add Team Members
-        </Typography>
-        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat.
-          Donec placerat nisl magna, et faucibus arcu condimentum sed.
+        <Typography component="legend">Add Survey Job Members</Typography>
+        <Typography
+          variant="body1"
+          color="textSecondary"
+          sx={{
+            maxWidth: '72ch'
+          }}>
+          Select team members and assign each member a job for this survey.
         </Typography>
       </Box>
+      {errors && errors['participants'] && selectedUsers.length > 0 && (
+        <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+      )}
       <Box mt={3}>
-        <SearchAutocompleteField<ISystemUser | IGetSurveyParticipant>
-          id={''}
-          displayNameKey={'display_name'}
-          placeholderText={'Find Team Members'}
-          searchOptions={searchUsers}
-          selectedOptions={selectedUsers}
-          handleSearch={handleSearch}
-          isSearching={isSearching}
-          handleOnChange={handleAddUser}
-          renderSearch={(option) => (
-            <UserCard
-              name={option.display_name}
-              email={option.email}
-              agency={option.agency}
-              type={option.identity_source}
+        <Autocomplete
+          id={'autocomplete-user-role-search'}
+          data-testid={'autocomplete-user-role-search'}
+          filterSelectedOptions
+          noOptionsText="No records found"
+          options={filterSearchOptions(searchUserDataLoader.data, selectedUsers)}
+          getOptionLabel={(option) => option.display_name}
+          onChange={(_, option) => {
+            if (option) {
+              handleAddUser(option);
+            }
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              placeholder={'Find team members'}
+              fullWidth
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <Box mx={1} mt="6px">
+                    <Icon path={mdiMagnify} size={1}></Icon>
+                  </Box>
+                )
+              }}
             />
           )}
+          renderOption={(renderProps, renderOption) => {
+            return (
+              <Box component="li" {...renderProps}>
+                <UserCard
+                  name={renderOption.display_name}
+                  email={renderOption.email}
+                  agency={renderOption.agency}
+                  type={renderOption.identity_source}
+                />
+              </Box>
+            );
+          }}
         />
       </Box>
-      <Box mt={3}>
+      <Box component="fieldset" mt={4}>
         {selectedUsers.length > 0 && (
-          <Typography component={'legend'} variant="h5">
-            Team Members ({selectedUsers.length})
-          </Typography>
+          <Box mt={2}>
+            <Box
+              sx={{
+                '& .userRoleItemContainer + .userRoleItemContainer': {
+                  mt: 1
+                }
+              }}>
+              {selectedUsers.map((user: ISystemUser | IGetSurveyParticipant, index: number) => {
+                const error = rowItemError(index);
+                return (
+                  <UserRoleSelector
+                    index={index}
+                    user={user}
+                    roles={props.jobs}
+                    error={error}
+                    selectedRole={getSelectedRole(index)}
+                    handleAdd={handleAddUserRole}
+                    handleRemove={handleRemoveUser}
+                    key={user.system_user_id}
+                  />
+                );
+              })}
+            </Box>
+          </Box>
         )}
-        {errors && errors['participants'] && (
-          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
-        )}
-        <Box>
-          {selectedUsers.map((user: ISystemUser | IGetSurveyParticipant, index: number) => {
-            const error = rowItemError(index);
-
-            return (
-              <UserRoleSelector
-                index={index}
-                user={user}
-                roles={props.jobs}
-                error={error}
-                selectedRole={getSelectedRole(index)}
-                handleAdd={handleAddUserRole}
-                handleRemove={handleRemoveUser}
-                key={`${user.system_user_id}-${user.email}`}
-              />
-            );
-          })}
-        </Box>
       </Box>
     </form>
   );

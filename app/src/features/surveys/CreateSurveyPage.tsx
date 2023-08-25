@@ -336,8 +336,8 @@ const CreateSurveyPage = () => {
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
-                  title="Survey Users"
-                  summary="Add some users"
+                  title="Team Members"
+                  summary="Specify team members and their associated job for this survey."
                   component={<SurveyUserForm users={[]} jobs={codes.survey_jobs} />}
                 />
 
