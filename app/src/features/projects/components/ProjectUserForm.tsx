@@ -1,6 +1,7 @@
-import { Box, Typography } from '@mui/material';
+import { mdiMagnify } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Autocomplete, Box, TextField, Typography } from '@mui/material';
 import AlertBar from 'components/alert/AlertBar';
-import SearchAutocompleteField from 'components/fields/SearchAutocompleteField';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { PROJECT_ROLE } from 'constants/roles';
@@ -9,8 +10,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { debounce } from 'lodash';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 export const ProjectUserRoleYupSchema = yup.object().shape({
@@ -44,7 +45,6 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const biohubApi = useBiohubApi();
 
   const [searchUsers, setSearchUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
 
   useEffect(() => {
@@ -55,26 +55,14 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     });
   }, [props.users]);
 
-  const handleSearch = useMemo(
-    () =>
-      debounce(async (inputValue: string, existingValues: ISystemUser[]) => {
-        if (!inputValue) {
-          return;
-        }
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await biohubApi.user.searchSystemUser('').catch(() => []);
 
-        setIsSearching(true);
-
-        const response = await biohubApi.user.searchSystemUser(inputValue.toLowerCase()).catch(() => []);
-
-        // filter out any selected values from dropdown
-        const filteredList = response.filter(
-          (item) => !existingValues.some((existing) => existing.system_user_id === item.system_user_id)
-        );
-        setIsSearching(false);
-        setSearchUsers(filteredList);
-      }, 500),
-    [biohubApi.user]
-  );
+      setSearchUsers(alphabetizeObjects(response, 'display_name'));
+    };
+    fetchUsers();
+  }, []);
 
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
     selectedUsers.push(user);
@@ -150,30 +138,48 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
-        <Typography component="legend">
-          Add Team Members
-        </Typography>
+        <Typography component="legend">Add Team Members</Typography>
         <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
           Select team members and assign each member a role for this project.
         </Typography>
         <Box mt={3}>
-          <SearchAutocompleteField<ISystemUser | IGetProjectParticipant>
-            id={''}
-            displayNameKey={'display_name'}
-            placeholderText={'Find Team Members'}
-            searchOptions={searchUsers}
-            selectedOptions={selectedUsers}
-            handleSearch={handleSearch}
-            isSearching={isSearching}
-            handleOnChange={handleAddUser}
-            renderSearch={(option) => (
-              <UserCard
-                name={option.display_name}
-                email={option.email}
-                agency={option.agency}
-                type={option.identity_source}
+          <Autocomplete
+            id={'autocomplete-user-role-search'}
+            data-testid={'autocomplete-user-role-search'}
+            filterSelectedOptions
+            options={searchUsers.filter(
+              (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
+            )}
+            getOptionLabel={(option) => option.display_name}
+            onChange={(_, option) => {
+              if (option) {
+                handleAddUser(option);
+              }
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                placeholder={'Find Team Members'}
+                fullWidth
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: <Icon path={mdiMagnify} size={1}></Icon>
+                }}
               />
             )}
+            renderOption={(renderProps, renderOption) => {
+              return (
+                <Box component="li" {...renderProps}>
+                  <UserCard
+                    name={renderOption.display_name}
+                    email={renderOption.email}
+                    agency={renderOption.agency}
+                    type={renderOption.identity_source}
+                  />
+                </Box>
+              );
+            }}
           />
         </Box>
       </Box>
@@ -186,13 +192,12 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         {errors && errors['participants'] && (
           <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         )}
-        <Box 
+        <Box
           sx={{
             '& .userRoleItemContainer + .userRoleItemContainer': {
               mt: 1
             }
-          }}
-        >
+          }}>
           {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
             const error = rowItemError(index);
 

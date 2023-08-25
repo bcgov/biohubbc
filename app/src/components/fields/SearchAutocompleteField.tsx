@@ -14,7 +14,6 @@ interface ISearchAutocompleteFieldProps<T> {
   renderSearch: (arg0: any) => JSX.Element;
 }
 
-// No idea what the comma is for
 const SearchAutocompleteField = <T,>(props: ISearchAutocompleteFieldProps<T>) => {
   const {
     id,
