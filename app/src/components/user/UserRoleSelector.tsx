@@ -20,19 +20,27 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
   const { index, selectedRole, user, roles, error, handleAdd, handleRemove } = props;
 
   return (
-    <Box
-      className="userRoleItemContainer"
-      sx={{
-        '& .userRoleItem + p': {
-          pt: 1,
-          pl: 2
-        }
-      }}>
+
+    <Box mt={1}
+      className="userRoleItemContainer">
       <Paper
         variant="outlined"
-        className="userRoleItem"
+        className={ error ? 'userRoleItemError' : 'userRoleItem'}
         sx={{
-          borderColor: error ? 'error.main' : 'grey.400'
+          '&.userRoleItem': {
+            borderColor: 'grey.400'
+          },
+          '&.userRoleItemError': {
+            borderColor: 'error.main',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'error.main'
+            },
+            '& + p': {
+              pt: 0.75,
+              pb: 0.75,
+              pl: 2
+            }
+          }
         }}>
         <Box display="flex" alignItems="center" px={2} py={1.5}>
           <Box flex="1 1 auto">
@@ -41,7 +49,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
           <Box flex="0 0 auto">
             <Select
               size="small"
-              sx={{ width: '200px' }}
+              sx={{ width: '200px', backgroundColor: '#fff' }}
               displayEmpty
               value={selectedRole}
               onChange={(event) => {
@@ -74,6 +82,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
       </Paper>
       {error}
     </Box>
+
   );
 };
 
