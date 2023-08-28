@@ -98,7 +98,7 @@ describe.skip('CreateSurveyPage', () => {
       permits: [{ id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
     });
 
-    const { getByText } = renderContainer();
+    const { getByText, getAllByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
@@ -110,6 +110,8 @@ describe.skip('CreateSurveyPage', () => {
       expect(getByText('Proprietary Data')).toBeVisible();
 
       expect(getByText('Agreements')).toBeVisible();
+
+      expect(getAllByText('Partnerships')[0]).toBeVisible();
     });
   });
 

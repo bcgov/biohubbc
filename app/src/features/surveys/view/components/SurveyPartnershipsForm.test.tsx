@@ -1,4 +1,3 @@
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import { render } from 'test-helpers/test-utils';
 import SurveyPartnershipsForm, {
@@ -6,53 +5,48 @@ import SurveyPartnershipsForm, {
   SurveyPartnershipsFormInitialValues,
   SurveyPartnershipsFormYupSchema
 } from './SurveyPartnershipsForm';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
+import { codes } from 'test-helpers/code-helpers';
+import { DataLoader } from 'hooks/useDataLoader';
 
-const first_nations: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 1,
-    label: 'nation 1'
-  },
-  {
-    value: 2,
-    label: 'nation 2'
+jest.mock('../../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
+  codes: {
+    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   }
-];
+};
 
-const stakeholder_partnerships: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 1,
-    label: 'partner 1'
-  },
-  {
-    value: 2,
-    label: 'partner 2'
-  }
-];
 
-describe('ProjectPartnershipsForm', () => {
+const mockCodesContext: ICodesContext = {
+  codesDataLoader: {
+    data: codes,
+    load: () => {}
+  } as DataLoader<any, any, any>
+};
+
+const renderContainer = (props: any) => {
+  return render(
+    <CodesContext.Provider value={mockCodesContext}>
+      {props.children }
+    </CodesContext.Provider>
+  );
+};
+
+
+describe('SurveyPartnershipsForm', () => {
+  beforeEach(() => {
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
+  });
+
   it('renders correctly with default empty values', () => {
-    /*
-    // TODO 
+    
 
-  const codesContext = useContext(CodesContext);
-
-  const codes = codesContext.codesDataLoader.data;
-  codesContext.codesDataLoader.load();
-
-  const { handleSubmit } = formikProps;
-
-  const first_nations: IMultiAutocompleteFieldOption[] =
-    codes?.first_nations?.map((item) => {
-      return { value: item.id, label: item.name };
-    }) || [];
-
-  const stakeholder_partnerships: IMultiAutocompleteFieldOption[] =
-    codes?.agency?.map((item) => {
-      return { value: item.name, label: item.name };
-    }) || [];
-    */
-
-    const { getByLabelText } = render(
+    const { getByLabelText } = renderContainer(
       <Formik
         initialValues={SurveyPartnershipsFormInitialValues}
         validationSchema={SurveyPartnershipsFormInitialValues}
@@ -75,7 +69,7 @@ describe('ProjectPartnershipsForm', () => {
       }
     };
 
-    const { getByLabelText, getByText } = render(
+    const { getByLabelText, getByText } = renderContainer(
       <Formik
         initialValues={existingFormValues}
         validationSchema={SurveyPartnershipsFormYupSchema}
