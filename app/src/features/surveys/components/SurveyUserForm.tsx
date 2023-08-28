@@ -41,6 +41,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   const searchUserDataLoader = useDataLoader(() => biohubApi.user.searchSystemUser(''));
   searchUserDataLoader.load();
 
+  const [searchText, setSearchText] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetSurveyParticipant)[]>([]);
 
   useEffect(() => {
@@ -169,6 +170,14 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           noOptionsText="No records found"
           options={filterSearchOptions(searchUserDataLoader.data, selectedUsers)}
           getOptionLabel={(option) => option.display_name}
+          inputValue={searchText}
+          onInputChange={(_, value, reason) => {
+            if (reason === 'reset') {
+              setSearchText('');
+            } else {
+              setSearchText(value);
+            }
+          }}
           onChange={(_, option) => {
             if (option) {
               handleAddUser(option);
