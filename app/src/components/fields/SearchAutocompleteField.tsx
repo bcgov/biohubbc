@@ -57,7 +57,11 @@ const SearchAutocompleteField = <T,>(props: ISearchAutocompleteFieldProps<T>) =>
           fullWidth
           InputProps={{
             ...params.InputProps,
-            startAdornment: <Box mx={1} mt={"6px"}><Icon path={mdiMagnify} size={1} /></Box>,
+            startAdornment: (
+              <Box mx={1} mt={'6px'}>
+                <Icon path={mdiMagnify} size={1} />
+              </Box>
+            ),
             endAdornment: (
               <>
                 {isSearching ? <CircularProgress color="inherit" size={20} /> : null}

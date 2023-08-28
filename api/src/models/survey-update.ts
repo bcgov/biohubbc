@@ -57,6 +57,7 @@ export class PutSurveyDetailsData {
   end_date: string;
   lead_first_name: string;
   lead_last_name: string;
+  survey_types: number[];
   revision_count: number;
 
   constructor(obj?: any) {
@@ -65,6 +66,7 @@ export class PutSurveyDetailsData {
     this.end_date = obj?.end_date || null;
     this.lead_first_name = obj?.biologist_first_name || null;
     this.lead_last_name = obj?.biologist_last_name || null;
+    this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count ?? null;
   }
 }

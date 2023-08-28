@@ -25,6 +25,7 @@ export class GetSurveyData {
   biologist_last_name: string;
   survey_area_name: string;
   geometry: Feature[];
+  survey_types: number[];
   revision_count: number;
 
   constructor(obj?: any) {
@@ -38,6 +39,7 @@ export class GetSurveyData {
     this.biologist_first_name = obj?.lead_first_name || '';
     this.biologist_last_name = obj?.lead_last_name || '';
     this.survey_area_name = obj?.location_name || '';
+    this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count || 0;
   }
 }

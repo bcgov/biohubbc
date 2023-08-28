@@ -69,6 +69,13 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE project_program ADD CONSTRAINT project_program_fk001 FOREIGN KEY (project_id) REFERENCES project (project_id);
     ALTER TABLE project_program ADD CONSTRAINT project_program_fk002 FOREIGN KEY (program_id) REFERENCES program (program_id);
 
+    -- Add indexes on foreign key columns
+    CREATE INDEX project_program_idx1 ON project_program(project_id);
+    CREATE INDEX project_program_idx2 ON project_program(program_id);
+
+    -- Add unique key constraint
+    CREATE UNIQUE INDEX project_program_uk1 ON project_program(project_id, program_id);
+
     create trigger audit_program before insert or update or delete on program for each row execute procedure tr_audit_trigger();
     create trigger audit_project_program before insert or update or delete on project_program for each row execute procedure tr_audit_trigger();
 

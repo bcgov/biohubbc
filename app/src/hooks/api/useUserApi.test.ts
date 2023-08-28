@@ -32,7 +32,7 @@ describe('useUserApi', () => {
   it('getUserById works as expected', async () => {
     mock.onGet(`/api/user/${systemUserId}/get`).reply(200, {
       system_user_id: 123,
-      user_record_end_date: 'test',
+      record_end_date: 'test',
       user_identifier: 'myidirboss',
       role_names: ['role 1', 'role 2']
     });

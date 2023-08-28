@@ -26,6 +26,7 @@ describe('survey/{surveyId}/view', () => {
               end_date: '2020-05-05',
               biologist_first_name: 'first',
               biologist_last_name: 'last',
+              survey_types: [1, 2],
               revision_count: 1
             },
             species: {
@@ -91,6 +92,7 @@ describe('survey/{surveyId}/view', () => {
               end_date: '2020-05-05',
               biologist_first_name: 'first',
               biologist_last_name: 'last',
+              survey_types: [1, 2],
               revision_count: 1
             },
             species: {

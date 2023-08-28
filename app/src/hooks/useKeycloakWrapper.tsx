@@ -4,6 +4,7 @@ import Keycloak from 'keycloak-js';
 import { useCallback } from 'react';
 import { buildUrl } from 'utils/Utils';
 import { useBiohubApi } from './useBioHubApi';
+import { useCritterbaseApi } from './useCritterbaseApi';
 import useDataLoader from './useDataLoader';
 
 export enum SYSTEM_IDENTITY_SOURCE {
@@ -133,6 +134,7 @@ export interface IKeycloakWrapper {
   getLoginUrl: (redirectUri?: string) => string;
 
   user: ISystemUser | undefined;
+  critterbaseUuid: () => string | undefined;
 }
 
 /**
@@ -145,6 +147,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const { keycloak } = useKeycloak();
 
   const biohubApi = useBiohubApi();
+  const cbApi = useCritterbaseApi();
 
   const keycloakUserDataLoader = useDataLoader(async () => {
     return (
@@ -155,6 +158,12 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   });
 
   const userDataLoader = useDataLoader(() => biohubApi.user.getUser());
+
+  const critterbaseSignupLoader = useDataLoader(async () => {
+    if (userDataLoader?.data?.system_user_id != null) {
+      return cbApi.authentication.signUp();
+    }
+  });
 
   const administrativeActivityStandingDataLoader = useDataLoader(biohubApi.admin.getAdministrativeActivityStanding);
 
@@ -171,6 +180,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
       // Authenticated user either has has no roles or has been deactivated
       // Check if the user has a pending access request
       administrativeActivityStandingDataLoader.load();
+    }
+
+    if (userDataLoader.isReady && !critterbaseSignupLoader.data) {
+      critterbaseSignupLoader.load();
     }
   }
 
@@ -296,6 +309,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     return userDataLoader?.data;
   };
 
+  const critterbaseUuid = useCallback(() => {
+    return critterbaseSignupLoader.data?.user_id;
+  }, [critterbaseSignupLoader.data?.user_id]);
+
   return {
     keycloak,
     hasLoadedAllUserInfo: userDataLoader.isReady || !!administrativeActivityStandingDataLoader.data,
@@ -313,7 +330,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     user: user(),
     displayName: displayName(),
     refresh,
-    getLoginUrl
+    getLoginUrl,
+    critterbaseUuid
   };
 }
 

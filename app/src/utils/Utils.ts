@@ -289,3 +289,23 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
 export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], property: string) => {
   return _.sortBy(data, property);
 };
+
+/**
+ * Coerce a potentially invalid number towards zero.
+ * @param n a potentially NaN number
+ * @returns n if a number, 0 otherwise
+ */
+export const coerceZero = (n: any): number => (isNaN(n ?? NaN) ? 0 : Number(n));
+
+/**
+ * Format a field name in a way that's appropriate for a UI label
+ * ie. format_field_name -> Format Field Name
+ * @param str format_field_name
+ * @returns Format Field Name
+ */
+export const formatLabel = (str: string): string => {
+  return str
+    .split('_')
+    .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
+    .join(' ');
+};

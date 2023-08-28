@@ -19,6 +19,7 @@ export const surveyObject: SurveyViewObject = {
     biologist_last_name: 'last',
     survey_area_name: 'study area',
     geometry: [geoJsonFeature],
+    survey_types: [1],
     revision_count: 0
   },
   purpose_and_methodology: {

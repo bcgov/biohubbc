@@ -70,8 +70,6 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
         enableReinitialize={true}
         onSubmit={handleSubmit}>
         <>
-          {/* <ScrollToFormikError fieldOrder={Object.keys(initialProjectFieldData)} /> */}
-
           <HorizontalSplitFormComponent
             title="General Information"
             summary="Enter general information, objectives and timelines for the project."
@@ -80,11 +78,6 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                 <ProjectDetailsForm
                   program={
                     codes?.program?.map((item) => {
-                      return { value: item.id, label: item.name };
-                    }) || []
-                  }
-                  type={
-                    codes?.type?.map((item) => {
                       return { value: item.id, label: item.name };
                     }) || []
                   }

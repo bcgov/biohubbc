@@ -91,16 +91,27 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  const getLoggedInUserAsParticipant = (): IGetProjectParticipant => {
-    const loggedInUser = keycloakWrapper?.user;
-    return {
-      system_user_id: loggedInUser?.system_user_id,
-      display_name: loggedInUser?.display_name,
-      email: loggedInUser?.email,
-      agency: loggedInUser?.agency,
-      identity_source: loggedInUser?.identity_source,
-      project_role_names: [PROJECT_ROLE.COORDINATOR]
-    } as IGetProjectParticipant;
+  const getProjectParticipants = (): IGetProjectParticipant[] => {
+    let participants: IGetProjectParticipant[] = [];
+
+    // load initial values from draft webform
+    if (props.initialValues?.participants) {
+      participants = props.initialValues?.participants as IGetProjectParticipant[];
+    } else {
+      // this is a fresh form and the logged in user needs to be added as a participant
+      const loggedInUser = keycloakWrapper?.user;
+      participants = [
+        {
+          system_user_id: loggedInUser?.system_user_id,
+          display_name: loggedInUser?.display_name,
+          email: loggedInUser?.email,
+          agency: loggedInUser?.agency,
+          identity_source: loggedInUser?.identity_source,
+          project_role_names: [PROJECT_ROLE.COORDINATOR]
+        } as IGetProjectParticipant
+      ];
+    }
+    return participants;
   };
 
   return (
@@ -123,11 +134,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
               <ProjectDetailsForm
                 program={
                   codes?.program?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-                type={
-                  codes?.type?.map((item) => {
                     return { value: item.id, label: item.name };
                   }) || []
                 }
@@ -182,7 +188,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         <HorizontalSplitFormComponent
           title="Team Members"
           summary="Specify team members and their associated role for this project."
-          component={<ProjectUserForm users={[getLoggedInUserAsParticipant()]} roles={codes.project_roles} />}
+          component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
         />
 
         <Divider className={classes.sectionDivider} />

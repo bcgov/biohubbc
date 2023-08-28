@@ -10,15 +10,15 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
+import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import AttachmentsListItemMenuButton from './AttachmentsListItemMenuButton';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
@@ -64,7 +64,7 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
   const [page] = useState(0);
 
   if (!attachments.length) {
-    return <NoAttachments />;
+    return <NoSurveySectionData text={'No Documents'} />;
   }
 
   return (
@@ -129,16 +129,6 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
         </TableBody>
       </Table>
     </TableContainer>
-  );
-};
-
-const NoAttachments = () => {
-  return (
-    <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2} minHeight={66}>
-      <Typography component="span" variant="body2" color="textSecondary" data-testid="observations-nodata">
-        No Documents
-      </Typography>
-    </Box>
   );
 };
 

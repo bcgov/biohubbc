@@ -1,4 +1,3 @@
-import { region, regional_offices } from '../constants/codes';
 import { IDBConnection } from '../database/db';
 import { CodeRepository, IAllCodeSets } from '../repositories/code-repository';
 import { getLogger } from '../utils/logger';
@@ -81,11 +80,7 @@ export class CodeService extends DBService {
       ecological_seasons: ecological_seasons,
       intended_outcomes: intended_outcomes,
       vantage_codes: vantage_codes,
-      survey_jobs: survey_jobs,
-
-      // TODO Temporarily hard coded list of code values below
-      region,
-      regional_offices
+      survey_jobs: survey_jobs
     };
   }
 }
