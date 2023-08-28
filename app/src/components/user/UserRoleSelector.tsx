@@ -20,12 +20,10 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
   const { index, selectedRole, user, roles, error, handleAdd, handleRemove } = props;
 
   return (
-
-    <Box mt={1}
-      className="userRoleItemContainer">
+    <Box mt={1} className="userRoleItemContainer">
       <Paper
         variant="outlined"
-        className={ error ? 'userRoleItemError' : 'userRoleItem'}
+        className={error ? 'userRoleItemError' : 'userRoleItem'}
         sx={{
           '&.userRoleItem': {
             borderColor: 'grey.400'
@@ -82,7 +80,6 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
       </Paper>
       {error}
     </Box>
-
   );
 };
 

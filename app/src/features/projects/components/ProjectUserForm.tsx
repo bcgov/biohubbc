@@ -3,6 +3,7 @@ import Icon from '@mdi/react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import Collapse from '@mui/material/Collapse';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
@@ -16,10 +17,9 @@ import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { useEffect, useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import { TransitionGroup } from 'react-transition-group';
-import Collapse from '@mui/material/Collapse';
 
 export const ProjectUserRoleYupSchema = yup.object().shape({
   participants: yup
@@ -234,37 +234,34 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             }}
           />
         </Box>
-        {/* {selectedUsers.length > 0 && ( */}
-          
-          <Box>
-            <Box
-              sx={{
-                '& .userRoleItemContainer + .userRoleItemContainer': {
-                  mt: 1
-                }
-              }}>
-              <TransitionGroup>
-                {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
-                  const error = rowItemError(index);
-                  return (
-                    <Collapse key={user.system_user_id}>
-                      <UserRoleSelector
-                        index={index}
-                        user={user}
-                        roles={props.roles}
-                        error={error}
-                        selectedRole={getSelectedRole(index)}
-                        handleAdd={handleAddUserRole}
-                        handleRemove={handleRemoveUser}
-                        key={user.system_user_id}
-                      />
-                    </Collapse>
-                  );
-                })}
-              </TransitionGroup>
-            </Box>
+        <Box>
+          <Box
+            sx={{
+              '& .userRoleItemContainer + .userRoleItemContainer': {
+                mt: 1
+              }
+            }}>
+            <TransitionGroup>
+              {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
+                const error = rowItemError(index);
+                return (
+                  <Collapse key={user.system_user_id}>
+                    <UserRoleSelector
+                      index={index}
+                      user={user}
+                      roles={props.roles}
+                      error={error}
+                      selectedRole={getSelectedRole(index)}
+                      handleAdd={handleAddUserRole}
+                      handleRemove={handleRemoveUser}
+                      key={user.system_user_id}
+                    />
+                  </Collapse>
+                );
+              })}
+            </TransitionGroup>
           </Box>
-        {/* )} */}
+        </Box>
       </Box>
     </form>
   );
