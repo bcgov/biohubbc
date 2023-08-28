@@ -5,6 +5,7 @@ import { ensureProtocol } from 'utils/Utils';
 
 export interface IConfig {
   API_HOST: string;
+  CB_API_HOST: string;
   CHANGE_VERSION: string;
   NODE_ENV: string;
   REACT_APP_NODE_ENV: string;
@@ -18,6 +19,7 @@ export interface IConfig {
 
 export const ConfigContext = React.createContext<IConfig | undefined>({
   API_HOST: '',
+  CB_API_HOST: '',
   CHANGE_VERSION: '',
   NODE_ENV: '',
   REACT_APP_NODE_ENV: '',
@@ -42,12 +44,17 @@ const getLocalConfig = (): IConfig => {
   const API_HOST = process.env.REACT_APP_API_HOST;
   const API_PORT = process.env.REACT_APP_API_PORT;
 
+  const CB_API_HOST = process.env.REACT_APP_CRITTERBASE_API_HOST;
+  const CB_API_PORT = process.env.REACT_APP_CRITTERBASE_API_PORT;
+
   const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'localhost';
+  const CB_API_URL = (CB_API_PORT && `${CB_API_HOST}:${CB_API_PORT}`) || CB_API_HOST || 'localhost';
 
   const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
   const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || 'gblhvt';
   return {
     API_HOST: ensureProtocol(API_URL, 'http://'),
+    CB_API_HOST: ensureProtocol(CB_API_URL, 'http://'),
     CHANGE_VERSION: process.env.CHANGE_VERSION || 'NA',
     NODE_ENV: process.env.NODE_ENV,
     REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
