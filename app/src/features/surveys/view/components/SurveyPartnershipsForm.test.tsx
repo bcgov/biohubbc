@@ -1,15 +1,15 @@
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { Formik } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { codes } from 'test-helpers/code-helpers';
 import { render } from 'test-helpers/test-utils';
 import SurveyPartnershipsForm, {
   ISurveyPartnershipsForm,
   SurveyPartnershipsFormInitialValues,
   SurveyPartnershipsFormYupSchema
 } from './SurveyPartnershipsForm';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { CodesContext, ICodesContext } from 'contexts/codesContext';
-import { codes } from 'test-helpers/code-helpers';
-import { DataLoader } from 'hooks/useDataLoader';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
@@ -20,7 +20,6 @@ const mockUseApi = {
   }
 };
 
-
 const mockCodesContext: ICodesContext = {
   codesDataLoader: {
     data: codes,
@@ -29,11 +28,7 @@ const mockCodesContext: ICodesContext = {
 };
 
 const renderContainer = (props: any) => {
-  return render(
-    <CodesContext.Provider value={mockCodesContext}>
-      {props.children }
-    </CodesContext.Provider>
-  );
+  return render(<CodesContext.Provider value={mockCodesContext}>{props.children}</CodesContext.Provider>);
 };
 
 describe.skip('SurveyPartnershipsForm', () => {
@@ -43,8 +38,6 @@ describe.skip('SurveyPartnershipsForm', () => {
   });
 
   it('renders correctly with default empty values', () => {
-    
-
     const { getByLabelText } = renderContainer(
       <Formik
         initialValues={SurveyPartnershipsFormInitialValues}

@@ -569,7 +569,7 @@ export class EmlService extends DBService {
         }
       })
     );
-  
+
     return additionalMetadata;
   }
 
