@@ -79,7 +79,6 @@ export function getCritter(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
-    console.log('user', user);
 
     const cb = new CritterbaseService(user);
     const result = await cb.getCritter(req.params.critterId);

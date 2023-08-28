@@ -22,7 +22,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  createCritter()
+  signUp()
 ];
 
 POST.apiDoc = {
@@ -63,14 +63,12 @@ POST.apiDoc = {
   }
 };
 
-export function createCritter(): RequestHandler {
+export function signUp(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
-    console.log('user', user);
-
     const cb = new CritterbaseService(user);
     const result = await cb.signUp();
     return res.status(200).json(result);

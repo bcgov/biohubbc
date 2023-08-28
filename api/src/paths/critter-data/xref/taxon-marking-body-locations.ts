@@ -83,7 +83,6 @@ export function getTaxonMeasurements(): RequestHandler {
       username: req['system_user']?.user_identifier
     };
     const taxon_id = String(req.query.taxon_id);
-    console.log('Key was: ' + taxon_id);
     const cb = new CritterbaseService(user);
     const result = await cb.getTaxonBodyLocations(taxon_id);
     return res.status(200).json(result);

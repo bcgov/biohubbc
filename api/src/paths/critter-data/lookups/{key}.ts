@@ -113,7 +113,6 @@ export function getLookupValues(): RequestHandler {
       username: req['system_user']?.user_identifier
     };
     const key: ICbRouteKey = req.params.key as ICbRouteKey;
-    console.log('Key was: ' + JSON.stringify(req.query));
     const cb = new CritterbaseService(user);
     const params = [];
     for (const [a, b] of Object.entries(req.query)) {

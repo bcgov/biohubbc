@@ -1,6 +1,5 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Critter } from 'features/surveys/view/survey-animals/animal';
 import { v4 } from 'uuid';
 import { useFamilyApi } from './useFamilyApi';
 
@@ -18,12 +17,12 @@ describe('useFamily', () => {
   const family = {
     family_id: v4(),
     family_label: 'fam'
-  }
+  };
 
   const immediateFamily = {
     parents: [],
     children: []
-  }
+  };
 
   it('should return a list of families', async () => {
     mock.onGet('/api/family').reply(200, [family]);
@@ -40,5 +39,4 @@ describe('useFamily', () => {
     expect(Array.isArray(result.parents));
     expect(Array.isArray(result.children));
   });
-
 });
