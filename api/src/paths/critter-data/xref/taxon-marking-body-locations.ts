@@ -23,7 +23,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getTaxonMeasurements()
+  getTaxonBodyLocations()
 ];
 
 GET.apiDoc = {
@@ -70,7 +70,7 @@ GET.apiDoc = {
   }
 };
 
-export function getTaxonMeasurements(): RequestHandler {
+export function getTaxonBodyLocations(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
       keycloak_guid: req['system_user']?.user_guid,
