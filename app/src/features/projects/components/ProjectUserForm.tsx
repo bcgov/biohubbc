@@ -60,6 +60,10 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   useEffect(() => {
     props.users.forEach((user, index) => {
       setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
+      setFieldValue(`participants[${index}].display_name`, user.display_name);
+      setFieldValue(`participants[${index}].email`, user.email);
+      setFieldValue(`participants[${index}].agency`, user.agency);
+      setFieldValue(`participants[${index}].identity_source`, user.identity_source);
       setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
     });
     setSelectedUsers(props.users);
@@ -70,6 +74,10 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
 
     setFieldValue(`participants[${selectedUsers.length - 1}]`, {
       system_user_id: user.system_user_id,
+      display_name: user.display_name,
+      email: user.email,
+      agency: user.agency,
+      identity_source: user.identity_source,
       project_role_names: []
     });
     clearErrors();
