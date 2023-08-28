@@ -201,7 +201,6 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
               if (option) {
                 handleAddUser(option);
               }
-              setSearchText('');
             }}
             renderInput={(params) => (
               <TextField
