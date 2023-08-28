@@ -34,7 +34,6 @@ describe('ProjectService', () => {
           project_name: 'Project 1',
           coordinator_agency: '',
           project_programs: [],
-          project_types: [],
           regions: [],
           start_date: '1900-01-01',
           end_date: '2200-10-10'
@@ -45,7 +44,6 @@ describe('ProjectService', () => {
           project_name: 'Project 2',
           coordinator_agency: '',
           project_programs: [],
-          project_types: [],
           regions: [],
           start_date: '1900-01-01',
           end_date: '2000-12-31'

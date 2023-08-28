@@ -5,6 +5,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -15,16 +16,25 @@ import { getFormattedDateRangeString } from 'utils/Utils';
  * @return {*}
  */
 const SurveyGeneralInformation = () => {
+  const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
 
-  if (!surveyForViewData) {
+  if (!surveyForViewData || !codesContext.codesDataLoader.data) {
     return <></>;
   }
 
   const {
     surveyData: { survey_details, species, permit }
   } = surveyForViewData;
+
+  const codes = codesContext.codesDataLoader.data;
+
+  const surveyTypes =
+    codes.type
+      .filter((code) => survey_details.survey_types.includes(code.id))
+      .map((code) => code.name)
+      .join(', ') || '';
 
   return (
     <>
@@ -33,6 +43,12 @@ const SurveyGeneralInformation = () => {
         <Divider></Divider>
         <Box component="dl" my={0}>
           <Grid container spacing={1}>
+            <Grid item sm={12}>
+              <Typography component="dt" color="textSecondary" variant="subtitle2">
+                Types
+              </Typography>
+              <Typography component="dd">{surveyTypes ? <>{surveyTypes}</> : 'No Types'}</Typography>
+            </Grid>
             <Grid item sm={6}>
               <Typography component="dt" color="textSecondary" variant="subtitle2">
                 Survey Lead

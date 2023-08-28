@@ -81,7 +81,7 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
           name={props.name}
           labelId={`${props.name}-label`}
           label={props.label}
-          value={get(values, props.name)}
+          value={get(values, props.name) ?? ''}
           onChange={handleChange}
           onOpen={(e) => {
             setMenuAnchorEl(e.currentTarget);

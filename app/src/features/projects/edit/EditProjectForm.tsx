@@ -81,11 +81,6 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                       return { value: item.id, label: item.name };
                     }) || []
                   }
-                  type={
-                    codes?.type?.map((item) => {
-                      return { value: item.id, label: item.name };
-                    }) || []
-                  }
                 />
                 <Box mt={3}>
                   <ProjectObjectivesForm />

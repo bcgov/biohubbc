@@ -12,9 +12,3 @@ export const region = [
   { id: 8, name: 'Northeast' },
   { id: 9, name: 'Province' }
 ];
-
-export const regional_offices = [
-  { id: 1, name: 'Office 1' },
-  { id: 2, name: 'Office 2' },
-  { id: 3, name: 'Office 3' }
-];

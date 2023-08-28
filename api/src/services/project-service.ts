@@ -304,11 +304,6 @@ export class ProjectService extends DBService {
       )
     );
 
-    // Handle project activities
-    promises.push(
-      Promise.all(postProjectData.project.project_types.map((typeId: number) => this.insertType(typeId, projectId)))
-    );
-
     // Handle project regions
     promises.push(this.insertRegion(projectId, postProjectData.location.geometry));
 
@@ -337,10 +332,6 @@ export class ProjectService extends DBService {
 
   async insertClassificationDetail(iucn3_id: number, project_id: number): Promise<number> {
     return this.projectRepository.insertClassificationDetail(iucn3_id, project_id);
-  }
-
-  async insertType(typeId: number, projectId: number): Promise<number> {
-    return this.projectRepository.insertType(typeId, projectId);
   }
 
   async postProjectParticipant(projectId: number, systemUserId: number, projectParticipantRole: string): Promise<void> {
@@ -475,19 +466,6 @@ export class ProjectService extends DBService {
       putCoordinatorData,
       revision_count
     );
-
-    if (putProjectData?.project_types) {
-      await this.updateTypeData(projectId, putProjectData);
-    }
-  }
-
-  async updateTypeData(projectId: number, projectData: PutProjectData) {
-    await this.projectRepository.deleteTypeData(projectId);
-
-    const insertTypePromises =
-      projectData?.project_types?.map((typeId: number) => this.insertType(typeId, projectId)) || [];
-
-    await Promise.all([...insertTypePromises]);
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {
