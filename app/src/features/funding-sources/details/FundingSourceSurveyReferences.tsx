@@ -124,74 +124,70 @@ const FundingSourceSurveyReferences = (props: IFundingSourceSurveyReferencesProp
         </Typography>
       </Box>
 
-      <Box mt={3}>
+      <Box mt={2}>
+        <Box mb={1}>
+          <TextField
+            name={'funding-source-survey-references-search'}
+            id={'funding-source-survey-references-search'}
+            aria-label="Search Referenced Surveys"
+            placeholder="Search"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Icon path={mdiMagnify} size={1} />
+                </InputAdornment>
+              )
+            }}
+            inputProps={{
+              'data-testid': 'funding-source-survey-references-search'
+            }}
+            className={classes.filtersBox}
+            onChange={(event) => {
+              onSearch(event.target.value);
+            }}
+            variant="outlined"
+            fullWidth={true}
+          />
+        </Box>
         {fundingSourceSurveyReferences.length === 0 ? (
-          <>
-            <Box>
-              <Paper
-                elevation={0}
-                variant="outlined"
-                sx={{
-                  padding: '24px',
-                  textAlign: 'center',
-                  background: grey[100]
-                }}>
-                <Typography variant="body1" color="textSecondary">
-                  No surveys are currently referencing this funding source.
-                </Typography>
-              </Paper>
-            </Box>
-          </>
+          <Box>
+            <Paper
+              elevation={0}
+              variant="outlined"
+              sx={{
+                padding: '24px',
+                textAlign: 'center',
+                background: grey[100]
+              }}>
+              <Typography variant="body1" color="textSecondary">
+                No surveys found
+              </Typography>
+            </Paper>
+          </Box>
         ) : (
-          <>
-            <Box mb={1}>
-              <TextField
-                name={'funding-source-survey-references-search'}
-                id={'funding-source-survey-references-search'}
-                aria-label="Search Referenced Surveys"
-                placeholder="Search"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Icon path={mdiMagnify} size={1} />
-                    </InputAdornment>
-                  )
+          <Paper elevation={0} variant="outlined">
+            <Box>
+              <DataGrid
+                className={classes.dataGrid}
+                autoHeight
+                rows={fundingSourceSurveyReferences}
+                getRowId={(row) => `funding-source-survey-reference-${row.survey_id}`}
+                columns={columns}
+                pageSizeOptions={[5]}
+                rowSelection={false}
+                checkboxSelection={false}
+                hideFooter
+                disableRowSelectionOnClick
+                disableColumnSelector
+                disableColumnFilter
+                disableColumnMenu
+                sortingOrder={['asc', 'desc']}
+                slots={{
+                  noRowsOverlay: NoRowsOverlayStyled
                 }}
-                inputProps={{
-                  'data-testid': 'funding-source-survey-references-search'
-                }}
-                className={classes.filtersBox}
-                onChange={(event) => {
-                  onSearch(event.target.value);
-                }}
-                variant="outlined"
-                fullWidth={true}
               />
             </Box>
-            <Paper elevation={0} variant="outlined">
-              <Box>
-                <DataGrid
-                  className={classes.dataGrid}
-                  autoHeight
-                  rows={fundingSourceSurveyReferences}
-                  getRowId={(row) => `funding-source-survey-reference-${row.survey_id}`}
-                  columns={columns}
-                  pageSizeOptions={[5]}
-                  rowSelection={false}
-                  checkboxSelection={false}
-                  hideFooter
-                  disableRowSelectionOnClick
-                  disableColumnSelector
-                  disableColumnFilter
-                  disableColumnMenu
-                  sortingOrder={['asc', 'desc']}
-                  slots={{
-                    noRowsOverlay: NoRowsOverlayStyled
-                  }}
-                />
-              </Box>
-            </Paper>
-          </>
+          </Paper>
         )}
       </Box>
     </>
