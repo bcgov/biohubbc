@@ -1103,9 +1103,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * @TODO jdsdoc
-   *
-   * @TODO should probably simplify this method to use knex? And accept [] as a valid response? ...
+   * Gets all indigenous partnerships belonging to the given survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<GetPartnershipsData['indigenous_partnerships'][]>}
@@ -1133,7 +1131,7 @@ export class SurveyRepository extends BaseRepository {
         fn.name;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows;
 
@@ -1148,10 +1146,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * @TODO jsdoc
-   *
-   * @TODO should probably simplify this method to use knex? And accept [] as a valid response? ...
-   *
+   * Gets all stakeholder partnerships belonging to the given survey
    * @param {number} surveyId
    * @return {*}  {Promise<GetPartnershipsData['stakeholder_partnerships'][]>}
    * @memberof SurveyRepository
@@ -1170,7 +1165,7 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows;
 
