@@ -442,7 +442,8 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          partnerships: ProjectPartnershipsFormInitialValues.partnerships,
+          participants: AddProjectParticipantsFormInitialValues.participants
         }
       });
 
@@ -616,7 +617,6 @@ describe('CreateProjectPage', () => {
               displayName: '',
               email: '',
               identitySource: '',
-              project_role_names: ['Coordinator'],
               roleId: '',
               userIdentifier: ''
             }
