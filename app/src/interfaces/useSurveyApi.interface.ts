@@ -40,6 +40,7 @@ export interface IGetSurveyForViewResponseDetails {
   biologist_last_name: string;
   survey_area_name: string;
   geometry: Feature[];
+  survey_types: number[];
   revision_count: number;
 }
 
@@ -79,6 +80,7 @@ export interface SurveyUpdateObject {
     end_date: string;
     biologist_first_name: string;
     biologist_last_name: string;
+    survey_types: number[];
     revision_count: number;
   };
   species?: {

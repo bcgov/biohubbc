@@ -326,7 +326,7 @@ describe('ProjectRepository', () => {
 
       const input = ({
         project: {
-          type: 1,
+          project_programs: [1],
           name: 'name',
           start_date: 'start_date',
           end_date: 'end_date',
@@ -356,7 +356,7 @@ describe('ProjectRepository', () => {
 
       const input = ({
         project: {
-          type: 1,
+          project_programs: [1],
           name: 'name',
           start_date: 'start_date',
           end_date: 'end_date',
@@ -386,7 +386,7 @@ describe('ProjectRepository', () => {
 
       const input = ({
         project: {
-          type: 1,
+          project_programs: [1],
           name: 'name',
           start_date: 'start_date',
           end_date: 'end_date',

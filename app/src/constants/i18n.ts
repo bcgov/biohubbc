@@ -297,6 +297,47 @@ export const SubmitSurveyBiohubI18N = {
   submitSurveyBiohubNoSubmissionDataDialogText: 'No new data or information has been added to this survey to submit.'
 };
 
+export const SurveyAnimalsI18N = {
+  animalIndividualsHelp:
+    'Individual animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',
+  animalDialogTitle: 'Invidividual Animals',
+  animalDialogAddNew: 'Add New Individual',
+  animalSectionComment: (section: string) => `Add comment about this ${section}`,
+  animalGeneralTitle: 'General',
+  animalGeneralHelp: 'General help placeholder',
+  animalCaptureTitle: 'Capture Information',
+  animalCaptureTitle2: 'Capture Event',
+  animalCaptureHelp:
+    'Capture Events are when animals have been deliberately handled or immobilized. All capture events should be reported by adding a Capture Event to a new or existing individual.',
+  animalCaptureAddBtn: 'Add Capture Event',
+  animalCaptureReleaseRadio: 'This individual was released at a different location than where it was captured',
+  animalMarkingTitle: 'Markings',
+  animalMarkingTitle2: 'Animal Marking',
+  animalMarkingHelp:
+    'Markings are physical, chemical, or electronic tags or characteristics that uniquely identify individuals.',
+  animalMarkingAddBtn: 'Add Marking',
+  animalMeasurementTitle: 'Measurements',
+  animalMeasurementTitle2: 'Animal Measurement',
+  animalMeasurementHelp:
+    'Measurements are quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
+  animalMeasurementAddBtn: 'Add Measurement',
+  animalFamilyTitle: 'Family',
+  animalFamilyTitle2: 'Animal Relationship',
+  animalFamilyHelp:
+    'Family Relationships describe how multiple individuals are related to one another. You must add an individual before it can be referenced as a parent or child of another individual.',
+  animalFamilyAddBtn: 'Add Relationship',
+  animalMortalityTitle: 'Mortality',
+  animalMortalityTitle2: 'Mortality Event',
+  animalMortalityHelp:
+    "Mortality Events describe an individual's death, including the suspected location, date, and cause of death. An individual can only have one Mortality Event.",
+  animalMortalityAddBtn: 'Add Mortality',
+
+  // Input help strings
+  taxonHelp:
+    'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family',
+  taxonLabelHelp: 'A custom and unique name for you to recognize this individual'
+};
+
 export const FundingSourceI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
