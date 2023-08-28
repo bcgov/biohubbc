@@ -2,13 +2,14 @@ import { Grid, MenuItem, SelectChangeEvent } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import CustomTextField from 'components/fields/CustomTextField';
+import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { has } from 'lodash-es';
-import React, { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { v4 } from 'uuid';
 import {
   AnimalMeasurementSchema,
@@ -38,11 +39,16 @@ const MeasurementAnimalForm = () => {
   const api = useCritterbaseApi();
   const { values } = useFormikContext<IAnimal>();
 
-  const { data: measurements, load } = useDataLoader(api.lookup.getTaxonMeasurements);
+  const { data: measurements, refresh, load } = useDataLoader(api.lookup.getTaxonMeasurements);
 
   if (values.general.taxon_id) {
     load(values.general.taxon_id);
   }
+
+  useEffect(() => {
+    refresh(values.general.taxon_id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.general.taxon_id]);
 
   const newMeasurement: IAnimalMeasurement = {
     _id: v4(),
@@ -154,7 +160,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             query={`taxon_measurement_id=${taxonMeasurementId}`}
             controlProps={{
               size: 'small',
-              required: isRequiredInSchema(AnimalMeasurementSchema, 'qualitative_option_id'),
+              required: true,
               disabled: !taxonMeasurementId
             }}
           />
@@ -165,7 +171,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             handleBlur={handleBlur}
             label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
             other={{
-              required: isRequiredInSchema(AnimalMeasurementSchema, 'value'),
+              required: true,
               size: 'small',
               disabled: !taxonMeasurementId
             }}
@@ -174,16 +180,11 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
         )}
       </Grid>
       <Grid item xs={4}>
-        <CustomTextField
-          other={{
-            required: isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp'),
-            size: 'small',
-            type: 'date',
-            InputLabelProps: { shrink: true }
-          }}
-          label="Measured Date"
+        <SingleDateField
           name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measured_timestamp', index)}
-          handleBlur={handleBlur}
+          required={isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp')}
+          label={'Measured Date'}
+          other={{ size: 'small' }}
         />
       </Grid>
       <Grid item xs={12}>

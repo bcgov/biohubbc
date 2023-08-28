@@ -1,4 +1,6 @@
+import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { omit, omitBy } from 'lodash-es';
+import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
@@ -42,6 +44,13 @@ const mustBeNum = 'Must be a number';
 const numSchema = yup.number().typeError(mustBeNum);
 const latSchema = yup.number().min(-90, glt(-90)).max(90, glt(90, false)).typeError(mustBeNum);
 const lonSchema = yup.number().min(-180, glt(-180)).max(180, glt(180, false)).typeError(mustBeNum);
+const dateSchema = yup
+  .date()
+  .min(moment(DATE_LIMIT.min), `Must be after ${DATE_LIMIT.min}`)
+  .max(moment(DATE_LIMIT.max), `Must be before ${DATE_LIMIT.max}`)
+  .typeError('Invalid date format');
+
+export type ProjectionMode = 'wgs' | 'utm';
 
 export const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
@@ -52,20 +61,33 @@ export const AnimalGeneralSchema = yup.object({}).shape({
 export const AnimalCaptureSchema = yup.object({}).shape({
   _id: yup.string().required(),
 
-  capture_longitude: lonSchema.required(req),
-  capture_latitude: latSchema.required(req),
-  capture_utm_northing: numSchema,
-  capture_utm_easting: numSchema,
-  capture_timestamp: yup.date().required(req),
-  capture_coordinate_uncertainty: numSchema,
+  capture_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required(req) }),
+  capture_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required(req) }),
+  capture_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
+  capture_utm_easting: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
+  capture_timestamp: dateSchema.required(req),
+  capture_coordinate_uncertainty: numSchema.required(req),
   capture_comment: yup.string(),
   projection_mode: yup.mixed().oneOf(['wgs', 'utm']),
-  release_longitude: lonSchema.optional(),
-  release_latitude: latSchema.optional(),
-  release_utm_northing: numSchema.optional(),
-  release_utm_easting: numSchema.optional(),
-  release_coordinate_uncertainty: numSchema.optional(),
-  release_timestamp: yup.date().optional(),
+  show_release: yup.boolean().required(), // used for conditional required release fields
+  release_longitude: lonSchema.when(['projection_mode', 'show_release'], {
+    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'wgs' && show_release,
+    then: lonSchema.required(req)
+  }),
+  release_latitude: latSchema.when(['projection_mode', 'show_release'], {
+    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'wgs' && show_release,
+    then: latSchema.required(req)
+  }),
+  release_utm_northing: numSchema.when(['projection_mode', 'show_release'], {
+    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
+    then: numSchema.required(req)
+  }),
+  release_utm_easting: numSchema.when(['projection_mode', 'show_release'], {
+    is: (projection_mode: ProjectionMode, show_release: boolean) => projection_mode === 'utm' && show_release,
+    then: numSchema.required(req)
+  }),
+  release_coordinate_uncertainty: numSchema.when('show_release', { is: true, then: numSchema.required(req) }),
+  release_timestamp: dateSchema.when('show_release', { is: true, then: dateSchema.required(req) }),
   release_comment: yup.string().optional()
 });
 
@@ -78,31 +100,36 @@ export const AnimalMarkingSchema = yup.object({}).shape({
   secondary_colour_id: yup.string().optional(),
   marking_comment: yup.string()
 });
+//proprietaryDataForm
+export const AnimalMeasurementSchema = yup.object({}).shape(
+  {
+    _id: yup.string().required(),
 
-export const AnimalMeasurementSchema = yup.object({}).shape({
-  _id: yup.string().required(),
-
-  taxon_measurement_id: yup.string().required(req),
-  value: numSchema.when('qualitative_option_id', {
-    is: (qual_option: string) => !qual_option,
-    then: numSchema.required(req)
-  }),
-  qualitative_option_id: yup.string().when('val', {
-    is: (val: number | string | undefined) => val === '' || val === undefined,
-    then: yup.string().required(req)
-  }),
-  measured_timestamp: yup.date().required(req),
-  measurement_comment: yup.string()
-});
+    taxon_measurement_id: yup.string().required(req),
+    qualitative_option_id: yup.string().when('value', {
+      is: (value: '' | number) => value === 0 || !value,
+      then: yup.string().required(req),
+      otherwise: yup.string()
+    }),
+    value: numSchema.when('qualitative_option_id', {
+      is: (qualitative_option_id: string) => !qualitative_option_id,
+      then: numSchema.required(req),
+      otherwise: numSchema
+    }),
+    measured_timestamp: dateSchema.required(req),
+    measurement_comment: yup.string()
+  },
+  [['value', 'qualitative_option_id']]
+);
 
 export const AnimalMortalitySchema = yup.object({}).shape({
   _id: yup.string().required(),
 
-  mortality_longitude: lonSchema.required(req),
-  mortality_latitude: latSchema.required(req),
-  mortality_utm_northing: numSchema,
-  mortality_utm_easting: numSchema,
-  mortality_timestamp: yup.date().required(req),
+  mortality_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required(req) }),
+  mortality_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required(req) }),
+  mortality_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
+  mortality_utm_easting: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
+  mortality_timestamp: dateSchema.required(req),
   mortality_coordinate_uncertainty: numSchema,
   mortality_comment: yup.string(),
   mortality_pcod_reason: yup.string().uuid().required(req),
@@ -206,6 +233,9 @@ type ICritterQualitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'val
 
 type ICritterQuantitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'qualitative_option_id' | '_id'>;
 
+type ICapturesAndLocations = { captures: ICritterCapture[]; capture_locations: ICritterLocation[] };
+type IMortalityAndLocation = { mortalities: ICritterMortality[]; mortalities_locations: ICritterLocation[] };
+
 export const newFamilyIdPlaceholder = 'New Family';
 
 type ICritterFamilyParent = {
@@ -223,6 +253,12 @@ type ICritterFamily = {
   family_label: string;
 };
 
+type ICritterRelationships = {
+  parents: ICritterFamilyParent[];
+  children: ICritterFamilyChild[];
+  families: ICritterFamily[];
+};
+
 //Converts IAnimal(Form data) to a Critterbase Critter
 
 export class Critter {
@@ -236,11 +272,7 @@ export class Critter {
     quantitative: ICritterQuantitativeMeasurement[];
   };
   mortalities: Omit<ICritterMortality, '_id'>[];
-  families: {
-    parents: ICritterFamilyParent[];
-    children: ICritterFamilyChild[];
-    families: ICritterFamily[];
-  };
+  families: ICritterRelationships;
   locations: ICritterLocation[];
 
   private taxon_name?: string;
@@ -249,135 +281,170 @@ export class Critter {
     return `${this.animal_id}-${this.taxon_name}`;
   }
 
-  constructor(animal: IAnimal) {
-    this.critter_id = v4();
-    this.taxon_id = animal.general.taxon_id;
-    this.taxon_name = animal.general.taxon_name;
-    this.animal_id = animal.general.animal_id;
-    this.captures = [];
-    this.locations = [];
-    this.families = { parents: [], children: [], families: [] };
-
-    animal.captures.forEach((c) => {
-      const cleanedCapture = omitBy(c, (v) => v === '') as IAnimalCapture;
+  _formatCritterCaptures(animal_captures: IAnimalCapture[]): ICapturesAndLocations {
+    const formattedCaptures: ICritterCapture[] = [];
+    const formattedLocations: ICritterLocation[] = [];
+    animal_captures.forEach((capture) => {
+      const cleanedCapture = omitBy(capture, (value) => value === '') as IAnimalCapture;
       const c_loc_id = v4();
       let r_loc_id: string | undefined = undefined;
 
-      this.locations.push({
+      formattedLocations.push({
         location_id: c_loc_id,
-        latitude: Number(c.capture_latitude),
-        longitude: Number(c.capture_longitude),
-        coordinate_uncertainty: Number(c.capture_coordinate_uncertainty),
+        latitude: Number(capture.capture_latitude),
+        longitude: Number(capture.capture_longitude),
+        coordinate_uncertainty: Number(capture.capture_coordinate_uncertainty),
         coordinate_uncertainty_unit: 'm'
       });
 
-      if (c.release_latitude && c.release_longitude) {
+      if (capture.release_latitude && capture.release_longitude) {
         r_loc_id = v4();
 
-        this.locations.push({
+        formattedLocations.push({
           location_id: r_loc_id,
-          latitude: Number(c.release_latitude),
-          longitude: Number(c.release_longitude),
-          coordinate_uncertainty: Number(c.release_coordinate_uncertainty),
+          latitude: Number(capture.release_latitude),
+          longitude: Number(capture.release_longitude),
+          coordinate_uncertainty: Number(capture.release_coordinate_uncertainty),
           coordinate_uncertainty_unit: 'm'
         });
       }
 
-      this.captures.push({
+      formattedCaptures.push({
         critter_id: this.critter_id,
         capture_location_id: c_loc_id,
         release_location_id: r_loc_id,
-        ...omit(cleanedCapture, '_id')
+        capture_timestamp: cleanedCapture.capture_timestamp,
+        release_timestamp: cleanedCapture.release_timestamp,
+        capture_comment: cleanedCapture.capture_comment,
+        release_comment: cleanedCapture.release_comment
       });
     });
 
-    this.mortalities = [];
-    animal.mortality.forEach((m) => {
-      const cleanedMortality = omitBy(m, (v) => v === '') as IAnimalMortality;
+    return { captures: formattedCaptures, capture_locations: formattedLocations };
+  }
+
+  _formatCritterMortalities(animal_mortalities: IAnimalMortality[]): IMortalityAndLocation {
+    const formattedMortalities: ICritterMortality[] = [];
+    const formattedLocations: ICritterLocation[] = [];
+    animal_mortalities.forEach((mortality) => {
+      const cleanedMortality = omitBy(mortality, (value) => value === '') as IAnimalMortality;
       const loc_id = v4();
 
-      this.locations.push({
+      formattedLocations.push({
         location_id: loc_id,
-        latitude: Number(m.mortality_latitude),
-        longitude: Number(m.mortality_latitude),
-        coordinate_uncertainty: Number(m.mortality_latitude),
+        latitude: Number(mortality.mortality_latitude),
+        longitude: Number(mortality.mortality_latitude),
+        coordinate_uncertainty: Number(mortality.mortality_latitude),
         coordinate_uncertainty_unit: 'm'
       });
 
-      this.mortalities.push({
+      formattedMortalities.push({
         critter_id: this.critter_id,
         location_id: loc_id,
-        ...omit(cleanedMortality, '')
+        mortality_timestamp: cleanedMortality.mortality_timestamp,
+        mortality_comment: cleanedMortality.mortality_comment,
+        mortality_pcod_taxon_id: cleanedMortality.mortality_pcod_taxon_id,
+        mortality_pcod_reason: cleanedMortality.mortality_pcod_reason,
+        mortality_pcod_confidence: cleanedMortality.mortality_pcod_confidence,
+        mortality_ucod_reason: cleanedMortality.mortality_ucod_reason,
+        mortality_ucod_confidence: cleanedMortality.mortality_ucod_confidence,
+        mortality_ucod_taxon_id: cleanedMortality.mortality_ucod_taxon_id
       });
     });
+    return { mortalities: formattedMortalities, mortalities_locations: formattedLocations };
+  }
 
-    this.markings = animal.markings.map((m) => {
-      const cleanedMarking = omitBy(m, (v) => v === '') as IAnimalMarking;
+  _formatCritterMarkings(animal_markings: IAnimalMarking[]): ICritterMarking[] {
+    return animal_markings.map((marking) => {
+      const cleanedMarking = omitBy(marking, (value) => value === '') as IAnimalMarking;
       return {
         critter_id: this.critter_id,
         ...omit(cleanedMarking, '_id')
       };
     });
+  }
 
+  _formatCritterQualitativeMeasurements(animal_measurements: IAnimalMeasurement[]): ICritterQualitativeMeasurement[] {
+    const filteredQualitativeMeasurements = animal_measurements.filter((measurement) => {
+      if (measurement.qualitative_option_id && measurement.value) {
+        console.log('Qualitative measurement must only contain option_id and no value.');
+        return false;
+      }
+      return measurement.qualitative_option_id;
+    });
+
+    return filteredQualitativeMeasurements.map((qual_measurement) => ({
+      critter_id: this.critter_id,
+      taxon_measurement_id: qual_measurement.taxon_measurement_id,
+      qualitative_option_id: qual_measurement.qualitative_option_id,
+      measured_timestamp: qual_measurement.measured_timestamp || undefined,
+      measurement_comment: qual_measurement.measurement_comment || undefined
+    }));
+  }
+
+  _formatCritterQuantitativeMeasurements(animal_measurements: IAnimalMeasurement[]): ICritterQuantitativeMeasurement[] {
+    const filteredQuantitativeMeasurements = animal_measurements.filter((measurement) => {
+      if (measurement.qualitative_option_id && measurement.value) {
+        console.log('Quantitative measurement must only contain a value and no qualitative_option_id');
+        return false;
+      }
+      return measurement.value;
+    });
+    return filteredQuantitativeMeasurements.map((quant_measurement) => {
+      return {
+        critter_id: this.critter_id,
+        taxon_measurement_id: quant_measurement.taxon_measurement_id,
+        value: Number(quant_measurement.value),
+        measured_timestamp: quant_measurement.measured_timestamp || undefined,
+        measurement_comment: quant_measurement.measurement_comment || undefined
+      };
+    });
+  }
+
+  _formatCritterFamilyRelationships(animal_family: IAnimalRelationship[]): ICritterRelationships {
     let newFamily = undefined;
-    for (const f of animal.family) {
-      if (f.family_id === newFamilyIdPlaceholder) {
+    const families: ICritterFamily[] = [];
+    for (const fam of animal_family) {
+      if (fam.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };
-          this.families.families.push(newFamily);
+          families.push(newFamily);
         }
-        f.family_id = newFamily.family_id;
+        fam.family_id = newFamily.family_id;
       }
     }
 
-    this.families.parents = animal.family
-      .filter((a) => a.relationship === 'parent')
-      .map((a) => ({ family_id: a.family_id, parent_critter_id: this.critter_id }));
-    this.families.children = animal.family
-      .filter((a) => a.relationship === 'child')
-      .map((a) => ({ family_id: a.family_id, child_critter_id: this.critter_id }));
+    const parents = animal_family
+      .filter((parent) => parent.relationship === 'parent')
+      .map((parent_fam) => ({ family_id: parent_fam.family_id, parent_critter_id: this.critter_id }));
+
+    const children = animal_family
+      .filter((children) => children.relationship === 'child')
+      .map((children_fam) => ({ family_id: children_fam.family_id, child_critter_id: this.critter_id }));
+    //Currently not supporting siblings in the UI
+    return { parents, children, families };
+  }
+
+  constructor(animal: IAnimal) {
+    this.critter_id = v4();
+    this.taxon_id = animal.general.taxon_id;
+    this.taxon_name = animal.general.taxon_name;
+    this.animal_id = animal.general.animal_id;
+    const { captures, capture_locations } = this._formatCritterCaptures(animal.captures);
+    const { mortalities, mortalities_locations } = this._formatCritterMortalities(animal.mortality);
+
+    this.captures = captures;
+    this.mortalities = mortalities;
+    this.locations = [...capture_locations, ...mortalities_locations];
+
+    this.markings = this._formatCritterMarkings(animal.markings);
 
     this.measurements = {
-      qualitative: animal.measurements
-        .filter((m) => {
-          if (m.qualitative_option_id && m.value) {
-            console.log('Qualitative measurement must only contain option_id and no value.');
-            return false;
-          }
-          if (m.qualitative_option_id) {
-            return true;
-          }
-          return false;
-        })
-        .map((m) => {
-          return {
-            critter_id: this.critter_id,
-            taxon_measurement_id: m.taxon_measurement_id,
-            qualitative_option_id: m.qualitative_option_id,
-            measured_timestamp: m.measured_timestamp || undefined,
-            measurement_comment: m.measurement_comment || undefined
-          };
-        }),
-      quantitative: animal.measurements
-        .filter((m) => {
-          if (m.qualitative_option_id && m.value) {
-            console.log('Quantitative measurement must only contain a value and no option_id');
-            return false;
-          }
-          if (m.value != null) {
-            return true;
-          }
-          return false;
-        })
-        .map((m) => {
-          return {
-            critter_id: this.critter_id,
-            taxon_measurement_id: m.taxon_measurement_id,
-            value: m.value,
-            measured_timestamp: m.measured_timestamp || undefined,
-            measurement_comment: m.measurement_comment || undefined
-          };
-        })
+      qualitative: this._formatCritterQualitativeMeasurements(animal.measurements),
+      quantitative: this._formatCritterQuantitativeMeasurements(animal.measurements)
     };
+
+    const { parents, children, families } = this._formatCritterFamilyRelationships(animal.family);
+    this.families = { parents, children, families };
   }
 }

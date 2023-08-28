@@ -73,6 +73,7 @@ PUT.apiDoc = {
                 'end_date',
                 'biologist_first_name',
                 'biologist_last_name',
+                'survey_types',
                 'revision_count'
               ],
               properties: {
@@ -93,6 +94,13 @@ PUT.apiDoc = {
                 },
                 biologist_last_name: {
                   type: 'string'
+                },
+                survey_types: {
+                  type: 'array',
+                  items: {
+                    type: 'integer',
+                    minimum: 1
+                  }
                 },
                 revision_count: {
                   type: 'number'

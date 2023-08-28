@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel, FormGroup, Grid, Switch, Tab, Tabs } from '@mui/material';
+import { Box, FormControlLabel, FormGroup, Grid, Switch, Tab, Tabs } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
 import MapContainer from 'components/map/MapContainer';
@@ -7,9 +7,7 @@ import { LatLng } from 'leaflet';
 import { ChangeEvent, useState } from 'react';
 import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
 import { coerceZero, formatLabel } from 'utils/Utils';
-import { getAnimalFieldName, IAnimal } from '../animal';
-
-type ProjectionMode = 'wgs' | 'utm';
+import { getAnimalFieldName, IAnimal, ProjectionMode } from '../animal';
 
 export type LocationEntryFields<T> = {
   latitude: keyof T;
@@ -27,7 +25,6 @@ type LocationEntryFormProps<T> = {
   secondaryLocationFields?: LocationEntryFields<T>;
   otherPrimaryFields?: JSX.Element[];
   otherSecondaryFields?: JSX.Element[];
-  secondaryCheckboxLabel?: string;
 };
 
 const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
@@ -37,11 +34,9 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   primaryLocationFields,
   secondaryLocationFields,
   otherPrimaryFields,
-  otherSecondaryFields,
-  secondaryCheckboxLabel
+  otherSecondaryFields
 }: LocationEntryFormProps<T>) => {
   const { handleBlur, setFieldValue } = useFormikContext();
-  const [showSecondary, setShowSecondary] = useState(false); //Controls whether fields for the release event are shown or not.
   const [tabState, setTabState] = useState(0); //Controls whether we are on the Forms tab or the Map tab.
   const [placeSecondaryMode, setPlaceSecondary] = useState(false); //Controls whether left clicking on the map will place the capture or release marker.
 
@@ -53,46 +48,37 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
     setFieldValue(getAnimalFieldName<T>(name, fields.utm_easting, index), utm_coords[0]);
   };
 
+  const setLatLonFromUTM = (fields: LocationEntryFields<T> | undefined) => {
+    if (fields && (value[fields.latitude] || value[fields.longitude])) {
+      const utm_coords = getLatLngAsUtm(
+        value[fields.latitude] as unknown as number,
+        value[fields.longitude] as unknown as number
+      );
+      setFieldValue(getAnimalFieldName<T>(name, fields.utm_easting, index), utm_coords[0]);
+      setFieldValue(getAnimalFieldName<T>(name, fields.utm_northing, index), utm_coords[1]);
+    }
+  };
+
+  const setUTMFromLatLng = (fields: LocationEntryFields<T> | undefined) => {
+    if (fields && (value[fields.utm_northing] || value[fields.utm_easting])) {
+      const wgs_coords = getUtmAsLatLng(
+        value[fields.utm_northing] as unknown as number,
+        value[fields.utm_easting] as unknown as number
+      );
+      setFieldValue(getAnimalFieldName<T>(name, fields.latitude, index), wgs_coords[1]);
+      setFieldValue(getAnimalFieldName<T>(name, fields.longitude, index), wgs_coords[0]);
+    }
+  };
+
   const onProjectionModeSwitch = (e: ChangeEvent<HTMLInputElement>) => {
     //This gets called everytime the toggle element fires. We need to do a projection each time so that the new fields that get shown
     //will be in sync with the values from the ones that were just hidden.
     if (value.projection_mode === 'wgs') {
-      const utm_coords = getLatLngAsUtm(
-        value[primaryLocationFields.latitude] as unknown as number,
-        value[primaryLocationFields.longitude] as unknown as number
-      );
-      setFieldValue(getAnimalFieldName<T>(name, primaryLocationFields.utm_northing, index), utm_coords[1]);
-      setFieldValue(getAnimalFieldName<T>(name, primaryLocationFields.utm_easting, index), utm_coords[0]);
-
-      if (
-        secondaryLocationFields &&
-        (value[secondaryLocationFields.latitude] || value[secondaryLocationFields.longitude])
-      ) {
-        const utm_coords_release = getLatLngAsUtm(
-          coerceZero(value[secondaryLocationFields.latitude]),
-          coerceZero(value[secondaryLocationFields.longitude])
-        );
-        setFieldValue(getAnimalFieldName<T>(name, secondaryLocationFields.utm_northing, index), utm_coords_release[1]);
-        setFieldValue(getAnimalFieldName<T>(name, secondaryLocationFields.utm_easting, index), utm_coords_release[0]);
-      }
+      setLatLonFromUTM(primaryLocationFields);
+      setLatLonFromUTM(secondaryLocationFields);
     } else {
-      const wgs_coords = getUtmAsLatLng(
-        coerceZero(value[primaryLocationFields.utm_northing]),
-        coerceZero(value[primaryLocationFields.utm_easting])
-      );
-      setFieldValue(getAnimalFieldName<T>(name, primaryLocationFields.latitude, index), wgs_coords[1]);
-      setFieldValue(getAnimalFieldName<T>(name, primaryLocationFields.longitude, index), wgs_coords[0]);
-      if (
-        secondaryLocationFields &&
-        (value[secondaryLocationFields.utm_northing] || value[secondaryLocationFields.utm_easting])
-      ) {
-        const wgs_coords_release = getUtmAsLatLng(
-          coerceZero(value[secondaryLocationFields.utm_northing]),
-          coerceZero(value[secondaryLocationFields.utm_easting])
-        );
-        setFieldValue(getAnimalFieldName<T>(name, secondaryLocationFields.latitude, index), wgs_coords_release[1]);
-        setFieldValue(getAnimalFieldName<T>(name, secondaryLocationFields.longitude, index), wgs_coords_release[0]);
-      }
+      setUTMFromLatLng(primaryLocationFields);
+      setUTMFromLatLng(secondaryLocationFields);
     }
     setFieldValue(getAnimalFieldName<T>(name, 'projection_mode', index), e.target.checked ? 'utm' : 'wgs');
   };
@@ -212,14 +198,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           {renderLocationFields(primaryLocationFields)}
           {otherPrimaryFields}
           {secondaryLocationFields ? (
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox checked={showSecondary} onChange={() => setShowSecondary((s) => !s)} />}
-                label={secondaryCheckboxLabel}
-              />
-            </Grid>
-          ) : null}
-          {showSecondary && secondaryLocationFields ? (
             <>
               {renderLocationFields(secondaryLocationFields)}
               {otherSecondaryFields}

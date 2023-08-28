@@ -295,6 +295,11 @@ const CreateSurveyPage = () => {
                   summary=""
                   component={
                     <GeneralInformationForm
+                      type={
+                        codes?.type?.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
                       projectStartDate={projectData.project.start_date}
                       projectEndDate={projectData.project.end_date}
                     />

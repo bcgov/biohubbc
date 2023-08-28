@@ -1,6 +1,7 @@
-import { Button, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Form, useFormikContext } from 'formik';
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Critter, IAnimal } from './animal';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
@@ -9,21 +10,21 @@ import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
 
-interface IndividualAnimalFormProps {
-  getAnimalCount: (num: number) => void;
-}
-
 /**
  * Renders The 'Individual Animals' Form displayed in Survey view
  * Note: Lots of conditionally rendered sections.
  *
- * params {IndividualAnimalFormProps}
- * returns {*}
- */
+ * @params {IndividualAnimalFormProps}
+ * @returns {*}
+ *
+ **/
+
+interface IndividualAnimalFormProps {
+  getAnimalCount: (num: number) => void;
+}
 
 const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => {
   const { values } = useFormikContext<IAnimal>();
-  const [devShow, setDevShow] = useState(false);
 
   useEffect(() => {
     // placeholder for when the form handles multiple animals.
@@ -42,16 +43,7 @@ const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => 
       <MeasurementAnimalForm />
       <FamilyAnimalForm />
 
-      {/* Temp development testing code -> remove before deployed */}
-      {process.env.NODE_ENV === 'development' ? (
-        <Button onClick={() => setDevShow((d) => !d)}>Display Form Values (Only Dev)</Button>
-      ) : null}
-      {devShow ? (
-        <>
-          <pre>{JSON.stringify({ form_values: values }, null, 2)}</pre>
-          <pre>{JSON.stringify({ payload: new Critter(values) }, null, 2)}</pre>
-        </>
-      ) : null}
+      <FormikDevDebugger custom_payload={new Critter(values)} />
     </Form>
   );
 };

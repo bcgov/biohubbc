@@ -83,26 +83,13 @@ GET.apiDoc = {
               project: {
                 description: 'Basic project metadata',
                 type: 'object',
-                required: [
-                  'project_name',
-                  'project_programs',
-                  'project_types',
-                  'start_date',
-                  'end_date',
-                  'revision_count'
-                ],
+                required: ['project_name', 'project_programs', 'start_date', 'end_date', 'revision_count'],
                 nullable: true,
                 properties: {
                   project_name: {
                     type: 'string'
                   },
                   project_programs: {
-                    type: 'array',
-                    items: {
-                      type: 'number'
-                    }
-                  },
-                  project_types: {
                     type: 'array',
                     items: {
                       type: 'number'

@@ -25,6 +25,7 @@ const animal: IAnimal = {
       capture_coordinate_uncertainty: 10,
       capture_timestamp: new Date(),
       projection_mode: 'wgs',
+      show_release: false,
       release_latitude: 3,
       release_longitude: 3,
       release_utm_northing: 19429156.095,
