@@ -214,6 +214,10 @@ GET.apiDoc = {
                   partnerships: {
                     title: 'Survey partnerships',
                     type: 'object',
+                    required: [
+                      'indigenous_partnerships',
+                      'stakeholder_partnerships'
+                    ],
                     properties: {
                       indigenous_partnerships: {
                         type: 'array',

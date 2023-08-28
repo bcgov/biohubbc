@@ -108,7 +108,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql<{ id: number }>(sqlStatement);
-    const result = response?.rows;
+    const result = response.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project survey ids', [
@@ -139,7 +139,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project survey details data', [
@@ -171,7 +171,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetSpeciesData>(sqlStatement);
 
-    const result = response?.rows;
+    const result = response.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get survey species data', [
@@ -214,7 +214,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get survey purpose and methodology data', [
@@ -242,7 +242,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<ISurveyProprietorModel>(sqlStatement);
 
-    return response?.rows[0];
+    return response.rows[0];
   }
 
   /**
@@ -279,7 +279,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result) {
       return null;
@@ -307,7 +307,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     return new GetSurveyLocationData(result);
   }
@@ -391,7 +391,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetLatestSurveyOccurrenceSubmission>(sqlStatement);
 
-    const result = response?.rows[0] || null;
+    const result = response.rows[0] || null;
 
     return result;
   }
@@ -441,7 +441,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IOccurrenceSubmissionMessagesResponse>(sqlStatement);
 
-    if (!response?.rows) {
+    if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get occurrence submission messages', [
         'SurveyRepository->getOccurrenceSubmissionMessages',
         'response was null or undefined, expected response != null'
@@ -494,7 +494,7 @@ export class SurveyRepository extends BaseRepository {
     `;
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
+    const result = response.rows;
 
     return new GetAttachmentsData(result);
   }
@@ -535,7 +535,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
+    const result = response.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get attachments data', [
@@ -614,7 +614,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to insert survey data', [
@@ -648,7 +648,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert focal species data', [
@@ -682,7 +682,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert ancillary species data', [
@@ -714,7 +714,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert vantage codes', [
@@ -759,7 +759,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert survey proprietor data', [
@@ -1031,7 +1031,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
 
-    if (!response || response.rowCount !== 1) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert survey occurrence submission', [
         'ErrorRepository->insertSurveyOccurrenceSubmission',
         'rowCount was null or undefined, expected rowCount = 1'
@@ -1064,7 +1064,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
 
-    if (!response || response.rowCount !== 1) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to update survey occurrence submission', [
         'ErrorRepository->updateSurveyOccurrenceSubmission',
         'rowCount was null or undefined, expected rowCount = 1'
@@ -1092,7 +1092,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
 
-    if (!response || response.rowCount !== 1) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to delete survey occurrence submission', [
         'ErrorRepository->deleteOccurrenceSubmission',
         'rowCount was null or undefined, expected rowCount = 1'
@@ -1133,7 +1133,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
+    const result = response.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get survey Indigenous Partnerships data', [
@@ -1167,7 +1167,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
+    const result = response.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get survey Stakeholder Partnerships data', [
@@ -1204,7 +1204,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ survey_first_nation_partnership_id: number }>(queryBuilder);
 
-    if (!response || response.rowCount === 0) {
+    if (response.rowCount === 0) {
       throw new ApiExecuteSQLError('Failed to insert survey indigenous partnerships', [
         'ErrorRepository->insertIndigenousPartnerships',
         'rowCount was null or undefined, expected rowCount != 0'
@@ -1239,7 +1239,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ survey_stakeholder_partnership_id: number }>(queryBuilder);
 
-    if (!response || response.rowCount === 0) {
+    if (response.rowCount === 0) {
       throw new ApiExecuteSQLError('Failed to insert survey stakeholder partnerships', [
         'ErrorRepository->insertStakeholderPartnerships',
         'rowCount was null or undefined, expected rowCount != 0'

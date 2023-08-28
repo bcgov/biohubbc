@@ -180,6 +180,7 @@ PUT.apiDoc = {
             partnerships: {
               title: 'Survey partnerships',
               type: 'object',
+              required: [],
               properties: {
                 indigenous_partnerships: {
                   type: 'array',
