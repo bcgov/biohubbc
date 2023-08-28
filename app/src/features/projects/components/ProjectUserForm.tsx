@@ -18,6 +18,8 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { useEffect, useState } from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
+import { TransitionGroup } from 'react-transition-group';
+import Collapse from '@mui/material/Collapse';
 
 export const ProjectUserRoleYupSchema = yup.object().shape({
   participants: yup
@@ -53,6 +55,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   searchUserDataLoader.load();
 
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     props.users.forEach((user, index) => {
@@ -105,7 +108,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
         text = 'All team members must be assigned a role.';
       } else {
         if (selectedUsers.length > 0) {
-          title = 'Coordinator Role is Required';
+          title = 'A coordinator role is required';
         } else {
           title = 'Missing Team Member';
         }
@@ -188,6 +191,14 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             noOptionsText="No records found"
             options={filterSearchOptions(searchUserDataLoader.data, selectedUsers)}
             getOptionLabel={(option) => option.display_name}
+            inputValue={searchText}
+            onInputChange={(_, value, reason) => {
+              if (reason === 'reset') {
+                setSearchText('');
+              } else {
+                setSearchText(value);
+              }
+            }}
             onChange={(_, option) => {
               if (option) {
                 handleAddUser(option);
@@ -223,32 +234,37 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             }}
           />
         </Box>
-        {selectedUsers.length > 0 && (
-          <Box mt={2}>
+        {/* {selectedUsers.length > 0 && ( */}
+          
+          <Box>
             <Box
               sx={{
                 '& .userRoleItemContainer + .userRoleItemContainer': {
                   mt: 1
                 }
               }}>
-              {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
-                const error = rowItemError(index);
-                return (
-                  <UserRoleSelector
-                    index={index}
-                    user={user}
-                    roles={props.roles}
-                    error={error}
-                    selectedRole={getSelectedRole(index)}
-                    handleAdd={handleAddUserRole}
-                    handleRemove={handleRemoveUser}
-                    key={user.system_user_id}
-                  />
-                );
-              })}
+              <TransitionGroup>
+                {selectedUsers.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
+                  const error = rowItemError(index);
+                  return (
+                    <Collapse key={user.system_user_id}>
+                      <UserRoleSelector
+                        index={index}
+                        user={user}
+                        roles={props.roles}
+                        error={error}
+                        selectedRole={getSelectedRole(index)}
+                        handleAdd={handleAddUserRole}
+                        handleRemove={handleRemoveUser}
+                        key={user.system_user_id}
+                      />
+                    </Collapse>
+                  );
+                })}
+              </TransitionGroup>
             </Box>
           </Box>
-        )}
+        {/* )} */}
       </Box>
     </form>
   );
