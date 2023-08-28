@@ -53,6 +53,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   searchUserDataLoader.load();
 
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     props.users.forEach((user, index) => {
@@ -188,10 +189,19 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             noOptionsText="No records found"
             options={filterSearchOptions(searchUserDataLoader.data, selectedUsers)}
             getOptionLabel={(option) => option.display_name}
+            inputValue={searchText}
+            onInputChange={(_, value, reason) => {
+              if (reason === 'reset') {
+                setSearchText('');
+              } else {
+                setSearchText(value);
+              }
+            }}
             onChange={(_, option) => {
               if (option) {
                 handleAddUser(option);
               }
+              setSearchText('');
             }}
             renderInput={(params) => (
               <TextField
