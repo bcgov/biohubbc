@@ -25,10 +25,8 @@ export async function seed(knex: Knex): Promise<void> {
     await knex.raw(`
       ${insertProjectData()}
       ${insertProjectTypeData()}
-      ${insertProjectFirstNationData()}
       ${insertProjectIUCNData()}
       ${insertProjectParticipationData()}
-      ${insertProjectStakeholderData()}
       ${insertFundingData()}
       ${insertSurveyData()}
       ${insertSurveyPermitData()}
@@ -36,6 +34,8 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyFundingData()}
       ${insertSurveyProprietorData()}
       ${insertSurveyVantageData()}
+      ${insertSurveyFirstNationData()}
+      ${insertSurveyStakeholderData()}
       ${insertProjectProgramData()}
       `);
   }
@@ -278,24 +278,24 @@ const insertProjectTypeData = () => `
 `;
 
 /**
- * SQL to insert Project First Nation data
+ * SQL to insert Survey First Nation Partnership data
  *
  */
-const insertProjectFirstNationData = () => `
-  INSERT into project_first_nation
-    ( project_id, first_nations_id )
+const insertSurveyFirstNationData = () => `
+  INSERT into survey_first_nation_partnership
+    ( survey_id, first_nations_id )
   VALUES
     ( 1, 206 )
   ;
 `;
 
 /**
- * SQL to insert Project Stakeholder data
+ * SQL to insert Project Stakeholder Partnership data
  *
  */
-const insertProjectStakeholderData = () => `
-  INSERT into stakeholder_partnership
-    ( project_id, name )
+const insertSurveyStakeholderData = () => `
+  INSERT into survey_stakeholder_partnership
+    ( survey_id, name )
   VALUES
     ( 1, 'BC Hydro' )
   ;
