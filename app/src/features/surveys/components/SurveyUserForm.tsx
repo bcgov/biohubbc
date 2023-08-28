@@ -44,14 +44,18 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetSurveyParticipant)[]>([]);
 
   useEffect(() => {
-    if (props.users.length > 0) {
-      props.users.forEach((user, index) => {
-        selectedUsers.push(user);
-        setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
-        setFieldValue(`participants[${index}].survey_job_name`, (user as IGetSurveyParticipant).survey_job_name);
-      });
-    }
+    props.users.forEach((user, index) => {
+      selectedUsers.push(user);
+      setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
+      setFieldValue(`participants[${index}].display_name`, user.display_name);
+      setFieldValue(`participants[${index}].email`, user.email);
+      setFieldValue(`participants[${index}].agency`, user.agency);
+      setFieldValue(`participants[${index}].identity_source`, user.identity_source);
+      setFieldValue(`participants[${index}].system_user_id`, user.system_user_id);
+      setFieldValue(`participants[${index}].survey_job_name`, (user as IGetSurveyParticipant).survey_job_name);
+    });
 
+    setSelectedUsers(props.users);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.users]);
 
@@ -60,6 +64,10 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
 
     setFieldValue(`participants[${selectedUsers.length - 1}]`, {
       system_user_id: user.system_user_id,
+      display_name: user.display_name,
+      email: user.email,
+      agency: user.agency,
+      identity_source: user.identity_source,
       survey_job_name: ''
     });
     clearErrors();

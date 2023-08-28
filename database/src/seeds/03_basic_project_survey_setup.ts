@@ -63,6 +63,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyFundingData(surveyId)}
       ${insertSurveyProprietorData(surveyId)}
       ${insertSurveyVantageData(surveyId)}
+      ${insertSurveyParticipationData(surveyId)}
     `);
   }
 }
@@ -97,12 +98,12 @@ const insertProjectProgramData = (projectId: number) => `
   );
 `;
 
-const insertSurveyParticipationData = () => `
+const insertSurveyParticipationData = (surveyId: number) => `
   INSERT into survey_participation
     ( survey_id, system_user_id, survey_job_id )
   VALUES
     (
-      1,
+      ${surveyId},
       (
         SELECT COALESCE((
           SELECT
