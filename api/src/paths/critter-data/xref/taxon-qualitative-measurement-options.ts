@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../services/critterbase-service';
+import { critterbaseCommonLookupResponse } from '../../../utils/shared-api-docs';
 
 // TODO: Put this all into an existing endpoint
 
@@ -51,17 +52,10 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Lookup response object',
+      description: 'Allowed values for qualitative measurement',
       content: {
         'application/json': {
-          schema: {
-            title: 'Taxon measurements',
-            type: 'array',
-            items: {
-              title: 'Measurement type',
-              type: 'object'
-            }
-          }
+          schema: critterbaseCommonLookupResponse
         }
       }
     },

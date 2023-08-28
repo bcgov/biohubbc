@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../services/critterbase-service';
+import { critterbaseCommonLookupResponse } from '../../../utils/shared-api-docs';
 
 // TODO: Put this all into an existing endpoint
 
@@ -26,7 +27,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Gets allowed values a particular taxons body locations in Critterbase.',
+  description: 'Gets allowed values for a particular taxons body locations in Critterbase.',
   tags: ['critterbase'],
   security: [
     {
@@ -44,17 +45,10 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Lookup response object',
+      description: 'Taxon marking body location response object',
       content: {
         'application/json': {
-          schema: {
-            title: 'Taxon measurements',
-            type: 'array',
-            items: {
-              title: 'Measurement type',
-              type: 'object'
-            }
-          }
+          schema: critterbaseCommonLookupResponse
         }
       }
     },
