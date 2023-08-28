@@ -144,10 +144,10 @@ export const CbRoutes = {
 
   // taxon xrefs
   ['taxon-measurements']: `${xref}/taxon-measurements`,
-  taxon_qualitative_measurements: `${xref}/taxon-qualitative-measurements`,
+  ['taxon_qualitative_measurements']: `${xref}/taxon-qualitative-measurements`,
   ['taxon-qualitative-measurement-options']: `${xref}/taxon-qualitative-measurement-options`,
-  taxon_quantitative_measurements: `${xref}/taxon-quantitative-measurements`,
-  taxon_collection_categories: `${xref}/taxon-collection-categories`,
+  ['taxon-quantitative-measurements']: `${xref}/taxon-quantitative-measurements`,
+  ['taxon-collection-categories']: `${xref}/taxon-collection-categories`,
   ['taxon-marking-body-locations']: `${xref}/taxon-marking-body-locations`
 } as const;
 
