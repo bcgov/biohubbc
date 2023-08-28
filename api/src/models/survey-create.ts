@@ -40,6 +40,7 @@ export class PostSurveyDetailsData {
   end_date: string;
   biologist_first_name: string;
   biologist_last_name: string;
+  survey_types: number[];
 
   constructor(obj?: any) {
     this.survey_name = obj?.survey_name || null;
@@ -47,6 +48,7 @@ export class PostSurveyDetailsData {
     this.end_date = obj?.end_date || null;
     this.biologist_first_name = obj?.biologist_first_name || null;
     this.biologist_last_name = obj?.biologist_last_name || null;
+    this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
   }
 }
 

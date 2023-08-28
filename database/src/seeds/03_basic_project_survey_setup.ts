@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
@@ -14,32 +15,64 @@ const PROJECT_SEEDER_USER_IDENTIFIER = process.env.PROJECT_SEEDER_USER_IDENTIFIE
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`
     SET SCHEMA '${DB_SCHEMA}';
-    SET SEARCH_PATH = ${DB_SCHEMA}, ${DB_SCHEMA_DAPI_V1};
+    SET SEARCH_PATH=${DB_SCHEMA},${DB_SCHEMA_DAPI_V1};
   `);
 
-  const response = await knex.raw(`
+  // Check if at least 1 funding sources already exists
+  const response1 = await knex.raw(`
+    ${checkAnyFundingSourceExists()}
+  `);
+
+  if (!response1.rows.length) {
+    // Insert funding source data
+    await knex.raw(`
+      ${insertFundingData()}
+    `);
+  }
+
+  // Check if at least 1 project already exists
+  const response2 = await knex.raw(`
     ${checkAnyProjectExists()}
   `);
 
-  if (!response?.rows?.[0]) {
-    await knex.raw(`
+  if (!response2.rows.length) {
+    // Insert project data
+    const response3 = await knex.raw(`
       ${insertProjectData()}
-      ${insertProjectTypeData()}
-      ${insertProjectFirstNationData()}
-      ${insertProjectIUCNData()}
-      ${insertProjectParticipationData()}
-      ${insertProjectStakeholderData()}
-      ${insertFundingData()}
-      ${insertSurveyData()}
-      ${insertSurveyPermitData()}
-      ${insertSurveySpeciesData()}
-      ${insertSurveyFundingData()}
-      ${insertSurveyProprietorData()}
-      ${insertSurveyVantageData()}
-      ${insertProjectProgramData()}
-      `);
+    `);
+    const projectId = response3.rows[0].project_id;
+    await knex.raw(`
+      ${insertProjectFirstNationData(projectId)}
+      ${insertProjectFirstNationData(projectId)}
+      ${insertProjectIUCNData(projectId)}
+      ${insertProjectParticipationData(projectId)}
+      ${insertProjectStakeholderData(projectId)}
+      ${insertProjectProgramData(projectId)}
+    `);
+
+    // Insert survey data
+    const response4 = await knex.raw(`
+      ${insertSurveyData(projectId)}
+    `);
+    const surveyId = response4.rows[0].survey_id;
+    await knex.raw(`
+      ${insertSurveyTypeData(surveyId)}
+      ${insertSurveyPermitData(surveyId)}
+      ${insertSurveyFocalSpeciesData(surveyId)}
+      ${insertSurveyAncillarySpeciesData(surveyId)}
+      ${insertSurveyFundingData(surveyId)}
+      ${insertSurveyProprietorData(surveyId)}
+      ${insertSurveyVantageData(surveyId)}
+    `);
   }
 }
+
+const checkAnyFundingSourceExists = () => `
+  SELECT
+    funding_source_id
+  FROM
+    funding_source;
+`;
 
 const checkAnyProjectExists = () => `
   SELECT
@@ -52,14 +85,15 @@ const checkAnyProjectExists = () => `
  * SQL to insert Project Program data
  *
  */
-const insertProjectProgramData = () => `
+const insertProjectProgramData = (projectId: number) => `
   INSERT into project_program
     (
       project_id,
       program_id
     )
   VALUES (
-    1, 3
+    ${projectId}, 
+    (select program_id from program order by random() limit 1)
   );
 `;
 
@@ -67,14 +101,15 @@ const insertProjectProgramData = () => `
  * SQL to insert Survey Vantage data
  *
  */
-const insertSurveyVantageData = () => `
+const insertSurveyVantageData = (surveyId: number) => `
   INSERT into survey_vantage
     (
       survey_id,
       vantage_id
     )
   VALUES (
-    1, 1
+    ${surveyId},
+    (select vantage_id from vantage order by random() limit 1)
   );
 `;
 
@@ -82,7 +117,7 @@ const insertSurveyVantageData = () => `
  * SQL to insert Survey Proprietor data
  *
  */
-const insertSurveyProprietorData = () => `
+const insertSurveyProprietorData = (surveyId: number) => `
   INSERT into survey_proprietor
     (
       survey_id,
@@ -92,7 +127,11 @@ const insertSurveyProprietorData = () => `
       disa_required
     )
   VALUES (
-    1, 4, 'Category Rationale', 'Proprietor Name', 'Y'
+    ${surveyId},
+    (select proprietor_type_id from proprietor_type where is_first_nation is false order by random() limit 1),
+    $$${faker.company.catchPhraseDescriptor()}$$,
+    $$${faker.company.name()}$$,
+    'Y'
   );
 `;
 
@@ -104,9 +143,9 @@ const insertFundingData = () => `
     record_effective_date
   )
   VALUES (
-    'Funding Source Name',
-    'Funding Source Description',
-    '2021-01-01'
+    $$${faker.company.name()}$$,
+    $$${faker.lorem.lines(2)}$$,
+    $$${faker.date.between({ from: '2000-01-01T00:00:00-08:00', to: '2020-01-01T00:00:00-08:00' }).toISOString()}$$
   );
 `;
 
@@ -114,7 +153,7 @@ const insertFundingData = () => `
  * SQL to insert Survey funding data
  *
  */
-const insertSurveyFundingData = () => `
+const insertSurveyFundingData = (surveyId: number) => `
   INSERT into survey_funding_source
     (
       survey_id,
@@ -122,7 +161,9 @@ const insertSurveyFundingData = () => `
       amount
     )
   VALUES (
-    1, 1, 1000
+    ${surveyId},
+    (select funding_source_id from funding_source order by random() limit 1),
+    ${faker.commerce.price({ min: 100, max: 99999999, dec: 0 })}
   );
 `;
 
@@ -130,7 +171,8 @@ const insertSurveyFundingData = () => `
  * SQL to insert Survey study species data
  *
  */
-const insertSurveySpeciesData = () => `
+const focalTaxonIdOptions = [2065, 2066, 2067, 2068];
+const insertSurveyFocalSpeciesData = (surveyId: number) => `
   INSERT into study_species
     (
       survey_id,
@@ -138,7 +180,23 @@ const insertSurveySpeciesData = () => `
       is_focal
     )
   VALUES (
-    1, 2065, 'Y'
+    ${surveyId},
+    ${focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)]},
+    'Y'
+  );
+`;
+const ancillaryTaxonIdOptions = [1666, 1667, 1668, 1669];
+const insertSurveyAncillarySpeciesData = (surveyId: number) => `
+  INSERT into study_species
+    (
+      survey_id,
+      wldtaxonomic_units_id,
+      is_focal
+    )
+  VALUES (
+    ${surveyId},
+    ${ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)]},
+    'N'
   );
 `;
 
@@ -146,7 +204,7 @@ const insertSurveySpeciesData = () => `
  * SQL to insert Survey permit data
  *
  */
-const insertSurveyPermitData = () => `
+const insertSurveyPermitData = (surveyId: number) => `
   INSERT into permit
     (
       survey_id,
@@ -154,7 +212,9 @@ const insertSurveyPermitData = () => `
       type
     )
   VALUES (
-    1, 1234, 'Park Use Permit'
+    ${surveyId},
+    $$${faker.number.int({ min: 10000, max: 999999 })}$$,
+    'Park Use Permit'
   );
 `;
 
@@ -162,12 +222,12 @@ const insertSurveyPermitData = () => `
  * SQL to insert Survey data
  *
  */
-const insertSurveyData = () => `
+const insertSurveyData = (projectId: number) => `
   INSERT into survey
     (
       project_id,
-      field_method_id,
       name,
+      field_method_id,
       additional_details,
       start_date,
       end_date,
@@ -180,15 +240,15 @@ const insertSurveyData = () => `
       intended_outcome_id
     )
   VALUES (
-    1,
-    12,
-    'Survey Name',
-    'Additional Details',
-    '2023-01-02',
-    '2023-01-30',
-    'First Name',
-    'Last Name',
-    'Survey Area Name',
+    ${projectId},
+    'Seed Survey',
+    (select field_method_id from field_method order by random() limit 1),
+    $$${faker.lorem.sentences(2)}$$,
+    $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
+    $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,
+    $$${faker.person.firstName()}$$,
+    $$${faker.person.lastName()}$$,
+    $$${faker.lorem.words(6)}$$,
     'POLYGON ((-121.904297 50.930738, -121.904297 51.971346, -120.19043 51.971346, -120.19043 50.930738, -121.904297 50.930738))',
     '[
       {
@@ -223,21 +283,26 @@ const insertSurveyData = () => `
         "properties": {}
       }
     ]',
-    1,
-    1
-  );
+    (select ecological_season_id from ecological_season order by random() limit 1),
+    (select intended_outcome_id from intended_outcome order by random() limit 1)
+  )
+  RETURNING survey_id;
 `;
 
 /**
  * SQL to insert Project participation data
  *
  */
-const insertProjectParticipationData = () => `
+const insertProjectParticipationData = (projectId: number) => `
   INSERT into project_participation
-    ( project_id, system_user_id, project_role_id )
+    ( 
+      project_id,
+      system_user_id,
+      project_role_id
+    )
   VALUES
     (
-      1,
+      ${projectId},
       (
         SELECT COALESCE((
           SELECT
@@ -257,11 +322,17 @@ const insertProjectParticipationData = () => `
  * SQL to insert Project iucn data
  *
  */
-const insertProjectIUCNData = () => `
+const insertProjectIUCNData = (projectId: number) => `
   INSERT into project_iucn_action_classification
-    ( project_id, iucn_conservation_action_level_3_subclassification_id )
+    (
+      project_id,
+      iucn_conservation_action_level_3_subclassification_id
+    )
   VALUES
-    ( 1, 34 )
+    (
+      ${projectId},
+      (select iucn_conservation_action_level_3_subclassification_id from iucn_conservation_action_level_3_subclassification order by random() limit 1)
+    )
   ;
 `;
 
@@ -269,11 +340,17 @@ const insertProjectIUCNData = () => `
  * SQL to insert Project Type data
  *
  */
-const insertProjectTypeData = () => `
-  INSERT into project_type
-    ( project_id, type_id )
+const insertSurveyTypeData = (surveyId: number) => `
+  INSERT into survey_type
+    (
+      survey_id,
+      type_id
+    )
   VALUES
-    ( 1, 5 )
+    (
+      ${surveyId}, 
+      (SELECT type_id from type order by random() limit 1)
+    )
   ;
 `;
 
@@ -281,11 +358,17 @@ const insertProjectTypeData = () => `
  * SQL to insert Project First Nation data
  *
  */
-const insertProjectFirstNationData = () => `
+const insertProjectFirstNationData = (projectId: number) => `
   INSERT into project_first_nation
-    ( project_id, first_nations_id )
+    (
+      project_id,
+      first_nations_id
+    )
   VALUES
-    ( 1, 206 )
+    (
+      ${projectId},
+      (SELECT first_nations_id from first_nations order by random() limit 1)
+    )
   ;
 `;
 
@@ -293,11 +376,17 @@ const insertProjectFirstNationData = () => `
  * SQL to insert Project Stakeholder data
  *
  */
-const insertProjectStakeholderData = () => `
+const insertProjectStakeholderData = (projectId: number) => `
   INSERT into stakeholder_partnership
-    ( project_id, name )
+    (
+      project_id,
+      name
+    )
   VALUES
-    ( 1, 'BC Hydro' )
+    (
+      ${projectId},
+      (select name from agency order by random() limit 1)
+    )
   ;
 `;
 
@@ -322,15 +411,15 @@ const insertProjectData = () => `
       geojson
     )
   VALUES (
-    'Default Project',
-    'Objectives',
-    'Location Description',
-    '2023-01-01',
-    '2023-01-31',
-    'First Name',
-    'Last Name',
-    'EMAIL@address.com',
-    'A Rocha Canada',
+    'Seed Project',
+    $$${faker.lorem.sentences(2)}$$,
+    $$${faker.lorem.sentences(2)}$$,
+    $$${faker.date.between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' }).toISOString()}$$,
+    $$${faker.date.between({ from: '2025-01-01T00:00:00-08:00', to: '2030-01-01T00:00:00-08:00' }).toISOString()}$$,
+    $$${faker.person.firstName()}$$,
+    $$${faker.person.lastName()}$$,
+    $$${faker.internet.email()}$$,
+    $$${faker.company.name()}$$,
     'Y',
     'POLYGON ((-121.904297 50.930738, -121.904297 51.971346, -120.19043 51.971346, -120.19043 50.930738, -121.904297 50.930738))',
     '[
@@ -366,5 +455,6 @@ const insertProjectData = () => `
         "properties": {}
       }
     ]'
-  );
+  )
+  RETURNING project_id;
 `;

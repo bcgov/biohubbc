@@ -331,7 +331,7 @@ export class EmlService extends DBService {
 
         // Build EML->Dataset->Project->AdditionalMetadata field
         .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectData))
-        .withAdditionalMetadata(this._getSurveyAdditionalMetadata(surveysData))
+        .withAdditionalMetadata(await this._getSurveyAdditionalMetadata(surveysData))
 
         // Build EML->Dataset->Project->RelatedProject field
         .withRelatedProjects(await this._buildAllSurveyEmlProjectSections(surveysData))
@@ -374,7 +374,7 @@ export class EmlService extends DBService {
 
         // Build EML->Dataset->Project->AdditionalMetadata field
         .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectData))
-        .withAdditionalMetadata(this._getSurveyAdditionalMetadata([surveyData]))
+        .withAdditionalMetadata(await this._getSurveyAdditionalMetadata([surveyData]))
 
         // Build EML->Dataset->Project->RelatedProject field//
         .withRelatedProjects([this._buildProjectEmlProjectSection(projectData)])
@@ -532,8 +532,9 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): AdditionalMetadata[] {
+  async _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): Promise<AdditionalMetadata[]> {
     const additionalMetadata: AdditionalMetadata[] = [];
+    const codes = await this.codes();
 
     _surveysData.forEach((item) => {
       // add this metadata field so biohub is aware if EML is a project or survey
@@ -545,6 +546,23 @@ export class EmlService extends DBService {
           }
         }
       });
+
+      if (item.survey_details.survey_types.length) {
+        const names = codes.type
+          .filter((code) => item.survey_details.survey_types.includes(code.id))
+          .map((code) => code.name);
+
+        additionalMetadata.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            surveyTypes: {
+              surveyType: names.map((item) => {
+                return { name: item };
+              })
+            }
+          }
+        });
+      }
     });
 
     return additionalMetadata;
@@ -569,23 +587,6 @@ export class EmlService extends DBService {
             projectProgram: projectData.project.project_programs.map(
               (item) => codes.program.find((code) => code.id === item)?.name
             )
-          }
-        }
-      });
-    }
-
-    if (projectData.project.project_types.length) {
-      const names = codes.type
-        .filter((code) => projectData.project.project_types.includes(code.id))
-        .map((code) => code.name);
-
-      additionalMetadata.push({
-        describes: projectData.project.uuid,
-        metadata: {
-          projectActivities: {
-            projectActivity: names.map((item) => {
-              return { name: item };
-            })
           }
         }
       });
