@@ -30,7 +30,6 @@ const useLookupApi = (axios: AxiosInstance) => {
   }: SelectOptionsProps): Promise<Array<ICbSelectRows | string>> => {
     const _param = param ? `/${param}` : ``;
     const _query = query ? `&${query}` : ``;
-
     const { data } = await axios.get(`/api/critter-data/${route}${_param}?format=asSelect${_query}`);
 
     return data;
