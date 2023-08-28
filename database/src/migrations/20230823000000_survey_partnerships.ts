@@ -11,25 +11,10 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
 
   ----------------------------------------------------------------------------------------
-  -- Remove old view
-  ----------------------------------------------------------------------------------------
-
-  SET search_path=biohub_dapi_v1;
-  DROP VIEW biohub_dapi_v1.stakeholder_partnership;
-  DROP VIEW biohub_dapi_v1.project_first_nation;
-
-  SET search_path=biohub;
-
-  ----------------------------------------------------------------------------------------
-  -- Remove old 'stakeholder_partnership' and 'survey_first_nation_partnership' tables
-  ----------------------------------------------------------------------------------------
-
-  DROP TABLE stakeholder_partnership;
-  DROP TABLE project_first_nation;
-
-  ----------------------------------------------------------------------------------------
   -- Create new survey_stakeholder_partnership table
   ----------------------------------------------------------------------------------------
+
+  SET search_path=biohub;
 
   CREATE TABLE survey_stakeholder_partnership(
       survey_stakeholder_partnership_id   integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
@@ -126,7 +111,84 @@ export async function up(knex: Knex): Promise<void> {
   create trigger journal_observation after insert or update or delete on survey_stakeholder_partnership for each row execute procedure tr_journal_trigger();
   create trigger audit_observation before insert or update or delete on survey_first_nation_partnership for each row execute procedure tr_audit_trigger();
   create trigger journal_observation after insert or update or delete on survey_first_nation_partnership for each row execute procedure tr_journal_trigger();
-  
+
+
+  ----------------------------------------------------------------------------------------
+  -- Migrate existing data to new tables
+  ----------------------------------------------------------------------------------------
+
+  insert into survey_first_nation_partnership (
+    first_nations_id,
+    survey_id,
+    create_date,
+    create_user,
+    update_date,
+    update_user,
+    revision_count
+  )(
+    select
+      fn.first_nations_id,
+      s.survey_id,
+      fn.create_date,
+      fn.create_user,
+      null as update_date,
+      null as update_user,
+      0 as revision_count
+    FROM
+      project_first_nation fn
+    LEFT JOIN
+      survey s
+    ON
+      fn.project_id = s.project_id
+    where
+      survey_id is not null
+  );
+
+  insert into survey_stakeholder_partnership (
+    "name",
+    survey_id,
+    create_date,
+    create_user,
+    update_date,
+    update_user,
+    revision_count
+  )(
+    select
+      sp."name",
+      s.survey_id,
+      sp.create_date,
+      sp.create_user,
+      null as update_date,
+      null as update_user,
+      0 as revision_count
+    FROM
+      stakeholder_partnership sp
+    LEFT JOIN
+      survey s
+    ON
+      sp.project_id = s.project_id
+    where
+      survey_id is not null
+  );
+
+
+  ----------------------------------------------------------------------------------------
+  -- Remove old views
+  ----------------------------------------------------------------------------------------
+
+  SET search_path=biohub_dapi_v1;
+  DROP VIEW biohub_dapi_v1.stakeholder_partnership;
+  DROP VIEW biohub_dapi_v1.project_first_nation;
+
+  SET search_path=biohub;
+
+  ----------------------------------------------------------------------------------------
+  -- Remove old 'stakeholder_partnership' and 'survey_first_nation_partnership' tables
+  ----------------------------------------------------------------------------------------
+
+  DROP TABLE stakeholder_partnership;
+  DROP TABLE project_first_nation;
+
   ----------------------------------------------------------------------------------------
   -- Create views
   ----------------------------------------------------------------------------------------
@@ -140,7 +202,6 @@ export async function up(knex: Knex): Promise<void> {
   ----------------------------------------------------------------------------------------
   -- Update api_delete_survey procedure
   ----------------------------------------------------------------------------------------
-
 
   set search_path=biohub;
 
@@ -223,7 +284,68 @@ export async function up(knex: Knex): Promise<void> {
           raise;
       end;
    $procedure$;
-`);
+
+
+   ----------------------------------------------------------------------------------------
+   -- Update api_delete_project procedure
+   ----------------------------------------------------------------------------------------
+ 
+   CREATE OR REPLACE PROCEDURE api_delete_project(p_project_id integer)
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    AS $procedure$
+    -- *******************************************************************
+    -- Procedure: api_delete_project
+    -- Purpose: deletes a project and dependencies
+    --
+    -- MODIFICATION HISTORY
+    -- Person           Date        Comments
+    -- ---------------- ----------- --------------------------------------
+    -- charlie.garrettjones@quartech.com
+    --                  2021-04-19  initial release
+    -- charlie.garrettjones@quartech.com
+    --                  2021-06-21  added delete survey
+    -- charlie.garrettjones@quartech.com
+    --                  2022-09-07  changes to permit model
+    -- charlie.garrettjones@quartech.com
+    --                  2022-12-20  delete security
+    -- charlie.garrettjones@quartech.com
+    --                  2023-03-14  1.7.0 model changes
+    -- alfred.rosenthal@quartech.com
+    --                  2023-07-26 removing climate associations, delete project regions, programs, grouping
+    -- curtis.upshall@quartech.com
+    --                  2023-08-28 partnerships
+    -- *******************************************************************
+    declare
+        _survey_id survey.survey_id%type;
+      begin
+        for _survey_id in (select survey_id from survey where project_id = p_project_id) loop
+          call api_delete_survey(_survey_id);
+        end loop;
+    
+        delete from survey where project_id = p_project_id;
+        delete from project_type where project_id = p_project_id;
+        delete from project_management_actions where project_id = p_project_id;
+        delete from project_funding_source where project_id = p_project_id;
+        delete from project_iucn_action_classification where project_id = p_project_id;
+        delete from project_attachment_publish where project_attachment_id in (select project_attachment_id from project_attachment where project_id = p_project_id);
+        delete from project_attachment where project_id = p_project_id;
+        delete from project_report_author where project_report_attachment_id in (select project_report_attachment_id from project_report_attachment where project_id = p_project_id);
+        delete from project_report_publish where project_report_attachment_id in (select project_report_attachment_id from project_report_attachment where project_id = p_project_id);
+        delete from project_report_attachment where project_id = p_project_id;
+        delete from project_participation where project_id = p_project_id;
+        delete from project_metadata_publish where project_id = p_project_id;
+        delete from project_region where project_id = p_project_id;
+        delete from project_program where project_id = p_project_id;
+        delete from grouping_project where project_id = p_project_id;
+        delete from project where project_id = p_project_id;
+    
+    exception
+      when others THEN
+        raise;    
+    end;
+    $procedure$;
+  `);
 }
 
 export async function down(knex: Knex): Promise<void> {
