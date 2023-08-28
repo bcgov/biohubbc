@@ -22,21 +22,6 @@ const project_programs: IMultiAutocompleteFieldOption[] = [
   }
 ];
 
-const options: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 1,
-    label: 'activity 1'
-  },
-  {
-    value: 2,
-    label: 'activity 2'
-  },
-  {
-    value: 3,
-    label: 'activity 3'
-  }
-];
-
 describe('ProjectDetailsForm', () => {
   it('renders correctly with default empty values', async () => {
     const { getByLabelText } = render(
@@ -46,7 +31,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm program={project_programs} type={options} />}
+        {() => <ProjectDetailsForm program={project_programs} />}
       </Formik>
     );
 
@@ -60,7 +45,6 @@ describe('ProjectDetailsForm', () => {
       project: {
         project_name: 'name 1',
         project_programs: [2],
-        project_types: [2, 3],
         start_date: '2021-03-14',
         end_date: '2021-04-14'
       }
@@ -73,7 +57,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm program={project_programs} type={options} />}
+        {() => <ProjectDetailsForm program={project_programs} />}
       </Formik>
     );
 

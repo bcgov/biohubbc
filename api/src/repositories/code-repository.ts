@@ -20,7 +20,6 @@ export const IAllCodeSets = z.object({
   investment_action_category: CodeSet(z.object({ agency_id: z.number() }).shape),
   type: CodeSet(),
   program: CodeSet(),
-  region: CodeSet(),
   proprietor_type: CodeSet(z.object({ id: z.number(), name: z.string(), is_first_nation: z.boolean() }).shape),
   iucn_conservation_action_level_1_classification: CodeSet(),
   iucn_conservation_action_level_2_subclassification: CodeSet(
@@ -31,7 +30,6 @@ export const IAllCodeSets = z.object({
   ),
   system_roles: CodeSet(),
   project_roles: CodeSet(),
-  regional_offices: CodeSet(),
   administrative_activity_status_type: CodeSet(),
   field_methods: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   ecological_seasons: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),

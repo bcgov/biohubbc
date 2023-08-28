@@ -28,7 +28,6 @@ export const ProjectData = z.object({
   uuid: z.string(),
   project_name: z.string(),
   project_programs: z.array(z.number()),
-  project_types: z.array(z.number()),
   start_date: z.string(),
   end_date: z.string().nullable(),
   comments: z.string().nullable(),
@@ -43,7 +42,6 @@ export const ProjectListData = z.object({
   project_name: z.string(),
   coordinator_agency: z.string(),
   project_programs: z.array(z.number()).default([]),
-  project_types: z.array(z.number()).default([]),
   regions: z.array(z.string()).default([]),
   start_date: z.string(),
   end_date: z.string().nullable().optional()

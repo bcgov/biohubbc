@@ -25,11 +25,6 @@ const GeneralInformation = () => {
   const codes = codesContext.codesDataLoader.data;
   const projectData = projectContext.projectDataLoader.data.projectData;
 
-  const projectTypes =
-    codes.type
-      .filter((code) => projectData.project.project_types.includes(code.id))
-      .map((code) => code.name)
-      .join(', ') || '';
   const projectPrograms =
     codes.program
       .filter((code) => projectData.project.project_programs.includes(code.id))
@@ -65,12 +60,6 @@ const GeneralInformation = () => {
               </>
             )}
           </Typography>
-        </Grid>
-        <Grid item sm={12}>
-          <Typography component="dt" color="textSecondary" variant="subtitle2">
-            Types
-          </Typography>
-          <Typography component="dd">{projectTypes ? <>{projectTypes}</> : 'No Types'}</Typography>
         </Grid>
       </Grid>
     </Box>
