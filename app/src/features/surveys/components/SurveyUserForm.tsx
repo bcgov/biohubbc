@@ -1,6 +1,7 @@
 import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Autocomplete, Box, CircularProgress, TextField, Typography } from '@mui/material';
+import Collapse from '@mui/material/Collapse';
 import AlertBar from 'components/alert/AlertBar';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
@@ -11,6 +12,7 @@ import { ICode } from 'interfaces/useCodesApi.interface';
 import { ICreateSurveyRequest, IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { useEffect, useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import { alphabetizeObjects } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
@@ -194,18 +196,18 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           }}
         />
       </Box>
-      <Box component="fieldset" mt={4}>
-        {selectedUsers.length > 0 && (
-          <Box mt={2}>
-            <Box
-              sx={{
-                '& .userRoleItemContainer + .userRoleItemContainer': {
-                  mt: 1
-                }
-              }}>
-              {selectedUsers.map((user: ISystemUser | IGetSurveyParticipant, index: number) => {
-                const error = rowItemError(index);
-                return (
+      <Box>
+        <Box
+          sx={{
+            '& .userRoleItemContainer + .userRoleItemContainer': {
+              mt: 1
+            }
+          }}>
+          <TransitionGroup>
+            {selectedUsers.map((user: ISystemUser | IGetSurveyParticipant, index: number) => {
+              const error = rowItemError(index);
+              return (
+                <Collapse key={user.system_user_id}>
                   <UserRoleSelector
                     index={index}
                     user={user}
@@ -216,11 +218,11 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
                     handleRemove={handleRemoveUser}
                     key={user.system_user_id}
                   />
-                );
-              })}
-            </Box>
-          </Box>
-        )}
+                </Collapse>
+              );
+            })}
+          </TransitionGroup>
+        </Box>
       </Box>
     </form>
   );
