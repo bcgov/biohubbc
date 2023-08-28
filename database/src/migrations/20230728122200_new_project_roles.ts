@@ -89,8 +89,8 @@ export async function up(knex: Knex): Promise<void> {
     CREATE UNIQUE INDEX project_permission_nuk1 ON project_permission(name, (record_end_date is NULL)) where record_end_date is null;
 
     -- Add indexes on foreign key columns
-    CREATE UNIQUE INDEX project_role_permission_idx1 ON project_role_permission(project_permission_id);
-    CREATE UNIQUE INDEX project_role_permission_idx2 ON project_role_permission(project_role_id);
+    CREATE INDEX project_role_permission_idx1 ON project_role_permission(project_permission_id);
+    CREATE INDEX project_role_permission_idx2 ON project_role_permission(project_role_id);
 
     -------------------------------------------------------------------------
     -- End date old roles

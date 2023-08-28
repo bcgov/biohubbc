@@ -179,8 +179,7 @@ export class ProjectRepository extends BaseRepository {
         p.update_date,
         p.update_user,
         p.revision_count,
-        pp.project_programs,
-        pa.project_types
+        pp.project_programs
       FROM
         project p
       LEFT JOIN (
@@ -189,12 +188,6 @@ export class ProjectRepository extends BaseRepository {
         WHERE p.program_id = pp.program_id
         GROUP BY pp.project_id
       ) as pp on pp.project_id = p.project_id
-      LEFT JOIN (
-        SELECT array_remove(array_agg(pt.type_id), NULL) as project_types, p.project_id
-        FROM project p
-        LEFT JOIN project_type pt on p.project_id = pt.project_id
-        GROUP BY p.project_id
-      ) as pa on pa.project_id = p.project_id
       WHERE
         p.project_id = ${projectId};
     `;
@@ -490,33 +483,6 @@ export class ProjectRepository extends BaseRepository {
     return result.id;
   }
 
-  async insertType(typeId: number, projectId: number): Promise<number> {
-    const sqlStatement = SQL`
-      INSERT INTO project_type (
-        type_id,
-        project_id
-      ) VALUES (
-        ${typeId},
-        ${projectId}
-      )
-      RETURNING
-        project_type_id as id;
-    `;
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = response?.rows?.[0];
-
-    if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert project type data', [
-        'ProjectRepository->insertType',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result.id;
-  }
-
   /**
    * Links a given project with a list of given programs.
    * This insert assumes previous records for a project have been removed first
@@ -670,17 +636,6 @@ export class ProjectRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
-  }
-
-  async deleteTypeData(projectId: number): Promise<void> {
-    const sqlDeleteStatement = SQL`
-      DELETE FROM
-        project_type
-      WHERE
-        project_id = ${projectId};
-    `;
-
-    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
   }
 
   async deleteProject(projectId: number): Promise<void> {

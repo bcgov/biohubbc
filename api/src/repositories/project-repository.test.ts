@@ -298,7 +298,7 @@ describe('ProjectRepository', () => {
 
       const input = ({
         project: {
-          type: 1,
+          project_programs: [1],
           name: 'name',
           start_date: 'start_date',
           end_date: 'end_date',
@@ -329,7 +329,7 @@ describe('ProjectRepository', () => {
 
       const input = ({
         project: {
-          type: 1,
+          project_programs: [1],
           name: 'name',
           start_date: 'start_date',
           end_date: 'end_date',
@@ -360,7 +360,7 @@ describe('ProjectRepository', () => {
 
       const input = ({
         project: {
-          type: 1,
+          project_programs: [1],
           name: 'name',
           start_date: 'start_date',
           end_date: 'end_date',
@@ -414,34 +414,6 @@ describe('ProjectRepository', () => {
     });
   });
 
-  describe('insertType', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
-
-      const repository = new ProjectRepository(dbConnection);
-
-      const response = await repository.insertType(1, 1);
-
-      expect(response).to.not.be.null;
-      expect(response).to.eql(1);
-    });
-
-    it('should throw an error', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
-
-      const repository = new ProjectRepository(dbConnection);
-
-      try {
-        await repository.insertType(1, 1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to insert project type data');
-      }
-    });
-  });
-
   describe('deleteIUCNData', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
@@ -450,19 +422,6 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       const response = await repository.deleteIUCNData(1);
-
-      expect(response).to.eql(undefined);
-    });
-  });
-
-  describe('deleteActivityData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ query: () => mockResponse });
-
-      const repository = new ProjectRepository(dbConnection);
-
-      const response = await repository.deleteTypeData(1);
 
       expect(response).to.eql(undefined);
     });

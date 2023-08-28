@@ -156,6 +156,11 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             summary=""
             component={
               <GeneralInformationForm
+                type={
+                  props.codes?.type?.map((item) => {
+                    return { value: item.id, label: item.name };
+                  }) || []
+                }
                 projectStartDate={props.projectData.project.start_date}
                 projectEndDate={props.projectData.project.end_date}
               />

@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -8,7 +9,6 @@ import {
   GetAttachmentsData,
   GetPartnershipsData,
   GetReportAttachmentsData,
-  GetSurveyData,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData
@@ -75,6 +75,47 @@ export interface ISurveyProprietorModel {
   disa_required: boolean;
 }
 
+const SurveyRecord = z.object({
+  project_id: z.number(),
+  survey_id: z.number(),
+  name: z.string().nullable(),
+  uuid: z.string().nullable(),
+  start_date: z.string(),
+  end_date: z.string().nullable(),
+  lead_first_name: z.string(),
+  lead_last_name: z.string(),
+  field_method_id: z.number().nullable(),
+  additional_details: z.string().nullable(),
+  ecological_season_id: z.number().nullable(),
+  intended_outcome_id: z.number().nullable(),
+  location_name: z.string(),
+  location_description: z.string().nullable(),
+  geometry: z.any().nullable(),
+  geography: z.any().nullable(),
+  geojson: z.any().nullable(),
+  comments: z.string().nullable(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SurveyRecord = z.infer<typeof SurveyRecord>;
+
+const SurveyTypeRecord = z.object({
+  survey_type_id: z.number(),
+  survey_id: z.number(),
+  type_id: z.number(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SurveyTypeRecord = z.infer<typeof SurveyTypeRecord>;
+
 const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
@@ -121,13 +162,13 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Gets survey data for a given survey ID
+   * Gets a survey record for a given survey ID
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<GetSurveyData>}
+   * @return {*}  {Promise<SurveyRecord>}
    * @memberof SurveyRepository
    */
-  async getSurveyData(surveyId: number): Promise<GetSurveyData> {
+  async getSurveyData(surveyId: number): Promise<SurveyRecord> {
     const sqlStatement = SQL`
       SELECT
         *
@@ -137,18 +178,38 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, SurveyRecord);
 
-    const result = response.rows?.[0];
-
-    if (!result) {
+    if (!response.rows[0]) {
       throw new ApiExecuteSQLError('Failed to get project survey details data', [
         'SurveyRepository->getSurveyData',
         'response was null or undefined, expected response != null'
       ]);
     }
 
-    return new GetSurveyData(result);
+    return response.rows[0];
+  }
+
+  /**
+   * Gets survey types records for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*}  {Promise<SurveyTypeRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveyTypesData(surveyId: number): Promise<SurveyTypeRecord[]> {
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_type
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyTypeRecord);
+
+    return response.rows;
   }
 
   /**
@@ -627,6 +688,34 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
+   * Inserts new survey_type records.
+   *
+   * @param {number[]} typeIds
+   * @param {number} surveyId
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyRepository
+   */
+  async insertSurveyTypes(typeIds: number[], surveyId: number): Promise<void> {
+    const queryBuilder = getKnex()
+      .table('survey_type')
+      .insert(
+        typeIds.map((typeId) => ({
+          type_id: typeId,
+          survey_id: surveyId
+        }))
+      );
+
+    const response = await this.connection.knex(queryBuilder);
+
+    if (response.rowCount !== typeIds.length) {
+      throw new ApiExecuteSQLError('Failed to insert survey types data', [
+        'SurveyRepository->insertSurveyTypes',
+        `rowCount was ${response.rowCount}, expected rowCount = ${typeIds.length}`
+      ]);
+    }
+  }
+
+  /**
    * Inserts a new focal species record and returns the new ID
    *
    * @param {number} focal_species_id
@@ -930,6 +1019,24 @@ export class SurveyRepository extends BaseRepository {
         'response was null or undefined, expected response != null'
       ]);
     }
+  }
+
+  /**
+   * Deletes Survey type data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
+  async deleteSurveyTypesData(surveyId: number) {
+    const sqlStatement = SQL`
+      DELETE
+        from survey_type
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    await this.connection.sql(sqlStatement);
   }
 
   /**

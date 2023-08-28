@@ -20,7 +20,6 @@ describe('ProjectData', () => {
         uuid: 'uuid',
         project_name: '',
         project_programs: [],
-        project_types: [],
         start_date: '2005-01-01',
         end_date: '2006-01-01',
         comments: '',
@@ -38,10 +37,6 @@ describe('ProjectData', () => {
 
     it('sets programs', () => {
       expect(data.project_programs).to.eql([]);
-    });
-
-    it('sets project_types', () => {
-      expect(data.project_types).to.eql([]);
     });
 
     it('sets start_date', () => {
@@ -71,7 +66,6 @@ describe('ProjectData', () => {
         uuid: 'uuid',
         project_name: 'project name',
         project_programs: [1],
-        project_types: [1, 2],
         start_date: '2020-04-20T07:00:00.000Z',
         end_date: '2020-05-20T07:00:00.000Z',
         comments: '',
@@ -89,10 +83,6 @@ describe('ProjectData', () => {
 
     it('sets type', () => {
       expect(data.project_programs).to.eql([1]);
-    });
-
-    it('sets project_types', () => {
-      expect(data.project_types).to.eql([1, 2]);
     });
 
     it('sets start_date', () => {

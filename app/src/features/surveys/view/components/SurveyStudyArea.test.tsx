@@ -235,6 +235,7 @@ describe('SurveyStudyArea', () => {
           biologist_last_name: 'lastttt',
           survey_area_name: 'study area is this',
           geometry: [geoJsonFeature],
+          survey_types: [1],
           revision_count: 0
         }
       },

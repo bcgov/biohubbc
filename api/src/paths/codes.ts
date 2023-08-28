@@ -19,6 +19,25 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            required: [
+              'management_action_type',
+              'first_nations',
+              'agency',
+              'investment_action_category',
+              'type',
+              'iucn_conservation_action_level_1_classification',
+              'iucn_conservation_action_level_2_subclassification',
+              'iucn_conservation_action_level_3_subclassification',
+              'program',
+              'proprietor_type',
+              'system_roles',
+              'project_roles',
+              'administrative_activity_status_type',
+              'field_methods',
+              'ecological_seasons',
+              'intended_outcomes',
+              'vantage_codes'
+            ],
             properties: {
               management_action_type: {
                 type: 'array',
@@ -79,8 +98,9 @@ GET.apiDoc = {
                   }
                 }
               },
-              project_type: {
+              type: {
                 type: 'array',
+                description: 'Types of surveys',
                 items: {
                   type: 'object',
                   properties: {
@@ -94,20 +114,6 @@ GET.apiDoc = {
                 }
               },
               project_program: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              region: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -215,20 +221,6 @@ GET.apiDoc = {
                 }
               },
               project_role: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              regional_offices: {
                 type: 'array',
                 items: {
                   type: 'object',

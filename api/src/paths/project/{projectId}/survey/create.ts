@@ -69,6 +69,7 @@ POST.apiDoc = {
           properties: {
             survey_details: {
               type: 'object',
+              required: ['survey_name', 'start_date'],
               properties: {
                 survey_name: {
                   type: 'string'
@@ -86,6 +87,13 @@ POST.apiDoc = {
                 },
                 biologist_last_name: {
                   type: 'string'
+                },
+                survey_types: {
+                  type: 'array',
+                  items: {
+                    type: 'integer',
+                    minimum: 1
+                  }
                 }
               }
             },

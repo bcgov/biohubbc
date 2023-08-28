@@ -534,6 +534,7 @@ export class EmlService extends DBService {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async _getSurveyAdditionalMetadata(_surveysData: SurveyObject[]): Promise<AdditionalMetadata[]> {
     const additionalMetadata: AdditionalMetadata[] = [];
+    const codes = await this.codes();
 
     await Promise.all(
       _surveysData.map(async (item) => {
@@ -549,9 +550,26 @@ export class EmlService extends DBService {
 
         const partnetshipsMetadata = await this._buildPartnershipMetadata(item);
         additionalMetadata.push(partnetshipsMetadata);
+
+        if (item.survey_details.survey_types.length) {
+          const names = codes.type
+            .filter((code) => item.survey_details.survey_types.includes(code.id))
+            .map((code) => code.name);
+
+          additionalMetadata.push({
+            describes: item.survey_details.uuid,
+            metadata: {
+              surveyTypes: {
+                surveyType: names.map((item) => {
+                  return { name: item };
+                })
+              }
+            }
+          });
+        }
       })
     );
-
+  
     return additionalMetadata;
   }
 
@@ -574,23 +592,6 @@ export class EmlService extends DBService {
             projectProgram: projectData.project.project_programs.map(
               (item) => codes.program.find((code) => code.id === item)?.name
             )
-          }
-        }
-      });
-    }
-
-    if (projectData.project.project_types.length) {
-      const names = codes.type
-        .filter((code) => projectData.project.project_types.includes(code.id))
-        .map((code) => code.name);
-
-      additionalMetadata.push({
-        describes: projectData.project.uuid,
-        metadata: {
-          projectActivities: {
-            projectActivity: names.map((item) => {
-              return { name: item };
-            })
           }
         }
       });
