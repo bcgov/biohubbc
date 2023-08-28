@@ -7,15 +7,8 @@ export type IFamily = {
 
 const useFamilyApi = (axios: AxiosInstance) => {
   const getAllFamilies = async (): Promise<IFamily[]> => {
-    try {
-      const { data } = await axios.get('/api/family');
-      return data;
-    } catch (e) {
-      if (e instanceof Error) {
-        console.log(e.message);
-      }
-    }
-    return [];
+    const { data } = await axios.get('/api/family');
+    return data;
   };
 
   const getImmediateFamily = async (family_id: string): Promise<{ parents: any[]; siblings: any[]; children: any }> => {
