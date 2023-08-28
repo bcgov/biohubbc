@@ -24,7 +24,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import { IGetProjectParticipantsResponseArrayItem } from 'interfaces/useProjectApi.interface';
+import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect } from 'react';
 import { alphabetizeObjects, getFormattedIdentitySource } from 'utils/Utils';
 import ProjectParticipantsHeader from './ProjectParticipantsHeader';
@@ -50,7 +50,7 @@ const ProjectParticipantsPage: React.FC = () => {
   const biohubApi = useBiohubApi();
 
   const projectParticipantsDataLoader = useDataLoader(() =>
-    biohubApi.project.getProjectParticipants(projectContext.projectId)
+    biohubApi.projectParticipants.getProjectParticipants(projectContext.projectId)
   );
 
   useDataLoaderError(projectParticipantsDataLoader, (dataLoader) => {
@@ -77,7 +77,7 @@ const ProjectParticipantsPage: React.FC = () => {
     [dialogContext]
   );
 
-  const handleDialogRemoveParticipantOpen = (participant: IGetProjectParticipantsResponseArrayItem) => {
+  const handleDialogRemoveParticipantOpen = (participant: IGetProjectParticipant) => {
     dialogContext.setYesNoDialog({
       dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
       dialogContent: (
@@ -109,7 +109,7 @@ const ProjectParticipantsPage: React.FC = () => {
 
   const handleRemoveProjectParticipant = async (projectParticipationId: number) => {
     try {
-      const response = await biohubApi.project.removeProjectParticipant(
+      const response = await biohubApi.projectParticipants.removeProjectParticipant(
         projectContext.projectId,
         projectParticipationId
       );
@@ -164,12 +164,12 @@ const ProjectParticipantsPage: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {alphabetizeObjects(projectParticipantsDataLoader?.data?.participants ?? [], 'user_identifier').map(
+                  {alphabetizeObjects(projectParticipantsDataLoader?.data ?? [], 'user_identifier').map(
                     (participant) => (
                       <TableRow key={participant.project_participation_id}>
                         <TableCell scope="row">{participant.user_identifier}</TableCell>
                         <TableCell scope="row">
-                          {getFormattedIdentitySource(participant.user_identity_source_name as SYSTEM_IDENTITY_SOURCE)}
+                          {getFormattedIdentitySource(participant.identity_source as SYSTEM_IDENTITY_SOURCE)}
                         </TableCell>
                         <TableCell>
                           <Box my={-1}>

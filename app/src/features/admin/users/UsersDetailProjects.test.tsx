@@ -1,6 +1,7 @@
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
@@ -15,7 +16,9 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   project: {
-    getAllUserProjectsForView: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>(),
+    getAllUserProjectsForView: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>()
+  },
+  projectParticipants: {
     removeProjectParticipant: jest.fn<Promise<boolean>, []>(),
     updateProjectParticipantRole: jest.fn<Promise<boolean>, []>()
   },
@@ -24,13 +27,17 @@ const mockUseApi = {
   }
 };
 
-const mockUser = {
+const mockUser: ISystemUser = {
   system_user_id: 1,
-  user_record_end_date: 'ending',
+  record_end_date: 'ending',
   user_identifier: 'testUser',
   role_names: ['system'],
   user_guid: '1111',
-  identity_source: 'idir'
+  identity_source: 'idir',
+  role_ids: [],
+  email: '',
+  display_name: '',
+  agency: ''
 };
 
 describe('UsersDetailProjects', () => {
@@ -65,20 +72,16 @@ describe('UsersDetailProjects', () => {
       coordinator_agency: [{ id: 1, name: 'agency 1' }]
     } as any);
 
-    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue({
-      assignedProjects: []
-    } as any);
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([]);
 
-    const { getAllByTestId, getAllByText } = render(
+    const { getByTestId, getAllByText } = render(
       <Router history={history}>
         <UsersDetailProjects userDetails={mockUser} />
       </Router>
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('projects_header').length).toEqual(1);
-      expect(getAllByText('Assigned Projects').length).toEqual(1);
-      expect(getAllByText('()').length).toEqual(1);
+      expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(0\)/);
       expect(getAllByText('No Projects').length).toEqual(1);
     });
   });
@@ -93,24 +96,24 @@ describe('UsersDetailProjects', () => {
 
     mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
       {
+        project_participation_id: 4,
         project_id: 2,
-        name: 'projectName',
+        project_name: 'projectName',
         system_user_id: 1,
-        project_role_id: 3,
-        project_participation_id: 4
+        project_role_ids: [3],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
       }
     ]);
 
-    const { getAllByTestId, getAllByText } = render(
+    const { getAllByText, getByTestId } = render(
       <Router history={history}>
         <UsersDetailProjects userDetails={mockUser} />
       </Router>
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('projects_header').length).toEqual(1);
-      expect(getAllByText('Assigned Projects').length).toEqual(1);
-      expect(getAllByText('(1)').length).toEqual(1);
+      expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
       expect(getAllByText('projectName').length).toEqual(1);
     });
   });
@@ -125,31 +128,33 @@ describe('UsersDetailProjects', () => {
 
     mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
       {
+        project_participation_id: 4,
         project_id: 1,
-        name: 'projectName',
+        project_name: 'projectName',
         system_user_id: 2,
-        project_role_id: 3,
-        project_participation_id: 4
+        project_role_ids: [3],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
       },
       {
+        project_participation_id: 8,
         project_id: 5,
-        name: 'secondProjectName',
+        project_name: 'secondProjectName',
         system_user_id: 6,
-        project_role_id: 7,
-        project_participation_id: 8
+        project_role_ids: [7],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
       }
     ]);
 
-    const { getAllByTestId, getAllByText } = render(
+    const { getByTestId, getAllByText } = render(
       <Router history={history}>
         <UsersDetailProjects userDetails={mockUser} />
       </Router>
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('projects_header').length).toEqual(1);
-      expect(getAllByText('Assigned Projects').length).toEqual(1);
-      expect(getAllByText('(2)').length).toEqual(1);
+      expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(2\)/);
       expect(getAllByText('projectName').length).toEqual(1);
       expect(getAllByText('secondProjectName').length).toEqual(1);
     });
@@ -165,11 +170,13 @@ describe('UsersDetailProjects', () => {
 
     mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
       {
+        project_participation_id: 4,
         project_id: 1,
-        name: 'projectName',
+        project_name: 'projectName',
         system_user_id: 2,
-        project_role_id: 3,
-        project_participation_id: 4
+        project_role_ids: [3],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
       }
     ]);
 
@@ -201,11 +208,13 @@ describe('UsersDetailProjects', () => {
 
       mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
+          project_participation_id: 4,
           project_id: 1,
-          name: 'projectName',
+          project_name: 'projectName',
           system_user_id: 2,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1']
         }
       ]);
 
@@ -242,26 +251,30 @@ describe('UsersDetailProjects', () => {
         project_roles: [{ id: 1, name: 'Coordinator' }]
       } as any);
 
-      mockUseApi.project.removeProjectParticipant.mockResolvedValue(true);
+      mockUseApi.projectParticipants.removeProjectParticipant.mockResolvedValue(true);
 
       mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
+          project_participation_id: 4,
           project_id: 1,
-          name: 'projectName',
+          project_name: 'projectName',
           system_user_id: 2,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1']
         },
         {
+          project_participation_id: 8,
           project_id: 5,
-          name: 'secondProjectName',
+          project_name: 'secondProjectName',
           system_user_id: 6,
-          project_role_id: 7,
-          project_participation_id: 8
+          project_role_ids: [7],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1']
         }
       ]);
 
-      const { getAllByText, getByText, getAllByTestId } = render(
+      const { getByTestId, getAllByText, getByText, getAllByTestId } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailProjects userDetails={mockUser} />
@@ -270,19 +283,20 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(2)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(2\)/);
         expect(getAllByText('projectName').length).toEqual(1);
         expect(getAllByText('secondProjectName').length).toEqual(1);
       });
 
       mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
+          project_participation_id: 8,
           project_id: 5,
-          name: 'secondProjectName',
+          project_name: 'secondProjectName',
           system_user_id: 6,
-          project_role_id: 7,
-          project_participation_id: 8
+          project_role_ids: [7],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1']
         }
       ]);
 
@@ -295,8 +309,7 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getByText('Remove'));
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(1)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
         expect(getAllByText('secondProjectName').length).toEqual(1);
       });
     });
@@ -317,23 +330,24 @@ describe('UsersDetailProjects', () => {
 
       mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
-          project_id: 2,
-          name: 'projectName',
-          system_user_id: 1,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_participation_id: 4,
+          project_id: 1,
+          project_name: 'projectName',
+          system_user_id: 2,
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Observer']
         }
       ]);
 
-      const { getAllByText, getByText } = render(
+      const { getByTestId, getAllByText, getByText } = render(
         <Router history={history}>
           <UsersDetailProjects userDetails={mockUser} />
         </Router>
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(1)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
@@ -360,15 +374,17 @@ describe('UsersDetailProjects', () => {
 
       mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
-          project_id: 2,
-          name: 'projectName',
-          system_user_id: 1,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_participation_id: 4,
+          project_id: 1,
+          project_name: 'projectName',
+          system_user_id: 2,
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Observer']
         }
       ]);
 
-      const { getAllByText, getByText } = render(
+      const { getByTestId, getAllByText, getByText } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailProjects userDetails={mockUser} />
@@ -377,8 +393,7 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(1)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
@@ -417,17 +432,19 @@ describe('UsersDetailProjects', () => {
 
       mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
-          project_id: 2,
-          name: 'projectName',
-          system_user_id: 1,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_participation_id: 4,
+          project_id: 1,
+          project_name: 'projectName',
+          system_user_id: 2,
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Observer']
         }
       ]);
 
-      mockUseApi.project.updateProjectParticipantRole.mockResolvedValue(true);
+      mockUseApi.projectParticipants.updateProjectParticipantRole.mockResolvedValue(true);
 
-      const { getAllByText, getByText } = render(
+      const { getByTestId, getAllByText, getByText } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailProjects userDetails={mockUser} />
@@ -436,8 +453,7 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(1)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
         expect(getAllByText('projectName').length).toEqual(1);
       });
 

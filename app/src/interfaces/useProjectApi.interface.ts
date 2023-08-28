@@ -78,11 +78,13 @@ export interface IGetProjectAttachmentsResponse {
  * @interface IGetUserProjectsListResponse
  */
 export interface IGetUserProjectsListResponse {
-  project_id: number;
-  name: string;
-  system_user_id: number;
-  project_role_id: number;
   project_participation_id: number;
+  project_id: number;
+  project_name: string;
+  system_user_id: number;
+  project_role_ids: number[];
+  project_role_names: string[];
+  project_role_permissions: string[];
 }
 
 /**
@@ -116,6 +118,13 @@ export interface IProjectsListData {
   project_programs: number[];
 }
 
+export interface IProjectUserRoles {
+  participants: {
+    system_user_id: number;
+    project_role_names: string[];
+  }[];
+}
+
 /**
  * Create project post object.
  *
@@ -128,7 +137,8 @@ export interface ICreateProjectRequest
     IProjectObjectivesForm,
     IProjectLocationForm,
     IProjectIUCNForm,
-    IProjectPartnershipsForm {}
+    IProjectPartnershipsForm,
+    IProjectUserRoles {}
 
 /**
  * Create project response object.
@@ -146,7 +156,8 @@ export enum UPDATE_GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  partnerships = 'partnerships'
+  partnerships = 'partnerships',
+  participants = 'participants'
 }
 
 /**
@@ -162,6 +173,7 @@ export interface IGetProjectForUpdateResponse {
   coordinator?: IGetProjectForUpdateResponseCoordinator;
   iucn?: IGetProjectForUpdateResponseIUCN;
   partnerships?: IGetProjectForUpdateResponsePartnerships;
+  participants?: IGetProjectParticipant[];
 }
 
 export interface IGetProjectForUpdateResponseDetails {
@@ -237,6 +249,7 @@ export interface ProjectViewObject {
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
   coordinator: IGetProjectForViewResponseCoordinator;
+  participants: IGetProjectParticipant[];
   iucn: IGetProjectForViewResponseIUCN;
   partnerships: IGetProjectForViewResponsePartnerships;
 }
@@ -264,6 +277,20 @@ export interface IGetProjectForViewResponseCoordinator {
   email_address: string;
   coordinator_agency: string;
   share_contact_details: string;
+}
+
+export interface IGetProjectParticipant {
+  project_participation_id: number;
+  project_id: number;
+  system_user_id: number;
+  identity_source: string;
+  user_identifier: string;
+  email: string | null;
+  display_name: string;
+  agency: string | null;
+  project_role_ids: number[];
+  project_role_names: string[];
+  project_role_permissions: string[];
 }
 
 interface IGetProjectForViewResponseIUCNArrayItem {
@@ -342,21 +369,6 @@ export interface IGetReportAuthors {
   last_name: string;
 }
 
-export interface IGetProjectParticipantsResponseArrayItem {
-  project_participation_id: number;
-  project_id: number;
-  system_user_id: number;
-  project_role_id: number;
-  project_role_name: string;
-  user_identifier: string;
-  user_identity_source_id: number;
-  user_identity_source_name: string;
-}
-
-export interface IGetProjectParticipantsResponse {
-  participants: IGetProjectParticipantsResponseArrayItem[];
-}
-
 export interface IAddProjectParticipant {
   userIdentifier: string;
   displayName: string;
@@ -365,12 +377,10 @@ export interface IAddProjectParticipant {
   roleId: number;
 }
 
-export interface IGetUserProjectParticipantResponse {
-  participant: {
-    project_id: number;
-    system_user_id: number;
-    project_role_ids: number[];
-    project_role_names: PROJECT_ROLE[];
-    project_role_permissions: PROJECT_PERMISSION[];
-  } | null;
-}
+export type IGetUserProjectParticipantResponse = {
+  project_id: number;
+  system_user_id: number;
+  project_role_ids: number[];
+  project_role_names: PROJECT_ROLE[];
+  project_role_permissions: PROJECT_PERMISSION[];
+} | null;

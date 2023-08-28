@@ -1,6 +1,5 @@
 import { Feature } from 'geojson';
 import moment from 'moment';
-import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
@@ -27,9 +26,9 @@ import {
   ProjectData,
   ProjectSupplementaryData
 } from '../models/project-view';
-import { ProjectUser } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { PublishStatus } from '../repositories/history-publish-repository';
+import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -61,72 +60,6 @@ export class ProjectService extends DBService {
     this.surveyService = new SurveyService(connection);
   }
 
-  /**
-   * Gets the project participant, adding them if they do not already exist.
-   *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @return {*}  {Promise<any>}
-   * @memberof ProjectService
-   */
-  async ensureProjectParticipant(
-    projectId: number,
-    systemUserId: number,
-    projectParticipantRoleId: number
-  ): Promise<void> {
-    const projectParticipantRecord = await this.getProjectParticipant(projectId, systemUserId);
-
-    if (projectParticipantRecord) {
-      // project participant already exists, do nothing
-      return;
-    }
-
-    // add new project participant record
-    await this.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-  }
-
-  /**
-   * Get an existing project participant.
-   *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @return {*}  {Promise<any>}
-   * @memberof ProjectService
-   */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUser | null> {
-    return this.projectParticipationService.getProjectParticipant(projectId, systemUserId);
-  }
-
-  /**
-   * Get all project participants for a project.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<object[]>}
-   * @memberof ProjectService
-   */
-  async getProjectParticipants(projectId: number): Promise<object[]> {
-    return this.projectParticipationService.getProjectParticipants(projectId);
-  }
-
-  /**
-   * Adds a new project participant.
-   *
-   * Note: Will fail if the project participant already exists.
-   *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @param {number} projectParticipantRoleId
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async addProjectParticipant(
-    projectId: number,
-    systemUserId: number,
-    projectParticipantRoleId: number
-  ): Promise<void> {
-    return this.projectParticipationService.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-  }
-
   async getProjectList(
     isUserAdmin: boolean,
     systemUserId: number | null,
@@ -149,10 +82,19 @@ export class ProjectService extends DBService {
   }
 
   async getProjectById(projectId: number): Promise<IGetProject> {
-    const [projectData, objectiveData, coordinatorData, locationData, iucnData, partnershipsData] = await Promise.all([
+    const [
+      projectData,
+      objectiveData,
+      coordinatorData,
+      projectParticipantsData,
+      locationData,
+      iucnData,
+      partnershipsData
+    ] = await Promise.all([
       this.getProjectData(projectId),
       this.getObjectivesData(projectId),
       this.getCoordinatorData(projectId),
+      this.getProjectParticipantsData(projectId),
       this.getLocationData(projectId),
       this.getIUCNClassificationData(projectId),
       this.getPartnershipsData(projectId)
@@ -162,6 +104,7 @@ export class ProjectService extends DBService {
       project: projectData,
       objectives: objectiveData,
       coordinator: coordinatorData,
+      participants: projectParticipantsData,
       location: locationData,
       iucn: iucnData,
       partnerships: partnershipsData
@@ -241,6 +184,14 @@ export class ProjectService extends DBService {
       );
     }
 
+    if (entities.includes(GET_ENTITIES.participants)) {
+      promises.push(
+        this.getProjectParticipantsData(projectId).then((value) => {
+          results.participants = value;
+        })
+      );
+    }
+
     await Promise.all(promises);
 
     return results;
@@ -256,6 +207,10 @@ export class ProjectService extends DBService {
 
   async getCoordinatorData(projectId: number): Promise<GetCoordinatorData> {
     return this.projectRepository.getCoordinatorData(projectId);
+  }
+
+  async getProjectParticipantsData(projectId: number): Promise<ProjectUser[]> {
+    return this.projectParticipationService.getProjectParticipants(projectId);
   }
 
   async getLocationData(projectId: number): Promise<GetLocationData> {
@@ -355,10 +310,10 @@ export class ProjectService extends DBService {
     // Handle project programs
     promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
 
-    await Promise.all(promises);
+    //Handle project participants
+    promises.push(this.projectParticipationService.postProjectParticipants(projectId, postProjectData.participants));
 
-    // The user that creates a project is automatically assigned a coordinator role, for this project
-    await this.insertParticipantRole(projectId, PROJECT_ROLE.COORDINATOR);
+    await Promise.all(promises);
 
     return projectId;
   }
@@ -379,8 +334,8 @@ export class ProjectService extends DBService {
     return this.projectRepository.insertClassificationDetail(iucn3_id, project_id);
   }
 
-  async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    return this.projectParticipationService.insertParticipantRole(projectId, projectParticipantRole);
+  async postProjectParticipant(projectId: number, systemUserId: number, projectParticipantRole: string): Promise<void> {
+    return this.projectParticipationService.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
   }
 
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {
@@ -442,12 +397,12 @@ export class ProjectService extends DBService {
       promises.push(this.updateIUCNData(projectId, entities));
     }
 
-    if (entities?.location) {
-      promises.push(this.insertRegion(projectId, entities.location.geometry));
-    }
-
     if (entities?.project?.project_programs) {
       promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
+    }
+
+    if (entities?.participants) {
+      promises.push(this.projectParticipationService.upsertProjectParticipantData(projectId, entities.participants));
     }
 
     await Promise.all(promises);
@@ -573,10 +528,6 @@ export class ProjectService extends DBService {
     }
 
     return true;
-  }
-
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
-    return this.projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
   }
 
   /**

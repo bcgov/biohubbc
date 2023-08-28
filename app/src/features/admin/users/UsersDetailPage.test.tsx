@@ -4,7 +4,7 @@ import { Router } from 'react-router';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
-import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
+import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 import UsersDetailPage from './UsersDetailPage';
 
 const history = createMemoryHistory();
@@ -15,7 +15,7 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   user: {
-    getUserById: jest.fn<Promise<IGetUserResponse>, []>()
+    getUserById: jest.fn<Promise<ISystemUser>, []>()
   },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
@@ -53,15 +53,25 @@ describe('UsersDetailPage', () => {
     mockUseApi.user.getUserById.mockResolvedValue({
       system_user_id: 1,
       user_identifier: 'LongerUserName',
-      user_record_end_date: 'end',
+      record_end_date: 'end',
       role_names: ['role1', 'role2'],
       user_guid: '',
-      identity_source: 'idir'
+      identity_source: 'idir',
+      role_ids: [],
+      email: '',
+      display_name: '',
+      agency: ''
     });
 
     mockUseApi.project.getAllUserProjectsForView.mockResolvedValue({
-      project: null
-    } as any);
+      project_participation_id: 3,
+      project_id: 321,
+      project_name: 'test',
+      system_user_id: 1,
+      project_role_ids: [2],
+      project_role_names: ['Role1'],
+      project_role_permissions: ['Permission1']
+    });
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }]
