@@ -12,10 +12,10 @@ import { PublishStatus } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import FileSummaryResults from './components/FileSummaryResults';
-import NoSummaryResults from './components/NoSummaryResults';
 import SummaryResultsErrors from './components/SummaryResultsErrors';
 import SummaryResultsLoading from './components/SummaryResultsLoading';
 
@@ -157,7 +157,9 @@ const SurveySummaryResults = () => {
         {!summaryData && !surveyContext.summaryDataLoader.isReady && <SummaryResultsLoading fileLoading={fileName} />}
 
         {/* No summary */}
-        {!surveyContext.summaryDataLoader.data && surveyContext.summaryDataLoader.isReady && <NoSummaryResults />}
+        {!surveyContext.summaryDataLoader.data && surveyContext.summaryDataLoader.isReady && (
+          <NoSurveySectionData text={'No Summary Results'} paperVariant="outlined" />
+        )}
 
         {/* Got a summary with errors */}
         {summaryData && !surveyContext.summaryDataLoader.isLoading && summaryData.messages.length > 0 && (

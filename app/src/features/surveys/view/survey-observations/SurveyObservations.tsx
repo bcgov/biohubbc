@@ -12,12 +12,12 @@ import { PublishStatus } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
 import { IUploadObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import LoadingObservationsCard from './components/LoadingObservationsCard';
-import NoObservationsCard from './components/NoObservationsCard';
 import ObservationFileCard from './components/ObservationFileCard';
 import ObservationMessagesCard from './components/ObservationMessagesCard';
 import ValidatingObservationsCard from './components/ValidatingObservationsCard';
@@ -197,7 +197,7 @@ const SurveyObservations: React.FC = () => {
 
         {/* Submission data has finished loading, but is null, no submission to display */}
         {!surveyContext.observationDataLoader.data && surveyContext.observationDataLoader.isReady && (
-          <NoObservationsCard />
+          <NoSurveySectionData text={'No Observations'} paperVariant={'outlined'} />
         )}
 
         {/* Submission data exists, validation is running */}

@@ -46,10 +46,17 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
   const rawEndDateValue = get(values, endName);
 
   const formattedStartDateValue =
-    (rawStartDateValue && moment(rawStartDateValue).isValid() && moment(rawStartDateValue)) || null;
+    (rawStartDateValue &&
+      moment(rawStartDateValue, DATE_FORMAT.ShortDateFormat).isValid() &&
+      moment(rawStartDateValue, DATE_FORMAT.ShortDateFormat)) ||
+    null;
 
   const formattedEndDateValue =
-    (rawEndDateValue && moment(rawEndDateValue).isValid() && moment(rawEndDateValue)) || null;
+    (rawEndDateValue &&
+      moment(rawEndDateValue, DATE_FORMAT.ShortDateFormat).isValid() &&
+      moment(rawEndDateValue, DATE_FORMAT.ShortDateFormat)) ||
+    null;
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <Grid container item spacing={3}>
