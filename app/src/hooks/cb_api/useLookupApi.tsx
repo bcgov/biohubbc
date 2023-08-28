@@ -44,9 +44,18 @@ const useLookupApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const getTaxonMarkingBodyLocations = async (taxon_id?: string): Promise<Array<ICbSelectRows>> => {
+    if (!taxon_id) {
+      return [];
+    }
+    const { data } = await axios.get(`/api/critter-data/xref/taxon-marking-body-locations?taxon_id=${taxon_id}`);
+    return data;
+  };
+
   return {
     getSelectOptions,
-    getTaxonMeasurements
+    getTaxonMeasurements,
+    getTaxonMarkingBodyLocations
   };
 };
 

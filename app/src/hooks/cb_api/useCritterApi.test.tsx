@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Critter } from 'features/surveys/view/survey-animals/animal';
+import { Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
 import { v4 } from 'uuid';
 import { useCritterApi } from './useCritterApi';
 
@@ -56,24 +56,22 @@ describe('useCritterApi', () => {
   });
 
   it('should create a critter in critterbase', async () => {
-    const payload: Critter = {
+    const forCritter: IAnimal = {
       ...mockCritter,
-      taxon_id: '',
       captures: [],
       markings: [],
-      measurements: {
-        qualitative: [],
-        quantitative: []
+      measurements: [],
+      general: {
+        taxon_id: mockCritter.taxon,
+        animal_id: mockCritter.animal_id,
+        taxon_name: 'Joe'
       },
-      mortalities: [],
-      families: {
-        parents: [],
-        children: [],
-        families: []
-      },
-      locations: [],
-      name: ''
+      mortality: [],
+      family: [],
+      images: [],
+      device: undefined
     };
+    const payload = new Critter(forCritter);
 
     mock.onPost('/api/bulk').reply(201, { count: 1 });
 
