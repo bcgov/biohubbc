@@ -160,7 +160,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -187,7 +187,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should return Null', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -224,7 +224,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error when rows == null', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -251,7 +251,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error when rows == null', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -384,7 +384,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should return Null', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -434,7 +434,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should return Null', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -531,7 +531,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -610,7 +610,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -637,7 +637,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -664,7 +664,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -715,7 +715,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -1014,7 +1014,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -1043,7 +1043,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);

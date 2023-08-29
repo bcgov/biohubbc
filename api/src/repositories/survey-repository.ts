@@ -435,7 +435,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetLatestSurveyOccurrenceSubmission>(sqlStatement);
 
-    const result = response.rows[0] || null;
+    const result = response.rows?.[0] || null;
 
     return result;
   }
