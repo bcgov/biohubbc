@@ -1,7 +1,6 @@
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
@@ -26,10 +25,6 @@ import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
 } from '../components/ProjectObjectivesForm';
-import ProjectPartnershipsForm, {
-  ProjectPartnershipsFormInitialValues,
-  ProjectPartnershipsFormYupSchema
-} from '../components/ProjectPartnershipsForm';
 import ProjectUserForm, {
   ProjectUserRoleFormInitialValues,
   ProjectUserRoleYupSchema
@@ -56,13 +51,11 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
-  ...ProjectPartnershipsFormInitialValues,
   ...ProjectUserRoleFormInitialValues
 };
 
 export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
   .concat(ProjectObjectivesFormYupSchema)
-  .concat(ProjectPartnershipsFormYupSchema)
   .concat(ProjectUserRoleYupSchema);
 // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (yup schema) temporarily, while its decided where exactly project/survey locations should be defined
 // .concat(ProjectLocationFormYupSchema)
@@ -190,35 +183,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           summary="Specify team members and their associated role for this project."
           component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
         />
-
-        <Divider className={classes.sectionDivider} />
-
-        <HorizontalSplitFormComponent
-          title="Partnerships"
-          summary="Select partners supporting or participating in this project."
-          component={
-            <>
-              <Box component="fieldset">
-                <Typography component="legend" variant="h5">
-                  Select Partnerships
-                </Typography>
-                <Box mt={1}>
-                  <ProjectPartnershipsForm
-                    first_nations={
-                      codes?.first_nations?.map((item) => {
-                        return { value: item.id, label: item.name };
-                      }) || []
-                    }
-                    stakeholder_partnerships={
-                      codes?.agency?.map((item) => {
-                        return { value: item.name, label: item.name };
-                      }) || []
-                    }
-                  />
-                </Box>
-              </Box>
-            </>
-          }></HorizontalSplitFormComponent>
 
         {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
         {/* <Divider className={classes.sectionDivider} />

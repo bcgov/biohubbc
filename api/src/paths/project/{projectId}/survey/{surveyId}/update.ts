@@ -64,6 +64,16 @@ PUT.apiDoc = {
         schema: {
           title: 'SurveyProject put request object',
           type: 'object',
+          required: [
+            'survey_details',
+            'species',
+            'permit',
+            'funding_sources',
+            'partnerships',
+            'proprietor',
+            'purpose_and_methodology',
+            'location'
+          ],
           properties: {
             survey_details: {
               type: 'object',
@@ -171,6 +181,26 @@ PUT.apiDoc = {
                   },
                   revision_count: {
                     type: 'number'
+                  }
+                }
+              }
+            },
+            partnerships: {
+              title: 'Survey partnerships',
+              type: 'object',
+              required: [],
+              properties: {
+                indigenous_partnerships: {
+                  type: 'array',
+                  items: {
+                    type: 'integer',
+                    minimum: 1
+                  }
+                },
+                stakeholder_partnerships: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
                   }
                 }
               }

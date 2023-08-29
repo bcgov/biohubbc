@@ -10,7 +10,13 @@ export type SurveyObject = {
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
+  partnerships: ISurveyPartnerships;
 };
+
+export interface ISurveyPartnerships {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+}
 
 export class GetSurveyData {
   id: number;

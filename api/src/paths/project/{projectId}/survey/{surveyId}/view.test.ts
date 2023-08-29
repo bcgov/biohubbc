@@ -58,6 +58,10 @@ describe('survey/{surveyId}/view', () => {
               proprietor_type_id: 2,
               proprietor_type_name: 'name'
             },
+            partnerships: {
+              indigenous_partnerships: [],
+              stakeholder_partnerships: []
+            },
             location: {
               survey_area_name: 'location',
               geometry: []
@@ -116,6 +120,10 @@ describe('survey/{surveyId}/view', () => {
               revision_count: 0
             },
             proprietor: null,
+            partnerships: {
+              indigenous_partnerships: [],
+              stakeholder_partnerships: []
+            },
             location: {
               survey_area_name: 'location',
               geometry: []

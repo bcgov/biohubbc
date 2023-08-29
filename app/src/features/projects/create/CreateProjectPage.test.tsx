@@ -4,12 +4,12 @@ import { ProjectDetailsFormInitialValues } from 'features/projects/components/Pr
 import { ProjectIUCNFormInitialValues } from 'features/projects/components/ProjectIUCNForm';
 import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
-import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
 import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IDraftResponse } from 'interfaces/useDraftApi.interface';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
@@ -37,6 +37,9 @@ const mockUseApi = {
   },
   spatial: {
     getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
+  },
+  codes: {
+    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   }
 };
 
@@ -66,10 +69,13 @@ describe('CreateProjectPage', () => {
     mockUseApi.draft.updateDraft.mockClear();
     mockUseApi.draft.getDraft.mockClear();
     mockUseApi.spatial.getRegions.mockClear();
+    mockUseApi.codes.getAllCodeSets.mockClear();
 
     mockUseApi.spatial.getRegions.mockResolvedValue({
       regions: []
     });
+
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -79,7 +85,7 @@ describe('CreateProjectPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    const { getByText, getAllByText } = renderContainer();
+    const { getByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Create New Project')).toBeVisible();
@@ -87,8 +93,6 @@ describe('CreateProjectPage', () => {
       expect(getByText('General Information')).toBeVisible();
 
       expect(getByText('Project Coordinator')).toBeVisible();
-
-      expect(getAllByText('Partnerships')[0]).toBeVisible();
 
       // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined
       // expect(getByText('Location and Boundary')).toBeVisible();
@@ -174,8 +178,7 @@ describe('CreateProjectPage', () => {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+            iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
@@ -207,8 +210,7 @@ describe('CreateProjectPage', () => {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+            iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
@@ -248,8 +250,7 @@ describe('CreateProjectPage', () => {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+            iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
@@ -296,8 +297,7 @@ describe('CreateProjectPage', () => {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+            iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
@@ -343,8 +343,7 @@ describe('CreateProjectPage', () => {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
-          iucn: ProjectIUCNFormInitialValues.iucn,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          iucn: ProjectIUCNFormInitialValues.iucn
         }
       });
 
@@ -442,7 +441,6 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships,
           participants: AddProjectParticipantsFormInitialValues.participants
         }
       });
@@ -534,8 +532,7 @@ describe('CreateProjectPage', () => {
             {
               project_role_names: ['Coordinator']
             }
-          ],
-          partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
+          ]
         });
 
         expect(history.location.pathname).toEqual('/admin/projects');
@@ -560,7 +557,6 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships,
           participants: AddProjectParticipantsFormInitialValues.participants
         }
       });
@@ -611,7 +607,6 @@ describe('CreateProjectPage', () => {
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
-          partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] },
           participants: [
             {
               displayName: '',

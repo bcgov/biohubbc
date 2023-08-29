@@ -8,7 +8,7 @@ import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render } from 'test-helpers/test-utils';
 import Partnerships from './Partnerships';
 
-jest.mock('../../../../hooks/useBioHubApi');
+jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {

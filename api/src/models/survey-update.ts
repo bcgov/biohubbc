@@ -8,6 +8,7 @@ export class PutSurveyObject {
   proprietor: PutSurveyProprietorData;
   purpose_and_methodology: PutSurveyPurposeAndMethodologyData;
   location: PutSurveyLocationData;
+  partnerships: PutPartnershipsData;
 
   constructor(obj?: any) {
     this.survey_details = (obj?.survey_details && new PutSurveyDetailsData(obj.survey_details)) || null;
@@ -19,6 +20,17 @@ export class PutSurveyObject {
     this.purpose_and_methodology =
       (obj?.purpose_and_methodology && new PutSurveyPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
     this.location = (obj?.location && new PutSurveyLocationData(obj.location)) || null;
+    this.partnerships = (obj?.partnerships && new PutPartnershipsData(obj.partnerships)) || null;
+  }
+}
+
+export class PutPartnershipsData {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+
+  constructor(obj?: any) {
+    this.indigenous_partnerships = (obj?.indigenous_partnerships?.length && obj.indigenous_partnerships) || [];
+    this.stakeholder_partnerships = (obj?.stakeholder_partnerships?.length && obj.stakeholder_partnerships) || [];
   }
 }
 
