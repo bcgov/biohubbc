@@ -54,7 +54,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const searchUserDataLoader = useDataLoader(() => biohubApi.user.searchSystemUser(''));
   searchUserDataLoader.load();
 
-  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>(props.users);
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
@@ -66,8 +66,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
       setFieldValue(`participants[${index}].identity_source`, user.identity_source);
       setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
     });
-    setSelectedUsers(props.users);
-  }, []);
+  }, [props.users, setFieldValue]);
 
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
     selectedUsers.push(user);
