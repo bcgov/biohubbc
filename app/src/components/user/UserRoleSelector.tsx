@@ -15,6 +15,7 @@ interface IUserRoleSelectorProps {
   error: JSX.Element | undefined;
   handleAdd: (role: string, index: number) => void;
   handleRemove: (id: number) => void;
+  label: string;
 }
 
 const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
@@ -56,7 +57,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
               }}
               renderValue={(selected) => {
                 if (!selected) {
-                  return 'Select a Role';
+                  return props.label;
                 }
                 return selected;
               }}>
