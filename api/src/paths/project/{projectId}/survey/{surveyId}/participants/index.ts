@@ -250,7 +250,7 @@ export function createSurveyParticipants(): RequestHandler {
       throw new HTTP400('Missing required param `surveyId`');
     }
 
-    if (!req.body.participants || !req.body.participants.length) {
+    if (!req.body.participants?.length) {
       throw new HTTP400('Missing required body param `participants`');
     }
 

@@ -101,7 +101,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   const alertBarText = (): { title: string; text: string } => {
     let title = '';
     let text = '';
-    if (errors && errors.participants && Array.isArray(errors.participants)) {
+    if (errors?.participants && Array.isArray(errors.participants)) {
       title = 'Missing Jobs';
       text = 'All team members must be assigned a survey job.';
     }
@@ -110,7 +110,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   };
 
   const rowItemError = (index: number): JSX.Element | undefined => {
-    if (errors && errors.participants && Array.isArray(errors.participants)) {
+    if (errors?.participants && Array.isArray(errors.participants)) {
       const errorAtIndex = errors.participants[index];
       if (errorAtIndex) {
         return (
@@ -159,7 +159,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           Select team members and assign each member a job for this survey.
         </Typography>
       </Box>
-      {errors && errors['participants'] && selectedUsers.length > 0 && (
+      {errors?.['participants'] && selectedUsers.length > 0 && (
         <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
       )}
       <Box mt={3}>

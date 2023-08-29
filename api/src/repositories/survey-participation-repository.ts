@@ -80,7 +80,7 @@ export class SurveyParticipationRepository extends BaseRepository {
     `;
     const response = await this.connection.sql(sqlStatement, SurveyJob);
 
-    if (!response || !response.rowCount) {
+    if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey jobs', [
         'SurveyParticipationRepository->getSurveyJobs',
         'rows was null or undefined, expected rows != null'
@@ -249,7 +249,7 @@ export class SurveyParticipationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert survey participant', [
         'SurveyParticipationRepository->insertSurveyParticipant',
         'rows was null or undefined, expected rows != null'
@@ -276,7 +276,7 @@ export class SurveyParticipationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to update survey participant', [
         'SurveyParticipationRepository->updateSurveyParticipant',
         'rows was null or undefined, expected rows != null'
@@ -302,7 +302,7 @@ export class SurveyParticipationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete survey participation record', [
         'SurveyParticipationRepository->deleteSurveyParticipationRecord',
         'rows was null or undefined, expected rows != null'

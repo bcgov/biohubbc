@@ -110,7 +110,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const alertBarText = (): { title: string; text: string } => {
     let title = '';
     let text = '';
-    if (errors && errors.participants) {
+    if (errors?.participants) {
       if (Array.isArray(errors.participants)) {
         title = 'Missing Roles';
         text = 'All team members must be assigned a role.';
@@ -128,7 +128,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   };
 
   const rowItemError = (index: number): JSX.Element | undefined => {
-    if (errors && errors.participants && Array.isArray(errors.participants)) {
+    if (errors?.participants && Array.isArray(errors.participants)) {
       const errorAtIndex = errors.participants[index];
       if (errorAtIndex) {
         return (
@@ -176,7 +176,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           }}>
           A minimum of one team member must be assigned the coordinator role.
         </Typography>
-        {errors && errors['participants'] && !selectedUsers.length && (
+        {errors?.['participants'] && !selectedUsers.length && (
           <Box mt={3}>
             <AlertBar
               severity="error"
@@ -186,7 +186,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             />
           </Box>
         )}
-        {errors && errors['participants'] && selectedUsers.length > 0 && (
+        {errors?.['participants'] && selectedUsers.length > 0 && (
           <Box mt={3}>
             <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
           </Box>
