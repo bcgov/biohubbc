@@ -37,7 +37,35 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
           subClassification2: 2
         }
       ]
-    }
+    },
+    participants: [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role 1'],
+        project_role_permissions: ['Permission 1', 'Permission 2'],
+        identity_source: '',
+        email: 'email@email.com',
+        display_name: 'Tim Taster',
+        agency: '',
+        user_identifier: ''
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_ids: [1],
+        project_role_names: ['Role 1'],
+        project_role_permissions: ['Permission 1', 'Permission 2'],
+        identity_source: '',
+        email: 'email@email.com',
+        display_name: 'Tom Tester',
+        agency: '',
+        user_identifier: ''
+      }
+    ]
   },
   projectSupplementaryData: {
     project_metadata_publish: {

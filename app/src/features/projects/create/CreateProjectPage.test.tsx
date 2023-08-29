@@ -21,6 +21,7 @@ import {
   render,
   waitFor
 } from 'test-helpers/test-utils';
+import { AddProjectParticipantsFormInitialValues } from '../participants/AddProjectParticipantsForm';
 
 const history = createMemoryHistory();
 
@@ -439,7 +440,8 @@ describe('CreateProjectPage', () => {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
-          iucn: ProjectIUCNFormInitialValues.iucn
+          iucn: ProjectIUCNFormInitialValues.iucn,
+          participants: AddProjectParticipantsFormInitialValues.participants
         }
       });
 
@@ -525,7 +527,12 @@ describe('CreateProjectPage', () => {
           },
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
-          iucn: { classificationDetails: [] }
+          iucn: { classificationDetails: [] },
+          participants: [
+            {
+              project_role_names: ['Coordinator']
+            }
+          ]
         });
 
         expect(history.location.pathname).toEqual('/admin/projects');
@@ -549,7 +556,8 @@ describe('CreateProjectPage', () => {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
-          iucn: ProjectIUCNFormInitialValues.iucn
+          iucn: ProjectIUCNFormInitialValues.iucn,
+          participants: AddProjectParticipantsFormInitialValues.participants
         }
       });
 
@@ -598,7 +606,16 @@ describe('CreateProjectPage', () => {
           },
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
-          iucn: { classificationDetails: [] }
+          iucn: { classificationDetails: [] },
+          participants: [
+            {
+              displayName: '',
+              email: '',
+              identitySource: '',
+              roleId: '',
+              userIdentifier: ''
+            }
+          ]
         });
 
         expect(history.location.pathname).toEqual('/admin/projects');

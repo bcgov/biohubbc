@@ -21,14 +21,14 @@ describe('search', () => {
 
       const mockQuery = sinon.stub();
 
-      mockQuery.resolves({ rows: null });
+      mockQuery.resolves({ rows: [], rowCount: 0 });
 
       sinon.stub(db, 'getDBConnection').returns({
         ...dbConnectionObj,
         systemUserId: () => {
           return 20;
         },
-        query: mockQuery
+        sql: mockQuery
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
 
@@ -43,7 +43,7 @@ describe('search', () => {
 
       await result(mockReq, mockRes, mockNext);
 
-      expect(mockRes.jsonValue).to.equal(null);
+      expect(mockRes.jsonValue).to.eql([]);
     });
 
     it('should return rows on success when result is empty', async () => {
@@ -51,14 +51,14 @@ describe('search', () => {
 
       const mockQuery = sinon.stub();
 
-      mockQuery.resolves({ rows: [] });
+      mockQuery.resolves({ rows: [], rowCount: 0 });
 
       sinon.stub(db, 'getDBConnection').returns({
         ...dbConnectionObj,
         systemUserId: () => {
           return 20;
         },
-        query: mockQuery
+        sql: mockQuery
       });
       sinon.stub(authorization, 'userHasValidRole').returns(false);
 
@@ -96,7 +96,7 @@ describe('search', () => {
         systemUserId: () => {
           return 20;
         },
-        query: mockQuery
+        sql: mockQuery
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
 

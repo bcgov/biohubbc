@@ -1,6 +1,7 @@
 import { Feature } from 'geojson';
 import { z } from 'zod';
 import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
+import { ProjectUser } from '../repositories/project-participation-repository';
 
 export interface IProjectAdvancedFilters {
   coordinator_agency?: string;
@@ -18,6 +19,7 @@ export interface IGetProject {
   coordinator: GetCoordinatorData;
   project: ProjectData;
   objectives: GetObjectivesData;
+  participants: ProjectUser[];
   location: GetLocationData;
   iucn: GetIUCNClassificationData;
 }

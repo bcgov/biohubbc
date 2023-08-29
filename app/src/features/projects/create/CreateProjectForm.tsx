@@ -4,10 +4,12 @@ import Divider from '@mui/material/Divider';
 import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
+import { PROJECT_ROLE } from 'constants/roles';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
+import React, { useContext } from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
 import ProjectCoordinatorForm, {
   ProjectCoordinatorInitialValues,
@@ -23,6 +25,10 @@ import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
 } from '../components/ProjectObjectivesForm';
+import ProjectUserForm, {
+  ProjectUserRoleFormInitialValues,
+  ProjectUserRoleYupSchema
+} from '../components/ProjectUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   sectionDivider: {
@@ -44,11 +50,13 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectObjectivesFormInitialValues,
   ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
-  ...ProjectIUCNFormInitialValues
+  ...ProjectIUCNFormInitialValues,
+  ...ProjectUserRoleFormInitialValues
 };
 
-export const validationProjectYupSchema =
-  ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema).concat(ProjectObjectivesFormYupSchema);
+export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
+  .concat(ProjectObjectivesFormYupSchema)
+  .concat(ProjectUserRoleYupSchema);
 // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (yup schema) temporarily, while its decided where exactly project/survey locations should be defined
 // .concat(ProjectLocationFormYupSchema)
 // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired
@@ -73,6 +81,32 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
   const handleSubmit = async (formikData: ICreateProjectRequest) => {
     props.handleSubmit(formikData);
   };
+
+  const { keycloakWrapper } = useContext(AuthStateContext);
+
+  const getProjectParticipants = (): IGetProjectParticipant[] => {
+    let participants: IGetProjectParticipant[] = [];
+
+    // load initial values from draft webform
+    if (props.initialValues?.participants) {
+      participants = props.initialValues?.participants as IGetProjectParticipant[];
+    } else {
+      // this is a fresh form and the logged in user needs to be added as a participant
+      const loggedInUser = keycloakWrapper?.user;
+      participants = [
+        {
+          system_user_id: loggedInUser?.system_user_id,
+          display_name: loggedInUser?.display_name,
+          email: loggedInUser?.email,
+          agency: loggedInUser?.agency,
+          identity_source: loggedInUser?.identity_source,
+          project_role_names: [PROJECT_ROLE.COORDINATOR]
+        } as IGetProjectParticipant
+      ];
+    }
+    return participants;
+  };
+
   return (
     <Formik
       innerRef={formikRef}
@@ -141,6 +175,14 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           component={
             <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
           }></HorizontalSplitFormComponent>
+
+        <Divider className={classes.sectionDivider} />
+
+        <HorizontalSplitFormComponent
+          title="Team Members"
+          summary="Specify team members and their associated role for this project."
+          component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
+        />
 
         {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
         {/* <Divider className={classes.sectionDivider} />

@@ -63,7 +63,7 @@ GET.apiDoc = {
             properties: {
               projectData: {
                 type: 'object',
-                required: ['project', 'coordinator', 'objectives', 'location', 'iucn'],
+                required: ['project', 'coordinator', 'participants', 'objectives', 'location', 'iucn'],
                 properties: {
                   project: {
                     description: 'Basic project metadata',
@@ -127,6 +127,50 @@ GET.apiDoc = {
                       share_contact_details: {
                         type: 'string',
                         enum: ['true', 'false']
+                      }
+                    }
+                  },
+                  participants: {
+                    title: 'Project participants',
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: [
+                        'project_participation_id',
+                        'project_id',
+                        'system_user_id',
+                        'project_role_ids',
+                        'project_role_names',
+                        'project_role_permissions'
+                      ],
+                      properties: {
+                        project_participation_id: {
+                          type: 'number'
+                        },
+                        project_id: {
+                          type: 'number'
+                        },
+                        system_user_id: {
+                          type: 'number'
+                        },
+                        project_role_ids: {
+                          type: 'array',
+                          items: {
+                            type: 'number'
+                          }
+                        },
+                        project_role_names: {
+                          type: 'array',
+                          items: {
+                            type: 'string'
+                          }
+                        },
+                        project_role_permissions: {
+                          type: 'array',
+                          items: {
+                            type: 'string'
+                          }
+                        }
                       }
                     }
                   },

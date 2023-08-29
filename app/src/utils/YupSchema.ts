@@ -196,4 +196,14 @@ yup.addMethod(yup.array, 'isUniqueAuthor', function (message: string) {
   });
 });
 
+yup.addMethod(yup.array, 'hasAtLeastOneValue', function (message: string, key: string, valueToFind: any) {
+  return this.test('has-at-least-one-value', message, (values) => {
+    if (!values || !values.length) {
+      return true;
+    }
+    const found = values.filter((item) => item[key][0] === valueToFind);
+    return found.length > 0 || false;
+  });
+});
+
 export default yup;

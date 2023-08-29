@@ -11,6 +11,7 @@ import React from 'react';
 import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
+import ProjectUserForm from '../components/ProjectUserForm';
 import {
   getCoordinatorAgencyOptions,
   initialProjectFieldData,
@@ -67,8 +68,6 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
         enableReinitialize={true}
         onSubmit={handleSubmit}>
         <>
-          {/* <ScrollToFormikError fieldOrder={Object.keys(initialProjectFieldData)} /> */}
-
           <HorizontalSplitFormComponent
             title="General Information"
             summary="Enter general information, objectives and timelines for the project."
@@ -125,6 +124,14 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
             component={
               <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
             }></HorizontalSplitFormComponent>
+
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
+            title="Team Members"
+            summary="Specify team members and their associated role for this project."
+            component={<ProjectUserForm users={props.projectData.participants || []} roles={codes.project_roles} />}
+          />
 
           {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
           {/* <Divider className={classes.sectionDivider} />

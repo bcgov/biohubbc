@@ -126,7 +126,7 @@ describe('getSingleSubmissionURL', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
@@ -148,7 +148,7 @@ describe('getSingleSubmissionURL', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(SummaryService.prototype, 'findSummarySubmissionById').resolves({

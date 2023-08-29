@@ -123,7 +123,7 @@ describe('DraftRepository', () => {
         sql: async () => {
           return ({
             rowCount: 2,
-            rows: null
+            rows: []
           } as any) as Promise<QueryResult<any>>;
         }
       });
@@ -163,7 +163,7 @@ describe('DraftRepository', () => {
         sql: async () => {
           return ({
             rowCount: 0,
-            rows: null
+            rows: []
           } as any) as Promise<QueryResult<any>>;
         }
       });
@@ -207,7 +207,7 @@ describe('DraftRepository', () => {
         sql: async () => {
           return ({
             rowCount: 0,
-            rows: null
+            rows: []
           } as any) as Promise<QueryResult<any>>;
         }
       });

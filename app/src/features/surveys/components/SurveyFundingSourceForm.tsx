@@ -74,7 +74,7 @@ const SurveyFundingSourceForm = () => {
         name="funding_sources"
         render={(arrayHelpers: FieldArrayRenderProps) => (
           <Box>
-            {values.funding_sources.map((surveyFundingSource, index) => {
+            {values.funding_sources.map((surveyFundingSource: ISurveyFundingSource, index: number) => {
               return (
                 <Box
                   mb={3}

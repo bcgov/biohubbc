@@ -26,7 +26,7 @@ import { APIError } from '../../../hooks/api/useAxios';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
-import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
+import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -51,7 +51,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface IProjectDetailsProps {
-  userDetails: IGetUserResponse;
+  userDetails: ISystemUser;
 }
 
 /**
@@ -71,8 +71,8 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   const [assignedProjects, setAssignedProjects] = useState<IGetUserProjectsListResponse[]>();
 
   const handleGetUserProjects = useCallback(
-    async (userId: number) => {
-      const userProjectsListResponse = await biohubApi.project.getAllUserProjectsForView(userId);
+    async (systemUserId: number) => {
+      const userProjectsListResponse = await biohubApi.project.getAllUserProjectsForView(systemUserId);
       setAssignedProjects(userProjectsListResponse);
     },
     [biohubApi.project]
@@ -107,7 +107,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const handleRemoveProjectParticipant = async (projectId: number, projectParticipationId: number) => {
     try {
-      const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
+      const response = await biohubApi.projectParticipants.removeProjectParticipant(projectId, projectParticipationId);
 
       if (!response) {
         openErrorDialog({
@@ -180,7 +180,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     <Paper elevation={0}>
       <Toolbar>
         <Typography data-testid="projects_header" variant="h4" component="h2">
-          Assigned Projects{' '}
+          Assigned Projects &zwnj;
           <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
             ({assignedProjects?.length})
           </Typography>
@@ -202,7 +202,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                 <TableRow key={row.project_id}>
                   <TableCell scope="row">
                     <Link component={RouterLink} to={`/admin/projects/${row.project_id}/details`} aria-current="page">
-                      {row.name}
+                      {row.project_name}
                     </Link>
                   </TableCell>
 
@@ -329,7 +329,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     }
 
     try {
-      const status = await biohubApi.project.updateProjectParticipantRole(
+      const status = await biohubApi.projectParticipants.updateProjectParticipantRole(
         item.project_id,
         item.project_participation_id,
         newRoleId
@@ -360,11 +360,9 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     }
   };
 
-  const currentProjectRoleName = projectRoleCodes.find((item) => item.id === row.project_role_id)?.name;
-
   return (
     <CustomMenuButton
-      buttonLabel={currentProjectRoleName}
+      buttonLabel={row.project_role_permissions[0]}
       buttonTitle={'Change Project Role'}
       buttonProps={{ variant: 'outlined', size: 'small' }}
       menuItems={projectRoleCodes.map((roleCode) => {

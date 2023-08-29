@@ -32,21 +32,15 @@ describe('PermitRepository', () => {
       expect(response).to.eql([{ permit_id: 2 }]);
     });
 
-    it('should throw an error if no permits were found', async () => {
-      const mockQueryResponse = ({} as unknown) as QueryResult<IPermitModel>;
+    it('should return empty rows', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-      const mockDBConnection = getMockDBConnection({
-        sql: sinon.stub().resolves(mockQueryResponse)
-      });
+      const repository = new PermitRepository(dbConnection);
 
-      const permitRepository = new PermitRepository(mockDBConnection);
+      const response = await repository.getPermitBySurveyId(1);
 
-      try {
-        await permitRepository.getPermitBySurveyId(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiError).message).to.equal('Failed to get permit by Id');
-      }
+      expect(response).to.eql([]);
     });
   });
 
@@ -112,21 +106,15 @@ describe('PermitRepository', () => {
       expect(response).to.eql([{ permit_id: 2 }]);
     });
 
-    it('should throw an error if no permits were found', async () => {
-      const mockQueryResponse = ({} as unknown) as QueryResult<IPermitModel>;
+    it('should return empty rows', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
-      const mockDBConnection = getMockDBConnection({
-        sql: sinon.stub().resolves(mockQueryResponse)
-      });
+      const repository = new PermitRepository(dbConnection);
 
-      const permitRepository = new PermitRepository(mockDBConnection);
+      const response = await repository.getAllPermits();
 
-      try {
-        await permitRepository.getAllPermits();
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiError).message).to.equal('Failed to get all permits');
-      }
+      expect(response).to.eql([]);
     });
   });
 
