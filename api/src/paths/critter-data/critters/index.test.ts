@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { CritterbaseService, IBulkCreate } from '../../../services/critterbase-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
-import * as createCritter from './post';
+import * as createCritter from './index';
 
 chai.use(sinonChai);
 
@@ -18,12 +18,13 @@ describe('paths/critter-data/critters/post', () => {
   const payload: IBulkCreate = {
     critters: [],
     captures: [],
-    mortality: [],
+    mortalities: [],
     locations: [],
     markings: [],
-    measurement_quantitative: [],
-    measurement_qualitative: [],
-    family: []
+    qualitative_measurements: [],
+    quantitative_measurements: [],
+    families: [],
+    collections: []
   };
 
   describe('createCritter', () => {

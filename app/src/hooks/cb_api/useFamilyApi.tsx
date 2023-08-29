@@ -19,7 +19,7 @@ const useFamilyApi = (axios: AxiosInstance) => {
   };
 
   const getImmediateFamily = async (family_id: string): Promise<{ parents: any[]; siblings: any[]; children: any }> => {
-    const { data } = await axios.get('/api/critter-data/family/' + family_id);
+    const { data } = await axios.get(`/api/critter-data/family/${family_id}`);
     return data;
   };
 

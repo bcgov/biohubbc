@@ -91,7 +91,7 @@ export function getQualMeasurementOptions(): RequestHandler {
       const result = await cb.getQualitativeOptions(taxon_id);
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.error({ label: 'getTaxonMeasurements', message: 'error', error });
+      defaultLog.error({ label: 'getQualMeasurementOptions', message: 'error', error });
       throw error;
     }
   };

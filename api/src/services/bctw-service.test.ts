@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
@@ -98,13 +98,11 @@ describe('BctwService', () => {
       const endpoint = '/endpoint';
       const mockResponse = { data: 'data' } as AxiosResponse;
 
-      const mockGetToken = sinon.stub(bctwService, 'getToken').resolves('abc123');
-      const mockAxios = sinon.stub(axios, 'get').resolves(mockResponse);
+      const mockAxios = sinon.stub(bctwService.axiosInstance, 'get').resolves(mockResponse);
 
       const result = await bctwService.makeGetRequest(endpoint);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockGetToken).to.have.been.calledOnce;
       expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}`);
     });
 
@@ -114,13 +112,11 @@ describe('BctwService', () => {
       const queryParams = { param: 'param' };
       const mockResponse = { data: 'data' } as AxiosResponse;
 
-      const mockGetToken = sinon.stub(bctwService, 'getToken').resolves('abc123');
-      const mockAxios = sinon.stub(axios, 'get').resolves(mockResponse);
+      const mockAxios = sinon.stub(bctwService.axiosInstance, 'get').resolves(mockResponse);
 
       const result = await bctwService.makeGetRequest(endpoint, queryParams);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockGetToken).to.have.been.calledOnce;
       expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}?param=${queryParams['param']}`);
     });
   });
@@ -135,13 +131,11 @@ describe('BctwService', () => {
       const endpoint = '/endpoint';
       const mockResponse = { data: 'data' } as AxiosResponse;
 
-      const mockGetToken = sinon.stub(bctwService, 'getToken').resolves('abc123');
-      const mockAxios = sinon.stub(axios, 'post').resolves(mockResponse);
+      const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves(mockResponse);
 
       const result = await bctwService.makePostPatchRequest('post', endpoint, { foo: 'bar' });
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockGetToken).to.have.been.calledOnce;
       expect(mockAxios).to.have.been.calledOnce;
     });
   });

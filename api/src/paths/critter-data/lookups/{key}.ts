@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { CritterbaseService, ICbRouteKey, ICritterbaseUser } from '../../../services/critterbase-service';
+import { CbRouteKey, CritterbaseService, ICritterbaseUser } from '../../../services/critterbase-service';
 import { getLogger } from '../../../utils/logger';
 
 // TODO: Put this all into an existing endpoint
@@ -113,7 +113,7 @@ export function getLookupValues(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
-    const key: ICbRouteKey = req.params.key as ICbRouteKey;
+    const key: CbRouteKey = req.params.key as CbRouteKey;
     const cb = new CritterbaseService(user);
     const params = [];
     for (const [a, b] of Object.entries(req.query)) {

@@ -16,7 +16,7 @@ const useCritterApi = (axios: AxiosInstance) => {
 
   const getCritterByID = async (critter_id: string): Promise<Record<string, unknown>> => {
     try {
-      const { data } = await axios.get('/api/critter-data/critters/' + critter_id);
+      const { data } = await axios.get(`/api/critter-data/critters/${critter_id}`);
       return data;
     } catch (e) {
       if (e instanceof Error) {

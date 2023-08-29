@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
@@ -49,10 +49,17 @@ export const HEALTH_ENDPOINT = '/health';
 export class BctwService {
   user: IBctwUser;
   keycloak: KeycloakService;
+  axiosInstance: AxiosInstance;
 
   constructor(user: IBctwUser) {
     this.user = user;
     this.keycloak = new KeycloakService();
+    this.axiosInstance = axios.create({
+      headers: {
+        authorization: `Bearer ${this.getToken()}`,
+        user: this.getUserHeader()
+      }
+    });
   }
 
   /**
@@ -99,7 +106,6 @@ export class BctwService {
    */
   async makeGetRequest(endpoint: string, queryParams?: Record<string, string>) {
     let url = `${BCTW_API_HOST}${endpoint}`;
-    const token = await this.getToken();
 
     // If query parameters are provided, append them to the URL
     if (queryParams) {
@@ -107,12 +113,7 @@ export class BctwService {
       url += `?${params.toString()}`;
     }
 
-    const response = await axios.get(url, {
-      headers: {
-        authorization: `Bearer ${token}`,
-        user: this.getUserHeader()
-      }
-    });
+    const response = await this.axiosInstance.get(url);
 
     this.handleRequestError(response, url);
     return response.data;
@@ -127,15 +128,9 @@ export class BctwService {
    * @return {*}
    * @memberof BctwService
    */
-  async makePostPatchRequest(method: 'post' | 'patch', endpoint: string, data?: any) {
+  async makePostPatchRequest<DataType = any>(method: 'post' | 'patch', endpoint: string, data?: DataType) {
     const url = `${BCTW_API_HOST}${endpoint}`;
-    const token = await this.getToken();
-    const response = await axios[method](url, data, {
-      headers: {
-        authorization: `Bearer ${token}`,
-        user: this.getUserHeader()
-      }
-    });
+    const response = await this.axiosInstance[method](url, data);
     this.handleRequestError(response, url);
     return response.data;
   }

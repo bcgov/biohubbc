@@ -1,8 +1,8 @@
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { CritterbaseService, CRITTERBASE_API_HOST } from './critterbase-service';
+import { CritterbaseService, CRITTERBASE_API_HOST, IBulkCreate } from './critterbase-service';
 import { KeycloakService } from './keycloak-service';
 
 chai.use(sinonChai);
@@ -48,14 +48,12 @@ describe('CritterbaseService', () => {
       const endpoint = '/endpoint';
       const mockResponse = { data: 'data' } as AxiosResponse;
 
-      const mockGetToken = sinon.stub(cb, 'getToken').resolves('abc123');
-      const mockAxios = sinon.stub(axios, 'get').resolves(mockResponse);
+      const mockAxios = sinon.stub(cb.axiosInstance, 'get').resolves(mockResponse);
 
       const result = await cb.makeGetRequest(endpoint, []);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockGetToken).to.have.been.calledOnce;
-      expect(mockAxios).to.have.been.calledOnceWith(`${CRITTERBASE_API_HOST}${endpoint}`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${CRITTERBASE_API_HOST}${endpoint}?`);
     });
 
     it('should make an axios get request with params', async () => {
@@ -64,13 +62,11 @@ describe('CritterbaseService', () => {
       const queryParams = [{ key: 'param', value: 'param' }];
       const mockResponse = { data: 'data' } as AxiosResponse;
 
-      const mockGetToken = sinon.stub(cb, 'getToken').resolves('abc123');
-      const mockAxios = sinon.stub(axios, 'get').resolves(mockResponse);
+      const mockAxios = sinon.stub(cb.axiosInstance, 'get').resolves(mockResponse);
 
       const result = await cb.makeGetRequest(endpoint, queryParams);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockGetToken).to.have.been.calledOnce;
       expect(mockAxios).to.have.been.calledOnceWith(`${CRITTERBASE_API_HOST}${endpoint}?param=param`);
     });
   });
@@ -85,13 +81,11 @@ describe('CritterbaseService', () => {
       const endpoint = '/endpoint';
       const mockResponse = { data: 'data' } as AxiosResponse;
 
-      const mockGetToken = sinon.stub(cb, 'getToken').resolves('abc123');
-      const mockAxios = sinon.stub(axios, 'post').resolves(mockResponse);
+      const mockAxios = sinon.stub(cb.axiosInstance, 'post').resolves(mockResponse);
 
       const result = await cb.makePostPatchRequest('post', endpoint, { foo: 'bar' });
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockGetToken).to.have.been.calledOnce;
       expect(mockAxios).to.have.been.calledOnce;
     });
   });
@@ -143,15 +137,16 @@ describe('CritterbaseService', () => {
     });
     describe('createCritter', async () => {
       const mockPostPatchRequest = sinon.stub(cb, 'makePostPatchRequest');
-      const data = {
+      const data: IBulkCreate = {
         locations: [{ latitude: 2, longitude: 2 }],
         critters: [],
         captures: [],
-        mortality: [],
+        mortalities: [],
         markings: [],
-        measurement_quantitative: [],
-        measurement_qualitative: [],
-        family: []
+        qualitative_measurements: [],
+        quantitative_measurements: [],
+        families: [],
+        collections: []
       };
       await cb.createCritter(data);
       expect(mockPostPatchRequest).to.have.been.calledOnceWith('post', 'critters', data);

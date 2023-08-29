@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
+import { URLSearchParams } from 'url';
 import { KeycloakService } from './keycloak-service';
 
 export interface ICritterbaseUser {
@@ -97,15 +98,22 @@ export interface IFamilyPayload {
   children: { family_id: string; child_critter_id: string }[];
 }
 
+export interface ICollection {
+  critter_collection_unit?: string;
+  critter_id: string;
+  collection_unit_id: string;
+}
+
 export interface IBulkCreate {
   critters: ICritter[];
   captures: ICapture[];
-  mortality: IMortality[];
+  collections: ICollection[];
+  mortalities: IMortality[];
   locations: ILocation[];
   markings: IMarking[];
-  measurement_quantitative: IQuantMeasurement[];
-  measurement_qualitative: IQualMeasurement[];
-  family: IFamilyPayload[];
+  quantitative_measurements: IQuantMeasurement[];
+  qualitative_measurements: IQualMeasurement[];
+  families: IFamilyPayload[];
 }
 
 export interface ICbSelectRows {
@@ -151,7 +159,7 @@ export const CbRoutes = {
   ['taxon-marking-body-locations']: `${xref}/taxon-marking-body-locations`
 } as const;
 
-export type ICbRouteKey = keyof typeof CbRoutes;
+export type CbRouteKey = keyof typeof CbRoutes;
 
 export const CRITTERBASE_API_HOST = process.env.CB_API_HOST || ``;
 const CRITTER_ENDPOINT = '/critters/';
@@ -162,10 +170,17 @@ const FAMILY_ENDPOINT = '/family';
 export class CritterbaseService {
   user: ICritterbaseUser;
   keycloak: KeycloakService;
+  axiosInstance: AxiosInstance;
 
   constructor(user: ICritterbaseUser) {
     this.user = user;
     this.keycloak = new KeycloakService();
+    this.axiosInstance = axios.create({
+      headers: {
+        authorization: `Bearer ${this.getToken()}`,
+        ...this.getUserHeader()
+      }
+    });
   }
 
   async getToken(): Promise<string> {
@@ -178,50 +193,38 @@ export class CritterbaseService {
   }
 
   async makeGetRequest(endpoint: string, params: QueryParam[]) {
-    let url = `${CRITTERBASE_API_HOST}${endpoint}`;
-    for (let i = 0; i < params.length; i++) {
-      url += (i === 0 ? '?' : '&') + params[i].key + '=' + params[i].value;
+    const appendParams = new URLSearchParams();
+    for (const p of params) {
+      appendParams.append(p.key, p.value);
     }
-    console.log('Actual URL we will hit ' + url);
-    const token = await this.getToken();
-    const response = await axios.get(url, {
-      headers: {
-        authorization: `Bearer ${token}`,
-        ...this.getUserHeader()
-      }
-    });
+    const url = `${CRITTERBASE_API_HOST}${endpoint}?${appendParams.toString()}`;
+    const response = await this.axiosInstance.get(url);
     return response.data;
   }
 
-  async makePostPatchRequest(method: 'post' | 'patch', endpoint: string, data?: any) {
+  async makePostPatchRequest<DataType = any>(method: 'post' | 'patch', endpoint: string, data?: DataType) {
     const url = `${CRITTERBASE_API_HOST}${endpoint}`;
-    const token = await this.getToken();
-    const response = await axios[method](url, data, {
-      headers: {
-        authorization: `Bearer ${token}`,
-        ...this.getUserHeader()
-      }
-    });
+    const response = await this.axiosInstance[method](url, data);
     return response.data;
   }
 
-  async getLookupValues(route: ICbRouteKey, params: QueryParam[]) {
-    return this.makeGetRequest(`${CbRoutes[route]}`, params);
+  async getLookupValues(route: CbRouteKey, params: QueryParam[]) {
+    return this.makeGetRequest(CbRoutes[route], params);
   }
 
   async getTaxonMeasurements(taxon_id: string) {
-    return this.makeGetRequest(`${CbRoutes['taxon-measurements']}`, [{ key: 'taxon_id', value: taxon_id }]);
+    return this.makeGetRequest(CbRoutes['taxon-measurements'], [{ key: 'taxon_id', value: taxon_id }]);
   }
 
   async getTaxonBodyLocations(taxon_id: string) {
-    return this.makeGetRequest(`${CbRoutes['taxon-marking-body-locations']}`, [
+    return this.makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
       { key: 'taxon_id', value: taxon_id },
       { key: 'format', value: 'asSelect' }
     ]);
   }
 
   async getQualitativeOptions(taxon_measurement_id: string, format = 'asSelect') {
-    return this.makeGetRequest(`${CbRoutes['taxon-qualitative-measurement-options']}`, [
+    return this.makeGetRequest(CbRoutes['taxon-qualitative-measurement-options'], [
       { key: 'taxon_measurement_id', value: taxon_measurement_id },
       { key: 'format', value: format }
     ]);
@@ -236,7 +239,7 @@ export class CritterbaseService {
   }
 
   async getCritter(critter_id: string) {
-    return this.makeGetRequest(CRITTER_ENDPOINT + critter_id, [{ key: 'format', value: 'detail' }]);
+    return this.makeGetRequest(`${CRITTER_ENDPOINT}${critter_id}`, [{ key: 'format', value: 'detail' }]);
   }
 
   async createCritter(data: IBulkCreate) {
