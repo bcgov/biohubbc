@@ -95,10 +95,7 @@ export class SurveyService extends DBService {
   }
 
   async getSurveyPartnershipsData(surveyId: number): Promise<ISurveyPartnerships> {
-    const [
-      indigenousPartnerships,
-      stakeholderPartnerships
-    ] = [
+    const [indigenousPartnerships, stakeholderPartnerships] = [
       await this.surveyRepository.getIndigenousPartnershipsBySurveyId(surveyId),
       await this.surveyRepository.getStakeholderPartnershipsBySurveyId(surveyId)
     ];

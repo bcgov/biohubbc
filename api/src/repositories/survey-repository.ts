@@ -124,7 +124,7 @@ export const StakeholderPartnershipRecord = z.object({
 export const IndigenousPartnershipRecord = z.object({
   survey_first_nation_partnership_id: z.number(),
   survey_id: z.number(),
-  first_nations_id: z.number(),
+  first_nations_id: z.number()
 });
 
 export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnershipRecord>;
@@ -1207,9 +1207,7 @@ export class SurveyRepository extends BaseRepository {
    * @return {*}  {Promise<GetPartnershipsData['indigenous_partnerships'][]>}
    * @memberof SurveyRepository
    */
-  async getIndigenousPartnershipsBySurveyId(
-    surveyId: number
-  ): Promise<IndigenousPartnershipRecord[]> {
+  async getIndigenousPartnershipsBySurveyId(surveyId: number): Promise<IndigenousPartnershipRecord[]> {
     defaultLog.debug({ label: 'getIndigenousPartnershipsBySurveyId', surveyId });
 
     const sqlStatement = SQL`
@@ -1241,9 +1239,7 @@ export class SurveyRepository extends BaseRepository {
    * @return {*}  {Promise<GetPartnershipsData['stakeholder_partnerships'][]>}
    * @memberof SurveyRepository
    */
-  async getStakeholderPartnershipsBySurveyId(
-    surveyId: number
-  ): Promise<StakeholderPartnershipRecord[]> {
+  async getStakeholderPartnershipsBySurveyId(surveyId: number): Promise<StakeholderPartnershipRecord[]> {
     defaultLog.debug({ label: 'getStakeholderPartnershipsBySurveyId', surveyId });
 
     const sqlStatement = SQL`
