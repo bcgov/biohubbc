@@ -326,7 +326,6 @@ export async function up(knex: Knex): Promise<void> {
     
         delete from survey where project_id = p_project_id;
         delete from project_management_actions where project_id = p_project_id;
-        delete from project_funding_source where project_id = p_project_id;
         delete from project_iucn_action_classification where project_id = p_project_id;
         delete from project_attachment_publish where project_attachment_id in (select project_attachment_id from project_attachment where project_id = p_project_id);
         delete from project_attachment where project_id = p_project_id;
