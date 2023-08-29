@@ -1,6 +1,6 @@
 import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Collapse from '@mui/material/Collapse';
@@ -139,23 +139,9 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     }
   };
 
-  const filterSearchOptions = (
-    searchUsers: ISystemUser[],
-    selectedUsers: (ISystemUser | IGetProjectParticipant)[]
-  ): ISystemUser[] => {
-    // filter out any selected users out
-    const filtered = searchUsers.filter(
-      (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
-    );
-    // alphabetize array on display name
-    return alphabetizeObjects(filtered, 'display_name');
-  };
-
-  const getSelectedRole = (index: number): string | undefined => {
-    if (values.participants[index]) {
-      // users should only ever have a single role on a project so index: 0 is a safe selection
-      return values.participants[index].project_role_names[0] || '';
-    }
+  const getSelectedRole = (index: number): string => {
+    // users should only ever have a single role on a project so index: 0 is a safe selection
+    return values.participants?.[index]?.project_role_names?.[0] || '';
   };
 
   if (!searchUserDataLoader.data || !searchUserDataLoader.hasLoaded) {
@@ -196,7 +182,14 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             data-testid={'autocomplete-user-role-search'}
             filterSelectedOptions
             noOptionsText="No records found"
-            options={filterSearchOptions(searchUserDataLoader.data, selectedUsers)}
+            options={alphabetizeObjects(searchUserDataLoader.data, 'display_name')}
+            filterOptions={(options, state) => {
+              const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
+              const unselectedOptions = options.filter(
+                (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
+              );
+              return searchFilter(unselectedOptions, state);
+            }}
             getOptionLabel={(option) => option.display_name}
             inputValue={searchText}
             onInputChange={(_, value, reason) => {

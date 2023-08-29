@@ -10,7 +10,7 @@ import UserCard from './UserCard';
 interface IUserRoleSelectorProps {
   index: number;
   user: ISystemUser | IGetProjectParticipant | IGetSurveyParticipant;
-  selectedRole: string | undefined;
+  selectedRole: string;
   roles: ICode[];
   error: JSX.Element | undefined;
   handleAdd: (role: string, index: number) => void;
