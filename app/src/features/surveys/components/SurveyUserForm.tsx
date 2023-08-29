@@ -149,14 +149,14 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
   return (
     <form onSubmit={handleSubmit}>
       <Box component="fieldset">
-        <Typography component="legend">Add Survey Job Members</Typography>
+        <Typography component="legend">Add Participants</Typography>
         <Typography
           variant="body1"
           color="textSecondary"
           sx={{
             maxWidth: '72ch'
           }}>
-          Select team members and assign each member a job for this survey.
+          Add people and their associated job for this survey.
         </Typography>
       </Box>
       {errors?.['participants'] && selectedUsers.length > 0 && (
@@ -187,7 +187,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
             <TextField
               {...params}
               variant="outlined"
-              placeholder={'Find team members'}
+              placeholder={'Find people'}
               fullWidth
               InputProps={{
                 ...params.InputProps,
@@ -234,6 +234,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
                     handleAdd={handleAddUserRole}
                     handleRemove={handleRemoveUser}
                     key={user.system_user_id}
+                    label={'Select a Job'}
                   />
                 </Collapse>
               );
