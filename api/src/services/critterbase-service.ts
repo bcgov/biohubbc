@@ -153,7 +153,7 @@ export const CbRoutes = {
 
 export type ICbRouteKey = keyof typeof CbRoutes;
 
-const CRITTERBASE_API_HOST = process.env.CB_API_HOST || ``;
+export const CRITTERBASE_API_HOST = process.env.CB_API_HOST || ``;
 const CRITTER_ENDPOINT = '/critters/';
 const BULK_ENDPOINT = '/bulk';
 const SIGNUP_ENDPOINT = '/signup';

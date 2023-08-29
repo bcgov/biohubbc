@@ -1,5 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
 import { v4 } from 'uuid';
 import { useCritterApi } from './useCritterApi';
 
@@ -54,7 +55,7 @@ describe('useCritterApi', () => {
     expect(typeof result.mortality_timestamp).toBe('string');
   });
 
-  /*it('should create a critter in critterbase', async () => {
+  it('should create a critter in critterbase', async () => {
     const forCritter: IAnimal = {
       ...mockCritter,
       captures: [],
@@ -76,5 +77,5 @@ describe('useCritterApi', () => {
 
     const result = await useCritterApi(axios).createCritter(payload);
     expect(result.count).toBe(1);
-  });*/
+  });
 });
