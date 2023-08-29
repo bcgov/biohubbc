@@ -33,6 +33,7 @@ import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
+import { SurveyParticipationService } from './survey-participation-service';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -74,6 +75,14 @@ describe('SurveyService', () => {
       const getSurveyLocationDataStub = sinon
         .stub(SurveyService.prototype, 'getSurveyLocationData')
         .resolves(({ data: 'locationData' } as unknown) as any);
+      const getSurveyParticipantsStub = sinon
+        .stub(SurveyParticipationService.prototype, 'getSurveyParticipants')
+        .resolves([{ data: 'participantData' } as any]);
+
+      const getSurveyPartnershipsDataStub = sinon.stub(SurveyService.prototype, 'getSurveyPartnershipsData').resolves({
+        indigenous_partnerships: [],
+        stakeholder_partnerships: []
+      });
 
       const response = await surveyService.getSurveyById(1);
 
@@ -84,6 +93,8 @@ describe('SurveyService', () => {
       expect(getSurveyPurposeAndMethodologyStub).to.be.calledOnce;
       expect(getSurveyProprietorDataForViewStub).to.be.calledOnce;
       expect(getSurveyLocationDataStub).to.be.calledOnce;
+      expect(getSurveyParticipantsStub).to.be.calledOnce;
+      expect(getSurveyPartnershipsDataStub).to.be.calledOnce;
 
       expect(response).to.eql({
         survey_details: { data: 'surveyData' },
@@ -92,6 +103,11 @@ describe('SurveyService', () => {
         funding_sources: { data: 'fundingSourceData' },
         purpose_and_methodology: { data: 'purposeAndMethodologyData' },
         proprietor: { data: 'proprietorData' },
+        partnerships: {
+          indigenous_partnerships: [],
+          stakeholder_partnerships: []
+        },
+        participants: [{ data: 'participantData' } as any],
         location: { data: 'locationData' }
       });
     });
@@ -118,6 +134,9 @@ describe('SurveyService', () => {
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
       const insertRegionStub = sinon.stub(SurveyService.prototype, 'insertRegion').resolves();
+      const upsertSurveyParticipantDataStub = sinon
+        .stub(SurveyService.prototype, 'upsertSurveyParticipantData')
+        .resolves();
 
       const surveyService = new SurveyService(dbConnectionObj);
 
@@ -133,6 +152,7 @@ describe('SurveyService', () => {
       expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).not.to.have.been.called;
       expect(insertRegionStub).not.to.have.been.called;
+      expect(upsertSurveyParticipantDataStub).not.to.have.been.called;
     });
 
     it('updates everything when all data provided', async () => {
@@ -152,6 +172,9 @@ describe('SurveyService', () => {
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
       const updateSurveyRegionStub = sinon.stub(SurveyService.prototype, 'insertRegion').resolves();
+      const upsertSurveyParticipantDataStub = sinon
+        .stub(SurveyService.prototype, 'upsertSurveyParticipantData')
+        .resolves();
 
       const surveyService = new SurveyService(dbConnectionObj);
 
@@ -163,7 +186,8 @@ describe('SurveyService', () => {
         funding_sources: [{}],
         proprietor: {},
         purpose_and_methodology: {},
-        location: {}
+        location: {},
+        participants: [{}]
       });
 
       await surveyService.updateSurvey(surveyId, putSurveyData);
@@ -176,6 +200,7 @@ describe('SurveyService', () => {
       expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
       expect(updateSurveyRegionStub).to.have.been.calledOnce;
+      expect(upsertSurveyParticipantDataStub).to.have.been.calledOnce;
     });
   });
 
@@ -1300,3 +1325,26 @@ describe('SurveyService', () => {
     });
   });
 });
+
+/*
+TODO
+
+describe('getPartnershipsData', () => {
+  it('returns the first row on success', async () => {
+    const dbConnection = getMockDBConnection();
+    const service = new ProjectService(dbConnection);
+    
+    const data = new GetPartnershipsData([{ id: 1 }], [{ id: 1 }]);
+    
+    const repoStub1 = sinon.stub(ProjectRepository.prototype, 'getIndigenousPartnershipsRows').resolves([{ id: 1 }]);
+    const repoStub2 = sinon.stub(ProjectRepository.prototype, 'getStakeholderPartnershipsRows').resolves([{ id: 1 }]);
+    
+    const response = await service.getPartnershipsData(1);
+    
+    expect(repoStub1).to.be.calledOnce;
+    expect(repoStub2).to.be.calledOnce;
+    expect(response).to.eql(data);
+  });
+});
+
+*/

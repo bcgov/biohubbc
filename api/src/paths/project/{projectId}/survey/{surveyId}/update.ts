@@ -64,6 +64,16 @@ PUT.apiDoc = {
         schema: {
           title: 'SurveyProject put request object',
           type: 'object',
+          required: [
+            'survey_details',
+            'species',
+            'permit',
+            'funding_sources',
+            'partnerships',
+            'proprietor',
+            'purpose_and_methodology',
+            'location'
+          ],
           properties: {
             survey_details: {
               type: 'object',
@@ -175,6 +185,26 @@ PUT.apiDoc = {
                 }
               }
             },
+            partnerships: {
+              title: 'Survey partnerships',
+              type: 'object',
+              required: [],
+              properties: {
+                indigenous_partnerships: {
+                  type: 'array',
+                  items: {
+                    type: 'integer',
+                    minimum: 1
+                  }
+                },
+                stakeholder_partnerships: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                }
+              }
+            },
             proprietor: {
               type: 'object',
               required: [
@@ -251,6 +281,28 @@ PUT.apiDoc = {
                 },
                 revision_count: {
                   type: 'number'
+                }
+              }
+            },
+            participants: {
+              type: 'array',
+              items: {
+                type: 'object',
+                nullable: true,
+                required: ['system_user_id', 'survey_job_name'],
+                properties: {
+                  survey_participation_id: {
+                    type: 'number',
+                    minimum: 1,
+                    nullable: true
+                  },
+                  system_user_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  survey_job_name: {
+                    type: 'string'
+                  }
                 }
               }
             }

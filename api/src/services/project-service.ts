@@ -10,7 +10,6 @@ import {
   PutIUCNData,
   PutLocationData,
   PutObjectivesData,
-  PutPartnershipsData,
   PutProjectData
 } from '../models/project-update';
 import {
@@ -19,7 +18,6 @@ import {
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
-  GetPartnershipsData,
   GetReportAttachmentsData,
   IGetProject,
   IProjectAdvancedFilters,
@@ -88,16 +86,14 @@ export class ProjectService extends DBService {
       coordinatorData,
       projectParticipantsData,
       locationData,
-      iucnData,
-      partnershipsData
+      iucnData
     ] = await Promise.all([
       this.getProjectData(projectId),
       this.getObjectivesData(projectId),
       this.getCoordinatorData(projectId),
       this.getProjectParticipantsData(projectId),
       this.getLocationData(projectId),
-      this.getIUCNClassificationData(projectId),
-      this.getPartnershipsData(projectId)
+      this.getIUCNClassificationData(projectId)
     ]);
 
     return {
@@ -106,8 +102,7 @@ export class ProjectService extends DBService {
       coordinator: coordinatorData,
       participants: projectParticipantsData,
       location: locationData,
-      iucn: iucnData,
-      partnerships: partnershipsData
+      iucn: iucnData
     };
   }
 
@@ -130,8 +125,7 @@ export class ProjectService extends DBService {
       project: undefined,
       objectives: undefined,
       location: undefined,
-      iucn: undefined,
-      partnerships: undefined
+      iucn: undefined
     };
 
     const promises: Promise<any>[] = [];
@@ -140,14 +134,6 @@ export class ProjectService extends DBService {
       promises.push(
         this.getCoordinatorData(projectId).then((value) => {
           results.coordinator = value;
-        })
-      );
-    }
-
-    if (entities.includes(GET_ENTITIES.partnerships)) {
-      promises.push(
-        this.getPartnershipsData(projectId).then((value) => {
-          results.partnerships = value;
         })
       );
     }
@@ -221,23 +207,6 @@ export class ProjectService extends DBService {
     return this.projectRepository.getIUCNClassificationData(projectId);
   }
 
-  async getPartnershipsData(projectId: number): Promise<GetPartnershipsData> {
-    const [indigenousPartnershipsRows, stakegholderPartnershipsRows] = await Promise.all([
-      this.projectRepository.getIndigenousPartnershipsRows(projectId),
-      this.projectRepository.getStakeholderPartnershipsRows(projectId)
-    ]);
-
-    return new GetPartnershipsData(indigenousPartnershipsRows, stakegholderPartnershipsRows);
-  }
-
-  async getIndigenousPartnershipsRows(projectId: number): Promise<any[]> {
-    return this.projectRepository.getIndigenousPartnershipsRows(projectId);
-  }
-
-  async getStakeholderPartnershipsRows(projectId: number): Promise<any[]> {
-    return this.projectRepository.getStakeholderPartnershipsRows(projectId);
-  }
-
   async getAttachmentsData(projectId: number): Promise<GetAttachmentsData> {
     return this.projectRepository.getAttachmentsData(projectId);
   }
@@ -277,24 +246,6 @@ export class ProjectService extends DBService {
 
     const promises: Promise<any>[] = [];
 
-    // Handle indigenous partners
-    promises.push(
-      Promise.all(
-        postProjectData.partnerships.indigenous_partnerships.map((indigenousNationId: number) =>
-          this.insertIndigenousNation(indigenousNationId, projectId)
-        )
-      )
-    );
-
-    // Handle stakeholder partners
-    promises.push(
-      Promise.all(
-        postProjectData.partnerships.stakeholder_partnerships.map((stakeholderPartner: string) =>
-          this.insertStakeholderPartnership(stakeholderPartner, projectId)
-        )
-      )
-    );
-
     // Handle project IUCN classifications
     promises.push(
       Promise.all(
@@ -320,14 +271,6 @@ export class ProjectService extends DBService {
 
   async insertProject(postProjectData: PostProjectObject): Promise<number> {
     return this.projectRepository.insertProject(postProjectData);
-  }
-
-  async insertIndigenousNation(indigenousNationsId: number, project_id: number): Promise<number> {
-    return this.projectRepository.insertIndigenousNation(indigenousNationsId, project_id);
-  }
-
-  async insertStakeholderPartnership(stakeholderPartner: string, project_id: number): Promise<number> {
-    return this.projectRepository.insertStakeholderPartnership(stakeholderPartner, project_id);
   }
 
   async insertClassificationDetail(iucn3_id: number, project_id: number): Promise<number> {
@@ -385,10 +328,6 @@ export class ProjectService extends DBService {
   async updateProject(projectId: number, entities: IUpdateProject): Promise<void> {
     const promises: Promise<any>[] = [];
 
-    if (entities?.partnerships) {
-      promises.push(this.updatePartnershipsData(projectId, entities));
-    }
-
     if (entities?.project || entities?.location || entities?.objectives || entities?.coordinator) {
       promises.push(this.updateProjectData(projectId, entities));
     }
@@ -419,25 +358,6 @@ export class ProjectService extends DBService {
       ) ?? [];
 
     await Promise.all(insertIUCNPromises);
-  }
-
-  async updatePartnershipsData(projectId: number, entities: IUpdateProject): Promise<void> {
-    const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
-
-    await this.projectRepository.deleteIndigenousPartnershipsData(projectId);
-    await this.projectRepository.deleteStakeholderPartnershipsData(projectId);
-
-    const insertIndigenousPartnershipsPromises =
-      putPartnershipsData?.indigenous_partnerships?.map((indigenousPartnership: number) =>
-        this.insertIndigenousNation(indigenousPartnership, projectId)
-      ) ?? [];
-
-    const insertStakeholderPartnershipsPromises =
-      putPartnershipsData?.stakeholder_partnerships?.map((stakeholderPartnership: string) =>
-        this.insertStakeholderPartnership(stakeholderPartnership, projectId)
-      ) ?? [];
-
-    await Promise.all([...insertIndigenousPartnershipsPromises, ...insertStakeholderPartnershipsPromises]);
   }
 
   async updateProjectData(projectId: number, entities: IUpdateProject): Promise<void> {

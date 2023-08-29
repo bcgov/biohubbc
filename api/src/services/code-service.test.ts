@@ -42,7 +42,8 @@ describe('CodeService', () => {
         'ecological_seasons',
         'field_methods',
         'intended_outcomes',
-        'vantage_codes'
+        'vantage_codes',
+        'survey_jobs'
       );
     });
   });

@@ -38,10 +38,6 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
         }
       ]
     },
-    partnerships: {
-      indigenous_partnerships: [1, 2],
-      stakeholder_partnerships: ['partner 3', 'partner 4']
-    },
     participants: [
       {
         project_participation_id: 1,

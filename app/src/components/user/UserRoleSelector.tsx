@@ -3,17 +3,19 @@ import Icon from '@mdi/react';
 import { Box, IconButton, MenuItem, Paper, Select } from '@mui/material';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import UserCard from './UserCard';
 
 interface IUserRoleSelectorProps {
   index: number;
-  user: ISystemUser | IGetProjectParticipant;
-  selectedRole: string | undefined;
+  user: ISystemUser | IGetProjectParticipant | IGetSurveyParticipant;
+  selectedRole: string;
   roles: ICode[];
   error: JSX.Element | undefined;
   handleAdd: (role: string, index: number) => void;
   handleRemove: (id: number) => void;
+  label: string;
 }
 
 const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
@@ -55,7 +57,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
               }}
               renderValue={(selected) => {
                 if (!selected) {
-                  return 'Select a Role';
+                  return props.label;
                 }
                 return selected;
               }}>

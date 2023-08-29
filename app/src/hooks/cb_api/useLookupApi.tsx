@@ -80,18 +80,12 @@ const useLookupApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const getTaxonMeasurements = async (taxon_id?: string): Promise<Array<IMeasurementStub> | undefined> => {
-    if (!taxon_id) {
-      return;
-    }
+  const getTaxonMeasurements = async (taxon_id: string): Promise<Array<IMeasurementStub> | undefined> => {
     const { data } = await axios.get(`${CbRoutes.taxon_measurements}?taxon_id=${taxon_id}`);
     return data;
   };
 
-  const getTaxonMarkingBodyLocations = async (taxon_id?: string): Promise<Array<IMarkingStub> | undefined> => {
-    if (!taxon_id) {
-      return;
-    }
+  const getTaxonMarkingBodyLocations = async (taxon_id: string): Promise<Array<IMarkingStub> | undefined> => {
     const { data } = await axios.get(`${CbRoutes.taxon_marking_body_locations}?taxon_id=${taxon_id}`);
     return data;
   };

@@ -5,7 +5,6 @@ import { IProjectDetailsForm } from 'features/projects/components/ProjectDetails
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
-import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { Feature } from 'geojson';
 
 export interface IGetProjectAttachment {
@@ -137,7 +136,6 @@ export interface ICreateProjectRequest
     IProjectObjectivesForm,
     IProjectLocationForm,
     IProjectIUCNForm,
-    IProjectPartnershipsForm,
     IProjectUserRoles {}
 
 /**
@@ -156,7 +154,6 @@ export enum UPDATE_GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  partnerships = 'partnerships',
   participants = 'participants'
 }
 
@@ -172,7 +169,6 @@ export interface IGetProjectForUpdateResponse {
   location?: IGetProjectForUpdateResponseLocation;
   coordinator?: IGetProjectForUpdateResponseCoordinator;
   iucn?: IGetProjectForUpdateResponseIUCN;
-  partnerships?: IGetProjectForUpdateResponsePartnerships;
   participants?: IGetProjectParticipant[];
 }
 
@@ -213,11 +209,6 @@ export interface IGetProjectForUpdateResponseIUCN {
   classificationDetails: IGetProjectForUpdateResponseIUCNArrayItem[];
 }
 
-export interface IGetProjectForUpdateResponsePartnerships {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
-}
-
 /**
  * An interface for a single instance of project metadata, for update-only use cases.
  *
@@ -251,7 +242,6 @@ export interface ProjectViewObject {
   coordinator: IGetProjectForViewResponseCoordinator;
   participants: IGetProjectParticipant[];
   iucn: IGetProjectForViewResponseIUCN;
-  partnerships: IGetProjectForViewResponsePartnerships;
 }
 
 export interface IGetProjectForViewResponseDetails {
@@ -301,11 +291,6 @@ interface IGetProjectForViewResponseIUCNArrayItem {
 
 export interface IGetProjectForViewResponseIUCN {
   classificationDetails: IGetProjectForViewResponseIUCNArrayItem[];
-}
-
-export interface IGetProjectForViewResponsePartnerships {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
 }
 
 export interface ProjectSupplementaryData {

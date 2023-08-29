@@ -77,6 +77,7 @@ GET.apiDoc = {
                   'species',
                   'permit',
                   'funding_sources',
+                  'partnerships',
                   'proprietor',
                   'purpose_and_methodology',
                   'location'
@@ -214,6 +215,26 @@ GET.apiDoc = {
                         },
                         revision_count: {
                           type: 'number'
+                        }
+                      }
+                    }
+                  },
+                  partnerships: {
+                    title: 'Survey partnerships',
+                    type: 'object',
+                    required: ['indigenous_partnerships', 'stakeholder_partnerships'],
+                    properties: {
+                      indigenous_partnerships: {
+                        type: 'array',
+                        items: {
+                          type: 'integer',
+                          minimum: 1
+                        }
+                      },
+                      stakeholder_partnerships: {
+                        type: 'array',
+                        items: {
+                          type: 'string'
                         }
                       }
                     }
