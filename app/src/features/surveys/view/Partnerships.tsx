@@ -51,11 +51,11 @@ const Partnerships = () => {
         <Typography component="dt" variant="subtitle2" color="textSecondary">
           Indigenous
         </Typography>
-        {surveyData.partnerships.indigenous_partnerships?.map((indigenousPartnership: number, index: number) => {
+        {surveyData.partnerships.indigenous_partnerships?.map((indigenousPartnership: number) => {
           return (
             <Typography
               component="dd"
-              key={`first-nations-${indigenousPartnership}-${index}`}
+              key={`first-nations-${indigenousPartnership}`}
               className={classes.projectPartners}>
               {codes.first_nations?.find((item: any) => item.id === indigenousPartnership)?.name}
             </Typography>
@@ -68,13 +68,13 @@ const Partnerships = () => {
         <Typography component="dt" variant="subtitle2" color="textSecondary">
           Other Partnerships
         </Typography>
-        {surveyData.partnerships.stakeholder_partnerships?.map((stakeholderPartnership: string, index: number) => {
+        {surveyData.partnerships.stakeholder_partnerships?.map((stakeholderPartnership: string) => {
           return (
             <Typography
               component="dd"
               variant="body1"
               className={classes.projectPartners}
-              key={`stakeholder-${stakeholderPartnership}-${index}`}>
+              key={`stakeholder-${stakeholderPartnership}`}>
               {stakeholderPartnership}
             </Typography>
           );
