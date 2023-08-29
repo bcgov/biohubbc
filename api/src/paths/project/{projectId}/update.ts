@@ -4,6 +4,7 @@ import { Feature } from 'geojson';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
+import { PostParticipantData } from '../../../models/project-create';
 import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
 import { projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
@@ -37,7 +38,8 @@ export enum GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  partnerships = 'partnerships'
+  partnerships = 'partnerships',
+  participants = 'participants'
 }
 
 export const getAllEntities = (): string[] => Object.values(GET_ENTITIES);
@@ -217,6 +219,67 @@ GET.apiDoc = {
                     }
                   }
                 }
+              },
+              participants: {
+                title: 'Project participants',
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'project_participation_id',
+                    'project_id',
+                    'system_user_id',
+                    'project_role_ids',
+                    'project_role_names',
+                    'project_role_permissions',
+                    'display_name',
+                    'email',
+                    'agency',
+                    'identity_source'
+                  ],
+                  properties: {
+                    project_participation_id: {
+                      type: 'number'
+                    },
+                    project_id: {
+                      type: 'number'
+                    },
+                    system_user_id: {
+                      type: 'number'
+                    },
+                    project_role_ids: {
+                      type: 'array',
+                      items: {
+                        type: 'number'
+                      }
+                    },
+                    project_role_names: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
+                    },
+                    project_role_permissions: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
+                    },
+                    display_name: {
+                      type: 'string'
+                    },
+                    email: {
+                      type: 'string'
+                    },
+                    agency: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    identity_source: {
+                      type: 'string'
+                    }
+                  }
+                }
               }
             }
           }
@@ -357,6 +420,7 @@ export interface IUpdateProject {
   location: { geometry: Feature[]; location_description: string } | null;
   iucn: any | null;
   partnerships: any | null;
+  participants: PostParticipantData[] | null;
 }
 
 /**

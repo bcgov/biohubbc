@@ -21,6 +21,7 @@ import {
   render,
   waitFor
 } from 'test-helpers/test-utils';
+import { AddProjectParticipantsFormInitialValues } from '../participants/AddProjectParticipantsForm';
 
 const history = createMemoryHistory();
 
@@ -441,7 +442,8 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          partnerships: ProjectPartnershipsFormInitialValues.partnerships,
+          participants: AddProjectParticipantsFormInitialValues.participants
         }
       });
 
@@ -528,6 +530,11 @@ describe('CreateProjectPage', () => {
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
+          participants: [
+            {
+              project_role_names: ['Coordinator']
+            }
+          ],
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
@@ -553,7 +560,8 @@ describe('CreateProjectPage', () => {
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          partnerships: ProjectPartnershipsFormInitialValues.partnerships,
+          participants: AddProjectParticipantsFormInitialValues.participants
         }
       });
 
@@ -603,7 +611,16 @@ describe('CreateProjectPage', () => {
           objectives: { objectives: '' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
-          partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
+          partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] },
+          participants: [
+            {
+              displayName: '',
+              email: '',
+              identitySource: '',
+              roleId: '',
+              userIdentifier: ''
+            }
+          ]
         });
 
         expect(history.location.pathname).toEqual('/admin/projects');

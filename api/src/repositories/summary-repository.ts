@@ -73,7 +73,7 @@ export class SummaryRepository extends BaseRepository {
         sss.survey_summary_submission_id = ${summarySubmissionId}
     `;
 
-    const response = await this.connection.query<ISummarySubmissionResponse>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql<ISummarySubmissionResponse>(sqlStatement);
 
     if (!response) {
       throw new HTTP400('Failed to query survey summary submission table');
@@ -124,7 +124,7 @@ export class SummaryRepository extends BaseRepository {
       LIMIT 1;
     `;
 
-    const response = await this.connection.query<ISurveySummaryDetails>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql<ISurveySummaryDetails>(sqlStatement);
 
     if (!response) {
       throw new HTTP400('Failed to query survey summary submission table');
@@ -153,10 +153,7 @@ export class SummaryRepository extends BaseRepository {
       RETURNING survey_summary_submission_id;
     `;
 
-    const response = await this.connection.query<{ survey_summary_submission_id: number }>(
-      sqlStatement.text,
-      sqlStatement.values
-    );
+    const response = await this.connection.sql<{ survey_summary_submission_id: number }>(sqlStatement);
 
     if (!response) {
       throw new HTTP400('Failed to update survey summary submission record');
@@ -193,10 +190,7 @@ export class SummaryRepository extends BaseRepository {
       RETURNING survey_summary_submission_id;
     `;
 
-    const response = await this.connection.query<{ survey_summary_submission_id: number }>(
-      sqlStatement.text,
-      sqlStatement.values
-    );
+    const response = await this.connection.sql<{ survey_summary_submission_id: number }>(sqlStatement);
 
     if (!response) {
       throw new HTTP400('Failed to insert survey summary submission record');
@@ -269,10 +263,7 @@ export class SummaryRepository extends BaseRepository {
       RETURNING survey_summary_detail_id;
     `;
 
-    const response = await this.connection.query<{ survey_summary_detail_id: number }>(
-      sqlStatement.text,
-      sqlStatement.values
-    );
+    const response = await this.connection.sql<{ survey_summary_detail_id: number }>(sqlStatement);
 
     if (!response) {
       throw new HTTP400('Failed to insert summary details data');
@@ -299,7 +290,7 @@ export class SummaryRepository extends BaseRepository {
         delete_timestamp;
     `;
 
-    const response = await this.connection.query<{ delete_timestamp: string }>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql<{ delete_timestamp: string }>(sqlStatement);
 
     if (!response?.rows[0]?.delete_timestamp) {
       throw new HTTP400('Failed to soft delete survey summary submission');
@@ -341,10 +332,7 @@ export class SummaryRepository extends BaseRepository {
       sssm.submission_message_id;
     `;
 
-    const response = await this.connection.query<ISummarySubmissionMessagesResponse>(
-      sqlStatement.text,
-      sqlStatement.values
-    );
+    const response = await this.connection.sql<ISummarySubmissionMessagesResponse>(sqlStatement);
 
     if (!response) {
       throw new HTTP400('Failed to query survey summary submission table');
@@ -375,10 +363,7 @@ export class SummaryRepository extends BaseRepository {
       ;
     `;
 
-    const response = await this.connection.query<{ summary_template_id: number }>(
-      sqlStatement.text,
-      sqlStatement.values
-    );
+    const response = await this.connection.sql<{ summary_template_id: number }>(sqlStatement);
 
     if (!response) {
       throw new HTTP400('Failed to query summary templates table');
@@ -487,7 +472,7 @@ export class SummaryRepository extends BaseRepository {
         submission_message_id;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert summary submission message record', [

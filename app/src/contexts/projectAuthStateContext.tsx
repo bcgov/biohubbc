@@ -6,7 +6,7 @@ import { useParams } from 'react-router';
 import { AuthStateContext } from './authStateContext';
 
 export interface IProjectAuthStateContext {
-  getProjectParticipant: () => IGetUserProjectParticipantResponse['participant'];
+  getProjectParticipant: () => IGetUserProjectParticipantResponse;
   hasProjectRole: (validProjectRoles?: string[]) => boolean;
   hasSystemRole: (validSystemRoles?: string[]) => boolean;
   hasProjectPermission: (validProjectPermissions?: string[]) => boolean;
@@ -26,7 +26,7 @@ export const ProjectAuthStateContext = React.createContext<IProjectAuthStateCont
 export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const biohubApi = useBiohubApi();
   const participantDataLoader = useDataLoader((projectId: number) =>
-    biohubApi.project.getUserProjectParticipant(projectId)
+    biohubApi.projectParticipants.getUserProjectParticipant(projectId)
   );
   const { keycloakWrapper } = useContext(AuthStateContext);
 
@@ -38,7 +38,7 @@ export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> 
   }, [projectId]);
 
   const getProjectParticipant = useCallback(() => {
-    return participantDataLoader.data?.participant ?? null;
+    return participantDataLoader.data ?? null;
   }, [participantDataLoader.data]);
 
   const hasProjectRole = useCallback(
@@ -97,7 +97,7 @@ export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> 
 
   React.useEffect(() => {
     // If perceived projectId does not differ from the currently loaded participant, skip refresh
-    if (!projectId || projectId === participantDataLoader.data?.participant?.project_id) {
+    if (!projectId || projectId === participantDataLoader.data?.project_id) {
       return;
     }
 

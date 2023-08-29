@@ -15,7 +15,7 @@ import { SystemUserI18N } from '../../../constants/i18n';
 import { DialogContext } from '../../../contexts/dialogContext';
 import { APIError } from '../../../hooks/api/useAxios';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
+import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectTitleContainer: {
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IUsersHeaderProps {
-  userDetails: IGetUserResponse;
+  userDetails: ISystemUser;
 }
 
 const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
@@ -83,7 +83,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     [defaultErrorDialogProps, dialogContext]
   );
 
-  const deActivateSystemUser = async (user: IGetUserResponse) => {
+  const deActivateSystemUser = async (user: ISystemUser) => {
     if (!user?.system_user_id) {
       return;
     }

@@ -150,9 +150,6 @@ export class ProjectRepository extends BaseRepository {
     sqlStatement.append(';');
 
     const response = await this.connection.sql(sqlStatement, ProjectListData);
-    if (!response.rows) {
-      return [];
-    }
 
     return response.rows;
   }
@@ -215,8 +212,9 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = response?.rows?.[0];
+    const response = await this.connection.sql(sqlStatement);
+
+    const result = response.rows?.[0] || null;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get project objectives data', [
@@ -243,7 +241,7 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
     const result = response?.rows?.[0];
 
     if (!result) {
@@ -272,18 +270,9 @@ export class ProjectRepository extends BaseRepository {
         p.revision_count;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project location data', [
-        'ProjectRepository->getLocationData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return new GetLocationData(result);
+    return new GetLocationData(response.rows);
   }
 
   async getIUCNClassificationData(projectId: number): Promise<GetIUCNClassificationData> {
@@ -314,18 +303,9 @@ export class ProjectRepository extends BaseRepository {
         ical3s.iucn_conservation_action_level_3_subclassification_id;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project IUCN Classification data', [
-        'ProjectRepository->getIUCNClassificationData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return new GetIUCNClassificationData(result);
+    return new GetIUCNClassificationData(response.rows);
   }
 
   async getIndigenousPartnershipsRows(projectId: number): Promise<any[]> {
@@ -346,18 +326,9 @@ export class ProjectRepository extends BaseRepository {
         fn.name;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project Indigenous Partnerships data', [
-        'ProjectRepository->getIndigenousPartnershipsRows',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
+    return response.rows;
   }
 
   async getStakeholderPartnershipsRows(projectId: number): Promise<any[]> {
@@ -370,18 +341,9 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project Stakeholder Partnerships data', [
-        'ProjectRepository->getStakeholderPartnershipsRows',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return result;
+    return response.rows;
   }
 
   async getAttachmentsData(projectId: number): Promise<GetAttachmentsData> {
@@ -394,17 +356,9 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project Attachment data', [
-        'ProjectRepository->getAttachmentsData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-    return new GetAttachmentsData(result);
+    return new GetAttachmentsData(response.rows);
   }
 
   async getReportAttachmentsData(projectId: number): Promise<GetReportAttachmentsData> {
@@ -434,7 +388,7 @@ export class ProjectRepository extends BaseRepository {
         pra.file_size;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows;
 
@@ -498,7 +452,7 @@ export class ProjectRepository extends BaseRepository {
         project_id as id;
     `);
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
 
@@ -525,7 +479,7 @@ export class ProjectRepository extends BaseRepository {
         first_nations_id as id;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
 
@@ -552,7 +506,7 @@ export class ProjectRepository extends BaseRepository {
         stakeholder_partnership_id as id;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
 
@@ -579,7 +533,7 @@ export class ProjectRepository extends BaseRepository {
         project_iucn_action_classification_id as id;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
 
@@ -656,7 +610,7 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
+    await this.connection.sql(sqlDeleteStatement);
   }
 
   async deleteIndigenousPartnershipsData(projectId: number): Promise<void> {
@@ -667,7 +621,7 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
+    await this.connection.sql(sqlDeleteStatement);
   }
 
   async deleteStakeholderPartnershipsData(projectId: number): Promise<void> {
@@ -678,7 +632,7 @@ export class ProjectRepository extends BaseRepository {
         project_id = ${projectId};
     `;
 
-    await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
+    await this.connection.sql(sqlDeleteStatement);
   }
 
   async updateProjectData(
@@ -760,7 +714,7 @@ export class ProjectRepository extends BaseRepository {
         revision_count = ${revision_count};
     `);
 
-    const result = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const result = await this.connection.sql(sqlStatement);
 
     if (!result?.rowCount) {
       throw new ApiExecuteSQLError('Failed to update stale project data', [
