@@ -2,40 +2,51 @@ import Grid from '@mui/material/Grid';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import { useContext } from 'react';
 import yup from 'utils/YupSchema';
 
-export interface IProjectPartnershipsForm {
+export interface ISurveyPartnershipsForm {
   partnerships: {
     indigenous_partnerships: number[];
     stakeholder_partnerships: string[];
   };
 }
 
-export const ProjectPartnershipsFormInitialValues: IProjectPartnershipsForm = {
+export const SurveyPartnershipsFormInitialValues: ISurveyPartnershipsForm = {
   partnerships: {
     indigenous_partnerships: [],
     stakeholder_partnerships: []
   }
 };
 
-export const ProjectPartnershipsFormYupSchema = yup.object().shape({});
-
-export interface IProjectPartnershipsFormProps {
-  first_nations: IMultiAutocompleteFieldOption[];
-  stakeholder_partnerships: IMultiAutocompleteFieldOption[];
-}
+export const SurveyPartnershipsFormYupSchema = yup.object().shape({});
 
 /**
- * Create project - Partnerships section
+ * Create/edit survey - Partnerships section
  *
  * @return {*}
  */
-const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props) => {
-  const formikProps = useFormikContext<IProjectPartnershipsForm>();
+const SurveyPartnershipsForm = () => {
+  const formikProps = useFormikContext<ISurveyPartnershipsForm>();
+
+  const codesContext = useContext(CodesContext);
+
+  const codes = codesContext.codesDataLoader.data;
+  codesContext.codesDataLoader.load();
 
   const { handleSubmit } = formikProps;
+
+  const first_nations: IMultiAutocompleteFieldOption[] =
+    codes?.first_nations?.map((item) => {
+      return { value: item.id, label: item.name };
+    }) || [];
+
+  const stakeholder_partnerships: IMultiAutocompleteFieldOption[] =
+    codes?.agency?.map((item) => {
+      return { value: item.name, label: item.name };
+    }) || [];
 
   return (
     <form onSubmit={handleSubmit}>
@@ -44,7 +55,7 @@ const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props)
           <MultiAutocompleteFieldVariableSize
             id={'partnerships.indigenous_partnerships'}
             label={'Indigenous Partnerships'}
-            options={props.first_nations}
+            options={first_nations}
             required={false}
           />
         </Grid>
@@ -52,7 +63,7 @@ const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props)
           <MultiAutocompleteFieldVariableSize
             id={'partnerships.stakeholder_partnerships'}
             label={'Other Partnerships'}
-            options={props.stakeholder_partnerships}
+            options={stakeholder_partnerships}
             required={false}
           />
         </Grid>
@@ -61,4 +72,4 @@ const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props)
   );
 };
 
-export default ProjectPartnershipsForm;
+export default SurveyPartnershipsForm;

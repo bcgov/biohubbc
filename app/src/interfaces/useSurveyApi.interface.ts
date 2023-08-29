@@ -82,6 +82,16 @@ export interface IGetSurveyParticipant {
   survey_job_name: string;
 }
 
+export interface IGetSurveyForViewResponsePartnerships {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+}
+
+export interface IGetSurveyForUpdateResponsePartnerships {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+}
+
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
@@ -90,6 +100,7 @@ export interface SurveyViewObject {
   funding_sources: ISurveyFundingSource[];
   proprietor: IGetSurveyForViewResponseProprietor | null;
   participants: IGetSurveyParticipant[];
+  partnerships: IGetSurveyForViewResponsePartnerships;
 }
 
 export interface SurveyUpdateObject {
@@ -120,6 +131,7 @@ export interface SurveyUpdateObject {
       revision_count: number;
     }
   ];
+  partnerships?: IGetSurveyForUpdateResponsePartnerships;
   purpose_and_methodology?: {
     intended_outcome_id: number;
     additional_details: string;

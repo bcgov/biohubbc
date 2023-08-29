@@ -42,11 +42,8 @@ export async function seed(knex: Knex): Promise<void> {
     `);
     const projectId = response3.rows[0].project_id;
     await knex.raw(`
-      ${insertProjectFirstNationData(projectId)}
-      ${insertProjectFirstNationData(projectId)}
       ${insertProjectIUCNData(projectId)}
       ${insertProjectParticipationData(projectId)}
-      ${insertProjectStakeholderData(projectId)}
       ${insertProjectProgramData(projectId)}
     `);
 
@@ -62,6 +59,8 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyAncillarySpeciesData(surveyId)}
       ${insertSurveyFundingData(surveyId)}
       ${insertSurveyProprietorData(surveyId)}
+      ${insertSurveyFirstNationData(surveyId)}
+      ${insertSurveyStakeholderData(surveyId)}
       ${insertSurveyVantageData(surveyId)}
       ${insertSurveyParticipationData(surveyId)}
     `);
@@ -377,36 +376,36 @@ const insertSurveyTypeData = (surveyId: number) => `
 `;
 
 /**
- * SQL to insert Project First Nation data
+ * SQL to insert Survey First Nation Partnership data
  *
  */
-const insertProjectFirstNationData = (projectId: number) => `
-  INSERT into project_first_nation
+const insertSurveyFirstNationData = (surveyId: number) => `
+  INSERT into survey_first_nation_partnership
     (
-      project_id,
+      survey_id,
       first_nations_id
     )
   VALUES
     (
-      ${projectId},
+      ${surveyId},
       (SELECT first_nations_id from first_nations order by random() limit 1)
     )
   ;
 `;
 
 /**
- * SQL to insert Project Stakeholder data
+ * SQL to insert Project Stakeholder Partnership data
  *
  */
-const insertProjectStakeholderData = (projectId: number) => `
-  INSERT into stakeholder_partnership
+const insertSurveyStakeholderData = (surveyId: number) => `
+  INSERT into survey_stakeholder_partnership
     (
-      project_id,
+      survey_id,
       name
     )
   VALUES
     (
-      ${projectId},
+      ${surveyId},
       (select name from agency order by random() limit 1)
     )
   ;

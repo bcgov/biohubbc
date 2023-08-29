@@ -9,6 +9,7 @@ import SurveyProprietaryData from 'features/surveys/view/components/SurveyPropri
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
 import SurveyFundingSources from './components/SurveyFundingSources';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
+import Partnerships from './Partnerships';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyMetadataContainer: {
@@ -67,6 +68,11 @@ const SurveyDetails = () => {
           <Typography component="h4">Funding Sources</Typography>
           <Divider></Divider>
           <SurveyFundingSources />
+        </Box>
+        <Box component="section">
+          <Typography component="h4">Partnerships</Typography>
+          <Divider></Divider>
+          <Partnerships />
         </Box>
         <Box component="section">
           <Typography component="h4">Purpose and Methodology</Typography>

@@ -15,6 +15,10 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
+import SurveyPartnershipsForm, {
+  SurveyPartnershipsFormInitialValues,
+  SurveyPartnershipsFormYupSchema
+} from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -129,6 +133,7 @@ const CreateSurveyPage = () => {
     ...PurposeAndMethodologyInitialValues,
     ...StudyAreaInitialValues,
     ...SurveyFundingSourceFormInitialValues,
+    ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues,
     ...SurveyUserJobFormInitialValues
@@ -174,7 +179,8 @@ const CreateSurveyPage = () => {
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
-    .concat(SurveyUserJobYupSchema);
+    .concat(SurveyUserJobYupSchema)
+    .concat(SurveyPartnershipsFormYupSchema);
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -352,13 +358,22 @@ const CreateSurveyPage = () => {
                   title="Funding Sources"
                   summary="Specify funding sources for this survey."
                   component={
-                    <Box component="fieldset">
-                      <Typography component="legend">Add Funding Sources</Typography>
-                      <Box mt={1}>
-                        <SurveyFundingSourceForm />
+                    <Box>
+                      <Box component="fieldset">
+                        <Typography component="legend">Add Funding Sources</Typography>
+                        <Box mt={1}>
+                          <SurveyFundingSourceForm />
+                        </Box>
+                      </Box>
+                      <Box component="fieldset" mt={5}>
+                        <Typography component="legend">Additional Partnerships</Typography>
+                        <Box mt={1}>
+                          <SurveyPartnershipsForm />
+                        </Box>
                       </Box>
                     </Box>
-                  }></HorizontalSplitFormComponent>
+                  }
+                />
 
                 <Divider className={classes.sectionDivider} />
 

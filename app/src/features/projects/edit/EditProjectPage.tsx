@@ -76,7 +76,6 @@ const EditProjectPage: React.FC = (props) => {
       UPDATE_GET_ENTITIES.objectives,
       UPDATE_GET_ENTITIES.location,
       UPDATE_GET_ENTITIES.iucn,
-      UPDATE_GET_ENTITIES.partnerships,
       UPDATE_GET_ENTITIES.participants
     ])
   );

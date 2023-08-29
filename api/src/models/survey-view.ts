@@ -12,7 +12,13 @@ export type SurveyObject = {
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
   participants: SurveyUser[];
+  partnerships: ISurveyPartnerships;
 };
+
+export interface ISurveyPartnerships {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+}
 
 export class GetSurveyData {
   id: number;

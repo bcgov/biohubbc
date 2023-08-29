@@ -536,34 +536,39 @@ export class EmlService extends DBService {
     const additionalMetadata: AdditionalMetadata[] = [];
     const codes = await this.codes();
 
-    _surveysData.forEach((item) => {
-      // add this metadata field so biohub is aware if EML is a project or survey
-      additionalMetadata.push({
-        describes: item.survey_details.uuid,
-        metadata: {
-          types: {
-            type: 'SURVEY'
-          }
-        }
-      });
-
-      if (item.survey_details.survey_types.length) {
-        const names = codes.type
-          .filter((code) => item.survey_details.survey_types.includes(code.id))
-          .map((code) => code.name);
-
+    await Promise.all(
+      _surveysData.map(async (item) => {
+        // add this metadata field so biohub is aware if EML is a project or survey
         additionalMetadata.push({
           describes: item.survey_details.uuid,
           metadata: {
-            surveyTypes: {
-              surveyType: names.map((item) => {
-                return { name: item };
-              })
+            types: {
+              type: 'SURVEY'
             }
           }
         });
-      }
-    });
+
+        const partnetshipsMetadata = await this._buildPartnershipMetadata(item);
+        additionalMetadata.push(partnetshipsMetadata);
+
+        if (item.survey_details.survey_types.length) {
+          const names = codes.type
+            .filter((code) => item.survey_details.survey_types.includes(code.id))
+            .map((code) => code.name);
+
+          additionalMetadata.push({
+            describes: item.survey_details.uuid,
+            metadata: {
+              surveyTypes: {
+                surveyType: names.map((item) => {
+                  return { name: item };
+                })
+              }
+            }
+          });
+        }
+      })
+    );
 
     return additionalMetadata;
   }
@@ -623,8 +628,6 @@ export class EmlService extends DBService {
       });
     }
 
-    additionalMetadata.push(await this._buildPartnershipMetadata(projectData));
-
     // add this metadata field so biohub is aware if EML is a project or survey
     additionalMetadata.push({
       describes: projectData.project.uuid,
@@ -638,10 +641,10 @@ export class EmlService extends DBService {
     return additionalMetadata;
   }
 
-  async _buildPartnershipMetadata(projectData: IGetProject): Promise<any> {
-    const stakeholders = projectData.partnerships.stakeholder_partnerships;
+  async _buildPartnershipMetadata(surveyData: SurveyObject): Promise<any> {
+    const stakeholders = surveyData.partnerships.stakeholder_partnerships;
     const codes = await this.codes();
-    const indigenousPartnerships = projectData.partnerships.indigenous_partnerships;
+    const indigenousPartnerships = surveyData.partnerships.indigenous_partnerships;
     const firstNationsNames = codes.first_nations
       .filter((code) => indigenousPartnerships.includes(code.id))
       .map((code) => code.name);
@@ -649,7 +652,7 @@ export class EmlService extends DBService {
     const sortedPartnerships = _.sortBy([...firstNationsNames, ...stakeholders]);
 
     return {
-      describes: projectData.project.uuid,
+      describes: surveyData.survey_details.uuid,
       metadata: {
         partnerships: {
           partnership: sortedPartnerships.map((name) => {

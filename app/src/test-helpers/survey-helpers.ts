@@ -59,6 +59,10 @@ export const surveyObject: SurveyViewObject = {
       funding_source_name: 'funding source name'
     }
   ],
+  partnerships: {
+    indigenous_partnerships: [1, 2],
+    stakeholder_partnerships: ['partner 3', 'partner 4']
+  },
   species: {
     focal_species: [1],
     focal_species_names: ['focal species 1'],
