@@ -1,6 +1,6 @@
 import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Collapse from '@mui/material/Collapse';
@@ -54,7 +54,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const searchUserDataLoader = useDataLoader(() => biohubApi.user.searchSystemUser(''));
   searchUserDataLoader.load();
 
-  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<(ISystemUser | IGetProjectParticipant)[]>(props.users);
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
@@ -66,8 +66,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
       setFieldValue(`participants[${index}].identity_source`, user.identity_source);
       setFieldValue(`participants[${index}].project_role_names`, (user as IGetProjectParticipant).project_role_names);
     });
-    setSelectedUsers(props.users);
-  }, []);
+  }, [props.users, setFieldValue]);
 
   const handleAddUser = (user: ISystemUser | IGetProjectParticipant) => {
     selectedUsers.push(user);
@@ -110,7 +109,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   const alertBarText = (): { title: string; text: string } => {
     let title = '';
     let text = '';
-    if (errors && errors.participants) {
+    if (errors?.participants) {
       if (Array.isArray(errors.participants)) {
         title = 'Missing Roles';
         text = 'All team members must be assigned a role.';
@@ -128,7 +127,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
   };
 
   const rowItemError = (index: number): JSX.Element | undefined => {
-    if (errors && errors.participants && Array.isArray(errors.participants)) {
+    if (errors?.participants && Array.isArray(errors.participants)) {
       const errorAtIndex = errors.participants[index];
       if (errorAtIndex) {
         return (
@@ -140,23 +139,9 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
     }
   };
 
-  const filterSearchOptions = (
-    searchUsers: ISystemUser[],
-    selectedUsers: (ISystemUser | IGetProjectParticipant)[]
-  ): ISystemUser[] => {
-    // filter out any selected users out
-    const filtered = searchUsers.filter(
-      (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
-    );
-    // alphabetize array on display name
-    return alphabetizeObjects(filtered, 'display_name');
-  };
-
-  const getSelectedRole = (index: number): string | undefined => {
-    if (values.participants[index]) {
-      // users should only ever have a single role on a project so index: 0 is a safe selection
-      return values.participants[index].project_role_names[0] || '';
-    }
+  const getSelectedRole = (index: number): string => {
+    // users should only ever have a single role on a project so index: 0 is a safe selection
+    return values.participants?.[index]?.project_role_names?.[0] || '';
   };
 
   if (!searchUserDataLoader.data || !searchUserDataLoader.hasLoaded) {
@@ -176,7 +161,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
           }}>
           A minimum of one team member must be assigned the coordinator role.
         </Typography>
-        {errors && errors['participants'] && !selectedUsers.length && (
+        {errors?.['participants'] && !selectedUsers.length && (
           <Box mt={3}>
             <AlertBar
               severity="error"
@@ -186,7 +171,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             />
           </Box>
         )}
-        {errors && errors['participants'] && selectedUsers.length > 0 && (
+        {errors?.['participants'] && selectedUsers.length > 0 && (
           <Box mt={3}>
             <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
           </Box>
@@ -197,7 +182,14 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             data-testid={'autocomplete-user-role-search'}
             filterSelectedOptions
             noOptionsText="No records found"
-            options={filterSearchOptions(searchUserDataLoader.data, selectedUsers)}
+            options={alphabetizeObjects(searchUserDataLoader.data, 'display_name')}
+            filterOptions={(options, state) => {
+              const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
+              const unselectedOptions = options.filter(
+                (item) => !selectedUsers.some((existing) => existing.system_user_id === item.system_user_id)
+              );
+              return searchFilter(unselectedOptions, state);
+            }}
             getOptionLabel={(option) => option.display_name}
             inputValue={searchText}
             onInputChange={(_, value, reason) => {
@@ -263,6 +255,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                       handleAdd={handleAddUserRole}
                       handleRemove={handleRemoveUser}
                       key={user.system_user_id}
+                      label={'Select a Role'}
                     />
                   </Collapse>
                 );

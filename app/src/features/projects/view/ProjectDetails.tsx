@@ -9,7 +9,6 @@ import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
 import GeneralInformation from './components/GeneralInformation';
-import Partnerships from './components/Partnerships';
 import ProjectCoordinator from './components/ProjectCoordinator';
 import ProjectObjectives from './components/ProjectObjectives';
 
@@ -98,7 +97,6 @@ const ProjectDetails = () => {
             Partnerships
           </Typography>
           <Divider></Divider>
-          <Partnerships />
         </Box>
 
         {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (view) temporarily, while its decided if IUCN information is desired */}

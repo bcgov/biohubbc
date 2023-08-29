@@ -115,6 +115,22 @@ const SurveyTypeRecord = z.object({
 
 export type SurveyTypeRecord = z.infer<typeof SurveyTypeRecord>;
 
+export const StakeholderPartnershipRecord = z.object({
+  survey_stakeholder_partnership_id: z.number(),
+  survey_id: z.number(),
+  name: z.string()
+});
+
+export const IndigenousPartnershipRecord = z.object({
+  survey_first_nation_partnership_id: z.number(),
+  survey_id: z.number(),
+  first_nations_id: z.number()
+});
+
+export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnershipRecord>;
+
+export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
+
 const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
@@ -257,7 +273,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get survey purpose and methodology data', [
@@ -285,7 +301,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<ISurveyProprietorModel>(sqlStatement);
 
-    return response?.rows[0];
+    return response.rows[0];
   }
 
   /**
@@ -322,7 +338,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result) {
       return null;
@@ -350,7 +366,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     return new GetSurveyLocationData(result);
   }
@@ -434,7 +450,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetLatestSurveyOccurrenceSubmission>(sqlStatement);
 
-    const result = response?.rows[0] || null;
+    const result = response.rows?.[0] || null;
 
     return result;
   }
@@ -530,7 +546,7 @@ export class SurveyRepository extends BaseRepository {
     `;
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows;
+    const result = response.rows;
 
     return new GetAttachmentsData(result);
   }
@@ -571,7 +587,16 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    return new GetReportAttachmentsData(response.rows);
+    const result = response.rows;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get attachments data', [
+        'SurveyRepository->getReportAttachmentsData',
+        'response was null or undefined, expected response != null'
+      ]);
+    }
+
+    return new GetReportAttachmentsData(result);
   }
 
   /**
@@ -641,7 +666,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to insert survey data', [
@@ -703,7 +728,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert focal species data', [
@@ -737,7 +762,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert ancillary species data', [
@@ -769,7 +794,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert vantage codes', [
@@ -814,7 +839,7 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = response?.rows?.[0];
+    const result = response.rows?.[0];
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert survey proprietor data', [
@@ -1104,7 +1129,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
 
-    if (!response || response.rowCount !== 1) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert survey occurrence submission', [
         'ErrorRepository->insertSurveyOccurrenceSubmission',
         'rowCount was null or undefined, expected rowCount = 1'
@@ -1137,7 +1162,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
 
-    if (!response || response.rowCount !== 1) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to update survey occurrence submission', [
         'ErrorRepository->updateSurveyOccurrenceSubmission',
         'rowCount was null or undefined, expected rowCount = 1'
@@ -1165,12 +1190,179 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
 
-    if (!response || response.rowCount !== 1) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to delete survey occurrence submission', [
         'ErrorRepository->deleteOccurrenceSubmission',
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
+
+    return response.rowCount;
+  }
+
+  /**
+   * Gets all indigenous partnerships belonging to the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<GetPartnershipsData['indigenous_partnerships'][]>}
+   * @memberof SurveyRepository
+   */
+  async getIndigenousPartnershipsBySurveyId(surveyId: number): Promise<IndigenousPartnershipRecord[]> {
+    defaultLog.debug({ label: 'getIndigenousPartnershipsBySurveyId', surveyId });
+
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_first_nation_partnership sfnp
+      WHERE
+        sfnp.survey_id = ${surveyId}
+    `;
+
+    const response = await this.connection.sql<IndigenousPartnershipRecord>(sqlStatement);
+
+    const result = response.rows;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get survey Indigenous Partnerships data', [
+        'SurveyRepository->getIndigenousPartnershipsBySurveyId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return result;
+  }
+
+  /**
+   * Gets all stakeholder partnerships belonging to the given survey
+   * @param {number} surveyId
+   * @return {*}  {Promise<GetPartnershipsData['stakeholder_partnerships'][]>}
+   * @memberof SurveyRepository
+   */
+  async getStakeholderPartnershipsBySurveyId(surveyId: number): Promise<StakeholderPartnershipRecord[]> {
+    defaultLog.debug({ label: 'getStakeholderPartnershipsBySurveyId', surveyId });
+
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_stakeholder_partnership
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql<StakeholderPartnershipRecord>(sqlStatement);
+
+    const result = response.rows;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get survey Stakeholder Partnerships data', [
+        'SurveyRepository->getStakeholderPartnershipsBySurveyId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return result;
+  }
+
+  /**
+   * Inserts indegenous partnership records for the given survey
+   *
+   * @param {number[]} firstNationsIds
+   * @param {number} surveyId
+   * @return {*}  {Promise<IndigenousPartnershipRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async insertIndigenousPartnerships(
+    firstNationsIds: number[],
+    surveyId: number
+  ): Promise<IndigenousPartnershipRecord[]> {
+    defaultLog.debug({ label: 'insertIndigenousPartnerships', firstNationsIds, surveyId });
+    const queryBuilder = getKnex()
+      .table('survey_first_nation_partnership')
+      .insert(
+        firstNationsIds.map((firstNationsId: number) => ({
+          first_nations_id: firstNationsId,
+          survey_id: surveyId
+        }))
+      )
+      .returning('*');
+
+    const response = await this.connection.knex<IndigenousPartnershipRecord>(queryBuilder);
+
+    if (response.rowCount === 0) {
+      throw new ApiExecuteSQLError('Failed to insert survey indigenous partnerships', [
+        'ErrorRepository->insertIndigenousPartnerships',
+        'rowCount was null or undefined, expected rowCount != 0'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * Inserts stakeholder partnership records for the given survey
+   *
+   * @param {string[]} stakeholderPartners
+   * @param {number} surveyId
+   * @return {*}  {Promise<StakeholderPartnershipRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async insertStakeholderPartnerships(
+    stakeholderPartners: string[],
+    surveyId: number
+  ): Promise<StakeholderPartnershipRecord[]> {
+    defaultLog.debug({ label: 'insertStakeholderPartnerships', stakeholderPartners, surveyId });
+    const queryBuilder = getKnex()
+      .table('survey_stakeholder_partnership')
+      .insert(
+        stakeholderPartners.map((stakeholder: string) => ({
+          name: stakeholder,
+          survey_id: surveyId
+        }))
+      )
+      .returning('*');
+
+    const response = await this.connection.knex<StakeholderPartnershipRecord>(queryBuilder);
+
+    if (response.rowCount === 0) {
+      throw new ApiExecuteSQLError('Failed to insert survey stakeholder partnerships', [
+        'ErrorRepository->insertStakeholderPartnerships',
+        'rowCount was null or undefined, expected rowCount != 0'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * Deletes all indgenous partnership records for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>} The number of rows affected
+   * @memberof SurveyRepository
+   */
+  async deleteIndigenousPartnershipsData(surveyId: number): Promise<number> {
+    defaultLog.debug({ label: 'deleteIndigenousPartnershipsData', surveyId });
+    const queryBuilder = getKnex().table('survey_first_nation_partnership').delete().where('survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder);
+
+    return response.rowCount;
+  }
+
+  /**
+   * Deletes all stakeholder partnership records for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>} The number of rows affected
+   * @memberof SurveyRepository
+   */
+  async deleteStakeholderPartnershipsData(surveyId: number): Promise<number> {
+    defaultLog.debug({ label: 'deleteStakeholderPartnershipsData', surveyId });
+    const queryBuilder = getKnex().table('survey_stakeholder_partnership').delete().where('survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder);
 
     return response.rowCount;
   }

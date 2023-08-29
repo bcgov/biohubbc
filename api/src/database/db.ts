@@ -137,6 +137,7 @@ export interface IDBConnection {
    * @param {any[]} [values] SQL values array (optional)
    * @return {*}  {(Promise<QueryResult<any>>)}
    * @throws If the connection is not open.
+   * @deprecated Prefer using `.sql` (pass entire statement object) or `.knex` (pass quiery builder object)
    * @memberof IDBConnection
    */
   query: <T extends pg.QueryResultRow = any>(text: string, values?: any[]) => Promise<pg.QueryResult<T>>;

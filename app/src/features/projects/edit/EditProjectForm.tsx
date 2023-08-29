@@ -2,7 +2,6 @@ import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
@@ -12,7 +11,6 @@ import React from 'react';
 import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
-import ProjectPartnershipsForm from '../components/ProjectPartnershipsForm';
 import ProjectUserForm from '../components/ProjectUserForm';
 import {
   getCoordinatorAgencyOptions,
@@ -134,35 +132,6 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
             summary="Specify team members and their associated role for this project."
             component={<ProjectUserForm users={props.projectData.participants || []} roles={codes.project_roles} />}
           />
-
-          <Divider className={classes.sectionDivider} />
-
-          <HorizontalSplitFormComponent
-            title="Partnerships"
-            summary="Select partners supporting or participating in this project."
-            component={
-              <>
-                <Box component="fieldset">
-                  <Typography component="legend" variant="h5">
-                    Select Partnerships
-                  </Typography>
-                  <Box mt={1}>
-                    <ProjectPartnershipsForm
-                      first_nations={
-                        codes?.first_nations?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      stakeholder_partnerships={
-                        codes?.agency?.map((item) => {
-                          return { value: item.name, label: item.name };
-                        }) || []
-                      }
-                    />
-                  </Box>
-                </Box>
-              </>
-            }></HorizontalSplitFormComponent>
 
           {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
           {/* <Divider className={classes.sectionDivider} />

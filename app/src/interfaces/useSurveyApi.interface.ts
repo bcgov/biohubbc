@@ -19,7 +19,8 @@ export interface ICreateSurveyRequest
     IPurposeAndMethodologyForm,
     IStudyAreaForm,
     IProprietaryDataForm,
-    IAgreementsForm {}
+    IAgreementsForm,
+    IParticipantsJobForm {}
 
 /**
  * Create survey response object.
@@ -30,6 +31,14 @@ export interface ICreateSurveyRequest
 export interface ICreateSurveyResponse {
   id: number;
 }
+
+export interface IParticipantsJobForm {
+  participants: {
+    system_user_id: number;
+    survey_job_name: string;
+  }[];
+}
+
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   project_id: number;
@@ -63,6 +72,25 @@ export interface IGetSurveyForViewResponseProprietor {
   proprietor_type_id?: number;
   proprietor_type_name?: string;
 }
+export interface IGetSurveyParticipant {
+  system_user_id: number;
+  identity_source: string;
+  email: string | null;
+  display_name: string;
+  agency: string | null;
+  survey_job_id: number;
+  survey_job_name: string;
+}
+
+export interface IGetSurveyForViewResponsePartnerships {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+}
+
+export interface IGetSurveyForUpdateResponsePartnerships {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+}
 
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
@@ -71,6 +99,8 @@ export interface SurveyViewObject {
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding_sources: ISurveyFundingSource[];
   proprietor: IGetSurveyForViewResponseProprietor | null;
+  participants: IGetSurveyParticipant[];
+  partnerships: IGetSurveyForViewResponsePartnerships;
 }
 
 export interface SurveyUpdateObject {
@@ -101,6 +131,7 @@ export interface SurveyUpdateObject {
       revision_count: number;
     }
   ];
+  partnerships?: IGetSurveyForUpdateResponsePartnerships;
   purpose_and_methodology?: {
     intended_outcome_id: number;
     additional_details: string;
@@ -123,6 +154,15 @@ export interface SurveyUpdateObject {
     geometry: Feature[];
     revision_count: number;
   };
+  participants?: {
+    identity_source: string;
+    email: string | null;
+    display_name: string;
+    agency: string | null;
+    survey_job_id: number;
+    system_user_id: number;
+    survey_job_name: string;
+  }[];
 }
 
 export interface SurveySupplementaryData {
@@ -285,4 +325,5 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   ISurveyFundingSourceForm &
   IStudyAreaForm &
   IProprietaryDataForm &
-  IUpdateAgreementsForm;
+  IUpdateAgreementsForm &
+  IParticipantsJobForm;

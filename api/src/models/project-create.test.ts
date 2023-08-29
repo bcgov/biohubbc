@@ -5,7 +5,6 @@ import {
   PostIUCNData,
   PostLocationData,
   PostObjectivesData,
-  PostPartnershipsData,
   PostProjectData,
   PostProjectObject
 } from './project-create';
@@ -36,10 +35,6 @@ describe('PostProjectObject', () => {
 
     it('sets iucn', function () {
       expect(projectPostObject.iucn).to.equal(null);
-    });
-
-    it('sets partnerships', function () {
-      expect(projectPostObject.partnerships).to.equal(null);
     });
   });
 
@@ -267,45 +262,6 @@ describe('PostCoordinatorData', () => {
 
     it('sets share_contact_details', function () {
       expect(projectCoordinatorData.share_contact_details).to.eql(true);
-    });
-  });
-});
-
-describe('PostPartnershipsData', () => {
-  describe('No values provided', () => {
-    let projectPartnershipsData: PostPartnershipsData;
-
-    before(() => {
-      projectPartnershipsData = new PostPartnershipsData(null);
-    });
-
-    it('sets indigenous_partnerships', function () {
-      expect(projectPartnershipsData.indigenous_partnerships).to.eql([]);
-    });
-
-    it('sets stakeholder_partnerships', function () {
-      expect(projectPartnershipsData.stakeholder_partnerships).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectPartnershipsData: PostPartnershipsData;
-
-    const obj = {
-      indigenous_partnerships: [1, 2],
-      stakeholder_partnerships: ['partner1, partner2']
-    };
-
-    before(() => {
-      projectPartnershipsData = new PostPartnershipsData(obj);
-    });
-
-    it('sets indigenous_partnerships', function () {
-      expect(projectPartnershipsData.indigenous_partnerships).to.eql(obj.indigenous_partnerships);
-    });
-
-    it('sets stakeholder_partnerships', function () {
-      expect(projectPartnershipsData.stakeholder_partnerships).to.eql(obj.stakeholder_partnerships);
     });
   });
 });

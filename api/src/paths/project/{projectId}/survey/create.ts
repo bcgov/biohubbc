@@ -59,10 +59,13 @@ POST.apiDoc = {
             'survey_details',
             'species',
             'permit',
+            'funding_sources',
+            'partnerships',
             'proprietor',
             'purpose_and_methodology',
             'location',
-            'agreements'
+            'agreements',
+            'participants'
           ],
           properties: {
             survey_details: {
@@ -150,6 +153,26 @@ POST.apiDoc = {
                 }
               }
             },
+            partnerships: {
+              title: 'Survey partnerships',
+              type: 'object',
+              required: [],
+              properties: {
+                indigenous_partnerships: {
+                  type: 'array',
+                  items: {
+                    type: 'integer',
+                    minimum: 1
+                  }
+                },
+                stakeholder_partnerships: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                }
+              }
+            },
             proprietor: {
               type: 'object',
               properties: {
@@ -206,6 +229,22 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     ...(GeoJSONFeature as object)
+                  }
+                }
+              }
+            },
+            participants: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['system_user_id', 'survey_job_name'],
+                properties: {
+                  system_user_id: {
+                    type: 'number',
+                    minimum: 1
+                  },
+                  survey_job_name: {
+                    type: 'string'
                   }
                 }
               }
