@@ -7,7 +7,6 @@ import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
-  GetPartnershipsData,
   GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
@@ -15,6 +14,7 @@ import {
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
+  ISurveyPartnerships,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
@@ -94,11 +94,19 @@ export class SurveyService extends DBService {
     };
   }
 
-  async getSurveyPartnershipsData(surveyId: number): Promise<GetPartnershipsData> {
-    return new GetPartnershipsData(
+  async getSurveyPartnershipsData(surveyId: number): Promise<ISurveyPartnerships> {
+    const [
+      indigenousPartnerships,
+      stakeholderPartnerships
+    ] = [
       await this.surveyRepository.getIndigenousPartnershipsBySurveyId(surveyId),
       await this.surveyRepository.getStakeholderPartnershipsBySurveyId(surveyId)
-    );
+    ];
+
+    return {
+      indigenous_partnerships: indigenousPartnerships.map((partnership) => partnership.first_nations_id),
+      stakeholder_partnerships: stakeholderPartnerships.map((partnership) => partnership.name)
+    };
   }
 
   /**

@@ -7,7 +7,6 @@ import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAttachmentsData,
-  GetPartnershipsData,
   GetReportAttachmentsData,
   GetSurveyLocationData,
   GetSurveyProprietorData,
@@ -115,6 +114,22 @@ const SurveyTypeRecord = z.object({
 });
 
 export type SurveyTypeRecord = z.infer<typeof SurveyTypeRecord>;
+
+export const StakeholderPartnershipRecord = z.object({
+  survey_stakeholder_partnership_id: z.number(),
+  survey_id: z.number(),
+  name: z.string()
+});
+
+export const IndigenousPartnershipRecord = z.object({
+  survey_first_nation_partnership_id: z.number(),
+  survey_id: z.number(),
+  first_nations_id: z.number(),
+});
+
+export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnershipRecord>;
+
+export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
 const defaultLog = getLogger('repositories/survey-repository');
 
@@ -1194,27 +1209,19 @@ export class SurveyRepository extends BaseRepository {
    */
   async getIndigenousPartnershipsBySurveyId(
     surveyId: number
-  ): Promise<GetPartnershipsData['indigenous_partnerships'][]> {
+  ): Promise<IndigenousPartnershipRecord[]> {
     defaultLog.debug({ label: 'getIndigenousPartnershipsBySurveyId', surveyId });
 
     const sqlStatement = SQL`
       SELECT
-        fn.first_nations_id as id,
-        fn.name as first_nations_name
+        *
       FROM
         survey_first_nation_partnership sfnp
-      LEFT OUTER JOIN
-        first_nations fn
-      ON
-      sfnp.first_nations_id = fn.first_nations_id
       WHERE
-      sfnp.survey_id = ${surveyId}
-      GROUP BY
-        fn.first_nations_id,
-        fn.name;
+        sfnp.survey_id = ${surveyId}
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<IndigenousPartnershipRecord>(sqlStatement);
 
     const result = response.rows;
 
@@ -1236,19 +1243,19 @@ export class SurveyRepository extends BaseRepository {
    */
   async getStakeholderPartnershipsBySurveyId(
     surveyId: number
-  ): Promise<GetPartnershipsData['stakeholder_partnerships'][]> {
+  ): Promise<StakeholderPartnershipRecord[]> {
     defaultLog.debug({ label: 'getStakeholderPartnershipsBySurveyId', surveyId });
 
     const sqlStatement = SQL`
       SELECT
-        name as partnership_name
+        *
       FROM
         survey_stakeholder_partnership
       WHERE
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<StakeholderPartnershipRecord>(sqlStatement);
 
     const result = response.rows;
 
@@ -1267,13 +1274,13 @@ export class SurveyRepository extends BaseRepository {
    *
    * @param {number[]} firstNationsIds
    * @param {number} surveyId
-   * @return {*}  {Promise<{ survey_first_nation_partnership_id: number }[]>}
+   * @return {*}  {Promise<IndigenousPartnershipRecord[]>}
    * @memberof SurveyRepository
    */
   async insertIndigenousPartnerships(
     firstNationsIds: number[],
     surveyId: number
-  ): Promise<{ survey_first_nation_partnership_id: number }[]> {
+  ): Promise<IndigenousPartnershipRecord[]> {
     defaultLog.debug({ label: 'insertIndigenousPartnerships', firstNationsIds, surveyId });
     const queryBuilder = getKnex()
       .table('survey_first_nation_partnership')
@@ -1283,9 +1290,9 @@ export class SurveyRepository extends BaseRepository {
           survey_id: surveyId
         }))
       )
-      .returning('survey_first_nation_partnership_id');
+      .returning('*');
 
-    const response = await this.connection.knex<{ survey_first_nation_partnership_id: number }>(queryBuilder);
+    const response = await this.connection.knex<IndigenousPartnershipRecord>(queryBuilder);
 
     if (response.rowCount === 0) {
       throw new ApiExecuteSQLError('Failed to insert survey indigenous partnerships', [
@@ -1302,13 +1309,13 @@ export class SurveyRepository extends BaseRepository {
    *
    * @param {string[]} stakeholderPartners
    * @param {number} surveyId
-   * @return {*}  {Promise<{ survey_stakeholder_partnership_id: number }[]>}
+   * @return {*}  {Promise<StakeholderPartnershipRecord[]>}
    * @memberof SurveyRepository
    */
   async insertStakeholderPartnerships(
     stakeholderPartners: string[],
     surveyId: number
-  ): Promise<{ survey_stakeholder_partnership_id: number }[]> {
+  ): Promise<StakeholderPartnershipRecord[]> {
     defaultLog.debug({ label: 'insertStakeholderPartnerships', stakeholderPartners, surveyId });
     const queryBuilder = getKnex()
       .table('survey_stakeholder_partnership')
@@ -1318,9 +1325,9 @@ export class SurveyRepository extends BaseRepository {
           survey_id: surveyId
         }))
       )
-      .returning('survey_stakeholder_partnership_id');
+      .returning('*');
 
-    const response = await this.connection.knex<{ survey_stakeholder_partnership_id: number }>(queryBuilder);
+    const response = await this.connection.knex<StakeholderPartnershipRecord>(queryBuilder);
 
     if (response.rowCount === 0) {
       throw new ApiExecuteSQLError('Failed to insert survey stakeholder partnerships', [
