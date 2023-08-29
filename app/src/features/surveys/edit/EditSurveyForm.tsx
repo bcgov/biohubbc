@@ -199,12 +199,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <HorizontalSplitFormComponent
             title="Team Members"
             summary="Specify team members and their associated job for this survey."
-            component={
-              <SurveyUserForm
-                users={(props?.surveyData?.participants) || []}
-                jobs={props.codes.survey_jobs}
-              />
-            }
+            component={<SurveyUserForm users={props?.surveyData?.participants || []} jobs={props.codes.survey_jobs} />}
           />
 
           <Divider className={classes.sectionDivider} />
