@@ -262,6 +262,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
                       handleAdd={handleAddUserRole}
                       handleRemove={handleRemoveUser}
                       key={user.system_user_id}
+                      label={'Select a Role'}
                     />
                   </Collapse>
                 );
