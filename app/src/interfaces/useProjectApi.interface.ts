@@ -154,7 +154,6 @@ export enum UPDATE_GET_ENTITIES {
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  partnerships = 'partnerships',
   participants = 'participants'
 }
 
