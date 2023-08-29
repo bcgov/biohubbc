@@ -3,9 +3,11 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../services/critterbase-service';
+import { getLogger } from '../../../utils/logger';
 import { critterbaseCommonLookupResponse } from '../../../utils/shared-api-docs';
 
 // TODO: Put this all into an existing endpoint
+const defaultLog = getLogger('paths/critter-data/xref');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -85,7 +87,12 @@ export function getQualMeasurementOptions(): RequestHandler {
     };
     const taxon_id = String(req.query.taxon_measurement_id);
     const cb = new CritterbaseService(user);
-    const result = await cb.getQualitativeOptions(taxon_id);
-    return res.status(200).json(result);
+    try {
+      const result = await cb.getQualitativeOptions(taxon_id);
+      return res.status(200).json(result);
+    } catch (error) {
+      defaultLog.error({ label: 'getTaxonMeasurements', message: 'error', error });
+      throw error;
+    }
   };
 }
