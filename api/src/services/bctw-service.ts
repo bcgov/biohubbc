@@ -1,43 +1,52 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
+import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { KeycloakService } from './keycloak-service';
 
-export interface IDeployDevice {
-  device_id: number;
-  frequency: number;
-  manufacturer: string;
-  model: string;
-  attachment_start: string;
-  attachment_end: string;
-  critter_id: string;
-}
+export const IDeployDevice = z.object({
+  device_id: z.number(),
+  frequency: z.number(),
+  manufacturer: z.string(),
+  model: z.string(),
+  attachment_start: z.string(),
+  attachment_end: z.string(),
+  critter_id: z.string()
+});
 
-export interface IDeploymentUpdate {
-  deployment_id: string;
-  attachment_start: string;
-  attachment_end: string;
-}
+export type IDeployDevice = z.infer<typeof IDeployDevice>;
 
-export interface IDeploymentRecord {
-  assignment_id: string;
-  collar_id: string;
-  critter_id: string;
-  created_at: string;
-  created_by_user_id: string;
-  updated_at: string;
-  updated_by_user_id: string;
-  valid_from: string;
-  valid_to: string;
-  attachment_start: string;
-  attachment_end: string;
-  deployment_id: number;
-}
+export const IDeploymentUpdate = z.object({
+  deployment_id: z.string(),
+  attachment_start: z.string(),
+  attachment_end: z.string()
+});
 
-export interface IBctwUser {
-  keycloak_guid: string;
-  username: string;
-}
+export type IDeploymentUpdate = z.infer<typeof IDeploymentUpdate>;
+
+export const IDeploymentRecord = z.object({
+  assignment_id: z.string(),
+  collar_id: z.string(),
+  critter_id: z.string(),
+  created_at: z.string(),
+  created_by_user_id: z.string(),
+  updated_at: z.string(),
+  updated_by_user_id: z.string(),
+  valid_from: z.string(),
+  valid_to: z.string(),
+  attachment_start: z.string(),
+  attachment_end: z.string(),
+  deployment_id: z.number()
+});
+
+export type IDeploymentRecord = z.infer<typeof IDeploymentRecord>;
+
+export const IBctwUser = z.object({
+  keycloak_guid: z.string(),
+  username: z.string()
+});
+
+export type IBctwUser = z.infer<typeof IBctwUser>;
 
 export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
 export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
