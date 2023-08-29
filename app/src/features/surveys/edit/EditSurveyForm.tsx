@@ -14,7 +14,7 @@ import SurveyPartnershipsForm, {
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ProjectViewObject } from 'interfaces/useProjectApi.interface';
-import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
@@ -32,6 +32,7 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
+import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IEditSurveyForm {
   codes: IGetAllCodeSetsResponse;
   projectData: ProjectViewObject;
+  surveyData: SurveyUpdateObject;
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   handleCancel: () => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
@@ -93,7 +95,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         sedis_procedures_accepted: 'true' as unknown as StringBoolean,
         foippa_requirements_accepted: 'true' as unknown as StringBoolean
       }
-    }
+    },
+    ...SurveyUserJobFormInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -136,8 +139,9 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
-    .concat(SurveyPartnershipsFormYupSchema)
-    .concat(AgreementsYupSchema);
+    .concat(AgreementsYupSchema)
+    .concat(SurveyUserJobYupSchema)
+    .concat(SurveyPartnershipsFormYupSchema);
 
   return (
     <Box p={5} component={Paper} display="block">
@@ -199,8 +203,16 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
-            title="Funding Sources and Partnerships"
-            summary="Specify survey funding sources and partnerships."
+            title="Survey Participants"
+            summary="Specify the people who participated in this survey."
+            component={<SurveyUserForm users={props?.surveyData?.participants || []} jobs={props.codes.survey_jobs} />}
+          />
+
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
+            title="Funding Sources"
+            summary="Specify funding sources for this survey."
             component={
               <Box>
                 <Box component="fieldset">

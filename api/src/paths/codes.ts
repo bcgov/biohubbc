@@ -234,6 +234,20 @@ GET.apiDoc = {
                   }
                 }
               },
+              survey_jobs: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
               administrative_activity_status_type: {
                 type: 'array',
                 items: {

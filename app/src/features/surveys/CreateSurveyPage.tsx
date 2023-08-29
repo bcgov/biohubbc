@@ -47,6 +47,7 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from './components/SurveyFundingSourceForm';
+import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -134,7 +135,8 @@ const CreateSurveyPage = () => {
     ...SurveyFundingSourceFormInitialValues,
     ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
-    ...AgreementsInitialValues
+    ...AgreementsInitialValues,
+    ...SurveyUserJobFormInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -176,8 +178,9 @@ const CreateSurveyPage = () => {
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
-    .concat(SurveyPartnershipsFormYupSchema)
-    .concat(AgreementsYupSchema);
+    .concat(AgreementsYupSchema)
+    .concat(SurveyUserJobYupSchema)
+    .concat(SurveyPartnershipsFormYupSchema);
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -344,8 +347,16 @@ const CreateSurveyPage = () => {
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
-                  title="Funding Sources and Partnerships"
-                  summary="Specify survey funding sources and partnerships."
+                  title="Survey Participants"
+                  summary="Specify the people who participated in this survey."
+                  component={<SurveyUserForm users={[]} jobs={codes.survey_jobs} />}
+                />
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Funding Sources"
+                  summary="Specify funding sources for this survey."
                   component={
                     <Box>
                       <Box component="fieldset">

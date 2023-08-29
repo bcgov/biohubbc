@@ -62,6 +62,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyFirstNationData(surveyId)}
       ${insertSurveyStakeholderData(surveyId)}
       ${insertSurveyVantageData(surveyId)}
+      ${insertSurveyParticipationData(surveyId)}
     `);
   }
 }
@@ -91,9 +92,30 @@ const insertProjectProgramData = (projectId: number) => `
       program_id
     )
   VALUES (
-    ${projectId}, 
+    ${projectId},
     (select program_id from program order by random() limit 1)
   );
+`;
+
+const insertSurveyParticipationData = (surveyId: number) => `
+  INSERT into survey_participation
+    ( survey_id, system_user_id, survey_job_id )
+  VALUES
+    (
+      ${surveyId},
+      (
+        SELECT COALESCE((
+          SELECT
+            system_user_id
+          FROM
+            system_user su
+          WHERE
+            su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
+        ), 1)
+      ),
+      1
+    )
+  ;
 `;
 
 /**
@@ -294,7 +316,7 @@ const insertSurveyData = (projectId: number) => `
  */
 const insertProjectParticipationData = (projectId: number) => `
   INSERT into project_participation
-    ( 
+    (
       project_id,
       system_user_id,
       project_role_id
@@ -347,7 +369,7 @@ const insertSurveyTypeData = (surveyId: number) => `
     )
   VALUES
     (
-      ${surveyId}, 
+      ${surveyId},
       (SELECT type_id from type order by random() limit 1)
     )
   ;

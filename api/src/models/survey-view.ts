@@ -1,6 +1,7 @@
 import { Feature } from 'geojson';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
+import { SurveyUser } from '../repositories/survey-participation-repository';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
@@ -10,6 +11,7 @@ export type SurveyObject = {
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
+  participants: SurveyUser[];
   partnerships: ISurveyPartnerships;
 };
 

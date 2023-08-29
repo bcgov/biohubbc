@@ -283,6 +283,28 @@ PUT.apiDoc = {
                   type: 'number'
                 }
               }
+            },
+            participants: {
+              type: 'array',
+              items: {
+                type: 'object',
+                nullable: true,
+                required: ['system_user_id', 'survey_job_name'],
+                properties: {
+                  survey_participation_id: {
+                    type: 'number',
+                    minimum: 1,
+                    nullable: true
+                  },
+                  system_user_id: {
+                    type: 'integer',
+                    minimum: 1
+                  },
+                  survey_job_name: {
+                    type: 'string'
+                  }
+                }
+              }
             }
           }
         }

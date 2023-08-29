@@ -57,7 +57,6 @@ const SurveyAnimals: React.FC = () => {
       //Temp solution for keycloak timeout bug
       //TODO fix this in useAxios or higher level component.
       //This error can occur when keycloak token refresh happens
-      console.log(err);
       await postCritterPayload();
     }
   };

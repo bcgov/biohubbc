@@ -1,6 +1,6 @@
 import { PROJECT_PERMISSION, PROJECT_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/http-error';
+import { ApiGeneralError } from '../errors/api-error';
 import { PostParticipantData } from '../models/project-create';
 import {
   IParticipant,
@@ -307,7 +307,9 @@ export class ProjectParticipationService extends DBService {
 
   async upsertProjectParticipantData(projectId: number, participants: PostParticipantData[]): Promise<void> {
     if (!this.doProjectParticipantsHaveARole(participants, PROJECT_ROLE.COORDINATOR)) {
-      throw new HTTP400(`Projects require that a single participant has a ${PROJECT_ROLE.COORDINATOR} role.`);
+      throw new ApiGeneralError(
+        `Projects require that at least one participant has a ${PROJECT_ROLE.COORDINATOR} role.`
+      );
     }
 
     // all actions to take

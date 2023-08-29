@@ -64,7 +64,8 @@ POST.apiDoc = {
             'proprietor',
             'purpose_and_methodology',
             'location',
-            'agreements'
+            'agreements',
+            'participants'
           ],
           properties: {
             survey_details: {
@@ -228,6 +229,22 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     ...(GeoJSONFeature as object)
+                  }
+                }
+              }
+            },
+            participants: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['system_user_id', 'survey_job_name'],
+                properties: {
+                  system_user_id: {
+                    type: 'number',
+                    minimum: 1
+                  },
+                  survey_job_name: {
+                    type: 'string'
                   }
                 }
               }

@@ -35,6 +35,7 @@ import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { RegionService } from './region-service';
+import { SurveyParticipationService } from './survey-participation-service';
 import { TaxonomyService } from './taxonomy-service';
 
 const defaultLog = getLogger('services/survey-service');
@@ -52,6 +53,7 @@ export class SurveyService extends DBService {
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
   fundingSourceService: FundingSourceService;
+  surveyParticipationService: SurveyParticipationService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -61,6 +63,7 @@ export class SurveyService extends DBService {
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
     this.fundingSourceService = new FundingSourceService(connection);
+    this.surveyParticipationService = new SurveyParticipationService(connection);
   }
 
   /**
@@ -90,7 +93,8 @@ export class SurveyService extends DBService {
       partnerships: await this.getSurveyPartnershipsData(surveyId),
       purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
       proprietor: await this.getSurveyProprietorDataForView(surveyId),
-      location: await this.getSurveyLocationData(surveyId)
+      location: await this.getSurveyLocationData(surveyId),
+      participants: await this.surveyParticipationService.getSurveyParticipants(surveyId)
     };
   }
 
@@ -411,6 +415,19 @@ export class SurveyService extends DBService {
       )
     );
 
+    // Handle survey participants
+    promises.push(
+      Promise.all(
+        postSurveyData.participants.map((participant) =>
+          this.surveyParticipationService.insertSurveyParticipant(
+            surveyId,
+            participant.system_user_id,
+            participant.survey_job_name
+          )
+        )
+      )
+    );
+
     // Handle survey proprietor data
     postSurveyData.proprietor && promises.push(this.insertSurveyProprietor(postSurveyData.proprietor, surveyId));
 
@@ -633,6 +650,10 @@ export class SurveyService extends DBService {
       promises.push(this.insertRegion(surveyId, putSurveyData?.location.geometry));
     }
 
+    if (putSurveyData?.participants.length) {
+      promises.push(this.upsertSurveyParticipantData(surveyId, putSurveyData));
+    }
+
     await Promise.all(promises);
   }
 
@@ -697,6 +718,65 @@ export class SurveyService extends DBService {
    */
   async deleteSurveySpeciesData(surveyId: number) {
     return this.surveyRepository.deleteSurveySpeciesData(surveyId);
+  }
+
+  /**
+   * Updates survey participants
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @memberof SurveyService
+   */
+  async upsertSurveyParticipantData(surveyId: number, surveyData: PutSurveyObject) {
+    // Get any existing survey participants
+    const existingParticipants = await this.surveyParticipationService.getSurveyParticipants(surveyId);
+
+    //Compare input and existing for participants to delete
+    const existingParticipantsToDelete = existingParticipants.filter((existingParticipant) => {
+      return !surveyData.participants.find(
+        (incomingParticipant) => incomingParticipant.system_user_id === existingParticipant.system_user_id
+      );
+    });
+
+    // Delete any non existing participants
+    if (existingParticipantsToDelete.length) {
+      const promises: Promise<any>[] = [];
+
+      existingParticipantsToDelete.forEach((participant: any) => {
+        promises.push(
+          this.surveyParticipationService.deleteSurveyParticipationRecord(participant.survey_participation_id)
+        );
+      });
+
+      await Promise.all(promises);
+    }
+
+    const promises: Promise<any>[] = [];
+
+    // The remaining participants with either update if they have a survey_participation_id
+    // or insert new record
+    surveyData.participants.forEach((participant) => {
+      if (participant.survey_participation_id) {
+        // Update participant
+        promises.push(
+          this.surveyParticipationService.updateSurveyParticipant(
+            participant.survey_participation_id,
+            participant.survey_job_name
+          )
+        );
+      } else {
+        // Create new participant
+        promises.push(
+          this.surveyParticipationService.insertSurveyParticipant(
+            surveyId,
+            participant.system_user_id,
+            participant.survey_job_name
+          )
+        );
+      }
+    });
+
+    await Promise.all(promises);
   }
 
   /**

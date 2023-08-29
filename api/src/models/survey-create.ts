@@ -9,6 +9,7 @@ export class PostSurveyObject {
   purpose_and_methodology: PostPurposeAndMethodologyData;
   location: PostLocationData;
   agreements: PostAgreementsData;
+  participants: PostParticipationData[];
   partnerships: PostPartnershipsData;
 
   constructor(obj?: any) {
@@ -22,6 +23,8 @@ export class PostSurveyObject {
       (obj?.purpose_and_methodology && new PostPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.agreements = (obj?.agreements && new PostAgreementsData(obj.agreements)) || null;
+    this.participants =
+      (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
   }
 }
@@ -130,6 +133,16 @@ export class PostPurposeAndMethodologyData {
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = obj?.vantage_code_ids || [];
     this.surveyed_all_areas = obj?.surveyed_all_areas || null;
+  }
+}
+
+export class PostParticipationData {
+  system_user_id: number;
+  survey_job_name: string;
+
+  constructor(obj?: any) {
+    this.system_user_id = obj?.system_user_id || null;
+    this.survey_job_name = obj?.survey_job_name || null;
   }
 }
 
