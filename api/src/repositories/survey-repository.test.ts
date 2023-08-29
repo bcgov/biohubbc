@@ -52,18 +52,15 @@ describe('SurveyRepository', () => {
       expect(response).to.eql([{ id: 1 }]);
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+    it('should return empty rows', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      try {
-        await repository.getSurveyIdsByProjectId(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get project survey ids');
-      }
+      const response = await repository.getSurveyIdsByProjectId(1);
+
+      expect(response).to.eql([]);
     });
   });
 
@@ -137,18 +134,16 @@ describe('SurveyRepository', () => {
       expect(response).to.eql([{ id: 1 }]);
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+    it('should return empty rows', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      try {
-        await repository.getSpeciesData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get survey species data');
-      }
+      const response = await repository.getSpeciesData(1);
+
+      expect(response).to.not.be.null;
+      expect(response).to.eql([]);
     });
   });
 
@@ -328,18 +323,15 @@ describe('SurveyRepository', () => {
       expect(response).to.eql(new GetReportAttachmentsData([{ id: 1 }]));
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+    it('should return empty rows', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      try {
-        await repository.getReportAttachmentsData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get attachments data');
-      }
+      const response = await repository.getReportAttachmentsData(1);
+
+      expect(response).to.eql(new GetReportAttachmentsData([]));
     });
   });
 

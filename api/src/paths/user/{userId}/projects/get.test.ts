@@ -29,7 +29,15 @@ describe('projects', () => {
       const getProjectsBySystemUserIdStub = sinon
         .stub(ProjectParticipationService.prototype, 'getProjectsBySystemUserId')
         .resolves([
-          { project_id: 123, name: 'test', system_user_id: 12, project_role_id: 42, project_participation_id: 88 }
+          {
+            project_id: 123,
+            project_name: 'projectname',
+            system_user_id: 12,
+            project_role_ids: [42],
+            project_role_names: ['Role1'],
+            project_role_permissions: ['Permission1'],
+            project_participation_id: 88
+          }
         ]);
 
       const requestHandler = projects.getAllUserProjects();
@@ -39,7 +47,15 @@ describe('projects', () => {
       expect(getProjectsBySystemUserIdStub).to.have.been.calledOnceWith(1);
 
       expect(mockRes.jsonValue).to.eql([
-        { project_id: 123, name: 'test', system_user_id: 12, project_role_id: 42, project_participation_id: 88 }
+        {
+          project_id: 123,
+          project_name: 'projectname',
+          system_user_id: 12,
+          project_role_ids: [42],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1'],
+          project_participation_id: 88
+        }
       ]);
     });
 

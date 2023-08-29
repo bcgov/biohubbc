@@ -2,8 +2,8 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { User } from '../models/user';
 import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { PermitService } from './permit-service';
 import { UserService } from './user-service';
@@ -39,14 +39,17 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: User = {
+      const mockUserObject: SystemUser = {
         system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const mockDBConnection = getMockDBConnection();
@@ -78,14 +81,17 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: User = {
+      const mockUserObject: SystemUser = {
         system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const mockDBConnection = getMockDBConnection();
@@ -117,14 +123,17 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: User = {
+      const mockUserObject: SystemUser = {
         system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: []
+        role_names: [],
+        email: 'email@email.com',
+        display_name: 'test user',
+        agency: null
       };
 
       const mockDBConnection = getMockDBConnection();

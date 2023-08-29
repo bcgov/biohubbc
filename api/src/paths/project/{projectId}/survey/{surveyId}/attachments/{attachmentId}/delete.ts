@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { User } from '../../../../../../../models/user';
+import { SystemUser } from '../../../../../../../repositories/user-repository';
 import {
   authorizeRequestHandler,
   getSystemUserObject
@@ -112,7 +112,7 @@ export function deleteAttachment(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const systemUserObject: User = req['system_user'] || (await getSystemUserObject(connection));
+      const systemUserObject: SystemUser = req['system_user'] || (await getSystemUserObject(connection));
       const isAdmin =
         systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
         systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR);

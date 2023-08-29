@@ -25,12 +25,15 @@ describe('users', () => {
       const mockResponse = [
         {
           system_user_id: 1,
-          user_identifier: 'identifier',
-          user_guid: 'aaaa',
+          user_identifier: 'testname',
+          user_guid: '123-456-789',
           identity_source: 'idir',
-          record_end_date: '',
+          record_end_date: null,
           role_ids: [1, 2],
-          role_names: ['System Admin', 'Coordinator']
+          role_names: ['System Admin', 'Coordinator'],
+          email: 'email@email.com',
+          display_name: 'test name',
+          agency: null
         }
       ];
 
