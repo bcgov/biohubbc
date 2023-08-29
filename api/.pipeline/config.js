@@ -84,7 +84,7 @@ const phases = {
     backboneArtifactIntakePath: '/api/artifact/intake',
     backboneIntakeEnabled: false,
     bctwApiHost: 'https://moe-bctw-api-dev.apps.silver.devops.gov.bc.ca',
-    critterbaseApiHost: 'https://moe-critterbase-api-dev.apps.silver.devops.gov.bc.ca/api/',
+    critterbaseApiHost: 'https://moe-critterbase-api-dev.apps.silver.devops.gov.bc.ca/api',
     env: 'dev',
     elasticsearchURL: 'http://es01.a0ec71-dev:9200',
     elasticsearchTaxonomyIndex: 'taxonomy_3.0.0',
