@@ -6,7 +6,7 @@ import { CritterbaseService, ICritterbaseUser } from '../../../services/critterb
 import { getLogger } from '../../../utils/logger';
 
 // TODO: Put this all into an existing endpoint
-const defaultLog = getLogger('paths/critter-data/critters')
+const defaultLog = getLogger('paths/critter-data/critters');
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
