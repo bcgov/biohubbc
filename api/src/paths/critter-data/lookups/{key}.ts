@@ -3,9 +3,10 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { CritterbaseService, ICbRouteKey, ICritterbaseUser } from '../../../services/critterbase-service';
+import { getLogger } from '../../../utils/logger';
 
 // TODO: Put this all into an existing endpoint
-
+const defaultLog = getLogger('paths/lookups');
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
@@ -118,7 +119,12 @@ export function getLookupValues(): RequestHandler {
     for (const [a, b] of Object.entries(req.query)) {
       params.push({ key: String(a), value: String(b) });
     }
-    const result = await cb.getLookupValues(key, params);
-    return res.status(200).json(result);
+    try {
+      const result = await cb.getLookupValues(key, params);
+      return res.status(200).json(result);
+    } catch (error) {
+      defaultLog.error({ label: 'lookups', message: 'error', error });
+      throw error;
+    }
   };
 }
