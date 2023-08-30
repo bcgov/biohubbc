@@ -163,7 +163,7 @@ describe('BctwService', () => {
 
     describe('deployDevice', () => {
       it('should send a post request', async () => {
-        const mockAxios = sinon.stub(bctwService, 'axiosInstance');
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post');
 
         await bctwService.deployDevice(mockDevice);
 
@@ -183,7 +183,7 @@ describe('BctwService', () => {
 
     describe('updateDeployment', () => {
       it('should send a patch request', async () => {
-        const mockAxios = sinon.stub(bctwService, 'axiosInstance');
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'patch');
 
         await bctwService.updateDeployment(mockDeployment);
 

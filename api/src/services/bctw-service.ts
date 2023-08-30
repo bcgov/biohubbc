@@ -117,19 +117,6 @@ export class BctwService {
   }
 
   /**
-   * Throw an error if the request to the BCTW API fails.
-   *
-   * @param {AxiosResponse<any>} response
-   * @param {string} endpoint
-   * @memberof BctwService
-   */
-  handleRequestError(response: AxiosResponse<any>, endpoint: string) {
-    if (!response.data || response.status >= 400) {
-      throw new ApiError(ApiErrorType.UNKNOWN, `API request to ${endpoint} failed with status code ${response.status}`);
-    }
-  }
-
-  /**
    * Send an authorized get request to the BCTW API.
    *
    * @param {string} endpoint
