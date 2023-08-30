@@ -97,7 +97,7 @@ export async function up(knex: Knex): Promise<void> {
   
   COMMENT ON COLUMN survey_site_strategy.survey_site_strategy_id  IS 'System generated surrogate primary key identifier.';
   COMMENT ON COLUMN survey_site_strategy.survey_id       IS 'A foreign key pointing to the survey table.';
-  COMMENT ON COLUMN survey_site_strategy.type_id         IS 'A foreign key pointing to the type table.';
+  COMMENT ON COLUMN survey_site_strategy.site_strategy_id         IS 'A foreign key pointing to the type table.';
   COMMENT ON COLUMN survey_site_strategy.create_date     IS 'The datetime the record was created.';
   COMMENT ON COLUMN survey_site_strategy.create_user     IS 'The id of the user who created the record as identified in the system user table.';
   COMMENT ON COLUMN survey_site_strategy.update_date     IS 'The datetime the record was updated.';
@@ -115,15 +115,15 @@ export async function up(knex: Knex): Promise<void> {
     REFERENCES survey(survey_id);
 
   ALTER TABLE survey_site_strategy ADD CONSTRAINT survey_site_strategy_fk2
-    FOREIGN KEY (type_id)
-    REFERENCES type(type_id);
+    FOREIGN KEY (site_strategy_id)
+    REFERENCES site_strategy(site_strategy_id);
 
   -- add indexes for foreign keys
   CREATE INDEX survey_site_strategy_idx1 ON survey_site_strategy(survey_id);
-  CREATE INDEX survey_site_strategy_idx2 ON survey_site_strategy(type_id);
+  CREATE INDEX survey_site_strategy_idx2 ON survey_site_strategy(site_strategy_id);
     
   -- add unique index
-  CREATE UNIQUE INDEX survey_site_strategy_uk1 ON survey_site_strategy(survey_id, type_id);
+  CREATE UNIQUE INDEX survey_site_strategy_uk1 ON survey_site_strategy(survey_id, site_strategy_id);
 
   -------------------------------------------------------------------------
   -- Create audit and journal triggers for survey_site_strategy table
