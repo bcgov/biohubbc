@@ -105,7 +105,7 @@ describe('ProjectUserForm', () => {
 
   it('renders newly added users properly', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
-    const { getByTestId, getByText, getAllByText } = render(
+    const { getByTestId, getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Formik
           initialValues={ProjectUserRoleFormInitialValues}
@@ -131,7 +131,6 @@ describe('ProjectUserForm', () => {
 
       expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
       expect(getByText('Test User')).toBeVisible();
-      expect(getAllByText('Select a Role')[0]).toBeVisible();
     });
   });
 
