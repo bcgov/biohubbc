@@ -1,7 +1,6 @@
 import { PROJECT_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik } from 'formik';
-import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
@@ -23,8 +22,6 @@ const roles: ICode[] = [
     name: PROJECT_ROLE.OBSERVER
   }
 ];
-
-const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
@@ -108,7 +105,7 @@ describe('ProjectUserForm', () => {
 
   it('renders newly added users properly', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, getAllByText } = render(
       <AuthStateContext.Provider value={authState}>
         <Formik
           initialValues={ProjectUserRoleFormInitialValues}
@@ -134,7 +131,7 @@ describe('ProjectUserForm', () => {
 
       expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
       expect(getByText('Test User')).toBeVisible();
-      expect(getByText('Select a Role')).toBeVisible();
+      expect(getAllByText('Select a Role')[0]).toBeVisible();
     });
   });
 
@@ -171,18 +168,8 @@ describe('ProjectUserForm', () => {
     );
 
     await waitFor(async () => {
-      // const autocomplete = getByTestId('autocomplete-user-role-search');
-      // const input = within(autocomplete).getByPlaceholderText('Find team members');
-
-      // // Search for a user
-      // fireEvent.change(input, { target: { value: 'Jim Testy' } });
-      // // Arrow down to user in field
-      // fireEvent.keyDown(autocomplete, { key: 'ArrowDown' });
-      // // select the first item
-      // fireEvent.keyDown(autocomplete, { key: 'Enter' });
-
       expect(getByTestId('autocomplete-user-role-search')).toBeVisible();
-      expect(getByTestId('remove-user-role-button-1')).toBeVisible();
+      expect(getByTestId('remove-user-role-button-0')).toBeVisible();
     });
   });
 });

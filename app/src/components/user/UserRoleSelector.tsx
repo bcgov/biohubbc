@@ -68,6 +68,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
               ))}
             </Select>
             <IconButton
+              data-testid={`remove-user-role-button-${index}`}
               sx={{
                 ml: 2
               }}
