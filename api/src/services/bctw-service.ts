@@ -199,10 +199,3 @@ export class BctwService {
     return this._makeGetRequest(HEALTH_ENDPOINT);
   }
 }
-
-(async () => {
-  const user = { keycloak_guid: 'A82FE250A5BC40E68ABC54A1D0618D75', username: 'jkissack' };
-  const bctw = new BctwService(user);
-  const res = await bctw.getHealth();
-  console.log('BCTW Connection: ', res);
-})();
