@@ -65,7 +65,6 @@ export class BctwService {
     this.keycloak = new KeycloakService();
     this.axiosInstance = axios.create({
       headers: {
-        authorization: `Bearer ${this.getToken()}`,
         user: this.getUserHeader()
       },
       baseURL: BCTW_API_HOST
@@ -79,6 +78,19 @@ export class BctwService {
         return Promise.reject(
           new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`)
         );
+      }
+    );
+
+    // Async request interceptor
+    this.axiosInstance.interceptors.request.use(
+      async (config) => {
+        const token = await this.getToken();
+        config.headers['Authorization'] = `Bearer ${token}`;
+
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
     );
   }
@@ -187,3 +199,10 @@ export class BctwService {
     return this._makeGetRequest(HEALTH_ENDPOINT);
   }
 }
+
+(async () => {
+  const user = { keycloak_guid: 'A82FE250A5BC40E68ABC54A1D0618D75', username: 'jkissack' };
+  const bctw = new BctwService(user);
+  const res = await bctw.getHealth();
+  console.log('BCTW Connection: ', res);
+})();
