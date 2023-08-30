@@ -17,7 +17,7 @@ export async function up(knex: Knex): Promise<void> {
   SET search_path=biohub;
 
   CREATE TABLE survey_block(
-      survey_block_id   integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      survey_block_id                     integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       survey_id                           integer           NOT NULL,
       name                                varchar(300),
       description                         varchar(3000),
