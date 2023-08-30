@@ -155,7 +155,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async deployDevice(device: IDeployDevice): Promise<IDeploymentRecord> {
-    return this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
+    return await this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
   }
 
   /**
@@ -176,7 +176,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async updateDeployment(deployment: IDeploymentUpdate): Promise<IDeploymentRecord> {
-    return this.axiosInstance.patch(UPDATE_DEPLOYMENT_ENDPOINT, deployment);
+    return await this.axiosInstance.patch(UPDATE_DEPLOYMENT_ENDPOINT, deployment);
   }
 
   /**

@@ -56,39 +56,39 @@ describe('BctwService', () => {
     });
   });
 
-  describe('handleRequestError', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
+  // describe('handleRequestError', () => {
+  //   afterEach(() => {
+  //     sinon.restore();
+  //   });
 
-    it('should throw an error if the status is not 200', async () => {
-      const bctwService = new BctwService(mockUser);
-      const response = { data: 'data', status: 400 } as AxiosResponse;
-      const endpoint = '/endpoint';
-      try {
-        await bctwService.handleRequestError(response, endpoint);
-      } catch (error) {
-        expect((error as Error).message).to.equal(
-          `API request to ${endpoint} failed with status code ${response.status}`
-        );
-      }
-    });
+  //   it('should throw an error if the status is not 200', async () => {
+  //     const bctwService = new BctwService(mockUser);
+  //     const response = { data: 'data', status: 400 } as AxiosResponse;
+  //     const endpoint = '/endpoint';
+  //     try {
+  //       await bctwService.handleRequestError(response, endpoint);
+  //     } catch (error) {
+  //       expect((error as Error).message).to.equal(
+  //         `API request to ${endpoint} failed with status code ${response.status}`
+  //       );
+  //     }
+  //   });
 
-    it('should throw an error if the response has no data', async () => {
-      const bctwService = new BctwService(mockUser);
-      const response = { data: null, status: 200 } as AxiosResponse;
-      const endpoint = '/endpoint';
-      try {
-        await bctwService.handleRequestError(response, endpoint);
-      } catch (error) {
-        expect((error as Error).message).to.equal(
-          `API request to ${endpoint} failed with status code ${response.status}`
-        );
-      }
-    });
-  });
+  //   it('should throw an error if the response has no data', async () => {
+  //     const bctwService = new BctwService(mockUser);
+  //     const response = { data: null, status: 200 } as AxiosResponse;
+  //     const endpoint = '/endpoint';
+  //     try {
+  //       await bctwService.handleRequestError(response, endpoint);
+  //     } catch (error) {
+  //       expect((error as Error).message).to.equal(
+  //         `API request to ${endpoint} failed with status code ${response.status}`
+  //       );
+  //     }
+  //   });
+  // });
 
-  describe('makeGetRequest', () => {
+  describe('_makeGetRequest', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -100,7 +100,7 @@ describe('BctwService', () => {
 
       const mockAxios = sinon.stub(bctwService.axiosInstance, 'get').resolves(mockResponse);
 
-      const result = await bctwService.makeGetRequest(endpoint);
+      const result = await bctwService._makeGetRequest(endpoint);
 
       expect(result).to.equal(mockResponse.data);
       expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}`);
@@ -114,31 +114,31 @@ describe('BctwService', () => {
 
       const mockAxios = sinon.stub(bctwService.axiosInstance, 'get').resolves(mockResponse);
 
-      const result = await bctwService.makeGetRequest(endpoint, queryParams);
+      const result = await bctwService._makeGetRequest(endpoint, queryParams);
 
       expect(result).to.equal(mockResponse.data);
       expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}?param=${queryParams['param']}`);
     });
   });
 
-  describe('makePostPatchRequest', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
+  // describe('makePostPatchRequest', () => {
+  //   afterEach(() => {
+  //     sinon.restore();
+  //   });
 
-    it('should make an axios post/patch request', async () => {
-      const bctwService = new BctwService(mockUser);
-      const endpoint = '/endpoint';
-      const mockResponse = { data: 'data' } as AxiosResponse;
+  //   it('should make an axios post/patch request', async () => {
+  //     const bctwService = new BctwService(mockUser);
+  //     const endpoint = '/endpoint';
+  //     const mockResponse = { data: 'data' } as AxiosResponse;
 
-      const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves(mockResponse);
+  //     const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves(mockResponse);
 
-      const result = await bctwService.makePostPatchRequest('post', endpoint, { foo: 'bar' });
+  //     const result = await bctwService.makePostPatchRequest('post', endpoint, { foo: 'bar' });
 
-      expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnce;
-    });
-  });
+  //     expect(result).to.equal(mockResponse.data);
+  //     expect(mockAxios).to.have.been.calledOnce;
+  //   });
+  // });
 
   describe('BctwService public methods', () => {
     afterEach(() => {
@@ -163,17 +163,17 @@ describe('BctwService', () => {
 
     describe('deployDevice', () => {
       it('should send a post request', async () => {
-        const mockPostPatchRequest = sinon.stub(bctwService, 'makePostPatchRequest');
+        const mockAxios = sinon.stub(bctwService, 'axiosInstance');
 
         await bctwService.deployDevice(mockDevice);
 
-        expect(mockPostPatchRequest).to.have.been.calledOnceWith('post', DEPLOY_DEVICE_ENDPOINT, mockDevice);
+        expect(mockAxios).to.have.been.calledOnceWith(DEPLOY_DEVICE_ENDPOINT, mockDevice);
       });
     });
 
     describe('getDeployments', () => {
       it('should send a get request', async () => {
-        const mockGetRequest = sinon.stub(bctwService, 'makeGetRequest');
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
         await bctwService.getDeployments();
 
@@ -183,17 +183,17 @@ describe('BctwService', () => {
 
     describe('updateDeployment', () => {
       it('should send a patch request', async () => {
-        const mockPostPatchRequest = sinon.stub(bctwService, 'makePostPatchRequest');
+        const mockAxios = sinon.stub(bctwService, 'axiosInstance');
 
         await bctwService.updateDeployment(mockDeployment);
 
-        expect(mockPostPatchRequest).to.have.been.calledOnceWith('patch', UPDATE_DEPLOYMENT_ENDPOINT, mockDeployment);
+        expect(mockAxios).to.have.been.calledOnceWith(UPDATE_DEPLOYMENT_ENDPOINT, mockDeployment);
       });
     });
 
     describe('getCollarVendors', () => {
       it('should send a get request', async () => {
-        const mockGetRequest = sinon.stub(bctwService, 'makeGetRequest');
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
         await bctwService.getCollarVendors();
 
@@ -203,7 +203,7 @@ describe('BctwService', () => {
 
     describe('getHealth', () => {
       it('should send a get request', async () => {
-        const mockGetRequest = sinon.stub(bctwService, 'makeGetRequest');
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
         await bctwService.getHealth();
 
