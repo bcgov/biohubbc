@@ -178,7 +178,6 @@ export class CritterbaseService {
     this.keycloak = new KeycloakService();
     this.axiosInstance = axios.create({
       headers: {
-        authorization: `Bearer ${this.getToken()}`,
         user: this.getUserHeader()
       },
       baseURL: CRITTERBASE_API_HOST
@@ -192,6 +191,19 @@ export class CritterbaseService {
         return Promise.reject(
           new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`)
         );
+      }
+    );
+
+    // Async request interceptor
+    this.axiosInstance.interceptors.request.use(
+      async (config) => {
+        const token = await this.getToken();
+        config.headers['Authorization'] = `Bearer ${token}`;
+
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
     );
   }
@@ -256,10 +268,12 @@ export class CritterbaseService {
   }
 
   async createCritter(data: IBulkCreate) {
-    return this.axiosInstance.post(BULK_ENDPOINT, data);
+    const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
+    return response.data;
   }
 
   async signUp() {
-    return this.axiosInstance.post(SIGNUP_ENDPOINT);
+    const response = await this.axiosInstance.post(SIGNUP_ENDPOINT);
+    return response.data;
   }
 }
