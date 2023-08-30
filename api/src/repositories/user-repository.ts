@@ -244,7 +244,9 @@ export class UserRepository extends BaseRepository {
     userIdentifier: string,
     identitySource: string,
     displayName: string,
-    email: string
+    email: string,
+    givenName?: string,
+    familyName?: string
   ): Promise<{ system_user_id: number }> {
     const sqlStatement = SQL`
     INSERT INTO
@@ -254,6 +256,8 @@ export class UserRepository extends BaseRepository {
       user_identity_source_id,
       user_identifier,
       display_name,
+      given_name,
+      family_name,
       email,
       record_effective_date
     )
@@ -269,6 +273,8 @@ export class UserRepository extends BaseRepository {
       ),
       ${userIdentifier.toLowerCase()},
       ${displayName},
+      ${givenName || null},
+      ${familyName || null},
       ${email.toLowerCase()},
       now()
     )
@@ -446,6 +452,34 @@ export class UserRepository extends BaseRepository {
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert user system roles', [
         'UserRepository->addUserSystemRoles',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+  }
+
+  /**
+   * Adds the specified roles by name to the user.
+   *
+   * @param {number} systemUserId
+   * @param {string} roleName
+   * @memberof UserRepository
+   */
+  async addUserSystemRoleByName(systemUserId: number, roleName: string) {
+    const sqlStatement = SQL`
+    INSERT INTO system_user_role (
+      system_user_id,
+      system_role_id
+    ) VALUES (
+      ${systemUserId},
+      (SELECT system_role_id FROM system_role WHERE name = ${roleName})
+    );
+  `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to insert user system roles', [
+        'UserRepository->addUserSystemRoleByName',
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }

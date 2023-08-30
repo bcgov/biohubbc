@@ -68,6 +68,17 @@ POST.apiDoc = {
             roleId: {
               type: 'number',
               minimum: 1
+            },
+            given_name: {
+              type: 'string',
+              description: 'The given name for the user.'
+            },
+            family_name: {
+              type: 'string',
+              description: 'The family name for the user.'
+            },
+            role_name: {
+              type: 'string'
             }
           }
         }
@@ -113,6 +124,10 @@ export function addSystemRoleUser(): RequestHandler {
 
     const roleId = req.body?.roleId || null;
 
+    const given_name: string = req.body?.given_name;
+    const family_name: string = req.body?.family_name;
+    const role_name: string = req.body?.role_name;
+
     if (!userIdentifier) {
       throw new HTTP400('Missing required body param: userIdentifier');
     }
@@ -143,11 +158,17 @@ export function addSystemRoleUser(): RequestHandler {
         userIdentifier,
         identitySource,
         displayName,
-        email
+        email,
+        given_name,
+        family_name
       );
 
       if (userObject) {
-        await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
+        if (role_name) {
+          await userService.addUserSystemRoleByName(userObject.system_user_id, role_name);
+        } else {
+          await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
+        }
       }
 
       await connection.commit();

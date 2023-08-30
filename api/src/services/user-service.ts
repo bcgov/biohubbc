@@ -85,14 +85,18 @@ export class UserService extends DBService {
     userIdentifier: string,
     identitySource: string,
     displayName: string,
-    email: string
+    email: string,
+    givenName?: string,
+    familyName?: string
   ): Promise<{ system_user_id: number }> {
     const response = await this.userRepository.addSystemUser(
       userGuid,
       userIdentifier,
       identitySource,
       displayName,
-      email
+      email,
+      givenName,
+      familyName
     );
 
     return response;
@@ -127,7 +131,9 @@ export class UserService extends DBService {
     userIdentifier: string,
     identitySource: string,
     displayName: string,
-    email: string
+    email: string,
+    givenName?: string,
+    familyName?: string
   ): Promise<SystemUser> {
     // Check if the user exists in SIMS
     const existingUser = userGuid
@@ -143,7 +149,15 @@ export class UserService extends DBService {
       }
 
       // Found no existing user, add them
-      const newUserId = await this.addSystemUser(userGuid, userIdentifier, identitySource, displayName, email);
+      const newUserId = await this.addSystemUser(
+        userGuid,
+        userIdentifier,
+        identitySource,
+        displayName,
+        email,
+        givenName,
+        familyName
+      );
 
       // fetch the new user object
       return this.getUserById(newUserId.system_user_id);
@@ -204,6 +218,18 @@ export class UserService extends DBService {
    */
   async addUserSystemRoles(systemUserId: number, roleIds: number[]) {
     return this.userRepository.addUserSystemRoles(systemUserId, roleIds);
+  }
+
+  /**
+   * Adds the specified role by name to the user.
+   *
+   * @param {number} systemUserId
+   * @param {string} roleName
+   * @return {*}
+   * @memberof UserService
+   */
+  async addUserSystemRoleByName(systemUserId: number, roleName: string) {
+    return this.userRepository.addUserSystemRoleByName(systemUserId, roleName);
   }
 
   /**
