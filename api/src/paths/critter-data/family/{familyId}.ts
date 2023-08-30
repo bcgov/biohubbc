@@ -40,7 +40,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'familyId',
       schema: {
-        type: 'string'
+        type: 'string',
+        format: 'uuid'
       },
       required: true
     }

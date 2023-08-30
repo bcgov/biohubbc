@@ -39,8 +39,8 @@ describe('paths/critter-data/critters/post', () => {
 
       await requestHandler(mockReq, mockRes, mockNext);
 
-      expect(mockCreateCritter.calledOnce).to.be.true;
-      expect(mockCreateCritter).calledWith(payload);
+      expect(mockCreateCritter).to.have.been.calledOnceWith(payload);
+      //expect(mockCreateCritter).calledWith(payload);
       expect(mockRes.statusValue).to.equal(201);
       expect(mockRes.json.calledWith({ count: 0 })).to.be.true;
     });
@@ -49,6 +49,7 @@ describe('paths/critter-data/critters/post', () => {
       const mockCreateCritter = sinon.stub(CritterbaseService.prototype, 'createCritter').rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+      mockReq.body = payload;
       const requestHandler = createCritter.createCritter();
 
       try {
@@ -56,7 +57,7 @@ describe('paths/critter-data/critters/post', () => {
         expect.fail();
       } catch (actualError) {
         expect(actualError).to.equal(mockError);
-        expect(mockCreateCritter.calledOnce).to.be.true;
+        expect(mockCreateCritter).to.have.been.calledOnceWith(payload);
       }
     });
   });

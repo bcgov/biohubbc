@@ -5,7 +5,6 @@ import { authorizeRequestHandler } from '../../../request-handlers/security/auth
 import { CritterbaseService, ICritterbaseUser } from '../../../services/critterbase-service';
 import { getLogger } from '../../../utils/logger';
 
-// TODO: Put this all into an existing endpoint
 const defaultLog = getLogger('paths/critter-data/xref');
 
 export const GET: Operation = [
@@ -40,7 +39,8 @@ GET.apiDoc = {
       in: 'query',
       name: 'taxon_id',
       schema: {
-        type: 'string'
+        type: 'string',
+        format: 'uuid'
       }
     }
   ],

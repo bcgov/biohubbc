@@ -36,7 +36,7 @@ describe('useFamily', () => {
     const familyId = v4();
     mock.onGet('/api/critter-data/family/' + familyId).reply(200, immediateFamily);
     const result = await useFamilyApi(axios).getImmediateFamily(familyId);
-    expect(Array.isArray(result.parents));
-    expect(Array.isArray(result.children));
+    expect(Array.isArray(result.parents)).toBe(true);
+    expect(Array.isArray(result.children)).toBe(true);
   });
 });

@@ -38,7 +38,7 @@ describe('useLookup', () => {
   it('should return a lookup table in a format to be used by select components', async () => {
     mock.onGet('/api/critter-data/lookups/colours?format=asSelect').reply(200, mockLookup);
     const result = await useLookupApi(axios).getSelectOptions({ route: 'lookups/colours' });
-    expect(Array.isArray(result));
+    expect(Array.isArray(result)).toBe(true);
     expect(typeof result).not.toBe('string');
     const res = result as ICbSelectRows[];
     expect(res[0].key).toBe('colour_id');
@@ -50,7 +50,7 @@ describe('useLookup', () => {
     const taxon_id = v4();
     mock.onGet('/api/critter-data/xref/taxon-measurements?taxon_id=' + taxon_id).reply(200, mockMeasurement);
     const result = await useLookupApi(axios).getTaxonMeasurements(taxon_id);
-    expect(Array.isArray(result));
+    expect(Array.isArray(result)).toBe(true);
     expect(typeof result?.[0].taxon_measurement_id).toBe('string');
     expect(typeof result?.[0].measurement_name).toBe('string');
   });

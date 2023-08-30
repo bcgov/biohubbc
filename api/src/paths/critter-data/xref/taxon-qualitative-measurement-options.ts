@@ -6,7 +6,6 @@ import { CritterbaseService, ICritterbaseUser } from '../../../services/critterb
 import { getLogger } from '../../../utils/logger';
 import { critterbaseCommonLookupResponse } from '../../../utils/shared-api-docs';
 
-// TODO: Put this all into an existing endpoint
 const defaultLog = getLogger('paths/critter-data/xref');
 
 export const GET: Operation = [
@@ -41,7 +40,8 @@ GET.apiDoc = {
       in: 'query',
       name: 'taxon_measurement_id',
       schema: {
-        type: 'string'
+        type: 'string',
+        format: 'uuid'
       }
     },
     {

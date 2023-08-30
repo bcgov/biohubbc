@@ -5,7 +5,6 @@ import { authorizeRequestHandler } from '../../../request-handlers/security/auth
 import { CbRouteKey, CritterbaseService, ICritterbaseUser } from '../../../services/critterbase-service';
 import { getLogger } from '../../../utils/logger';
 
-// TODO: Put this all into an existing endpoint
 const defaultLog = getLogger('paths/lookups');
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
