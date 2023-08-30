@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
@@ -67,8 +67,20 @@ export class BctwService {
       headers: {
         authorization: `Bearer ${this.getToken()}`,
         user: this.getUserHeader()
-      }
+      },
+      baseURL: BCTW_API_HOST
     });
+
+    this.axiosInstance.interceptors.response.use(
+      (response: AxiosResponse) => {
+        return response;
+      },
+      (error: AxiosError) => {
+        return Promise.reject(
+          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`)
+        );
+      }
+    );
   }
 
   /**
@@ -113,34 +125,13 @@ export class BctwService {
    * @return {*}
    * @memberof BctwService
    */
-  async makeGetRequest(endpoint: string, queryParams?: Record<string, string>) {
-    let url = `${BCTW_API_HOST}${endpoint}`;
-
-    // If query parameters are provided, append them to the URL
+  async _makeGetRequest(endpoint: string, queryParams?: Record<string, string>) {
+    let url = endpoint;
     if (queryParams) {
       const params = new URLSearchParams(queryParams);
       url += `?${params.toString()}`;
     }
-
     const response = await this.axiosInstance.get(url);
-
-    this.handleRequestError(response, url);
-    return response.data;
-  }
-
-  /**
-   * Send an authorized post or patch request to the BCTW API.
-   *
-   * @param {('post' | 'patch')} method
-   * @param {string} endpoint
-   * @param {*} [data]
-   * @return {*}
-   * @memberof BctwService
-   */
-  async makePostPatchRequest<DataType = any>(method: 'post' | 'patch', endpoint: string, data?: DataType) {
-    const url = `${BCTW_API_HOST}${endpoint}`;
-    const response = await this.axiosInstance[method](url, data);
-    this.handleRequestError(response, url);
     return response.data;
   }
 
@@ -152,7 +143,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async deployDevice(device: IDeployDevice): Promise<IDeploymentRecord> {
-    return this.makePostPatchRequest('post', DEPLOY_DEVICE_ENDPOINT, device);
+    return this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
   }
 
   /**
@@ -162,7 +153,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async getDeployments(): Promise<IDeploymentRecord[]> {
-    return this.makeGetRequest(GET_DEPLOYMENTS_ENDPOINT);
+    return this._makeGetRequest(GET_DEPLOYMENTS_ENDPOINT);
   }
 
   /**
@@ -173,7 +164,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async updateDeployment(deployment: IDeploymentUpdate): Promise<IDeploymentRecord> {
-    return this.makePostPatchRequest('patch', UPDATE_DEPLOYMENT_ENDPOINT, deployment);
+    return this.axiosInstance.patch(UPDATE_DEPLOYMENT_ENDPOINT, deployment);
   }
 
   /**
@@ -183,7 +174,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async getCollarVendors(): Promise<string[]> {
-    return this.makeGetRequest(GET_COLLAR_VENDORS_ENDPOINT);
+    return this._makeGetRequest(GET_COLLAR_VENDORS_ENDPOINT);
   }
 
   /**
@@ -193,6 +184,6 @@ export class BctwService {
    * @memberof BctwService
    */
   async getHealth(): Promise<string> {
-    return this.makeGetRequest(HEALTH_ENDPOINT);
+    return this._makeGetRequest(HEALTH_ENDPOINT);
   }
 }

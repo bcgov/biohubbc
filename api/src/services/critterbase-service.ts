@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
-import { KeycloakService } from './keycloak-service';
 import { ApiError, ApiErrorType } from '../errors/api-error';
+import { KeycloakService } from './keycloak-service';
 
 export interface ICritterbaseUser {
   username: string;
@@ -163,7 +163,7 @@ export const CbRoutes = {
 export type CbRouteKey = keyof typeof CbRoutes;
 
 export const CRITTERBASE_API_HOST = process.env.CB_API_HOST || ``;
-const CRITTER_ENDPOINT = '/critters/';
+const CRITTER_ENDPOINT = '/critters';
 const BULK_ENDPOINT = '/bulk';
 const SIGNUP_ENDPOINT = '/signup';
 const FAMILY_ENDPOINT = '/family';
@@ -179,7 +179,7 @@ export class CritterbaseService {
     this.axiosInstance = axios.create({
       headers: {
         authorization: `Bearer ${this.getToken()}`,
-        ...this.getUserHeader()
+        user: this.getUserHeader()
       },
       baseURL: CRITTERBASE_API_HOST
     });
@@ -189,7 +189,9 @@ export class CritterbaseService {
         return response;
       },
       (error: AxiosError) => {
-        return Promise.reject(new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`));
+        return Promise.reject(
+          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`)
+        );
       }
     );
   }
@@ -199,8 +201,14 @@ export class CritterbaseService {
     return token;
   }
 
-  getUserHeader(): { user: string } {
-    return { user: JSON.stringify(this.user) };
+  /**
+   * Return user information as a JSON string.
+   *
+   * @return {*}  {string}
+   * @memberof BctwService
+   */
+  getUserHeader(): string {
+    return JSON.stringify(this.user);
   }
 
   async _makeGetRequest(endpoint: string, params: QueryParam[]) {
@@ -208,46 +216,43 @@ export class CritterbaseService {
     for (const p of params) {
       appendParams.append(p.key, p.value);
     }
-    const url = `${CRITTERBASE_API_HOST}${endpoint}?${appendParams.toString()}`;
+    const url = `${endpoint}?${appendParams.toString()}`;
     const response = await this.axiosInstance.get(url);
     return response.data;
   }
 
   async getLookupValues(route: CbRouteKey, params: QueryParam[]) {
-    const query = new URLSearchParams(CbRoutes[route])
-    params.forEach((param) => query.append(param.key, param.value));
-
-    return this.axiosInstance.get(query.toString());
+    return this._makeGetRequest(CbRoutes[route], params);
   }
 
   async getTaxonMeasurements(taxon_id: string) {
-    return this.makeGetRequest(CbRoutes['taxon-measurements'], [{ key: 'taxon_id', value: taxon_id }]);
+    return this._makeGetRequest(CbRoutes['taxon-measurements'], [{ key: 'taxon_id', value: taxon_id }]);
   }
 
   async getTaxonBodyLocations(taxon_id: string) {
-    return this.makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
+    return this._makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
       { key: 'taxon_id', value: taxon_id },
       { key: 'format', value: 'asSelect' }
     ]);
   }
 
   async getQualitativeOptions(taxon_measurement_id: string, format = 'asSelect') {
-    return this.makeGetRequest(CbRoutes['taxon-qualitative-measurement-options'], [
+    return this._makeGetRequest(CbRoutes['taxon-qualitative-measurement-options'], [
       { key: 'taxon_measurement_id', value: taxon_measurement_id },
       { key: 'format', value: format }
     ]);
   }
 
   async getFamilies() {
-    return this.makeGetRequest(FAMILY_ENDPOINT, []);
+    return this._makeGetRequest(FAMILY_ENDPOINT, []);
   }
 
   async getFamilyById(family_id: string) {
-    return this.makeGetRequest(`${FAMILY_ENDPOINT}/${family_id}`, []);
+    return this._makeGetRequest(`${FAMILY_ENDPOINT}/${family_id}`, []);
   }
 
   async getCritter(critter_id: string) {
-    return this.makeGetRequest(`${CRITTER_ENDPOINT}${critter_id}`, [{ key: 'format', value: 'detail' }]);
+    return this._makeGetRequest(`${CRITTER_ENDPOINT}/${critter_id}`, [{ key: 'format', value: 'detail' }]);
   }
 
   async createCritter(data: IBulkCreate) {
@@ -255,6 +260,6 @@ export class CritterbaseService {
   }
 
   async signUp() {
-    return this.makePostPatchRequest('post', SIGNUP_ENDPOINT);
+    return this.axiosInstance.post(SIGNUP_ENDPOINT);
   }
 }
