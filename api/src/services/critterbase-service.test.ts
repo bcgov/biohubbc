@@ -85,7 +85,7 @@ describe('CritterbaseService', () => {
 
       const result = await cb.axiosInstance.post(endpoint, { foo: 'bar' });
 
-      expect(result).to.equal(mockResponse.data);
+      expect(result).to.equal(mockResponse);
       expect(mockAxios).to.have.been.calledOnce;
     });
   });

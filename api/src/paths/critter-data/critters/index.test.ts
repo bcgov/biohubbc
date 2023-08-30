@@ -41,7 +41,7 @@ describe('paths/critter-data/critters/post', () => {
 
       expect(mockCreateCritter.calledOnce).to.be.true;
       expect(mockCreateCritter).calledWith(payload);
-      expect(mockRes.statusValue).to.equal(200);
+      expect(mockRes.statusValue).to.equal(201);
       expect(mockRes.json.calledWith({ count: 0 })).to.be.true;
     });
     it('should fail', async () => {
