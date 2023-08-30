@@ -17,7 +17,7 @@ describe('CritterbaseService', () => {
   describe('getUserHeader', () => {
     const cb = new CritterbaseService(mockUser);
     const result = cb.getUserHeader();
-    expect(result.user).to.be.a('string');
+    expect(result).to.be.a('string');
   });
 
   describe('getToken', () => {
@@ -50,7 +50,7 @@ describe('CritterbaseService', () => {
 
       const mockAxios = sinon.stub(cb.axiosInstance, 'get').resolves(mockResponse);
 
-      const result = await cb.makeGetRequest(endpoint, []);
+      const result = await cb._makeGetRequest(endpoint, []);
 
       expect(result).to.equal(mockResponse.data);
       expect(mockAxios).to.have.been.calledOnceWith(`${CRITTERBASE_API_HOST}${endpoint}?`);
@@ -64,7 +64,7 @@ describe('CritterbaseService', () => {
 
       const mockAxios = sinon.stub(cb.axiosInstance, 'get').resolves(mockResponse);
 
-      const result = await cb.makeGetRequest(endpoint, queryParams);
+      const result = await cb._makeGetRequest(endpoint, queryParams);
 
       expect(result).to.equal(mockResponse.data);
       expect(mockAxios).to.have.been.calledOnceWith(`${CRITTERBASE_API_HOST}${endpoint}?param=param`);
@@ -83,7 +83,7 @@ describe('CritterbaseService', () => {
 
       const mockAxios = sinon.stub(cb.axiosInstance, 'post').resolves(mockResponse);
 
-      const result = await cb.makePostPatchRequest('post', endpoint, { foo: 'bar' });
+      const result = await cb.axiosInstance.post(endpoint, { foo: 'bar' });
 
       expect(result).to.equal(mockResponse.data);
       expect(mockAxios).to.have.been.calledOnce;
@@ -98,19 +98,19 @@ describe('CritterbaseService', () => {
     const cb = new CritterbaseService(mockUser);
 
     describe('getLookupValues', async () => {
-      const mockGetRequest = sinon.stub(cb, 'makeGetRequest');
+      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
       await cb.getLookupValues('colours', []);
       expect(mockGetRequest).to.have.been.calledOnceWith('lookups/colours', [{ key: 'format', value: 'asSelect ' }]);
     });
     describe('getTaxonMeasurements', async () => {
-      const mockGetRequest = sinon.stub(cb, 'makeGetRequest');
+      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
       await cb.getTaxonMeasurements('asdf');
       expect(mockGetRequest).to.have.been.calledOnceWith('xref/taxon-measurements', [
         { key: 'taxon_id', value: 'asdf ' }
       ]);
     });
     describe('getTaxonBodyLocations', async () => {
-      const mockGetRequest = sinon.stub(cb, 'makeGetRequest');
+      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
       await cb.getTaxonBodyLocations('asdf');
       expect(mockGetRequest).to.have.been.calledOnceWith('xref/taxon-marking-body-locations', [
         { key: 'taxon_id', value: 'asdf' },
@@ -118,7 +118,7 @@ describe('CritterbaseService', () => {
       ]);
     });
     describe('getQualitativeOptions', async () => {
-      const mockGetRequest = sinon.stub(cb, 'makeGetRequest');
+      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
       await cb.getQualitativeOptions('asdf');
       expect(mockGetRequest).to.have.been.calledOnceWith('xref/taxon-qualitative-measurement-options', [
         { key: 'taxon_measurement_id', value: 'asdf' },
@@ -126,17 +126,17 @@ describe('CritterbaseService', () => {
       ]);
     });
     describe('getFamilies', async () => {
-      const mockGetRequest = sinon.stub(cb, 'makeGetRequest');
+      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
       await cb.getFamilies();
       expect(mockGetRequest).to.have.been.calledOnceWith('family', []);
     });
     describe('getCritter', async () => {
-      const mockGetRequest = sinon.stub(cb, 'makeGetRequest');
+      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
       await cb.getCritter('asdf');
       expect(mockGetRequest).to.have.been.calledOnceWith('critters/' + 'asdf', [{ key: 'format', value: 'detail' }]);
     });
     describe('createCritter', async () => {
-      const mockPostPatchRequest = sinon.stub(cb, 'makePostPatchRequest');
+      const mockPostPatchRequest = sinon.stub(cb.axiosInstance, 'post');
       const data: IBulkCreate = {
         locations: [{ latitude: 2, longitude: 2 }],
         critters: [],
@@ -152,7 +152,7 @@ describe('CritterbaseService', () => {
       expect(mockPostPatchRequest).to.have.been.calledOnceWith('post', 'critters', data);
     });
     describe('signUp', async () => {
-      const mockPostPatchRequest = sinon.stub(cb, 'makePostPatchRequest');
+      const mockPostPatchRequest = sinon.stub(cb.axiosInstance, 'post');
       await cb.signUp();
       expect(mockPostPatchRequest).to.have.been.calledOnceWith('post', 'signup');
     });

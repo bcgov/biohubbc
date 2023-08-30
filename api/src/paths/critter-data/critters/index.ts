@@ -42,7 +42,6 @@ POST.apiDoc = {
         schema: {
           title: 'Bulk post request object',
           type: 'object',
-          required: ['name', 'data'],
           properties: {
             critters: {
               title: 'critters',
@@ -153,7 +152,7 @@ export function createCritter(): RequestHandler {
     const cb = new CritterbaseService(user);
     try {
       const result = await cb.createCritter(req.body);
-      return res.status(200).json(result);
+      return res.status(201).json(result);
     } catch (error) {
       defaultLog.error({ label: 'createCritter', message: 'error', error });
       throw error;

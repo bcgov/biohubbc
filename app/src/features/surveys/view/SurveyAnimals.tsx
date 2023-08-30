@@ -40,12 +40,12 @@ const SurveyAnimals: React.FC = () => {
   const handleOnSave = async (animal: IAnimal) => {
     const critter = new Critter(animal);
     const postCritterPayload = async () => {
-      const res = await cbApi.critters.createCritter(critter);
+      await cbApi.critters.createCritter(critter);
       dialogContext.setSnackbar({
         open: true,
         snackbarMessage: (
           <Typography variant="body2" component="div">
-            {`${pluralize('Animal', res.count)} added to Survey`}
+            {`Animal added to Survey`}
           </Typography>
         )
       });
@@ -54,10 +54,7 @@ const SurveyAnimals: React.FC = () => {
     try {
       await postCritterPayload();
     } catch (err) {
-      //Temp solution for keycloak timeout bug
-      //TODO fix this in useAxios or higher level component.
-      //This error can occur when keycloak token refresh happens
-      await postCritterPayload();
+      console.log(`Critter submission error ${JSON.stringify(err)}`);
     }
   };
 
