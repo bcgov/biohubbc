@@ -18,6 +18,7 @@ const SurveyAnimals: React.FC = () => {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
+  const [localCritters, setLocalCritters] = useState([]);
 
   const toggleDialog = () => {
     setOpenDialog((d) => !d);
@@ -96,7 +97,15 @@ const SurveyAnimals: React.FC = () => {
       />
       <Divider></Divider>
       <Box p={3}>
-        <NoSurveySectionData text={'No Individual Animals'} paperVariant={'outlined'} />
+        {localCritters.length ? (
+          localCritters.map((a) => (
+            <>
+              <pre>Critter</pre>
+            </>
+          ))
+        ) : (
+          <NoSurveySectionData text={'No Individual Animals'} paperVariant={'outlined'} />
+        )}
       </Box>
     </Box>
   );
