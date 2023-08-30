@@ -29,8 +29,6 @@ export class GetSurveyData {
   end_date: string;
   biologist_first_name: string;
   biologist_last_name: string;
-  survey_area_name: string;
-  geometry: Feature[];
   survey_types: number[];
   revision_count: number;
 
@@ -41,10 +39,8 @@ export class GetSurveyData {
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.geometry = (obj?.geojson?.length && obj.geojson) || [];
     this.biologist_first_name = obj?.lead_first_name || '';
     this.biologist_last_name = obj?.lead_last_name || '';
-    this.survey_area_name = obj?.location_name || '';
     this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count || 0;
   }
@@ -165,12 +161,18 @@ export type SurveySupplementaryData = {
 };
 
 export class GetSurveyLocationData {
-  survey_area_name: string;
+  survey_spatial_component_id: number;
+  name: string;
+  description: string;
   geometry: Feature[];
+  revision_count: number;
 
   constructor(obj?: any) {
-    this.survey_area_name = obj?.location_name || '';
+    this.survey_spatial_component_id = obj?.survey_spatial_component_id || null;
+    this.name = obj?.name || null;
+    this.description = obj?.description || null;
     this.geometry = (obj?.geojson?.length && obj.geojson) || [];
+    this.revision_count = obj?.revision_count || null;
   }
 }
 

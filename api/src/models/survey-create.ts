@@ -109,11 +109,13 @@ export class PostProprietorData {
 }
 
 export class PostLocationData {
-  survey_area_name: string;
+  name: string;
+  description: string;
   geometry: Feature[];
 
   constructor(obj?: any) {
-    this.survey_area_name = obj?.survey_area_name || null;
+    this.name = obj?.name || null;
+    this.description = obj?.description || null;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
   }
 }

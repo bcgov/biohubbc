@@ -220,15 +220,25 @@ POST.apiDoc = {
               }
             },
             location: {
-              type: 'object',
-              properties: {
-                survey_area_name: {
-                  type: 'string'
-                },
-                geometry: {
-                  type: 'array',
-                  items: {
-                    ...(GeoJSONFeature as object)
+              description: 'Survey location data',
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['name', 'description', 'geometry'],
+                properties: {
+                  name: {
+                    type: 'string',
+                    maxLength: 100
+                  },
+                  description: {
+                    type: 'string',
+                    maxLength: 250
+                  },
+                  geometry: {
+                    type: 'array',
+                    items: {
+                      ...(GeoJSONFeature as object)
+                    }
                   }
                 }
               }

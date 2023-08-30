@@ -139,12 +139,16 @@ export class PutSurveyPurposeAndMethodologyData {
 }
 
 export class PutSurveyLocationData {
-  survey_area_name: string;
+  survey_spatial_component_id: number;
+  name: string;
+  description: string;
   geometry: Feature[];
   revision_count: number;
 
   constructor(obj?: any) {
-    this.survey_area_name = obj?.survey_area_name || null;
+    this.survey_spatial_component_id = obj?.survey_spatial_component_id || null;
+    this.name = obj?.name || null;
+    this.description = obj?.description || null;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.revision_count = obj?.revision_count ?? null;
   }

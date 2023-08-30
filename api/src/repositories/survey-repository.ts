@@ -87,11 +87,6 @@ const SurveyRecord = z.object({
   additional_details: z.string().nullable(),
   ecological_season_id: z.number().nullable(),
   intended_outcome_id: z.number().nullable(),
-  location_name: z.string(),
-  location_description: z.string().nullable(),
-  geometry: z.any().nullable(),
-  geography: z.any().nullable(),
-  geojson: z.any().nullable(),
   comments: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
@@ -620,9 +615,6 @@ export class SurveyRepository extends BaseRepository {
         additional_details,
         ecological_season_id,
         intended_outcome_id,
-        location_name,
-        geojson,
-        geography
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
@@ -633,36 +625,11 @@ export class SurveyRepository extends BaseRepository {
         ${surveyData.purpose_and_methodology.field_method_id},
         ${surveyData.purpose_and_methodology.additional_details},
         ${surveyData.purpose_and_methodology.ecological_season_id},
-        ${surveyData.purpose_and_methodology.intended_outcome_id},
-        ${surveyData.location.survey_area_name},
-        ${JSON.stringify(surveyData.location.geometry)}
-    `;
-
-    if (surveyData?.location?.geometry?.length) {
-      const geometryCollectionSQL = generateGeometryCollectionSQL(surveyData.location.geometry);
-
-      sqlStatement.append(SQL`
-        ,public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-      sqlStatement.append(geometryCollectionSQL);
-
-      sqlStatement.append(SQL`
-        , 4326)))
-      `);
-    } else {
-      sqlStatement.append(SQL`
-      ,null
-      `);
-    }
-
-    sqlStatement.append(SQL`
+        ${surveyData.purpose_and_methodology.intended_outcome_id}
       )
       RETURNING
         survey_id as id;
-    `);
+    `;
 
     const response = await this.connection.sql(sqlStatement);
 
@@ -993,9 +960,6 @@ export class SurveyRepository extends BaseRepository {
 
       fieldsToUpdate = {
         ...fieldsToUpdate,
-        location_name: surveyData.location.survey_area_name,
-        geojson: JSON.stringify(surveyData.location.geometry),
-        geography: knex.raw(geometrySqlStatement.sql, geometrySqlStatement.values),
         revision_count: surveyData.location.revision_count
       };
     }

@@ -918,7 +918,7 @@ export class EmlService extends DBService {
 
     return {
       geographicCoverage: {
-        geographicDescription: surveyData.location.survey_area_name,
+        geographicDescription: surveyData.location.name,
         boundingCoordinates: {
           westBoundingCoordinate: surveyBoundingBox[0],
           eastBoundingCoordinate: surveyBoundingBox[2],

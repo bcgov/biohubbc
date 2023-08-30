@@ -302,17 +302,33 @@ GET.apiDoc = {
                     }
                   },
                   location: {
-                    description: 'Survey location Details',
-                    type: 'object',
-                    required: ['survey_area_name', 'geometry'],
-                    properties: {
-                      survey_area_name: {
-                        type: 'string'
-                      },
-                      geometry: {
-                        type: 'array',
-                        items: {
-                          ...(GeoJSONFeature as object)
+                    description: 'Survey location data',
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['survey_spatial_component_id', 'name', 'description', 'geometry', 'revision_count'],
+                      properties: {
+                        survey_spatial_component_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        name: {
+                          type: 'string',
+                          maxLength: 100
+                        },
+                        description: {
+                          type: 'string',
+                          maxLength: 250
+                        },
+                        geometry: {
+                          type: 'array',
+                          items: {
+                            ...(GeoJSONFeature as object)
+                          }
+                        },
+                        revision_count: {
+                          type: 'integer',
+                          minimum: 0
                         }
                       }
                     }
