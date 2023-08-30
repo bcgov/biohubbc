@@ -375,6 +375,27 @@ const CreateSurveyPage = () => {
                   }
                 />
 
+                <HorizontalSplitFormComponent
+                  title="Site Selection Strategy"
+                  summary="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed."
+                  component={
+                    <Box component="fieldset">
+                      <Typography component="legend">Site Selection Strategy</Typography>
+                      <Typography
+                        variant="body1"
+                        color="textSecondary"
+                        sx={{
+                          maxWidth: '72ch'
+                        }}>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                      </Typography>
+                      <Box mt={1}>
+                        <SurveyFundingSourceForm />
+                      </Box>
+                    </Box>
+                  }
+                />
+
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
