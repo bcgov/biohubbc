@@ -1,6 +1,7 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
 import { KeycloakService } from './keycloak-service';
+import { ApiError, ApiErrorType } from '../errors/api-error';
 
 export interface ICritterbaseUser {
   username: string;
@@ -179,8 +180,18 @@ export class CritterbaseService {
       headers: {
         authorization: `Bearer ${this.getToken()}`,
         ...this.getUserHeader()
-      }
+      },
+      baseURL: CRITTERBASE_API_HOST
     });
+
+    this.axiosInstance.interceptors.response.use(
+      (response: AxiosResponse) => {
+        return response;
+      },
+      (error: AxiosError) => {
+        return Promise.reject(new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`));
+      }
+    );
   }
 
   async getToken(): Promise<string> {
@@ -192,7 +203,7 @@ export class CritterbaseService {
     return { user: JSON.stringify(this.user) };
   }
 
-  async makeGetRequest(endpoint: string, params: QueryParam[]) {
+  async _makeGetRequest(endpoint: string, params: QueryParam[]) {
     const appendParams = new URLSearchParams();
     for (const p of params) {
       appendParams.append(p.key, p.value);
@@ -202,14 +213,11 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async makePostPatchRequest<DataType = any>(method: 'post' | 'patch', endpoint: string, data?: DataType) {
-    const url = `${CRITTERBASE_API_HOST}${endpoint}`;
-    const response = await this.axiosInstance[method](url, data);
-    return response.data;
-  }
-
   async getLookupValues(route: CbRouteKey, params: QueryParam[]) {
-    return this.makeGetRequest(CbRoutes[route], params);
+    const query = new URLSearchParams(CbRoutes[route])
+    params.forEach((param) => query.append(param.key, param.value));
+
+    return this.axiosInstance.get(query.toString());
   }
 
   async getTaxonMeasurements(taxon_id: string) {
@@ -243,7 +251,7 @@ export class CritterbaseService {
   }
 
   async createCritter(data: IBulkCreate) {
-    return this.makePostPatchRequest('post', BULK_ENDPOINT, data);
+    return this.axiosInstance.post(BULK_ENDPOINT, data);
   }
 
   async signUp() {
