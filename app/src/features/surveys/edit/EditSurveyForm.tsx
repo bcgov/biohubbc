@@ -33,6 +33,7 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
+import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -80,6 +81,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     ...StudyAreaInitialValues,
     ...SurveyFundingSourceFormInitialValues,
     ...SurveyPartnershipsFormInitialValues,
+    ...SurveySiteSelectionInitialValues,
     ...{
       proprietor: {
         survey_data_proprietary: '' as unknown as StringBoolean,
@@ -141,6 +143,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
+    .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema);
 
   return (
