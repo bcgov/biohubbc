@@ -354,7 +354,7 @@ export class SurveyRepository extends BaseRepository {
       SELECT
         *
       FROM
-        survey_spatial_component
+        survey_location
       WHERE
         survey_id = ${surveyId};
     `;

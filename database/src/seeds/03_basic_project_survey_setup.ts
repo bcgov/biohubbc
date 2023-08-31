@@ -245,7 +245,7 @@ const insertSurveyPermitData = (surveyId: number) => `
  *
  */
 const insertSurveyLocationData = (surveyId: number) => `
-  INSERT into survey_spatial_component
+  INSERT into survey_location
     (
       survey_id,
       name,
