@@ -20,6 +20,7 @@ import {
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PublishStatus } from '../repositories/history-publish-repository';
+import { SurveyBlock } from '../repositories/survey-block-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -35,6 +36,7 @@ import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { RegionService } from './region-service';
+import { SurveyBlockService } from './survey-block-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -445,9 +447,18 @@ export class SurveyService extends DBService {
       promises.push(this.insertRegion(surveyId, postSurveyData.location.geometry));
     }
 
+    if (postSurveyData.blocks) {
+      promises.push(this.upsertBlocks(surveyId, postSurveyData.blocks));
+    }
+
     await Promise.all(promises);
 
     return surveyId;
+  }
+
+  async upsertBlocks(surveyId: number, blocks: SurveyBlock[]): Promise<void> {
+    const service = new SurveyBlockService(this.connection);
+    return service.upsertSurveyBlocks(surveyId, blocks);
   }
 
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {
@@ -652,6 +663,10 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.participants.length) {
       promises.push(this.upsertSurveyParticipantData(surveyId, putSurveyData));
+    }
+
+    if (putSurveyData?.blocks) {
+      promises.push(this.upsertBlocks(surveyId, putSurveyData.blocks));
     }
 
     await Promise.all(promises);
