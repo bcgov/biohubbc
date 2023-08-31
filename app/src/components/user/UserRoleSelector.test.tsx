@@ -91,7 +91,7 @@ describe('UserRoleSelector', () => {
     const onDelete = jest.fn();
     const onAdd = jest.fn();
 
-    const { getByText, getAllByRole, getByRole } = render(
+    const { getAllByRole, getByRole } = render(
       <UserRoleSelector
         index={0}
         user={{
