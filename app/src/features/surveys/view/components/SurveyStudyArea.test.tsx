@@ -4,7 +4,6 @@ import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import { geoJsonFeature } from 'test-helpers/spatial-helpers';
 import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import SurveyStudyArea from './SurveyStudyArea';
@@ -210,7 +209,8 @@ describe('SurveyStudyArea', () => {
             }
           ],
           revision_count: 0,
-          survey_area_name: 'study area'
+          name: 'study area',
+          description: 'study area description'
         }
       });
     });
@@ -233,8 +233,6 @@ describe('SurveyStudyArea', () => {
           end_date: '2021-01-25',
           biologist_first_name: 'firstttt',
           biologist_last_name: 'lastttt',
-          survey_area_name: 'study area is this',
-          geometry: [geoJsonFeature],
           survey_types: [1],
           revision_count: 0
         }

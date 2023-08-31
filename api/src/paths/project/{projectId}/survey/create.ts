@@ -63,7 +63,7 @@ POST.apiDoc = {
             'partnerships',
             'proprietor',
             'purpose_and_methodology',
-            'location',
+            'locations',
             'agreements',
             'participants'
           ],
@@ -219,7 +219,7 @@ POST.apiDoc = {
                 }
               }
             },
-            location: {
+            locations: {
               description: 'Survey location data',
               type: 'array',
               items: {

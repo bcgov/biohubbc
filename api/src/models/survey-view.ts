@@ -10,7 +10,7 @@ export type SurveyObject = {
   funding_sources: GetSurveyFundingSourceData[];
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
-  location: GetSurveyLocationData;
+  locations: GetSurveyLocationData[];
   participants: SurveyUser[];
   partnerships: ISurveyPartnerships;
 };

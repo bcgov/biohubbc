@@ -27,7 +27,7 @@ import GeneralInformationForm, {
 } from '../components/GeneralInformationForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
-import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from '../components/StudyAreaForm';
+import LocationForm, { StudyAreaInitialValues, StudyAreaYupSchema } from '../components/StudyAreaForm';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
@@ -236,7 +236,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <HorizontalSplitFormComponent
             title="Study Area"
             summary=""
-            component={<StudyAreaForm />}></HorizontalSplitFormComponent>
+            component={<LocationForm />}></HorizontalSplitFormComponent>
 
           <Divider className={classes.sectionDivider} />
 

@@ -80,7 +80,7 @@ GET.apiDoc = {
                   'partnerships',
                   'proprietor',
                   'purpose_and_methodology',
-                  'location'
+                  'locations'
                 ],
                 properties: {
                   survey_details: {
@@ -313,7 +313,7 @@ GET.apiDoc = {
                       }
                     }
                   },
-                  location: {
+                  locations: {
                     description: 'Survey location data',
                     type: 'array',
                     items: {
@@ -449,6 +449,8 @@ export function getSurvey(): RequestHandler {
       const surveySupplementaryData = await surveyService.getSurveySupplementaryDataById(Number(req.params.surveyId));
 
       await connection.commit();
+
+      console.log(surveyData);
 
       return res.status(200).json({ surveyData: surveyData, surveySupplementaryData: surveySupplementaryData });
     } catch (error) {

@@ -47,14 +47,15 @@ describe('Study Area Form', () => {
       );
       // Assert survey area name field is visible and populated correctly
       expect(getByLabelText('Survey Area Name', { exact: false })).toBeVisible();
-      expect(getByTestId('location.survey_area_name')).toHaveValue('');
+      expect(getByTestId('location.name')).toHaveValue('');
     });
   });
 
   it('renders correctly with non default values', async () => {
     const existingFormValues: IStudyAreaForm = {
       location: {
-        survey_area_name: 'a study area name',
+        name: 'a study area name',
+        description: 'a study area description',
         geometry: [
           {
             type: 'Feature',
@@ -95,7 +96,7 @@ describe('Study Area Form', () => {
       );
       // Assert survey area name field is visible and populated correctly
       expect(getByLabelText('Survey Area Name', { exact: false })).toBeVisible();
-      expect(getByTestId('location.survey_area_name')).toHaveValue('a study area name');
+      expect(getByTestId('location.name')).toHaveValue('a study area name');
     });
   });
 });

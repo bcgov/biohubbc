@@ -79,7 +79,7 @@ GET.apiDoc = {
                   'funding_sources',
                   'proprietor',
                   'purpose_and_methodology',
-                  'location',
+                  'locations',
                   'participants'
                 ],
                 properties: {
@@ -301,7 +301,7 @@ GET.apiDoc = {
                       }
                     }
                   },
-                  location: {
+                  locations: {
                     description: 'Survey location data',
                     type: 'array',
                     items: {

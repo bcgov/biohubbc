@@ -47,8 +47,6 @@ export interface IGetSurveyForViewResponseDetails {
   end_date: string;
   biologist_first_name: string;
   biologist_last_name: string;
-  survey_area_name: string;
-  geometry: Feature[];
   survey_types: number[];
   revision_count: number;
 }
@@ -92,6 +90,13 @@ export interface IGetSurveyForUpdateResponsePartnerships {
   stakeholder_partnerships: string[];
 }
 
+export interface IGetSurveyLocation {
+  name: string;
+  description: string;
+  geometry: Feature[];
+  revision_count: number;
+}
+
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
@@ -101,6 +106,7 @@ export interface SurveyViewObject {
   proprietor: IGetSurveyForViewResponseProprietor | null;
   participants: IGetSurveyParticipant[];
   partnerships: IGetSurveyForViewResponsePartnerships;
+  locations: IGetSurveyLocation[];
 }
 
 export interface SurveyUpdateObject {
@@ -149,11 +155,7 @@ export interface SurveyUpdateObject {
     category_rationale: string;
     disa_required: StringBoolean;
   };
-  location?: {
-    survey_area_name: string;
-    geometry: Feature[];
-    revision_count: number;
-  };
+  locations: IGetSurveyLocation[];
   participants?: {
     identity_source: string;
     email: string | null;

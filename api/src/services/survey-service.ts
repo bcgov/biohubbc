@@ -93,7 +93,7 @@ export class SurveyService extends DBService {
       partnerships: await this.getSurveyPartnershipsData(surveyId),
       purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
       proprietor: await this.getSurveyProprietorDataForView(surveyId),
-      location: await this.getSurveyLocationData(surveyId),
+      locations: await this.getSurveyLocationsData(surveyId),
       participants: await this.surveyParticipationService.getSurveyParticipants(surveyId)
     };
   }
@@ -214,11 +214,11 @@ export class SurveyService extends DBService {
    * Get Survey location for a given survey ID
    *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyLocationData>}
+   * @returns {*} {Promise<GetSurveyLocationData[]>}
    * @memberof SurveyService
    */
-  async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
-    return this.surveyRepository.getSurveyLocationData(surveyId);
+  async getSurveyLocationsData(surveyId: number): Promise<GetSurveyLocationData[]> {
+    return this.surveyRepository.getSurveyLocationsData(surveyId);
   }
 
   /**

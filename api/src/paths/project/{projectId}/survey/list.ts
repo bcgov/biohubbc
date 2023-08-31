@@ -71,7 +71,7 @@ GET.apiDoc = {
                     'permit',
                     'proprietor',
                     'purpose_and_methodology',
-                    'location'
+                    'locations'
                   ],
                   properties: {
                     survey_details: {
@@ -253,7 +253,7 @@ GET.apiDoc = {
                         }
                       }
                     },
-                    location: {
+                    locations: {
                       type: 'array',
                       items: {
                         type: 'object',

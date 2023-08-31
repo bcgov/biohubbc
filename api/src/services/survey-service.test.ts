@@ -72,9 +72,9 @@ describe('SurveyService', () => {
       const getSurveyProprietorDataForViewStub = sinon
         .stub(SurveyService.prototype, 'getSurveyProprietorDataForView')
         .resolves(({ data: 'proprietorData' } as unknown) as any);
-      const getSurveyLocationDataStub = sinon
-        .stub(SurveyService.prototype, 'getSurveyLocationData')
-        .resolves(({ data: 'locationData' } as unknown) as any);
+      const getSurveyLocationsDataStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyLocationsData')
+        .resolves(([]);
       const getSurveyParticipantsStub = sinon
         .stub(SurveyParticipationService.prototype, 'getSurveyParticipants')
         .resolves([{ data: 'participantData' } as any]);
@@ -92,7 +92,7 @@ describe('SurveyService', () => {
       expect(getSurveyFundingSourceDataStub).to.be.calledOnce;
       expect(getSurveyPurposeAndMethodologyStub).to.be.calledOnce;
       expect(getSurveyProprietorDataForViewStub).to.be.calledOnce;
-      expect(getSurveyLocationDataStub).to.be.calledOnce;
+      expect(getSurveyLocationsDataStub).to.be.calledOnce;
       expect(getSurveyParticipantsStub).to.be.calledOnce;
       expect(getSurveyPartnershipsDataStub).to.be.calledOnce;
 
@@ -108,7 +108,7 @@ describe('SurveyService', () => {
           stakeholder_partnerships: []
         },
         participants: [{ data: 'participantData' } as any],
-        location: { data: 'locationData' }
+        locations: []
       });
     });
   });
@@ -186,7 +186,7 @@ describe('SurveyService', () => {
         funding_sources: [{}],
         proprietor: {},
         purpose_and_methodology: {},
-        location: {},
+        locations: [],
         participants: [{}]
       });
 
@@ -431,11 +431,11 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const data = new GetSurveyLocationData([{ id: 1 }]);
+      const data = [new GetSurveyLocationData({ id: 1 })];
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyLocationData').resolves(data);
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyLocationsData').resolves(data);
 
-      const response = await service.getSurveyLocationData(1);
+      const response = await service.getSurveyLocationsData(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);

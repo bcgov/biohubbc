@@ -72,7 +72,7 @@ PUT.apiDoc = {
             'partnerships',
             'proprietor',
             'purpose_and_methodology',
-            'location'
+            'locations'
           ],
           properties: {
             survey_details: {
@@ -266,7 +266,7 @@ PUT.apiDoc = {
                 }
               }
             },
-            location: {
+            locations: {
               description: 'Survey location data',
               type: 'array',
               items: {

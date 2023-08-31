@@ -62,10 +62,13 @@ describe('survey/{surveyId}/view', () => {
               indigenous_partnerships: [],
               stakeholder_partnerships: []
             },
-            location: {
-              survey_area_name: 'location',
-              geometry: []
-            }
+            locations: [
+              {
+                name: 'location name',
+                desciption: 'location description',
+                geometry: []
+              }
+            ]
           },
           surveySupplementaryData: {
             survey_metadata_publish: {
@@ -124,10 +127,14 @@ describe('survey/{surveyId}/view', () => {
               indigenous_partnerships: [],
               stakeholder_partnerships: []
             },
-            location: {
-              survey_area_name: 'location',
-              geometry: []
-            }
+            locations: [
+              {
+                name: 'location name',
+                description: 'location description',
+                geometry: [],
+                revision_count: 0
+              }
+            ]
           },
           surveySupplementaryData: {
             survey_metadata_publish: null

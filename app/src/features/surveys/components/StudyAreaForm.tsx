@@ -7,22 +7,26 @@ import yup from 'utils/YupSchema';
 
 export interface IStudyAreaForm {
   location: {
-    survey_area_name: string;
+    name: string;
+    description: string;
     geometry: Feature[];
   };
 }
 
 export const StudyAreaInitialValues: IStudyAreaForm = {
   location: {
-    survey_area_name: '',
+    name: '',
+    // TODO description is temporarily hardcoded until the new UI to populate this field is implemented
+    description: 'Insert description here',
     geometry: []
   }
 };
 
 export const StudyAreaYupSchema = yup.object().shape({
   location: yup.object().shape({
-    survey_area_name: yup.string().required('Survey Area Name is Required'),
-    geometry: yup.array().min(1, 'A survey study area is required').required('A survey study area is required')
+    name: yup.string().max(50, 'Name cannot exceed 50 characters').required('Name is Required'),
+    description: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is Required'),
+    geometry: yup.array().min(1, 'A geometry is required').required('A geometry is required')
   })
 });
 
@@ -40,7 +44,7 @@ const StudyAreaForm = () => {
     <form onSubmit={handleSubmit}>
       <Box mb={4}>
         <CustomTextField
-          name="location.survey_area_name"
+          name="location.name"
           label="Survey Area Name"
           other={{
             required: true

@@ -306,8 +306,12 @@ describe('GetSurveyLocationData', () => {
       data = new GetSurveyLocationData(null);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal('');
+    it('sets name', () => {
+      expect(data.name).to.equal(null);
+    });
+
+    it('sets description', () => {
+      expect(data.description).to.equal(null);
     });
 
     it('sets geometry', () => {
@@ -319,20 +323,25 @@ describe('GetSurveyLocationData', () => {
     let data: GetSurveyLocationData;
 
     const obj = {
-      location_name: 'area_name',
-      geojson: [{}]
+      name: 'area name',
+      description: 'area description',
+      geometry: [{}]
     };
 
     before(() => {
       data = new GetSurveyLocationData(obj);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(obj.location_name);
+    it('sets name', () => {
+      expect(data.name).to.equal(obj.name);
+    });
+
+    it('sets description', () => {
+      expect(data.description).to.equal(obj.description);
     });
 
     it('sets geometry', () => {
-      expect(data.geometry).to.eql(obj.geojson);
+      expect(data.geometry).to.eql(obj.geometry);
     });
   });
 });

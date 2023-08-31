@@ -62,7 +62,7 @@ describe('PostSurveyObject', () => {
       permit: {},
       proprietor: {},
       purpose_and_methodology: {},
-      location: {},
+      locations: [],
       agreements: {}
     };
 
@@ -393,8 +393,12 @@ describe('PostLocationData', () => {
       data = new PostLocationData(null);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(null);
+    it('sets name', () => {
+      expect(data.name).to.equal(null);
+    });
+
+    it('sets description', () => {
+      expect(data.description).to.equal(null);
     });
 
     it('sets geometry', () => {
@@ -406,7 +410,8 @@ describe('PostLocationData', () => {
     let data: PostLocationData;
 
     const obj = {
-      survey_area_name: 'area_name',
+      name: 'area name',
+      description: 'area description',
       geometry: [{}]
     };
 
@@ -414,8 +419,12 @@ describe('PostLocationData', () => {
       data = new PostLocationData(obj);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(obj.survey_area_name);
+    it('sets name', () => {
+      expect(data.name).to.equal(obj.name);
+    });
+
+    it('sets description', () => {
+      expect(data.description).to.equal(obj.description);
     });
 
     it('sets geometry', () => {

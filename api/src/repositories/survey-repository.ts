@@ -346,24 +346,22 @@ export class SurveyRepository extends BaseRepository {
    * Get Survey location for a given survey ID
    *
    * @param {number} surveyId
-   * @returns {*} Promise<GetSurveyLocationDAta>
+   * @returns {*} Promise<GetSurveyLocationData[]>
    * @memberof SurveyRepository
    */
-  async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
+  async getSurveyLocationsData(surveyId: number): Promise<GetSurveyLocationData[]> {
     const sqlStatement = SQL`
       SELECT
         *
       FROM
-        survey
+        survey_spatial_component
       WHERE
         survey_id = ${surveyId};
     `;
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response.rows?.[0];
-
-    return new GetSurveyLocationData(result);
+    return response.rows.map((row) => new GetSurveyLocationData(row));
   }
 
   /**

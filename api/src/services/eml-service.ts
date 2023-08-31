@@ -908,17 +908,17 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getSurveyGeographicCoverage(surveyData: SurveyObject): Record<string, any> {
-    if (!surveyData.location.geometry?.length) {
+    if (!surveyData.locations[0]?.geometry?.length) {
       return {};
     }
 
-    const polygonFeatures = this._makePolygonFeatures(surveyData.location.geometry);
+    const polygonFeatures = this._makePolygonFeatures(surveyData.locations[0].geometry);
     const datasetGPolygons = this._makeDatasetGPolygons(polygonFeatures);
     const surveyBoundingBox = bbox(featureCollection(polygonFeatures));
 
     return {
       geographicCoverage: {
-        geographicDescription: surveyData.location.name,
+        geographicDescription: surveyData.locations[0].name,
         boundingCoordinates: {
           westBoundingCoordinate: surveyBoundingBox[0],
           eastBoundingCoordinate: surveyBoundingBox[2],
