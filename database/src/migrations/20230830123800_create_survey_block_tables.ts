@@ -68,8 +68,8 @@ export async function up(knex: Knex): Promise<void> {
   CREATE UNIQUE INDEX survey_block_uk1 ON survey_block(name, survey_id);
 
   -- Create audit and journal triggers
-  create trigger audit_observation before insert or update or delete on survey_block for each row execute procedure tr_audit_trigger();
-  create trigger journal_observation after insert or update or delete on survey_block for each row execute procedure tr_journal_trigger();
+  create trigger audit_survey_block before insert or update or delete on survey_block for each row execute procedure tr_audit_trigger();
+  create trigger journal_survey_block after insert or update or delete on survey_block for each row execute procedure tr_journal_trigger();
 
 
   ----------------------------------------------------------------------------------------
