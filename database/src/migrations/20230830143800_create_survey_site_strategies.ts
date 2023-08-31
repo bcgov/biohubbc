@@ -62,7 +62,7 @@ export async function up(knex: Knex): Promise<void> {
   ----------------------------------------------------------------------------------------
 
   -- Add unique constraint
-  CREATE UNIQUE INDEX site_strategy_uk1 ON site_strategy(name, record_end_date);
+  CREATE UNIQUE INDEX site_strategy_uk1 ON site_strategy(name, (record_end_date is NULL)) where record_end_date is null;
 
   -- Create audit and journal triggers
   create trigger audit_site_strategy before insert or update or delete on site_strategy for each row execute procedure tr_audit_trigger();
