@@ -78,18 +78,15 @@ describe('SurveyParticipationRepository', () => {
       expect(response).to.eql([{ id: 1 }]);
     });
 
-    it('should throw an error when no rows returned', async () => {
+    it('should return no rows', async () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyParticipationRepository(dbConnection);
 
-      try {
-        await repository.getSurveyParticipants(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get survey participants');
-      }
+      const response = await repository.getSurveyParticipants(1);
+
+      expect(response).to.eql([]);
     });
   });
 
