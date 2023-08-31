@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Form, useFormikContext } from 'formik';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Critter, IAnimal } from './animal';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
