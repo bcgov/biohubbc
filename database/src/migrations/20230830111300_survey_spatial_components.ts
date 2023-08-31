@@ -105,8 +105,8 @@ export async function up(knex: Knex): Promise<void> {
     REFERENCES spatial_component_type(spatial_component_type_id);
   
     -- Add indexes on foreign key columns
-    CREATE INDEX survey_spatial_component_idx2 ON survey_spatial_component(survey_id);
-    CREATE INDEX survey_spatial_component_idx1 ON survey_spatial_component(spatial_component_type_id);
+    CREATE INDEX survey_spatial_component_idx1 ON survey_spatial_component(survey_id);
+    CREATE INDEX survey_spatial_component_idx2 ON survey_spatial_component(spatial_component_type_id);
   
     -------------------------------------------------------------------------
     -- Create audit and journal triggers
