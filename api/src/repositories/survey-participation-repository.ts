@@ -90,7 +90,7 @@ export class SurveyParticipationRepository extends BaseRepository {
   }
 
   /**
-   * Get a survey participant record with job name.
+   * Get a survey participant record.
    *
    * @param {number} surveyId
    * @param {number} systemUserId
@@ -155,7 +155,7 @@ export class SurveyParticipationRepository extends BaseRepository {
   }
 
   /**
-   * Get a survey participant record with job name.
+   * Get survey participant records.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SurveyUser[]>}
@@ -214,13 +214,6 @@ export class SurveyParticipationRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUser));
-
-    if (!response.rows.length) {
-      throw new ApiExecuteSQLError('Failed to get survey participants', [
-        'SurveyParticipationRepository->getSurveyParticipants',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
 
     return response.rows;
   }
