@@ -9,7 +9,7 @@ import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { has } from 'lodash-es';
-import React, { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { v4 } from 'uuid';
 import {
   AnimalMeasurementSchema,
@@ -156,7 +156,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             label="Value"
             name={optionName}
             id="qualitative_option"
-            route="taxon_qualitative_measurement_options"
+            route="xref/taxon-qualitative-measurement-options"
             query={`taxon_measurement_id=${taxonMeasurementId}`}
             controlProps={{
               size: 'small',

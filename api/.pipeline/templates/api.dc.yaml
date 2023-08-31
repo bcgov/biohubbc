@@ -27,6 +27,12 @@ parameters:
   - name: BACKBONE_API_HOST
     required: true
     description: API host for BioHub Platform Backbone. Example "https://platform.com".
+  - name: CB_API_HOST
+    required: true
+    description: API host for the Critterbase service, SIMS API will hit this to retrieve critter metadata. Example "https://critterbase.com".
+  - name: BCTW_API_HOST
+    required: true
+    description: API host for the BC Telemetry Warehouse service. SIMS API will hit this for device deployments and other telemetry operations.  Example "https://bctw.com".
   - name: BACKBONE_INTAKE_PATH
     required: true
     description: API path for BioHub Platform Backbone DwCA submission intake endpoint. Example "/api/path/to/intake".
@@ -190,6 +196,10 @@ objects:
                   value: ${APP_HOST}
                 - name: BACKBONE_API_HOST
                   value: ${BACKBONE_API_HOST}
+                - name: CB_API_HOST
+                  value: ${CB_API_HOST}
+                - name: BCTW_API_HOST
+                  value: ${BCTW_API_HOST}
                 - name: BACKBONE_INTAKE_PATH
                   value: ${BACKBONE_INTAKE_PATH}
                 - name: BACKBONE_ARTIFACT_INTAKE_PATH
