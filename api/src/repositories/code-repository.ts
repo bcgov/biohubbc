@@ -35,7 +35,8 @@ export const IAllCodeSets = z.object({
   ecological_seasons: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   intended_outcomes: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   vantage_codes: CodeSet(),
-  survey_jobs: CodeSet()
+  survey_jobs: CodeSet(),
+  site_strategies: CodeSet()
 });
 
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
@@ -404,6 +405,22 @@ export class CodeRepository extends BaseRepository {
         name
       FROM
         survey_job
+      WHERE
+        record_end_date is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response.rows;
+  }
+
+  async getSiteSelectionStrategies() {
+    const sqlStatement = SQL`
+      SELECT
+        ss.site_strategy_id as id,
+        ss.name
+      FROM
+        site_strategy ss
       WHERE
         record_end_date is null;
     `;
