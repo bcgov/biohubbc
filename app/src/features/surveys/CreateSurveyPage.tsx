@@ -48,6 +48,8 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormYupSchema
 } from './components/SurveyFundingSourceForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
+import SurveySiteSelectionForm, { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
+import SurveyStratumForm from './components/SurveyStratumForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -136,6 +138,7 @@ const CreateSurveyPage = () => {
     ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues,
+    ...SurveySiteSelectionInitialValues,
     ...SurveyUserJobFormInitialValues
   });
 
@@ -180,6 +183,7 @@ const CreateSurveyPage = () => {
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
+    .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema);
 
   const handleCancel = () => {
@@ -375,24 +379,42 @@ const CreateSurveyPage = () => {
                   }
                 />
 
+                <Divider className={classes.sectionDivider} />
+
                 <HorizontalSplitFormComponent
                   title="Site Selection Strategy"
                   summary="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed."
                   component={
-                    <Box component="fieldset">
-                      <Typography component="legend">Site Selection Strategy</Typography>
-                      <Typography
-                        variant="body1"
-                        color="textSecondary"
-                        sx={{
-                          maxWidth: '72ch'
-                        }}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
-                      </Typography>
-                      <Box mt={1}>
-                        <SurveyFundingSourceForm />
+                    <>
+                      <Box component="fieldset">
+                        <Typography component="legend">Site Selection Strategy</Typography>
+                        <Typography
+                          variant="body1"
+                          color="textSecondary"
+                          sx={{
+                            maxWidth: '72ch'
+                          }}>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                        </Typography>
+                        <Box mt={1}>
+                          <SurveySiteSelectionForm />
+                        </Box>
                       </Box>
-                    </Box>
+                      <Box component="fieldset" mt={5}>
+                        <Typography component="legend">Define Stratums</Typography>
+                        <Typography
+                          variant="body1"
+                          color="textSecondary"
+                          sx={{
+                            maxWidth: '72ch'
+                          }}>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                        </Typography>
+                        <Box mt={1}>
+                          <SurveyStratumForm />
+                        </Box>
+                      </Box>
+                    </>
                   }
                 />
 

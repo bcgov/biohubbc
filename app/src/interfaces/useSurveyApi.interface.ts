@@ -5,6 +5,7 @@ import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDat
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
 import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
 import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
+import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
 import { StringBoolean } from 'types/misc';
 
@@ -326,4 +327,6 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   IStudyAreaForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm &
+  { partnerships: IGetSurveyForViewResponsePartnerships } &
+  ISurveySiteSelectionForm &
   IParticipantsJobForm;

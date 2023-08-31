@@ -1,57 +1,62 @@
-import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import AutocompleteField from 'components/fields/AutocompleteField';
-import DollarAmountField from 'components/fields/DollarAmountField';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
+import {  useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import yup from 'utils/YupSchema';
+import { useContext } from 'react';
+import { CodesContext } from 'contexts/codesContext';
+import assert from 'assert';
+import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 
-export interface ISurveySiteSelection {
-  funding_source_id: number;
-  amount: number;
-  revision_count: number;
-  survey_funding_source_id?: number;
-  survey_id: number;
-  funding_source_name?: string;
-  start_date?: string;
-  end_date?: string;
-  description?: string;
+interface IStratum {
+  survey_stratum_id: number | undefined;
+  name: string;
+  description: string;
 }
 
 export interface ISurveySiteSelectionForm {
-  funding_sources: ISurveySiteSelection[];
+  site_selection_strategies: {
+    strategies: string[];
+    stratums: IStratum[];
+  }
 }
 
-const SurveySiteSelectionInitialValues: ISurveySiteSelection = {
-  funding_source_id: undefined as unknown as number,
-  amount: undefined as unknown as number,
-  revision_count: 0,
-  survey_funding_source_id: undefined,
-  survey_id: 0
+export const SurveySiteSelectionInitialValues: ISurveySiteSelectionForm = {
+  site_selection_strategies: {
+    strategies: ['Systematic'],
+    stratums: [
+      {
+        survey_stratum_id: undefined,
+        name: 'Stratum A',
+        description: 'Hello world'
+      }
+    ]
+  }
 };
+
 
 export const SurveySiteSelectionYupSchema = yup.object().shape({
-  funding_source_id: yup.number().required('Must select a funding source').min(1, 'Must select a funding source'), // TODO confirm that this is not triggered when the autocomplete is empty.
-  amount: yup
-    .number()
-    .min(0, 'Must be a positive number')
-    .max(9999999999, 'Cannot exceed $9,999,999,999')
-    .nullable(true)
-    .transform((value) => (isNaN(value) ? null : Number(value)))
+  site_selection_strategies: yup.object().shape({
+    strategies: yup
+      .array(
+        yup
+          .string()
+          .oneOf(['Stratified'], 'You must include the Stratified site selection strategy in order to add Stratums.')
+          .required('Must select a valid site selection strategy')
+      )
+      .min(0),
+    stratums: yup.array().when('site_strategies', (site_strategies, schema) => {
+      return site_strategies.length > 1
+        ? schema.required('You must include the Stratified site selection strategy in order to add Stratums.')
+        : schema;
+    }).of(
+      yup.object({
+        survey_stratum_id: yup.number().optional(),
+        name: yup.string().required('Must provide a name for stratum'),
+        description: yup.string().optional(),
+      })
+    )
+  })
 });
 
-export const SurveySiteSelectionFormInitialValues: ISurveySiteSelectionForm = {
-  funding_sources: []
-};
-
-export const SurveySiteSelectionFormYupSchema = yup.object().shape({
-  funding_sources: yup.array(SurveySiteSelectionYupSchema)
-});
 
 /**
  * Create/edit survey - Funding section
@@ -60,74 +65,22 @@ export const SurveySiteSelectionFormYupSchema = yup.object().shape({
  */
 const SurveySiteSelectionForm = () => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { values, handleChange, handleSubmit } = formikProps;
+  const { handleSubmit } = formikProps;
 
-  const biohubApi = useBiohubApi();
-  const SiteSelectionsDataLoader = useDataLoader(() => biohubApi.funding.getAllSiteSelections());
-  SiteSelectionsDataLoader.load();
+  const codesContext = useContext(CodesContext);
+  assert(codesContext.codesDataLoader.data);
 
-  const SiteSelections = SiteSelectionsDataLoader.data ?? [];
+  const siteStrategies = codesContext.codesDataLoader.data.site_strategies.map((code) => {
+    return { label: code.name, value: code.name };
+  });
 
   return (
     <form onSubmit={handleSubmit}>
-      <FieldArray
-        name="funding_sources"
-        render={(arrayHelpers: FieldArrayRenderProps) => (
-          <Box>
-            {values.funding_sources.map((surveySiteSelection: ISurveySiteSelection, index: number) => {
-              return (
-                <Box
-                  mb={3}
-                  display="flex"
-                  gap={2}
-                  alignItems="flex-start"
-                  key={surveySiteSelection.survey_funding_source_id}>
-                  <AutocompleteField // <IGetSiteSelectionsResponse>
-                    id={`funding_sources.[${index}].funding_source_id`}
-                    name={`funding_sources.[${index}].funding_source_id`}
-                    label="Funding Source"
-                    sx={{ flex: 6 }}
-                    options={SiteSelections.map((SiteSelection) => ({
-                      value: SiteSelection.funding_source_id,
-                      label: SiteSelection.name
-                    }))}
-                    // getOptionDisabled={(option) => values.funding_sources.some((source) => source.funding_source_id === option.value)}
-                    loading={SiteSelectionsDataLoader.isLoading}
-                    required
-                  />
-                  <DollarAmountField
-                    label="Amount (Optional)"
-                    id={`funding_sources.[${index}].amount`}
-                    name={`funding_sources.[${index}].amount`}
-                    value={surveySiteSelection.amount}
-                    onChange={handleChange}
-                    sx={{ flex: 4 }}
-                  />
-                  <Box mt={1}>
-                    <IconButton
-                      data-testid={`funding-form-delete-button-${index}`}
-                      title="Remove Funding Source"
-                      aria-label="Remove Funding Source"
-                      onClick={() => arrayHelpers.remove(index)}
-                      sx={{ ml: -1 }}>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </IconButton>
-                  </Box>
-                </Box>
-              );
-            })}
-            <Button
-              data-testid="funding-form-add-button"
-              variant="outlined"
-              color="primary"
-              title="Create Funding Source"
-              aria-label="Create Funding Source"
-              startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => arrayHelpers.push(SurveySiteSelectionInitialValues)}>
-              Add Funding Source
-            </Button>
-          </Box>
-        )}
+      <MultiAutocompleteFieldVariableSize
+        id="site_selection_strategies.strategies"
+        label="Site Selection Strategies"
+        options={siteStrategies}
+        required={true}
       />
     </form>
   );
