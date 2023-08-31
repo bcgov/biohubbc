@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 
 /**
  * 1. Adds two new tables:
- *  - Codes table for site selection strategy 
+ *  - Codes table for site selection strategy
  *  - Xref table for survey site selection strategies
  * 2. Updates the survey delete procedure to account for blocks, stratums and survey site selection strategies
  * @export

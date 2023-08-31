@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
 /**
- * Adds a new table for creating blocks, which are associated to surveys; 
+ * Adds a new table for creating blocks, which are associated to surveys;
  *
  * @export
  * @param {Knex} knex
