@@ -5,7 +5,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { Fragment, useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { v4 } from 'uuid';
 import {
   AnimalMarkingSchema,
@@ -68,7 +68,7 @@ const MarkingAnimalForm = () => {
                     label="Marking Type"
                     name={getAnimalFieldName<IAnimalMarking>(name, 'marking_type_id', index)}
                     id="marking_type"
-                    route="marking_type"
+                    route="lookups/marking-types"
                     controlProps={{
                       size: 'small',
                       required: isRequiredInSchema(AnimalMarkingSchema, 'marking_type_id')
@@ -80,7 +80,7 @@ const MarkingAnimalForm = () => {
                     label="Marking Body Location"
                     name={getAnimalFieldName<IAnimalMarking>(name, 'taxon_marking_body_location_id', index)}
                     id="marking_body_location"
-                    route="taxon_marking_body_locations"
+                    route="xref/taxon-marking-body-locations"
                     query={`taxon_id=${values.general.taxon_id}`}
                     controlProps={{
                       size: 'small',
@@ -93,7 +93,7 @@ const MarkingAnimalForm = () => {
                     label="Primary Colour"
                     name={getAnimalFieldName<IAnimalMarking>(name, 'primary_colour_id', index)}
                     id="primary_colour_id"
-                    route="colours"
+                    route="lookups/colours"
                     controlProps={{
                       size: 'small',
                       required: isRequiredInSchema(AnimalMarkingSchema, 'primary_colour_id')
@@ -105,7 +105,7 @@ const MarkingAnimalForm = () => {
                     label="Secondary Colour"
                     name={getAnimalFieldName<IAnimalMarking>(name, 'secondary_colour_id', index)}
                     id="secondary_colour_id"
-                    route="colours"
+                    route="lookups/colours"
                     controlProps={{
                       size: 'small',
                       required: isRequiredInSchema(AnimalMarkingSchema, 'secondary_colour_id')

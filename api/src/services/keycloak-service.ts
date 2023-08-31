@@ -57,6 +57,11 @@ const defaultLog = getLogger('services/keycloak-service');
  * @class KeycloakService
  */
 export class KeycloakService {
+  // Used to authenticate with the SIMS Service Credentials
+  keycloakHost: string;
+  keycloakServiceClientId: string;
+  keycloakServiceClientSecret: string;
+
   // Used to authenticate with the CSS API using the SIMS API credentials
   keycloakApiTokenUrl: string;
   keycloakApiClientId: string;
@@ -68,6 +73,10 @@ export class KeycloakService {
   keycloakEnvironment: string;
 
   constructor() {
+    this.keycloakHost = `${process.env.KEYCLOAK_HOST}`;
+    this.keycloakServiceClientId = `${process.env.KEYCLOAK_ADMIN_USERNAME}`;
+    this.keycloakServiceClientSecret = `${process.env.KEYCLOAK_ADMIN_PASSWORD}`;
+
     this.keycloakApiTokenUrl = `${process.env.KEYCLOAK_API_TOKEN_URL}`;
     this.keycloakApiClientId = `${process.env.KEYCLOAK_API_CLIENT_ID}`;
     this.keycloakApiClientSecret = `${process.env.KEYCLOAK_API_CLIENT_SECRET}`;
@@ -78,7 +87,36 @@ export class KeycloakService {
   }
 
   /**
-   * Get an access token from keycloak for the service account user.
+   * Get an access token from keycloak for the SIMS Service account.
+   *
+   * @return {*}  {Promise<string>}
+   * @memberof KeycloakService
+   */
+  async getKeycloakServiceToken(): Promise<string> {
+    try {
+      const { data } = await axios.post(
+        `${this.keycloakHost}/realms/standard/protocol/openid-connect/token`,
+        qs.stringify({
+          grant_type: 'client_credentials',
+          client_id: this.keycloakServiceClientId,
+          client_secret: this.keycloakServiceClientSecret
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
+
+      return data.access_token as string;
+    } catch (error) {
+      defaultLog.debug({ label: 'getKeycloakServiceToken', message: 'error', error: error });
+      throw new ApiGeneralError('Failed to authenticate with keycloak', [(error as Error).message]);
+    }
+  }
+
+  /**
+   * Get an access token from keycloak for the sims-team account user.
    *
    * @return {*}  {Promise<string>}
    * @memberof KeycloakService
