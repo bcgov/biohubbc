@@ -14,7 +14,7 @@ import { useMarkings } from './cb_api/useMarkings';
  */
 export const useCritterbaseApi = () => {
   const config = useContext(ConfigContext);
-  const apiAxios = useAxios(config?.CB_API_HOST);
+  const apiAxios = useAxios(config?.API_HOST);
   const markings = useMarkings(apiAxios);
   const authentication = useAuthentication(apiAxios);
   const lookup = useLookupApi(apiAxios);

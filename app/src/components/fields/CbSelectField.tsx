@@ -1,6 +1,6 @@
 import { FormControlProps, MenuItem, SelectChangeEvent } from '@mui/material';
 import { useFormikContext } from 'formik';
-import { ICbRouteKey, ICbSelectRows } from 'hooks/cb_api/useLookupApi';
+import { ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useIsMounted from 'hooks/useIsMounted';
@@ -16,7 +16,7 @@ export interface ICbSelectSharedProps {
 
 export interface ICbSelectField extends ICbSelectSharedProps {
   id: string;
-  route: ICbRouteKey;
+  route: string;
   param?: string;
   query?: string;
   handleChangeSideEffect?: (value: string, label: string) => void;

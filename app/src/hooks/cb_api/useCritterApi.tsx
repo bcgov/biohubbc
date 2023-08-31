@@ -3,13 +3,27 @@ import { Critter } from 'features/surveys/view/survey-animals/animal';
 
 const useCritterApi = (axios: AxiosInstance) => {
   const getAllCritters = async (): Promise<Record<string, unknown>[]> => {
-    const { data } = await axios.get('/api/critters');
-    return data;
+    try {
+      const { data } = await axios.get('/api/critter-data/critters');
+      return data;
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log(e.message);
+      }
+    }
+    return [];
   };
 
   const getCritterByID = async (critter_id: string): Promise<Record<string, unknown>> => {
-    const { data } = await axios.get('/api/critters/' + critter_id);
-    return data;
+    try {
+      const { data } = await axios.get(`/api/critter-data/critters/${critter_id}`);
+      return data;
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log(e.message);
+      }
+    }
+    return {};
   };
 
   const createCritter = async (critter: Critter): Promise<{ count: number }> => {
@@ -21,7 +35,7 @@ const useCritterApi = (axios: AxiosInstance) => {
       quantitative_measurements: critter.measurements.quantitative,
       ...critter
     };
-    const { data } = await axios.post('/api/bulk', payload);
+    const { data } = await axios.post('/api/critter-data/critters', payload);
     return data;
   };
 
