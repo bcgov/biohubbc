@@ -36,7 +36,7 @@ const GeneralAnimalForm = () => {
               controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'), size: 'small' }}
               label={'Taxon'}
               id={'taxon'}
-              route={'taxons'}
+              route={'lookups/taxons'}
               handleChangeSideEffect={handleTaxonName}
             />
           </HelpButtonTooltip>
