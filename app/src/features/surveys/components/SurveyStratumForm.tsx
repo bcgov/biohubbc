@@ -4,11 +4,11 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
-import DialogActions from '@mui/materia/DialogActions';
+import DialogActions from '@mui/material/DialogActions';
 import {  useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import yup from 'utils/YupSchema';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CodesContext } from 'contexts/codesContext';
 import assert from 'assert';
 import { Box, DialogContentText, TextField } from '@mui/material';
@@ -50,46 +50,63 @@ const StratumFormYupSchema = yup.object().shape({
 
 interface IStratumDialogProps {
   open: boolean;
-  editing: boolean;
-  stratumForm: IStratumForm
+  stratumFormInitialValues: IStratumForm
   onCancel: () => void;
   onSave: (stratumForm: IStratumForm) => void;
 }
 
 const StratumDialog = (props: IStratumDialogProps) => {
-  const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-
-  const formikProps = useFormikContext();
-  const { handleChange } = formikProps;
-
-  const handleChangeName = () => {
-    //
-  }
-
-  const handleChangeDescription = () => {
-    //
-  }
-
-  const handleSave = () => {
-    props.onSave(null)
-  }
+  const [currentStratum, setCurrentStratum] = useState<IStratumForm>(StratumFormInitialValues);
 
   const formikContext = useFormikContext<IEditSurveyRequest>();
   const { values, handleSubmit } = formikContext
 
+  const handleChangeName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setCurrentStratum({
+      ...currentStratum,
+      stratum: {
+        ...currentStratum.stratum,
+        name: event.target.value
+      }
+    })
+  }
+
+  const handleChangeDescription = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setCurrentStratum({
+      ...currentStratum,
+      stratum: {
+        ...currentStratum.stratum,
+        description: event.target.value
+      }
+    })
+  }
+
+  const handleSave = () => {
+    props.onSave(currentStratum)
+  }
+
+  const handleCancel = () => {
+    props.onCancel();
+  }
+
+  useEffect(() => {
+    setCurrentStratum(props.stratumFormInitialValues)
+  }, []);
+
+  const editing = props.stratumFormInitialValues.index !== null;
+
   return (
     <ComponentDialog
       open={props.open}
-      dialogTitle={props.editing ? 'Edit Stratum Details' : 'Add Stratum'}
+      dialogTitle={editing ? 'Edit Stratum Details' : 'Add Stratum'}
       onClose={props.onCancel}>
       <form onSubmit={handleSubmit}>
         <DialogContentText>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.</DialogContentText>
         <TextField
           fullWidth
-          name={`site_selection_strategies.stratums[${props.stratumIndex}].name`}
+          name='new-survey-stratum-name'
           variant='outlined'
-          value={props.stratumIndex ? values.site_selection_strategies.stratums[props.stratumIndex].name : undefined}
+          value={currentStratum.stratum.name}
           onChange={handleChangeName}
           label='Name'
         />
@@ -97,9 +114,9 @@ const StratumDialog = (props: IStratumDialogProps) => {
           fullWidth
           multiline
           rows={5}
-          name={`site_selection_strategies.stratums[${props.stratumIndex}].description`}
+          name='new-survey-stratum-description'
           variant='outlined'
-          value={props.stratumIndex ? values.site_selection_strategies.stratums[props.stratumIndex].description : undefined}
+          value={currentStratum.stratum.description}
           onChange={handleChangeDescription}
           label='Description'
         />
@@ -107,7 +124,7 @@ const StratumDialog = (props: IStratumDialogProps) => {
           <Button onClick={() => handleSave()}>Save</Button>
           <Button onClick={() => handleCancel()}>Cancel</Button>
         </DialogActions>
-      </>
+      </form>
     </ComponentDialog>
   )
 }
@@ -118,23 +135,28 @@ const StratumDialog = (props: IStratumDialogProps) => {
  * @return {*}
  */
 const SurveyStratumForm = () => {
-  const [stratumIndex, setStratumIndex] =  useState<number | null>(null);
-  const [initialStratum, setInitialStratum] = useState<IStratum | null>(null);
-
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [currentStratumForm, setCurrentStratumForm] =  useState<IStratumForm>(StratumFormInitialValues);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   const formikProps = useFormikContext<IEditSurveyRequest>();
   const { values, handleSubmit, setFieldValue } = formikProps;
 
-  const handleCreateStratum = () => {
-    setFieldValue(
-      'site_selection_strategies.stratums',
-      [
-        ...values.site_selection_strategies.stratums, { name: '', description: '' }
-      ]
-    );
+  const handleSave = (stratumForm: IStratumForm) => {
+    if (stratumForm.index === null) {
+      // Create new stratum
+      setFieldValue(
+        'site_selection_strategies.stratums',
+        [...values.site_selection_strategies.stratums, stratumForm.stratum]
+      );
+    } else {
+      // Edit existing stratum
+      setFieldValue(`site_selection_strategies.stratums[${stratumForm.index}`, stratumForm.stratum);
+    }
+  }
 
+  const handleCreateStratum = () => {
+    setCurrentStratumForm(StratumFormInitialValues);
+    setDialogOpen(true);
   }
 
   /*
@@ -151,21 +173,13 @@ const SurveyStratumForm = () => {
     <>
       <StratumDialog
         open={dialogOpen}
-        onCancel={() => {}}
-
-        onSave={(stratum) => {
-          if (isEditing) {
-            // 
-          } else {
-
-          }
-        }}
-        stratumIndex={stratumIndex}
-        editing={false}
+        onCancel={() => setDialogOpen(false)}
+        stratumFormInitialValues={currentStratumForm}
+        onSave={handleSave}
       />
       <form onSubmit={handleSubmit}>
         <Box my={2}>
-          {values.site_selection_strategies.stratums.map((stratum, index: number) => {
+          {values.site_selection_strategies.stratums.map((stratum: IStratum, index: number) => {
             return (
               <Box mt={1} className="userRoleItemContainer">
                 <Paper
