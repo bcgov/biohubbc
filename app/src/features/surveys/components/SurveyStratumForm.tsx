@@ -1,4 +1,4 @@
-import { mdiClose, mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline, mdiUnfoldMoreVertical } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -36,7 +36,7 @@ const StratumFormInitialValues: IStratumForm = {
   }
 }
 
-const StratumFormYupSchema = yup.object().shape({
+export const StratumFormYupSchema = yup.object().shape({
   index: yup.number().nullable(true),
   stratum: yup.object().shape({
     survey_stratum_id: yup.number(),
@@ -62,7 +62,7 @@ const StratumDialog = (props: IStratumDialogProps) => {
   const [currentStratum, setCurrentStratum] = useState<IStratumForm>(StratumFormInitialValues);
 
   const formikContext = useFormikContext<IEditSurveyRequest>();
-  const { values, handleSubmit } = formikContext
+  const { handleSubmit } = formikContext
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));

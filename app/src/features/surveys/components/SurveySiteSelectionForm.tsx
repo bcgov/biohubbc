@@ -37,24 +37,20 @@ export const SurveySiteSelectionInitialValues: ISurveySiteSelectionForm = {
 export const SurveySiteSelectionYupSchema = yup.object().shape({
   site_selection_strategies: yup.object().shape({
     strategies: yup
-      .array(
-        yup
-          .string()
-          .oneOf(['Stratified'], 'You must include the Stratified site selection strategy in order to add Stratums.')
-          .required('Must select a valid site selection strategy')
-      )
-      .min(0),
-    stratums: yup.array().when('site_strategies', (site_strategies, schema) => {
-      return site_strategies.length > 1
-        ? schema.required('You must include the Stratified site selection strategy in order to add Stratums.')
-        : schema;
-    }).of(
-      yup.object({
+      .array()
+      .of(yup.string() /* .required('Must select a valid site selection strategy') */ )
+      .when('site_strategies', (site_strategies, schema) => {
+        return site_strategies.length > 1
+          ? schema.required('You must include the Stratified site selection strategy in order to add Stratums.')
+          : schema;
+      }),
+    stratums: yup
+      .array()
+      .of(yup.object({
         survey_stratum_id: yup.number().optional(),
         name: yup.string().required('Must provide a name for stratum'),
         description: yup.string().optional(),
-      })
-    )
+      }))
   })
 });
 
