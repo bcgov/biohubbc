@@ -12,7 +12,13 @@ import { useEffect, useState } from 'react';
 import { Box, Dialog, DialogContent, DialogContentText, DialogTitle, ListItemIcon, Menu, MenuItem, MenuProps, TextField, useMediaQuery, useTheme } from '@mui/material';
 
 interface IStratum {
-  survey_stratum_id: number | undefined;
+  /**
+   * @TODO We probably won't track the survey stratum ID in the frontend. Reason: new records won't have an ID.
+   * From a technical perspective, it is much easier to simply erase all stratum and re-insert them upon
+   * survey create/survey update, rather than track the IDs of already existing stratums.
+   */
+
+  // survey_stratum_id: number | undefined;
   name: string;
   description: string;
 }
@@ -25,7 +31,6 @@ interface IStratumForm {
 const StratumFormInitialValues: IStratumForm = {
   index: null,
   stratum: {
-    survey_stratum_id: undefined,
     name: '',
     description: ''
   }
@@ -92,15 +97,17 @@ const StratumDialog = (props: IStratumDialogProps) => {
 
   useEffect(() => {
     setCurrentStratum(props.stratumFormInitialValues)
-  }, []);
+  }, [props.stratumFormInitialValues]);
 
   const editing = props.stratumFormInitialValues.index !== null;
 
+  // @TODO implement yup validation.
   return (
     <Dialog
       open={props.open}
       fullScreen={fullScreen}
       maxWidth="xl"
+      keepMounted={false}
       onClose={props.onCancel}>
       <DialogTitle>{editing ? 'Edit Stratum Details' : 'Add Stratum'}</DialogTitle>
       <DialogContent>
