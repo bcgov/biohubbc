@@ -13,6 +13,7 @@ export interface ITableActionsMenuProps {
   onRemoveDevice: (critter_id: string) => void;
   onEditDevice: (critter_id: string) => void;
   onEditCritter: (critter_id: string) => void;
+  onRemoveCritter: (critter_id: string) => void;
 }
 
 const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
@@ -75,7 +76,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             handleClose();
             props.onEditDevice(props.critter_id);
           }}
-          data-testid="funding-source-table-row-edit-timespan">
+          data-testid="animal-table-row-edit-timespan">
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
@@ -86,11 +87,22 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             handleClose();
             props.onEditCritter(props.critter_id);
           }}
-          data-testid="funding-source-table-row-edit-critter">
+          data-testid="animal-table-row-edit-critter">
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
           <Typography variant="inherit">Edit Critter Details</Typography>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            props.onRemoveCritter(props.critter_id);
+          }}
+          data-testid="animal-table-row-remove-critter">
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          <Typography variant="inherit">Remove Critter From Survey</Typography>
         </MenuItem>
       </Menu>
     </>

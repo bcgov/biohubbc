@@ -107,7 +107,13 @@ const SurveyAnimals: React.FC = () => {
       <Divider></Divider>
       <Box p={3}>
         {critterData?.length ? (
-          <SurveyAnimalsTable animalData={critterData} />
+          <SurveyAnimalsTable
+            animalData={critterData}
+            removeCritterAction={(critter_id) => {
+              bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
+              refresh();
+            }}
+          />
         ) : (
           <NoSurveySectionData text={'No Individual Animals'} paperVariant={'outlined'} />
         )}

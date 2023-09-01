@@ -444,6 +444,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: string): Promise<number> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -464,7 +469,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSummarySubmissionSignedURL,
     deleteSummarySubmission,
     getSurveyCritters,
-    createCritterAndAddToSurvey
+    createCritterAndAddToSurvey,
+    removeCritterFromSurvey
   };
 };
 

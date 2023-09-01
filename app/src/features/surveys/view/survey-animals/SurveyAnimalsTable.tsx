@@ -45,11 +45,12 @@ interface ISurveyAnimalsTableEntry {
 
 interface ISurveyAnimalsTableProps {
   animalData: ICritterDetailedResponse[];
+  removeCritterAction: (critter_id: string) => void;
 }
 
 const noOpPlaceHolder = (critter_id: string) => {};
 
-export const SurveyAnimalsTable = ({ animalData }: ISurveyAnimalsTableProps): JSX.Element => {
+export const SurveyAnimalsTable = ({ animalData, removeCritterAction }: ISurveyAnimalsTableProps): JSX.Element => {
   const classes = useStyles();
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
     {
@@ -94,6 +95,7 @@ export const SurveyAnimalsTable = ({ animalData }: ISurveyAnimalsTableProps): JS
           onRemoveDevice={noOpPlaceHolder}
           onEditCritter={noOpPlaceHolder}
           onEditDevice={noOpPlaceHolder}
+          onRemoveCritter={removeCritterAction}
         />
       )
     }

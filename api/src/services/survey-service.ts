@@ -1114,10 +1114,20 @@ export class SurveyService extends DBService {
    * Add a critter as part of this survey. Does not create anything in the external system.
    *
    * @param {number} surveyId
-   * @param {number} critterId 
+   * @param {string} critterId
    * @returns {*}
    */
   async addCritterToSurvey(surveyId: number, critterId: string) {
     return this.surveyRepository.addCritterToSurvey(surveyId, critterId);
+  }
+
+  /**
+   * Removes a critter from the survey. Does not affect the critter in the external system.
+   * @param {number} surveyId
+   * @param {string} critterId
+   * @returns {*}
+   */
+  async removeCritterFromSurvey(surveyId: number, critterId: string) {
+    return this.surveyRepository.removeCritterFromSurvey(surveyId, critterId);
   }
 }

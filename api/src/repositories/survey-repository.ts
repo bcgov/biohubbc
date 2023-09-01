@@ -1403,4 +1403,22 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder);
     return response.rowCount;
   }
+
+  /**
+   * Removes a critter from the survey.
+   *
+   * @param surveyId
+   * @param critterId
+   * @returns {*}
+   * @member SurveyRepository
+   */
+  async removeCritterFromSurvey(surveyId: number, critterId: string): Promise<number> {
+    defaultLog.debug({ label: 'removeCritterFromSurvey', surveyId });
+    const queryBuilder = getKnex()
+      .table('critter')
+      .delete()
+      .where({ survey_id: surveyId, critterbase_critter_id: critterId });
+    const response = await this.connection.knex(queryBuilder);
+    return response.rowCount;
+  }
 }
