@@ -1,4 +1,4 @@
-import { mdiClose, mdiDotsVertical, mdiPlus, mdiUnfoldMoreVertical } from '@mdi/js';
+import { mdiClose, mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline, mdiUnfoldMoreVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -8,11 +8,8 @@ import DialogActions from '@mui/material/DialogActions';
 import {  useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import yup from 'utils/YupSchema';
-import { useContext, useEffect, useState } from 'react';
-import { CodesContext } from 'contexts/codesContext';
-import assert from 'assert';
-import { Box, DialogContentText, TextField } from '@mui/material';
-import ComponentDialog from 'components/dialog/ComponentDialog';
+import { useEffect, useState } from 'react';
+import { Box, Dialog, DialogContent, DialogContentText, DialogTitle, ListItemIcon, Menu, MenuItem, MenuProps, TextField, useMediaQuery, useTheme } from '@mui/material';
 
 interface IStratum {
   survey_stratum_id: number | undefined;
@@ -44,6 +41,7 @@ const StratumFormYupSchema = yup.object().shape({
       .max(300, 'Name cannot exceed 300 characters'),
     description: yup
       .string()
+      .required('Must provide a stratum description')
       .max(3000, 'Description cannot exceed 3000 characters'),
   })
 })
@@ -60,6 +58,9 @@ const StratumDialog = (props: IStratumDialogProps) => {
 
   const formikContext = useFormikContext<IEditSurveyRequest>();
   const { values, handleSubmit } = formikContext
+
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleChangeName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setCurrentStratum({
@@ -96,37 +97,48 @@ const StratumDialog = (props: IStratumDialogProps) => {
   const editing = props.stratumFormInitialValues.index !== null;
 
   return (
-    <ComponentDialog
+    <Dialog
       open={props.open}
-      dialogTitle={editing ? 'Edit Stratum Details' : 'Add Stratum'}
+      fullScreen={fullScreen}
+      maxWidth="xl"
       onClose={props.onCancel}>
-      <form onSubmit={handleSubmit}>
-        <DialogContentText>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.</DialogContentText>
-        <TextField
-          fullWidth
-          name='new-survey-stratum-name'
-          variant='outlined'
-          value={currentStratum.stratum.name}
-          onChange={handleChangeName}
-          label='Name'
-        />
-        <TextField
-          fullWidth
-          multiline
-          rows={5}
-          name='new-survey-stratum-description'
-          variant='outlined'
-          value={currentStratum.stratum.description}
-          onChange={handleChangeDescription}
-          label='Description'
-        />
-        <DialogActions>
-          <Button onClick={() => handleSave()}>Save</Button>
-          <Button onClick={() => handleCancel()}>Cancel</Button>
-        </DialogActions>
-      </form>
-    </ComponentDialog>
-  )
+      <DialogTitle>{editing ? 'Edit Stratum Details' : 'Add Stratum'}</DialogTitle>
+      <DialogContent>
+        <form onSubmit={handleSubmit}>
+          <DialogContentText>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.</DialogContentText>
+          <Box mt={4}>
+            <TextField
+              fullWidth
+              sx={{ mb: 4 }}
+              name='new-survey-stratum-name'
+              variant='outlined'
+              value={currentStratum.stratum.name}
+              onChange={handleChangeName}
+              required
+              label='Name'
+            />
+            <TextField
+              fullWidth
+              multiline
+              rows={5}
+              name='new-survey-stratum-description'
+              variant='outlined'
+              value={currentStratum.stratum.description}
+              onChange={handleChangeDescription}
+              required
+              label='Description'
+            />
+          </Box>
+        </form>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => handleSave()} variant="contained" color='primary'>
+          {editing ? 'Update' : 'Add Stratum'}
+        </Button>
+        <Button onClick={() => handleCancel()} variant="outlined">Cancel</Button>        
+      </DialogActions>
+    </Dialog>
+  );
 }
 
 /**
@@ -137,6 +149,7 @@ const StratumDialog = (props: IStratumDialogProps) => {
 const SurveyStratumForm = () => {
   const [currentStratumForm, setCurrentStratumForm] =  useState<IStratumForm>(StratumFormInitialValues);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const formikProps = useFormikContext<IEditSurveyRequest>();
   const { values, handleSubmit, setFieldValue } = formikProps;
@@ -152,6 +165,8 @@ const SurveyStratumForm = () => {
       // Edit existing stratum
       setFieldValue(`site_selection_strategies.stratums[${stratumForm.index}`, stratumForm.stratum);
     }
+
+    setDialogOpen(false);
   }
 
   const handleCreateStratum = () => {
@@ -159,15 +174,23 @@ const SurveyStratumForm = () => {
     setDialogOpen(true);
   }
 
-  /*
-  const handleRemoveStratum = (index: number) => {
+  const handleClickContextMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+    setAnchorEl(event.currentTarget);
+    setCurrentStratumForm({
+      index,
+      stratum: values.site_selection_strategies.stratums[index]
+    });
+  }
+
+  const handleDelete = () => {
+    setAnchorEl(null);
     // TODO
   }
 
-  const handleEditStratum = (index: number) => {
-    // TODO
+  const handleEdit = () => {
+    setDialogOpen(true);
+    setAnchorEl(null);
   }
-  */
 
   return (
     <>
@@ -177,6 +200,32 @@ const SurveyStratumForm = () => {
         stratumFormInitialValues={currentStratumForm}
         onSave={handleSave}
       />
+      <Menu
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+      >
+        <MenuItem onClick={() => handleEdit()}>
+          <ListItemIcon>
+            <Icon path={mdiPencilOutline} size={1} />
+          </ListItemIcon>
+          Edit Details
+        </MenuItem>
+        <MenuItem onClick={() => handleDelete()}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          Remove Stratum
+        </MenuItem>
+      </Menu>
       <form onSubmit={handleSubmit}>
         <Box my={2}>
           {values.site_selection_strategies.stratums.map((stratum: IStratum, index: number) => {
@@ -203,7 +252,6 @@ const SurveyStratumForm = () => {
                   }}>
                   <Box display="flex" alignItems="center" px={2} py={1.5}>
                     <Box flex="1 1 auto">
-                    
                       <Typography variant="subtitle1" fontWeight="bold">
                         {stratum.name}
                       </Typography>
@@ -217,17 +265,12 @@ const SurveyStratumForm = () => {
                           ml: 2
                         }}
                         aria-label="remove user from project team"
-                        onClick={() => {
-                          
-                        }}>
+                        onClick={(event) => handleClickContextMenu(event, index)}>
                         <Icon path={mdiDotsVertical} size={1}></Icon>
                       </IconButton>
                     </Box>
                   </Box>
                 </Paper>
-                {
-                //error
-                }
               </Box>
             );
           })}
