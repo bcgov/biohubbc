@@ -290,7 +290,7 @@ const insertSurveyLocationData = (surveyId: number) => `
         },
         "properties": {}
       }
-    ]',
+    ]'
   );
 `;
 

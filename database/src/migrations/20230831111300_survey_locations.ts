@@ -30,33 +30,33 @@ export async function up(knex: Knex): Promise<void> {
     -------------------------------------------------------------------------
   
     CREATE TABLE survey_location(
-      survey_location_id   integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      survey_id                     integer                     NOT NULL,
-      name                          varchar(100)                NOT NULL,
-      description                   varchar(250)                NOT NULL,
-      geometry                      geometry(geometry, 3005),
-      geography                     geography(geometry)         NOT NULL,
-      geojson                       jsonb                       NOT NULL,
-      create_date                   timestamptz(6)              DEFAULT now() NOT NULL,
-      create_user                   integer                     NOT NULL,
-      update_date                   timestamptz(6),
-      update_user                   integer,
-      revision_count                integer                     DEFAULT 0 NOT NULL,
+      survey_location_id       integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      survey_id                integer                     NOT NULL,
+      name                     varchar(100)                NOT NULL,
+      description              varchar(250)                NOT NULL,
+      geometry                 geometry(geometry, 3005),
+      geography                geography(geometry)         NOT NULL,
+      geojson                  jsonb                       NOT NULL,
+      create_date              timestamptz(6)              DEFAULT now() NOT NULL,
+      create_user              integer                     NOT NULL,
+      update_date              timestamptz(6),
+      update_user              integer,
+      revision_count           integer                     DEFAULT 0 NOT NULL,
       CONSTRAINT survey_location_pk PRIMARY KEY (survey_location_id)
     );
   
-    COMMENT ON COLUMN survey_location.survey_location_id   IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN survey_location.name                          IS 'The name of the spatial record.';
-    COMMENT ON COLUMN survey_location.description                   IS 'The description of the spatial record.';
-    COMMENT ON COLUMN survey_location.geometry                      IS 'The containing geometry of the record.';
-    COMMENT ON COLUMN survey_location.geography                     IS 'The containing geography of the record.';
-    COMMENT ON COLUMN survey_location.geojson                       IS 'A GeoJSON representation of the geometry which may contain additional metadata.';
-    COMMENT ON COLUMN survey_location.create_date                   IS 'The datetime the record was created.';
-    COMMENT ON COLUMN survey_location.create_user                   IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN survey_location.update_date                   IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN survey_location.update_user                   IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN survey_location.revision_count                IS 'Revision count used for concurrency control.';
-    COMMENT ON TABLE  survey_location                               IS 'Spatial records associated to a survey.';
+    COMMENT ON COLUMN survey_location.survey_location_id      IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN survey_location.name                    IS 'The name of the spatial record.';
+    COMMENT ON COLUMN survey_location.description             IS 'The description of the spatial record.';
+    COMMENT ON COLUMN survey_location.geometry                IS 'The containing geometry of the record.';
+    COMMENT ON COLUMN survey_location.geography               IS 'The containing geography of the record.';
+    COMMENT ON COLUMN survey_location.geojson                 IS 'A GeoJSON representation of the geometry which may contain additional metadata.';
+    COMMENT ON COLUMN survey_location.create_date             IS 'The datetime the record was created.';
+    COMMENT ON COLUMN survey_location.create_user             IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN survey_location.update_date             IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN survey_location.update_user             IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN survey_location.revision_count          IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  survey_location                         IS 'Spatial records associated to a survey.';
   
     ----------------------------------------------------------------------------------------
     -- Create Indexes and Constraints
