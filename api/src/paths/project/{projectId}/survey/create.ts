@@ -253,11 +253,8 @@ POST.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['survey_id', 'name', 'description'],
+                required: ['name', 'description'],
                 properties: {
-                  survey_id: {
-                    type: 'number'
-                  },
                   name: {
                     type: 'string'
                   },

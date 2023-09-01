@@ -20,10 +20,11 @@ export class SurveyBlockService extends DBService {
     return this.surveyBlockRepository.deleteSurveyBlockRecord(surveyBlockId);
   }
 
-  async updateInsertSurveyBlocks(blocks: SurveyBlock[]): Promise<void> {
+  async updateInsertSurveyBlocks(surveyId: number, blocks: SurveyBlock[]): Promise<void> {
     const insertUpdate: Promise<any>[] = [];
 
     blocks.forEach((item: SurveyBlock) => {
+      item.survey_id = surveyId;
       if (item.survey_block_id) {
         insertUpdate.push(this.surveyBlockRepository.updateSurveyBlock(item));
       } else {
@@ -48,7 +49,7 @@ export class SurveyBlockService extends DBService {
       promises.push(this.deleteSurveyBlock(item.survey_block_id));
     });
 
-    promises.push(this.updateInsertSurveyBlocks(blocks));
+    promises.push(this.updateInsertSurveyBlocks(surveyId, blocks));
 
     await Promise.all(promises);
   }

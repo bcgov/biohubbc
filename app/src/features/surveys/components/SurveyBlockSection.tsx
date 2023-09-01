@@ -63,8 +63,6 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
     setAnchorEl(null);
   };
 
-  // NEED TO UPDATE THE SERVICE FILES
-  // CREATE ACTION WE WON"T HAVE ANY SURVEY IDS so I need to update everything to reflect that
   return (
     <>
       {/* CREATE BLOCK DIALOG */}
@@ -72,9 +70,9 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
         open={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSave={(data) => {
+          setEditData(undefined);
           setFieldValue(`${name}[${values.blocks.length}]`, data);
           setIsCreateModalOpen(false);
-          setEditData(undefined);
         }}
       />
 
@@ -82,11 +80,15 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
       <EditSurveyBlockDialog
         open={isEditModalOpen}
         initialData={editData}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setAnchorEl(null);
+        }}
         onSave={(data, index) => {
+          setEditData(undefined);
           setFieldValue(`${name}[${index}]`, data);
           setIsEditModalOpen(false);
-          setEditData(undefined);
+          setAnchorEl(null);
         }}
       />
       <Menu
