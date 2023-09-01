@@ -23,14 +23,8 @@ export interface ISurveySiteSelectionForm {
 
 export const SurveySiteSelectionInitialValues: ISurveySiteSelectionForm = {
   site_selection_strategies: {
-    strategies: ['Systematic'],
-    stratums: [
-      {
-        survey_stratum_id: undefined,
-        name: 'Stratum A',
-        description: 'Hello world'
-      }
-    ]
+    strategies: [],
+    stratums: []
   }
 };
 
@@ -69,10 +63,10 @@ interface ISurveySiteSelectionFormProps {
  * @return {*}
  */
 const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
-  const [showStratumDeleteConfirmModal, setShowStratumDeleteConfirmModal] = useState<boolean>(true);
+  const [showStratumDeleteConfirmModal, setShowStratumDeleteConfirmModal] = useState<boolean>(false);
 
   const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { values, setFieldValue, handleSubmit } = formikProps;
+  const { values, setFieldValue } = formikProps;
 
   const codesContext = useContext(CodesContext);
   assert(codesContext.codesDataLoader.data);
@@ -116,14 +110,12 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
         onClose={handleCancelDeleteAllStratums}
         onYes={handleConfirmDeleteAllStratums}
       />
-      <form onSubmit={handleSubmit}>
-        <MultiAutocompleteFieldVariableSize
-          id="site_selection_strategies.strategies"
-          label="Site Selection Strategies"
-          options={siteStrategies}
-          required={false}
-        />
-      </form>
+      <MultiAutocompleteFieldVariableSize
+        id="site_selection_strategies.strategies"
+        label="Site Selection Strategies"
+        options={siteStrategies}
+        required={false}
+      />
     </>
   );
 };
