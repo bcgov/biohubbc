@@ -1,11 +1,12 @@
 import {  useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import yup from 'utils/YupSchema';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { CodesContext } from 'contexts/codesContext';
 import assert from 'assert';
 import { useEffect } from 'react';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 
 interface IStratum {
   survey_stratum_id: number | undefined;
@@ -39,7 +40,7 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
     strategies: yup
       .array()
       .of(yup.string() /* .required('Must select a valid site selection strategy') */ )
-      .when('stratums', (stratums, schema) => {
+      .when('stratums', (stratums: string[], schema: any) => {
         return stratums.length > 0
           ? schema.test(
               'allowsStratums',
@@ -68,8 +69,10 @@ interface ISurveySiteSelectionFormProps {
  * @return {*}
  */
 const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
+  const [showStratumDeleteConfirmModal, setShowStratumDeleteConfirmModal] = useState<boolean>(true);
+
   const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { values, handleSubmit } = formikProps;
+  const { values, setFieldValue, handleSubmit } = formikProps;
 
   const codesContext = useContext(CodesContext);
   assert(codesContext.codesDataLoader.data);
@@ -78,23 +81,50 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
     return { label: code.name, value: code.name };
   });
 
+  const handleConfirmDeleteAllStratums = () => {
+    // Delete all Stratums and hide the Stratums form
+    setFieldValue('site_selection_strategies.stratums', []);
+    props.onChangeStratumEntryVisibility(false);
+    setShowStratumDeleteConfirmModal(false);
+  }
+
+  const handleCancelDeleteAllStratums = () => {
+    setShowStratumDeleteConfirmModal(false);
+    setFieldValue('site_selection_strategies.strategies', [
+      ...values.site_selection_strategies.strategies, 'Stratified'
+    ]);
+  }
+
   useEffect(() => {
     if (values.site_selection_strategies.strategies.includes('Stratified')) {
       props.onChangeStratumEntryVisibility(true);
-    } else if (values.site_selection_strategies.stratums.length === 0) {
+    } else if (values.site_selection_strategies.stratums.length > 0) {
+      // Prompt to confirm removing all stratums
+      setShowStratumDeleteConfirmModal(true);
+    } else {
       props.onChangeStratumEntryVisibility(false);
     }
-  }, [values])
+  }, [values]);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <MultiAutocompleteFieldVariableSize
-        id="site_selection_strategies.strategies"
-        label="Site Selection Strategies"
-        options={siteStrategies}
-        required={false}
+    <>
+      <YesNoDialog
+        dialogTitle="Delete Stratums?"
+        dialogText="Removing the Stratified site selection strategy will delete all survey Stratums. Are you sure?"
+        open={showStratumDeleteConfirmModal}
+        onNo={handleCancelDeleteAllStratums}
+        onClose={handleCancelDeleteAllStratums}
+        onYes={handleConfirmDeleteAllStratums}
       />
-    </form>
+      <form onSubmit={handleSubmit}>
+        <MultiAutocompleteFieldVariableSize
+          id="site_selection_strategies.strategies"
+          label="Site Selection Strategies"
+          options={siteStrategies}
+          required={false}
+        />
+      </form>
+    </>
   );
 };
 
