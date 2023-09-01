@@ -20,7 +20,8 @@ export interface ICreateSurveyRequest
     IStudyAreaForm,
     IProprietaryDataForm,
     IAgreementsForm,
-    IParticipantsJobForm {}
+    IParticipantsJobForm,
+    ISurveyBlockForm {}
 
 /**
  * Create survey response object.
@@ -30,6 +31,14 @@ export interface ICreateSurveyRequest
  */
 export interface ICreateSurveyResponse {
   id: number;
+}
+
+export interface ISurveyBlockForm {
+  blocks: {
+    survey_block_id: number | null;
+    name: string;
+    description: string;
+  }[];
 }
 
 export interface IParticipantsJobForm {
