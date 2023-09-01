@@ -1,6 +1,8 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { Critter } from 'features/surveys/view/survey-animals/animal';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,
@@ -405,6 +407,43 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Retrieve a list of critters associated with the given survey with details taken from critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {ICritterDetailedResponse[]}
+   */
+  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<ICritterDetailedResponse[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters`);
+    return data;
+  };
+
+  /**
+   * Create a critter and add it to the list of critters associated with this survey. This will create a new critter in Critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {Critter} critter Critter payload type
+   * @returns Count of affected rows
+   */
+  const createCritterAndAddToSurvey = async (
+    projectId: number,
+    surveyId: number,
+    critter: Critter
+  ): Promise<Record<string, unknown>[]> => {
+    const payload = {
+      critters: [
+        { critter_id: critter.critter_id, animal_id: critter.animal_id, sex: 'Unknown', taxon_id: critter.taxon_id }
+      ],
+      qualitative_measurements: critter.measurements.qualitative,
+      quantitative_measurements: critter.measurements.quantitative,
+      ...critter
+    };
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -423,7 +462,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachmentSignedURL,
     deleteSurvey,
     getSummarySubmissionSignedURL,
-    deleteSummarySubmission
+    deleteSummarySubmission,
+    getSurveyCritters,
+    createCritterAndAddToSurvey
   };
 };
 

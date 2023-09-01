@@ -1,8 +1,9 @@
-import { makeStyles } from '@mui/styles';
 import { grey } from '@mui/material/colors';
+import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import React from 'react';
-import { ICritterSimpleResponse } from 'hooks/cb_api/useCritterApi';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { getFormattedDate } from 'utils/Utils';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 const useStyles = makeStyles(() => ({
   projectsTable: {
@@ -37,16 +38,16 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface ISurveyAnimalsTableEntry {
-  critter_id: string; 
-  animal_id: string;
+  critter_id: string;
+  animal_id: string | null;
   taxon: string;
 }
 
 interface ISurveyAnimalsTableProps {
-  animalData: ICritterSimpleResponse[];
+  animalData: ICritterDetailedResponse[];
 }
 
-const noOpPlaceHolder = (critter_id: string) => { };
+const noOpPlaceHolder = (critter_id: string) => {};
 
 export const SurveyAnimalsTable = ({ animalData }: ISurveyAnimalsTableProps): JSX.Element => {
   const classes = useStyles();
@@ -60,12 +61,24 @@ export const SurveyAnimalsTable = ({ animalData }: ISurveyAnimalsTableProps): JS
     {
       field: 'animal_id',
       headerName: 'Animal ID',
-      flex: 1,
+      flex: 1
     },
     {
       field: 'taxon',
-      headerName: 'Taxon name',
+      headerName: 'Taxon',
       flex: 1
+    },
+    {
+      field: 'create_timestamp',
+      headerName: 'Created On',
+      flex: 1,
+      renderCell: (params) => <p>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}</p>
+    },
+    {
+      field: 'telemetry_device',
+      headerName: 'Device ID',
+      flex: 1,
+      renderCell: (params) => <p>No Device</p>
     },
     {
       field: 'actions',
@@ -73,6 +86,7 @@ export const SurveyAnimalsTable = ({ animalData }: ISurveyAnimalsTableProps): JS
       sortable: false,
       flex: 1,
       align: 'right',
+      maxWidth: 50,
       renderCell: (params) => (
         <SurveyAnimalsTableActions
           critter_id={params.row.critter_id}

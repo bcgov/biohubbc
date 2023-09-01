@@ -1101,4 +1101,23 @@ export class SurveyService extends DBService {
 
     return PublishStatus.SUBMITTED;
   }
+  /**
+   * Get all critter associations for the given survey. This only gets you critter ids, which can be used to fetch details from the external system.
+   * @param {number} surveyId
+   * @returns {*}
+   */
+  async getCrittersInSurvey(surveyId: number) {
+    return this.surveyRepository.getCrittersInSurvey(surveyId);
+  }
+
+  /**
+   * Add a critter as part of this survey. Does not create anything in the external system.
+   *
+   * @param {number} surveyId
+   * @param {number} critterId 
+   * @returns {*}
+   */
+  async addCritterToSurvey(surveyId: number, critterId: string) {
+    return this.surveyRepository.addCritterToSurvey(surveyId, critterId);
+  }
 }

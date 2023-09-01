@@ -117,12 +117,17 @@ export interface IBulkCreate {
   families: IFamilyPayload[];
 }
 
+interface IFilterObj {
+  body: string[];
+  negate: boolean;
+}
+
 export interface IFilterCritters {
-  critter_ids: string[];
-  animal_ids: string[];
-  wlh_ids: string[];
-  collection_units: string[];
-  taxon_name_commons: string[];
+  critter_ids?: IFilterObj;
+  animal_ids?: IFilterObj;
+  wlh_ids?: IFilterObj;
+  collection_units?: IFilterObj;
+  taxon_name_commons?: IFilterObj;
 }
 
 export interface ICbSelectRows {
@@ -281,8 +286,8 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async filterCritters(data: IFilterCritters) {
-    const response = await this.axiosInstance.post(FILTER_ENDPOINT, data);
+  async filterCritters(data: IFilterCritters, format: 'default' | 'detailed' = 'default') {
+    const response = await this.axiosInstance.post(`${FILTER_ENDPOINT}?format=${format}`, data);
     return response.data;
   }
 

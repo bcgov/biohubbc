@@ -1,21 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { Critter } from 'features/surveys/view/survey-animals/animal';
-
-export interface ICritterSimpleResponse {
-  critter_id: string;
-  wlh_id: string;
-  animal_id: string;
-  sex: string;
-  taxon: string;
-  collection_units: {
-    critter_collection_unit_id: string;
-    category_name: string;
-    unit_name: string;
-    collection_unit_id: string;
-    collection_category_id: string;
-  }[];
-  mortality_timestamp?: string;
-}
+import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 
 const useCritterApi = (axios: AxiosInstance) => {
   const getAllCritters = async (): Promise<Record<string, unknown>[]> => {
@@ -65,7 +50,9 @@ const useCritterApi = (axios: AxiosInstance) => {
     collection_units?: IFilterBody;
     taxon_name_commons?: IFilterBody;
   }
-  const filterCritters = async (critterFilter: IFilterCritters): Promise<ICritterSimpleResponse[]> => {
+  const filterCritters = async (
+    critterFilter: IFilterCritters
+  ): Promise<ICritterDetailedResponse | ICritterSimpleResponse[]> => {
     const { data } = await axios.post('api/critter-data/critters/filter', critterFilter);
     return data;
   };

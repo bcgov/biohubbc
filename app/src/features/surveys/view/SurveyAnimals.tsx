@@ -6,7 +6,8 @@ import EditDialog from 'components/dialog/EditDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { SurveyContext } from 'contexts/surveyContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
@@ -15,21 +16,15 @@ import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
 
 const SurveyAnimals: React.FC = () => {
-  const cbApi = useCritterbaseApi();
+  const bhApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
+  const surveyContext = useContext(SurveyContext);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
-  const [localCritterIds, setLocalCritterIds] = useState<string[]>([
-    '4bd8fe08-f0e1-41fd-99b3-494fab00a763',
-    'c20c4b75-e3b1-48eb-9924-5ae66f1e14ab'
-  ]);
 
-  const {
-    refresh,
-    load,
-    data: critterData
-  } = useDataLoader(() => cbApi.critters.filterCritters({ critter_ids: { body: localCritterIds, negate: false } }));
+  const { projectId, surveyId } = surveyContext;
+  const { refresh, load, data: critterData } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
   if (!critterData) {
     load();
   }
@@ -54,8 +49,7 @@ const SurveyAnimals: React.FC = () => {
   const handleOnSave = async (animal: IAnimal) => {
     const critter = new Critter(animal);
     const postCritterPayload = async () => {
-      await cbApi.critters.createCritter(critter);
-      setLocalCritterIds([...localCritterIds, critter.critter_id]);
+      await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
       refresh();
       dialogContext.setSnackbar({
         open: true,

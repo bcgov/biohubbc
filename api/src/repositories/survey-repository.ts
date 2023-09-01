@@ -131,6 +131,14 @@ export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnership
 
 export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
+export const SurveyCritterRecord = z.object({
+  critter_id: z.number(),
+  survey_id: z.number(),
+  critterbase_critter_id: z.string().uuid()
+});
+
+export type SurveyCritterRecord = z.infer<typeof SurveyCritterRecord>;
+
 const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
@@ -1364,6 +1372,35 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder);
 
+    return response.rowCount;
+  }
+
+  /**
+   * Get critters in this survey
+   *
+   * @param {number} surveyId
+   * @returns {*}
+   * @member SurveyRepository
+   */
+  async getCrittersInSurvey(surveyId: number): Promise<SurveyCritterRecord[]> {
+    defaultLog.debug({ label: 'getcrittersInSurvey', surveyId });
+    const queryBuilder = getKnex().table('critter').select().where('survey_id', surveyId);
+    const response = await this.connection.knex(queryBuilder);
+    return response.rows;
+  }
+
+  /**
+   * Add critter to survey
+   *
+   * @param {number} surveyId
+   * @param {string} critterId
+   * @returns {*}
+   * @member SurveyRepository
+   */
+  async addCritterToSurvey(surveyId: number, critterId: string): Promise<number> {
+    defaultLog.debug({ label: 'addCritterToSurvey', surveyId });
+    const queryBuilder = getKnex().table('critter').insert({ survey_id: surveyId, critterbase_critter_id: critterId });
+    const response = await this.connection.knex(queryBuilder);
     return response.rowCount;
   }
 }
