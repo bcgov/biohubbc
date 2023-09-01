@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
+import Card from '@mui/material/Card';
 import DialogActions from '@mui/material/DialogActions';
 import {  useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
@@ -244,7 +244,7 @@ const SurveyStratumForm = () => {
           {values.site_selection_strategies.stratums.map((stratum: IStratum, index: number) => {
             return (
               <Box mt={2} className="userRoleItemContainer">
-                <Paper
+                <Card
                   variant="outlined"
                   // className={error ? 'userRoleItemError' : 'userRoleItem'}
                   sx={{
@@ -283,7 +283,7 @@ const SurveyStratumForm = () => {
                       </IconButton>
                     </Box>
                   </Box>
-                </Paper>
+                </Card>
               </Box>
             );
           })}

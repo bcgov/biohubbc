@@ -39,9 +39,13 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
     strategies: yup
       .array()
       .of(yup.string() /* .required('Must select a valid site selection strategy') */ )
-      .when('site_strategies', (site_strategies, schema) => {
-        return site_strategies.length > 1
-          ? schema.required('You must include the Stratified site selection strategy in order to add Stratums.')
+      .when('stratums', (stratums, schema) => {
+        return stratums.length > 0
+          ? schema.test(
+              'allowsStratums',
+              'You must include the Stratified site selection strategy in order to add Stratums.',
+              (stratums: string[]) => stratums.includes('Stratified')
+            )
           : schema;
       }),
     stratums: yup
@@ -88,7 +92,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
         id="site_selection_strategies.strategies"
         label="Site Selection Strategies"
         options={siteStrategies}
-        required={true}
+        required={false}
       />
     </form>
   );
