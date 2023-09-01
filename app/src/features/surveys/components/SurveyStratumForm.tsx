@@ -96,8 +96,10 @@ const StratumDialog = (props: IStratumDialogProps) => {
   }
 
   useEffect(() => {
-    setCurrentStratum(props.stratumFormInitialValues)
-  }, [props.stratumFormInitialValues]);
+    if (props.open) {
+      setCurrentStratum(props.stratumFormInitialValues)
+    }
+  }, [props.stratumFormInitialValues, props.open]);
 
   const editing = props.stratumFormInitialValues.index !== null;
 
@@ -174,6 +176,7 @@ const SurveyStratumForm = () => {
     }
 
     setDialogOpen(false);
+    // setCurrentStratumForm(StratumFormInitialValues);
   }
 
   const handleCreateStratum = () => {
@@ -191,7 +194,10 @@ const SurveyStratumForm = () => {
 
   const handleDelete = () => {
     setAnchorEl(null);
-    // TODO
+    setFieldValue(
+      'site_selection_strategies.stratums',
+      values.site_selection_strategies.stratums.filter((_stratum, index) => index !== currentStratumForm.index)
+    );
   }
 
   const handleEdit = () => {
@@ -234,10 +240,10 @@ const SurveyStratumForm = () => {
         </MenuItem>
       </Menu>
       <form onSubmit={handleSubmit}>
-        <Box my={2}>
+        <Box mt={4}>
           {values.site_selection_strategies.stratums.map((stratum: IStratum, index: number) => {
             return (
-              <Box mt={1} className="userRoleItemContainer">
+              <Box mt={2} className="userRoleItemContainer">
                 <Paper
                   variant="outlined"
                   // className={error ? 'userRoleItemError' : 'userRoleItem'}
@@ -282,7 +288,7 @@ const SurveyStratumForm = () => {
             );
           })}
 
-          <Box mt={2}>
+          <Box mt={4}>
             <Button
               data-testid="stratum-add-button"
               variant="outlined"

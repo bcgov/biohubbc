@@ -1,4 +1,4 @@
-import { Theme } from '@mui/material';
+import { Collapse, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -109,7 +109,9 @@ const CreateSurveyPage = () => {
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+
+  const [showStratumForm, setShowStratumForm] = useState<boolean>(false);
 
   const dialogContext = useContext(DialogContext);
 
@@ -396,24 +398,26 @@ const CreateSurveyPage = () => {
                           }}>
                           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
                         </Typography>
-                        <Box mt={1}>
-                          <SurveySiteSelectionForm />
+                        <Box mt={4}>
+                          <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm}/>
                         </Box>
                       </Box>
-                      <Box component="fieldset" mt={5}>
-                        <Typography component="legend">Define Stratums</Typography>
-                        <Typography
-                          variant="body1"
-                          color="textSecondary"
-                          sx={{
-                            maxWidth: '72ch'
-                          }}>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
-                        </Typography>
-                        <Box mt={1}>
-                          <SurveyStratumForm />
+                      <Collapse in={showStratumForm}>
+                        <Box component="fieldset" mt={5}>
+                          <Typography component="legend">Define Stratums</Typography>
+                          <Typography
+                            variant="body1"
+                            color="textSecondary"
+                            sx={{
+                              maxWidth: '72ch'
+                            }}>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                          </Typography>
+                          <Box mt={1}>
+                            <SurveyStratumForm />
+                          </Box>
                         </Box>
-                      </Box>
+                      </Collapse>
                     </>
                   }
                 />

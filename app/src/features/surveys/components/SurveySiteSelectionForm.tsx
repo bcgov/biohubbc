@@ -4,6 +4,7 @@ import yup from 'utils/YupSchema';
 import { useContext } from 'react';
 import { CodesContext } from 'contexts/codesContext';
 import assert from 'assert';
+import { useEffect } from 'react';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 
 interface IStratum {
@@ -57,15 +58,18 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
   })
 });
 
+interface ISurveySiteSelectionFormProps {
+  onChangeStratumEntryVisibility: (isVisible: boolean) => void;
+}
 
 /**
  * Create/edit survey - Funding section
  *
  * @return {*}
  */
-const SurveySiteSelectionForm = () => {
+const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { handleSubmit } = formikProps;
+  const { values, handleSubmit } = formikProps;
 
   const codesContext = useContext(CodesContext);
   assert(codesContext.codesDataLoader.data);
@@ -73,6 +77,14 @@ const SurveySiteSelectionForm = () => {
   const siteStrategies = codesContext.codesDataLoader.data.site_strategies.map((code) => {
     return { label: code.name, value: code.name };
   });
+
+  useEffect(() => {
+    if (values.site_selection_strategies.strategies.includes('Stratified')) {
+      props.onChangeStratumEntryVisibility(true);
+    } else if (values.site_selection_strategies.stratums.length === 0) {
+      props.onChangeStratumEntryVisibility(false);
+    }
+  }, [values])
 
   return (
     <form onSubmit={handleSubmit}>
