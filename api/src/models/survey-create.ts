@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { SiteSelectionStrategies } from '../repositories/survey-repository';
 
 export class PostSurveyObject {
   survey_details: PostSurveyDetailsData;
@@ -11,6 +12,7 @@ export class PostSurveyObject {
   agreements: PostAgreementsData;
   participants: PostParticipationData[];
   partnerships: PostPartnershipsData;
+  site_selection_strategies: SiteSelectionStrategies;
 
   constructor(obj?: any) {
     this.survey_details = (obj?.survey_details && new PostSurveyDetailsData(obj.survey_details)) || null;
@@ -26,6 +28,7 @@ export class PostSurveyObject {
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
+    this.site_selection_strategies = obj.site_selection_strategies;
   }
 }
 

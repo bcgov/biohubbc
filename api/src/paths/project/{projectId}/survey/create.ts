@@ -63,6 +63,7 @@ POST.apiDoc = {
             'partnerships',
             'proprietor',
             'purpose_and_methodology',
+            'site_selection_strategies',
             'location',
             'agreements',
             'participants'
@@ -216,6 +217,33 @@ POST.apiDoc = {
                 },
                 ecological_season_id: {
                   type: 'number'
+                }
+              }
+            },
+            site_selection_strategies: {
+              type: 'object',
+              required: ['strategies', 'stratums'],
+              properties: {
+                strategies: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                },
+                stratums: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['name', 'description'],
+                    properties: {
+                      name: {
+                        type: 'string'
+                      },
+                      description: {
+                        type: 'string'
+                      }
+                    }
+                  }
                 }
               }
             },

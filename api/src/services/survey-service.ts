@@ -26,7 +26,8 @@ import {
   IObservationSubmissionUpdateDetails,
   IOccurrenceSubmissionMessagesResponse,
   ISurveyProprietorModel,
-  SurveyRepository
+  SurveyRepository,
+  SurveyStratum
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
@@ -445,9 +446,33 @@ export class SurveyService extends DBService {
       promises.push(this.insertRegion(surveyId, postSurveyData.location.geometry));
     }
 
+    // Handle site selection strategies
+    if (postSurveyData.site_selection_strategies.strategies.length > 0) {
+      promises.push(this.replaceSiteSelectionStrategies(
+        surveyId,
+        postSurveyData.site_selection_strategies.strategies
+      ));
+    }
+
+    // Handle stratums
+    if (postSurveyData.site_selection_strategies.stratums.length > 0) {
+      promises.push(this.replaceStratums(
+        surveyId,
+        postSurveyData.site_selection_strategies.stratums
+      ));
+    }
+
     await Promise.all(promises);
 
     return surveyId;
+  }
+
+  async replaceSiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<any> {
+    return this.surveyRepository.replaceSiteSelectionStrategies(surveyId, strategies);
+  }
+  
+  async replaceStratums(surveyId: number, stratums: SurveyStratum[]): Promise<any> {
+    return this.surveyRepository.replaceStratums(surveyId, stratums);
   }
 
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {

@@ -131,6 +131,20 @@ export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnership
 
 export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
+export const SurveyStratum = z.object({
+  name: z.string(),
+  description: z.string()
+});
+
+export type SurveyStratum = z.infer<typeof SurveyStratum>;
+
+export const SiteSelectionStrategies = z.object({
+  strategies: z.array(z.string()),
+  stratums: z.array(SurveyStratum)
+});
+
+export type SiteSelectionStrategies = z.infer<typeof SiteSelectionStrategies>;
+
 const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
@@ -1365,5 +1379,74 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder);
 
     return response.rowCount;
+  }
+
+  async replaceSiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
+    defaultLog.debug({ label: 'replaceSiteSelectionStrategies', surveyId });
+
+    const sqlStatement = SQL`
+      --- Delete statement
+      WITH A AS (
+        DELETE FROM 
+          survey_site_strategy
+        WHERE
+          survey_id = ${surveyId}
+      )
+
+      --- Insert statement
+      INSERT INTO
+        survey_site_strategy (survey_id, site_strategy_id)
+      (
+        SELECT
+          ${surveyId} AS survey_id,
+          site_strategy_id
+        FROM
+          site_strategy
+        WHERE
+          name
+        IN
+          (${strategies.map(strategy => `'${strategy}'`).join(',')})
+      )
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (response.rowCount !== strategies.length) {
+      throw new ApiExecuteSQLError('Failed to replace survey site selection strategies', [
+        'SurveyRepository->replaceSiteSelectionStrategies',
+        `rowCount was ${response.rowCount}, expected rowCount = ${strategies.length}`
+      ]);
+    }
+  }
+  
+  async replaceStratums(surveyId: number, stratums: SurveyStratum[]): Promise<any> {
+    return;
+    defaultLog.debug({ label: 'replaceStratums', surveyId });
+
+    const knex = getKnex();
+
+    const deleteQuery = knex
+      .table('survey_stratum')
+      .delete()
+      .where('survey_id', surveyId);
+
+    const insertQuery = knex
+      .table('survey_stratum')
+      .insert(stratums.map((stratum) => ({
+        survey_id: surveyId,
+        name: stratum.name,
+        description: stratum.description
+      })))
+      .returning('*');
+
+    await this.connection.knex(deleteQuery);
+    const response = await this.connection.knex(insertQuery);
+
+    if (response.rowCount !== stratums.length) {
+      throw new ApiExecuteSQLError('Failed to replace survey stratums', [
+        'SurveyRepository->replaceStratums',
+        `rowCount was ${response.rowCount}, expected rowCount = ${stratums.length}`
+      ]);
+    }
   }
 }
