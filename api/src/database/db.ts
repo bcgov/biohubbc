@@ -43,6 +43,15 @@ pg.types.setTypeParser(pg.types.builtins.DATE, (stringValue: string) => {
   return stringValue; // 1082 for `DATE` type
 });
 
+// Adding a TIMESTAMP type parser to keep all dates used in the system consistent
+pg.types.setTypeParser(pg.types.builtins.TIMESTAMP, (stringValue: string) => {
+  return stringValue; // 1082 for `TIMESTAMP` type
+});
+// Adding a TIMESTAMPTZ type parser to keep all dates used in the system consistent
+pg.types.setTypeParser(pg.types.builtins.TIMESTAMPTZ, (stringValue: string) => {
+  return stringValue; // 1082 for `DATE` type
+});
+
 // singleton pg pool instance used by the api
 let DBPool: pg.Pool | undefined;
 
@@ -150,8 +159,6 @@ export interface IDBConnection {
   /**
    * Get the ID of the system user in context.
    *
-   * Note: will always return `null` if the connection is not open.
-   *
    * @throws If the connection is not open.
    * @memberof IDBConnection
    */
@@ -163,12 +170,14 @@ export interface IDBConnection {
  *
  * Usage Example:
  *
+ * const sqlStatement = SQL\`select * from table where id = ${id};\`;
+ *
  * const connection = await getDBConnection(req['keycloak_token']);
+ *
  * try {
  *   await connection.open();
- *   await connection.sql(sqlStatement1);
+ *   await connection.query(sqlStatement1.text, sqlStatement1.values);
  *   await connection.sql(sqlStatement2);
- *   await connection.sql(sqlStatement3);
  *   await connection.commit();
  * } catch (error) {
  *   await connection.rollback();
@@ -287,6 +296,14 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     return _client.query<T>(text, values || []);
   };
 
+  const _getSystemUserID = (): number => {
+    if (!_client || !_isOpen) {
+      throw Error('DBConnection is not open');
+    }
+
+    return _systemUserId as number;
+  };
+
   /**
    * Performs a query against this connection, returning the results.
    *
@@ -336,29 +353,16 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   };
 
   /**
-   * Get the ID of the system user in context.
-   *
-   * Note: will always return `null` if the connection is not open.
-   *
-   * @return {*}  {number}
-   */
-  const _getSystemUserID = (): number => {
-    if (!_client || !_isOpen) {
-      throw Error('DBConnection is not open');
-    }
-
-    return _systemUserId as number;
-  };
-
-  /**
    * Set the user context.
    *
    * Sets the _systemUserId if successful.
    */
   const _setUserContext = async () => {
     const userGuid = getUserGuid(_token);
+    console.log('userGuid', userGuid);
 
     const userIdentitySource = getUserIdentitySource(_token);
+    console.log('userIdentitySource', userIdentitySource);
 
     if (!userGuid || !userIdentitySource) {
       throw new ApiGeneralError('Failed to identify authenticated user');
@@ -366,6 +370,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
 
     // Set the user context for all queries made using this connection
     const setSystemUserContextSQLStatement = UserQueries.setSystemUserContextSQL(userGuid, userIdentitySource);
+    console.log('setSystemUserContextSQLStatement', setSystemUserContextSQLStatement);
 
     if (!setSystemUserContextSQLStatement) {
       throw new ApiExecuteSQLError('Failed to build SQL user context statement');
@@ -388,9 +393,9 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     query: asyncErrorWrapper(_query),
     sql: asyncErrorWrapper(_sql),
     knex: asyncErrorWrapper(_knex),
+    release: syncErrorWrapper(_release),
     commit: asyncErrorWrapper(_commit),
     rollback: asyncErrorWrapper(_rollback),
-    release: syncErrorWrapper(_release),
     systemUserId: syncErrorWrapper(_getSystemUserID)
   };
 };
@@ -421,7 +426,7 @@ export const getAPIUserDBConnection = (): IDBConnection => {
  */
 export const getServiceAccountDBConnection = (sourceSystem: SOURCE_SYSTEM): IDBConnection => {
   return getDBConnection({
-    preferred_username: `service-account-${sourceSystem}@${SYSTEM_IDENTITY_SOURCE.SYSTEM}`,
+    preferred_username: `${sourceSystem}@${SYSTEM_IDENTITY_SOURCE.SYSTEM}`,
     identity_provider: SYSTEM_IDENTITY_SOURCE.SYSTEM
   });
 };
@@ -445,7 +450,7 @@ export const getKnexQueryBuilder = <
  *
  * @template TRecord
  * @template TResult
- * @return {*}  {Knex<TRecord, TResult>}
+ * @return {*}  {Knex<TRecord,TResult>}
  */
 export const getKnex = <TRecord extends Record<string, any> = any, TResult = Record<string, any>[]>(): Knex<
   TRecord,

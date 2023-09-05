@@ -9,5 +9,7 @@ export const setSystemUserContextSQL = (
     return null;
   }
 
-  return SQL`select api_set_context(${userGuid}, ${systemUserType});`;
+  return SQL`
+  SELECT api_set_context(${userGuid}, ${systemUserType});
+`;
 };

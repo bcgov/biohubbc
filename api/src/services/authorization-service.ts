@@ -238,12 +238,15 @@ export class AuthorizationService extends DBService {
    * @return {*}  {Promise<boolean>} `Promise<true>` if the user is a valid system user, `Promise<false>` otherwise.
    */
   async authorizeByServiceClient(authorizeServiceClient: AuthorizeByServiceClient): Promise<boolean> {
+    console.log('authorizeServiceClient', authorizeServiceClient);
+    console.log('this._keycloakToken', this._keycloakToken);
     if (!this._keycloakToken) {
       // Cannot verify token source
       return false;
     }
 
     const source = getKeycloakSource(this._keycloakToken);
+    console.log('source', source);
 
     if (!source) {
       // Cannot verify token source
