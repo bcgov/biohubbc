@@ -23,6 +23,7 @@ import React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import { PrototypePage } from 'pages/prototype/PrototypePage';
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -115,6 +116,10 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
+      <RouteWithTitle title="prototype" path="/prototype">
+        <PrototypePage />
+      </RouteWithTitle>
+
       <Route path="/login">
         <UnAuthenticatedRouteGuard>
           <LoginPage />
@@ -136,6 +141,7 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle title={getTitle()} path="*">
         <Redirect to="/page-not-found" />
       </RouteWithTitle>
+
     </Switch>
   );
 };
