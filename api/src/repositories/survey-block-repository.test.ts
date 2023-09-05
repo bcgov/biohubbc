@@ -59,6 +59,55 @@ describe.only('SurveyBlockRepository', () => {
     });
   });
 
+  describe('updateSurveyBlock', () => {
+    it('should succeed with valid data', async () => {
+      const mockResponse = ({
+        rows: [
+          {
+            survey_block_id: 1,
+            survey_id: 1,
+            name: 'Updated name',
+            description: '',
+            create_date: '',
+            create_user: 1,
+            update_date: '',
+            update_user: 1,
+            revision_count: 1
+          }
+        ],
+        rowCount: 1
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: () => mockResponse
+      });
+
+      const repo = new SurveyBlockRepository(dbConnection);
+      const block: SurveyBlock = { survey_block_id: 1, survey_id: 1, name: 'Updated name', description: 'block' };
+      const response = await repo.updateSurveyBlock(block);
+      expect(response.survey_block_id).to.be.eql(1);
+      expect(response.name).to.be.eql('Updated name');
+    });
+
+    it('should failed with erroneous data', async () => {
+      const mockResponse = ({
+        rows: [],
+        rowCount: 0
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({
+        sql: () => mockResponse
+      });
+
+      const repo = new SurveyBlockRepository(dbConnection);
+      const block: SurveyBlock = { survey_block_id: null, survey_id: 1, name: 'new', description: 'block' };
+      try {
+        await repo.updateSurveyBlock(block);
+        expect.fail();
+      } catch (error) {
+        expect(((error as any) as ApiExecuteSQLError).message).to.be.eq('Failed to update survey block');
+      }
+    });
+  });
+
   describe('insertSurveyBlock', () => {
     it('should succeed with valid data', async () => {
       const mockResponse = ({
