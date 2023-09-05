@@ -37,6 +37,7 @@
     "@mui/styles": "^5.9.3",
     "@mui/system": "^5.12.3",
     "@mui/x-data-grid": "^6.3.1",
+    "@mui/x-data-grid-pro": "^6.12.1",
     "@mui/x-date-pickers": "^6.11.0",
     "@react-keycloak/web": "^3.4.0",
     "@react-leaflet/core": "~1.0.2",
