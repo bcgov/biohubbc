@@ -9,7 +9,7 @@ import { SurveyBlock, SurveyBlockRepository } from './survey-block-repository';
 
 chai.use(sinonChai);
 
-describe.only('SurveyBlockRepository', () => {
+describe('SurveyBlockRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
