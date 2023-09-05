@@ -2,8 +2,6 @@ import { IDBConnection } from '../database/db';
 import { SurveyBlock, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
 
-// const defaultLog = getLogger('services/survey-block-service');
-
 export class SurveyBlockService extends DBService {
   surveyBlockRepository: SurveyBlockRepository;
 
@@ -12,14 +10,36 @@ export class SurveyBlockService extends DBService {
     this.surveyBlockRepository = new SurveyBlockRepository(connection);
   }
 
+  /**
+   * Gets Block Survey Records for a given survey id
+   *
+   * @param {number} surveyId
+   * @return {*} {Promise<SurveyBlockRecord[]>}
+   * @returns
+   */
   async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
     return await this.surveyBlockRepository.getSurveyBlocksForSurveyId(surveyId);
   }
 
+  /**
+   *  Deletes a survey block record.
+   *
+   * @param {number} surveyBlockId
+   * @return {*}  {Promise<SurveyBlockRecord>}
+   * @memberof SurveyBlockService
+   */
   async deleteSurveyBlock(surveyBlockId: number): Promise<SurveyBlockRecord> {
     return this.surveyBlockRepository.deleteSurveyBlockRecord(surveyBlockId);
   }
 
+  /**
+   * Insert or Updates Survey Block Records based on the existence of a survey_block_id
+   *
+   * @param {number} surveyId
+   * @param {SurveyBlock[]} blocks
+   * @return {*} {Promise<void>}
+   * @memberof SurveyBlockService
+   */
   async updateInsertSurveyBlocks(surveyId: number, blocks: SurveyBlock[]): Promise<void> {
     const insertUpdate: Promise<any>[] = [];
 
@@ -35,13 +55,24 @@ export class SurveyBlockService extends DBService {
     await Promise.all(insertUpdate);
   }
 
+  /**
+   * Inserts, Updates and Deletes Block records
+   * All passed in blocks are treated as the source of truth,
+   * Any pre existing blocks that do not collide with passed in blocks are deleted
+   *
+   * @param {number} surveyId
+   * @param {SurveyBlock[]} blocks
+   * @return {*} {Promise<void>}
+   * @memberof SurveyBlockService
+   */
   async upsertSurveyBlocks(surveyId: number, blocks: SurveyBlock[]): Promise<void> {
     // all actions to take
     const promises: Promise<any>[] = [];
-    // get old
-    // delete not found
-    // upsert the last
+
+    // Get existing blocks
     const existingBlocks = await this.getSurveyBlocksForSurveyId(surveyId);
+
+    // Filter out any
     const blocksToDelete = existingBlocks.filter(
       (item) => !blocks.find((incoming) => incoming.survey_block_id === item.survey_block_id)
     );
@@ -50,6 +81,7 @@ export class SurveyBlockService extends DBService {
       promises.push(this.deleteSurveyBlock(item.survey_block_id));
     });
 
+    // update or insert block data
     promises.push(this.updateInsertSurveyBlocks(surveyId, blocks));
 
     await Promise.all(promises);

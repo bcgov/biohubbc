@@ -27,13 +27,20 @@ export const SurveyBlockRecord = z.object({
 export type SurveyBlockRecord = z.infer<typeof SurveyBlockRecord>;
 
 /**
- * A repository class for accessing project participants data.
+ * A repository class for accessing Survey Block data.
  *
  * @export
- * @class ProjectParticipationRepository
+ * @class SurveyBlockRepository
  * @extends {BaseRepository}
  */
 export class SurveyBlockRepository extends BaseRepository {
+  /**
+   * Gets all Survey Block Records for a given survey id.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SurveyBlockRecord[]>}
+   * @memberof SurveyBlockRepository
+   */
   async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
     const sql = SQL`
       SELECT * 
@@ -45,6 +52,13 @@ export class SurveyBlockRepository extends BaseRepository {
     return response.rows || [];
   }
 
+  /**
+   * Updates a survey block record.
+   *
+   * @param {SurveyBlock} block
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyBlockRepository
+   */
   async updateSurveyBlock(block: SurveyBlock): Promise<void> {
     const sql = SQL`
       UPDATE survey_block SET name = ${block.name}, description = ${block.description}, survey_id=${block.survey_id} WHERE survey_block_id = ${block.survey_block_id};
@@ -52,6 +66,13 @@ export class SurveyBlockRepository extends BaseRepository {
     await this.connection.sql(sql);
   }
 
+  /**
+   * Inserts a survey block record.
+   *
+   * @param {SurveyBlock} block
+   * @return {*}  {Promise<SurveyBlockRecord>}
+   * @memberof SurveyBlockRepository
+   */
   async insertSurveyBlock(block: SurveyBlock): Promise<SurveyBlockRecord> {
     const sql = SQL`
     INSERT INTO survey_block (
@@ -79,7 +100,7 @@ export class SurveyBlockRepository extends BaseRepository {
   }
 
   /**
-   *  Deletes a survey block record.
+   * Deletes a survey block record.
    *
    * @param {number} surveyBlockId
    * @return {*}  {Promise<SurveyBlockRecord>}
