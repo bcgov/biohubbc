@@ -43,11 +43,11 @@ export const StratumFormYupSchema = yup.object().shape({
     survey_stratum_id: yup.number(),
     name: yup
       .string()
-      .required('Must provide a stratum name')
+      .required('Must provide a Stratum name')
       .max(300, 'Name cannot exceed 300 characters'),
     description: yup
       .string()
-      .required('Must provide a stratum description')
+      .required('Must provide a Stratum description')
       .max(3000, 'Description cannot exceed 3000 characters'),
   })
 });
@@ -60,6 +60,7 @@ interface IStratumDialogProps {
 }
 
 const StratumDialog = (props: IStratumDialogProps) => {
+  console.log('stratumFormInitialValues: ', props.stratumFormInitialValues)
   const [currentStratum, setCurrentStratum] = useState<IStratumForm>(StratumFormInitialValues);
 
   const theme = useTheme();
@@ -93,7 +94,6 @@ const StratumDialog = (props: IStratumDialogProps) => {
             open={props.open}
             fullScreen={fullScreen}
             maxWidth="xl"
-            keepMounted={false}
             onClose={props.onCancel}>
             <DialogTitle>{editing ? 'Edit Stratum Details' : 'Add Stratum'}</DialogTitle>
             <DialogContent>
@@ -101,23 +101,20 @@ const StratumDialog = (props: IStratumDialogProps) => {
                 <DialogContentText>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.</DialogContentText>
                 <Box mt={4}>
                   <CustomTextField
-                    // sx={{ mb: 4 }}
+                    other={{
+                      sx: { mb: 4 },
+                      required: true
+                    }}
                     name='stratum.name'
-                    // variant='outlined'
-                    // value={formikProps.values.stratum.name}
-                    // onChange={formikProps.handleChange}
-                    // required
                     label='Name'
                   />
                   <CustomTextField
-                    
-                    // multiline
-                    // rows={5}
+                    other={{
+                      multiline: true,
+                      required: true,
+                      rows: 5
+                    }}
                     name='stratum.description'
-                    // variant='outlined'
-                    // value={formikProps.values.stratum.description}
-                    // onChange={formikProps.handleChange}
-                    // required
                     label='Description'
                   />
                 </Box>
@@ -174,7 +171,7 @@ const SurveyStratumForm = () => {
     setCurrentStratumForm(stratumForm);
   }
 
-  const handleCreateStratum = () => {
+  const handleCreateNewStratum = () => {
     setCurrentStratumForm(StratumFormInitialValues);
     setDialogOpen(true);
   }
@@ -276,7 +273,7 @@ const SurveyStratumForm = () => {
               title="Create Stratum"
               aria-label="Create Stratum"
               startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => handleCreateStratum()}
+              onClick={() => handleCreateNewStratum()}
               >
               Add Stratum
             </Button>
