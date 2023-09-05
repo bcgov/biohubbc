@@ -61,7 +61,13 @@ export class SurveyBlockRepository extends BaseRepository {
    */
   async updateSurveyBlock(block: SurveyBlock): Promise<void> {
     const sql = SQL`
-      UPDATE survey_block SET name = ${block.name}, description = ${block.description}, survey_id=${block.survey_id} WHERE survey_block_id = ${block.survey_block_id};
+      UPDATE survey_block 
+      SET 
+        name = ${block.name}, 
+        description = ${block.description}, 
+        survey_id=${block.survey_id} 
+      WHERE 
+        survey_block_id = ${block.survey_block_id};
     `;
     await this.connection.sql(sql);
   }
@@ -90,7 +96,7 @@ export class SurveyBlockRepository extends BaseRepository {
     const response = await this.connection.sql(sql, SurveyBlockRecord);
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert project team member', [
+      throw new ApiExecuteSQLError('Failed to insert survey block', [
         'SurveyBlockRepository->postSurveyBlock',
         'rows was null or undefined, expected rows != null'
       ]);
