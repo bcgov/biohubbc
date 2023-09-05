@@ -55,7 +55,7 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
   };
 
   const handleDelete = () => {
-    if (editData?.index) {
+    if (editData) {
       const data = values.blocks;
       data.splice(editData.index, 1);
       setFieldValue(name, data);

@@ -45,6 +45,7 @@ export class SurveyBlockService extends DBService {
     const blocksToDelete = existingBlocks.filter(
       (item) => !blocks.find((incoming) => incoming.survey_block_id === item.survey_block_id)
     );
+
     blocksToDelete.forEach((item) => {
       promises.push(this.deleteSurveyBlock(item.survey_block_id));
     });

@@ -20,7 +20,7 @@ import {
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PublishStatus } from '../repositories/history-publish-repository';
-import { SurveyBlock } from '../repositories/survey-block-repository';
+import { SurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -96,8 +96,14 @@ export class SurveyService extends DBService {
       purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
       proprietor: await this.getSurveyProprietorDataForView(surveyId),
       location: await this.getSurveyLocationData(surveyId),
-      participants: await this.surveyParticipationService.getSurveyParticipants(surveyId)
+      participants: await this.surveyParticipationService.getSurveyParticipants(surveyId),
+      blocks: await this.getSurveyBlocksForSurveyId(surveyId)
     };
+  }
+
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
+    const service = new SurveyBlockService(this.connection);
+    return service.getSurveyBlocksForSurveyId(surveyId);
   }
 
   async getSurveyPartnershipsData(surveyId: number): Promise<ISurveyPartnerships> {

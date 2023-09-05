@@ -90,7 +90,7 @@ export class SurveyBlockRepository extends BaseRepository {
       DELETE FROM
         survey_block
       WHERE
-        survey_id = ${surveyBlockId}
+        survey_block_id = ${surveyBlockId}
       RETURNING
         *;
     `;
