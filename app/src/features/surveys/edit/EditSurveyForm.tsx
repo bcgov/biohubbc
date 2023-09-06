@@ -1,6 +1,7 @@
 import { Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
@@ -33,7 +34,8 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
-import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
+import SurveySiteSelectionForm, { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
+import SurveyStratumForm from '../components/SurveyStratumForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -65,6 +67,7 @@ export interface IEditSurveyForm {
  */
 const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
   const classes = useStyles();
+  const [showStratumForm, setShowStratumForm] = useState<boolean>(false);
 
   // Initial values for the survey form sections
   const [surveyInitialValues] = useState<IEditSurveyRequest>({
@@ -98,6 +101,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         foippa_requirements_accepted: 'true' as unknown as StringBoolean
       }
     },
+    ...SurveySiteSelectionInitialValues,
     ...SurveyUserJobFormInitialValues
   });
 
@@ -143,6 +147,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
+    .concat(SurveySiteSelectionYupSchema)
     .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema);
 
@@ -231,6 +236,47 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                   </Box>
                 </Box>
               </Box>
+            }
+          />
+
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
+            title="Site Selection Strategy"
+            summary="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed."
+            component={
+              <>
+                <Box component="fieldset">
+                  <Typography component="legend">Site Selection Strategy</Typography>
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    sx={{
+                      maxWidth: '72ch'
+                    }}>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                  </Typography>
+                  <Box mt={4}>
+                    <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm}/>
+                  </Box>
+                </Box>
+                <Collapse in={showStratumForm}>
+                  <Box component="fieldset" mt={5}>
+                    <Typography component="legend">Define Stratums</Typography>
+                    <Typography
+                      variant="body1"
+                      color="textSecondary"
+                      sx={{
+                        maxWidth: '72ch'
+                      }}>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                    </Typography>
+                    <Box mt={1}>
+                      <SurveyStratumForm />
+                    </Box>
+                  </Box>
+                </Collapse>
+              </>
             }
           />
 

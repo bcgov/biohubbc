@@ -5,10 +5,10 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Card from '@mui/material/Card';
 import DialogActions from '@mui/material/DialogActions';
-import {  Formik, useFormikContext } from 'formik';
+import {  Formik, FormikProps, useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import yup from 'utils/YupSchema';
-import { useEffect, useState } from 'react';
+import { useState, useRef } from 'react';
 import { Box, Dialog, DialogContent, DialogContentText, DialogTitle, ListItemIcon, Menu, MenuItem, MenuProps, useMediaQuery, useTheme } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 
@@ -56,12 +56,13 @@ interface IStratumDialogProps {
   open: boolean;
   stratumFormInitialValues: IStratumForm
   onCancel: () => void;
-  onSave: (stratumForm: IStratumForm) => void;
+  onSave: (formikProps: FormikProps<IStratumForm> | null) => void;
 }
 
-const StratumDialog = (props: IStratumDialogProps) => {
-  console.log('stratumFormInitialValues: ', props.stratumFormInitialValues)
-  const [currentStratum, setCurrentStratum] = useState<IStratumForm>(StratumFormInitialValues);
+const StratumDialog = (props: IStratumDialogProps) => {  
+  // const [currentStratum, setCurrentStratum] = useState<IStratumForm>(StratumFormInitialValues);
+
+  const formikRef = useRef<FormikProps<IStratumForm>>(null);
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -70,23 +71,26 @@ const StratumDialog = (props: IStratumDialogProps) => {
     props.onCancel();
   }
 
+  /*
   useEffect(() => {
     if (props.open) {
       setCurrentStratum(props.stratumFormInitialValues)
     }
   }, [props.stratumFormInitialValues, props.open]);
+  */
 
   const editing = props.stratumFormInitialValues.index !== null;
 
   return (
     <Formik<IStratumForm>
-      initialValues={currentStratum}
+      initialValues={props.stratumFormInitialValues}
+      innerRef={formikRef}
       enableReinitialize={true}
       validationSchema={StratumFormYupSchema}
       validateOnBlur={true}
       validateOnChange={false}
       onSubmit={(values) => {
-        props.onSave(values)
+        props.onSave(formikRef.current)
       }}>
       {(formikProps) => {
         return (
@@ -150,7 +154,13 @@ const SurveyStratumForm = () => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
   const { values, handleSubmit, setFieldValue } = formikProps;
 
-  const handleSave = (stratumForm: IStratumForm) => {
+  const handleSave = (formikProps: FormikProps<IStratumForm> | null) => {
+    if (!formikProps) {
+      return;
+    }
+  
+    const stratumForm = formikProps.values
+  
     if (stratumForm.index === null) {
       // Create new stratum
       setFieldValue(
