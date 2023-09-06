@@ -1,7 +1,11 @@
+import CloseIcon from '@mui/icons-material/Close';
+import { Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
 import EditDialog from 'components/dialog/EditDialog';
+import { useState } from 'react';
 import BlockForm from './BlockForm';
 import { BlockYupSchema } from './SurveyBlockSection';
-
 interface ICreateBlockProps {
   open: boolean;
   onSave: (data: any) => void;
@@ -10,6 +14,8 @@ interface ICreateBlockProps {
 
 const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
   const { open, onSave, onClose } = props;
+  const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
+  const [blockName, setBlockName] = useState('');
   return (
     <>
       <EditDialog
@@ -30,7 +36,36 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
         }}
         dialogSaveButtonLabel="Add Block"
         onCancel={() => onClose()}
-        onSave={(formValues) => onSave(formValues)}
+        onSave={(formValues) => {
+          setBlockName(formValues.name);
+          setIsSnackBarOpen(true);
+          onSave(formValues);
+        }}
+      />
+      {/* This is done instead of the dialogContext because that causes the form to rerender, removing any changes the user makes */}
+      <Snackbar
+        open={isSnackBarOpen}
+        autoHideDuration={6000}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        onClose={() => {
+          setIsSnackBarOpen(false);
+          setBlockName('');
+        }}
+        message={
+          <>
+            <Typography variant="body2" component="div">
+              Block <strong>{blockName}</strong> has been added.
+            </Typography>
+          </>
+        }
+        action={
+          <IconButton size="small" aria-label="close" color="inherit" onClick={() => setIsSnackBarOpen(false)}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
       />
     </>
   );

@@ -1,4 +1,9 @@
+import CloseIcon from '@mui/icons-material/Close';
+import { Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
 import EditDialog from 'components/dialog/EditDialog';
+import { useState } from 'react';
 import BlockForm from './BlockForm';
 import { BlockYupSchema, IEditBlock } from './SurveyBlockSection';
 
@@ -11,6 +16,8 @@ interface IEditBlockProps {
 
 const EditSurveyBlockDialog: React.FC<IEditBlockProps> = (props) => {
   const { open, initialData, onSave, onClose } = props;
+  const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
+  const [blockName, setBlockName] = useState('');
   return (
     <>
       <EditDialog
@@ -30,8 +37,49 @@ const EditSurveyBlockDialog: React.FC<IEditBlockProps> = (props) => {
           validationSchema: BlockYupSchema
         }}
         dialogSaveButtonLabel="Save"
-        onCancel={() => onClose()}
-        onSave={(formValues) => onSave(formValues, initialData?.index)}
+        onCancel={() => {
+          setBlockName('');
+          setIsSnackBarOpen(true);
+          onClose();
+        }}
+        onSave={(formValues) => {
+          setBlockName(formValues.name);
+          setIsSnackBarOpen(true);
+          onSave(formValues, initialData?.index);
+        }}
+      />
+      {/* This is done instead of the dialogContext because that causes the form to rerender, removing any changes the user makes */}
+      <Snackbar
+        open={isSnackBarOpen}
+        autoHideDuration={6000}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        onClose={() => {
+          setIsSnackBarOpen(false);
+          setBlockName('');
+        }}
+        message={
+          <>
+            <Typography variant="body2" component="div">
+              {initialData?.block.survey_block_id ? (
+                <>
+                  Block <strong>{blockName}</strong> has been updated.
+                </>
+              ) : (
+                <>
+                  Block <strong>{blockName}</strong> has been added.
+                </>
+              )}
+            </Typography>
+          </>
+        }
+        action={
+          <IconButton size="small" aria-label="close" color="inherit" onClick={() => setIsSnackBarOpen(false)}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
       />
     </>
   );
