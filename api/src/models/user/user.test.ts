@@ -7,7 +7,7 @@ describe('UserObject', () => {
     let data: UserObject;
 
     before(() => {
-      data = new UserObject(null as unknown as any);
+      data = new UserObject((null as unknown) as any);
     });
 
     it('sets id', function () {

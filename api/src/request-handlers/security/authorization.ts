@@ -21,10 +21,7 @@ export type AuthorizationSchemeCallback = (req: Request) => AuthorizationScheme;
 export function authorizeRequestHandler(authorizationSchemeCallback: AuthorizationSchemeCallback): RequestHandler {
   return async (req, res, next) => {
     req['authorization_scheme'] = authorizationSchemeCallback(req);
-    console.log("req['authorization_scheme'] ", req['authorization_scheme']);
-
     const isAuthorized = await authorizeRequest(req);
-    console.log('isAuthorized', isAuthorized);
 
     if (!isAuthorized) {
       defaultLog.warn({ label: 'authorize', message: 'User is not authorized' });
@@ -50,7 +47,6 @@ export const authorizeRequest = async (req: Request): Promise<boolean> => {
 
   try {
     const authorizationScheme: AuthorizationScheme = req['authorization_scheme'];
-    console.log('authorizationScheme', authorizationScheme);
 
     if (!authorizationScheme) {
       // No authorization scheme specified, all authenticated users are authorized
@@ -63,13 +59,11 @@ export const authorizeRequest = async (req: Request): Promise<boolean> => {
       systemUser: req['system_user'],
       keycloakToken: req['keycloak_token']
     });
-    console.log('authorizationService', authorizationService);
 
     const isAuthorized =
       (await authorizationService.authorizeSystemAdministrator()) ||
       (await authorizationService.executeAuthorizationScheme(authorizationScheme));
 
-    console.log('isAuthorized', isAuthorized);
     // Add the system_user to the request for future use, if needed
     req['system_user'] = authorizationService.systemUser;
 
