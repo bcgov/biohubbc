@@ -135,7 +135,7 @@ export class SurveyBlockRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, SurveyBlockRecord);
 
-    if (!response || !response.rowCount) {
+    if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete survey block record', [
         'SurveyBlockRepository->deleteSurveyBlockRecord',
         'rows was null or undefined, expected rows != null'
