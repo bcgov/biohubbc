@@ -26,6 +26,7 @@ import {
   IObservationSubmissionUpdateDetails,
   IOccurrenceSubmissionMessagesResponse,
   ISurveyProprietorModel,
+  SiteSelectionStrategies,
   SurveyRepository,
   SurveyStratum
 } from '../repositories/survey-repository';
@@ -95,6 +96,7 @@ export class SurveyService extends DBService {
       purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
       proprietor: await this.getSurveyProprietorDataForView(surveyId),
       location: await this.getSurveyLocationData(surveyId),
+      site_selection_strategies: await this.getSiteSelectionStrategiesBySurveyId(surveyId),
       participants: await this.surveyParticipationService.getSurveyParticipants(surveyId)
     };
   }
@@ -448,7 +450,7 @@ export class SurveyService extends DBService {
 
     // Handle site selection strategies
     if (postSurveyData.site_selection_strategies.strategies.length > 0) {
-      promises.push(this.replaceSiteSelectionStrategies(
+      promises.push(this.replaceSurveySiteSelectionStrategies(
         surveyId,
         postSurveyData.site_selection_strategies.strategies
       ));
@@ -467,8 +469,12 @@ export class SurveyService extends DBService {
     return surveyId;
   }
 
-  async replaceSiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<any> {
-    return this.surveyRepository.replaceSiteSelectionStrategies(surveyId, strategies);
+  async getSiteSelectionStrategiesBySurveyId(surveyId: number): Promise<SiteSelectionStrategies> {
+    return this.surveyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
+  }
+
+  async replaceSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<any> {
+    return this.surveyRepository.replaceSurveySiteSelectionStrategies(surveyId, strategies);
   }
   
   async replaceStratums(surveyId: number, stratums: SurveyStratum[]): Promise<any> {

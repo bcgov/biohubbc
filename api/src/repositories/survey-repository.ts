@@ -1381,8 +1381,31 @@ export class SurveyRepository extends BaseRepository {
     return response.rowCount;
   }
 
-  async replaceSiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
-    defaultLog.debug({ label: 'replaceSiteSelectionStrategies', surveyId });
+  async getSiteSelectionStrategiesBySurveyId(surveyId: number): Promise<SiteSelectionStrategies> {
+    defaultLog.debug({ label: 'replaceSurveySiteSelectionStrategies', surveyId });
+
+    const strategiesQuery = getKnex()
+      .select('ss.name')
+      .from('survey_site_strategy as sss')
+      .where('sss.survey_id', 1)
+      .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id')
+
+    const strategiesResponse = await this.connection.knex<{ name: string }>(strategiesQuery);
+    const strategies = strategiesResponse.rows.map((row) => row.name);
+
+    const stratumsQuery = getKnex()
+      .select()
+      .from('survey_stratum')
+      .where('survey_id', surveyId);
+
+    const stratumsResponse = await this.connection.knex<SurveyStratum>(stratumsQuery);
+    const stratums = stratumsResponse.rows;
+  
+    return { strategies, stratums };
+  }
+
+  async replaceSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
+    defaultLog.debug({ label: 'replaceSurveySiteSelectionStrategies', surveyId });
 
     const sqlStatement = SQL`
       --- Delete statement
@@ -1413,7 +1436,7 @@ export class SurveyRepository extends BaseRepository {
 
     if (response.rowCount !== strategies.length) {
       throw new ApiExecuteSQLError('Failed to replace survey site selection strategies', [
-        'SurveyRepository->replaceSiteSelectionStrategies',
+        'SurveyRepository->replaceSurveySiteSelectionStrategies',
         `rowCount was ${response.rowCount}, expected rowCount = ${strategies.length}`
       ]);
     }
