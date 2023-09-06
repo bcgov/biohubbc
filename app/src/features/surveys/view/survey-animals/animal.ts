@@ -170,7 +170,8 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   valid_to: yup.string(),
   attachment_start: yup.string(),
   attachment_end: yup.string(),
-  deployment_id: yup.number()
+  deployment_id: yup.number(),
+  device_id: yup.number()
 });
 
 const AnimalImageSchema = yup.object({}).shape({});

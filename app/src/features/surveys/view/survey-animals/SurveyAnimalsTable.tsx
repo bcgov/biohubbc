@@ -43,6 +43,7 @@ interface ISurveyAnimalsTableEntry {
   critter_id: string;
   animal_id: string | null;
   taxon: string;
+  telemetry_device?: IAnimalDeployment[];
 }
 
 interface ISurveyAnimalsTableProps {
@@ -88,7 +89,9 @@ export const SurveyAnimalsTable = ({
       field: 'telemetry_device',
       headerName: 'Device ID',
       flex: 1,
-      renderCell: (params) => <p>{params.value?.device_id ?? 'No Device'}</p>
+      renderCell: (params) => (
+        <p>{params.value?.map((device: IAnimalDeployment) => device.device_id).join(', ') ?? 'No Device'}</p>
+      )
     },
     {
       field: 'actions',
@@ -100,6 +103,7 @@ export const SurveyAnimalsTable = ({
       renderCell: (params) => (
         <SurveyAnimalsTableActions
           critter_id={params.row.survey_critter_id}
+          devices={params.row?.telemetry_device}
           onAddDevice={addDeviceAction}
           onRemoveDevice={noOpPlaceHolder}
           onEditCritter={noOpPlaceHolder}
@@ -109,16 +113,13 @@ export const SurveyAnimalsTable = ({
       )
     }
   ];
-  console.log('columns ', columns);
-  console.log('animalData ', animalData);
-  console.log('deviceData ', deviceData);
 
   const animalDeviceData = deviceData
     ? animalData.map((animal) => {
-        const match = deviceData.find((device) => device.critter_id === animal.critter_id);
+        const devices = deviceData.filter((device) => device.critter_id === animal.critter_id);
         return {
           ...animal,
-          telemetry_device: match ?? null
+          telemetry_device: devices.length ? devices : null
         };
       })
     : animalData;

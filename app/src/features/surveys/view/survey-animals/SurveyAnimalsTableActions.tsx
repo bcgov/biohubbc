@@ -6,9 +6,11 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
+import { IAnimalDeployment } from './animal';
 
 export interface ITableActionsMenuProps {
   critter_id: number;
+  devices?: IAnimalDeployment[];
   onAddDevice: (critter_id: number) => void;
   onRemoveDevice: (critter_id: number) => void;
   onEditDevice: (critter_id: number) => void;

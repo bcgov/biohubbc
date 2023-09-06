@@ -54,9 +54,7 @@ const SurveyAnimals: React.FC = () => {
     loadDeployments();
   }
 
-  useEffect(() => {
-    
-  })
+  useEffect(() => {});
 
   const toggleDialog = () => {
     setOpenAddCritterDialog((d) => !d);
@@ -118,7 +116,7 @@ const SurveyAnimals: React.FC = () => {
       survey_critter_id,
       data as IAnimalTelemetryDevice & { critter_id: string }
     );
-    setOpenAddDeviceDialog(false)
+    setOpenAddDeviceDialog(false);
     refreshDeployments();
   };
 
