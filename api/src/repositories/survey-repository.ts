@@ -8,9 +8,9 @@ import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAttachmentsData,
   GetReportAttachmentsData,
-  GetSurveyLocationData,
   GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
+  GetSurveyPurposeAndMethodologyData,
+  SurveyLocationRecord
 } from '../models/survey-view';
 import { getLogger } from '../utils/logger';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
@@ -349,7 +349,7 @@ export class SurveyRepository extends BaseRepository {
    * @returns {*} Promise<GetSurveyLocationData[]>
    * @memberof SurveyRepository
    */
-  async getSurveyLocationsData(surveyId: number): Promise<GetSurveyLocationData[]> {
+  async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
     const sqlStatement = SQL`
       SELECT
         *
@@ -359,9 +359,9 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, SurveyLocationRecord);
 
-    return response.rows.map((row) => new GetSurveyLocationData(row));
+    return response.rows;
   }
 
   /**

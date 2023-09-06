@@ -11,10 +11,10 @@ import {
   GetReportAttachmentsData,
   GetSurveyData,
   GetSurveyFundingSourceData,
-  GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
   ISurveyPartnerships,
+  SurveyLocationRecord,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
@@ -93,7 +93,7 @@ export class SurveyService extends DBService {
       partnerships: await this.getSurveyPartnershipsData(surveyId),
       purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
       proprietor: await this.getSurveyProprietorDataForView(surveyId),
-      locations: await this.getSurveyLocationsData(surveyId),
+      locations: [], //await this.getSurveyLocationsData(surveyId),
       participants: await this.surveyParticipationService.getSurveyParticipants(surveyId)
     };
   }
@@ -217,7 +217,7 @@ export class SurveyService extends DBService {
    * @returns {*} {Promise<GetSurveyLocationData[]>}
    * @memberof SurveyService
    */
-  async getSurveyLocationsData(surveyId: number): Promise<GetSurveyLocationData[]> {
+  async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
     return this.surveyRepository.getSurveyLocationsData(surveyId);
   }
 

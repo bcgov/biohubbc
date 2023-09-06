@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { z } from 'zod';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
@@ -10,7 +11,7 @@ export type SurveyObject = {
   funding_sources: GetSurveyFundingSourceData[];
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
-  locations: GetSurveyLocationData[];
+  locations: SurveyLocationRecord[];
   participants: SurveyUser[];
   partnerships: ISurveyPartnerships;
 };
@@ -160,6 +161,15 @@ export type SurveySupplementaryData = {
   survey_metadata_publish: SurveyMetadataPublish | null;
 };
 
+export const SurveyLocationRecord = z.object({
+  survey_spatial_component_id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  geometry: z.array(z.any()),
+  revision_count: z.number()
+});
+
+export type SurveyLocationRecord = z.infer<typeof SurveyLocationRecord>;
 export class GetSurveyLocationData {
   survey_spatial_component_id: number;
   name: string;
@@ -172,7 +182,7 @@ export class GetSurveyLocationData {
     this.name = obj?.name || null;
     this.description = obj?.description || null;
     this.geometry = (obj?.geojson?.length && obj.geojson) || [];
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count || 0;
   }
 }
 

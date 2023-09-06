@@ -912,7 +912,9 @@ export class EmlService extends DBService {
       return {};
     }
 
-    const polygonFeatures = this._makePolygonFeatures(surveyData.locations[0].geometry);
+    const polygonFeatures = this._makePolygonFeatures(
+      (surveyData.locations[0].geometry as any) as Feature<Geometry, GeoJsonProperties>[]
+    );
     const datasetGPolygons = this._makeDatasetGPolygons(polygonFeatures);
     const surveyBoundingBox = bbox(featureCollection(polygonFeatures));
 

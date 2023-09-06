@@ -261,7 +261,8 @@ GET.apiDoc = {
                         properties: {
                           survey_spatial_component_id: {
                             type: 'integer',
-                            minimum: 1
+                            minimum: 1,
+                            nullable: true
                           },
                           name: {
                             type: 'string',
@@ -279,7 +280,8 @@ GET.apiDoc = {
                           },
                           revision_count: {
                             type: 'integer',
-                            minimum: 0
+                            minimum: 0,
+                            nullable: true
                           }
                         }
                       }
