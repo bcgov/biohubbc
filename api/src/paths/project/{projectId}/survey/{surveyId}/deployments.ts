@@ -93,7 +93,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
     try {
       await connection.open();
       const critter_ids = (await surveyService.getCrittersInSurvey(surveyId)).map((a) => a.critterbase_critter_id);
-      const results = await bctw.getDeploymentsByCritterId(critter_ids);
+      const results = critter_ids.length ? await bctw.getDeploymentsByCritterId(critter_ids) : [];
       return res.status(201).json(results);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });

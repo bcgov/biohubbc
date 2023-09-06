@@ -4,6 +4,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { getFormattedDate } from 'utils/Utils';
+import { IAnimalDeployment } from './animal';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 const useStyles = makeStyles(() => ({
   projectsTable: {
@@ -46,6 +47,7 @@ interface ISurveyAnimalsTableEntry {
 
 interface ISurveyAnimalsTableProps {
   animalData: IDetailedCritterWithInternalId[];
+  deviceData?: IAnimalDeployment[];
   removeCritterAction: (critter_id: number) => void;
   addDeviceAction: (critter_id: number) => void;
 }
@@ -54,6 +56,7 @@ const noOpPlaceHolder = (critter_id: number) => {};
 
 export const SurveyAnimalsTable = ({
   animalData,
+  deviceData,
   removeCritterAction,
   addDeviceAction
 }: ISurveyAnimalsTableProps): JSX.Element => {
@@ -85,7 +88,7 @@ export const SurveyAnimalsTable = ({
       field: 'telemetry_device',
       headerName: 'Device ID',
       flex: 1,
-      renderCell: (params) => <p>No Device</p>
+      renderCell: (params) => <p>{params.value?.device_id ?? 'No Device'}</p>
     },
     {
       field: 'actions',
@@ -106,12 +109,25 @@ export const SurveyAnimalsTable = ({
       )
     }
   ];
+  console.log('columns ', columns);
+  console.log('animalData ', animalData);
+  console.log('deviceData ', deviceData);
+
+  const animalDeviceData = deviceData
+    ? animalData.map((animal) => {
+        const match = deviceData.find((device) => device.critter_id === animal.critter_id);
+        return {
+          ...animal,
+          telemetry_device: match ?? null
+        };
+      })
+    : animalData;
 
   return (
     <DataGrid
       className={classes.dataGrid}
       autoHeight
-      rows={animalData}
+      rows={animalDeviceData}
       getRowId={(row) => `survey-critter-${row.critter_id}`}
       columns={columns}
       pageSizeOptions={[5]}

@@ -31,7 +31,7 @@ const SurveyAnimals: React.FC = () => {
   const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
-  const [deploymentLookup, setDeploymentLookup] = useState<Record<string, unknown>>({});
+  // const [deploymentLookup, setDeploymentLookup] = useState<Record<string, unknown>>({});
 
   const { projectId, surveyId } = surveyContext;
   const {
@@ -118,6 +118,7 @@ const SurveyAnimals: React.FC = () => {
       survey_critter_id,
       data as IAnimalTelemetryDevice & { critter_id: string }
     );
+    setOpenAddDeviceDialog(false)
     refreshDeployments();
   };
 
@@ -179,6 +180,7 @@ const SurveyAnimals: React.FC = () => {
         {critterData?.length ? (
           <SurveyAnimalsTable
             animalData={critterData}
+            deviceData={deploymentData}
             removeCritterAction={(critter_id) => {
               bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
               refreshCritters();
