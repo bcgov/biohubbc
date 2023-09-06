@@ -85,10 +85,10 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
           setAnchorEl(null);
         }}
         onSave={(data, index) => {
-          setEditData(undefined);
-          setFieldValue(`${name}[${index}]`, data);
           setIsEditModalOpen(false);
           setAnchorEl(null);
+          setEditData(undefined);
+          setFieldValue(`${name}[${index}]`, data);
         }}
       />
       <Menu
