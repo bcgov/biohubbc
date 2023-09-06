@@ -148,12 +148,29 @@ export const AnimalRelationshipSchema = yup.object({}).shape({
   relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });
 
-const AnimalTelemetryDeviceSchema = yup.object({}).shape({
-  device_id: yup.string().required(req),
-  manufacturer: yup.string().required(req),
-  //I think this needs an additional field for hz
-  device_frequency: numSchema.required(req),
-  model: yup.string().required(req)
+export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
+  device_id: numSchema.required(req),
+  device_make: yup.string().required(req),
+  frequency: numSchema.required(req),
+  frequency_unit: yup.string().required(req),
+  device_model: yup.string().required(req),
+  attachment_start: yup.string().required(req),
+  attachment_end: yup.string()
+});
+
+export const AnimalDeploymentSchema = yup.object({}).shape({
+  assignment_id: yup.string(),
+  collar_id: yup.string(),
+  critter_id: yup.string(),
+  created_at: yup.string(),
+  created_by_user_id: yup.string(),
+  updated_at: yup.string(),
+  updated_by_user_id: yup.string(),
+  valid_from: yup.string(),
+  valid_to: yup.string(),
+  attachment_start: yup.string(),
+  attachment_end: yup.string(),
+  deployment_id: yup.number()
 });
 
 const AnimalImageSchema = yup.object({}).shape({});
@@ -198,6 +215,8 @@ export type IAnimalImage = InferType<typeof AnimalImageSchema>;
 export type IAnimal = InferType<typeof AnimalSchema>;
 
 export type IAnimalKey = keyof IAnimal;
+
+export type IAnimalDeployment = InferType<typeof AnimalDeploymentSchema>;
 
 //Critterbase related types
 type ICritterID = { critter_id: string };

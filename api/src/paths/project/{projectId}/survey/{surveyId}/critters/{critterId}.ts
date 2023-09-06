@@ -85,7 +85,7 @@ DELETE.apiDoc = {
 export function removeCritterFromSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const critterId = String(req.params.critterId);
+    const critterId = Number(req.params.critterId);
     const connection = getDBConnection(req['keycloak_token']);
     const surveyService = new SurveyService(connection);
     try {

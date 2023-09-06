@@ -46,14 +46,25 @@ export const IBctwUser = z.object({
   username: z.string()
 });
 
+interface ICodeResponse {
+  code_header_title: string;
+  code_header_name: string;
+  id: number;
+  code: string;
+  description: string;
+  long_description: string;
+}
+
 export type IBctwUser = z.infer<typeof IBctwUser>;
 
 export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
 export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
 export const GET_DEPLOYMENTS_ENDPOINT = '/get-deployments';
+export const GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT = '/get-deployments-by-critter-id';
 export const UPDATE_DEPLOYMENT_ENDPOINT = '/update-deployment';
 export const GET_COLLAR_VENDORS_ENDPOINT = '/get-collar-vendors';
 export const HEALTH_ENDPOINT = '/health';
+export const GET_CODE_ENDPOINT = '/get-code';
 
 export class BctwService {
   user: IBctwUser;
@@ -124,7 +135,7 @@ export class BctwService {
    * @return {*}
    * @memberof BctwService
    */
-  async _makeGetRequest(endpoint: string, queryParams?: Record<string, string>) {
+  async _makeGetRequest(endpoint: string, queryParams?: Record<string, string | string[]>) {
     let url = endpoint;
     if (queryParams) {
       const params = new URLSearchParams(queryParams);
@@ -153,6 +164,11 @@ export class BctwService {
    */
   async getDeployments(): Promise<IDeploymentRecord[]> {
     return this._makeGetRequest(GET_DEPLOYMENTS_ENDPOINT);
+  }
+
+  async getDeploymentsByCritterId(critter_ids: string[]): Promise<IDeploymentRecord[]> {
+    const query = { critter_ids: critter_ids };
+    return this._makeGetRequest(GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT, query);
   }
 
   /**
@@ -184,5 +200,9 @@ export class BctwService {
    */
   async getHealth(): Promise<string> {
     return this._makeGetRequest(HEALTH_ENDPOINT);
+  }
+
+  async getCode(codeHeaderName: string): Promise<ICodeResponse[]> {
+    return this._makeGetRequest(GET_CODE_ENDPOINT, { codeHeader: codeHeaderName });
   }
 }

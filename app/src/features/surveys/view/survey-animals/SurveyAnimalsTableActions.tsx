@@ -8,12 +8,12 @@ import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 
 export interface ITableActionsMenuProps {
-  critter_id: string;
-  onAddDevice: (critter_id: string) => void;
-  onRemoveDevice: (critter_id: string) => void;
-  onEditDevice: (critter_id: string) => void;
-  onEditCritter: (critter_id: string) => void;
-  onRemoveCritter: (critter_id: string) => void;
+  critter_id: number;
+  onAddDevice: (critter_id: number) => void;
+  onRemoveDevice: (critter_id: number) => void;
+  onEditDevice: (critter_id: number) => void;
+  onEditCritter: (critter_id: number) => void;
+  onRemoveCritter: (critter_id: number) => void;
 }
 
 const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {

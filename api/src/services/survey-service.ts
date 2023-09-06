@@ -1117,8 +1117,8 @@ export class SurveyService extends DBService {
    * @param {string} critterId
    * @returns {*}
    */
-  async addCritterToSurvey(surveyId: number, critterId: string) {
-    return this.surveyRepository.addCritterToSurvey(surveyId, critterId);
+  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string) {
+    return this.surveyRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
   }
 
   /**
@@ -1127,7 +1127,11 @@ export class SurveyService extends DBService {
    * @param {string} critterId
    * @returns {*}
    */
-  async removeCritterFromSurvey(surveyId: number, critterId: string) {
+  async removeCritterFromSurvey(surveyId: number, critterId: number) {
     return this.surveyRepository.removeCritterFromSurvey(surveyId, critterId);
+  }
+
+  async addDeployment(critterId: number, deplyomentId: string) {
+    return this.surveyRepository.addDeployment(critterId, deplyomentId);
   }
 }

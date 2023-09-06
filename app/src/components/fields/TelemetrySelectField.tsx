@@ -1,7 +1,6 @@
 import { FormControl, FormControlProps, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
 import { useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
-import { TelemetryApiLookupFunctions } from 'hooks/useTelemetryApi';
 import get from 'lodash-es/get';
 import React from 'react';
 
@@ -9,7 +8,7 @@ interface ITelemetrySelectField {
   name: string;
   label: string;
   id: string;
-  fetchData: TelemetryApiLookupFunctions;
+  fetchData: () => Promise<any>;
   controlProps?: FormControlProps;
 }
 
@@ -40,7 +39,7 @@ const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
         onBlur={handleBlur}
         displayEmpty
         inputProps={{ 'aria-label': 'Permit Type' }}>
-        {bctwLookupLoader.data?.map((a) => {
+        {bctwLookupLoader.data?.map((a: any) => {
           return (
             <MenuItem key={a} value={a}>
               {a}

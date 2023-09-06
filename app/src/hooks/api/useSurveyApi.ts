@@ -1,8 +1,7 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { Critter } from 'features/surveys/view/survey-animals/animal';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { Critter, IAnimalDeployment, IAnimalTelemetryDevice } from 'features/surveys/view/survey-animals/animal';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,
@@ -12,6 +11,7 @@ import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'inter
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
+  IDetailedCritterWithInternalId,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForListResponse,
   IGetSurveyForUpdateResponse,
@@ -414,7 +414,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @returns {ICritterDetailedResponse[]}
    */
-  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<ICritterDetailedResponse[]> => {
+  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<IDetailedCritterWithInternalId[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters`);
     return data;
   };
@@ -444,8 +444,28 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: string): Promise<number> => {
+  const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: number): Promise<number> => {
     const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
+    return data;
+  };
+
+  const addDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    body: IAnimalTelemetryDevice & { critter_id: string }
+  ): Promise<number> => {
+    body.device_id = Number(body.device_id); //Turn this into validation class soon
+    body.frequency = Number(body.frequency);
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
+      body
+    );
+    return data;
+  };
+
+  const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
     return data;
   };
 
@@ -470,7 +490,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSummarySubmission,
     getSurveyCritters,
     createCritterAndAddToSurvey,
-    removeCritterFromSurvey
+    removeCritterFromSurvey,
+    addDeployment,
+    getDeploymentsInSurvey
   };
 };
 

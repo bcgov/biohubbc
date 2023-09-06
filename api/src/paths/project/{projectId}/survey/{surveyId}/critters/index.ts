@@ -249,6 +249,15 @@ export function getCrittersFromSurvey(): RequestHandler {
         return res.status(200).json([]); // This is to catch some unintended behavior in this critterbase endpoint. TODO: Patch Critterbase to handle this correctly.
       }
       const result = await cb.filterCritters({ critter_ids: { body: critterIds, negate: false } }, 'detailed');
+
+      for (const bhCritter of surveyCritters) {
+        //This loop is obviously inefficient but probably inconsequential unless people are adding 100+ critters one by one to a survey.
+        const cbCritter = result.find((a: any) => a.critter_id === bhCritter.critterbase_critter_id);
+        if (cbCritter) {
+          cbCritter.survey_critter_id = bhCritter.critter_id;
+        }
+      }
+
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'createCritter', message: 'error', error });

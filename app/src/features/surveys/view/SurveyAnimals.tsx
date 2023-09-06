@@ -9,27 +9,57 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
+import {
+  AnimalSchema,
+  AnimalTelemetryDeviceSchema,
+  Critter,
+  IAnimal,
+  IAnimalTelemetryDevice
+} from './survey-animals/animal';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
+import TelemetryDeviceForm from './survey-animals/TelemetryDeviceForm';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
 
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
+  const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
+  const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
+  const [deploymentLookup, setDeploymentLookup] = useState<Record<string, unknown>>({});
 
   const { projectId, surveyId } = surveyContext;
-  const { refresh, load, data: critterData } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
+  const {
+    refresh: refreshCritters,
+    load: loadCritters,
+    data: critterData
+  } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
+
+  const {
+    refresh: refreshDeployments,
+    load: loadDeployments,
+    data: deploymentData
+  } = useDataLoader(() => bhApi.survey.getDeploymentsInSurvey(projectId, surveyId));
+
   if (!critterData) {
-    load();
+    loadCritters();
   }
+
+  if (!deploymentData) {
+    loadDeployments();
+  }
+
+  useEffect(() => {
+    
+  })
+
   const toggleDialog = () => {
-    setOpenDialog((d) => !d);
+    setOpenAddCritterDialog((d) => !d);
   };
 
   const pluralize = (str: string, count: number) =>
@@ -46,11 +76,21 @@ const SurveyAnimals: React.FC = () => {
     device: undefined
   };
 
-  const handleOnSave = async (animal: IAnimal) => {
+  const DeviceFormValues: IAnimalTelemetryDevice = {
+    device_id: '' as unknown as number,
+    device_make: '',
+    frequency: 0,
+    frequency_unit: '',
+    device_model: '',
+    attachment_start: '',
+    attachment_end: undefined
+  };
+
+  const handleCritterSave = async (animal: IAnimal) => {
     const critter = new Critter(animal);
     const postCritterPayload = async () => {
       await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
-      refresh();
+      refreshCritters();
       dialogContext.setSnackbar({
         open: true,
         snackbarMessage: (
@@ -66,6 +106,19 @@ const SurveyAnimals: React.FC = () => {
     } catch (err) {
       console.log(`Critter submission error ${JSON.stringify(err)}`);
     }
+  };
+
+  const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDevice) => {
+    const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
+    (data as any).critter_id = critter?.critter_id;
+    console.log('Data to be sent ' + JSON.stringify(data));
+    await bhApi.survey.addDeployment(
+      projectId,
+      surveyId,
+      survey_critter_id,
+      data as IAnimalTelemetryDevice & { critter_id: string }
+    );
+    refreshDeployments();
   };
 
   return (
@@ -85,15 +138,32 @@ const SurveyAnimals: React.FC = () => {
             </Typography>
           </Box>
         }
-        open={openDialog}
+        open={openAddCritterDialog}
         onSave={(values) => {
-          handleOnSave(values);
+          handleCritterSave(values);
         }}
         onCancel={toggleDialog}
         component={{
           element: <IndividualAnimalForm getAnimalCount={setAnimalCount} />,
           initialValues: AnimalFormValues,
           validationSchema: AnimalSchema
+        }}
+      />
+      <EditDialog
+        dialogTitle={'Add Telemetry Device'}
+        open={openAddDeviceDialog}
+        component={{
+          element: <TelemetryDeviceForm />,
+          initialValues: DeviceFormValues,
+          validationSchema: AnimalTelemetryDeviceSchema
+        }}
+        onCancel={() => setOpenAddDeviceDialog(false)}
+        onSave={(values) => {
+          if (selectedCritterId) {
+            handleTelemetrySave(selectedCritterId, values);
+          } else {
+            console.log('No selectedCritterId: ' + selectedCritterId);
+          }
         }}
       />
       <H2ButtonToolbar
@@ -111,7 +181,11 @@ const SurveyAnimals: React.FC = () => {
             animalData={critterData}
             removeCritterAction={(critter_id) => {
               bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
-              refresh();
+              refreshCritters();
+            }}
+            addDeviceAction={(critter_id) => {
+              setSelectedCritterId(critter_id);
+              setOpenAddDeviceDialog(true);
             }}
           />
         ) : (

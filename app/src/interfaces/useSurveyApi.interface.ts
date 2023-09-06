@@ -7,6 +7,7 @@ import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
 import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
 import { Feature } from 'geojson';
 import { StringBoolean } from 'types/misc';
+import { ICritterDetailedResponse } from './useCritterApi.interface';
 
 /**
  * Create survey post object.
@@ -318,6 +319,10 @@ export interface IUpdateAgreementsForm {
 
 export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
+}
+
+export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
+  survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
 }
 
 export type IEditSurveyRequest = IGeneralInformationForm &

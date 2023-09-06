@@ -2,7 +2,7 @@ import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { getFormattedDate } from 'utils/Utils';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 const useStyles = makeStyles(() => ({
@@ -38,19 +38,25 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface ISurveyAnimalsTableEntry {
+  survey_critter_id: number;
   critter_id: string;
   animal_id: string | null;
   taxon: string;
 }
 
 interface ISurveyAnimalsTableProps {
-  animalData: ICritterDetailedResponse[];
-  removeCritterAction: (critter_id: string) => void;
+  animalData: IDetailedCritterWithInternalId[];
+  removeCritterAction: (critter_id: number) => void;
+  addDeviceAction: (critter_id: number) => void;
 }
 
-const noOpPlaceHolder = (critter_id: string) => {};
+const noOpPlaceHolder = (critter_id: number) => {};
 
-export const SurveyAnimalsTable = ({ animalData, removeCritterAction }: ISurveyAnimalsTableProps): JSX.Element => {
+export const SurveyAnimalsTable = ({
+  animalData,
+  removeCritterAction,
+  addDeviceAction
+}: ISurveyAnimalsTableProps): JSX.Element => {
   const classes = useStyles();
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
     {
@@ -90,8 +96,8 @@ export const SurveyAnimalsTable = ({ animalData, removeCritterAction }: ISurveyA
       maxWidth: 50,
       renderCell: (params) => (
         <SurveyAnimalsTableActions
-          critter_id={params.row.critter_id}
-          onAddDevice={noOpPlaceHolder}
+          critter_id={params.row.survey_critter_id}
+          onAddDevice={addDeviceAction}
           onRemoveDevice={noOpPlaceHolder}
           onEditCritter={noOpPlaceHolder}
           onEditDevice={noOpPlaceHolder}
