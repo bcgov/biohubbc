@@ -10,8 +10,8 @@ describe('UserObject', () => {
       data = new UserObject((null as unknown) as any);
     });
 
-    it('sets id', function () {
-      expect(data.id).to.equal(null);
+    it('sets system_user_id', function () {
+      expect(data.system_user_id).to.equal(null);
     });
 
     it('sets user_identifier', function () {
@@ -32,8 +32,8 @@ describe('UserObject', () => {
       data = new UserObject(userObject);
     });
 
-    it('sets id', function () {
-      expect(data.id).to.equal(1);
+    it('sets system_user_id', function () {
+      expect(data.system_user_id).to.equal(1);
     });
 
     it('sets user_identifier', function () {
@@ -63,8 +63,8 @@ describe('UserObject', () => {
       data = new UserObject(userObject);
     });
 
-    it('sets id', function () {
-      expect(data.id).to.equal(1);
+    it('sets system_user_id', function () {
+      expect(data.system_user_id).to.equal(1);
     });
 
     it('sets user_identifier', function () {
