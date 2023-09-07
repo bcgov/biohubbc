@@ -246,24 +246,40 @@ const SurveyStratumForm = () => {
           {values.site_selection_strategies.stratums.map((stratum: IStratum, index: number) => {
             return (
               <Box mt={2}>
-                <Card
-                  variant="outlined"
-                  
-                >
-                  <Box display="flex" alignItems="center" px={2} py={1.5}>
+                <Card variant="outlined">
+                  <Box display="flex" alignItems="flex-start" px={2} py={1.5}>
                     <Box flex="1 1 auto">
-                      <Typography variant="subtitle1" fontWeight="bold">
+                      <Typography
+                        variant="subtitle1"
+                        fontWeight="bold"
+                        sx={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                          WebkitLineClamp: "1",
+                          WebkitBoxOrient: "vertical",
+                          mb: 1
+                        }}
+                      >
                         {stratum.name}
                       </Typography>
-                      <Typography variant="subtitle2" color="textSecondary">
+                      <Typography
+                        variant="subtitle2"
+                        color="textSecondary"
+                        sx={{
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                          WebkitLineClamp: "2",
+                          WebkitBoxOrient: "vertical",
+                        }}
+                      >
                         {stratum.description}
                       </Typography>
                     </Box>
                     <Box flex="0 0 auto">
                       <IconButton
-                        sx={{
-                          ml: 2
-                        }}
+                        sx={{ ml: 2 }}
                         aria-label="remove user from project team"
                         onClick={(event) => handleClickContextMenu(event, index)}>
                         <Icon path={mdiDotsVertical} size={1}></Icon>

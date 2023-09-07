@@ -99,6 +99,7 @@ export interface SurveyViewObject {
   permit: ISurveyPermits;
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding_sources: ISurveyFundingSource[];
+  site_selection_strategies: ISurveySiteSelectionForm['site_selection_strategies'];
   proprietor: IGetSurveyForViewResponseProprietor | null;
   participants: IGetSurveyParticipant[];
   partnerships: IGetSurveyForViewResponsePartnerships;
