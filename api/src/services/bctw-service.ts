@@ -36,7 +36,7 @@ export const IDeploymentRecord = z.object({
   valid_to: z.string(),
   attachment_start: z.string(),
   attachment_end: z.string(),
-  deployment_id: z.number(),
+  deployment_id: z.string(),
   device_id: z.number()
 });
 
