@@ -42,7 +42,7 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
           onSave(formValues);
         }}
       />
-      {/* This is done instead of the dialogContext because that causes the form to rerender, removing any changes the user makes */}
+
       <Snackbar
         open={isSnackBarOpen}
         autoHideDuration={6000}
