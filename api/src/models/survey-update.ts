@@ -1,5 +1,5 @@
 import { Feature } from 'geojson';
-import { SiteSelectionStrategies } from '../repositories/survey-repository';
+import { SurveyStratum, SurveyStratumRecord } from '../repositories/survey-repository';
 
 export class PutSurveyObject {
   survey_details: PutSurveyDetailsData;
@@ -11,7 +11,7 @@ export class PutSurveyObject {
   location: PutSurveyLocationData;
   participants: PutSurveyParticipantsData[];
   partnerships: PutPartnershipsData;
-  site_selection_strategies: SiteSelectionStrategies;
+  site_selection_strategies: PutSiteSelectionStrategies;
 
   constructor(obj?: any) {
     this.survey_details = (obj?.survey_details && new PutSurveyDetailsData(obj.survey_details)) || null;
@@ -26,7 +26,17 @@ export class PutSurveyObject {
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PutSurveyParticipantsData(p))) || [];
     this.partnerships = (obj?.partnerships && new PutPartnershipsData(obj.partnerships)) || null;
-    this.site_selection_strategies = obj.site_selection_strategies;
+    this.site_selection_strategies = (obj?.site_selection_strategies && new PutSiteSelectionStrategies(obj)) || null;
+  }
+}
+
+export class PutSiteSelectionStrategies {
+  strategies: string[];
+  stratums: Array<SurveyStratum | SurveyStratumRecord>;
+
+  constructor(obj?: any) {
+    this.strategies = obj?.strategies ?? [];
+    this.stratums = obj?.stratums ?? [];
   }
 }
 

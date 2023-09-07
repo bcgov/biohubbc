@@ -28,7 +28,8 @@ import {
   ISurveyProprietorModel,
   SiteSelectionStrategies,
   SurveyRepository,
-  SurveyStratum
+  SurveyStratum,
+  SurveyStratumRecord
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
@@ -458,7 +459,7 @@ export class SurveyService extends DBService {
 
     // Handle stratums
     if (postSurveyData.site_selection_strategies.stratums.length > 0) {
-      promises.push(this.replaceStratums(
+      promises.push(this.insertSurveyStratums(
         surveyId,
         postSurveyData.site_selection_strategies.stratums
       ));
@@ -477,8 +478,16 @@ export class SurveyService extends DBService {
     return this.surveyRepository.replaceSurveySiteSelectionStrategies(surveyId, strategies);
   }
   
-  async replaceStratums(surveyId: number, stratums: SurveyStratum[]): Promise<any> {
-    return this.surveyRepository.replaceStratums(surveyId, stratums);
+  async insertSurveyStratums(surveyId: number, stratums: SurveyStratum[]): Promise<any> {
+    return this.surveyRepository.insertSurveyStratums(surveyId, stratums);
+  }
+
+  async updateSurveyStratums(surveyId: number, stratums: SurveyStratumRecord[]): Promise<any> {
+    return this.surveyRepository.updateSurveyStratums(surveyId, stratums);
+  }
+
+  async deleteSurveyStratums(stratumIds: number[]): Promise<any> {
+    return this.surveyRepository.deleteSurveyStratums(stratumIds);
   }
 
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {
@@ -683,6 +692,52 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.participants.length) {
       promises.push(this.upsertSurveyParticipantData(surveyId, putSurveyData));
+    }
+
+    // Handle site selection strategies
+    if (putSurveyData.site_selection_strategies.strategies.length > 0) {
+      promises.push(this.replaceSurveySiteSelectionStrategies(
+        surveyId,
+        putSurveyData.site_selection_strategies.strategies
+      ));
+    }
+
+    // Handle stratums
+    if (putSurveyData.site_selection_strategies.stratums.length > 0) {
+      const insertStratums: SurveyStratum[] = [];
+      const updateStratums: SurveyStratumRecord[] = [];
+      
+      putSurveyData.site_selection_strategies.stratums.forEach((stratum) => {
+        if ('survey_stratum_id' in stratum) {
+          updateStratums.push(stratum);
+        } else {
+          insertStratums.push(stratum);
+        }
+      });
+
+      if (updateStratums.length) {
+        promises.push(this.updateSurveyStratums(
+          surveyId,
+          updateStratums
+        ));
+      }
+
+      if (insertStratums.length) {
+        promises.push(this.insertSurveyStratums(
+          surveyId,
+          insertStratums
+        ));
+      }
+
+      const currentSiteSelectionStrategies = await this.surveyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
+
+      const removeStratums = currentSiteSelectionStrategies.stratums.filter((stratum) => {
+        return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id)
+      });
+      
+      if (removeStratums.length) {
+        promises.push(this.deleteSurveyStratums(removeStratums.map((stratum) => stratum.survey_stratum_id)));
+      }
     }
 
     await Promise.all(promises);

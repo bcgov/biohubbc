@@ -136,11 +136,18 @@ export const SurveyStratum = z.object({
   description: z.string()
 });
 
+export const SurveyStratumRecord = z.object({
+  survey_stratum_id: z.number(),
+  revision_count: z.number()
+}).merge(SurveyStratum);
+
+export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
+
 export type SurveyStratum = z.infer<typeof SurveyStratum>;
 
 export const SiteSelectionStrategies = z.object({
   strategies: z.array(z.string()),
-  stratums: z.array(SurveyStratum)
+  stratums: z.array(SurveyStratumRecord)
 });
 
 export type SiteSelectionStrategies = z.infer<typeof SiteSelectionStrategies>;
@@ -1398,40 +1405,43 @@ export class SurveyRepository extends BaseRepository {
       .from('survey_stratum')
       .where('survey_id', surveyId);
 
-    const stratumsResponse = await this.connection.knex<SurveyStratum>(stratumsQuery);
+    const stratumsResponse = await this.connection.knex<SurveyStratumRecord>(stratumsQuery);
     const stratums = stratumsResponse.rows;
-  
+
     return { strategies, stratums };
   }
 
   async replaceSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
-    defaultLog.debug({ label: 'replaceSurveySiteSelectionStrategies', surveyId });
-
+    
     const sqlStatement = SQL`
       --- Delete statement
       WITH A AS (
         DELETE FROM 
-          survey_site_strategy
+        survey_site_strategy
         WHERE
           survey_id = ${surveyId}
       )
 
       --- Insert statement
       INSERT INTO
-        survey_site_strategy (survey_id, site_strategy_id)
+      survey_site_strategy (survey_id, site_strategy_id)
       (
         SELECT
           ${surveyId} AS survey_id,
           site_strategy_id
-        FROM
+          FROM
           site_strategy
-        WHERE
+          WHERE
           name
         IN
-          (${strategies.map(strategy => `'${strategy}'`).join(',')})
+        (${strategies.map(strategy => `'${strategy}'`).join(',')})
       )
-    `;
+      `;
 
+    const { sql, values } = sqlStatement
+      
+    defaultLog.debug({ label: 'replaceSurveySiteSelectionStrategies', surveyId, sql, values });
+    
     const response = await this.connection.sql(sqlStatement);
 
     if (response.rowCount !== strategies.length) {
@@ -1441,19 +1451,23 @@ export class SurveyRepository extends BaseRepository {
       ]);
     }
   }
-  
-  async replaceStratums(surveyId: number, stratums: SurveyStratum[]): Promise<any> {
-    return;
-    defaultLog.debug({ label: 'replaceStratums', surveyId });
 
-    const knex = getKnex();
+  async deleteSurveyStratums(stratumIds: number[]): Promise<void> {
+    defaultLog.debug({ label: 'deleteSurveyStratums', stratumIds });
 
-    const deleteQuery = knex
-      .table('survey_stratum')
+    const deleteQuery = getKnex()
       .delete()
-      .where('survey_id', surveyId);
+      .from('survey_stratum')
+      .whereIn('survey_stratum_id', stratumIds)
+      .returning('*');
 
-    const insertQuery = knex
+    await this.connection.knex(deleteQuery, SurveyStratumRecord);
+  }
+
+  async insertSurveyStratums(surveyId: number, stratums: SurveyStratum[]): Promise<SurveyStratumRecord[]> {
+    defaultLog.debug({ label: 'insertSurveyStratums', surveyId });
+    
+    const insertQuery = getKnex()
       .table('survey_stratum')
       .insert(stratums.map((stratum) => ({
         survey_id: surveyId,
@@ -1461,15 +1475,53 @@ export class SurveyRepository extends BaseRepository {
         description: stratum.description
       })))
       .returning('*');
-
-    await this.connection.knex(deleteQuery);
+      
+    await this.connection.knex(insertQuery, SurveyStratumRecord);
     const response = await this.connection.knex(insertQuery);
 
     if (response.rowCount !== stratums.length) {
-      throw new ApiExecuteSQLError('Failed to replace survey stratums', [
-        'SurveyRepository->replaceStratums',
+      throw new ApiExecuteSQLError('Failed to insert survey stratums', [
+        'SurveyRepository->insertSurveyStratums',
         `rowCount was ${response.rowCount}, expected rowCount = ${stratums.length}`
       ]);
     }
+
+    return response.rows;
+  }
+
+  /**
+   * Performs a batch update for survey stratum records
+   *
+   * @param {number} surveyId
+   * @param {SurveyStratumRecord[]} stratums
+   * @return {*}  {Promise<SurveyStratumRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async updateSurveyStratums(surveyId: number, stratums: SurveyStratumRecord[]): Promise<SurveyStratumRecord[]> {
+    defaultLog.debug({ label: 'updateSurveyStratums', surveyId });
+
+    const makeUpdateQuery = (stratum: SurveyStratumRecord) => getKnex()
+      .table('survey_stratum')
+      .update({
+        ...stratum,
+        survey_id: surveyId,
+        revision_count: stratum.revision_count + 1
+      })
+      .where('survey_stratum_id', stratum.survey_stratum_id)
+      .returning('*');
+
+    const responses = await Promise.all(stratums.map((stratum) => this.connection.knex(makeUpdateQuery(stratum), SurveyStratumRecord)))
+    const records = responses.reduce((acc: SurveyStratumRecord[], queryResult) => {
+      return [...acc, ...queryResult.rows]
+    }, []);
+
+    if (records.length !== stratums.length) {
+      throw new ApiExecuteSQLError('Failed to update survey stratums', [
+        'SurveyRepository->updateSurveyStratums',
+        `Total rowCount was ${records.length}, expected ${stratums.length} rows`
+      ]);
+    }
+
+    return records;
   }
 }
