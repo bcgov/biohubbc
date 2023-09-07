@@ -1,0 +1,55 @@
+import { expect } from 'chai';
+import sinon from 'sinon';
+import * as db from '../../../../../../../database/db';
+import { BctwService } from '../../../../../../../services/bctw-service';
+import { SurveyService } from '../../../../../../../services/survey-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
+import { deployDevice } from './deployments';
+
+describe('deployDevice', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
+  const mockSurveyEntry = 123;
+
+  it('deploys a new telemetry device', async () => {
+    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+    const mockAddDeployment = sinon.stub(SurveyService.prototype, 'addDeployment').resolves(mockSurveyEntry);
+    const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice');
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    const requestHandler = deployDevice();
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(mockGetDBConnection.calledOnce).to.be.true;
+    expect(mockAddDeployment.calledOnce).to.be.true;
+    expect(mockBctwService.calledOnce).to.be.true;
+    expect(mockRes.status).to.have.been.calledWith(201);
+    expect(mockRes.json).to.have.been.calledWith(mockSurveyEntry);
+  });
+
+  it('catches and re-throws errors', async () => {
+    const mockError = new Error('a test error');
+    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+    const mockAddDeployment = sinon.stub(SurveyService.prototype, 'addDeployment').rejects(mockError);
+    const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice');
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    const requestHandler = deployDevice();
+    try {
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).to.equal(mockError);
+      expect(mockGetDBConnection.calledOnce).to.be.true;
+      expect(mockAddDeployment.calledOnce).to.be.true;
+      expect(mockBctwService.notCalled).to.be.true;
+      expect(mockRes.status).not.to.have.been.called;
+      expect(mockRes.json).not.to.have.been.called;
+    }
+  });
+});
