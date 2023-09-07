@@ -3,10 +3,20 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import { DataGridPro } from '@mui/x-data-grid-pro/DataGridPro';
+import { DataGrid } from '@mui/x-data-grid';
 import Typography from '@mui/material/Typography';
-import { mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowLeft, mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import { grey } from '@mui/material/colors';
+// import ListSubheader from '@mui/material/ListSubheader';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+// import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import * as React from 'react';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 
 const columns = [
   { 
@@ -24,7 +34,7 @@ const columns = [
     type: 'singleSelect',
     valueOptions: ['Site 1', 'Site 2', 'Site 3', 'Site 4'],
     flex: 1,
-    minWidth: 180,
+    minWidth: 200,
     disableColumnMenu: true
   },
   { 
@@ -34,17 +44,25 @@ const columns = [
     type: 'singleSelect',
     valueOptions: ['Method 1', 'Method 2', 'Method 3', 'Method 4'],
     flex: 1,
-    minWidth: 250,
-    disableColumnMenu: true,
-
+    minWidth: 200,
+    disableColumnMenu: true
+  },
+  { 
+    field: 'samplingPeriod', 
+    headerName: 'Sampling Period',
+    editable: true,
+    type: 'singleSelect',
+    valueOptions: ['Period 1', 'Period 2', 'Period 3', 'Period 4', 'Undefined'],
+    flex: 1,
+    minWidth: 200,
+    disableColumnMenu: true
   },
   { 
     field: 'count', 
     headerName: 'Count',
     editable: true,
     type: 'number',
-    flex: 0,
-    minWidth: 60,
+    minWidth: 100,
     disableColumnMenu: true,
   },
   { 
@@ -52,33 +70,31 @@ const columns = [
     headerName: 'Date',
     editable: true,
     type: 'date',
-    flex: 1,
-    minWidth: 100,
-    disableColumnMenu: true
+    minWidth: 150,
+    disableColumnMenu: true,
   },
   { 
     field: 'time', 
     headerName: 'Time',
     editable: true,
     type: 'time',
-    flex: 1,
-    minWidth: 100,
+    width: 150,
     disableColumnMenu: true
   },
   { 
     field: 'lat', 
     headerName: 'Lat',
+    type: 'number',
     editable: true,
-    flex: 1,
-    minWidth: 100,
+    width: 150,
     disableColumnMenu: true
   },
   { 
     field: 'long', 
     headerName: 'Long',
+    type: 'number',
     editable: true,
-    flex: 1,
-    minWidth: 100,
+    width: 150,
     disableColumnMenu: true
   },
   { 
@@ -88,19 +104,21 @@ const columns = [
     width: 80,
     disableColumnMenu: true,
     resizable: false,
+    cellClassName: 'test',
     getActions: () => [
       <IconButton>
-        <Icon path={mdiTrashCanOutline} size={1} />
+        <Icon path={mdiDotsVertical} size={1} />
       </IconButton>
     ],
   }
 ];
 
 const rows = [
-  { id: 1, speciesName: 'Moose (Alces Americanus)' },
-  { id: 2, speciesName: 'Moose (Alces Americanus)' },
-  { id: 3, speciesName: 'Moose (Alces Americanus)' }
+  { id: 1, speciesName: 'Moose (Alces Americanus', samplingSite: 'Site 1', samplingMethod: 'Method 1' },
+  { id: 2, speciesName: 'Moose (Alces Americanus', samplingSite: 'Site 1', samplingMethod: 'Method 1' },
+  { id: 3, speciesName: 'Moose (Alces Americanus', samplingSite: 'Site 1', samplingMethod: 'Method 1' }
 ];
+
 
 export default function RenderHeaderGrid() {
   return (
@@ -111,6 +129,13 @@ export default function RenderHeaderGrid() {
 }
 
 export const PrototypePage = () => {
+  
+  // const [expanded, setExpanded] = React.useState<string | false>(false);
+
+  // const handleChange =
+  //   (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+  //     setExpanded(isExpanded ? panel : false);
+  //   };
 
   return (
 
@@ -125,20 +150,30 @@ export const PrototypePage = () => {
     >
       <AppBar
         position="relative"
-        color="primary"
         elevation={1}
         sx={{
           flex: '0 0 auto'
         }}
       >
         <Toolbar>
-          <Typography component="h1" variant="h4">Manage observations Prototype</Typography>
+          <IconButton
+            edge="start"
+            color="inherit"
+            sx={{
+              mr: 2
+            }}
+          >
+            <Icon path={mdiArrowLeft} size={1}></Icon>
+          </IconButton>
+          <Typography component="h1" variant="h4">Manage Observations Prototype</Typography>
         </Toolbar>
       </AppBar>
+      
       <Box 
         display="flex" 
         flex='1 1 auto'
       >
+        {/* Sampling Site List */}
         <Box 
           display="flex" 
           flexDirection="column" 
@@ -156,14 +191,133 @@ export const PrototypePage = () => {
           </Toolbar>
           <Box
             flex="1 1 auto"
-            p={3}
             sx={{
-              overflowY: 'scroll'
+              overflowY: 'scroll',
+              background: grey[50],
+              '& .MuiAccordion-root + .MuiAccordion-root': {
+                borderTopStyle: 'solid',
+                borderTopWidth: '1px',
+                borderTopColor: grey[300]
+              }
             }}
           >
-            <Typography>Content</Typography>
+            
+            <Accordion 
+              square 
+              disableGutters 
+              sx={{
+                boxShadow: 'none',
+                '&:before': {
+                  display: 'none'
+                }
+              }}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
+                <AccordionSummary
+                  aria-controls="panel1bh-content"
+                  id="panel1bh-header"
+                  sx={{
+                    p: 0
+                  }}
+                >
+                  <Typography variant="body2" sx={{fontWeight: 700}}>Sampling Site 1</Typography>
+                </AccordionSummary>
+                <IconButton
+                  edge="end"
+                >
+                  <Icon path={mdiDotsVertical} size={1}></Icon>
+                </IconButton>
+              </Box>
+              <AccordionDetails
+                sx={{
+                  pt: 0
+                }}
+              >
+                <List component="div" disablePadding>
+                  <ListItem
+                    sx={{
+                      background: grey[200]
+                    }}
+                  >
+                    <ListItemText>
+                      <Typography variant="body2">Method 1</Typography>
+                    </ListItemText>
+                  </ListItem>
+                </List>
+                <List disablePadding>
+                  <ListItem>
+                    <ListItemText>
+                      <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
+                    </ListItemText>
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText>
+                      <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
+                    </ListItemText>
+                  </ListItem>
+                </List>
+              </AccordionDetails>
+            </Accordion>
+
+            <Accordion 
+              square 
+              disableGutters 
+              sx={{
+                boxShadow: 'none',
+                '&:before': {
+                  display: 'none'
+                }
+              }}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
+                <AccordionSummary
+                  aria-controls="panel1bh-content"
+                  id="panel1bh-header"
+                  sx={{
+                    p: 0
+                  }}
+                >
+                  <Typography variant="body2" sx={{fontWeight: 700}}>Sampling Site 1</Typography>
+                </AccordionSummary>
+                <IconButton
+                  edge="end"
+                >
+                  <Icon path={mdiDotsVertical} size={1}></Icon>
+                </IconButton>
+              </Box>
+              <AccordionDetails
+                sx={{
+                  pt: 0
+                }}
+              >
+                <List disablePadding>
+                  <ListItem
+                    sx={{
+                      background: grey[200]
+                    }}
+                  >
+                    <ListItemText>
+                      <Typography variant="body2">Method 1</Typography>
+                    </ListItemText>
+                  </ListItem>
+                </List>
+                <List disablePadding>
+                  <ListItem>
+                    <ListItemText>
+                      <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
+                    </ListItemText>
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText>
+                      <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
+                    </ListItemText>
+                  </ListItem>
+                </List>
+              </AccordionDetails>
+            </Accordion>
+
           </Box>
         </Box>
+
+        {/* Observations Component */}
         <Box 
           display="flex" 
           flexDirection="column" 
@@ -174,7 +328,10 @@ export const PrototypePage = () => {
           <Toolbar
             sx={{
               flex: '0 0 auto',
-              borderBottom: '1px solid #ccc'
+              borderBottom: '1px solid #ccc',
+              '& Button + Button': {
+                ml: 1
+              }
             }}
           >
             <Typography
@@ -184,7 +341,30 @@ export const PrototypePage = () => {
             >
               <strong>Observations</strong>
             </Typography>
-            <Button color="primary" variant="outlined">+ Add Attribute</Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={
+                <Icon path={mdiImport} size={1} />
+              }>
+              Import Data
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={
+                <Icon path={mdiPlus} size={1} />
+              }>
+              Add Record
+            </Button>
+            <Button 
+              variant="outlined"
+              startIcon={
+                <Icon path={mdiCogOutline} size={1} />
+              }
+            >
+              Columns
+            </Button>
           </Toolbar>
           <Box 
             flex="1 1 auto"
@@ -200,11 +380,10 @@ export const PrototypePage = () => {
                 overflow: 'hidden',
               }}
             >
-              <DataGridPro 
+              <DataGrid
                 columns={columns} 
-                rows={rows} 
-                initialState={{ pinnedColumns: { right: ['actions'] } }}
-                rowReordering
+                rows={rows}
+                localeText={{ noRowsLabel: "No observations" }}
                 sx={{
                   background: '#fff',
                   border: 'none',
@@ -215,7 +394,27 @@ export const PrototypePage = () => {
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     color: '#999'
+                  },
+                  '& .test': {
+                    position: 'sticky',
+                    right: 0,
+                    top: 0,
+                    borderLeft: '1px solid #ccc',
+                    background: '#fff'
+                  },
+                  '& .MuiDataGrid-columnHeaders': {
+                    position: 'relative'
+                  },
+                  '& .MuiDataGrid-columnHeaders:after': {
+                    content: "''",
+                    position: 'absolute',
+                    right: 0,
+                    width: '79px',
+                    height: '80px',
+                    borderLeft: '1px solid #ccc',
+                    background: '#fff'
                   }
+
                 }}
               />
             </Box>
