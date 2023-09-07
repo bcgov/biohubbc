@@ -60,42 +60,6 @@ describe('SurveyBlockService', () => {
     });
   });
 
-  describe('updateInsertSurveyBlocks', () => {
-    it('should succeed with valid data', async () => {
-      const mockResponse = ({
-        rows: [
-          {
-            survey_block_id: 1,
-            survey_id: 1,
-            name: 'Updated name',
-            description: '',
-            create_date: '',
-            create_user: 1,
-            update_date: '',
-            update_user: 1,
-            revision_count: 1
-          }
-        ],
-        rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({
-        sql: () => mockResponse
-      });
-      const service = new SurveyBlockService(dbConnection);
-
-      const update = sinon.stub(SurveyBlockRepository.prototype, 'updateSurveyBlock').resolves();
-      const insert = sinon.stub(SurveyBlockRepository.prototype, 'insertSurveyBlock').resolves();
-      const blocks: SurveyBlock[] = [
-        { survey_block_id: 1, survey_id: 1, name: 'Old Block', description: 'Updated' },
-        { survey_block_id: null, survey_id: 1, name: 'New Block', description: 'block' }
-      ];
-
-      await service.updateInsertSurveyBlocks(1, blocks);
-      expect(update).to.be.calledOnce;
-      expect(insert).to.be.calledOnce;
-    });
-  });
-
   describe('upsertSurveyBlocks', () => {
     it('should succeed with valid data', async () => {
       const dbConnection = getMockDBConnection();
@@ -103,7 +67,8 @@ describe('SurveyBlockService', () => {
 
       const getOldBlocks = sinon.stub(SurveyBlockService.prototype, 'getSurveyBlocksForSurveyId').resolves([]);
       const deleteBlock = sinon.stub(SurveyBlockService.prototype, 'deleteSurveyBlock').resolves();
-      const updateInsert = sinon.stub(SurveyBlockService.prototype, 'updateInsertSurveyBlocks').resolves();
+      const insertBlock = sinon.stub(SurveyBlockRepository.prototype, 'insertSurveyBlock').resolves();
+      const updateBlock = sinon.stub(SurveyBlockRepository.prototype, 'updateSurveyBlock').resolves();
 
       const blocks: SurveyBlock[] = [
         { survey_block_id: null, survey_id: 1, name: 'Old Block', description: 'Updated' },
@@ -112,8 +77,9 @@ describe('SurveyBlockService', () => {
       await service.upsertSurveyBlocks(1, blocks);
 
       expect(getOldBlocks).to.be.calledOnce;
-      expect(updateInsert).to.be.calledOnce;
+      expect(insertBlock).to.be.calledTwice;
       expect(deleteBlock).to.not.be.calledOnce;
+      expect(updateBlock).to.not.be.calledOnce;
     });
 
     it('should run delete block code', async () => {
@@ -131,20 +97,33 @@ describe('SurveyBlockService', () => {
           update_date: '',
           update_user: 1,
           revision_count: 1
+        },
+        {
+          survey_block_id: 11,
+          survey_id: 1,
+          name: 'Old Block',
+          description: 'Going to be deleted',
+          create_date: '',
+          create_user: 1,
+          update_date: '',
+          update_user: 1,
+          revision_count: 1
         }
       ]);
       const deleteBlock = sinon.stub(SurveyBlockService.prototype, 'deleteSurveyBlock').resolves();
-      const updateInsert = sinon.stub(SurveyBlockService.prototype, 'updateInsertSurveyBlocks').resolves();
+      const insertBlock = sinon.stub(SurveyBlockRepository.prototype, 'insertSurveyBlock').resolves();
+      const updateBlock = sinon.stub(SurveyBlockRepository.prototype, 'updateSurveyBlock').resolves();
 
       const blocks: SurveyBlock[] = [
-        { survey_block_id: null, survey_id: 1, name: 'Old Block', description: 'Updated' },
+        { survey_block_id: 10, survey_id: 1, name: 'Old Block', description: 'Updated' },
         { survey_block_id: null, survey_id: 1, name: 'New Block', description: 'block' }
       ];
       await service.upsertSurveyBlocks(1, blocks);
 
       expect(getOldBlocks).to.be.calledOnce;
-      expect(updateInsert).to.be.calledOnce;
       expect(deleteBlock).to.be.calledOnce;
+      expect(insertBlock).to.be.calledOnce;
+      expect(updateBlock).to.be.calledOnce;
     });
   });
 
