@@ -114,7 +114,7 @@ export const SurveyAnimalsTable = ({
     }
   ];
 
-  const animalDeviceData = deviceData
+  const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
     ? animalData.map((animal) => {
         const devices = deviceData.filter((device) => device.critter_id === animal.critter_id);
         return {
