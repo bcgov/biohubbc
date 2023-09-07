@@ -462,6 +462,14 @@ export class SurveyService extends DBService {
     return surveyId;
   }
 
+  /**
+   * Insert, updates and deletes Survey Blocks for a given survey id
+   *
+   * @param {number} surveyId
+   * @param {SurveyBlock[]} blocks
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async upsertBlocks(surveyId: number, blocks: SurveyBlock[]): Promise<void> {
     const service = new SurveyBlockService(this.connection);
     return service.upsertSurveyBlocks(surveyId, blocks);

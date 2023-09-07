@@ -382,7 +382,7 @@ const CreateSurveyPage = () => {
                 <HorizontalSplitFormComponent
                   title="Block Data"
                   summary="Data for Blocks"
-                  component={<SurveyBlockSection name="blocks" />}
+                  component={<SurveyBlockSection />}
                 />
                 <Divider className={classes.sectionDivider} />
 

@@ -33,29 +33,6 @@ export class SurveyBlockService extends DBService {
   }
 
   /**
-   * Insert or Updates Survey Block Records based on the existence of a survey_block_id
-   *
-   * @param {number} surveyId
-   * @param {SurveyBlock[]} blocks
-   * @return {*} {Promise<void>}
-   * @memberof SurveyBlockService
-   */
-  async updateInsertSurveyBlocks(surveyId: number, blocks: SurveyBlock[]): Promise<void> {
-    const insertUpdate: Promise<any>[] = [];
-
-    blocks.forEach((item: SurveyBlock) => {
-      item.survey_id = surveyId;
-      if (item.survey_block_id) {
-        insertUpdate.push(this.surveyBlockRepository.updateSurveyBlock(item));
-      } else {
-        insertUpdate.push(this.surveyBlockRepository.insertSurveyBlock(item));
-      }
-    });
-
-    await Promise.all(insertUpdate);
-  }
-
-  /**
    * Inserts, Updates and Deletes Block records
    * All passed in blocks are treated as the source of truth,
    * Any pre existing blocks that do not collide with passed in blocks are deleted
@@ -82,7 +59,14 @@ export class SurveyBlockService extends DBService {
     });
 
     // update or insert block data
-    promises.push(this.updateInsertSurveyBlocks(surveyId, blocks));
+    blocks.forEach((item: SurveyBlock) => {
+      item.survey_id = surveyId;
+      if (item.survey_block_id) {
+        promises.push(this.surveyBlockRepository.updateSurveyBlock(item));
+      } else {
+        promises.push(this.surveyBlockRepository.insertSurveyBlock(item));
+      }
+    });
 
     await Promise.all(promises);
   }

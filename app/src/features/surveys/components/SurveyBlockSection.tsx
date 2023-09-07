@@ -1,7 +1,7 @@
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { ListItemIcon, Menu, MenuItem, MenuProps } from '@mui/material';
+import { ListItemIcon, Menu, MenuItem, MenuProps, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -14,18 +14,14 @@ import yup from 'utils/YupSchema';
 import CreateSurveyBlockDialog from './CreateSurveyBlockDialog';
 import EditSurveyBlockDialog from './EditSurveyBlockDialog';
 
-interface ISurveyBlockFormProps {
-  name: string; // the name of the formik field value
-}
-
 export const SurveyBlockInitialValues = {
   blocks: []
 };
 
 // Form validation for Block Item
 export const BlockYupSchema = yup.object({
-  name: yup.string().required(),
-  description: yup.string().required()
+  name: yup.string().required().max(50, 'Maximum 50 characters'),
+  description: yup.string().required().max(250, 'Maximum 250 characters')
 });
 
 export const SurveyBlockYupSchema = yup.array(BlockYupSchema);
@@ -39,8 +35,7 @@ export interface IEditBlock {
   };
 }
 
-const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
-  const { name } = props;
+const SurveyBlockSection: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -49,7 +44,7 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
   const formikProps = useFormikContext<ICreateSurveyRequest>();
   const { values, handleSubmit, setFieldValue } = formikProps;
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
     setEditData({ index: index, block: values.blocks[index] });
   };
@@ -58,7 +53,7 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
     if (editData) {
       const data = values.blocks;
       data.splice(editData.index, 1);
-      setFieldValue(name, data);
+      setFieldValue('blocks', data);
     }
     setAnchorEl(null);
   };
@@ -71,7 +66,7 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
         onClose={() => setIsCreateModalOpen(false)}
         onSave={(data) => {
           setEditData(undefined);
-          setFieldValue(`${name}[${values.blocks.length}]`, data);
+          setFieldValue(`blocks[${values.blocks.length}]`, data);
           setIsCreateModalOpen(false);
         }}
       />
@@ -88,9 +83,26 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
           setIsEditModalOpen(false);
           setAnchorEl(null);
           setEditData(undefined);
-          setFieldValue(`${name}[${index}]`, data);
+          setFieldValue(`blocks[${index}]`, data);
         }}
       />
+      <Typography
+        variant="h5"
+        component="h3"
+        sx={{
+          marginBottom: '14px'
+        }}>
+        Define Blocks
+      </Typography>
+      <Typography
+        variant="body1"
+        color="textSecondary"
+        sx={{
+          maxWidth: '90ch'
+        }}>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec
+        placerat nisl magna, et faucibus arcu condimentum sed.
+      </Typography>
       <Menu
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
@@ -119,7 +131,7 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
       <form onSubmit={handleSubmit}>
         <Button
           data-testid="block-form-add-button"
-          sx={{ marginBottom: 1 }}
+          sx={{ marginBottom: 2, marginTop: 2 }}
           variant="outlined"
           color="primary"
           title="Add Block"
@@ -131,14 +143,17 @@ const SurveyBlockSection: React.FC<ISurveyBlockFormProps> = (props) => {
         <Box>
           {values.blocks.map((item, index) => {
             return (
-              <Card key={`${item.name}-${item.description}`} sx={{ marginTop: 1 }}>
+              <Card key={`${item.name}-${item.description}`} sx={{ marginTop: 1 }} variant="outlined">
                 <CardHeader
                   action={
-                    <IconButton aria-label="settings">
+                    <IconButton
+                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                        handleMenuClick(event, index)
+                      }
+                      aria-label="settings">
                       <MoreVertIcon />
                     </IconButton>
                   }
-                  onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => handleMenuClick(event, index)}
                   title={item.name}
                   subheader={item.description}
                 />
