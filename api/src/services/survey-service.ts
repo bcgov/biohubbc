@@ -1131,6 +1131,14 @@ export class SurveyService extends DBService {
     return this.surveyRepository.removeCritterFromSurvey(surveyId, critterId);
   }
 
+  /**
+   * Add a deployment to the given critter. Does not affect the critter in the external system.
+   *
+   * @param {number} critterId
+   * @param {string} deplyomentId
+   * @return {*} 
+   * @memberof SurveyService
+   */
   async addDeployment(critterId: number, deplyomentId: string) {
     return this.surveyRepository.addDeployment(critterId, deplyomentId);
   }
