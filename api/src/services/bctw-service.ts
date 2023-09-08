@@ -167,6 +167,13 @@ export class BctwService {
     return this._makeGetRequest(GET_DEPLOYMENTS_ENDPOINT);
   }
 
+  /**
+   * Get all existing deployments for a list of critter IDs.
+   *
+   * @param {string[]} critter_ids
+   * @return {*}  {Promise<IDeploymentRecord[]>}
+   * @memberof BctwService
+   */
   async getDeploymentsByCritterId(critter_ids: string[]): Promise<IDeploymentRecord[]> {
     const query = { critter_ids: critter_ids };
     return this._makeGetRequest(GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT, query);
@@ -203,6 +210,13 @@ export class BctwService {
     return this._makeGetRequest(HEALTH_ENDPOINT);
   }
 
+  /**
+   * Get a list of all BCTW codes with a given header name.
+   *
+   * @param {string} codeHeaderName
+   * @return {*}  {Promise<ICodeResponse[]>}
+   * @memberof BctwService
+   */
   async getCode(codeHeaderName: string): Promise<ICodeResponse[]> {
     return this._makeGetRequest(GET_CODE_ENDPOINT, { codeHeader: codeHeaderName });
   }
