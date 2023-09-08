@@ -30,6 +30,31 @@ export const StudyAreaYupSchema = yup.object().shape({
   })
 });
 
+export interface ISurveyLocationForm {
+  locations: {
+    name: string;
+    description: string;
+    geometry: Feature[];
+  }[];
+}
+
+export const SurveyLocationInitialValues: ISurveyLocationForm = {
+  locations: []
+};
+
+export const SurveyLocationYupSchema = yup.object({
+  locations: yup.array(
+    yup.object({
+      name: yup.string().max(50, 'Name cannot exceed 50 characters').required('Name is Required'),
+      description: yup
+        .string()
+        .max(250, 'Description cannot exceed 250 characters')
+        .required('Description is Required'),
+      geometry: yup.array().min(1, 'A geometry is required').required('A geometry is required')
+    })
+  )
+});
+
 /**
  * Create survey - Study area section
  *

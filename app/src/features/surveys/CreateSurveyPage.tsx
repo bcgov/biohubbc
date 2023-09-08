@@ -42,7 +42,12 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyInitialValues,
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
-import LocationForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
+import LocationForm, {
+  StudyAreaInitialValues,
+  StudyAreaYupSchema,
+  SurveyLocationInitialValues,
+  SurveyLocationYupSchema
+} from './components/StudyAreaForm';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
@@ -136,7 +141,8 @@ const CreateSurveyPage = () => {
     ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues,
-    ...SurveyUserJobFormInitialValues
+    ...SurveyUserJobFormInitialValues,
+    ...SurveyLocationInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -180,7 +186,8 @@ const CreateSurveyPage = () => {
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
-    .concat(SurveyPartnershipsFormYupSchema);
+    .concat(SurveyPartnershipsFormYupSchema)
+    .concat(SurveyLocationYupSchema);
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
