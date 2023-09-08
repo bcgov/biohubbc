@@ -20,7 +20,7 @@ import {
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PublishStatus } from '../repositories/history-publish-repository';
-import { SurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
+import { PostSurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -470,7 +470,7 @@ export class SurveyService extends DBService {
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async upsertBlocks(surveyId: number, blocks: SurveyBlock[]): Promise<void> {
+  async upsertBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
     const service = new SurveyBlockService(this.connection);
     return service.upsertSurveyBlocks(surveyId, blocks);
   }

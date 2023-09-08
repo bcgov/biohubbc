@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { SurveyBlock, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
+import { PostSurveyBlock, SurveyBlockRecord, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { DBService } from './db-service';
 
 export class SurveyBlockService extends DBService {
@@ -42,7 +42,7 @@ export class SurveyBlockService extends DBService {
    * @return {*} {Promise<void>}
    * @memberof SurveyBlockService
    */
-  async upsertSurveyBlocks(surveyId: number, blocks: SurveyBlock[]): Promise<void> {
+  async upsertSurveyBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
     // all actions to take
     const promises: Promise<any>[] = [];
 
@@ -59,7 +59,7 @@ export class SurveyBlockService extends DBService {
     });
 
     // update or insert block data
-    blocks.forEach((item: SurveyBlock) => {
+    blocks.forEach((item: PostSurveyBlock) => {
       item.survey_id = surveyId;
       if (item.survey_block_id) {
         promises.push(this.surveyBlockRepository.updateSurveyBlock(item));

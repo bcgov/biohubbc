@@ -3,14 +3,12 @@ import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
-export const SurveyBlock = z.object({
-  survey_block_id: z.number().nullable(),
-  survey_id: z.number(),
-  name: z.string(),
-  description: z.string()
-});
-
-export type SurveyBlock = z.infer<typeof SurveyBlock>;
+export interface PostSurveyBlock {
+  survey_block_id: number | null;
+  survey_id: number;
+  name: string;
+  description: string;
+}
 
 // This describes the a row in the database for Survey Block
 export const SurveyBlockRecord = z.object({
@@ -59,7 +57,7 @@ export class SurveyBlockRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof SurveyBlockRepository
    */
-  async updateSurveyBlock(block: SurveyBlock): Promise<SurveyBlockRecord> {
+  async updateSurveyBlock(block: PostSurveyBlock): Promise<SurveyBlockRecord> {
     const sql = SQL`
       UPDATE survey_block 
       SET 
@@ -90,7 +88,7 @@ export class SurveyBlockRepository extends BaseRepository {
    * @return {*}  {Promise<SurveyBlockRecord>}
    * @memberof SurveyBlockRepository
    */
-  async insertSurveyBlock(block: SurveyBlock): Promise<SurveyBlockRecord> {
+  async insertSurveyBlock(block: PostSurveyBlock): Promise<SurveyBlockRecord> {
     const sql = SQL`
     INSERT INTO survey_block (
       survey_id,

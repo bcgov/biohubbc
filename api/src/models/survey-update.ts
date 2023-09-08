@@ -1,5 +1,5 @@
 import { Feature } from 'geojson';
-import { SurveyBlock } from '../repositories/survey-block-repository';
+import { PostSurveyBlock } from '../repositories/survey-block-repository';
 
 export class PutSurveyObject {
   survey_details: PutSurveyDetailsData;
@@ -11,7 +11,7 @@ export class PutSurveyObject {
   location: PutSurveyLocationData;
   participants: PutSurveyParticipantsData[];
   partnerships: PutPartnershipsData;
-  blocks: SurveyBlock[];
+  blocks: PostSurveyBlock[];
 
   constructor(obj?: any) {
     this.survey_details = (obj?.survey_details && new PutSurveyDetailsData(obj.survey_details)) || null;
@@ -26,7 +26,7 @@ export class PutSurveyObject {
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PutSurveyParticipantsData(p))) || [];
     this.partnerships = (obj?.partnerships && new PutPartnershipsData(obj.partnerships)) || null;
-    this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as SurveyBlock)) || [];
+    this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
   }
 }
 
