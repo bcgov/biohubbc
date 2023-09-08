@@ -18,7 +18,7 @@ describe('filterCritters', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockRes.status).to.have.been.calledWith(201);
+    expect(mockRes.status).to.have.been.calledWith(200);
     expect(mockRes.json).to.have.been.calledWith(mockCritters);
     expect(mockFilterCritters).to.have.been.calledOnce;
   });

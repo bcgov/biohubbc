@@ -7,11 +7,8 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IAnimal } from './animal';
 
 const TelemetryDeviceForm = () => {
-  const { values, errors } = useFormikContext<IAnimal>();
-
+  useFormikContext<IAnimal>();
   const api = useTelemetryApi();
-  console.log('Values ' + JSON.stringify(values));
-  console.log('Errors ' + JSON.stringify(errors));
   return (
     <Form>
       <Grid container spacing={2}>
