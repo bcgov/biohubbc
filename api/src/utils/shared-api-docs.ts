@@ -1,3 +1,5 @@
+import { SchemaObject } from 'ajv';
+
 export const attachmentApiDocObject = (basicDescription: string, successDescription: string) => {
   return {
     description: basicDescription,
@@ -44,4 +46,23 @@ export const attachmentApiDocObject = (basicDescription: string, successDescript
       }
     }
   };
+};
+
+export const critterbaseCommonLookupResponse: SchemaObject = {
+  title: 'asSelect',
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      key: {
+        type: 'string'
+      },
+      id: {
+        type: 'string'
+      },
+      value: {
+        type: 'string'
+      }
+    }
+  }
 };

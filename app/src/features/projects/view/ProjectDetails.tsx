@@ -92,13 +92,6 @@ const ProjectDetails = () => {
           <ProjectCoordinator />
         </Box>
 
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Partnerships
-          </Typography>
-          <Divider></Divider>
-        </Box>
-
         {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (view) temporarily, while its decided if IUCN information is desired */}
         {/* <Box component="section" mb={0}>
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
