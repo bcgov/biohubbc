@@ -4,7 +4,7 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { SurveyBlock, SurveyBlockRepository } from '../repositories/survey-block-repository';
+import { PostSurveyBlock, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SurveyBlockService } from './survey-block-service';
 
@@ -70,7 +70,7 @@ describe('SurveyBlockService', () => {
       const insertBlock = sinon.stub(SurveyBlockRepository.prototype, 'insertSurveyBlock').resolves();
       const updateBlock = sinon.stub(SurveyBlockRepository.prototype, 'updateSurveyBlock').resolves();
 
-      const blocks: SurveyBlock[] = [
+      const blocks: PostSurveyBlock[] = [
         { survey_block_id: null, survey_id: 1, name: 'Old Block', description: 'Updated' },
         { survey_block_id: null, survey_id: 1, name: 'New Block', description: 'block' }
       ];
@@ -114,7 +114,7 @@ describe('SurveyBlockService', () => {
       const insertBlock = sinon.stub(SurveyBlockRepository.prototype, 'insertSurveyBlock').resolves();
       const updateBlock = sinon.stub(SurveyBlockRepository.prototype, 'updateSurveyBlock').resolves();
 
-      const blocks: SurveyBlock[] = [
+      const blocks: PostSurveyBlock[] = [
         { survey_block_id: 10, survey_id: 1, name: 'Old Block', description: 'Updated' },
         { survey_block_id: null, survey_id: 1, name: 'New Block', description: 'block' }
       ];

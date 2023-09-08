@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import { SurveyBlock, SurveyBlockRepository } from './survey-block-repository';
+import { PostSurveyBlock, SurveyBlockRepository } from './survey-block-repository';
 
 chai.use(sinonChai);
 
@@ -82,7 +82,7 @@ describe('SurveyBlockRepository', () => {
       });
 
       const repo = new SurveyBlockRepository(dbConnection);
-      const block: SurveyBlock = { survey_block_id: 1, survey_id: 1, name: 'Updated name', description: 'block' };
+      const block: PostSurveyBlock = { survey_block_id: 1, survey_id: 1, name: 'Updated name', description: 'block' };
       const response = await repo.updateSurveyBlock(block);
       expect(response.survey_block_id).to.be.eql(1);
       expect(response.name).to.be.eql('Updated name');
@@ -98,7 +98,7 @@ describe('SurveyBlockRepository', () => {
       });
 
       const repo = new SurveyBlockRepository(dbConnection);
-      const block: SurveyBlock = { survey_block_id: null, survey_id: 1, name: 'new', description: 'block' };
+      const block: PostSurveyBlock = { survey_block_id: null, survey_id: 1, name: 'new', description: 'block' };
       try {
         await repo.updateSurveyBlock(block);
         expect.fail();
@@ -131,7 +131,7 @@ describe('SurveyBlockRepository', () => {
       });
       const repo = new SurveyBlockRepository(dbConnection);
 
-      const block: SurveyBlock = { survey_block_id: null, survey_id: 1, name: 'new', description: 'block' };
+      const block: PostSurveyBlock = { survey_block_id: null, survey_id: 1, name: 'new', description: 'block' };
       const response = await repo.insertSurveyBlock(block);
 
       expect(response.name).to.be.eql('new');
@@ -148,7 +148,12 @@ describe('SurveyBlockRepository', () => {
       });
       const repo = new SurveyBlockRepository(dbConnection);
       try {
-        const block = ({ survey_block_id: null, survey_id: 1, name: null, description: null } as any) as SurveyBlock;
+        const block = ({
+          survey_block_id: null,
+          survey_id: 1,
+          name: null,
+          description: null
+        } as any) as PostSurveyBlock;
         await repo.insertSurveyBlock(block);
         expect.fail();
       } catch (error) {
