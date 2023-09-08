@@ -166,7 +166,7 @@ export const PrototypePage = () => {
             color="text.secondary" 
             variant='body2'
           >
-            Manage Observations
+            Manage Survey Observations
         </Typography>
         </Breadcrumbs>
         <Typography 
@@ -176,7 +176,7 @@ export const PrototypePage = () => {
             ml: '-2px'
           }}
         >
-          Manage Observations
+          Manage Survey Observations
       </Typography>
       </Paper>
 
