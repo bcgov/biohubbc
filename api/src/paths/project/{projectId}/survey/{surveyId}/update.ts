@@ -305,6 +305,25 @@ PUT.apiDoc = {
                   }
                 }
               }
+            },
+            blocks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['name', 'description'],
+                properties: {
+                  survey_block_id: {
+                    type: 'number',
+                    nullable: true
+                  },
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
+                    type: 'string'
+                  }
+                }
+              }
             }
           }
         }
