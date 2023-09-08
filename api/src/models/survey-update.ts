@@ -35,8 +35,8 @@ export class PutSiteSelectionStrategies {
   stratums: Array<SurveyStratum | SurveyStratumRecord>;
 
   constructor(obj?: any) {
-    this.strategies = obj?.strategies ?? [];
-    this.stratums = obj?.stratums ?? [];
+    this.strategies = obj?.site_selection_strategies?.strategies ?? [];
+    this.stratums = obj?.site_selection_strategies?.stratums ?? [];
   }
 }
 

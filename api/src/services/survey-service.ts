@@ -450,8 +450,9 @@ export class SurveyService extends DBService {
     }
 
     // Handle site selection strategies
+    
     if (postSurveyData.site_selection_strategies.strategies.length > 0) {
-      promises.push(this.replaceSurveySiteSelectionStrategies(
+      promises.push(this.insertSurveySiteSelectionStrategies(
         surveyId,
         postSurveyData.site_selection_strategies.strategies
       ));
@@ -474,15 +475,63 @@ export class SurveyService extends DBService {
     return this.surveyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
   }
 
-  async replaceSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<any> {
-    return this.surveyRepository.replaceSurveySiteSelectionStrategies(surveyId, strategies);
+  async insertSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
+    return this.surveyRepository.insertSurveySiteSelectionStrategies(surveyId, strategies);
+  }
+
+  async replaceSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
+    // await this.surveyRepository.deleteSurveySiteSelectionStrategies(surveyId);
+
+    if (strategies.length > 0) {
+      await this.insertSurveySiteSelectionStrategies(surveyId, strategies);
+    }
   }
   
-  async insertSurveyStratums(surveyId: number, stratums: SurveyStratum[]): Promise<any> {
+  /**
+   * Receives an array of all stratums, that should be persisted for a particular survey, then
+   * deletes, inserts and updates stratum records accordingly.
+   *
+   * @param {number} surveyId
+   * @param {(Array<SurveyStratum | SurveyStratumRecord>)} stratums
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async replaceSurveySiteSelectionStratums(surveyId: number, stratums: Array<SurveyStratum | SurveyStratumRecord>): Promise<void> {
+    const insertStratums: SurveyStratum[] = [];
+    const updateStratums: SurveyStratumRecord[] = [];
+    
+    stratums.forEach((stratum) => {
+      if ('survey_stratum_id' in stratum) {
+        updateStratums.push(stratum);
+      } else {
+        insertStratums.push(stratum);
+      }
+    });
+
+    if (updateStratums.length) {
+      await this.updateSurveyStratums(surveyId, updateStratums);
+    }
+
+    if (insertStratums.length) {
+      await this.insertSurveyStratums(surveyId, insertStratums);
+    }
+
+    const currentSiteSelectionStrategies = await this.surveyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
+
+    const removeStratums = currentSiteSelectionStrategies.stratums.filter((stratum) => {
+      return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id)
+    });
+    
+    if (removeStratums.length) {
+      await this.deleteSurveyStratums(removeStratums.map((stratum) => stratum.survey_stratum_id));
+    }
+  }
+
+  async insertSurveyStratums(surveyId: number, stratums: SurveyStratum[]): Promise<SurveyStratumRecord[]> {
     return this.surveyRepository.insertSurveyStratums(surveyId, stratums);
   }
 
-  async updateSurveyStratums(surveyId: number, stratums: SurveyStratumRecord[]): Promise<any> {
+  async updateSurveyStratums(surveyId: number, stratums: SurveyStratumRecord[]): Promise<SurveyStratumRecord[]> {
     return this.surveyRepository.updateSurveyStratums(surveyId, stratums);
   }
 
@@ -695,49 +744,19 @@ export class SurveyService extends DBService {
     }
 
     // Handle site selection strategies
-    if (putSurveyData.site_selection_strategies.strategies.length > 0) {
+    if (putSurveyData.site_selection_strategies.strategies) {
       promises.push(this.replaceSurveySiteSelectionStrategies(
         surveyId,
         putSurveyData.site_selection_strategies.strategies
       ));
     }
-
+  
     // Handle stratums
     if (putSurveyData.site_selection_strategies.stratums.length > 0) {
-      const insertStratums: SurveyStratum[] = [];
-      const updateStratums: SurveyStratumRecord[] = [];
-      
-      putSurveyData.site_selection_strategies.stratums.forEach((stratum) => {
-        if ('survey_stratum_id' in stratum) {
-          updateStratums.push(stratum);
-        } else {
-          insertStratums.push(stratum);
-        }
-      });
-
-      if (updateStratums.length) {
-        promises.push(this.updateSurveyStratums(
-          surveyId,
-          updateStratums
-        ));
-      }
-
-      if (insertStratums.length) {
-        promises.push(this.insertSurveyStratums(
-          surveyId,
-          insertStratums
-        ));
-      }
-
-      const currentSiteSelectionStrategies = await this.surveyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
-
-      const removeStratums = currentSiteSelectionStrategies.stratums.filter((stratum) => {
-        return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id)
-      });
-      
-      if (removeStratums.length) {
-        promises.push(this.deleteSurveyStratums(removeStratums.map((stratum) => stratum.survey_stratum_id)));
-      }
+      promises.push(this.replaceSurveySiteSelectionStratums(
+        surveyId,
+        putSurveyData.site_selection_strategies.stratums
+      ));
     }
 
     await Promise.all(promises);

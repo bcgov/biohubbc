@@ -15,6 +15,7 @@ import {
 import { getLogger } from '../utils/logger';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
+// import { Knex } from 'knex';
 
 export interface IGetSpeciesData {
   wldtaxonomic_units_id: string;
@@ -1389,7 +1390,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   async getSiteSelectionStrategiesBySurveyId(surveyId: number): Promise<SiteSelectionStrategies> {
-    defaultLog.debug({ label: 'replaceSurveySiteSelectionStrategies', surveyId });
+    defaultLog.debug({ label: 'getSiteSelectionStrategiesBySurveyId', surveyId });
 
     const strategiesQuery = getKnex()
       .select('ss.name')
@@ -1411,45 +1412,75 @@ export class SurveyRepository extends BaseRepository {
     return { strategies, stratums };
   }
 
-  async replaceSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
+  async deleteSurveySiteSelectionStrategies(surveyId: number): Promise<number> {
+    defaultLog.debug({ label: 'deleteSurveySiteSelectionStrategies', surveyId });
     
-    const sqlStatement = SQL`
-      --- Delete statement
-      WITH A AS (
-        DELETE FROM 
+    const deleteStatement = SQL`
+      DELETE FROM 
         survey_site_strategy
+      WHERE
+      survey_id = ${surveyId}
+      RETURNING *;
+    `;
+
+    const response = await this.connection.sql(deleteStatement);
+    
+    return response.rowCount;
+  }
+  
+  async insertSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {  
+   
+    
+    const insertQuery = SQL`
+      WITH
+        strategies
+      AS (
+        SELECT
+          ss.site_strategy_id
+        FROM
+          site_strategy ss
         WHERE
-          survey_id = ${surveyId}
+          ss.name
+        IN
+          (`;
+
+    strategies.forEach((strategy, index) => {
+      insertQuery.append(`'${strategy}'`);
+      if (index < strategies.length - 1) {
+        insertQuery.append(', ');
+      }
+    })
+
+    insertQuery.append(SQL`
+          )
       )
 
-      --- Insert statement
       INSERT INTO
-      survey_site_strategy (survey_id, site_strategy_id)
+        survey_site_strategy (survey_id, site_strategy_id)
       (
         SELECT
           ${surveyId} AS survey_id,
           site_strategy_id
-          FROM
-          site_strategy
-          WHERE
-          name
-        IN
-        (${strategies.map(strategy => `'${strategy}'`).join(',')})
+        FROM
+          strategies
       )
-      `;
-
-    const { sql, values } = sqlStatement
-      
-    defaultLog.debug({ label: 'replaceSurveySiteSelectionStrategies', surveyId, sql, values });
+    `);
     
-    const response = await this.connection.sql(sqlStatement);
+    const { values, text } = insertQuery
 
+    const response = await this.connection.sql(insertQuery);
+
+    defaultLog.debug({ label: 'insertSurveySiteSelectionStrategies', surveyId, strategies, sql: String(text), values, rows: response.rows });
+    
+
+    /*
     if (response.rowCount !== strategies.length) {
-      throw new ApiExecuteSQLError('Failed to replace survey site selection strategies', [
-        'SurveyRepository->replaceSurveySiteSelectionStrategies',
+      throw new ApiExecuteSQLError('Failed to insert survey site selection strategies', [
+        'SurveyRepository->insertSurveySiteSelectionStrategies',
         `rowCount was ${response.rowCount}, expected rowCount = ${strategies.length}`
       ]);
     }
+    */
   }
 
   async deleteSurveyStratums(stratumIds: number[]): Promise<void> {
