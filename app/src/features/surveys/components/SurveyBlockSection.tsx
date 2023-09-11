@@ -133,7 +133,6 @@ const SurveyBlockSection: React.FC = () => {
           Remove
         </MenuItem>
       </Menu>
-      <TransitionGroup></TransitionGroup>
       <form onSubmit={handleSubmit}>
         <TransitionGroup>
           {values.blocks.map((item, index) => {
