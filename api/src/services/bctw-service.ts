@@ -165,7 +165,7 @@ export class BctwService {
     return await this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`);
   }
 
-  async getDeviceDeployments(deviceId: number): Promise<Record<string, unknown>[]> {
+  async getDeviceDeployments(deviceId: number): Promise<IDeploymentRecord[]> {
     return await this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, { device_id: String(deviceId) });
   }
 
