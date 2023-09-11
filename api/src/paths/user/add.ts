@@ -1,11 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
+import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection } from '../../database/db';
+import { getDBConnection, getServiceAccountDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
+import { getKeycloakSource } from '../../utils/keycloak-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/user/add');
@@ -13,10 +14,14 @@ const defaultLog = getLogger('paths/user/add');
 export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {
-      and: [
+      or: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
+        },
+        {
+          validServiceClientIDs: [SOURCE_SYSTEM['SIMS-SVC-4464']],
+          discriminator: 'ServiceClient'
         }
       ]
     };
@@ -39,7 +44,7 @@ POST.apiDoc = {
         schema: {
           title: 'User Response Object',
           type: 'object',
-          required: ['userIdentifier', 'identitySource', 'displayName', 'email', 'roleId'],
+          required: ['userIdentifier', 'identitySource', 'displayName', 'email'],
           properties: {
             userGuid: {
               type: 'string',
@@ -54,7 +59,8 @@ POST.apiDoc = {
               enum: [
                 SYSTEM_IDENTITY_SOURCE.IDIR,
                 SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
-                SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
+                SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS,
+                SYSTEM_IDENTITY_SOURCE.UNVERIFIED
               ]
             },
             displayName: {
@@ -68,6 +74,17 @@ POST.apiDoc = {
             roleId: {
               type: 'number',
               minimum: 1
+            },
+            given_name: {
+              type: 'string',
+              description: 'The given name for the user.'
+            },
+            family_name: {
+              type: 'string',
+              description: 'The family name for the user.'
+            },
+            role_name: {
+              type: 'string'
             }
           }
         }
@@ -103,35 +120,29 @@ POST.apiDoc = {
  */
 export function addSystemRoleUser(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
-
     const userGuid: string | null = req.body?.userGuid || null;
-    const userIdentifier: string | null = req.body?.userIdentifier || null;
-    const identitySource: string | null = req.body?.identitySource || null;
-    const displayName: string | null = req.body?.displayName || null;
-    const email: string | null = req.body?.email || null;
+    const userIdentifier: string = req.body?.userIdentifier || '';
+    const identitySource: string = req.body?.identitySource || '';
+    const displayName: string = req.body?.displayName || '';
+    const email: string = req.body?.email || '';
 
     const roleId = req.body?.roleId || null;
 
-    if (!userIdentifier) {
-      throw new HTTP400('Missing required body param: userIdentifier');
+    const given_name: string = req.body?.given_name;
+    const family_name: string = req.body?.family_name;
+    const role_name: string = req.body?.role_name;
+
+    const sourceSystem = getKeycloakSource(req['keycloak_token']);
+
+    if (!sourceSystem) {
+      throw new HTTP400('Failed to identify known submission source system', [
+        'token did not contain a clientId/azp or clientId/azp value is unknown'
+      ]);
     }
 
-    if (!identitySource) {
-      throw new HTTP400('Missing required body param: identitySource');
-    }
-
-    if (!displayName) {
-      throw new HTTP400('Missing required body param: identitySource');
-    }
-
-    if (!email) {
-      throw new HTTP400('Missing required body param: identitySource');
-    }
-
-    if (!roleId) {
-      throw new HTTP400('Missing required body param: roleId');
-    }
+    const connection = sourceSystem
+      ? getServiceAccountDBConnection(sourceSystem)
+      : getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
@@ -143,11 +154,17 @@ export function addSystemRoleUser(): RequestHandler {
         userIdentifier,
         identitySource,
         displayName,
-        email
+        email,
+        given_name,
+        family_name
       );
 
       if (userObject) {
-        await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
+        if (role_name) {
+          await userService.addUserSystemRoleByName(userObject.system_user_id, role_name);
+        } else {
+          await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
+        }
       }
 
       await connection.commit();
