@@ -12,9 +12,9 @@ export interface ITableActionsMenuProps {
   critter_id: number;
   devices?: IAnimalDeployment[];
   onAddDevice: (critter_id: number) => void;
-  onRemoveDevice: (critter_id: number) => void;
-  onEditDevice: (critter_id: number) => void;
-  onEditCritter: (critter_id: number) => void;
+  // onRemoveDevice: (critter_id: number) => void;
+  // onEditDevice: (critter_id: number) => void;
+  // onEditCritter: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
 }
 
@@ -65,7 +65,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
         <MenuItem
           onClick={() => {
             handleClose();
-            props.onRemoveDevice(props.critter_id);
+            // props.onRemoveDevice(props.critter_id);
           }}
           data-testid="animal-table-row-remove-device">
           <ListItemIcon>
@@ -76,7 +76,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
         <MenuItem
           onClick={() => {
             handleClose();
-            props.onEditDevice(props.critter_id);
+            // props.onEditDevice(props.critter_id);
           }}
           data-testid="animal-table-row-edit-timespan">
           <ListItemIcon>
@@ -87,7 +87,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
         <MenuItem
           onClick={() => {
             handleClose();
-            props.onEditCritter(props.critter_id);
+            // props.onEditCritter(props.critter_id);
           }}
           data-testid="animal-table-row-edit-critter">
           <ListItemIcon>

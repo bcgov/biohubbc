@@ -246,7 +246,7 @@ export function getCrittersFromSurvey(): RequestHandler {
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
       const critterIds = surveyCritters.map((a: any) => String(a.critterbase_critter_id));
       if (!critterIds.length) {
-        return res.status(200).json([]); // This is to catch some unintended behavior in this critterbase endpoint. TODO: Patch Critterbase to handle this correctly.
+        return res.status(200).json([]); // This is to catch some unintended behavior in this critterbase endpoint. Patch Critterbase to handle this correctly.
       }
       const result = await cb.filterCritters({ critter_ids: { body: critterIds, negate: false } }, 'detailed');
 

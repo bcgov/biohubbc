@@ -54,8 +54,6 @@ interface ISurveyAnimalsTableProps {
   onAddDevice: (critter_id: number) => void;
 }
 
-const noOpPlaceHolder = (critter_id: number) => {};
-
 export const SurveyAnimalsTable = ({
   animalData,
   deviceData,
@@ -112,9 +110,9 @@ export const SurveyAnimalsTable = ({
           critter_id={params.row.survey_critter_id}
           devices={params.row?.telemetry_device}
           onAddDevice={onAddDevice}
-          onRemoveDevice={noOpPlaceHolder}
-          onEditCritter={noOpPlaceHolder}
-          onEditDevice={noOpPlaceHolder}
+          // onRemoveDevice={}
+          // onEditCritter={}
+          // onEditDevice={}
           onRemoveCritter={onRemoveCritter}
         />
       )

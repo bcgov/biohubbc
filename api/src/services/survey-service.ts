@@ -1136,7 +1136,7 @@ export class SurveyService extends DBService {
    *
    * @param {number} critterId
    * @param {string} deplyomentId
-   * @return {*} 
+   * @return {*}
    * @memberof SurveyService
    */
   async addDeployment(critterId: number, deplyomentId: string) {
