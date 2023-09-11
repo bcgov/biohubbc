@@ -28,10 +28,7 @@ export const SurveyLocationYupSchema = yup.object({
   locations: yup.array(
     yup.object({
       name: yup.string().max(50, 'Name cannot exceed 50 characters').required('Name is Required'),
-      description: yup
-        .string()
-        .max(250, 'Description cannot exceed 250 characters')
-        .required('Description is Required'),
+      description: yup.string().max(250, 'Description cannot exceed 250 characters'),
       geometry: yup.array().min(1, 'A geometry is required').required('A geometry is required')
     })
   )
@@ -46,7 +43,12 @@ const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
 
   const { handleSubmit } = formikProps;
+  console.log('______');
+  console.log('______');
+  console.log('______');
   console.log(formikProps.values.locations);
+  console.log(formikProps.errors);
+
   return (
     <form onSubmit={handleSubmit}>
       <Box mb={4}>

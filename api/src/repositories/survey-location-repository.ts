@@ -1,8 +1,20 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { PostLocationData } from '../models/survey-create';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
 
+export const SurveyLocationRecord = z.object({
+  survey_location_id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  geography: z.any(),
+  geojson: z.any(),
+  geometry: z.any().nullable(),
+  revision_count: z.number()
+});
+
+export type SurveyLocationRecord = z.infer<typeof SurveyLocationRecord>;
 export class SurveyLocationRepository extends BaseRepository {
   async insertSurveyLocation(surveyId: number, data: PostLocationData): Promise<void> {
     const sql = SQL`
@@ -31,5 +43,26 @@ export class SurveyLocationRepository extends BaseRepository {
 
     sql.append(SQL`);`);
     await this.connection.sql(sql);
+  }
+
+  /**
+   * Get Survey location for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<GetSurveyLocationData[]>
+   * @memberof SurveyRepository
+   */
+  async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_location
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyLocationRecord);
+    return response.rows;
   }
 }

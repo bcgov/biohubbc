@@ -14,12 +14,12 @@ import {
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
   ISurveyPartnerships,
-  SurveyLocationRecord,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PublishStatus } from '../repositories/history-publish-repository';
+import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -94,7 +94,7 @@ export class SurveyService extends DBService {
       partnerships: await this.getSurveyPartnershipsData(surveyId),
       purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
       proprietor: await this.getSurveyProprietorDataForView(surveyId),
-      locations: [], //await this.getSurveyLocationsData(surveyId),
+      locations: await this.getSurveyLocationsData(surveyId),
       participants: await this.surveyParticipationService.getSurveyParticipants(surveyId)
     };
   }
@@ -219,7 +219,8 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
-    return this.surveyRepository.getSurveyLocationsData(surveyId);
+    const service = new SurveyLocationService(this.connection);
+    return service.getSurveyLocationsData(surveyId);
   }
 
   /**

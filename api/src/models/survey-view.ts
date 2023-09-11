@@ -1,7 +1,7 @@
 import { Feature } from 'geojson';
-import { z } from 'zod';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
+import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 
 export type SurveyObject = {
@@ -161,15 +161,6 @@ export type SurveySupplementaryData = {
   survey_metadata_publish: SurveyMetadataPublish | null;
 };
 
-export const SurveyLocationRecord = z.object({
-  survey_spatial_component_id: z.number(),
-  name: z.string(),
-  description: z.string(),
-  geometry: z.array(z.any()),
-  revision_count: z.number()
-});
-
-export type SurveyLocationRecord = z.infer<typeof SurveyLocationRecord>;
 export class GetSurveyLocationData {
   survey_spatial_component_id: number;
   name: string;

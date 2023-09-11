@@ -9,8 +9,7 @@ import {
   GetAttachmentsData,
   GetReportAttachmentsData,
   GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData,
-  SurveyLocationRecord
+  GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
 import { getLogger } from '../utils/logger';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
@@ -340,28 +339,6 @@ export class SurveyRepository extends BaseRepository {
     }
 
     return new GetSurveyProprietorData(result);
-  }
-
-  /**
-   * Get Survey location for a given survey ID
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<GetSurveyLocationData[]>
-   * @memberof SurveyRepository
-   */
-  async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
-    const sqlStatement = SQL`
-      SELECT
-        *
-      FROM
-        survey_location
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement, SurveyLocationRecord);
-
-    return response.rows;
   }
 
   /**
