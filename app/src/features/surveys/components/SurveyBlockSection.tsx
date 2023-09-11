@@ -169,7 +169,7 @@ const SurveyBlockSection: React.FC = () => {
           }}
           data-testid="block-form-add-button"
           variant="outlined"
-          color="secondary"
+          color="primary"
           title="Add Block"
           aria-label="Add Block"
           startIcon={<Icon path={mdiPlus} size={1} />}
