@@ -6,15 +6,15 @@ import { ListItemIcon, Menu, MenuItem, MenuProps, Typography } from '@mui/materi
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import { useFormikContext } from 'formik';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 import CreateSurveyBlockDialog from './CreateSurveyBlockDialog';
 import EditSurveyBlockDialog from './EditSurveyBlockDialog';
-import { TransitionGroup } from 'react-transition-group';
-import Collapse from '@mui/material/Collapse';
 
 export const SurveyBlockInitialValues = {
   blocks: []
@@ -94,7 +94,10 @@ const SurveyBlockSection: React.FC = () => {
         sx={{
           marginBottom: '14px'
         }}>
-        Define Blocks <Typography component="span" color="textSecondary" fontWeight="inherit">(optional)</Typography>
+        Define Blocks{' '}
+        <Typography component="span" color="textSecondary" fontWeight="inherit">
+          (optional)
+        </Typography>
       </Typography>
       <Typography
         variant="body1"
@@ -135,16 +138,15 @@ const SurveyBlockSection: React.FC = () => {
         <TransitionGroup>
           {values.blocks.map((item, index) => {
             return (
-              <Collapse key={`${item.name}-${item.description}`}>
-                <Card 
+              <Collapse key={`${item.name}-${item.description}-${index}`}>
+                <Card
                   variant="outlined"
                   sx={{
                     mt: 1,
                     '& .MuiCardHeader-title': {
                       mb: 0.5
                     }
-                  }}
-                >
+                  }}>
                   <CardHeader
                     action={
                       <IconButton

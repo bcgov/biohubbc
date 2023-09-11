@@ -147,7 +147,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
       </Box>
       {errors?.['participants'] && selectedUsers.length > 0 && (
         <Box mt={3}>
-          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text}/>
+          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
         </Box>
       )}
       <Box mt={3}>
