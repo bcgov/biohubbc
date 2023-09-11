@@ -21,10 +21,7 @@ const EditSurveyBlockDialog: React.FC<IEditBlockProps> = (props) => {
   return (
     <>
       <EditDialog
-        dialogTitle={'Edit Block'}
-        dialogText={
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.'
-        }
+        dialogTitle={'Edit Block Details'}
         open={open}
         dialogLoading={false}
         component={{

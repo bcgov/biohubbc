@@ -20,9 +20,6 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
     <>
       <EditDialog
         dialogTitle={'Add Block'}
-        dialogText={
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.'
-        }
         open={open}
         dialogLoading={false}
         component={{
@@ -57,7 +54,7 @@ const CreateSurveyBlockDialog: React.FC<ICreateBlockProps> = (props) => {
         message={
           <>
             <Typography variant="body2" component="div">
-              Block <strong>{blockName}</strong> has been added.
+              Block '<strong>{blockName}</strong>' has been added.
             </Typography>
           </>
         }

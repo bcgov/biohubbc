@@ -2,7 +2,7 @@ import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { ListItemIcon, Menu, MenuItem, MenuProps, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -20,8 +20,8 @@ export const SurveyBlockInitialValues = {
 
 // Form validation for Block Item
 export const BlockYupSchema = yup.object({
-  name: yup.string().required().max(50, 'Maximum 50 characters'),
-  description: yup.string().required().max(250, 'Maximum 250 characters')
+  name: yup.string().required('Name is required').max(50, 'Maximum 50 characters'),
+  description: yup.string().required('Description is required').max(250, 'Maximum 250 characters')
 });
 
 export const SurveyBlockYupSchema = yup.array(BlockYupSchema);
@@ -92,7 +92,7 @@ const SurveyBlockSection: React.FC = () => {
         sx={{
           marginBottom: '14px'
         }}>
-        Define Blocks
+        Define Blocks <Typography component="span" color="textSecondary" fontWeight="inherit">(optional)</Typography>
       </Typography>
       <Typography
         variant="body1"
@@ -100,8 +100,7 @@ const SurveyBlockSection: React.FC = () => {
         sx={{
           maxWidth: '90ch'
         }}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec
-        placerat nisl magna, et faucibus arcu condimentum sed.
+        Enter a name and description for each block used in this survey.
       </Typography>
       <Menu
         open={Boolean(anchorEl)}
@@ -129,38 +128,50 @@ const SurveyBlockSection: React.FC = () => {
         </MenuItem>
       </Menu>
       <form onSubmit={handleSubmit}>
+        {values.blocks.map((item, index) => {
+          return (
+            <Card 
+              key={`${item.name}-${item.description}`}
+              variant="outlined"
+              sx={{
+                mt: 1,
+                '&:first-child': {
+                  mt: 3
+                },
+                '& .MuiCardHeader-title': {
+                  mb: 0.5
+                }
+              }}
+            >
+              <CardHeader
+                action={
+                  <IconButton
+                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                      handleMenuClick(event, index)
+                    }
+                    aria-label="settings">
+                    <MoreVertIcon />
+                  </IconButton>
+                }
+                title={item.name}
+                subheader={item.description}
+              />
+            </Card>
+          );
+        })}
         <Button
+          sx={{
+            mt: 3
+          }}
           data-testid="block-form-add-button"
-          sx={{ marginBottom: 2, marginTop: 2 }}
           variant="outlined"
-          color="primary"
+          color="secondary"
           title="Add Block"
           aria-label="Add Block"
           startIcon={<Icon path={mdiPlus} size={1} />}
           onClick={() => setIsCreateModalOpen(true)}>
           Add Block
         </Button>
-        <Box>
-          {values.blocks.map((item, index) => {
-            return (
-              <Card key={`${item.name}-${item.description}`} sx={{ marginTop: 1 }} variant="outlined">
-                <CardHeader
-                  action={
-                    <IconButton
-                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                        handleMenuClick(event, index)
-                      }
-                      aria-label="settings">
-                      <MoreVertIcon />
-                    </IconButton>
-                  }
-                  title={item.name}
-                  subheader={item.description}
-                />
-              </Card>
-            );
-          })}
-        </Box>
       </form>
     </>
   );
