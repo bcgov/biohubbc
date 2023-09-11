@@ -334,7 +334,8 @@ GET.apiDoc = {
                               type: 'string'
                             },
                             description: {
-                              type: 'string'
+                              type: 'string',
+                              nullable: true
                             }
                           }
                         }

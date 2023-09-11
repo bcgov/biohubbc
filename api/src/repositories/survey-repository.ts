@@ -137,9 +137,13 @@ export const SurveyStratum = z.object({
 });
 
 export const SurveyStratumRecord = z.object({
+  name: z.string(),
+  description: z.string().nullable(),
+  survey_id: z.number(),
   survey_stratum_id: z.number(),
-  revision_count: z.number()
-}).merge(SurveyStratum);
+  revision_count: z.number(),
+  update_date: z.string().nullable()
+})
 
 export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
 
@@ -1572,13 +1576,6 @@ export class SurveyRepository extends BaseRepository {
         .where('survey_stratum_id', stratum.survey_stratum_id)
         .returning('*');
     }
-
-    const queries = stratums.map(makeUpdateQuery);
-
-    queries.forEach((q, i) => {
-      const { sql, bindings } = q.toSQL().toNative();
-      console.log({ number: i, sql, bindings })
-    })
 
     const responses = await Promise.all(stratums.map((stratum) => this.connection.knex(makeUpdateQuery(stratum), SurveyStratumRecord)))
 
