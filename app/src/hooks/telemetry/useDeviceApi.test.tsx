@@ -34,4 +34,10 @@ describe('useDeviceApi', () => {
     const result = await useDeviceApi(axios).getCodeValues('code_header_name');
     expect(result).toEqual([mockCodeValues]);
   });
+
+  it('should return device deployment details', async () => {
+    mock.onGet(`/api/telemetry/device/${123}`).reply(200, { device: undefined, deployments: [] });
+    const result = await useDeviceApi(axios).getDeviceDetails(123);
+    expect(result.deployments.length).toBe(0);
+  });
 });

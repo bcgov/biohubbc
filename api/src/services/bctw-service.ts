@@ -62,10 +62,12 @@ export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
 export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
 export const GET_DEPLOYMENTS_ENDPOINT = '/get-deployments';
 export const GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT = '/get-deployments-by-critter-id';
+export const GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT = '/get-deployments-by-device-id';
 export const UPDATE_DEPLOYMENT_ENDPOINT = '/update-deployment';
 export const GET_COLLAR_VENDORS_ENDPOINT = '/get-collar-vendors';
 export const HEALTH_ENDPOINT = '/health';
 export const GET_CODE_ENDPOINT = '/get-code';
+export const GET_DEVICE_DETAILS = '/get-collar-history-by-device/';
 
 export class BctwService {
   user: IBctwUser;
@@ -88,7 +90,9 @@ export class BctwService {
       },
       (error: AxiosError) => {
         return Promise.reject(
-          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`)
+          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`, [
+            error?.response?.data
+          ])
         );
       }
     );
@@ -155,6 +159,14 @@ export class BctwService {
    */
   async deployDevice(device: IDeployDevice): Promise<IDeploymentRecord> {
     return await this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
+  }
+
+  async getDeviceDetails(deviceId: number): Promise<Record<string, unknown>[]> {
+    return await this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`);
+  }
+
+  async getDeviceDeployments(deviceId: number): Promise<Record<string, unknown>[]> {
+    return await this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, { device_id: String(deviceId) });
   }
 
   /**

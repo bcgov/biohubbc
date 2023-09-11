@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { IAnimalDeployment } from 'features/surveys/view/survey-animals/animal';
 
 interface ICodeResponse {
   code_header_title: string;
@@ -31,7 +32,26 @@ const useDeviceApi = (axios: AxiosInstance) => {
     }
     return [];
   };
+
+  interface IGetDeviceDetailsResponse {
+    device: Record<string, unknown> | undefined;
+    deployments: Omit<IAnimalDeployment, 'device_id'>[];
+  }
+
+  const getDeviceDetails = async (deviceId: number): Promise<IGetDeviceDetailsResponse> => {
+    try {
+      const { data } = await axios.get(`/api/telemetry/device/${deviceId}`);
+      return data;
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log(e.message);
+      }
+    }
+    return { device: undefined, deployments: [] };
+  };
+
   return {
+    getDeviceDetails,
     getCollarVendors,
     getCodeValues
   };

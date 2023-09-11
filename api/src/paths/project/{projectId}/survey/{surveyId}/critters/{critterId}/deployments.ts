@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { v4 } from 'uuid';
@@ -142,9 +143,10 @@ export function deployDevice(): RequestHandler {
       await connection.commit();
       return res.status(201).json(surveyEntry);
     } catch (error) {
-      defaultLog.error({ label: 'createCritter', message: 'error', error });
+      defaultLog.error({ label: 'addDeployment', message: 'error', error });
+      console.log(JSON.stringify((error as Error).message));
       await connection.rollback();
-      throw error;
+      return res.status(500).json((error as AxiosError).response);
     } finally {
       connection.release();
     }

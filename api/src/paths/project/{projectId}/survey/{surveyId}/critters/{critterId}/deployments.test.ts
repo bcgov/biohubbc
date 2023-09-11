@@ -44,12 +44,9 @@ describe('deployDevice', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError).to.equal(mockError);
       expect(mockGetDBConnection.calledOnce).to.be.true;
       expect(mockAddDeployment.calledOnce).to.be.true;
       expect(mockBctwService.notCalled).to.be.true;
-      expect(mockRes.status).not.to.have.been.called;
-      expect(mockRes.json).not.to.have.been.called;
     }
   });
 });

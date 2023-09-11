@@ -10,7 +10,9 @@ import {
   GET_CODE_ENDPOINT,
   GET_COLLAR_VENDORS_ENDPOINT,
   GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT,
+  GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT,
   GET_DEPLOYMENTS_ENDPOINT,
+  GET_DEVICE_DETAILS,
   HEALTH_ENDPOINT,
   IDeployDevice,
   IDeploymentUpdate,
@@ -180,6 +182,28 @@ describe('BctwService', () => {
 
         expect(mockGetRequest).to.have.been.calledOnceWith(GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT, {
           critter_ids: ['abc123']
+        });
+      });
+    });
+
+    describe('getDeviceDetails', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        await bctwService.getDeviceDetails(123);
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(`${GET_DEVICE_DETAILS}${123}`);
+      });
+    });
+
+    describe('getDeviceDeployments', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        await bctwService.getDeviceDeployments(123);
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, {
+          device_id: '123'
         });
       });
     });

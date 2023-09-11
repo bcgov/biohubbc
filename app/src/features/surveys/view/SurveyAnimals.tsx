@@ -107,11 +107,21 @@ const SurveyAnimals: React.FC = () => {
   const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDevice) => {
     const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
     const critterTelemetryDevice = { ...data, critter_id: critter?.critter_id ?? '' };
-    await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
+    try {
+      await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
+    } catch (e) {
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            {`Could not add deployment.`}
+          </Typography>
+        )
+      });
+    }
     setOpenAddDeviceDialog(false);
     refreshDeployments();
   };
-  console.log('deploymentData', deploymentData);
 
   return (
     <Box>
