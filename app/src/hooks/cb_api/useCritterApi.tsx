@@ -1,6 +1,5 @@
 import { AxiosInstance } from 'axios';
 import { Critter } from 'features/surveys/view/survey-animals/animal';
-import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 
 const useCritterApi = (axios: AxiosInstance) => {
   const getAllCritters = async (): Promise<Record<string, unknown>[]> => {

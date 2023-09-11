@@ -1,43 +1,11 @@
 import { Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
-import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
+import { CustomDataGrid } from 'components/tables/CustomDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { getFormattedDate } from 'utils/Utils';
 import { IAnimalDeployment } from './animal';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
-const useStyles = makeStyles(() => ({
-  projectsTable: {
-    tableLayout: 'fixed'
-  },
-  linkButton: {
-    textAlign: 'left',
-    fontWeight: 700
-  },
-  noDataText: {
-    fontFamily: 'inherit !important',
-    fontSize: '0.875rem',
-    fontWeight: 700
-  },
-  dataGrid: {
-    border: 'none !important',
-    fontFamily: 'inherit !important',
-    '& .MuiDataGrid-columnHeaderTitle': {
-      textTransform: 'uppercase',
-      fontSize: '0.875rem',
-      fontWeight: 700,
-      color: grey[600]
-    },
-    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
-      {
-        outline: 'none !important'
-      },
-    '& .MuiDataGrid-row:hover': {
-      backgroundColor: 'transparent !important'
-    }
-  }
-}));
 
 interface ISurveyAnimalsTableEntry {
   survey_critter_id: number;
@@ -64,7 +32,6 @@ export const SurveyAnimalsTable = ({
   onRemoveCritter,
   onAddDevice
 }: ISurveyAnimalsTableProps): JSX.Element => {
-  const classes = useStyles();
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
     {
       field: 'critter_id',
@@ -134,8 +101,7 @@ export const SurveyAnimalsTable = ({
     : animalData;
 
   return (
-    <DataGrid
-      className={classes.dataGrid}
+    <CustomDataGrid
       autoHeight
       rows={animalDeviceData}
       getRowId={(row) => row.critter_id}
