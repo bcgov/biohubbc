@@ -9,7 +9,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import {
   AnimalSchema,
@@ -54,8 +54,6 @@ const SurveyAnimals: React.FC = () => {
     loadDeployments();
   }
 
-  useEffect(() => {});
-
   const toggleDialog = () => {
     setOpenAddCritterDialog((d) => !d);
   };
@@ -75,7 +73,7 @@ const SurveyAnimals: React.FC = () => {
   };
 
   const DeviceFormValues: IAnimalTelemetryDevice = {
-    device_id: '' as unknown as number,
+    device_id: 0,
     device_make: '',
     frequency: 0,
     frequency_unit: '',
@@ -108,17 +106,12 @@ const SurveyAnimals: React.FC = () => {
 
   const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDevice) => {
     const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
-    (data as any).critter_id = critter?.critter_id;
-    console.log('Data to be sent ' + JSON.stringify(data));
-    await bhApi.survey.addDeployment(
-      projectId,
-      surveyId,
-      survey_critter_id,
-      data as IAnimalTelemetryDevice & { critter_id: string }
-    );
+    const critterTelemetryDevice = { ...data, critter_id: critter?.critter_id ?? '' };
+    await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
     setOpenAddDeviceDialog(false);
     refreshDeployments();
   };
+  console.log('deploymentData', deploymentData);
 
   return (
     <Box>
@@ -160,8 +153,6 @@ const SurveyAnimals: React.FC = () => {
         onSave={(values) => {
           if (selectedCritterId) {
             handleTelemetrySave(selectedCritterId, values);
-          } else {
-            console.log('No selectedCritterId: ' + selectedCritterId);
           }
         }}
       />
@@ -179,11 +170,11 @@ const SurveyAnimals: React.FC = () => {
           <SurveyAnimalsTable
             animalData={critterData}
             deviceData={deploymentData}
-            removeCritterAction={(critter_id) => {
+            onRemoveCritter={(critter_id) => {
               bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
               refreshCritters();
             }}
-            addDeviceAction={(critter_id) => {
+            onAddDevice={(critter_id) => {
               setSelectedCritterId(critter_id);
               setOpenAddDeviceDialog(true);
             }}

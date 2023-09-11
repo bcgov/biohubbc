@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -49,17 +50,19 @@ interface ISurveyAnimalsTableEntry {
 interface ISurveyAnimalsTableProps {
   animalData: IDetailedCritterWithInternalId[];
   deviceData?: IAnimalDeployment[];
-  removeCritterAction: (critter_id: number) => void;
-  addDeviceAction: (critter_id: number) => void;
+  onRemoveCritter: (critter_id: number) => void;
+  onAddDevice: (critter_id: number) => void;
 }
 
-const noOpPlaceHolder = (critter_id: number) => {};
+const noOpPlaceHolder = (critter_id: number) => {
+  // This function intentionally left blank - used as placeholder.
+};
 
 export const SurveyAnimalsTable = ({
   animalData,
   deviceData,
-  removeCritterAction,
-  addDeviceAction
+  onRemoveCritter,
+  onAddDevice
 }: ISurveyAnimalsTableProps): JSX.Element => {
   const classes = useStyles();
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
@@ -83,14 +86,20 @@ export const SurveyAnimalsTable = ({
       field: 'create_timestamp',
       headerName: 'Created On',
       flex: 1,
-      renderCell: (params) => <p>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}</p>
+      renderCell: (params) => (
+        <Typography>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}</Typography>
+      )
     },
     {
       field: 'telemetry_device',
       headerName: 'Device ID',
       flex: 1,
       renderCell: (params) => (
-        <p>{params.value?.map((device: IAnimalDeployment) => device.device_id).join(', ') ?? 'No Device'}</p>
+        <Typography>
+          {params.value?.length
+            ? params.value?.map((device: IAnimalDeployment) => device.device_id).join(', ')
+            : 'No Device'}
+        </Typography>
       )
     },
     {
@@ -104,11 +113,11 @@ export const SurveyAnimalsTable = ({
         <SurveyAnimalsTableActions
           critter_id={params.row.survey_critter_id}
           devices={params.row?.telemetry_device}
-          onAddDevice={addDeviceAction}
+          onAddDevice={onAddDevice}
           onRemoveDevice={noOpPlaceHolder}
           onEditCritter={noOpPlaceHolder}
           onEditDevice={noOpPlaceHolder}
-          onRemoveCritter={removeCritterAction}
+          onRemoveCritter={onRemoveCritter}
         />
       )
     }
@@ -119,7 +128,7 @@ export const SurveyAnimalsTable = ({
         const devices = deviceData.filter((device) => device.critter_id === animal.critter_id);
         return {
           ...animal,
-          telemetry_device: devices.length ? devices : null
+          telemetry_device: devices
         };
       })
     : animalData;

@@ -1,6 +1,5 @@
-// TODO: Add functions for all device-orient bctw routes (vendor lookup, device deployment, etc.);
-
 import { AxiosInstance } from 'axios';
+
 interface ICodeResponse {
   code_header_title: string;
   code_header_name: string;
