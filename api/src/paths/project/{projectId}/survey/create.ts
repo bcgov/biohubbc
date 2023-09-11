@@ -248,6 +248,21 @@ POST.apiDoc = {
                   }
                 }
               }
+            },
+            blocks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['name', 'description'],
+                properties: {
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
+                    type: 'string'
+                  }
+                }
+              }
             }
           }
         }
