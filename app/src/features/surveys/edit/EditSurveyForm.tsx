@@ -28,6 +28,7 @@ import GeneralInformationForm, {
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from '../components/StudyAreaForm';
+import SurveyBlockSection, { SurveyBlockInitialValues } from '../components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
@@ -96,7 +97,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         foippa_requirements_accepted: 'true' as unknown as StringBoolean
       }
     },
-    ...SurveyUserJobFormInitialValues
+    ...SurveyUserJobFormInitialValues,
+    ...SurveyBlockInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -231,6 +233,13 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             }
           />
 
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
+            title="Sampling Methods"
+            summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
+            component={<SurveyBlockSection />}
+          />
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
