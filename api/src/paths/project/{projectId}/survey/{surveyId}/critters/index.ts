@@ -171,26 +171,33 @@ export function getCrittersFromSurvey(): RequestHandler {
     };
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
-    const cb = new CritterbaseService(user);
+
     const surveyService = new SurveyCritterService(connection);
+    const critterbaseService = new CritterbaseService(user);
     try {
       await connection.open();
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
-      const critterIds = surveyCritters.map((a: any) => String(a.critterbase_critter_id));
-      if (!critterIds.length) {
-        return res.status(200).json([]); // This is to catch some unintended behavior in this critterbase endpoint. Patch Critterbase to handle this correctly.
-      }
-      const result = await cb.filterCritters({ critter_ids: { body: critterIds, negate: false } }, 'detailed');
 
-      for (const bhCritter of surveyCritters) {
-        //This loop is obviously inefficient but probably inconsequential unless people are adding 100+ critters one by one to a survey.
-        const cbCritter = result.find((a: any) => a.critter_id === bhCritter.critterbase_critter_id);
-        if (cbCritter) {
-          cbCritter.survey_critter_id = bhCritter.critter_id;
+      // Exit early if surveyCritters list is empty
+      if (!surveyCritters.length) return res.status(200).json([]);
+
+      const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
+      const result = await critterbaseService.filterCritters(
+        { critter_ids: { body: critterIds, negate: false } },
+        'detailed'
+      );
+
+      const critterMap = new Map();
+      for (const item of result) {
+        critterMap.set(item.critter_id, item);
+      }
+
+      for (const surveyCritter of surveyCritters) {
+        if (critterMap.has(surveyCritter.critterbase_critter_id)) {
+          critterMap.get(surveyCritter.critterbase_critter_id).survey_critter_id = surveyCritter.critter_id;
         }
       }
-
-      return res.status(200).json(result);
+      return res.status(200).json([...critterMap.values()]);
     } catch (error) {
       defaultLog.error({ label: 'createCritter', message: 'error', error });
       await connection.rollback();
