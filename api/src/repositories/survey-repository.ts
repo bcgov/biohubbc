@@ -15,7 +15,6 @@ import {
 import { getLogger } from '../utils/logger';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
-// import { Knex } from 'knex';
 
 export interface IGetSpeciesData {
   wldtaxonomic_units_id: string;
@@ -1389,6 +1388,13 @@ export class SurveyRepository extends BaseRepository {
     return response.rowCount;
   }
 
+  /**
+   * Retreives the site selection strategies and stratums for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SiteSelectionStrategies>}
+   * @memberof SurveyRepository
+   */
   async getSiteSelectionStrategiesBySurveyId(surveyId: number): Promise<SiteSelectionStrategies> {
     defaultLog.debug({ label: 'getSiteSelectionStrategiesBySurveyId', surveyId });
 
@@ -1412,6 +1418,13 @@ export class SurveyRepository extends BaseRepository {
     return { strategies, stratums };
   }
 
+  /**
+   * Deletes all site selection strategies belonging to a survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyRepository
+   */
   async deleteSurveySiteSelectionStrategies(surveyId: number): Promise<number> {
     defaultLog.debug({ label: 'deleteSurveySiteSelectionStrategies', surveyId });
     
@@ -1428,9 +1441,17 @@ export class SurveyRepository extends BaseRepository {
     return response.rowCount;
   }
   
+  /**
+   * Inserts site selection strategies (by name) for a survey
+   *
+   * @param {number} surveyId
+   * @param {string[]} strategies
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyRepository
+   */
   async insertSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {  
-   
-    
+    defaultLog.debug({ label: 'insertSurveySiteSelectionStrategies', surveyId, strategies });
+
     const insertQuery = SQL`
       WITH
         strategies
@@ -1464,25 +1485,26 @@ export class SurveyRepository extends BaseRepository {
         FROM
           strategies
       )
+      RETURNING *;
     `);
-    
-    const { values, text } = insertQuery
 
-    const response = await this.connection.sql(insertQuery);
+    const response = await this.connection.sql(insertQuery);    
 
-    defaultLog.debug({ label: 'insertSurveySiteSelectionStrategies', surveyId, strategies, sql: String(text), values, rows: response.rows });
-    
-
-    /*
     if (response.rowCount !== strategies.length) {
       throw new ApiExecuteSQLError('Failed to insert survey site selection strategies', [
         'SurveyRepository->insertSurveySiteSelectionStrategies',
         `rowCount was ${response.rowCount}, expected rowCount = ${strategies.length}`
       ]);
     }
-    */
   }
 
+  /**
+   * Deletes the given survey stratums by ID
+   *
+   * @param {number[]} stratumIds
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyRepository
+   */
   async deleteSurveyStratums(stratumIds: number[]): Promise<void> {
     defaultLog.debug({ label: 'deleteSurveyStratums', stratumIds });
 
@@ -1495,6 +1517,14 @@ export class SurveyRepository extends BaseRepository {
     await this.connection.knex(deleteQuery, SurveyStratumRecord);
   }
 
+  /**
+   * Inserts the given survey stratums for the given survey
+   *
+   * @param {number} surveyId
+   * @param {SurveyStratum[]} stratums
+   * @return {*}  {Promise<SurveyStratumRecord[]>}
+   * @memberof SurveyRepository
+   */
   async insertSurveyStratums(surveyId: number, stratums: SurveyStratum[]): Promise<SurveyStratumRecord[]> {
     defaultLog.debug({ label: 'insertSurveyStratums', surveyId });
     
@@ -1506,9 +1536,8 @@ export class SurveyRepository extends BaseRepository {
         description: stratum.description
       })))
       .returning('*');
-      
-    await this.connection.knex(insertQuery, SurveyStratumRecord);
-    const response = await this.connection.knex(insertQuery);
+
+    const response = await this.connection.knex(insertQuery, SurveyStratumRecord);
 
     if (response.rowCount !== stratums.length) {
       throw new ApiExecuteSQLError('Failed to insert survey stratums', [
@@ -1531,17 +1560,28 @@ export class SurveyRepository extends BaseRepository {
   async updateSurveyStratums(surveyId: number, stratums: SurveyStratumRecord[]): Promise<SurveyStratumRecord[]> {
     defaultLog.debug({ label: 'updateSurveyStratums', surveyId });
 
-    const makeUpdateQuery = (stratum: SurveyStratumRecord) => getKnex()
-      .table('survey_stratum')
-      .update({
-        ...stratum,
-        survey_id: surveyId,
-        revision_count: stratum.revision_count + 1
-      })
-      .where('survey_stratum_id', stratum.survey_stratum_id)
-      .returning('*');
+    const makeUpdateQuery = (stratum: SurveyStratumRecord) => {
+      return getKnex()
+        .table('survey_stratum')
+        .update({
+          survey_id: surveyId,
+          name: stratum.name,
+          description: stratum.description,
+          update_date: 'now()'
+        })
+        .where('survey_stratum_id', stratum.survey_stratum_id)
+        .returning('*');
+    }
+
+    const queries = stratums.map(makeUpdateQuery);
+
+    queries.forEach((q, i) => {
+      const { sql, bindings } = q.toSQL().toNative();
+      console.log({ number: i, sql, bindings })
+    })
 
     const responses = await Promise.all(stratums.map((stratum) => this.connection.knex(makeUpdateQuery(stratum), SurveyStratumRecord)))
+
     const records = responses.reduce((acc: SurveyStratumRecord[], queryResult) => {
       return [...acc, ...queryResult.rows]
     }, []);

@@ -480,7 +480,7 @@ export class SurveyService extends DBService {
   }
 
   async replaceSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
-    // await this.surveyRepository.deleteSurveySiteSelectionStrategies(surveyId);
+    await this.surveyRepository.deleteSurveySiteSelectionStrategies(surveyId);
 
     if (strategies.length > 0) {
       await this.insertSurveySiteSelectionStrategies(surveyId, strategies);
@@ -499,6 +499,7 @@ export class SurveyService extends DBService {
   async replaceSurveySiteSelectionStratums(surveyId: number, stratums: Array<SurveyStratum | SurveyStratumRecord>): Promise<void> {
     const insertStratums: SurveyStratum[] = [];
     const updateStratums: SurveyStratumRecord[] = [];
+    const existingSiteSelectionStrategies = await this.surveyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
     
     stratums.forEach((stratum) => {
       if ('survey_stratum_id' in stratum) {
@@ -508,22 +509,22 @@ export class SurveyService extends DBService {
       }
     });
 
+    const removeStratums = existingSiteSelectionStrategies.stratums.filter((stratum) => {
+      return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id)
+    });
+
+    defaultLog.debug({ insertStratums, updateStratums, removeStratums })
+
+    if (removeStratums.length) {
+      await this.deleteSurveyStratums(removeStratums.map((stratum) => stratum.survey_stratum_id));
+    }
+
     if (updateStratums.length) {
       await this.updateSurveyStratums(surveyId, updateStratums);
     }
 
     if (insertStratums.length) {
       await this.insertSurveyStratums(surveyId, insertStratums);
-    }
-
-    const currentSiteSelectionStrategies = await this.surveyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
-
-    const removeStratums = currentSiteSelectionStrategies.stratums.filter((stratum) => {
-      return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id)
-    });
-    
-    if (removeStratums.length) {
-      await this.deleteSurveyStratums(removeStratums.map((stratum) => stratum.survey_stratum_id));
     }
   }
 
@@ -752,7 +753,7 @@ export class SurveyService extends DBService {
     }
   
     // Handle stratums
-    if (putSurveyData.site_selection_strategies.stratums.length > 0) {
+    if (putSurveyData.site_selection_strategies.stratums) {
       promises.push(this.replaceSurveySiteSelectionStratums(
         surveyId,
         putSurveyData.site_selection_strategies.stratums
