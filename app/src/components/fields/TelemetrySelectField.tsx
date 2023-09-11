@@ -8,7 +8,7 @@ interface ITelemetrySelectField {
   name: string;
   label: string;
   id: string;
-  fetchData: () => Promise<any>;
+  fetchData: () => Promise<(string | number)[]>;
   controlProps?: FormControlProps;
 }
 
@@ -39,9 +39,9 @@ const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
         onBlur={handleBlur}
         displayEmpty
         inputProps={{ 'aria-label': 'Permit Type' }}>
-        {bctwLookupLoader.data?.map((a: any) => {
+        {bctwLookupLoader.data?.map((a: string | number) => {
           return (
-            <MenuItem key={a} value={a}>
+            <MenuItem key={a.toString()} value={a}>
               {a}
             </MenuItem>
           );

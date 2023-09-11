@@ -43,6 +43,7 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
+import SurveyBlockSection, { SurveyBlockInitialValues } from './components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
@@ -136,7 +137,8 @@ const CreateSurveyPage = () => {
     ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues,
-    ...SurveyUserJobFormInitialValues
+    ...SurveyUserJobFormInitialValues,
+    ...SurveyBlockInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -375,6 +377,13 @@ const CreateSurveyPage = () => {
                   }
                 />
 
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Block Data"
+                  summary="Data for Blocks"
+                  component={<SurveyBlockSection />}
+                />
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
