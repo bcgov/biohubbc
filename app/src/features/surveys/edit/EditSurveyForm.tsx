@@ -29,6 +29,7 @@ import GeneralInformationForm, {
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from '../components/StudyAreaForm';
+import SurveyBlockSection, { SurveyBlockInitialValues } from '../components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
@@ -102,7 +103,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
       }
     },
     ...SurveySiteSelectionInitialValues,
-    ...SurveyUserJobFormInitialValues
+    ...SurveyUserJobFormInitialValues,
+    ...SurveyBlockInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -242,6 +244,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
+<<<<<<< HEAD
             title="Site Selection Strategy"
             summary="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed."
             component={
@@ -280,6 +283,12 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             }
           />
 
+=======
+            title="Block Data"
+            summary="Data for Blocks"
+            component={<SurveyBlockSection />}
+          />
+>>>>>>> dev
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent

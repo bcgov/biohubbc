@@ -1,5 +1,6 @@
 import { Feature } from 'geojson';
 import { SurveyStratum } from '../repositories/survey-repository';
+import { PostSurveyBlock } from '../repositories/survey-block-repository';
 
 export class PostSurveyObject {
   survey_details: PostSurveyDetailsData;
@@ -13,6 +14,7 @@ export class PostSurveyObject {
   participants: PostParticipationData[];
   partnerships: PostPartnershipsData;
   site_selection_strategies: PostSiteSelectionStrategies;
+  blocks: PostSurveyBlock[];
 
   constructor(obj?: any) {
     this.survey_details = (obj?.survey_details && new PostSurveyDetailsData(obj.survey_details)) || null;
@@ -29,6 +31,7 @@ export class PostSurveyObject {
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
     this.site_selection_strategies = (obj?.site_selection_strategies && new PostSiteSelectionStrategies(obj)) || null;
+    this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
   }
 }
 

@@ -1,6 +1,7 @@
 import { Feature } from 'geojson';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
+import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 import { SiteSelectionStrategies } from '../repositories/survey-repository';
 
@@ -15,6 +16,7 @@ export type SurveyObject = {
   participants: SurveyUser[];
   partnerships: ISurveyPartnerships;
   site_selection_strategies: SiteSelectionStrategies;
+  blocks: SurveyBlockRecord[];
 };
 
 export interface ISurveyPartnerships {
