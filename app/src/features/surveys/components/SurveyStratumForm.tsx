@@ -1,16 +1,28 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  MenuProps,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import Card from '@mui/material/Card';
 import DialogActions from '@mui/material/DialogActions';
-import {  Formik, FormikProps, useFormikContext } from 'formik';
-import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
-import yup from 'utils/YupSchema';
-import { useState, useRef } from 'react';
-import { Box, Dialog, DialogContent, DialogContentText, DialogTitle, ListItemIcon, Menu, MenuItem, MenuProps, useMediaQuery, useTheme } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
+import { Formik, FormikProps, useFormikContext } from 'formik';
+import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { useRef, useState } from 'react';
+import yup from 'utils/YupSchema';
 
 interface IStratum {
   /**
@@ -35,31 +47,28 @@ const StratumFormInitialValues: IStratumForm = {
     name: '',
     description: ''
   }
-}
+};
 
 export const StratumFormYupSchema = yup.object().shape({
   index: yup.number().nullable(true),
   stratum: yup.object().shape({
     survey_stratum_id: yup.number(),
-    name: yup
-      .string()
-      .required('Must provide a Stratum name')
-      .max(300, 'Name cannot exceed 300 characters'),
+    name: yup.string().required('Must provide a Stratum name').max(300, 'Name cannot exceed 300 characters'),
     description: yup
       .string()
       .required('Must provide a Stratum description')
-      .max(3000, 'Description cannot exceed 3000 characters'),
+      .max(3000, 'Description cannot exceed 3000 characters')
   })
 });
 
 interface IStratumDialogProps {
   open: boolean;
-  stratumFormInitialValues: IStratumForm
+  stratumFormInitialValues: IStratumForm;
   onCancel: () => void;
   onSave: (formikProps: FormikProps<IStratumForm> | null) => void;
 }
 
-const StratumDialog = (props: IStratumDialogProps) => {  
+const StratumDialog = (props: IStratumDialogProps) => {
   // const [currentStratum, setCurrentStratum] = useState<IStratumForm>(StratumFormInitialValues);
 
   const formikRef = useRef<FormikProps<IStratumForm>>(null);
@@ -69,7 +78,7 @@ const StratumDialog = (props: IStratumDialogProps) => {
 
   const handleCancel = () => {
     props.onCancel();
-  }
+  };
 
   /*
   useEffect(() => {
@@ -90,27 +99,26 @@ const StratumDialog = (props: IStratumDialogProps) => {
       validateOnBlur={true}
       validateOnChange={false}
       onSubmit={(values) => {
-        props.onSave(formikRef.current)
+        props.onSave(formikRef.current);
       }}>
       {(formikProps) => {
         return (
-          <Dialog
-            open={props.open}
-            fullScreen={fullScreen}
-            maxWidth="xl"
-            onClose={props.onCancel}>
+          <Dialog open={props.open} fullScreen={fullScreen} maxWidth="xl" onClose={props.onCancel}>
             <DialogTitle>{editing ? 'Edit Stratum Details' : 'Add Stratum'}</DialogTitle>
             <DialogContent>
               <>
-                <DialogContentText>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.</DialogContentText>
+                <DialogContentText>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat
+                  volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                </DialogContentText>
                 <Box mt={4}>
                   <CustomTextField
                     other={{
                       sx: { mb: 4 },
                       required: true
                     }}
-                    name='stratum.name'
-                    label='Name'
+                    name="stratum.name"
+                    label="Name"
                   />
                   <CustomTextField
                     other={{
@@ -118,28 +126,26 @@ const StratumDialog = (props: IStratumDialogProps) => {
                       required: true,
                       rows: 5
                     }}
-                    name='stratum.description'
-                    label='Description'
+                    name="stratum.description"
+                    label="Description"
                   />
                 </Box>
               </>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={() => formikProps.submitForm()}
-                variant="contained"
-                color='primary'
-              >
+              <Button onClick={() => formikProps.submitForm()} variant="contained" color="primary">
                 {editing ? 'Update' : 'Add Stratum'}
               </Button>
-              <Button onClick={() => handleCancel()} variant="outlined">Cancel</Button>        
+              <Button onClick={() => handleCancel()} variant="outlined">
+                Cancel
+              </Button>
             </DialogActions>
           </Dialog>
-        )
+        );
       }}
     </Formik>
   );
-}
+};
 
 /**
  * Create/edit survey - Funding section
@@ -147,7 +153,7 @@ const StratumDialog = (props: IStratumDialogProps) => {
  * @return {*}
  */
 const SurveyStratumForm = () => {
-  const [currentStratumForm, setCurrentStratumForm] =  useState<IStratumForm>(StratumFormInitialValues);
+  const [currentStratumForm, setCurrentStratumForm] = useState<IStratumForm>(StratumFormInitialValues);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
@@ -158,15 +164,15 @@ const SurveyStratumForm = () => {
     if (!formikProps) {
       return;
     }
-  
-    const stratumForm = formikProps.values
-  
+
+    const stratumForm = formikProps.values;
+
     if (stratumForm.index === null) {
       // Create new stratum
-      setFieldValue(
-        'site_selection_strategies.stratums',
-        [...values.site_selection_strategies.stratums, stratumForm.stratum]
-      );
+      setFieldValue('site_selection_strategies.stratums', [
+        ...values.site_selection_strategies.stratums,
+        stratumForm.stratum
+      ]);
     } else {
       // Edit existing stratum
       setFieldValue(`site_selection_strategies.stratums[${stratumForm.index}`, stratumForm.stratum);
@@ -179,12 +185,12 @@ const SurveyStratumForm = () => {
      * Formik will recognize an initial values change upon creating a subsequent stratum.
      */
     setCurrentStratumForm(stratumForm);
-  }
+  };
 
   const handleCreateNewStratum = () => {
     setCurrentStratumForm(StratumFormInitialValues);
     setDialogOpen(true);
-  }
+  };
 
   const handleClickContextMenu = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
@@ -192,7 +198,7 @@ const SurveyStratumForm = () => {
       index,
       stratum: values.site_selection_strategies.stratums[index]
     });
-  }
+  };
 
   const handleDelete = () => {
     setAnchorEl(null);
@@ -200,12 +206,12 @@ const SurveyStratumForm = () => {
       'site_selection_strategies.stratums',
       values.site_selection_strategies.stratums.filter((_stratum, index) => index !== currentStratumForm.index)
     );
-  }
+  };
 
   const handleEdit = () => {
     setDialogOpen(true);
     setAnchorEl(null);
-  }
+  };
 
   return (
     <>
@@ -226,8 +232,7 @@ const SurveyStratumForm = () => {
         transformOrigin={{
           vertical: 'top',
           horizontal: 'right'
-        }}
-      >
+        }}>
         <MenuItem onClick={() => handleEdit()}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
@@ -253,27 +258,25 @@ const SurveyStratumForm = () => {
                         variant="subtitle1"
                         fontWeight="bold"
                         sx={{
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          display: "-webkit-box",
-                          WebkitLineClamp: "1",
-                          WebkitBoxOrient: "vertical",
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: '1',
+                          WebkitBoxOrient: 'vertical',
                           mb: 1
-                        }}
-                      >
+                        }}>
                         {stratum.name}
                       </Typography>
                       <Typography
                         variant="subtitle2"
                         color="textSecondary"
                         sx={{
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          display: "-webkit-box",
-                          WebkitLineClamp: "2",
-                          WebkitBoxOrient: "vertical",
-                        }}
-                      >
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: '2',
+                          WebkitBoxOrient: 'vertical'
+                        }}>
                         {stratum.description}
                       </Typography>
                     </Box>
@@ -299,8 +302,7 @@ const SurveyStratumForm = () => {
               title="Create Stratum"
               aria-label="Create Stratum"
               startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => handleCreateNewStratum()}
-              >
+              onClick={() => handleCreateNewStratum()}>
               Add Stratum
             </Button>
           </Box>

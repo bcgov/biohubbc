@@ -34,9 +34,12 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
-import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
-import SurveySiteSelectionForm, { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
+import SurveySiteSelectionForm, {
+  SurveySiteSelectionInitialValues,
+  SurveySiteSelectionYupSchema
+} from '../components/SurveySiteSelectionForm';
 import SurveyStratumForm from '../components/SurveyStratumForm';
+import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -244,7 +247,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
-<<<<<<< HEAD
             title="Site Selection Strategy"
             summary="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed."
             component={
@@ -257,10 +259,11 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                     sx={{
                       maxWidth: '72ch'
                     }}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat
+                    volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
                   </Typography>
                   <Box mt={4}>
-                    <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm}/>
+                    <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
                   </Box>
                 </Box>
                 <Collapse in={showStratumForm}>
@@ -272,7 +275,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                       sx={{
                         maxWidth: '72ch'
                       }}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat
+                      volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
                     </Typography>
                     <Box mt={1}>
                       <SurveyStratumForm />
@@ -283,12 +287,13 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             }
           />
 
-=======
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
             title="Block Data"
             summary="Data for Blocks"
             component={<SurveyBlockSection />}
           />
->>>>>>> dev
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent

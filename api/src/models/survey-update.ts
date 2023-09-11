@@ -1,6 +1,6 @@
 import { Feature } from 'geojson';
-import { SurveyStratum, SurveyStratumRecord } from '../repositories/survey-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
+import { SurveyStratum, SurveyStratumRecord } from '../repositories/survey-repository';
 
 export class PutSurveyObject {
   survey_details: PutSurveyDetailsData;

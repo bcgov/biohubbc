@@ -336,7 +336,5 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   ISurveyFundingSourceForm &
   IStudyAreaForm &
   IProprietaryDataForm &
-  IUpdateAgreementsForm &
-  { partnerships: IGetSurveyForViewResponsePartnerships } &
-  ISurveySiteSelectionForm &
+  IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
   IParticipantsJobForm;

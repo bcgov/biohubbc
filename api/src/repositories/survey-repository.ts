@@ -143,7 +143,7 @@ export const SurveyStratumRecord = z.object({
   survey_stratum_id: z.number(),
   revision_count: z.number(),
   update_date: z.string().nullable()
-})
+});
 
 export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
 
@@ -1406,15 +1406,12 @@ export class SurveyRepository extends BaseRepository {
       .select('ss.name')
       .from('survey_site_strategy as sss')
       .where('sss.survey_id', 1)
-      .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id')
+      .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id');
 
     const strategiesResponse = await this.connection.knex<{ name: string }>(strategiesQuery);
     const strategies = strategiesResponse.rows.map((row) => row.name);
 
-    const stratumsQuery = getKnex()
-      .select()
-      .from('survey_stratum')
-      .where('survey_id', surveyId);
+    const stratumsQuery = getKnex().select().from('survey_stratum').where('survey_id', surveyId);
 
     const stratumsResponse = await this.connection.knex<SurveyStratumRecord>(stratumsQuery);
     const stratums = stratumsResponse.rows;
@@ -1431,7 +1428,7 @@ export class SurveyRepository extends BaseRepository {
    */
   async deleteSurveySiteSelectionStrategies(surveyId: number): Promise<number> {
     defaultLog.debug({ label: 'deleteSurveySiteSelectionStrategies', surveyId });
-    
+
     const deleteStatement = SQL`
       DELETE FROM 
         survey_site_strategy
@@ -1441,10 +1438,10 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(deleteStatement);
-    
+
     return response.rowCount;
   }
-  
+
   /**
    * Inserts site selection strategies (by name) for a survey
    *
@@ -1453,7 +1450,7 @@ export class SurveyRepository extends BaseRepository {
    * @return {*}  {Promise<void>}
    * @memberof SurveyRepository
    */
-  async insertSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {  
+  async insertSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
     defaultLog.debug({ label: 'insertSurveySiteSelectionStrategies', surveyId, strategies });
 
     const insertQuery = SQL`
@@ -1474,7 +1471,7 @@ export class SurveyRepository extends BaseRepository {
       if (index < strategies.length - 1) {
         insertQuery.append(', ');
       }
-    })
+    });
 
     insertQuery.append(SQL`
           )
@@ -1492,7 +1489,7 @@ export class SurveyRepository extends BaseRepository {
       RETURNING *;
     `);
 
-    const response = await this.connection.sql(insertQuery);    
+    const response = await this.connection.sql(insertQuery);
 
     if (response.rowCount !== strategies.length) {
       throw new ApiExecuteSQLError('Failed to insert survey site selection strategies', [
@@ -1531,14 +1528,16 @@ export class SurveyRepository extends BaseRepository {
    */
   async insertSurveyStratums(surveyId: number, stratums: SurveyStratum[]): Promise<SurveyStratumRecord[]> {
     defaultLog.debug({ label: 'insertSurveyStratums', surveyId });
-    
+
     const insertQuery = getKnex()
       .table('survey_stratum')
-      .insert(stratums.map((stratum) => ({
-        survey_id: surveyId,
-        name: stratum.name,
-        description: stratum.description
-      })))
+      .insert(
+        stratums.map((stratum) => ({
+          survey_id: surveyId,
+          name: stratum.name,
+          description: stratum.description
+        }))
+      )
       .returning('*');
 
     const response = await this.connection.knex(insertQuery, SurveyStratumRecord);
@@ -1575,12 +1574,14 @@ export class SurveyRepository extends BaseRepository {
         })
         .where('survey_stratum_id', stratum.survey_stratum_id)
         .returning('*');
-    }
+    };
 
-    const responses = await Promise.all(stratums.map((stratum) => this.connection.knex(makeUpdateQuery(stratum), SurveyStratumRecord)))
+    const responses = await Promise.all(
+      stratums.map((stratum) => this.connection.knex(makeUpdateQuery(stratum), SurveyStratumRecord))
+    );
 
     const records = responses.reduce((acc: SurveyStratumRecord[], queryResult) => {
-      return [...acc, ...queryResult.rows]
+      return [...acc, ...queryResult.rows];
     }, []);
 
     if (records.length !== stratums.length) {

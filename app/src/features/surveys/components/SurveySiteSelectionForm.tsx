@@ -1,12 +1,11 @@
-import {  useFormikContext } from 'formik';
-import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
-import yup from 'utils/YupSchema';
-import { useContext, useState } from 'react';
-import { CodesContext } from 'contexts/codesContext';
 import assert from 'assert';
-import { useEffect } from 'react';
-import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { CodesContext } from 'contexts/codesContext';
+import { useFormikContext } from 'formik';
+import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { useContext, useEffect, useState } from 'react';
+import yup from 'utils/YupSchema';
 
 interface IStratum {
   survey_stratum_id: number | undefined;
@@ -18,7 +17,7 @@ export interface ISurveySiteSelectionForm {
   site_selection_strategies: {
     strategies: string[];
     stratums: IStratum[];
-  }
+  };
 }
 
 export const SurveySiteSelectionInitialValues: ISurveySiteSelectionForm = {
@@ -28,12 +27,11 @@ export const SurveySiteSelectionInitialValues: ISurveySiteSelectionForm = {
   }
 };
 
-
 export const SurveySiteSelectionYupSchema = yup.object().shape({
   site_selection_strategies: yup.object().shape({
     strategies: yup
       .array()
-      .of(yup.string() /* .required('Must select a valid site selection strategy') */ )
+      .of(yup.string() /* .required('Must select a valid site selection strategy') */)
       .when('stratums', (stratums: string[], schema: any) => {
         return stratums.length > 0
           ? schema.test(
@@ -43,13 +41,13 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
             )
           : schema;
       }),
-    stratums: yup
-      .array()
-      .of(yup.object({
+    stratums: yup.array().of(
+      yup.object({
         survey_stratum_id: yup.number().optional(),
         name: yup.string().required('Must provide a name for stratum'),
-        description: yup.string().optional(),
-      }))
+        description: yup.string().optional()
+      })
+    )
   })
 });
 
@@ -80,14 +78,15 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
     setFieldValue('site_selection_strategies.stratums', []);
     props.onChangeStratumEntryVisibility(false);
     setShowStratumDeleteConfirmModal(false);
-  }
+  };
 
   const handleCancelDeleteAllStratums = () => {
     setShowStratumDeleteConfirmModal(false);
     setFieldValue('site_selection_strategies.strategies', [
-      ...values.site_selection_strategies.strategies, 'Stratified'
+      ...values.site_selection_strategies.strategies,
+      'Stratified'
     ]);
-  }
+  };
 
   useEffect(() => {
     if (values.site_selection_strategies.strategies.includes('Stratified')) {

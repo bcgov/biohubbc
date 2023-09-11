@@ -458,22 +458,18 @@ export class SurveyService extends DBService {
     }
 
     // Handle site selection strategies
-    
+
     if (postSurveyData.site_selection_strategies.strategies.length > 0) {
-      promises.push(this.insertSurveySiteSelectionStrategies(
-        surveyId,
-        postSurveyData.site_selection_strategies.strategies
-      ));
+      promises.push(
+        this.insertSurveySiteSelectionStrategies(surveyId, postSurveyData.site_selection_strategies.strategies)
+      );
     }
 
     // Handle stratums
     if (postSurveyData.site_selection_strategies.stratums.length > 0) {
-      promises.push(this.insertSurveyStratums(
-        surveyId,
-        postSurveyData.site_selection_strategies.stratums
-      ));
+      promises.push(this.insertSurveyStratums(surveyId, postSurveyData.site_selection_strategies.stratums));
     }
-    
+
     // Handle blocks
     if (postSurveyData.blocks) {
       promises.push(this.upsertBlocks(surveyId, postSurveyData.blocks));
@@ -499,7 +495,7 @@ export class SurveyService extends DBService {
       await this.insertSurveySiteSelectionStrategies(surveyId, strategies);
     }
   }
-  
+
   /**
    * Receives an array of all stratums, that should be persisted for a particular survey, then
    * deletes, inserts and updates stratum records accordingly.
@@ -509,11 +505,14 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof SurveyService
    */
-  async replaceSurveySiteSelectionStratums(surveyId: number, stratums: Array<SurveyStratum | SurveyStratumRecord>): Promise<void> {
+  async replaceSurveySiteSelectionStratums(
+    surveyId: number,
+    stratums: Array<SurveyStratum | SurveyStratumRecord>
+  ): Promise<void> {
     const insertStratums: SurveyStratum[] = [];
     const updateStratums: SurveyStratumRecord[] = [];
     const existingSiteSelectionStrategies = await this.surveyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
-    
+
     stratums.forEach((stratum) => {
       if ('survey_stratum_id' in stratum) {
         updateStratums.push(stratum);
@@ -523,10 +522,10 @@ export class SurveyService extends DBService {
     });
 
     const removeStratums = existingSiteSelectionStrategies.stratums.filter((stratum) => {
-      return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id)
+      return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id);
     });
 
-    defaultLog.debug({ insertStratums, updateStratums, removeStratums })
+    defaultLog.debug({ insertStratums, updateStratums, removeStratums });
 
     if (removeStratums.length) {
       await this.deleteSurveyStratums(removeStratums.map((stratum) => stratum.survey_stratum_id));
@@ -772,18 +771,16 @@ export class SurveyService extends DBService {
 
     // Handle site selection strategies
     if (putSurveyData.site_selection_strategies.strategies) {
-      promises.push(this.replaceSurveySiteSelectionStrategies(
-        surveyId,
-        putSurveyData.site_selection_strategies.strategies
-      ));
+      promises.push(
+        this.replaceSurveySiteSelectionStrategies(surveyId, putSurveyData.site_selection_strategies.strategies)
+      );
     }
-  
+
     // Handle stratums
     if (putSurveyData.site_selection_strategies.stratums) {
-      promises.push(this.replaceSurveySiteSelectionStratums(
-        surveyId,
-        putSurveyData.site_selection_strategies.stratums
-      ));
+      promises.push(
+        this.replaceSurveySiteSelectionStratums(surveyId, putSurveyData.site_selection_strategies.stratums)
+      );
     }
 
     // Handle blocks

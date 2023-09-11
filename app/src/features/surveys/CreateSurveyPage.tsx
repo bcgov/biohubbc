@@ -48,9 +48,12 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from './components/SurveyFundingSourceForm';
-import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
-import SurveySiteSelectionForm, { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
+import SurveySiteSelectionForm, {
+  SurveySiteSelectionInitialValues,
+  SurveySiteSelectionYupSchema
+} from './components/SurveySiteSelectionForm';
 import SurveyStratumForm from './components/SurveyStratumForm';
+import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -141,7 +144,8 @@ const CreateSurveyPage = () => {
     ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues,
-    ...SurveySiteSelectionInitialValues,    ...SurveyUserJobFormInitialValues,
+    ...SurveySiteSelectionInitialValues,
+    ...SurveyUserJobFormInitialValues,
     ...SurveyBlockInitialValues
   });
 
@@ -397,10 +401,11 @@ const CreateSurveyPage = () => {
                           sx={{
                             maxWidth: '72ch'
                           }}>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam
+                          erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
                         </Typography>
                         <Box mt={4}>
-                          <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm}/>
+                          <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
                         </Box>
                       </Box>
                       <Collapse in={showStratumForm}>
@@ -412,7 +417,8 @@ const CreateSurveyPage = () => {
                             sx={{
                               maxWidth: '72ch'
                             }}>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam
+                            erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
                           </Typography>
                           <Box mt={1}>
                             <SurveyStratumForm />

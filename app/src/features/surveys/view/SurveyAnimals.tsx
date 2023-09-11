@@ -8,10 +8,10 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import React, { useContext, useState } from 'react';
+import { pluralize } from 'utils/Utils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
-import { pluralize } from 'utils/Utils';
 
 const SurveyAnimals: React.FC = () => {
   const cbApi = useCritterbaseApi();
