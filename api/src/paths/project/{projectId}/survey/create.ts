@@ -63,7 +63,7 @@ POST.apiDoc = {
             'partnerships',
             'proprietor',
             'purpose_and_methodology',
-            'site_selection_strategies',
+            'site_selection',
             'location',
             'agreements',
             'participants'
@@ -220,7 +220,7 @@ POST.apiDoc = {
                 }
               }
             },
-            site_selection_strategies: {
+            site_selection: {
               type: 'object',
               required: ['strategies', 'stratums'],
               properties: {

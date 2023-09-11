@@ -66,13 +66,13 @@ const SurveyStratumForm = () => {
 
     if (stratumForm.index === null) {
       // Create new stratum
-      setFieldValue('site_selection_strategies.stratums', [
-        ...values.site_selection_strategies.stratums,
+      setFieldValue('site_selection.stratums', [
+        ...values.site_selection.stratums,
         stratumForm.stratum
       ]);
     } else {
       // Edit existing stratum
-      setFieldValue(`site_selection_strategies.stratums[${stratumForm.index}`, stratumForm.stratum);
+      setFieldValue(`site_selection.stratums[${stratumForm.index}`, stratumForm.stratum);
     }
 
     setDialogOpen(false);
@@ -93,15 +93,15 @@ const SurveyStratumForm = () => {
     setAnchorEl(event.currentTarget);
     setCurrentStratumForm({
       index,
-      stratum: values.site_selection_strategies.stratums[index]
+      stratum: values.site_selection.stratums[index]
     });
   };
 
   const handleDelete = () => {
     setAnchorEl(null);
     setFieldValue(
-      'site_selection_strategies.stratums',
-      values.site_selection_strategies.stratums.filter((_stratum, index) => index !== currentStratumForm.index)
+      'site_selection.stratums',
+      values.site_selection.stratums.filter((_stratum, index) => index !== currentStratumForm.index)
     );
   };
 
@@ -145,7 +145,7 @@ const SurveyStratumForm = () => {
       </Menu>
       <form onSubmit={handleSubmit}>
         <Box mt={4}>
-          {values.site_selection_strategies.stratums.map((stratum: IStratum, index: number) => {
+          {values.site_selection.stratums.map((stratum: IStratum, index: number) => {
             return (
               <Box mt={2}>
                 <Card variant="outlined">

@@ -99,7 +99,7 @@ export class SurveyService extends DBService {
       purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
       proprietor: await this.getSurveyProprietorDataForView(surveyId),
       location: await this.getSurveyLocationData(surveyId),
-      site_selection_strategies: await this.siteSelectionStrategyService.getSiteSelectionStrategiesBySurveyId(surveyId),
+      site_selection: await this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
       participants: await this.surveyParticipationService.getSurveyParticipants(surveyId),
       blocks: await this.getSurveyBlocksForSurveyId(surveyId)
     };
@@ -459,15 +459,15 @@ export class SurveyService extends DBService {
 
     // Handle site selection strategies
 
-    if (postSurveyData.site_selection_strategies.strategies.length > 0) {
+    if (postSurveyData.site_selection.strategies.length > 0) {
       promises.push(
-        this.siteSelectionStrategyService.insertSurveySiteSelectionStrategies(surveyId, postSurveyData.site_selection_strategies.strategies)
+        this.siteSelectionStrategyService.insertSurveySiteSelectionStrategies(surveyId, postSurveyData.site_selection.strategies)
       );
     }
 
     // Handle stratums
-    if (postSurveyData.site_selection_strategies.stratums.length > 0) {
-      promises.push(this.siteSelectionStrategyService.insertSurveyStratums(surveyId, postSurveyData.site_selection_strategies.stratums));
+    if (postSurveyData.site_selection.stratums.length > 0) {
+      promises.push(this.siteSelectionStrategyService.insertSurveyStratums(surveyId, postSurveyData.site_selection.stratums));
     }
 
     // Handle blocks
@@ -698,16 +698,16 @@ export class SurveyService extends DBService {
     }
 
     // Handle site selection strategies
-    if (putSurveyData.site_selection_strategies.strategies) {
+    if (putSurveyData.site_selection.strategies) {
       promises.push(
-        this.siteSelectionStrategyService.replaceSurveySiteSelectionStrategies(surveyId, putSurveyData.site_selection_strategies.strategies)
+        this.siteSelectionStrategyService.replaceSurveySiteSelectionStrategies(surveyId, putSurveyData.site_selection.strategies)
       );
     }
 
     // Handle stratums
-    if (putSurveyData.site_selection_strategies.stratums) {
+    if (putSurveyData.site_selection.stratums) {
       promises.push(
-        this.siteSelectionStrategyService.replaceSurveySiteSelectionStratums(surveyId, putSurveyData.site_selection_strategies.stratums)
+        this.siteSelectionStrategyService.replaceSurveySiteSelectionStratums(surveyId, putSurveyData.site_selection.stratums)
       );
     }
 

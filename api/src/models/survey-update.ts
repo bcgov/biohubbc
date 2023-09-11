@@ -12,7 +12,7 @@ export class PutSurveyObject {
   location: PutSurveyLocationData;
   participants: PutSurveyParticipantsData[];
   partnerships: PutPartnershipsData;
-  site_selection_strategies: PutSiteSelectionStrategies;
+  site_selection: PutSiteSelectionData;
   blocks: PostSurveyBlock[];
 
   constructor(obj?: any) {
@@ -28,18 +28,18 @@ export class PutSurveyObject {
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PutSurveyParticipantsData(p))) || [];
     this.partnerships = (obj?.partnerships && new PutPartnershipsData(obj.partnerships)) || null;
-    this.site_selection_strategies = (obj?.site_selection_strategies && new PutSiteSelectionStrategies(obj)) || null;
+    this.site_selection = (obj?.site_selection && new PutSiteSelectionData(obj)) || null;
     this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
   }
 }
 
-export class PutSiteSelectionStrategies {
+export class PutSiteSelectionData {
   strategies: string[];
   stratums: Array<SurveyStratum | SurveyStratumRecord>;
 
   constructor(obj?: any) {
-    this.strategies = obj?.site_selection_strategies?.strategies ?? [];
-    this.stratums = obj?.site_selection_strategies?.stratums ?? [];
+    this.strategies = obj?.site_selection?.strategies ?? [];
+    this.stratums = obj?.site_selection?.stratums ?? [];
   }
 }
 

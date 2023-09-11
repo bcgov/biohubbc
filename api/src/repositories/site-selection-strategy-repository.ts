@@ -23,12 +23,12 @@ export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
 
 export type SurveyStratum = z.infer<typeof SurveyStratum>;
 
-export const SiteSelectionStrategies = z.object({
+export const SiteSelectionData = z.object({
   strategies: z.array(z.string()),
   stratums: z.array(SurveyStratumRecord)
 });
 
-export type SiteSelectionStrategies = z.infer<typeof SiteSelectionStrategies>;
+export type SiteSelectionData = z.infer<typeof SiteSelectionData>;
 
 const defaultLog = getLogger('repositories/site-selection-strategy-repository');
 
@@ -45,11 +45,11 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
    * Retreives the site selection strategies and stratums for the given survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<SiteSelectionStrategies>}
+   * @return {*}  {Promise<SiteSelectionData>}
    * @memberof SurveyRepository
    */
-  async getSiteSelectionStrategiesBySurveyId(surveyId: number): Promise<SiteSelectionStrategies> {
-    defaultLog.debug({ label: 'getSiteSelectionStrategiesBySurveyId', surveyId });
+  async getSiteSelectionDataBySurveyId(surveyId: number): Promise<SiteSelectionData> {
+    defaultLog.debug({ label: 'getSiteSelectionDataBySurveyId', surveyId });
 
     const strategiesQuery = getKnex()
       .select('ss.name')

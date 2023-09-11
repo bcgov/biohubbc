@@ -43,7 +43,7 @@ const StratumCreateOrEditDialog = (props: IStratumDialogProps) => {
       validationSchema={StratumFormYupSchema}
       validateOnBlur={true}
       validateOnChange={false}
-      onSubmit={(values) => {
+      onSubmit={(_values) => {
         props.onSave(formikRef.current);
       }}>
       {(formikProps) => {

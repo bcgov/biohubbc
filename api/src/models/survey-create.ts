@@ -13,7 +13,7 @@ export class PostSurveyObject {
   agreements: PostAgreementsData;
   participants: PostParticipationData[];
   partnerships: PostPartnershipsData;
-  site_selection_strategies: PostSiteSelectionStrategies;
+  site_selection: PostSiteSelectionData;
   blocks: PostSurveyBlock[];
 
   constructor(obj?: any) {
@@ -30,18 +30,18 @@ export class PostSurveyObject {
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
-    this.site_selection_strategies = (obj?.site_selection_strategies && new PostSiteSelectionStrategies(obj)) || null;
+    this.site_selection = (obj?.site_selection && new PostSiteSelectionData(obj)) || null;
     this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
   }
 }
 
-export class PostSiteSelectionStrategies {
+export class PostSiteSelectionData {
   strategies: string[];
   stratums: SurveyStratum[];
 
   constructor(obj?: any) {
-    this.strategies = obj?.site_selection_strategies?.strategies ?? [];
-    this.stratums = obj?.site_selection_strategies?.stratums ?? [];
+    this.strategies = obj?.site_selection?.strategies ?? [];
+    this.stratums = obj?.site_selection?.stratums ?? [];
   }
 }
 

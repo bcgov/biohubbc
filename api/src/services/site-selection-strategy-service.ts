@@ -1,10 +1,17 @@
 import { IDBConnection } from '../database/db';
-import { SiteSelectionStrategies, SiteSelectionStrategyRepository, SurveyStratum, SurveyStratumRecord } from '../repositories/site-selection-strategy-repository';
+import { SiteSelectionData, SiteSelectionStrategyRepository, SurveyStratum, SurveyStratumRecord } from '../repositories/site-selection-strategy-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('repositories/site-selection-strategy-repository');
 
+/**
+ * Service for managing survey site selection strategies and stratums
+ *
+ * @export
+ * @class SiteSelectionStrategyService
+ * @extends {DBService}
+ */
 export class SiteSelectionStrategyService extends DBService {
   siteSelectionStrategyRepository: SiteSelectionStrategyRepository;
 
@@ -14,8 +21,15 @@ export class SiteSelectionStrategyService extends DBService {
     this.siteSelectionStrategyRepository = new SiteSelectionStrategyRepository(connection);
   }
 
-  async getSiteSelectionStrategiesBySurveyId(surveyId: number): Promise<SiteSelectionStrategies> {
-    return this.siteSelectionStrategyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
+  /**
+   * Retrieves site selection strategies and 
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SiteSelectionData>}
+   * @memberof SiteSelectionStrategyService
+   */
+  async getSiteSelectionDataBySurveyId(surveyId: number): Promise<SiteSelectionData> {
+    return this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(surveyId);
   }
 
   async insertSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
@@ -45,7 +59,7 @@ export class SiteSelectionStrategyService extends DBService {
   ): Promise<void> {
     const insertStratums: SurveyStratum[] = [];
     const updateStratums: SurveyStratumRecord[] = [];
-    const existingSiteSelectionStrategies = await this.siteSelectionStrategyRepository.getSiteSelectionStrategiesBySurveyId(surveyId);
+    const existingSiteSelectionStrategies = await this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(surveyId);
 
     stratums.forEach((stratum) => {
       if ('survey_stratum_id' in stratum) {

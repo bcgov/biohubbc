@@ -14,21 +14,21 @@ export interface IStratum {
 }
 
 export interface ISurveySiteSelectionForm {
-  site_selection_strategies: {
+  site_selection: {
     strategies: string[];
     stratums: IStratum[];
   };
 }
 
 export const SurveySiteSelectionInitialValues: ISurveySiteSelectionForm = {
-  site_selection_strategies: {
+  site_selection: {
     strategies: [],
     stratums: []
   }
 };
 
 export const SurveySiteSelectionYupSchema = yup.object().shape({
-  site_selection_strategies: yup.object().shape({
+  site_selection: yup.object().shape({
     strategies: yup
       .array()
       .of(yup.string() /* .required('Must select a valid site selection strategy') */)
@@ -75,23 +75,23 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
 
   const handleConfirmDeleteAllStratums = () => {
     // Delete all Stratums and hide the Stratums form
-    setFieldValue('site_selection_strategies.stratums', []);
+    setFieldValue('site_selection.stratums', []);
     props.onChangeStratumEntryVisibility(false);
     setShowStratumDeleteConfirmModal(false);
   };
 
   const handleCancelDeleteAllStratums = () => {
     setShowStratumDeleteConfirmModal(false);
-    setFieldValue('site_selection_strategies.strategies', [
-      ...values.site_selection_strategies.strategies,
+    setFieldValue('site_selection.strategies', [
+      ...values.site_selection.strategies,
       'Stratified'
     ]);
   };
 
   useEffect(() => {
-    if (values.site_selection_strategies.strategies.includes('Stratified')) {
+    if (values.site_selection.strategies.includes('Stratified')) {
       props.onChangeStratumEntryVisibility(true);
-    } else if (values.site_selection_strategies.stratums.length > 0) {
+    } else if (values.site_selection.stratums.length > 0) {
       // Prompt to confirm removing all stratums
       setShowStratumDeleteConfirmModal(true);
     } else {
@@ -110,7 +110,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
         onYes={handleConfirmDeleteAllStratums}
       />
       <MultiAutocompleteFieldVariableSize
-        id="site_selection_strategies.strategies"
+        id="site_selection.strategies"
         label="Site Selection Strategies"
         options={siteStrategies}
         required={false}

@@ -3,7 +3,7 @@ import { SurveyMetadataPublish } from '../repositories/history-publish-repositor
 import { IPermitModel } from '../repositories/permit-repository';
 import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
-import { SiteSelectionStrategies } from '../repositories/site-selection-strategy-repository';
+import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
@@ -15,7 +15,7 @@ export type SurveyObject = {
   location: GetSurveyLocationData;
   participants: SurveyUser[];
   partnerships: ISurveyPartnerships;
-  site_selection_strategies: SiteSelectionStrategies;
+  site_selection: SiteSelectionData;
   blocks: SurveyBlockRecord[];
 };
 
