@@ -54,6 +54,10 @@ interface ISurveyAnimalsTableProps {
   onAddDevice: (critter_id: number) => void;
 }
 
+const noOpPlaceHolder = (critter_id: number) => {
+  // This function intentionally left blank - used as placeholder.
+};
+
 export const SurveyAnimalsTable = ({
   animalData,
   deviceData,
@@ -110,9 +114,9 @@ export const SurveyAnimalsTable = ({
           critter_id={params.row.survey_critter_id}
           devices={params.row?.telemetry_device}
           onAddDevice={onAddDevice}
-          // onRemoveDevice={}
-          // onEditCritter={}
-          // onEditDevice={}
+          onRemoveDevice={noOpPlaceHolder}
+          onEditCritter={noOpPlaceHolder}
+          onEditDevice={noOpPlaceHolder}
           onRemoveCritter={onRemoveCritter}
         />
       )
