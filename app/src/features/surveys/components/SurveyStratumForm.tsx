@@ -2,35 +2,29 @@ import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '
 import Icon from '@mdi/react';
 import {
   Box,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   ListItemIcon,
   Menu,
   MenuItem,
-  MenuProps,
-  useMediaQuery,
-  useTheme
+  MenuProps
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import CustomTextField from 'components/fields/CustomTextField';
-import { Formik, FormikProps, useFormikContext } from 'formik';
+
+import { FormikProps, useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import yup from 'utils/YupSchema';
 import { IStratum } from './SurveySiteSelectionForm';
+import StratumCreateOrEditDialog from './StratumCreateOrEditDialog';
 
-interface IStratumForm {
+export interface IStratumForm {
   index: number | null;
   stratum: IStratum;
 }
 
-const StratumFormInitialValues: IStratumForm = {
+export const StratumFormInitialValues: IStratumForm = {
   index: null,
   stratum: {
     name: '',
@@ -49,92 +43,6 @@ export const StratumFormYupSchema = yup.object().shape({
       .max(3000, 'Description cannot exceed 3000 characters')
   })
 });
-
-interface IStratumDialogProps {
-  open: boolean;
-  stratumFormInitialValues: IStratumForm;
-  onCancel: () => void;
-  onSave: (formikProps: FormikProps<IStratumForm> | null) => void;
-}
-
-const StratumDialog = (props: IStratumDialogProps) => {
-  // const [currentStratum, setCurrentStratum] = useState<IStratumForm>(StratumFormInitialValues);
-
-  const formikRef = useRef<FormikProps<IStratumForm>>(null);
-
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const handleCancel = () => {
-    props.onCancel();
-  };
-
-  /*
-  useEffect(() => {
-    if (props.open) {
-      setCurrentStratum(props.stratumFormInitialValues)
-    }
-  }, [props.stratumFormInitialValues, props.open]);
-  */
-
-  const editing = props.stratumFormInitialValues.index !== null;
-
-  return (
-    <Formik<IStratumForm>
-      initialValues={props.stratumFormInitialValues}
-      innerRef={formikRef}
-      enableReinitialize={true}
-      validationSchema={StratumFormYupSchema}
-      validateOnBlur={true}
-      validateOnChange={false}
-      onSubmit={(values) => {
-        props.onSave(formikRef.current);
-      }}>
-      {(formikProps) => {
-        return (
-          <Dialog open={props.open} fullScreen={fullScreen} maxWidth="xl" onClose={props.onCancel}>
-            <DialogTitle>{editing ? 'Edit Stratum Details' : 'Add Stratum'}</DialogTitle>
-            <DialogContent>
-              <>
-                <DialogContentText>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat
-                  volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
-                </DialogContentText>
-                <Box mt={4}>
-                  <CustomTextField
-                    other={{
-                      sx: { mb: 4 },
-                      required: true
-                    }}
-                    name="stratum.name"
-                    label="Name"
-                  />
-                  <CustomTextField
-                    other={{
-                      multiline: true,
-                      required: true,
-                      rows: 5
-                    }}
-                    name="stratum.description"
-                    label="Description"
-                  />
-                </Box>
-              </>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => formikProps.submitForm()} variant="contained" color="primary">
-                {editing ? 'Update' : 'Add Stratum'}
-              </Button>
-              <Button onClick={() => handleCancel()} variant="outlined">
-                Cancel
-              </Button>
-            </DialogActions>
-          </Dialog>
-        );
-      }}
-    </Formik>
-  );
-};
 
 /**
  * Create/edit survey - Funding section
@@ -204,7 +112,7 @@ const SurveyStratumForm = () => {
 
   return (
     <>
-      <StratumDialog
+      <StratumCreateOrEditDialog
         open={dialogOpen}
         onCancel={() => setDialogOpen(false)}
         stratumFormInitialValues={currentStratumForm}
