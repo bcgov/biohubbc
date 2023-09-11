@@ -419,6 +419,22 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  type CritterBulkCreationResponse = {
+    create: {
+      critters: number;
+      collections: number;
+      markings: number;
+      locations: number;
+      captures: number;
+      mortalities: number;
+      qualitative_measurements: number;
+      quantitative_measurements: number;
+      families: number;
+      family_children: number;
+      family_parents: number;
+    };
+  };
+
   /**
    * Create a critter and add it to the list of critters associated with this survey. This will create a new critter in Critterbase.
    *
@@ -431,7 +447,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     critter: Critter
-  ): Promise<Record<string, unknown>[]> => {
+  ): Promise<CritterBulkCreationResponse> => {
     const payload = {
       critters: [
         { critter_id: critter.critter_id, animal_id: critter.animal_id, sex: 'Unknown', taxon_id: critter.taxon_id }

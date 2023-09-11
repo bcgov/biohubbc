@@ -5,7 +5,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { IAnimalDeployment } from './animal';
 
 export interface ITableActionsMenuProps {
@@ -19,10 +19,10 @@ export interface ITableActionsMenuProps {
 }
 
 const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const open = Boolean(anchorEl);
 
-  const handleClick = (event: any) => {
+  const handleClick = (event: React.MouseEvent) => {
     setAnchorEl(event.currentTarget);
   };
 

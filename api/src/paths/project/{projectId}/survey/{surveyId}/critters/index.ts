@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
-import { SurveyService } from '../../../../../../services/survey-service';
+import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters');
@@ -240,7 +240,7 @@ export function getCrittersFromSurvey(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
     const cb = new CritterbaseService(user);
-    const surveyService = new SurveyService(connection);
+    const surveyService = new SurveyCritterService(connection);
     try {
       await connection.open();
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
@@ -277,7 +277,7 @@ export function addCritterToSurvey(): RequestHandler {
     };
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyService(connection);
+    const surveyService = new SurveyCritterService(connection);
     const cb = new CritterbaseService(user);
     try {
       await connection.open();

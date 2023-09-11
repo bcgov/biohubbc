@@ -39,29 +39,11 @@ const useCritterApi = (axios: AxiosInstance) => {
     const { data } = await axios.post('/api/critter-data/critters', payload);
     return data;
   };
-  interface IFilterBody {
-    body: string[];
-    negate?: boolean;
-  }
-  interface IFilterCritters {
-    critter_ids?: IFilterBody;
-    animal_ids?: IFilterBody;
-    wlh_ids?: IFilterBody;
-    collection_units?: IFilterBody;
-    taxon_name_commons?: IFilterBody;
-  }
-  const filterCritters = async (
-    critterFilter: IFilterCritters
-  ): Promise<ICritterDetailedResponse | ICritterSimpleResponse[]> => {
-    const { data } = await axios.post('api/critter-data/critters/filter', critterFilter);
-    return data;
-  };
 
   return {
     getCritterByID,
     getAllCritters,
-    createCritter,
-    filterCritters
+    createCritter
   };
 };
 

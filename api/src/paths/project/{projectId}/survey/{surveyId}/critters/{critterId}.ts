@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { SurveyService } from '../../../../../../services/survey-service';
+import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}');
@@ -87,7 +87,7 @@ export function removeCritterFromSurvey(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const critterId = Number(req.params.critterId);
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyService(connection);
+    const surveyService = new SurveyCritterService(connection);
     try {
       await connection.open();
       const result = await surveyService.removeCritterFromSurvey(surveyId, critterId);

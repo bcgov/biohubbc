@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../../database/db';
 import { BctwService } from '../../../../../../../services/bctw-service';
-import { SurveyService } from '../../../../../../../services/survey-service';
+import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import { deployDevice } from './deployments';
 
@@ -16,7 +16,7 @@ describe('deployDevice', () => {
 
   it('deploys a new telemetry device', async () => {
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    const mockAddDeployment = sinon.stub(SurveyService.prototype, 'addDeployment').resolves(mockSurveyEntry);
+    const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'addDeployment').resolves(mockSurveyEntry);
     const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice');
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -34,7 +34,7 @@ describe('deployDevice', () => {
   it('catches and re-throws errors', async () => {
     const mockError = new Error('a test error');
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    const mockAddDeployment = sinon.stub(SurveyService.prototype, 'addDeployment').rejects(mockError);
+    const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'addDeployment').rejects(mockError);
     const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice');
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

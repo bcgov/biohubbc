@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { BctwService } from '../../../../../services/bctw-service';
 import { ICritterbaseUser } from '../../../../../services/critterbase-service';
-import { SurveyService } from '../../../../../services/survey-service';
+import { SurveyCritterService } from '../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters');
@@ -88,11 +88,13 @@ export function getDeploymentsInSurvey(): RequestHandler {
     };
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyService(connection);
+    const surveyCritterService = new SurveyCritterService(connection);
     const bctw = new BctwService(user);
     try {
       await connection.open();
-      const critter_ids = (await surveyService.getCrittersInSurvey(surveyId)).map((a) => a.critterbase_critter_id);
+      const critter_ids = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
+        (a) => a.critterbase_critter_id
+      );
       const results = critter_ids.length ? await bctw.getDeploymentsByCritterId(critter_ids) : [];
       return res.status(201).json(results);
     } catch (error) {

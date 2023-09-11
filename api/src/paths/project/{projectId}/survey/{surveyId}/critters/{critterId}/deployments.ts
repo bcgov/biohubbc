@@ -6,7 +6,7 @@ import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { BctwService } from '../../../../../../../services/bctw-service';
 import { ICritterbaseUser } from '../../../../../../../services/critterbase-service';
-import { SurveyService } from '../../../../../../../services/survey-service';
+import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters');
@@ -131,13 +131,13 @@ export function deployDevice(): RequestHandler {
     };
     const surveyId = Number(req.params.critterId);
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyService(connection);
+    const surveyCritterService = new SurveyCritterService(connection);
     const bctw = new BctwService(user);
     try {
       await connection.open();
       const override_deployment_id = v4();
       req.body.deployment_id = override_deployment_id;
-      const surveyEntry = await surveyService.addDeployment(surveyId, req.body.deployment_id);
+      const surveyEntry = await surveyCritterService.addDeployment(surveyId, req.body.deployment_id);
       await bctw.deployDevice(req.body);
       await connection.commit();
       return res.status(201).json(surveyEntry);

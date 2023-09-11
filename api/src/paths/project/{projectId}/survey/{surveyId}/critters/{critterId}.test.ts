@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../database/db';
-import { SurveyService } from '../../../../../../services/survey-service';
+import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { removeCritterFromSurvey } from './{critterId}';
 
@@ -15,7 +15,7 @@ describe('removeCritterFromSurvey', () => {
 
   it('removes critter from survey', async () => {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    sinon.stub(SurveyService.prototype, 'removeCritterFromSurvey').resolves(mockSurveyCritter);
+    sinon.stub(SurveyCritterService.prototype, 'removeCritterFromSurvey').resolves(mockSurveyCritter);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     const requestHandler = removeCritterFromSurvey();
@@ -30,7 +30,7 @@ describe('removeCritterFromSurvey', () => {
     const mockError = new Error('a test error');
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    sinon.stub(SurveyService.prototype, 'removeCritterFromSurvey').rejects(mockError);
+    sinon.stub(SurveyCritterService.prototype, 'removeCritterFromSurvey').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     const requestHandler = removeCritterFromSurvey();

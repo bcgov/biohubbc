@@ -129,7 +129,7 @@ export const SurveyAnimalsTable = ({
       className={classes.dataGrid}
       autoHeight
       rows={animalDeviceData}
-      getRowId={(row) => `survey-critter-${row.critter_id}`}
+      getRowId={(row) => row.critter_id}
       columns={columns}
       pageSizeOptions={[5]}
       rowSelection={false}
