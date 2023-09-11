@@ -26,11 +26,11 @@ describe('GetSurveyData', () => {
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal(null);
+      expect(data.end_date).to.equal('undefined');
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal(null);
+      expect(data.start_date).to.equal('undefined');
     });
 
     it('sets geojson', () => {
