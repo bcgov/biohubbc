@@ -380,8 +380,8 @@ const CreateSurveyPage = () => {
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
-                  title="Block Data"
-                  summary="Data for Blocks"
+                  title="Sampling Methods"
+                  summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
                   component={<SurveyBlockSection />}
                 />
                 <Divider className={classes.sectionDivider} />
