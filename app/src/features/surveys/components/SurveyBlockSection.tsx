@@ -13,6 +13,8 @@ import React, { useState } from 'react';
 import yup from 'utils/YupSchema';
 import CreateSurveyBlockDialog from './CreateSurveyBlockDialog';
 import EditSurveyBlockDialog from './EditSurveyBlockDialog';
+import { TransitionGroup } from 'react-transition-group';
+import Collapse from '@mui/material/Collapse';
 
 export const SurveyBlockInitialValues = {
   blocks: []
@@ -98,6 +100,7 @@ const SurveyBlockSection: React.FC = () => {
         variant="body1"
         color="textSecondary"
         sx={{
+          mb: 2,
           maxWidth: '90ch'
         }}>
         Enter a name and description for each block used in this survey.
@@ -127,41 +130,42 @@ const SurveyBlockSection: React.FC = () => {
           Remove
         </MenuItem>
       </Menu>
+      <TransitionGroup></TransitionGroup>
       <form onSubmit={handleSubmit}>
-        {values.blocks.map((item, index) => {
-          return (
-            <Card 
-              key={`${item.name}-${item.description}`}
-              variant="outlined"
-              sx={{
-                mt: 1,
-                '&:first-child': {
-                  mt: 3
-                },
-                '& .MuiCardHeader-title': {
-                  mb: 0.5
-                }
-              }}
-            >
-              <CardHeader
-                action={
-                  <IconButton
-                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                      handleMenuClick(event, index)
+        <TransitionGroup>
+          {values.blocks.map((item, index) => {
+            return (
+              <Collapse key={`${item.name}-${item.description}`}>
+                <Card 
+                  variant="outlined"
+                  sx={{
+                    mt: 1,
+                    '& .MuiCardHeader-title': {
+                      mb: 0.5
                     }
-                    aria-label="settings">
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-                title={item.name}
-                subheader={item.description}
-              />
-            </Card>
-          );
-        })}
+                  }}
+                >
+                  <CardHeader
+                    action={
+                      <IconButton
+                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                          handleMenuClick(event, index)
+                        }
+                        aria-label="settings">
+                        <MoreVertIcon />
+                      </IconButton>
+                    }
+                    title={item.name}
+                    subheader={item.description}
+                  />
+                </Card>
+              </Collapse>
+            );
+          })}
+        </TransitionGroup>
         <Button
           sx={{
-            mt: 3
+            mt: 1
           }}
           data-testid="block-form-add-button"
           variant="outlined"

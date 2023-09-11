@@ -381,7 +381,7 @@ const CreateSurveyPage = () => {
 
                 <HorizontalSplitFormComponent
                   title="Sampling Methods"
-                  summary="Specify site selection methods, stratums and sampling blocks (optional) for this survey."
+                  summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
                   component={<SurveyBlockSection />}
                 />
                 <Divider className={classes.sectionDivider} />
