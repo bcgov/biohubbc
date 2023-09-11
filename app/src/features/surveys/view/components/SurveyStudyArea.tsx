@@ -22,9 +22,9 @@ import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import LocationForm, {
-  IStudyAreaForm,
-  StudyAreaInitialValues,
-  StudyAreaYupSchema
+  ISurveyLocationForm,
+  SurveyLocationInitialValues,
+  SurveyLocationYupSchema
 } from 'features/surveys/components/StudyAreaForm';
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
@@ -84,7 +84,7 @@ const SurveyStudyArea = () => {
   const surveyGeometry = useMemo(() => surveyLocation?.geometry || [], [surveyLocation]);
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
+  const [studyAreaFormData, setStudyAreaFormData] = useState<ISurveyLocationForm>(SurveyLocationInitialValues);
 
   const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
@@ -161,31 +161,33 @@ const SurveyStudyArea = () => {
     }
 
     setStudyAreaFormData({
-      location: {
-        name: surveyLocation.name,
-        description: surveyLocation.description,
-        geometry: surveyLocation.geometry
-      }
+      locations: [
+        {
+          name: surveyLocation.name,
+          description: surveyLocation.description,
+          geometry: surveyLocation.geometry
+        }
+      ]
     });
 
     setOpenEditDialog(true);
   };
 
-  const handleDialogEditSave = async (values: IStudyAreaForm) => {
+  const handleDialogEditSave = async (values: ISurveyLocationForm) => {
     if (!surveyLocation) {
       return;
     }
 
     try {
       const surveyData = {
-        locations: [
-          {
-            name: values.location.name,
-            description: values.location.description,
-            geometry: values.location.geometry,
+        locations: values.locations.map((item) => {
+          return {
+            name: item.name,
+            description: item.description,
+            geometry: item.geometry,
             revision_count: surveyLocation.revision_count
-          }
-        ]
+          };
+        })
       };
 
       await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
@@ -216,7 +218,7 @@ const SurveyStudyArea = () => {
         component={{
           element: <LocationForm />,
           initialValues: studyAreaFormData,
-          validationSchema: StudyAreaYupSchema
+          validationSchema: SurveyLocationYupSchema
         }}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}

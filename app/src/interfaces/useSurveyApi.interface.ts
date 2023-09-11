@@ -3,7 +3,7 @@ import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
 import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
 import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
-import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
+import { ISurveyLocationForm } from 'features/surveys/components/StudyAreaForm';
 import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
 import { Feature } from 'geojson';
 import { StringBoolean } from 'types/misc';
@@ -17,10 +17,10 @@ import { StringBoolean } from 'types/misc';
 export interface ICreateSurveyRequest
   extends IGeneralInformationForm,
     IPurposeAndMethodologyForm,
-    IStudyAreaForm,
     IProprietaryDataForm,
     IAgreementsForm,
-    IParticipantsJobForm {}
+    IParticipantsJobForm,
+    ISurveyLocationForm {}
 
 /**
  * Create survey response object.
@@ -325,7 +325,7 @@ export interface IGetSurveyForUpdateResponse {
 export type IEditSurveyRequest = IGeneralInformationForm &
   IPurposeAndMethodologyForm &
   ISurveyFundingSourceForm &
-  IStudyAreaForm &
+  ISurveyLocationForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm &
   IParticipantsJobForm;

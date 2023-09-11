@@ -5,31 +5,6 @@ import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import yup from 'utils/YupSchema';
 
-export interface IStudyAreaForm {
-  location: {
-    name: string;
-    description: string;
-    geometry: Feature[];
-  };
-}
-
-export const StudyAreaInitialValues: IStudyAreaForm = {
-  location: {
-    name: '',
-    // TODO description is temporarily hardcoded until the new UI to populate this field is implemented
-    description: 'Insert description here',
-    geometry: []
-  }
-};
-
-export const StudyAreaYupSchema = yup.object().shape({
-  location: yup.object().shape({
-    name: yup.string().max(50, 'Name cannot exceed 50 characters').required('Name is Required'),
-    description: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is Required'),
-    geometry: yup.array().min(1, 'A geometry is required').required('A geometry is required')
-  })
-});
-
 export interface ISurveyLocationForm {
   locations: {
     name: string;
@@ -39,7 +14,14 @@ export interface ISurveyLocationForm {
 }
 
 export const SurveyLocationInitialValues: ISurveyLocationForm = {
-  locations: []
+  locations: [
+    {
+      name: '',
+      // TODO description is temporarily hardcoded until the new UI to populate this field is implemented
+      description: 'Insert description here',
+      geometry: []
+    }
+  ]
 };
 
 export const SurveyLocationYupSchema = yup.object({
@@ -61,15 +43,15 @@ export const SurveyLocationYupSchema = yup.object({
  * @return {*}
  */
 const StudyAreaForm = () => {
-  const formikProps = useFormikContext<IStudyAreaForm>();
+  const formikProps = useFormikContext<ISurveyLocationForm>();
 
   const { handleSubmit } = formikProps;
-
+  console.log(formikProps.values.locations);
   return (
     <form onSubmit={handleSubmit}>
       <Box mb={4}>
         <CustomTextField
-          name="location.name"
+          name={`locations[0].name`}
           label="Survey Area Name"
           other={{
             required: true
@@ -77,7 +59,7 @@ const StudyAreaForm = () => {
         />
       </Box>
       <MapBoundary
-        name="location.geometry"
+        name={`locations[0].geometry`}
         title="Study Area Boundary"
         mapId="study_area_form_map"
         bounds={undefined}

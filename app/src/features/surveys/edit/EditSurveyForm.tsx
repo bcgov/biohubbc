@@ -27,7 +27,7 @@ import GeneralInformationForm, {
 } from '../components/GeneralInformationForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
-import LocationForm, { StudyAreaInitialValues, StudyAreaYupSchema } from '../components/StudyAreaForm';
+import LocationForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from '../components/StudyAreaForm';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
@@ -77,7 +77,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         vantage_code_ids: []
       }
     },
-    ...StudyAreaInitialValues,
+    ...SurveyLocationInitialValues,
     ...SurveyFundingSourceFormInitialValues,
     ...SurveyPartnershipsFormInitialValues,
     ...{
@@ -135,7 +135,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
       )
       .nullable()
   })
-    .concat(StudyAreaYupSchema)
+    .concat(SurveyLocationYupSchema)
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)

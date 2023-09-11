@@ -1,9 +1,9 @@
 import { cleanup } from '@testing-library/react-hooks';
 import MapBoundary from 'components/boundary/MapBoundary';
 import StudyAreaForm, {
-  IStudyAreaForm,
-  StudyAreaInitialValues,
-  StudyAreaYupSchema
+  ISurveyLocationForm,
+  SurveyLocationInitialValues,
+  SurveyLocationYupSchema
 } from 'features/surveys/components/StudyAreaForm';
 import { Formik } from 'formik';
 import { render, waitFor } from 'test-helpers/test-utils';
@@ -24,8 +24,8 @@ describe('Study Area Form', () => {
   it('renders correctly with default values', async () => {
     const { getByLabelText, getByTestId } = render(
       <Formik
-        initialValues={StudyAreaInitialValues}
-        validationSchema={StudyAreaYupSchema}
+        initialValues={SurveyLocationInitialValues}
+        validationSchema={SurveyLocationYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={jest.fn()}>
@@ -41,7 +41,7 @@ describe('Study Area Form', () => {
           title: 'Study Area Boundary',
           mapId: 'study_area_form_map',
           bounds: undefined,
-          formikProps: expect.objectContaining({ values: StudyAreaInitialValues })
+          formikProps: expect.objectContaining({ values: SurveyLocationInitialValues })
         },
         expect.anything()
       );
@@ -52,29 +52,31 @@ describe('Study Area Form', () => {
   });
 
   it('renders correctly with non default values', async () => {
-    const existingFormValues: IStudyAreaForm = {
-      location: {
-        name: 'a study area name',
-        description: 'a study area description',
-        geometry: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [125.6, 10.1]
-            },
-            properties: {
-              name: 'Dinagat Islands'
+    const existingFormValues: ISurveyLocationForm = {
+      locations: [
+        {
+          name: 'a study area name',
+          description: 'a study area description',
+          geometry: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [125.6, 10.1]
+              },
+              properties: {
+                name: 'Dinagat Islands'
+              }
             }
-          }
-        ]
-      }
+          ]
+        }
+      ]
     };
 
     const { getByLabelText, getByTestId } = render(
       <Formik
         initialValues={existingFormValues}
-        validationSchema={StudyAreaYupSchema}
+        validationSchema={SurveyLocationYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={jest.fn()}>

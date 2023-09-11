@@ -601,6 +601,7 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
+    console.log(surveyData);
     const sqlStatement = SQL`
       INSERT INTO survey (
         project_id,
@@ -612,7 +613,7 @@ export class SurveyRepository extends BaseRepository {
         field_method_id,
         additional_details,
         ecological_season_id,
-        intended_outcome_id,
+        intended_outcome_id
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
@@ -630,7 +631,10 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-
+    console.log('ARE WE GETTIN HERE?______');
+    console.log('ARE WE GETTIN HERE?______');
+    console.log('ARE WE GETTIN HERE?______');
+    console.log('ARE WE GETTIN HERE?______');
     const result = response.rows?.[0];
 
     if (!result) {

@@ -1,7 +1,7 @@
 import { Feature } from 'geojson';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
+import { PostLocationData, PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
@@ -35,6 +35,7 @@ import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { RegionService } from './region-service';
+import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -440,14 +441,18 @@ export class SurveyService extends DBService {
       )
     );
 
-    // Handle regions associated to a survey
-    if (postSurveyData.location) {
-      promises.push(this.insertRegion(surveyId, postSurveyData.location.geometry));
+    if (postSurveyData.locations) {
+      promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertSurveyLocations(surveyId, item))));
     }
 
     await Promise.all(promises);
 
     return surveyId;
+  }
+
+  async insertSurveyLocations(surveyId: number, data: PostLocationData): Promise<void> {
+    const service = new SurveyLocationService(this.connection);
+    return service.insertSurveyLocation(surveyId, data);
   }
 
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {

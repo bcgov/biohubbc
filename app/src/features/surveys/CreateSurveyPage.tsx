@@ -42,12 +42,7 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyInitialValues,
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
-import LocationForm, {
-  StudyAreaInitialValues,
-  StudyAreaYupSchema,
-  SurveyLocationInitialValues,
-  SurveyLocationYupSchema
-} from './components/StudyAreaForm';
+import LocationForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from './components/StudyAreaForm';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
@@ -136,7 +131,6 @@ const CreateSurveyPage = () => {
   const [surveyInitialValues] = useState<ICreateSurveyRequest>({
     ...GeneralInformationInitialValues,
     ...PurposeAndMethodologyInitialValues,
-    ...StudyAreaInitialValues,
     ...SurveyFundingSourceFormInitialValues,
     ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
@@ -180,7 +174,6 @@ const CreateSurveyPage = () => {
         `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
       )
   })
-    .concat(StudyAreaYupSchema)
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
@@ -215,6 +208,7 @@ const CreateSurveyPage = () => {
    * @return {*}
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
+    console.log('ARE WE GETTING HERE?');
     try {
       const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), values);
 
@@ -267,7 +261,7 @@ const CreateSurveyPage = () => {
   if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
+  console.log(formikRef.current?.values);
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -423,7 +417,10 @@ const CreateSurveyPage = () => {
                     type="submit"
                     variant="contained"
                     color="primary"
-                    onClick={() => formikRef.current?.submitForm()}
+                    onClick={() => {
+                      console.log(formikRef.current?.errors);
+                      formikRef.current?.submitForm();
+                    }}
                     className={classes.actionButton}>
                     Save and Exit
                   </Button>

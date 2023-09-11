@@ -8,6 +8,7 @@ export class PostSurveyObject {
   proprietor: PostProprietorData;
   purpose_and_methodology: PostPurposeAndMethodologyData;
   location: PostLocationData;
+  locations: PostLocationData[];
   agreements: PostAgreementsData;
   participants: PostParticipationData[];
   partnerships: PostPartnershipsData;
@@ -26,6 +27,7 @@ export class PostSurveyObject {
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
+    this.locations = (obj?.locations && obj.locations.map((p: any) => new PostLocationData(p))) || [];
   }
 }
 
