@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { PutSurveyObject } from '../../../../../models/survey-update';
-import { SurveyLocationRequestObject } from '../../../../../openapi/schemas/survey';
+import { SurveyLocationPostRequestObject } from '../../../../../openapi/schemas/survey';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
@@ -267,7 +267,7 @@ PUT.apiDoc = {
               }
             },
             locations: {
-              ...(SurveyLocationRequestObject as object)
+              ...(SurveyLocationPostRequestObject as object)
             },
             participants: {
               type: 'array',
