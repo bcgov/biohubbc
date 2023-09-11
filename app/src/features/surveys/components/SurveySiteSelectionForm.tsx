@@ -7,10 +7,10 @@ import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 
-interface IStratum {
-  survey_stratum_id: number | undefined;
+export interface IStratum {
+  survey_stratum_id?: number;
   name: string;
-  description: string;
+  description: string | null;
 }
 
 export interface ISurveySiteSelectionForm {

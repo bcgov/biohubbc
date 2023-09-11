@@ -3,7 +3,7 @@ import { SurveyMetadataPublish } from '../repositories/history-publish-repositor
 import { IPermitModel } from '../repositories/permit-repository';
 import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
-import { SiteSelectionStrategies } from '../repositories/survey-repository';
+import { SiteSelectionStrategies } from '../repositories/site-selection-strategy-repository';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;

@@ -23,18 +23,7 @@ import { Formik, FormikProps, useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
-
-interface IStratum {
-  /**
-   * @TODO We probably won't track the survey stratum ID in the frontend. Reason: new records won't have an ID.
-   * From a technical perspective, it is much easier to simply erase all stratum and re-insert them upon
-   * survey create/survey update, rather than track the IDs of already existing stratums.
-   */
-
-  // survey_stratum_id: number | undefined;
-  name: string;
-  description: string;
-}
+import { IStratum } from './SurveySiteSelectionForm';
 
 interface IStratumForm {
   index: number | null;
