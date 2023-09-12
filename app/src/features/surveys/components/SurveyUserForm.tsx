@@ -146,7 +146,9 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
         </Typography>
       </Box>
       {errors?.['participants'] && selectedUsers.length > 0 && (
-        <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+        <Box mt={3}>
+          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+        </Box>
       )}
       <Box mt={3}>
         <Autocomplete

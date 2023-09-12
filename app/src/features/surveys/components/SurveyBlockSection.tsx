@@ -2,14 +2,16 @@ import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { ListItemIcon, Menu, MenuItem, MenuProps, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import { useFormikContext } from 'formik';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 import CreateSurveyBlockDialog from './CreateSurveyBlockDialog';
 import EditSurveyBlockDialog from './EditSurveyBlockDialog';
@@ -20,8 +22,8 @@ export const SurveyBlockInitialValues = {
 
 // Form validation for Block Item
 export const BlockYupSchema = yup.object({
-  name: yup.string().required().max(50, 'Maximum 50 characters'),
-  description: yup.string().required().max(250, 'Maximum 250 characters')
+  name: yup.string().required('Name is required').max(50, 'Maximum 50 characters'),
+  description: yup.string().required('Description is required').max(250, 'Maximum 250 characters')
 });
 
 export const SurveyBlockYupSchema = yup.array(BlockYupSchema);
@@ -92,16 +94,19 @@ const SurveyBlockSection: React.FC = () => {
         sx={{
           marginBottom: '14px'
         }}>
-        Define Blocks
+        Define Blocks{' '}
+        <Typography component="span" color="textSecondary" fontWeight="inherit">
+          (optional)
+        </Typography>
       </Typography>
       <Typography
         variant="body1"
         color="textSecondary"
         sx={{
+          mb: 2,
           maxWidth: '90ch'
         }}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec
-        placerat nisl magna, et faucibus arcu condimentum sed.
+        Enter a name and description for each block used in this survey.
       </Typography>
       <Menu
         open={Boolean(anchorEl)}
@@ -129,9 +134,41 @@ const SurveyBlockSection: React.FC = () => {
         </MenuItem>
       </Menu>
       <form onSubmit={handleSubmit}>
+        <TransitionGroup>
+          {values.blocks.map((item, index) => {
+            return (
+              <Collapse key={`${item.name}-${item.description}-${index}`}>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    mt: 1,
+                    '& .MuiCardHeader-title': {
+                      mb: 0.5
+                    }
+                  }}>
+                  <CardHeader
+                    action={
+                      <IconButton
+                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                          handleMenuClick(event, index)
+                        }
+                        aria-label="settings">
+                        <MoreVertIcon />
+                      </IconButton>
+                    }
+                    title={item.name}
+                    subheader={item.description}
+                  />
+                </Card>
+              </Collapse>
+            );
+          })}
+        </TransitionGroup>
         <Button
+          sx={{
+            mt: 1
+          }}
           data-testid="block-form-add-button"
-          sx={{ marginBottom: 2, marginTop: 2 }}
           variant="outlined"
           color="primary"
           title="Add Block"
@@ -140,27 +177,6 @@ const SurveyBlockSection: React.FC = () => {
           onClick={() => setIsCreateModalOpen(true)}>
           Add Block
         </Button>
-        <Box>
-          {values.blocks.map((item, index) => {
-            return (
-              <Card key={`${item.name}-${item.description}`} sx={{ marginTop: 1 }} variant="outlined">
-                <CardHeader
-                  action={
-                    <IconButton
-                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                        handleMenuClick(event, index)
-                      }
-                      aria-label="settings">
-                      <MoreVertIcon />
-                    </IconButton>
-                  }
-                  title={item.name}
-                  subheader={item.description}
-                />
-              </Card>
-            );
-          })}
-        </Box>
       </form>
     </>
   );

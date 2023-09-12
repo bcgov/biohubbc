@@ -34,12 +34,9 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
-import SurveySiteSelectionForm, {
-  SurveySiteSelectionInitialValues,
-  SurveySiteSelectionYupSchema
-} from '../components/SurveySiteSelectionForm';
-import SurveyStratumForm from '../components/SurveyStratumForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
+import SurveySiteSelectionForm, { SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
+import SurveyStratumForm from '../components/SurveyStratumForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -153,7 +150,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
     .concat(SurveySiteSelectionYupSchema)
-    .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema);
 
   return (
@@ -247,8 +243,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
-            title="Site Selection Strategy"
-            summary="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed."
+            title="Sampling Methods"
+            summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
             component={
               <>
                 <Box component="fieldset">
@@ -283,17 +279,11 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                     </Box>
                   </Box>
                 </Collapse>
+                <SurveyBlockSection />
               </>
             }
           />
 
-          <Divider className={classes.sectionDivider} />
-
-          <HorizontalSplitFormComponent
-            title="Block Data"
-            summary="Data for Blocks"
-            component={<SurveyBlockSection />}
-          />
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
