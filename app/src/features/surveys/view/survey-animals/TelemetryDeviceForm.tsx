@@ -14,15 +14,12 @@ const TelemetryDeviceForm = () => {
   const { values, setStatus } = useFormikContext<IAnimalTelemetryDevice>();
   const [bctwErrors, setBctwErrors] = useState<Record<string, string | undefined>>({});
   const api = useTelemetryApi();
-  const {
-    data: deviceData,
-    load: loadDevice,
-    refresh
-  } = useDataLoader(() => api.devices.getDeviceDetails(values.device_id));
+  const { data: deviceData, refresh: refreshDevice } = useDataLoader(() =>
+    api.devices.getDeviceDetails(values.device_id)
+  );
 
   useEffect(() => {
-    loadDevice();
-    refresh();
+    refreshDevice();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.device_id]);
 

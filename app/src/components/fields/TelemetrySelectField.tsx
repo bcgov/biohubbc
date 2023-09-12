@@ -39,10 +39,10 @@ const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
         onBlur={handleBlur}
         displayEmpty
         inputProps={{ 'aria-label': 'Permit Type' }}>
-        {bctwLookupLoader.data?.map((a: string | number) => {
+        {bctwLookupLoader.data?.map((bctwValue: string | number) => {
           return (
-            <MenuItem key={a.toString()} value={a}>
-              {a}
+            <MenuItem key={String(bctwValue)} value={bctwValue}>
+              {bctwValue}
             </MenuItem>
           );
         })}

@@ -40,6 +40,14 @@ export class SurveyCritterService extends DBService {
     return this.critterRepository.removeCritterFromSurvey(surveyId, critterId);
   }
 
+  /**
+   * Adds a deployment to a critter. Does not affect the critter or device in the external system.
+   *
+   * @param {number} critterId
+   * @param {string} deplyomentId
+   * @return {*}
+   * @memberof SurveyCritterService
+   */
   async addDeployment(critterId: number, deplyomentId: string) {
     return this.critterRepository.addDeployment(critterId, deplyomentId);
   }

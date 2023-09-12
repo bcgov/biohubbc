@@ -32,7 +32,6 @@ const SurveyAnimals: React.FC = () => {
   const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
-  // const [deploymentLookup, setDeploymentLookup] = useState<Record<string, unknown>>({});
 
   const { projectId, surveyId } = surveyContext;
   const {
@@ -116,9 +115,10 @@ const SurveyAnimals: React.FC = () => {
           </Typography>
         )
       });
+    } finally {
+      setOpenAddDeviceDialog(false);
+      refreshDeployments();
     }
-    setOpenAddDeviceDialog(false);
-    refreshDeployments();
   };
 
   return (

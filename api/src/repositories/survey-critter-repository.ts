@@ -58,6 +58,14 @@ export class SurveyCritterRepository extends BaseRepository {
     return response.rowCount;
   }
 
+  /**
+   * Add a deployment to the critter.
+   *
+   * @param {number} critterId
+   * @param {string} deplyomentId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyCritterRepository
+   */
   async addDeployment(critterId: number, deplyomentId: string): Promise<number> {
     defaultLog.debug({ label: 'addDeployment', deplyomentId });
     const queryBuilder = getKnex()

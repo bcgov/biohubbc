@@ -96,7 +96,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
         (a) => a.critterbase_critter_id
       );
       const results = critter_ids.length ? await bctw.getDeploymentsByCritterId(critter_ids) : [];
-      return res.status(201).json(results);
+      return res.status(200).json(results);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();
