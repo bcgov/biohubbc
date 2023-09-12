@@ -1,10 +1,10 @@
+import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
+import Typography from '@mui/material/Typography';
 import { useState } from 'react';
-import Box from '@mui/material/Box'
-import Collapse from '@mui/material/Collapse'
-import Typography from '@mui/material/Typography'
+import SurveyBlockSection from './SurveyBlockSection';
 import SurveySiteSelectionForm from './SurveySiteSelectionForm';
 import SurveyStratumForm from './SurveyStratumForm';
-import SurveyBlockSection from './SurveyBlockSection';
 
 const SamplingMethodsForm = () => {
   const [showStratumForm, setShowStratumForm] = useState<boolean>(false);
@@ -38,6 +38,6 @@ const SamplingMethodsForm = () => {
       </Box>
     </>
   );
-}
+};
 
-export default SamplingMethodsForm
+export default SamplingMethodsForm;

@@ -42,18 +42,15 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyInitialValues,
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
+import SamplingMethodsForm from './components/SamplingMethodsForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
 import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from './components/SurveyFundingSourceForm';
-import {
-  SurveySiteSelectionInitialValues,
-  SurveySiteSelectionYupSchema
-} from './components/SurveySiteSelectionForm';
+import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
-import SamplingMethodsForm from './components/SamplingMethodsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
