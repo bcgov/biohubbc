@@ -12,7 +12,7 @@ import { IAnimalTelemetryDevice } from './animal';
 
 const TelemetryDeviceForm = () => {
   const { values, setStatus } = useFormikContext<IAnimalTelemetryDevice>();
-  const [bctwErrors, setBctwErrors] = useState<Record<string, string>>({});
+  const [bctwErrors, setBctwErrors] = useState<Record<string, string | undefined>>({});
   const api = useTelemetryApi();
   const {
     data: deviceData,
