@@ -421,8 +421,6 @@ export function getSurvey(): RequestHandler {
 
       await connection.commit();
 
-      console.log(surveyData);
-
       return res.status(200).json({ surveyData: surveyData, surveySupplementaryData: surveySupplementaryData });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyForView', message: 'error', error });

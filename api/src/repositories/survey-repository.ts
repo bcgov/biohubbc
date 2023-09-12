@@ -608,10 +608,6 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    console.log('ARE WE GETTIN HERE?______');
-    console.log('ARE WE GETTIN HERE?______');
-    console.log('ARE WE GETTIN HERE?______');
-    console.log('ARE WE GETTIN HERE?______');
     const result = response.rows?.[0];
 
     if (!result) {
