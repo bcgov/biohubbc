@@ -69,6 +69,10 @@ export const surveyObject: SurveyViewObject = {
     ancillary_species: [2],
     ancillary_species_names: ['ancillary species 2']
   },
+  site_selection: {
+    strategies: [],
+    stratums: []
+  },
   participants: [
     {
       system_user_id: 1,

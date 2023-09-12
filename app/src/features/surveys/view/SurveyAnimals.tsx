@@ -10,6 +10,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useState } from 'react';
+import { pluralize } from 'utils/Utils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import {
   AnimalSchema,
@@ -57,9 +58,6 @@ const SurveyAnimals: React.FC = () => {
   const toggleDialog = () => {
     setOpenAddCritterDialog((d) => !d);
   };
-
-  const pluralize = (str: string, count: number) =>
-    count > 1 || count === 0 ? `${count} ${str}'s` : `${count} ${str}`;
 
   const AnimalFormValues: IAnimal = {
     general: { taxon_id: '', taxon_name: '', animal_id: '' },
@@ -134,7 +132,7 @@ const SurveyAnimals: React.FC = () => {
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
               {`${
                 animalCount
-                  ? `${pluralize('Animal', animalCount)} reported in this survey`
+                  ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
                   : `No individual animals were captured or reported in this survey`
               }`}
             </Typography>

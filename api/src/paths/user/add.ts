@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, getServiceAccountDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getKeycloakSource } from '../../utils/keycloak-utils';
@@ -133,12 +132,6 @@ export function addSystemRoleUser(): RequestHandler {
     const role_name: string = req.body?.role_name;
 
     const sourceSystem = getKeycloakSource(req['keycloak_token']);
-
-    if (!sourceSystem) {
-      throw new HTTP400('Failed to identify known submission source system', [
-        'token did not contain a clientId/azp or clientId/azp value is unknown'
-      ]);
-    }
 
     const connection = sourceSystem
       ? getServiceAccountDBConnection(sourceSystem)
