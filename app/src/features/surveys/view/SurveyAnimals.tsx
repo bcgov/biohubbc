@@ -8,6 +8,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import React, { useContext, useState } from 'react';
+import { pluralize } from 'utils/Utils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
@@ -22,9 +23,6 @@ const SurveyAnimals: React.FC = () => {
   const toggleDialog = () => {
     setOpenDialog((d) => !d);
   };
-
-  const pluralize = (str: string, count: number) =>
-    count > 1 || count === 0 ? `${count} ${str}'s` : `${count} ${str}`;
 
   const AnimalFormValues: IAnimal = {
     general: { taxon_id: '', taxon_name: '', animal_id: '' },
@@ -69,7 +67,7 @@ const SurveyAnimals: React.FC = () => {
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
               {`${
                 animalCount
-                  ? `${pluralize('Animal', animalCount)} reported in this survey`
+                  ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
                   : `No individual animals were captured or reported in this survey`
               }`}
             </Typography>

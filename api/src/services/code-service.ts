@@ -40,7 +40,8 @@ export class CodeService extends DBService {
       ecological_seasons,
       intended_outcomes,
       vantage_codes,
-      survey_jobs
+      survey_jobs,
+      site_selection_strategies
     ] = await Promise.all([
       await this.codeRepository.getManagementActionType(),
       await this.codeRepository.getFirstNations(),
@@ -59,28 +60,30 @@ export class CodeService extends DBService {
       await this.codeRepository.getEcologicalSeasons(),
       await this.codeRepository.getIntendedOutcomes(),
       await this.codeRepository.getVantageCodes(),
-      await this.codeRepository.getSurveyJobs()
+      await this.codeRepository.getSurveyJobs(),
+      await this.codeRepository.getSiteSelectionStrategies()
     ]);
 
     return {
-      management_action_type: management_action_type,
-      first_nations: first_nations,
-      agency: agency,
-      investment_action_category: investment_action_category,
-      type: type,
-      iucn_conservation_action_level_1_classification: iucn_conservation_action_level_1_classification,
-      iucn_conservation_action_level_2_subclassification: iucn_conservation_action_level_2_subclassification,
-      iucn_conservation_action_level_3_subclassification: iucn_conservation_action_level_3_subclassification,
-      program: program,
-      proprietor_type: proprietor_type,
-      system_roles: system_roles,
-      project_roles: project_roles,
-      administrative_activity_status_type: administrative_activity_status_type,
-      field_methods: field_methods,
-      ecological_seasons: ecological_seasons,
-      intended_outcomes: intended_outcomes,
-      vantage_codes: vantage_codes,
-      survey_jobs: survey_jobs
+      management_action_type,
+      first_nations,
+      agency,
+      investment_action_category,
+      type,
+      iucn_conservation_action_level_1_classification,
+      iucn_conservation_action_level_2_subclassification,
+      iucn_conservation_action_level_3_subclassification,
+      program,
+      proprietor_type,
+      system_roles,
+      project_roles,
+      administrative_activity_status_type,
+      field_methods,
+      ecological_seasons,
+      intended_outcomes,
+      vantage_codes,
+      survey_jobs,
+      site_selection_strategies
     };
   }
 }
