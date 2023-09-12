@@ -56,7 +56,7 @@ const StudyAreaForm = () => {
         />
       </Box>
       <MapBoundary
-        name={`locations[0].geometry`}
+        name={`locations[0].geojson`}
         title="Study Area Boundary"
         mapId="study_area_form_map"
         bounds={undefined}

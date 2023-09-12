@@ -81,7 +81,7 @@ const SurveyStudyArea = () => {
 
   const surveyLocations = surveyContext.surveyDataLoader.data?.surveyData?.locations;
   const surveyLocation = surveyLocations[0] || null;
-  const surveyGeometry = useMemo(() => surveyLocation?.geometry || [], [surveyLocation]);
+  const surveyGeometry = useMemo(() => surveyLocation?.geojson || [], [surveyLocation]);
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [studyAreaFormData, setStudyAreaFormData] = useState<ISurveyLocationForm>(SurveyLocationInitialValues);
@@ -95,6 +95,8 @@ const SurveyStudyArea = () => {
     env: [],
     wmu: []
   });
+
+  console.log(surveyLocation);
 
   const mapDataLoader = useDataLoader((projectId: number, occurrenceSubmissionId: number) =>
     biohubApi.observation.getOccurrencesForView(projectId, occurrenceSubmissionId)
@@ -190,7 +192,8 @@ const SurveyStudyArea = () => {
         })
       };
 
-      await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
+      // TODO fix this update
+      // await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
