@@ -37,17 +37,23 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
           ? schema.test(
               'allowsStratums',
               'You must include the Stratified site selection strategy in order to add Stratums.',
-              (stratums: string[]) => stratums.includes('Stratified')
+              (strategies: string[]) => strategies.includes('Stratified')
             )
           : schema;
       }),
-    stratums: yup.array().of(
-      yup.object({
-        survey_stratum_id: yup.number().optional(),
-        name: yup.string().required('Must provide a name for stratum'),
-        description: yup.string().optional()
+    stratums: yup
+      .array()
+      .of(
+        yup.object({
+          survey_stratum_id: yup.number().optional(),
+          name: yup.string().required('Must provide a name for stratum'),
+          description: yup.string().optional()
+        })
+      )
+      .test('duplicateStratums', 'Stratums must have unique names.', (stratums) => {
+        const entries = (stratums || []).map((stratum) => new String(stratum.name).trim());
+        return new Set(entries).size === stratums?.length;
       })
-    )
   })
 });
 

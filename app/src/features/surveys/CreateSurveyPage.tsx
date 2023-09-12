@@ -410,7 +410,12 @@ const CreateSurveyPage = () => {
                       </Box>
                       <Collapse in={showStratumForm}>
                         <Box component="fieldset" mt={5}>
-                          <Typography component="legend">Define Stratums</Typography>
+                          <Typography component="legend">
+                            Define Stratums&nbsp;
+                            <Typography component="span" color="textSecondary" fontWeight="inherit">
+                              (Optional)
+                            </Typography>
+                          </Typography>
                           <Typography
                             variant="body1"
                             color="textSecondary"
