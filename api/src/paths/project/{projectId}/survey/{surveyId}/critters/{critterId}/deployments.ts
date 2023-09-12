@@ -75,7 +75,7 @@ POST.apiDoc = {
               type: 'string'
             },
             device_id: {
-              type: 'number'
+              type: 'integer'
             },
             frequency: {
               type: 'number'
@@ -95,7 +95,7 @@ POST.apiDoc = {
     }
   },
   responses: {
-    201: {
+    200: {
       description: 'Responds with count of rows created in SIMS DB Deployments.',
       content: {
         'application/json': {
@@ -141,7 +141,7 @@ export function deployDevice(): RequestHandler {
       const surveyEntry = await surveyCritterService.addDeployment(surveyId, req.body.deployment_id);
       await bctw.deployDevice(req.body);
       await connection.commit();
-      return res.status(201).json(surveyEntry);
+      return res.status(200).json(surveyEntry);
     } catch (error) {
       defaultLog.error({ label: 'addDeployment', message: 'error', error });
       console.log(JSON.stringify((error as Error).message));

@@ -39,7 +39,7 @@ const TelemetryDeviceForm = () => {
         a.attachment_end == null
     );
     if (existingDeployment) {
-      errors.attachment_start = `Cannot make a deployment starting on this date, it will conflict with deployment ${
+      errors.attachment_start = `Cannot make a deployment starting on this date, as it will conflict with deployment ${
         existingDeployment.deployment_id
       } 
       running from ${existingDeployment.attachment_start} until ${existingDeployment.attachment_end ?? 'indefinite'}.`;
@@ -91,8 +91,8 @@ const TelemetryDeviceForm = () => {
         </Grid>
         {Object.entries(bctwErrors).length > 0 && (
           <Grid item xs={12}>
-            {Object.values(bctwErrors).map((a) => (
-              <FormHelperText error={true}>{a}</FormHelperText>
+            {Object.values(bctwErrors).map((bctwError) => (
+              <FormHelperText error={true}>{bctwError}</FormHelperText>
             ))}
           </Grid>
         )}

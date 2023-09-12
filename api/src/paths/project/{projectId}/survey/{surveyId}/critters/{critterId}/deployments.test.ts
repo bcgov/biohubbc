@@ -27,7 +27,7 @@ describe('deployDevice', () => {
     expect(mockGetDBConnection.calledOnce).to.be.true;
     expect(mockAddDeployment.calledOnce).to.be.true;
     expect(mockBctwService.calledOnce).to.be.true;
-    expect(mockRes.status).to.have.been.calledWith(201);
+    expect(mockRes.status).to.have.been.calledWith(200);
     expect(mockRes.json).to.have.been.calledWith(mockSurveyEntry);
   });
 

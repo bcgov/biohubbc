@@ -44,7 +44,8 @@ POST.apiDoc = {
             critters: {
               type: 'array',
               items: {
-                type: 'string'
+                type: 'string',
+                format: 'uuid'
               }
             },
             animal_ids: {
