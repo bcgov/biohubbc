@@ -281,7 +281,9 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                     </Box>
                   </Box>
                 </Collapse>
-                <SurveyBlockSection />
+                <Box component="fieldset" mt={5}>
+                  <SurveyBlockSection />
+                </Box>
               </>
             }
           />

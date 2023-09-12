@@ -425,7 +425,9 @@ const CreateSurveyPage = () => {
                           </Box>
                         </Box>
                       </Collapse>
-                      <SurveyBlockSection />
+                      <Box component="fieldset" mt={5}>
+                        <SurveyBlockSection />
+                      </Box>
                     </>
                   }
                 />

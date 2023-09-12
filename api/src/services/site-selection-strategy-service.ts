@@ -27,7 +27,7 @@ export class SiteSelectionStrategyService extends DBService {
   }
 
   /**
-   * Retrieves site selection strategies and
+   * Retrieves site selection strategies and stratums
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SiteSelectionData>}
@@ -37,10 +37,27 @@ export class SiteSelectionStrategyService extends DBService {
     return this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(surveyId);
   }
 
+  /**
+   * Attaches numerous site selection strategies to the given survey
+   *
+   * @param {number} surveyId
+   * @param {string[]} strategies
+   * @return {*}  {Promise<void>}
+   * @memberof SiteSelectionStrategyService
+   */
   async insertSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
     return this.siteSelectionStrategyRepository.insertSurveySiteSelectionStrategies(surveyId, strategies);
   }
 
+  /**
+   * Replaces all of the site selection strategies for the given survey, first by deleting
+   * all existing records, then inserting the new ones
+   *
+   * @param {number} surveyId
+   * @param {string[]} strategies
+   * @return {*}  {Promise<void>}
+   * @memberof SiteSelectionStrategyService
+   */
   async replaceSurveySiteSelectionStrategies(surveyId: number, strategies: string[]): Promise<void> {
     await this.siteSelectionStrategyRepository.deleteSurveySiteSelectionStrategies(surveyId);
 
@@ -62,6 +79,8 @@ export class SiteSelectionStrategyService extends DBService {
     surveyId: number,
     stratums: Array<SurveyStratum | SurveyStratumRecord>
   ): Promise<void> {
+    defaultLog.debug({ label: 'replaceSurveySiteSelectionStratums' });
+
     const insertStratums: SurveyStratum[] = [];
     const updateStratums: SurveyStratumRecord[] = [];
     const existingSiteSelectionStrategies = await this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(
@@ -80,8 +99,6 @@ export class SiteSelectionStrategyService extends DBService {
       return !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id);
     });
 
-    defaultLog.debug({ insertStratums, updateStratums, removeStratums });
-
     if (removeStratums.length) {
       await this.deleteSurveyStratums(removeStratums.map((stratum) => stratum.survey_stratum_id));
     }
@@ -95,14 +112,37 @@ export class SiteSelectionStrategyService extends DBService {
     }
   }
 
+  /**
+   * Inserts new survey stratums
+   *
+   * @param {number} surveyId
+   * @param {SurveyStratum[]} stratums
+   * @return {*}  {Promise<SurveyStratumRecord[]>}
+   * @memberof SiteSelectionStrategyService
+   */
   async insertSurveyStratums(surveyId: number, stratums: SurveyStratum[]): Promise<SurveyStratumRecord[]> {
     return this.siteSelectionStrategyRepository.insertSurveyStratums(surveyId, stratums);
   }
 
+  /**
+   * Updates all of the given survey stratums
+   *
+   * @param {number} surveyId
+   * @param {SurveyStratumRecord[]} stratums
+   * @return {*}  {Promise<SurveyStratumRecord[]>}
+   * @memberof SiteSelectionStrategyService
+   */
   async updateSurveyStratums(surveyId: number, stratums: SurveyStratumRecord[]): Promise<SurveyStratumRecord[]> {
     return this.siteSelectionStrategyRepository.updateSurveyStratums(surveyId, stratums);
   }
 
+  /**
+   * Deletes all of the given survey stratums by the survey stratum ID
+   *
+   * @param {number[]} stratumIds
+   * @return {*}  {Promise<any>}
+   * @memberof SiteSelectionStrategyService
+   */
   async deleteSurveyStratums(stratumIds: number[]): Promise<any> {
     return this.siteSelectionStrategyRepository.deleteSurveyStratums(stratumIds);
   }
