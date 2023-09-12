@@ -19,11 +19,11 @@ import LoginPage from 'pages/authentication/LoginPage';
 import LogOutPage from 'pages/authentication/LogOutPage';
 import { LandingPage } from 'pages/landing/LandingPage';
 import { Playground } from 'pages/Playground';
+import { PrototypePage } from 'pages/prototype/PrototypePage';
 import React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import { PrototypePage } from 'pages/prototype/PrototypePage';
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -141,7 +141,6 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle title={getTitle()} path="*">
         <Redirect to="/page-not-found" />
       </RouteWithTitle>
-
     </Switch>
   );
 };
