@@ -136,8 +136,10 @@ const SurveyStratumForm = () => {
       <form onSubmit={handleSubmit}>
         <Box mt={4}>
           {values.site_selection.stratums.map((stratum: IStratum, index: number) => {
+            const key = `${stratum.name}-${index}`;
+
             return (
-              <Box mt={2} key={stratum.name}>
+              <Box mt={2} key={key}>
                 <Card variant="outlined">
                   <Box display="flex" alignItems="flex-start" px={2} py={1.5}>
                     <Box flex="1 1 auto">

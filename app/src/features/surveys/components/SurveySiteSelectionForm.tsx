@@ -50,10 +50,13 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
           description: yup.string().optional()
         })
       )
+      /*
+      // TODO assure that duplicate stratums cannot be created
       .test('duplicateStratums', 'Stratums must have unique names.', (stratums) => {
         const entries = (stratums || []).map((stratum) => new String(stratum.name).trim());
         return new Set(entries).size === stratums?.length;
       })
+      */
   })
 });
 
