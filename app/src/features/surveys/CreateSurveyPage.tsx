@@ -42,14 +42,12 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyInitialValues,
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
-import SamplingMethodsForm from './components/SamplingMethodsForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
-import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
+import SurveyBlockSection, { SurveyBlockInitialValues } from './components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from './components/SurveyFundingSourceForm';
-import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -110,7 +108,7 @@ const CreateSurveyPage = () => {
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   const dialogContext = useContext(DialogContext);
 
@@ -139,7 +137,6 @@ const CreateSurveyPage = () => {
     ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues,
-    ...SurveySiteSelectionInitialValues,
     ...SurveyUserJobFormInitialValues,
     ...SurveyBlockInitialValues
   });
@@ -185,7 +182,6 @@ const CreateSurveyPage = () => {
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
-    .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema);
 
   const handleCancel = () => {
@@ -386,9 +382,8 @@ const CreateSurveyPage = () => {
                 <HorizontalSplitFormComponent
                   title="Sampling Methods"
                   summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
-                  component={<SamplingMethodsForm />}
+                  component={<SurveyBlockSection />}
                 />
-
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent

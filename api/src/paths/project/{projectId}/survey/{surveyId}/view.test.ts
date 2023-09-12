@@ -62,10 +62,6 @@ describe('survey/{surveyId}/view', () => {
               indigenous_partnerships: [],
               stakeholder_partnerships: []
             },
-            site_selection: {
-              strategies: ['strat1'],
-              stratums: [{ name: 'startum1', description: 'desc' }]
-            },
             location: {
               survey_area_name: 'location',
               geometry: []
@@ -127,10 +123,6 @@ describe('survey/{surveyId}/view', () => {
             partnerships: {
               indigenous_partnerships: [],
               stakeholder_partnerships: []
-            },
-            site_selection: {
-              strategies: ['strat1'],
-              stratums: [{ name: 'startum1', description: null }]
             },
             location: {
               survey_area_name: 'location',

@@ -94,9 +94,9 @@ const SurveyBlockSection: React.FC = () => {
         sx={{
           marginBottom: '14px'
         }}>
-        Define Blocks&nbsp;
+        Define Blocks{' '}
         <Typography component="span" color="textSecondary" fontWeight="inherit">
-          (Optional)
+          (optional)
         </Typography>
       </Typography>
       <Typography

@@ -309,21 +309,3 @@ export const formatLabel = (str: string): string => {
     .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
     .join(' ');
 };
-
-/**
- * Pluralizes a word.
- *
- * @example p(2, 'apple'); // => 'apples'
- * @example p(null, 'orange'); // => 'oranges'
- * @example p(1, 'banana'); // => 'banana'
- * @example p(10, 'berr', 'y', 'ies'); // => 'berries'
- *
- * @param quantity The quantity used to infer plural or singular
- * @param word The word to pluralize
- * @param {[string]} singularSuffix The suffix used for a singular item
- * @param {[string]} pluralSuffix The suffix used for plural items
- * @returns
- */
-export const pluralize = (quantity: number, word: string, singularSuffix = '', pluralSuffix = 's') => {
-  return `${word}${quantity === 1 ? singularSuffix : pluralSuffix}`;
-};

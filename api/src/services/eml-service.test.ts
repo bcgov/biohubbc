@@ -990,7 +990,6 @@ describe.skip('EmlService', () => {
       field_methods: [],
       intended_outcomes: [],
       vantage_codes: [],
-      site_selection_strategies: [],
       survey_jobs: []
     };
 
