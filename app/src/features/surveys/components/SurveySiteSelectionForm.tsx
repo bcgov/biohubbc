@@ -41,16 +41,14 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
             )
           : schema;
       }),
-    stratums: yup
-      .array()
-      .of(
-        yup.object({
-          survey_stratum_id: yup.number().optional(),
-          name: yup.string().required('Must provide a name for stratum'),
-          description: yup.string().optional()
-        })
-      )
-      /*
+    stratums: yup.array().of(
+      yup.object({
+        survey_stratum_id: yup.number().optional(),
+        name: yup.string().required('Must provide a name for stratum'),
+        description: yup.string().optional()
+      })
+    )
+    /*
       // TODO assure that duplicate stratums cannot be created
       .test('duplicateStratums', 'Stratums must have unique names.', (stratums) => {
         const entries = (stratums || []).map((stratum) => new String(stratum.name).trim());
