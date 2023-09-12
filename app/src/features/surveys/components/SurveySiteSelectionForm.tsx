@@ -101,7 +101,9 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
     } else {
       props.onChangeStratumEntryVisibility(false);
     }
-  }, [values]);
+  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.site_selection.strategies]);
 
   return (
     <>
