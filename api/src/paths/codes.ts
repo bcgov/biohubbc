@@ -37,7 +37,7 @@ GET.apiDoc = {
               'ecological_seasons',
               'intended_outcomes',
               'vantage_codes',
-              'site_strategies'
+              'site_selection_strategies'
             ],
             properties: {
               management_action_type: {
@@ -319,7 +319,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              site_strategies: {
+              site_selection_strategies: {
                 type: 'array',
                 items: {
                   type: 'object',

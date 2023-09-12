@@ -56,7 +56,7 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Survey Job 1' },
     { id: 2, name: 'Survey Job 2' }
   ],
-  site_strategies: [
+  site_selection_strategies: [
     { id: 1, name: 'Strategy 1' },
     { id: 2, name: 'Strategy 2' }
   ]

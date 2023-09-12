@@ -69,7 +69,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
   const codesContext = useContext(CodesContext);
   assert(codesContext.codesDataLoader.data);
 
-  const siteStrategies = codesContext.codesDataLoader.data.site_strategies.map((code) => {
+  const siteStrategies = codesContext.codesDataLoader.data.site_selection_strategies.map((code) => {
     return { label: code.name, value: code.name };
   });
 
