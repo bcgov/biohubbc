@@ -1,9 +1,9 @@
 import { Feature } from 'geojson';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
+import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
 import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
-import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;

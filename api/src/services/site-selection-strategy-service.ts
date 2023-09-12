@@ -1,5 +1,10 @@
 import { IDBConnection } from '../database/db';
-import { SiteSelectionData, SiteSelectionStrategyRepository, SurveyStratum, SurveyStratumRecord } from '../repositories/site-selection-strategy-repository';
+import {
+  SiteSelectionData,
+  SiteSelectionStrategyRepository,
+  SurveyStratum,
+  SurveyStratumRecord
+} from '../repositories/site-selection-strategy-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
@@ -22,7 +27,7 @@ export class SiteSelectionStrategyService extends DBService {
   }
 
   /**
-   * Retrieves site selection strategies and 
+   * Retrieves site selection strategies and
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SiteSelectionData>}
@@ -59,7 +64,9 @@ export class SiteSelectionStrategyService extends DBService {
   ): Promise<void> {
     const insertStratums: SurveyStratum[] = [];
     const updateStratums: SurveyStratumRecord[] = [];
-    const existingSiteSelectionStrategies = await this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(surveyId);
+    const existingSiteSelectionStrategies = await this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(
+      surveyId
+    );
 
     stratums.forEach((stratum) => {
       if ('survey_stratum_id' in stratum) {

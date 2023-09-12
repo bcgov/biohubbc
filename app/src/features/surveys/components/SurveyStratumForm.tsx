@@ -1,23 +1,16 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import {
-  Box,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  MenuProps
-} from '@mui/material';
+import { Box, ListItemIcon, Menu, MenuItem, MenuProps } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-
 import { FormikProps, useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useState } from 'react';
 import yup from 'utils/YupSchema';
-import { IStratum } from './SurveySiteSelectionForm';
 import StratumCreateOrEditDialog from './StratumCreateOrEditDialog';
+import { IStratum } from './SurveySiteSelectionForm';
 
 export interface IStratumForm {
   index: number | null;
@@ -66,10 +59,7 @@ const SurveyStratumForm = () => {
 
     if (stratumForm.index === null) {
       // Create new stratum
-      setFieldValue('site_selection.stratums', [
-        ...values.site_selection.stratums,
-        stratumForm.stratum
-      ]);
+      setFieldValue('site_selection.stratums', [...values.site_selection.stratums, stratumForm.stratum]);
     } else {
       // Edit existing stratum
       setFieldValue(`site_selection.stratums[${stratumForm.index}`, stratumForm.stratum);

@@ -82,10 +82,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
 
   const handleCancelDeleteAllStratums = () => {
     setShowStratumDeleteConfirmModal(false);
-    setFieldValue('site_selection.strategies', [
-      ...values.site_selection.strategies,
-      'Stratified'
-    ]);
+    setFieldValue('site_selection.strategies', [...values.site_selection.strategies, 'Stratified']);
   };
 
   useEffect(() => {

@@ -1,9 +1,9 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
-import { ApiExecuteSQLError } from '../errors/api-error';
-import { BaseRepository } from './base-repository';
-import { getLogger } from '../utils/logger';
 import { getKnex } from '../database/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
+import { getLogger } from '../utils/logger';
+import { BaseRepository } from './base-repository';
 
 export const SurveyStratum = z.object({
   name: z.string(),
@@ -40,7 +40,6 @@ const defaultLog = getLogger('repositories/site-selection-strategy-repository');
  * @extends {BaseRepository}
  */
 export class SiteSelectionStrategyRepository extends BaseRepository {
-  
   /**
    * Retreives the site selection strategies and stratums for the given survey
    *

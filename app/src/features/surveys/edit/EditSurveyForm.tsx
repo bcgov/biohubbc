@@ -34,9 +34,12 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
-import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
-import SurveySiteSelectionForm, { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
+import SurveySiteSelectionForm, {
+  SurveySiteSelectionInitialValues,
+  SurveySiteSelectionYupSchema
+} from '../components/SurveySiteSelectionForm';
 import SurveyStratumForm from '../components/SurveyStratumForm';
+import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {

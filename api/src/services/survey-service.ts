@@ -36,10 +36,10 @@ import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { RegionService } from './region-service';
+import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { TaxonomyService } from './taxonomy-service';
-import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 
 const defaultLog = getLogger('services/survey-service');
 
@@ -461,13 +461,18 @@ export class SurveyService extends DBService {
 
     if (postSurveyData.site_selection.strategies.length > 0) {
       promises.push(
-        this.siteSelectionStrategyService.insertSurveySiteSelectionStrategies(surveyId, postSurveyData.site_selection.strategies)
+        this.siteSelectionStrategyService.insertSurveySiteSelectionStrategies(
+          surveyId,
+          postSurveyData.site_selection.strategies
+        )
       );
     }
 
     // Handle stratums
     if (postSurveyData.site_selection.stratums.length > 0) {
-      promises.push(this.siteSelectionStrategyService.insertSurveyStratums(surveyId, postSurveyData.site_selection.stratums));
+      promises.push(
+        this.siteSelectionStrategyService.insertSurveyStratums(surveyId, postSurveyData.site_selection.stratums)
+      );
     }
 
     // Handle blocks
@@ -700,14 +705,20 @@ export class SurveyService extends DBService {
     // Handle site selection strategies
     if (putSurveyData?.site_selection?.strategies) {
       promises.push(
-        this.siteSelectionStrategyService.replaceSurveySiteSelectionStrategies(surveyId, putSurveyData.site_selection.strategies)
+        this.siteSelectionStrategyService.replaceSurveySiteSelectionStrategies(
+          surveyId,
+          putSurveyData.site_selection.strategies
+        )
       );
     }
 
     // Handle stratums
     if (putSurveyData?.site_selection?.stratums) {
       promises.push(
-        this.siteSelectionStrategyService.replaceSurveySiteSelectionStratums(surveyId, putSurveyData.site_selection.stratums)
+        this.siteSelectionStrategyService.replaceSurveySiteSelectionStratums(
+          surveyId,
+          putSurveyData.site_selection.stratums
+        )
       );
     }
 

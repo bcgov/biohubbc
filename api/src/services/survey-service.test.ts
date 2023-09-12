@@ -33,11 +33,11 @@ import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
+import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
-import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 
 chai.use(sinonChai);
 
@@ -81,7 +81,8 @@ describe('SurveyService', () => {
         .stub(SurveyParticipationService.prototype, 'getSurveyParticipants')
         .resolves([{ data: 'participantData' } as any]);
       const getSurveyBlockStub = sinon.stub(SurveyBlockService.prototype, 'getSurveyBlocksForSurveyId').resolves([]);
-      const getSiteSelectionDataStub = sinon.stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataBySurveyId')
+      const getSiteSelectionDataStub = sinon
+        .stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataBySurveyId')
         .resolves({ strategies: [], stratums: [] });
 
       const getSurveyPartnershipsDataStub = sinon.stub(SurveyService.prototype, 'getSurveyPartnershipsData').resolves({

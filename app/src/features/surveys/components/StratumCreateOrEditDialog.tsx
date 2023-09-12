@@ -1,20 +1,15 @@
-import { useRef } from 'react'
-import { IStratumForm, StratumFormYupSchema } from './SurveyStratumForm';
-import { Formik, FormikProps } from 'formik';
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
+import { useMediaQuery, useTheme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import CustomTextField from 'components/fields/CustomTextField';
-
-import {
-  useMediaQuery,
-  useTheme
-} from '@mui/material';
-
+import { Formik, FormikProps } from 'formik';
+import { useRef } from 'react';
+import { IStratumForm, StratumFormYupSchema } from './SurveyStratumForm';
 
 interface IStratumDialogProps {
   open: boolean;
