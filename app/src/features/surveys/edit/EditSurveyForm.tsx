@@ -35,7 +35,7 @@ import SurveyFundingSourceForm, {
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
-import SurveySiteSelectionForm, { SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
+import SurveySiteSelectionForm, { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
 import SurveyStratumForm from '../components/SurveyStratumForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -102,7 +102,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         foippa_requirements_accepted: 'true' as unknown as StringBoolean
       }
     },
-    ...SurveySiteSelectionInitialValues,
     ...SurveyUserJobFormInitialValues,
     ...SurveyBlockInitialValues
   });

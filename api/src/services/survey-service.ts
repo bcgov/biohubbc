@@ -698,14 +698,14 @@ export class SurveyService extends DBService {
     }
 
     // Handle site selection strategies
-    if (putSurveyData.site_selection.strategies) {
+    if (putSurveyData?.site_selection?.strategies) {
       promises.push(
         this.siteSelectionStrategyService.replaceSurveySiteSelectionStrategies(surveyId, putSurveyData.site_selection.strategies)
       );
     }
 
     // Handle stratums
-    if (putSurveyData.site_selection.stratums) {
+    if (putSurveyData?.site_selection?.stratums) {
       promises.push(
         this.siteSelectionStrategyService.replaceSurveySiteSelectionStratums(surveyId, putSurveyData.site_selection.stratums)
       );
