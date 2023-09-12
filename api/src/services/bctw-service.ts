@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import FormData from 'form-data';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
@@ -184,5 +185,23 @@ export class BctwService {
    */
   async getHealth(): Promise<string> {
     return this._makeGetRequest(HEALTH_ENDPOINT);
+  }
+
+  /**
+   * Upload a single or multiple zipped keyX files to the BCTW API.
+   *
+   * @param {Express.Multer.File} keyX
+   * @return {*}  {Promise<string>}
+   * @memberof BctwService
+   */
+  async uploadKeyX(keyX: Express.Multer.File): Promise<string> {
+    const formData = new FormData();
+    formData.append('xml', keyX.buffer, keyX.originalname);
+    const config = {
+      headers: {
+        ...formData.getHeaders()
+      }
+    };
+    return await this.axiosInstance.post('/import-xml', formData, config);
   }
 }
