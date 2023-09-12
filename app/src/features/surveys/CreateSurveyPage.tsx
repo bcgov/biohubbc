@@ -1,4 +1,4 @@
-import { Collapse, Theme } from '@mui/material';
+import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -43,17 +43,17 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
-import SurveyBlockSection, { SurveyBlockInitialValues } from './components/SurveyBlockSection';
+import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from './components/SurveyFundingSourceForm';
-import SurveySiteSelectionForm, {
+import {
   SurveySiteSelectionInitialValues,
   SurveySiteSelectionYupSchema
 } from './components/SurveySiteSelectionForm';
-import SurveyStratumForm from './components/SurveyStratumForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
+import SamplingMethodsForm from './components/SamplingMethodsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -114,8 +114,6 @@ const CreateSurveyPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
-
-  const [showStratumForm, setShowStratumForm] = useState<boolean>(false);
 
   const dialogContext = useContext(DialogContext);
 
@@ -391,35 +389,7 @@ const CreateSurveyPage = () => {
                 <HorizontalSplitFormComponent
                   title="Sampling Methods"
                   summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
-                  component={
-                    <>
-                      <Box component="fieldset">
-                        <Typography component="legend">Site Selection Strategy</Typography>
-                        <Box mt={1}>
-                          <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
-                        </Box>
-                      </Box>
-                      <Collapse in={showStratumForm}>
-                        <Box component="fieldset" mt={5}>
-                          <Typography component="legend">Define Stratums</Typography>
-                          <Typography
-                            variant="body1"
-                            color="textSecondary"
-                            sx={{
-                              maxWidth: '72ch'
-                            }}>
-                            Enter a name and description for each stratum used in this survey.
-                          </Typography>
-                          <Box mt={1}>
-                            <SurveyStratumForm />
-                          </Box>
-                        </Box>
-                      </Collapse>
-                      <Box component="fieldset" mt={5}>
-                        <SurveyBlockSection />
-                      </Box>
-                    </>
-                  }
+                  component={<SamplingMethodsForm />}
                 />
 
                 <Divider className={classes.sectionDivider} />
