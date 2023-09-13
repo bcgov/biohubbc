@@ -19,14 +19,14 @@ const SamplingMethodsForm = () => {
       </Box>
       <Collapse in={showStratumForm}>
         <Box component="fieldset" mt={5}>
-          <Typography component="legend">Stratums</Typography>
+          <Typography component="legend">Add Stratum</Typography>
           <Typography
             sx={{
               mb: 2
             }}
             variant="body1"
             color="textSecondary">
-            Specify the stratums included in this survey.
+            Specify each stratum used when selecting sampling sites.
           </Typography>
           <SurveyStratumForm />
         </Box>
@@ -37,7 +37,7 @@ const SamplingMethodsForm = () => {
           sx={{
             mb: 0
           }}>
-          Blocks (Optional)
+          Add Blocks (Optional)
         </Typography>
         <Typography
           sx={{
@@ -45,7 +45,7 @@ const SamplingMethodsForm = () => {
           }}
           variant="body1"
           color="textSecondary">
-          Specify the sampling blocks included in this survey
+          If required, specify each block included in this survey.
         </Typography>
         <SurveyBlockSection />
       </Box>
