@@ -9,7 +9,7 @@ export interface ISurveyLocationForm {
   locations: {
     name: string;
     description: string;
-    geometry: Feature[];
+    geojson: Feature[];
   }[];
 }
 
@@ -19,7 +19,7 @@ export const SurveyLocationInitialValues: ISurveyLocationForm = {
       name: '',
       // TODO description is temporarily hardcoded until the new UI to populate this field is implemented
       description: 'Insert description here',
-      geometry: []
+      geojson: []
     }
   ]
 };
@@ -29,7 +29,7 @@ export const SurveyLocationYupSchema = yup.object({
     yup.object({
       name: yup.string().max(50, 'Name cannot exceed 50 characters').required('Name is Required'),
       description: yup.string().max(250, 'Description cannot exceed 250 characters'),
-      geometry: yup.array().min(1, 'A geometry is required').required('A geometry is required')
+      geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
     })
   )
 });
@@ -43,7 +43,8 @@ const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
 
   const { handleSubmit } = formikProps;
-
+  console.log(formikProps.errors);
+  console.log(formikProps.values.locations);
   return (
     <form onSubmit={handleSubmit}>
       <Box mb={4}>

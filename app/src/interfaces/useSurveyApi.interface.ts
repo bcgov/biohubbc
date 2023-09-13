@@ -111,7 +111,7 @@ export interface SurveyViewObject {
   locations: IGetSurveyLocation[];
 }
 
-export interface SurveyUpdateObject {
+export interface SurveyUpdateObject extends ISurveyLocationForm {
   survey_details?: {
     survey_name: string;
     start_date: string;
@@ -157,7 +157,6 @@ export interface SurveyUpdateObject {
     category_rationale: string;
     disa_required: StringBoolean;
   };
-  locations: IGetSurveyLocation[];
   participants?: {
     identity_source: string;
     email: string | null;

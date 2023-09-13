@@ -113,12 +113,12 @@ export class PostProprietorData {
 export class PostLocationData {
   name: string;
   description: string;
-  geometry: Feature[];
+  geojson: Feature[];
 
   constructor(obj?: any) {
     this.name = obj?.name || null;
     this.description = obj?.description || null;
-    this.geometry = (obj?.geometry?.length && obj.geometry) || [];
+    this.geojson = (obj?.geojson?.length && obj.geojson) || [];
   }
 }
 

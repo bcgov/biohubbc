@@ -59,16 +59,6 @@ export const SurveyLocationPostRequestObject = {
         type: 'string',
         maxLength: 250
       },
-      geometry: {
-        type: 'array',
-        items: {
-          ...(GeoJSONFeature as object)
-        }
-      },
-      geography: {
-        type: 'string',
-        nullable: true
-      },
       geojson: {
         type: 'array',
         items: {

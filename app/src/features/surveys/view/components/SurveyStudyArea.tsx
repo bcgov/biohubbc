@@ -167,7 +167,7 @@ const SurveyStudyArea = () => {
         {
           name: surveyLocation.name,
           description: surveyLocation.description,
-          geometry: surveyLocation.geometry
+          geojson: surveyLocation.geojson
         }
       ]
     });
@@ -186,14 +186,13 @@ const SurveyStudyArea = () => {
           return {
             name: item.name,
             description: item.description,
-            geometry: item.geometry,
+            geojson: item.geojson,
             revision_count: surveyLocation.revision_count
           };
         })
       };
 
-      // TODO fix this update
-      // await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
+      await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });

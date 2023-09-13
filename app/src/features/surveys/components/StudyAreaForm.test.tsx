@@ -57,7 +57,7 @@ describe('Study Area Form', () => {
         {
           name: 'a study area name',
           description: 'a study area description',
-          geometry: [
+          geojson: [
             {
               type: 'Feature',
               geometry: {

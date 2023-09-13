@@ -29,15 +29,15 @@ export class SurveyLocationRepository extends BaseRepository {
         ${surveyId},
         ${data.name},
         ${data.description},
-        ${JSON.stringify(data.geometry)},
+        ${JSON.stringify(data.geojson)},
     `;
 
-    // should be a cleaner way to do this...
+    // TODO rework this so it's easier to read
     sql.append(SQL`public.geography(
       public.ST_Force2D(
         public.ST_SetSRID(`);
 
-    sql.append(generateGeometryCollectionSQL(data.geometry));
+    sql.append(generateGeometryCollectionSQL(data.geojson));
 
     sql.append(SQL`, 4326)))`);
 
