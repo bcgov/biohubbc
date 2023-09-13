@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { CritterbaseService, CRITTERBASE_API_HOST, IBulkCreate } from './critterbase-service';
+import { CritterbaseService, CRITTERBASE_API_HOST } from './critterbase-service';
 import { KeycloakService } from './keycloak-service';
 
 chai.use(sinonChai);
@@ -71,25 +71,6 @@ describe('CritterbaseService', () => {
     });
   });
 
-  describe('makePostPatchRequest', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should make an axios post/patch request', async () => {
-      const cb = new CritterbaseService(mockUser);
-      const endpoint = '/endpoint';
-      const mockResponse = { data: 'data' } as AxiosResponse;
-
-      const mockAxios = sinon.stub(cb.axiosInstance, 'post').resolves(mockResponse);
-
-      const result = await cb.axiosInstance.post(endpoint, { foo: 'bar' });
-
-      expect(result).to.equal(mockResponse);
-      expect(mockAxios).to.have.been.calledOnce;
-    });
-  });
-
   describe('Critterbase service public methods', () => {
     afterEach(() => {
       sinon.restore();
@@ -97,64 +78,110 @@ describe('CritterbaseService', () => {
 
     const cb = new CritterbaseService(mockUser);
 
-    describe('getLookupValues', async () => {
-      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
-      await cb.getLookupValues('colours', []);
-      expect(mockGetRequest).to.have.been.calledOnceWith('lookups/colours', [{ key: 'format', value: 'asSelect ' }]);
+    describe('getLookupValues', () => {
+      it('should retrieve matching lookup values', async () => {
+        const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
+        const mockParams = [{ key: 'format', value: 'asSelect ' }];
+        await cb.getLookupValues('colours', mockParams);
+        expect(mockGetRequest).to.have.been.calledOnceWith('/lookups/colours', mockParams);
+      });
     });
-    describe('getTaxonMeasurements', async () => {
-      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
-      await cb.getTaxonMeasurements('asdf');
-      expect(mockGetRequest).to.have.been.calledOnceWith('xref/taxon-measurements', [
-        { key: 'taxon_id', value: 'asdf ' }
-      ]);
+
+    describe('getTaxonMeasurements', () => {
+      it('should retrieve taxon measurements', async () => {
+        const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
+        await cb.getTaxonMeasurements('asdf');
+        expect(mockGetRequest).to.have.been.calledOnceWith('/xref/taxon-measurements', [
+          { key: 'taxon_id', value: 'asdf' }
+        ]);
+      });
     });
-    describe('getTaxonBodyLocations', async () => {
-      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
-      await cb.getTaxonBodyLocations('asdf');
-      expect(mockGetRequest).to.have.been.calledOnceWith('xref/taxon-marking-body-locations', [
-        { key: 'taxon_id', value: 'asdf' },
-        { key: 'format', value: 'asSelect' }
-      ]);
+
+    describe('getTaxonBodyLocations', () => {
+      it('should retrieve taxon body locations', async () => {
+        const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
+        await cb.getTaxonBodyLocations('asdf');
+        expect(mockGetRequest).to.have.been.calledOnceWith('/xref/taxon-marking-body-locations', [
+          { key: 'taxon_id', value: 'asdf' },
+          { key: 'format', value: 'asSelect' }
+        ]);
+      });
     });
-    describe('getQualitativeOptions', async () => {
-      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
-      await cb.getQualitativeOptions('asdf');
-      expect(mockGetRequest).to.have.been.calledOnceWith('xref/taxon-qualitative-measurement-options', [
-        { key: 'taxon_measurement_id', value: 'asdf' },
-        { key: 'format', value: 'asSelect' }
-      ]);
+
+    describe('getQualitativeOptions', () => {
+      it('should retrieve qualitative options', async () => {
+        const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
+        await cb.getQualitativeOptions('asdf');
+        expect(mockGetRequest).to.have.been.calledOnceWith('/xref/taxon-qualitative-measurement-options', [
+          { key: 'taxon_measurement_id', value: 'asdf' },
+          { key: 'format', value: 'asSelect' }
+        ]);
+      });
     });
-    describe('getFamilies', async () => {
-      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
-      await cb.getFamilies();
-      expect(mockGetRequest).to.have.been.calledOnceWith('family', []);
+
+    describe('getFamilies', () => {
+      it('should retrieve families', async () => {
+        const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
+        await cb.getFamilies();
+        expect(mockGetRequest).to.have.been.calledOnceWith('/family', []);
+      });
     });
-    describe('getCritter', async () => {
-      const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
-      await cb.getCritter('asdf');
-      expect(mockGetRequest).to.have.been.calledOnceWith('critters/' + 'asdf', [{ key: 'format', value: 'detail' }]);
+
+    describe('getFamilyById', () => {
+      it('should retrieve a family', async () => {
+        const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
+        await cb.getFamilyById('asdf');
+        expect(mockGetRequest).to.have.been.calledOnceWith('/family/' + 'asdf', []);
+      });
     });
-    describe('createCritter', async () => {
-      const mockPostPatchRequest = sinon.stub(cb.axiosInstance, 'post');
-      const data: IBulkCreate = {
-        locations: [{ latitude: 2, longitude: 2 }],
-        critters: [],
-        captures: [],
-        mortalities: [],
-        markings: [],
-        qualitative_measurements: [],
-        quantitative_measurements: [],
-        families: [],
-        collections: []
-      };
-      await cb.createCritter(data);
-      expect(mockPostPatchRequest).to.have.been.calledOnceWith('post', 'critters', data);
+
+    describe('getCritter', () => {
+      it('should fetch a critter', async () => {
+        const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
+        await cb.getCritter('asdf');
+        expect(mockGetRequest).to.have.been.calledOnceWith('/critters/' + 'asdf', [{ key: 'format', value: 'detail' }]);
+      });
     });
-    describe('signUp', async () => {
-      const mockPostPatchRequest = sinon.stub(cb.axiosInstance, 'post');
-      await cb.signUp();
-      expect(mockPostPatchRequest).to.have.been.calledOnceWith('post', 'signup');
+
+    describe('createCritter', () => {
+      it('should create a critter', async () => {
+        const data = {
+          locations: [{ latitude: 2, longitude: 2 }],
+          critters: [],
+          captures: [],
+          mortalities: [],
+          markings: [],
+          qualitative_measurements: [],
+          quantitative_measurements: [],
+          families: [],
+          collections: []
+        };
+        const axiosStub = sinon.stub(cb.axiosInstance, 'post').resolves({ data: [] });
+
+        await cb.createCritter(data);
+        expect(axiosStub).to.have.been.calledOnceWith('/bulk', data);
+      });
+    });
+
+    describe('signUp', () => {
+      it('should sign up a user', async () => {
+        const axiosStub = sinon.stub(cb.axiosInstance, 'post').resolves({ data: [] });
+        await cb.signUp();
+        expect(axiosStub).to.have.been.calledOnceWith('/signup');
+      });
+    });
+
+    describe('filterCritters', () => {
+      it('should filter critters', async () => {
+        const axiosStub = sinon.stub(cb.axiosInstance, 'post').resolves({ data: [] });
+        const mockFilterObj = { body: ['mock_id'], negate: false };
+        const mockFilterCritters = {
+          critter_ids: mockFilterObj,
+          animal_ids: mockFilterObj
+        };
+        await cb.filterCritters(mockFilterCritters);
+        expect(axiosStub).to.have.been.calledOnceWith('/critters/filter?format=default', mockFilterCritters);
+      });
     });
   });
 });

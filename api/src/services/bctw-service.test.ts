@@ -7,8 +7,12 @@ import {
   BctwService,
   BCTW_API_HOST,
   DEPLOY_DEVICE_ENDPOINT,
+  GET_CODE_ENDPOINT,
   GET_COLLAR_VENDORS_ENDPOINT,
+  GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT,
+  GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT,
   GET_DEPLOYMENTS_ENDPOINT,
+  GET_DEVICE_DETAILS,
   HEALTH_ENDPOINT,
   IDeployDevice,
   IDeploymentUpdate,
@@ -56,38 +60,6 @@ describe('BctwService', () => {
     });
   });
 
-  // describe('handleRequestError', () => {
-  //   afterEach(() => {
-  //     sinon.restore();
-  //   });
-
-  //   it('should throw an error if the status is not 200', async () => {
-  //     const bctwService = new BctwService(mockUser);
-  //     const response = { data: 'data', status: 400 } as AxiosResponse;
-  //     const endpoint = '/endpoint';
-  //     try {
-  //       await bctwService.handleRequestError(response, endpoint);
-  //     } catch (error) {
-  //       expect((error as Error).message).to.equal(
-  //         `API request to ${endpoint} failed with status code ${response.status}`
-  //       );
-  //     }
-  //   });
-
-  //   it('should throw an error if the response has no data', async () => {
-  //     const bctwService = new BctwService(mockUser);
-  //     const response = { data: null, status: 200 } as AxiosResponse;
-  //     const endpoint = '/endpoint';
-  //     try {
-  //       await bctwService.handleRequestError(response, endpoint);
-  //     } catch (error) {
-  //       expect((error as Error).message).to.equal(
-  //         `API request to ${endpoint} failed with status code ${response.status}`
-  //       );
-  //     }
-  //   });
-  // });
-
   describe('_makeGetRequest', () => {
     afterEach(() => {
       sinon.restore();
@@ -120,25 +92,6 @@ describe('BctwService', () => {
       expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}?param=${queryParams['param']}`);
     });
   });
-
-  // describe('makePostPatchRequest', () => {
-  //   afterEach(() => {
-  //     sinon.restore();
-  //   });
-
-  //   it('should make an axios post/patch request', async () => {
-  //     const bctwService = new BctwService(mockUser);
-  //     const endpoint = '/endpoint';
-  //     const mockResponse = { data: 'data' } as AxiosResponse;
-
-  //     const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves(mockResponse);
-
-  //     const result = await bctwService.makePostPatchRequest('post', endpoint, { foo: 'bar' });
-
-  //     expect(result).to.equal(mockResponse.data);
-  //     expect(mockAxios).to.have.been.calledOnce;
-  //   });
-  // });
 
   describe('BctwService public methods', () => {
     afterEach(() => {
@@ -208,6 +161,50 @@ describe('BctwService', () => {
         await bctwService.getHealth();
 
         expect(mockGetRequest).to.have.been.calledOnceWith(HEALTH_ENDPOINT);
+      });
+    });
+
+    describe('getCode', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        await bctwService.getCode('codeHeader');
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(GET_CODE_ENDPOINT, { codeHeader: 'codeHeader' });
+      });
+    });
+
+    describe('getDeploymentsByCritterId', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        await bctwService.getDeploymentsByCritterId(['abc123']);
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT, {
+          critter_ids: ['abc123']
+        });
+      });
+    });
+
+    describe('getDeviceDetails', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        await bctwService.getDeviceDetails(123);
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(`${GET_DEVICE_DETAILS}${123}`);
+      });
+    });
+
+    describe('getDeviceDeployments', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        await bctwService.getDeviceDeployments(123);
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, {
+          device_id: '123'
+        });
       });
     });
   });

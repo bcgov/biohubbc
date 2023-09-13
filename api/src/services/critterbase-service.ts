@@ -117,6 +117,19 @@ export interface IBulkCreate {
   families: IFamilyPayload[];
 }
 
+interface IFilterObj {
+  body: string[];
+  negate: boolean;
+}
+
+export interface IFilterCritters {
+  critter_ids?: IFilterObj;
+  animal_ids?: IFilterObj;
+  wlh_ids?: IFilterObj;
+  collection_units?: IFilterObj;
+  taxon_name_commons?: IFilterObj;
+}
+
 export interface ICbSelectRows {
   key: string;
   id: string;
@@ -164,6 +177,7 @@ export type CbRouteKey = keyof typeof CbRoutes;
 
 export const CRITTERBASE_API_HOST = process.env.CB_API_HOST || ``;
 const CRITTER_ENDPOINT = '/critters';
+const FILTER_ENDPOINT = `${CRITTER_ENDPOINT}/filter`;
 const BULK_ENDPOINT = '/bulk';
 const SIGNUP_ENDPOINT = '/signup';
 const FAMILY_ENDPOINT = '/family';
@@ -269,6 +283,11 @@ export class CritterbaseService {
 
   async createCritter(data: IBulkCreate) {
     const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
+    return response.data;
+  }
+
+  async filterCritters(data: IFilterCritters, format: 'default' | 'detailed' = 'default') {
+    const response = await this.axiosInstance.post(`${FILTER_ENDPOINT}?format=${format}`, data);
     return response.data;
   }
 

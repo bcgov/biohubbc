@@ -1,12 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
-import { critterCreateRequestObject } from '../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../services/critterbase-service';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/critter-data/critters');
+const defaultLog = getLogger('paths/critter-data/critters/filter');
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
@@ -23,12 +22,11 @@ export const POST: Operation = [
       ]
     };
   }),
-  createCritter()
+  filterCritters()
 ];
 
 POST.apiDoc = {
-  description:
-    'Creates a new critter in critterbase. Optionally make captures, markings, measurements, etc. along with it.',
+  description: 'Retrieves critters by filtering the global list with the criteria specified in the request body.',
   tags: ['critterbase'],
   security: [
     {
@@ -36,21 +34,60 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Critterbase bulk creation request object',
+    description: 'Filtering request object',
     content: {
       'application/json': {
-        schema: critterCreateRequestObject
+        schema: {
+          title: 'Bulk post request object',
+          type: 'object',
+          properties: {
+            critters: {
+              type: 'array',
+              items: {
+                type: 'string',
+                format: 'uuid'
+              }
+            },
+            animal_ids: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            },
+            wlh_ids: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            },
+            collection_units: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            },
+            taxon_name_commons: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          }
+        }
       }
     }
   },
   responses: {
-    201: {
-      description: 'Responds with counts of objects created in critterbase.',
+    200: {
+      description: 'Responds with an array of critters.',
       content: {
         'application/json': {
           schema: {
-            title: 'Bulk creation response object',
-            type: 'object'
+            title: 'List of filtered critters',
+            type: 'array',
+            items: {
+              type: 'object'
+            }
           }
         }
       }
@@ -73,7 +110,7 @@ POST.apiDoc = {
   }
 };
 
-export function createCritter(): RequestHandler {
+export function filterCritters(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
       keycloak_guid: req['system_user']?.user_guid,
@@ -82,10 +119,10 @@ export function createCritter(): RequestHandler {
 
     const cb = new CritterbaseService(user);
     try {
-      const result = await cb.createCritter(req.body);
-      return res.status(201).json(result);
+      const result = await cb.filterCritters(req.body);
+      return res.status(200).json(result);
     } catch (error) {
-      defaultLog.error({ label: 'createCritter', message: 'error', error });
+      defaultLog.error({ label: 'filterCritters', message: 'error', error });
       throw error;
     }
   };
