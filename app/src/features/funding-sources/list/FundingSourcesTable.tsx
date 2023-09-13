@@ -63,7 +63,6 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
 
   return (
     <CustomDataGrid
-      className={'data-grid'}
       autoHeight
       rows={props.fundingSources}
       getRowId={(row) => `funding-source-${row.funding_source_id}`}

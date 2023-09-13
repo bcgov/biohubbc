@@ -1,10 +1,10 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
 import { IAnimalDeployment } from './animal';
 
@@ -60,7 +60,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           <ListItemIcon>
             <Icon path={mdiPlus} size={1} />
           </ListItemIcon>
-          <Typography variant="inherit">Add Telemetry Device</Typography>
+          <ListItemText>Add Telemetry Device</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -71,7 +71,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
-          <Typography variant="inherit">Remove Telemetry Device</Typography>
+          <ListItemText>Remove Telemetry Device</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -82,7 +82,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
-          <Typography variant="inherit">Edit Deployment Timespan</Typography>
+          <ListItemText>Edit Deployment Timespan</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -93,7 +93,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
-          <Typography variant="inherit">Edit Critter Details</Typography>
+          <ListItemText>Edit Critter Details</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -104,7 +104,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
-          <Typography variant="inherit">Remove Critter From Survey</Typography>
+          <ListItemText>Remove Critter From Survey</ListItemText>
         </MenuItem>
       </Menu>
     </>
