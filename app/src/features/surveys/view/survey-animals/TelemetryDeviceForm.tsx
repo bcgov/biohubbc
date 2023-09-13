@@ -10,7 +10,13 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { IAnimalTelemetryDevice } from './animal';
 
-const TelemetryDeviceForm = () => {
+export type TelemetryDeviceFormMode = 'add' | 'edit' | 'remove';
+
+interface ITelemetryDeviceFormProps {
+  mode: TelemetryDeviceFormMode;
+}
+
+const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
   const { values, setStatus } = useFormikContext<IAnimalTelemetryDevice>();
   const [bctwErrors, setBctwErrors] = useState<Record<string, string | undefined>>({});
   const api = useTelemetryApi();
@@ -51,36 +57,40 @@ const TelemetryDeviceForm = () => {
   return (
     <Form>
       <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <CustomTextField label="Device ID" name={'device_id'} other={{ size: 'small' }} />
-        </Grid>
-        <Grid item xs={4}>
-          <CustomTextField label="Device Frequency" name={'frequency'} other={{ size: 'small' }} />
-        </Grid>
-        <Grid item xs={2}>
-          <TelemetrySelectField
-            label="Unit"
-            name={'frequency_unit'}
-            id="manufacturer"
-            fetchData={async () => {
-              const codeVals = await api.devices.getCodeValues('frequency_unit');
-              return codeVals.map((a) => a.description);
-            }}
-            controlProps={{ size: 'small' }}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TelemetrySelectField
-            label="Device Manufacturer"
-            name={'device_make'}
-            id="manufacturer"
-            fetchData={api.devices.getCollarVendors}
-            controlProps={{ size: 'small' }}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <CustomTextField label="Device Model" name={'device_model'} other={{ size: 'small' }} />
-        </Grid>
+        {mode === 'add' && (
+          <>
+            <Grid item xs={6}>
+              <CustomTextField label="Device ID" name={'device_id'} other={{ size: 'small' }} />
+            </Grid>
+            <Grid item xs={4}>
+              <CustomTextField label="Device Frequency" name={'frequency'} other={{ size: 'small' }} />
+            </Grid>
+            <Grid item xs={2}>
+              <TelemetrySelectField
+                label="Unit"
+                name={'frequency_unit'}
+                id="manufacturer"
+                fetchData={async () => {
+                  const codeVals = await api.devices.getCodeValues('frequency_unit');
+                  return codeVals.map((a) => a.description);
+                }}
+                controlProps={{ size: 'small' }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TelemetrySelectField
+                label="Device Manufacturer"
+                name={'device_make'}
+                id="manufacturer"
+                fetchData={api.devices.getCollarVendors}
+                controlProps={{ size: 'small' }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <CustomTextField label="Device Model" name={'device_model'} other={{ size: 'small' }} />
+            </Grid>
+          </>
+        )}
         <Grid item xs={6}>
           <SingleDateField
             name={'attachment_start'}
@@ -89,6 +99,18 @@ const TelemetryDeviceForm = () => {
             other={{ size: 'small' }}
           />
         </Grid>
+        {mode === 'edit' && (
+          <>
+            <Grid item xs={6}>
+              <SingleDateField
+                name={'attachment_end'}
+                required={true}
+                label={'Attachment End'}
+                other={{ size: 'small' }}
+              />
+            </Grid>
+          </>
+        )}
         {Object.entries(bctwErrors).length > 0 && (
           <Grid item xs={12}>
             {Object.values(bctwErrors).map((a) => (

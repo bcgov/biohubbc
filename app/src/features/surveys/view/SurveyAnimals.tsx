@@ -20,7 +20,7 @@ import {
 } from './survey-animals/animal';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
-import TelemetryDeviceForm from './survey-animals/TelemetryDeviceForm';
+import TelemetryDeviceForm, { TelemetryDeviceFormMode } from './survey-animals/TelemetryDeviceForm';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
@@ -28,10 +28,10 @@ const SurveyAnimals: React.FC = () => {
   const surveyContext = useContext(SurveyContext);
 
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
-  const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
+  const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
-  // const [deploymentLookup, setDeploymentLookup] = useState<Record<string, unknown>>({});
+  const [telemetryFormMode, setTelemetryFormMode] = useState<'add' | 'edit' | 'remove'>('add');
 
   const { projectId, surveyId } = surveyContext;
   const {
@@ -73,13 +73,37 @@ const SurveyAnimals: React.FC = () => {
   };
 
   const DeviceFormValues: IAnimalTelemetryDevice = {
-    device_id: 0,
+    device_id: '' as unknown as number,
     device_make: '',
-    frequency: 0,
+    frequency: '' as unknown as number,
     frequency_unit: '',
     device_model: '',
     attachment_start: '',
     attachment_end: undefined
+  };
+
+  const obtainDeviceFormInitialValues = (mode: TelemetryDeviceFormMode) => {
+    switch (mode) {
+      case 'add':
+        return DeviceFormValues;
+      case 'edit': {
+        const critterId = critterData?.find((a) => a.survey_critter_id === selectedCritterId)?.critter_id;
+        if (!critterId) {
+          throw Error('Could not determine the critterbase id of the selected critter.');
+        }
+        const currentDeployment = deploymentData?.find((a) => a.critter_id === critterId);
+        if (currentDeployment) {
+          const retObj = Object.assign({}, DeviceFormValues);
+          retObj.attachment_start = currentDeployment.attachment_start;
+          retObj.attachment_end = currentDeployment.attachment_end;
+          return retObj;
+        } else {
+          return DeviceFormValues;
+        }
+      }
+      case 'remove':
+        return DeviceFormValues;
+    }
   };
 
   const handleCritterSave = async (animal: IAnimal) => {
@@ -119,7 +143,7 @@ const SurveyAnimals: React.FC = () => {
         )
       });
     }
-    setOpenAddDeviceDialog(false);
+    setOpenDeviceDialog(false);
     refreshDeployments();
   };
 
@@ -153,13 +177,13 @@ const SurveyAnimals: React.FC = () => {
       />
       <EditDialog
         dialogTitle={'Add Telemetry Device'}
-        open={openAddDeviceDialog}
+        open={openDeviceDialog}
         component={{
-          element: <TelemetryDeviceForm />,
-          initialValues: DeviceFormValues,
+          element: <TelemetryDeviceForm mode={telemetryFormMode} />,
+          initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
           validationSchema: AnimalTelemetryDeviceSchema
         }}
-        onCancel={() => setOpenAddDeviceDialog(false)}
+        onCancel={() => setOpenDeviceDialog(false)}
         onSave={(values) => {
           if (selectedCritterId) {
             handleTelemetrySave(selectedCritterId, values);
@@ -180,13 +204,18 @@ const SurveyAnimals: React.FC = () => {
           <SurveyAnimalsTable
             animalData={critterData}
             deviceData={deploymentData}
+            onMenuOpen={setSelectedCritterId}
             onRemoveCritter={(critter_id) => {
               bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
               refreshCritters();
             }}
             onAddDevice={(critter_id) => {
-              setSelectedCritterId(critter_id);
-              setOpenAddDeviceDialog(true);
+              setTelemetryFormMode('add');
+              setOpenDeviceDialog(true);
+            }}
+            onEditDevice={(device_id) => {
+              setTelemetryFormMode('edit');
+              setOpenDeviceDialog(true);
             }}
           />
         ) : (

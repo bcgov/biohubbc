@@ -168,7 +168,7 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   updated_by_user_id: yup.string(),
   valid_from: yup.string(),
   valid_to: yup.string(),
-  attachment_start: yup.string(),
+  attachment_start: yup.string().required(),
   attachment_end: yup.string(),
   deployment_id: yup.string(),
   device_id: yup.number()
