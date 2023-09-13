@@ -14,7 +14,6 @@ const appTheme = createTheme({
   },
   palette: {
     // https://material-ui.com/customization/palette/
-    mode: 'dark',
     background: {
       default: '#f1f1f1'
     },
