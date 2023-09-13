@@ -9,6 +9,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import React, { useContext, useState } from 'react';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import {
@@ -24,6 +25,7 @@ import TelemetryDeviceForm, { TelemetryDeviceFormMode } from './survey-animals/T
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
+  const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
 
@@ -31,7 +33,7 @@ const SurveyAnimals: React.FC = () => {
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
-  const [telemetryFormMode, setTelemetryFormMode] = useState<'add' | 'edit' | 'remove'>('add');
+  const [telemetryFormMode, setTelemetryFormMode] = useState<'add' | 'edit'>('add');
 
   const { projectId, surveyId } = surveyContext;
   const {
@@ -49,6 +51,8 @@ const SurveyAnimals: React.FC = () => {
   if (!critterData) {
     loadCritters();
   }
+
+  const currentCritterbaseCritterId = critterData?.find((a) => a.survey_critter_id === selectedCritterId)?.critter_id;
 
   if (!deploymentData) {
     loadDeployments();
@@ -78,8 +82,12 @@ const SurveyAnimals: React.FC = () => {
     frequency: '' as unknown as number,
     frequency_unit: '',
     device_model: '',
-    attachment_start: '',
-    attachment_end: undefined
+    deployments: [
+      {
+        attachment_start: '',
+        attachment_end: undefined
+      }
+    ]
   };
 
   const obtainDeviceFormInitialValues = (mode: TelemetryDeviceFormMode) => {
@@ -87,22 +95,23 @@ const SurveyAnimals: React.FC = () => {
       case 'add':
         return DeviceFormValues;
       case 'edit': {
-        const critterId = critterData?.find((a) => a.survey_critter_id === selectedCritterId)?.critter_id;
-        if (!critterId) {
-          throw Error('Could not determine the critterbase id of the selected critter.');
-        }
-        const currentDeployment = deploymentData?.find((a) => a.critter_id === critterId);
-        if (currentDeployment) {
-          const retObj = Object.assign({}, DeviceFormValues);
-          retObj.attachment_start = currentDeployment.attachment_start;
-          retObj.attachment_end = currentDeployment.attachment_end;
-          return retObj;
+        const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId);
+        if (deployments) {
+          const red = deployments.reduce((acc, curr) => {
+            const currObj = acc.find((a) => a.device_id === curr.device_id);
+            const { attachment_end, attachment_start, ...rest } = curr;
+            if (!currObj) {
+              acc.push({ ...rest, deployments: [{ attachment_start, attachment_end }] });
+            } else {
+              currObj.deployments?.push({ attachment_start, attachment_end });
+            }
+            return acc;
+          }, [] as IAnimalTelemetryDevice[]);
+          return red;
         } else {
-          return DeviceFormValues;
+          return [DeviceFormValues];
         }
       }
-      case 'remove':
-        return DeviceFormValues;
     }
   };
 
@@ -128,21 +137,24 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
-  const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDevice) => {
+  const handleTelemetrySave = async (survey_critter_id: number, data: any) => {
     const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
     const critterTelemetryDevice = { ...data, critter_id: critter?.critter_id ?? '' };
-    try {
-      await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
-    } catch (e) {
-      dialogContext.setSnackbar({
-        open: true,
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            {`Could not add deployment.`}
-          </Typography>
-        )
-      });
+    if (telemetryFormMode === 'add') {
+      try {
+        await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
+      } catch (e) {
+        dialogContext.setSnackbar({
+          open: true,
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              {`Could not add deployment.`}
+            </Typography>
+          )
+        });
+      }
     }
+
     setOpenDeviceDialog(false);
     refreshDeployments();
   };
@@ -176,10 +188,16 @@ const SurveyAnimals: React.FC = () => {
         }}
       />
       <EditDialog
-        dialogTitle={'Add Telemetry Device'}
+        dialogTitle={telemetryFormMode === 'add' ? 'Add Telemetry Device' : 'Edit Telemetry Devices'}
         open={openDeviceDialog}
         component={{
-          element: <TelemetryDeviceForm mode={telemetryFormMode} />,
+          element: (
+            <TelemetryDeviceForm
+              deployments={deploymentData ?? []}
+              critter_id={currentCritterbaseCritterId}
+              mode={telemetryFormMode}
+            />
+          ),
           initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
           validationSchema: AnimalTelemetryDeviceSchema
         }}

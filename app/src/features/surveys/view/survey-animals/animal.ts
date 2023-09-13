@@ -148,30 +148,32 @@ export const AnimalRelationshipSchema = yup.object({}).shape({
   relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });
 
-export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
-  device_id: numSchema.required(req),
-  device_make: yup.string().required(req),
-  frequency: numSchema.required(req),
-  frequency_unit: yup.string().required(req),
-  device_model: yup.string().required(req),
+export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   attachment_start: yup.string().required(req),
   attachment_end: yup.string()
 });
 
+export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
+  device_id: numSchema.required(req),
+  device_make: yup.string().required(req),
+  frequency: numSchema,
+  frequency_unit: yup.string(),
+  device_model: yup.string(),
+  deployments: yup.array(AnimalDeploymentTimespanSchema)
+});
+
 export const AnimalDeploymentSchema = yup.object({}).shape({
-  assignment_id: yup.string(),
-  collar_id: yup.string(),
-  critter_id: yup.string(),
-  created_at: yup.string(),
-  created_by_user_id: yup.string(),
-  updated_at: yup.string(),
-  updated_by_user_id: yup.string(),
-  valid_from: yup.string(),
-  valid_to: yup.string(),
+  assignment_id: yup.string().required(),
+  collar_id: yup.string().required(),
+  critter_id: yup.string().required(),
   attachment_start: yup.string().required(),
   attachment_end: yup.string(),
-  deployment_id: yup.string(),
-  device_id: yup.number()
+  deployment_id: yup.string().required(),
+  device_id: yup.number().required(),
+  device_make: yup.string().required(),
+  device_model: yup.string(),
+  frequency: numSchema,
+  frequency_unit: yup.string()
 });
 
 const AnimalImageSchema = yup.object({}).shape({});

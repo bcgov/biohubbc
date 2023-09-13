@@ -12,7 +12,7 @@ interface ISurveyAnimalsTableEntry {
   critter_id: string;
   animal_id: string | null;
   taxon: string;
-  telemetry_device?: IAnimalDeployment[];
+  deployments?: IAnimalDeployment[];
 }
 
 interface ISurveyAnimalsTableProps {
@@ -41,7 +41,7 @@ export const SurveyAnimalsTable = ({
         const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
         return {
           ...animal,
-          telemetry_device: deployments
+          deployments: deployments
         };
       })
     : animalData;
@@ -72,7 +72,7 @@ export const SurveyAnimalsTable = ({
       )
     },
     {
-      field: 'telemetry_device',
+      field: 'deployments',
       headerName: 'Device ID',
       flex: 1,
       renderCell: (params) => (
@@ -93,10 +93,10 @@ export const SurveyAnimalsTable = ({
       renderCell: (params) => (
         <SurveyAnimalsTableActions
           critter_id={params.row.survey_critter_id}
-          devices={params.row?.telemetry_device}
+          devices={params.row?.deployments}
           disabledFields={{
-            editDevice: !params.row.telemetry_device?.length,
-            removeDevice: !params.row.telemetry_device?.length
+            editDevice: !params.row.deployments?.length,
+            removeDevice: !params.row.deployments?.length
           }}
           onMenuOpen={onMenuOpen}
           onAddDevice={onAddDevice}
