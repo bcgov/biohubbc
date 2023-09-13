@@ -43,8 +43,6 @@ const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
 
   const { handleSubmit } = formikProps;
-  console.log(formikProps.errors);
-  console.log(formikProps.values.locations);
   return (
     <form onSubmit={handleSubmit}>
       <Box mb={4}>

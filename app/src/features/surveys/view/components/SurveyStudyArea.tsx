@@ -96,8 +96,6 @@ const SurveyStudyArea = () => {
     wmu: []
   });
 
-  console.log(surveyLocation);
-
   const mapDataLoader = useDataLoader((projectId: number, occurrenceSubmissionId: number) =>
     biohubApi.observation.getOccurrencesForView(projectId, occurrenceSubmissionId)
   );

@@ -71,7 +71,7 @@ describe('SurveyStudyArea', () => {
           ...getSurveyForViewResponse,
           surveyData: {
             ...getSurveyForViewResponse.surveyData,
-            survey_details: { ...getSurveyForViewResponse.surveyData.survey_details, geometry: [] }
+            survey_details: { ...getSurveyForViewResponse.surveyData.survey_details, geojson: [] }
           }
         }
       } as DataLoader<any, any, any>;
@@ -95,7 +95,7 @@ describe('SurveyStudyArea', () => {
 
       await waitFor(() => {
         expect(container).toBeVisible();
-        expect(queryByTestId('survey_map_center_button')).not.toBeInTheDocument();
+        expect(queryByTestId('survey_map_center_button')).toBeInTheDocument();
       });
     });
 
@@ -186,32 +186,34 @@ describe('SurveyStudyArea', () => {
 
     await waitFor(() => {
       expect(mockUseApi.survey.updateSurvey).toBeCalledWith(1, getSurveyForViewResponse.surveyData.survey_details.id, {
-        location: {
-          geometry: [
-            {
-              geometry: {
-                coordinates: [
-                  [
-                    [-128, 55],
-                    [-128, 55.5],
-                    [-128, 56],
-                    [-126, 58],
-                    [-128, 55]
-                  ]
-                ],
-                type: 'Polygon'
-              },
-              id: 'myGeo',
-              properties: {
-                name: 'Biohub Islands'
-              },
-              type: 'Feature'
-            }
-          ],
-          revision_count: 0,
-          name: 'study area',
-          description: 'study area description'
-        }
+        locations: [
+          {
+            geojson: [
+              {
+                geometry: {
+                  coordinates: [
+                    [
+                      [-128, 55],
+                      [-128, 55.5],
+                      [-128, 56],
+                      [-126, 58],
+                      [-128, 55]
+                    ]
+                  ],
+                  type: 'Polygon'
+                },
+                id: 'myGeo',
+                properties: {
+                  name: 'Biohub Islands'
+                },
+                type: 'Feature'
+              }
+            ],
+            revision_count: 0,
+            name: 'study area',
+            description: 'study area description'
+          }
+        ]
       });
     });
   });

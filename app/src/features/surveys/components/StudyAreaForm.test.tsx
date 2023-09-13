@@ -37,7 +37,7 @@ describe('Study Area Form', () => {
       // Assert MapBoundary was rendered with the right propsF
       expect(MapBoundary).toHaveBeenCalledWith(
         {
-          name: 'location.geometry',
+          name: 'locations[0].geojson',
           title: 'Study Area Boundary',
           mapId: 'study_area_form_map',
           bounds: undefined,
@@ -47,7 +47,7 @@ describe('Study Area Form', () => {
       );
       // Assert survey area name field is visible and populated correctly
       expect(getByLabelText('Survey Area Name', { exact: false })).toBeVisible();
-      expect(getByTestId('location.name')).toHaveValue('');
+      expect(getByTestId('locations[0].name')).toHaveValue('');
     });
   });
 
@@ -88,7 +88,7 @@ describe('Study Area Form', () => {
       // Assert MapBoundary was rendered with the right propsF
       expect(MapBoundary).toHaveBeenCalledWith(
         {
-          name: 'location.geometry',
+          name: 'locations[0].geojson',
           title: 'Study Area Boundary',
           mapId: 'study_area_form_map',
           bounds: undefined,
@@ -98,7 +98,7 @@ describe('Study Area Form', () => {
       );
       // Assert survey area name field is visible and populated correctly
       expect(getByLabelText('Survey Area Name', { exact: false })).toBeVisible();
-      expect(getByTestId('location.name')).toHaveValue('a study area name');
+      expect(getByTestId('locations[0].name')).toHaveValue('a study area name');
     });
   });
 });
