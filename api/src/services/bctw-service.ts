@@ -37,7 +37,8 @@ export const IDeploymentRecord = z.object({
   valid_to: z.string(),
   attachment_start: z.string(),
   attachment_end: z.string(),
-  deployment_id: z.number()
+  deployment_id: z.string(),
+  device_id: z.number()
 });
 
 export type IDeploymentRecord = z.infer<typeof IDeploymentRecord>;
@@ -47,14 +48,27 @@ export const IBctwUser = z.object({
   username: z.string()
 });
 
+interface ICodeResponse {
+  code_header_title: string;
+  code_header_name: string;
+  id: number;
+  code: string;
+  description: string;
+  long_description: string;
+}
+
 export type IBctwUser = z.infer<typeof IBctwUser>;
 
 export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
 export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
 export const GET_DEPLOYMENTS_ENDPOINT = '/get-deployments';
+export const GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT = '/get-deployments-by-critter-id';
+export const GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT = '/get-deployments-by-device-id';
 export const UPDATE_DEPLOYMENT_ENDPOINT = '/update-deployment';
 export const GET_COLLAR_VENDORS_ENDPOINT = '/get-collar-vendors';
 export const HEALTH_ENDPOINT = '/health';
+export const GET_CODE_ENDPOINT = '/get-code';
+export const GET_DEVICE_DETAILS = '/get-collar-history-by-device/';
 
 export class BctwService {
   user: IBctwUser;
@@ -77,7 +91,9 @@ export class BctwService {
       },
       (error: AxiosError) => {
         return Promise.reject(
-          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`)
+          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`, [
+            error?.response?.data
+          ])
         );
       }
     );
@@ -125,7 +141,7 @@ export class BctwService {
    * @return {*}
    * @memberof BctwService
    */
-  async _makeGetRequest(endpoint: string, queryParams?: Record<string, string>) {
+  async _makeGetRequest(endpoint: string, queryParams?: Record<string, string | string[]>) {
     let url = endpoint;
     if (queryParams) {
       const params = new URLSearchParams(queryParams);
@@ -146,6 +162,14 @@ export class BctwService {
     return await this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
   }
 
+  async getDeviceDetails(deviceId: number): Promise<Record<string, unknown>[]> {
+    return await this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`);
+  }
+
+  async getDeviceDeployments(deviceId: number): Promise<IDeploymentRecord[]> {
+    return await this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, { device_id: String(deviceId) });
+  }
+
   /**
    * Get all existing deployments.
    *
@@ -154,6 +178,18 @@ export class BctwService {
    */
   async getDeployments(): Promise<IDeploymentRecord[]> {
     return this._makeGetRequest(GET_DEPLOYMENTS_ENDPOINT);
+  }
+
+  /**
+   * Get all existing deployments for a list of critter IDs.
+   *
+   * @param {string[]} critter_ids
+   * @return {*}  {Promise<IDeploymentRecord[]>}
+   * @memberof BctwService
+   */
+  async getDeploymentsByCritterId(critter_ids: string[]): Promise<IDeploymentRecord[]> {
+    const query = { critter_ids: critter_ids };
+    return this._makeGetRequest(GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT, query);
   }
 
   /**
@@ -203,5 +239,16 @@ export class BctwService {
       }
     };
     return await this.axiosInstance.post('/import-xml', formData, config);
+  }
+
+  /**
+   * Get a list of all BCTW codes with a given header name.
+   *
+   * @param {string} codeHeaderName
+   * @return {*}  {Promise<ICodeResponse[]>}
+   * @memberof BctwService
+   */
+  async getCode(codeHeaderName: string): Promise<ICodeResponse[]> {
+    return this._makeGetRequest(GET_CODE_ENDPOINT, { codeHeader: codeHeaderName });
   }
 }

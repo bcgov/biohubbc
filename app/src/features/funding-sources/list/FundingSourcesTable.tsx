@@ -1,43 +1,8 @@
-import { grey } from '@mui/material/colors';
-import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
+import { CustomDataGrid } from 'components/tables/CustomDataGrid';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
-import { useCallback } from 'react';
 import { getFormattedAmount } from 'utils/Utils';
 import TableActionsMenu from './FundingSourcesTableActionsMenu';
-import NoRowsOverlay from './FundingSourcesTableNoRowsOverlay';
-
-const useStyles = makeStyles(() => ({
-  projectsTable: {
-    tableLayout: 'fixed'
-  },
-  linkButton: {
-    textAlign: 'left',
-    fontWeight: 700
-  },
-  noDataText: {
-    fontFamily: 'inherit !important',
-    fontSize: '0.875rem',
-    fontWeight: 700
-  },
-  dataGrid: {
-    border: 'none !important',
-    fontFamily: 'inherit !important',
-    '& .MuiDataGrid-columnHeaderTitle': {
-      textTransform: 'uppercase',
-      fontSize: '0.875rem',
-      fontWeight: 700,
-      color: grey[600]
-    },
-    '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
-      {
-        outline: 'none !important'
-      },
-    '& .MuiDataGrid-row:hover': {
-      backgroundColor: 'transparent !important'
-    }
-  }
-}));
 
 export interface IFundingSourcesTableTableProps {
   fundingSources: IGetFundingSourcesResponse[];
@@ -54,8 +19,6 @@ export interface IFundingSourcesTableEntry {
 }
 
 const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
-  const classes = useStyles();
-
   const columns: GridColDef<IFundingSourcesTableEntry>[] = [
     {
       field: 'name',
@@ -98,11 +61,8 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
     }
   ];
 
-  const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
-
   return (
-    <DataGrid
-      className={classes.dataGrid}
+    <CustomDataGrid
       autoHeight
       rows={props.fundingSources}
       getRowId={(row) => `funding-source-${row.funding_source_id}`}
@@ -116,9 +76,6 @@ const FundingSourcesTable = (props: IFundingSourcesTableTableProps) => {
       disableColumnFilter
       disableColumnMenu
       sortingOrder={['asc', 'desc']}
-      slots={{
-        noRowsOverlay: NoRowsOverlayStyled
-      }}
       data-testid="funding-source-table"
     />
   );
