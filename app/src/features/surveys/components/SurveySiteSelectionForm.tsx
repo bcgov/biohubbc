@@ -108,10 +108,18 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
   return (
     <>
       <YesNoDialog
-        dialogTitle="Delete Stratums?"
-        dialogText="Removing the Stratified site selection strategy will delete all survey Stratums. Are you sure?"
+        dialogTitle="Remove all strata?"
+        dialogText="Removing 'stratified' as a site selection strategy will remove all strata. Are you sure you want to proceed?"
         open={showStratumDeleteConfirmModal}
         onNo={handleCancelDeleteAllStratums}
+        noButtonLabel="Cancel"
+        noButtonProps={{
+          color: 'primary'
+        }}
+        yesButtonLabel="Remove"
+        yesButtonProps={{
+          color: 'error'
+        }}
         onClose={handleCancelDeleteAllStratums}
         onYes={handleConfirmDeleteAllStratums}
       />

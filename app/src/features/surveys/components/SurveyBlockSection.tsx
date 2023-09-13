@@ -1,12 +1,13 @@
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { ListItemIcon, Menu, MenuItem, MenuProps, Typography } from '@mui/material';
+import { ListItemIcon, Menu, MenuItem, MenuProps } from '@mui/material';
 // import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
+import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import { useFormikContext } from 'formik';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
@@ -88,26 +89,6 @@ const SurveyBlockSection: React.FC = () => {
           setFieldValue(`blocks[${index}]`, data);
         }}
       />
-      <Typography
-        variant="h5"
-        component="h3"
-        sx={{
-          marginBottom: '14px'
-        }}>
-        Define Blocks&nbsp;
-        <Typography component="span" color="textSecondary" fontWeight="inherit">
-          (Optional)
-        </Typography>
-      </Typography>
-      <Typography
-        variant="body1"
-        color="textSecondary"
-        sx={{
-          mb: 2,
-          maxWidth: '90ch'
-        }}>
-        Enter a name and description for each block used in this survey.
-      </Typography>
       <Menu
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
@@ -141,6 +122,16 @@ const SurveyBlockSection: React.FC = () => {
                 <Card
                   variant="outlined"
                   sx={{
+                    background: grey[100],
+                    '& .MuiCardHeader-subheader': {
+                      display: '-webkit-box',
+                      WebkitLineClamp: '2',
+                      WebkitBoxOrient: 'vertical',
+                      maxWidth: '92ch',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      fontSize: '14px'
+                    },
                     mt: 1,
                     '& .MuiCardHeader-title': {
                       mb: 0.5
