@@ -12,28 +12,41 @@ const SamplingMethodsForm = () => {
   return (
     <>
       <Box component="fieldset">
-        <Typography component="legend">Site Selection Strategy</Typography>
+        <Typography component="legend">Site Selection Strategies</Typography>
         <Box mt={1}>
           <SurveySiteSelectionForm onChangeStratumEntryVisibility={setShowStratumForm} />
         </Box>
       </Box>
       <Collapse in={showStratumForm}>
         <Box component="fieldset" mt={5}>
-          <Typography component="legend">Define Stratums</Typography>
+          <Typography component="legend">Stratums</Typography>
           <Typography
-            variant="body1"
-            color="textSecondary"
             sx={{
-              maxWidth: '72ch'
-            }}>
-            Enter a name and description for each stratum used in this survey.
+              mb: 2
+            }}
+            variant="body1"
+            color="textSecondary">
+            Specify the stratums included in this survey.
           </Typography>
-          <Box mt={1}>
-            <SurveyStratumForm />
-          </Box>
+          <SurveyStratumForm />
         </Box>
       </Collapse>
       <Box component="fieldset" mt={5}>
+        <Typography
+          component="legend"
+          sx={{
+            mb: 0
+          }}>
+          Blocks (Optional)
+        </Typography>
+        <Typography
+          sx={{
+            mb: 2
+          }}
+          variant="body1"
+          color="textSecondary">
+          Specify the sampling blocks included in this survey
+        </Typography>
         <SurveyBlockSection />
       </Box>
     </>
