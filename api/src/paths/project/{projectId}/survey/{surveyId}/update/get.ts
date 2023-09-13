@@ -328,6 +328,24 @@ GET.apiDoc = {
                         }
                       }
                     }
+                  },
+                  blocks: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['survey_block_id', 'name', 'description'],
+                      properties: {
+                        survey_block_id: {
+                          type: 'number'
+                        },
+                        name: {
+                          type: 'string'
+                        },
+                        description: {
+                          type: 'string'
+                        }
+                      }
+                    }
                   }
                 }
               }

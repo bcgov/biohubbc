@@ -5,8 +5,10 @@ import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDat
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
 import { ISurveyLocationForm } from 'features/surveys/components/StudyAreaForm';
 import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
+import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
 import { StringBoolean } from 'types/misc';
+import { ICritterDetailedResponse } from './useCritterApi.interface';
 
 /**
  * Create survey post object.
@@ -20,7 +22,8 @@ export interface ICreateSurveyRequest
     IProprietaryDataForm,
     IAgreementsForm,
     IParticipantsJobForm,
-    ISurveyLocationForm {}
+    ISurveyLocationForm,
+    ISurveyBlockForm {}
 
 /**
  * Create survey response object.
@@ -30,6 +33,14 @@ export interface ICreateSurveyRequest
  */
 export interface ICreateSurveyResponse {
   id: number;
+}
+
+export interface ISurveyBlockForm {
+  blocks: {
+    survey_block_id: number | null;
+    name: string;
+    description: string;
+  }[];
 }
 
 export interface IParticipantsJobForm {
@@ -105,6 +116,7 @@ export interface SurveyViewObject {
   permit: ISurveyPermits;
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding_sources: ISurveyFundingSource[];
+  site_selection: ISurveySiteSelectionForm['site_selection'];
   proprietor: IGetSurveyForViewResponseProprietor | null;
   participants: IGetSurveyParticipant[];
   partnerships: IGetSurveyForViewResponsePartnerships;
@@ -323,10 +335,14 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
 }
 
+export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
+  survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
+}
+
 export type IEditSurveyRequest = IGeneralInformationForm &
   IPurposeAndMethodologyForm &
   ISurveyFundingSourceForm &
   ISurveyLocationForm &
   IProprietaryDataForm &
-  IUpdateAgreementsForm &
+  IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
   IParticipantsJobForm;

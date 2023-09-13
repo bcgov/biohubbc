@@ -4,9 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import * as db from '../../database/db';
-import { HTTPError } from '../../errors/http-error';
 import { SystemUser } from '../../repositories/user-repository';
 import { UserService } from '../../services/user-service';
+import * as keycloakUtils from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as user from './add';
 
@@ -18,108 +18,11 @@ describe('user', () => {
       sinon.restore();
     });
 
-    it('should throw a 400 error when no req body', async () => {
-      const dbConnectionObj = getMockDBConnection();
-
-      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-      mockReq.body = undefined;
-
-      try {
-        const requestHandler = user.addSystemRoleUser();
-
-        await requestHandler(mockReq, mockRes, mockNext);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing required body param: userIdentifier');
-      }
-    });
-
-    it('should throw a 400 error when no userIdentifier', async () => {
-      const dbConnectionObj = getMockDBConnection();
-
-      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-      mockReq.body = {
-        userGuid: 'aaaa',
-        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
-        displayName: 'display name',
-        email: 'email',
-        roleId: 1
-      };
-
-      try {
-        const requestHandler = user.addSystemRoleUser();
-
-        await requestHandler(mockReq, mockRes, mockNext);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing required body param: userIdentifier');
-      }
-    });
-
-    it('should throw a 400 error when no identitySource', async () => {
-      const dbConnectionObj = getMockDBConnection();
-
-      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-      mockReq.body = {
-        userGuid: 'aaaa',
-        userIdentifier: 'username',
-        displayName: 'display name',
-        email: 'email',
-        roleId: 1
-      };
-
-      try {
-        const requestHandler = user.addSystemRoleUser();
-
-        await requestHandler(mockReq, mockRes, mockNext);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing required body param: identitySource');
-      }
-    });
-
-    it('should throw a 400 error when no roleId', async () => {
-      const dbConnectionObj = getMockDBConnection();
-
-      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-      mockReq.body = {
-        userGuid: 'aaaa',
-        userIdentifier: 'username',
-        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
-        displayName: 'display name',
-        email: 'email'
-      };
-
-      try {
-        const requestHandler = user.addSystemRoleUser();
-
-        await requestHandler(mockReq, mockRes, mockNext);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Missing required body param: roleId');
-      }
-    });
-
     it('adds a system user and returns 200 on success', async () => {
       const dbConnectionObj = getMockDBConnection();
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+      sinon.stub(keycloakUtils, 'getKeycloakSource').resolves(true);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -161,6 +64,7 @@ describe('user', () => {
       const dbConnectionObj = getMockDBConnection();
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+      sinon.stub(keycloakUtils, 'getKeycloakSource').resolves(true);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

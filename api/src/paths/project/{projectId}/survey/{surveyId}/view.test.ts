@@ -68,7 +68,11 @@ describe('survey/{surveyId}/view', () => {
                 desciption: 'location description',
                 geometry: []
               }
-            ]
+            ],
+            site_selection: {
+              strategies: ['strat1'],
+              stratums: [{ name: 'startum1', description: 'desc' }]
+            }
           },
           surveySupplementaryData: {
             survey_metadata_publish: {
@@ -134,7 +138,11 @@ describe('survey/{surveyId}/view', () => {
                 geometry: [],
                 revision_count: 0
               }
-            ]
+            ],
+            site_selection: {
+              strategies: ['strat1'],
+              stratums: [{ name: 'startum1', description: null }]
+            }
           },
           surveySupplementaryData: {
             survey_metadata_publish: null

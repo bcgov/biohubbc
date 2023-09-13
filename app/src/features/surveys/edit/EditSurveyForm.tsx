@@ -27,11 +27,14 @@ import GeneralInformationForm, {
 } from '../components/GeneralInformationForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/ProprietaryDataForm';
 import PurposeAndMethodologyForm, { PurposeAndMethodologyYupSchema } from '../components/PurposeAndMethodologyForm';
+import SamplingMethodsForm from '../components/SamplingMethodsForm';
 import LocationForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from '../components/StudyAreaForm';
+import { SurveyBlockInitialValues } from '../components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
   SurveyFundingSourceFormYupSchema
 } from '../components/SurveyFundingSourceForm';
+import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from '../components/SurveySiteSelectionForm';
 import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from '../components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -80,6 +83,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     ...SurveyLocationInitialValues,
     ...SurveyFundingSourceFormInitialValues,
     ...SurveyPartnershipsFormInitialValues,
+    ...SurveySiteSelectionInitialValues,
     ...{
       proprietor: {
         survey_data_proprietary: '' as unknown as StringBoolean,
@@ -96,7 +100,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         foippa_requirements_accepted: 'true' as unknown as StringBoolean
       }
     },
-    ...SurveyUserJobFormInitialValues
+    ...SurveyUserJobFormInitialValues,
+    ...SurveyBlockInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -141,6 +146,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
+    .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema);
 
   return (
@@ -229,6 +235,14 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                 </Box>
               </Box>
             }
+          />
+
+          <Divider className={classes.sectionDivider} />
+
+          <HorizontalSplitFormComponent
+            title="Sampling Methods"
+            summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
+            component={<SamplingMethodsForm />}
           />
 
           <Divider className={classes.sectionDivider} />

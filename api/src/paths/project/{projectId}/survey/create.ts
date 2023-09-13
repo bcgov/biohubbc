@@ -64,6 +64,7 @@ POST.apiDoc = {
             'proprietor',
             'purpose_and_methodology',
             'locations',
+            'site_selection',
             'agreements',
             'participants'
           ],
@@ -222,6 +223,33 @@ POST.apiDoc = {
             locations: {
               ...(SurveyLocationPostRequestObject as object)
             },
+            site_selection: {
+              type: 'object',
+              required: ['strategies', 'stratums'],
+              properties: {
+                strategies: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                },
+                stratums: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['name', 'description'],
+                    properties: {
+                      name: {
+                        type: 'string'
+                      },
+                      description: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                }
+              }
+            },
             participants: {
               type: 'array',
               items: {
@@ -233,6 +261,21 @@ POST.apiDoc = {
                     minimum: 1
                   },
                   survey_job_name: {
+                    type: 'string'
+                  }
+                }
+              }
+            },
+            blocks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['name', 'description'],
+                properties: {
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
                     type: 'string'
                   }
                 }

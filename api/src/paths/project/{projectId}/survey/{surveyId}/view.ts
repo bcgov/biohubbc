@@ -80,7 +80,8 @@ GET.apiDoc = {
                   'partnerships',
                   'proprietor',
                   'purpose_and_methodology',
-                  'locations'
+                  'locations',
+                  'site_selection'
                 ],
                 properties: {
                   survey_details: {
@@ -315,6 +316,34 @@ GET.apiDoc = {
                   },
                   locations: {
                     ...(SurveyLocationRequestObject as object)
+                  },
+                  site_selection: {
+                    type: 'object',
+                    required: ['strategies', 'stratums'],
+                    properties: {
+                      strategies: {
+                        type: 'array',
+                        items: {
+                          type: 'string'
+                        }
+                      },
+                      stratums: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          required: ['name', 'description'],
+                          properties: {
+                            name: {
+                              type: 'string'
+                            },
+                            description: {
+                              type: 'string',
+                              nullable: true
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               },
