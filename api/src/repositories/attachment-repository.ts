@@ -1560,4 +1560,30 @@ export class AttachmentRepository extends BaseRepository {
       ]);
     }
   }
+
+  /**
+   * Get survey attachments to process
+   *
+   * @return {*}  {Promise<string[]>}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyKeyxAttachmentsToProcess(): Promise<{ survey_attachment_id: number; key: string }[]> {
+    const sqlStatement = SQL`
+      SELECT 
+        survey_attachment.survey_attachment_id,
+        survey_attachment.key,
+        s 
+      FROM 
+        survey_attachment 
+      LEFT JOIN 
+        survey_attachment_keyx 
+      ON 
+        survey_attachment.key = survey_attachment_keyx.key 
+      WHERE 
+        survey_attachment_keyx.key IS NULL`;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response?.rows ?? [];
+  }
 }

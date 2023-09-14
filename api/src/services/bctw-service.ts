@@ -1,3 +1,4 @@
+import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import { URLSearchParams } from 'url';
@@ -230,9 +231,9 @@ export class BctwService {
    * @return {*}  {Promise<string>}
    * @memberof BctwService
    */
-  async uploadKeyX(keyX: Express.Multer.File): Promise<string> {
+  async uploadKeyX(keyX: GetObjectOutput, keyXName: string): Promise<string> {
     const formData = new FormData();
-    formData.append('xml', keyX.buffer, keyX.originalname);
+    formData.append('xml', keyX.Body, keyXName);
     const config = {
       headers: {
         ...formData.getHeaders()
