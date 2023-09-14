@@ -456,7 +456,7 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const data = ([{ survey_location_id: 1 }] as any) as SurveyLocationRecord;
+      const data = ([{ survey_location_id: 1 }] as any) as SurveyLocationRecord[];
 
       const repoStub = sinon.stub(SurveyLocationRepository.prototype, 'getSurveyLocationsData').resolves(data);
 

@@ -40,8 +40,8 @@ describe('PostSurveyObject', () => {
       expect(data.purpose_and_methodology).to.equal(null);
     });
 
-    it('sets location', () => {
-      expect(data.location).to.equal(null);
+    it('sets locations', () => {
+      expect(data.locations).to.eql([]);
     });
 
     it('sets agreements', () => {
@@ -62,7 +62,6 @@ describe('PostSurveyObject', () => {
       permit: {},
       proprietor: {},
       purpose_and_methodology: {},
-      locations: [],
       agreements: {}
     };
 
@@ -88,10 +87,6 @@ describe('PostSurveyObject', () => {
 
     it('sets purpose_and_methodology', () => {
       expect(data.purpose_and_methodology).to.instanceOf(PostPurposeAndMethodologyData);
-    });
-
-    it('sets location', () => {
-      expect(data.location).to.instanceOf(PostLocationData);
     });
 
     it('sets agreements', () => {
@@ -401,8 +396,8 @@ describe('PostLocationData', () => {
       expect(data.description).to.equal(null);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql([]);
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql([]);
     });
   });
 
@@ -412,7 +407,7 @@ describe('PostLocationData', () => {
     const obj = {
       name: 'area name',
       description: 'area description',
-      geometry: [{}]
+      geojson: [{}]
     };
 
     before(() => {
@@ -427,8 +422,8 @@ describe('PostLocationData', () => {
       expect(data.description).to.equal(obj.description);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql(obj.geometry);
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql(obj.geojson);
     });
   });
 });

@@ -40,7 +40,7 @@ describe('PutSurveyObject', () => {
     });
 
     it('sets location', () => {
-      expect(data.location).to.equal(null);
+      expect(data.locations).to.equal([]);
     });
   });
 
@@ -53,7 +53,6 @@ describe('PutSurveyObject', () => {
       permit: {},
       proprietor: {},
       purpose_and_methodology: {},
-      locations: [],
       agreements: {}
     };
 
@@ -79,10 +78,6 @@ describe('PutSurveyObject', () => {
 
     it('sets purpose_and_methodology', () => {
       expect(data.purpose_and_methodology).to.instanceOf(PutSurveyPurposeAndMethodologyData);
-    });
-
-    it('sets location', () => {
-      expect(data.location).to.instanceOf(PutSurveyLocationData);
     });
   });
 });
@@ -448,7 +443,7 @@ describe('PutLocationData', () => {
     });
 
     it('sets geometry', () => {
-      expect(data.geometry).to.eql([]);
+      expect(data.geojson).to.eql([]);
     });
 
     it('sets revision_count', () => {
@@ -479,7 +474,7 @@ describe('PutLocationData', () => {
     });
 
     it('sets geometry', () => {
-      expect(data.geometry).to.eql(obj.geometry);
+      expect(data.geojson).to.eql(obj.geometry);
     });
 
     it('sets revision_count', () => {

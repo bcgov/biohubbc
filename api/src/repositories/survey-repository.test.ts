@@ -6,12 +6,7 @@ import sinonChai from 'sinon-chai';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
-import {
-  GetAttachmentsData,
-  GetSurveyLocationData,
-  GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
-} from '../models/survey-view';
+import { GetAttachmentsData, GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../models/survey-view';
 import { getMockDBConnection } from '../__mocks__/db';
 import {
   IObservationSubmissionInsertDetails,
@@ -195,19 +190,6 @@ describe('SurveyRepository', () => {
       const response = await repository.getSurveyProprietorDataForView(1);
 
       expect(response).to.eql(null);
-    });
-  });
-
-  describe('getSurveyLocationData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveyLocationsData(1);
-
-      expect(response).to.eql([new GetSurveyLocationData({ id: 1 })]);
     });
   });
 
