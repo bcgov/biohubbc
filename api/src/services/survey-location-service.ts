@@ -1,5 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { PostLocationData } from '../models/survey-create';
+import { PutSurveyLocationData } from '../models/survey-update';
 import { SurveyLocationRecord, SurveyLocationRepository } from '../repositories/survey-location-repository';
 import { DBService } from './db-service';
 
@@ -16,6 +17,9 @@ export class SurveyLocationService extends DBService {
     return await this.surveyLocationRepository.insertSurveyLocation(surveyId, data);
   }
 
+  async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
+    return await this.surveyLocationRepository.updateSurveyLocation(data);
+  }
   /**
    * Get Survey location for a given survey ID
    *

@@ -12,7 +12,6 @@ import {
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
 import { getLogger } from '../utils/logger';
-import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
@@ -895,8 +894,7 @@ export class SurveyRepository extends BaseRepository {
         start_date: surveyData.survey_details.start_date,
         end_date: surveyData.survey_details.end_date,
         lead_first_name: surveyData.survey_details.lead_first_name,
-        lead_last_name: surveyData.survey_details.lead_last_name,
-        revision_count: surveyData.survey_details.revision_count
+        lead_last_name: surveyData.survey_details.lead_last_name
       };
     }
 
@@ -906,40 +904,14 @@ export class SurveyRepository extends BaseRepository {
         field_method_id: surveyData.purpose_and_methodology.field_method_id,
         additional_details: surveyData.purpose_and_methodology.additional_details,
         ecological_season_id: surveyData.purpose_and_methodology.ecological_season_id,
-        intended_outcome_id: surveyData.purpose_and_methodology.intended_outcome_id,
-        revision_count: surveyData.purpose_and_methodology.revision_count
+        intended_outcome_id: surveyData.purpose_and_methodology.intended_outcome_id
       };
     }
 
-    if (surveyData.location) {
-      const geometrySqlStatement = SQL``;
-
-      if (surveyData?.location?.geometry?.length) {
-        geometrySqlStatement.append(SQL`
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-        const geometryCollectionSQL = generateGeometryCollectionSQL(surveyData.location.geometry);
-        geometrySqlStatement.append(geometryCollectionSQL);
-
-        geometrySqlStatement.append(SQL`
-        , 4326)))
-      `);
-      } else {
-        geometrySqlStatement.append(SQL`
-        null
-      `);
-      }
-
-      fieldsToUpdate = {
-        ...fieldsToUpdate,
-        revision_count: surveyData.location.revision_count
-      };
-    }
-
-    const updateSurveyQueryBuilder = knex('survey').update(fieldsToUpdate).where('survey_id', surveyId);
+    const updateSurveyQueryBuilder = knex('survey')
+      .update(fieldsToUpdate)
+      .where('survey_id', surveyId)
+      .andWhere('revision_count', surveyData.survey_details.revision_count);
 
     const result = await this.connection.knex(updateSurveyQueryBuilder);
 

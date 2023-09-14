@@ -1,6 +1,7 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { PostLocationData } from '../models/survey-create';
+import { PutSurveyLocationData } from '../models/survey-update';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
 
@@ -42,6 +43,33 @@ export class SurveyLocationRepository extends BaseRepository {
     sql.append(SQL`, 4326)))`);
 
     sql.append(SQL`);`);
+    await this.connection.sql(sql);
+  }
+
+  async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
+    const sql = SQL`
+      UPDATE 
+        survey_location
+      SET 
+        name = ${data.name},
+        description = ${data.description},
+        geojson = ${JSON.stringify(data.geojson)},
+        geography = 
+    `;
+
+    sql.append(SQL`public.geography(
+      public.ST_Force2D(
+        public.ST_SetSRID(`);
+
+    sql.append(generateGeometryCollectionSQL(data.geojson));
+
+    sql.append(SQL`, 4326)))`);
+
+    sql.append(SQL`
+    WHERE 
+        survey_location_id = ${data.survey_location_id};
+    `);
+    console.log(sql.sql);
     await this.connection.sql(sql);
   }
 
