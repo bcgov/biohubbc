@@ -49,10 +49,10 @@ const TelemetryDeviceForm = () => {
     <Form>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <CustomTextField label="Device ID" name={'device_id'} other={{ size: 'small' }} />
+          <CustomTextField label="Device ID" name={'device_id'} />
         </Grid>
         <Grid item xs={4}>
-          <CustomTextField label="Device Frequency" name={'frequency'} other={{ size: 'small' }} />
+          <CustomTextField label="Device Frequency" name={'frequency'} />
         </Grid>
         <Grid item xs={2}>
           <TelemetrySelectField
@@ -63,7 +63,6 @@ const TelemetryDeviceForm = () => {
               const codeVals = await api.devices.getCodeValues('frequency_unit');
               return codeVals.map((a) => a.description);
             }}
-            controlProps={{ size: 'small' }}
           />
         </Grid>
         <Grid item xs={6}>
@@ -72,19 +71,13 @@ const TelemetryDeviceForm = () => {
             name={'device_make'}
             id="manufacturer"
             fetchData={api.devices.getCollarVendors}
-            controlProps={{ size: 'small' }}
           />
         </Grid>
         <Grid item xs={6}>
-          <CustomTextField label="Device Model" name={'device_model'} other={{ size: 'small' }} />
+          <CustomTextField label="Device Model" name={'device_model'} />
         </Grid>
         <Grid item xs={6}>
-          <SingleDateField
-            name={'attachment_start'}
-            required={true}
-            label={'Attachment Start'}
-            other={{ size: 'small' }}
-          />
+          <SingleDateField name={'attachment_start'} required={true} label={'Attachment Start'} />
         </Grid>
         {Object.entries(bctwErrors).length > 0 && (
           <Grid item xs={12}>

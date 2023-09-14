@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
@@ -12,7 +12,6 @@ export interface ITableActionsMenuProps {
   critter_id: number;
   devices?: IAnimalDeployment[];
   onAddDevice: (critter_id: number) => void;
-  onRemoveDevice: (critter_id: number) => void;
   onEditDevice: (critter_id: number) => void;
   onEditCritter: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
@@ -62,18 +61,9 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           </ListItemIcon>
           <ListItemText>Add Telemetry Device</ListItemText>
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            props.onRemoveDevice(props.critter_id);
-          }}
-          data-testid="animal-table-row-remove-device">
-          <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </ListItemIcon>
-          <ListItemText>Remove Telemetry Device</ListItemText>
-        </MenuItem>
-        <MenuItem
+        {
+          //To be implemented later.
+          /*<MenuItem
           onClick={() => {
             handleClose();
             props.onEditDevice(props.critter_id);
@@ -94,18 +84,21 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
           <ListItemText>Edit Critter Details</ListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            props.onRemoveCritter(props.critter_id);
-          }}
-          data-testid="animal-table-row-remove-critter">
-          <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </ListItemIcon>
-          <ListItemText>Remove Critter From Survey</ListItemText>
-        </MenuItem>
+        </MenuItem>*/
+        }
+        {!props.devices?.length && (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              props.onRemoveCritter(props.critter_id);
+            }}
+            data-testid="animal-table-row-remove-critter">
+            <ListItemIcon>
+              <Icon path={mdiTrashCanOutline} size={1} />
+            </ListItemIcon>
+            <ListItemText>Remove Critter From Survey</ListItemText>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );
