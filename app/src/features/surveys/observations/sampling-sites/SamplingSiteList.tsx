@@ -1,6 +1,5 @@
 import { mdiDotsVertical, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-// import * as React from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -8,16 +7,16 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
-// import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-// import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-// import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { useHistory } from 'react-router';
 
 export const SamplingSiteList = () => {
+  const history = useHistory();
+
   return (
     <Box
       display="flex"
@@ -43,6 +42,9 @@ export const SamplingSiteList = () => {
           }}
           variant="contained"
           color="primary"
+          action={() => {
+            history.push('sampling');
+          }}
           startIcon={<Icon path={mdiPlus} size={1} />}>
           Add
         </Button>
