@@ -17,6 +17,13 @@ export const SurveyLocationRecord = z.object({
 
 export type SurveyLocationRecord = z.infer<typeof SurveyLocationRecord>;
 export class SurveyLocationRepository extends BaseRepository {
+  /**
+   * Creates a survey location for a given survey
+   *
+   * @param {number} surveyId
+   * @param {PostLocationData} data
+   * @memberof SurveyLocationRepository
+   */
   async insertSurveyLocation(surveyId: number, data: PostLocationData): Promise<void> {
     const sql = SQL`
       INSERT INTO survey_location (
@@ -31,21 +38,21 @@ export class SurveyLocationRepository extends BaseRepository {
         ${data.name},
         ${data.description},
         ${JSON.stringify(data.geojson)},
-    `;
-
-    // TODO rework this so it's easier to read
-    sql.append(SQL`public.geography(
-      public.ST_Force2D(
-        public.ST_SetSRID(`);
-
-    sql.append(generateGeometryCollectionSQL(data.geojson));
-
-    sql.append(SQL`, 4326)))`);
-
-    sql.append(SQL`);`);
+        public.geography(
+          public.ST_Force2D(
+            public.ST_SetSRID(`.append(generateGeometryCollectionSQL(data.geojson)).append(`, 4326)
+          )
+        )
+      );`);
     await this.connection.sql(sql);
   }
 
+  /**
+   * Updates survey location data
+   *
+   * @param {PutSurveyLocationData} data
+   * @memberof SurveyLocationRepository
+   */
   async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
     const sql = SQL`
       UPDATE 
@@ -54,22 +61,14 @@ export class SurveyLocationRepository extends BaseRepository {
         name = ${data.name},
         description = ${data.description},
         geojson = ${JSON.stringify(data.geojson)},
-        geography = 
-    `;
-
-    sql.append(SQL`public.geography(
-      public.ST_Force2D(
-        public.ST_SetSRID(`);
-
-    sql.append(generateGeometryCollectionSQL(data.geojson));
-
-    sql.append(SQL`, 4326)))`);
-
-    sql.append(SQL`
-    WHERE 
+        geography = public.geography(
+                      public.ST_Force2D(
+                        public.ST_SetSRID(`.append(generateGeometryCollectionSQL(data.geojson)).append(`, 4326)
+                      )
+                    )
+      WHERE 
         survey_location_id = ${data.survey_location_id};
     `);
-    console.log(sql.sql);
     await this.connection.sql(sql);
   }
 
@@ -78,7 +77,7 @@ export class SurveyLocationRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @returns {*} Promise<GetSurveyLocationData[]>
-   * @memberof SurveyRepository
+   * @memberof SurveyLocationRepository
    */
   async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
     const sqlStatement = SQL`
