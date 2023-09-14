@@ -1,10 +1,8 @@
 import { useMediaQuery, useTheme } from '@mui/material';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import CustomTextField from 'components/fields/CustomTextField';
 import { Formik, FormikProps } from 'formik';
@@ -46,31 +44,23 @@ const StratumCreateOrEditDialog = (props: IStratumDialogProps) => {
           <Dialog open={props.open} fullScreen={fullScreen} maxWidth="xl" onClose={props.onCancel}>
             <DialogTitle>{editing ? 'Edit Stratum Details' : 'Add Stratum'}</DialogTitle>
             <DialogContent>
-              <>
-                <DialogContentText>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat
-                  volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.
-                </DialogContentText>
-                <Box mt={4}>
-                  <CustomTextField
-                    other={{
-                      sx: { mb: 4 },
-                      required: true
-                    }}
-                    name="stratum.name"
-                    label="Name"
-                  />
-                  <CustomTextField
-                    other={{
-                      multiline: true,
-                      required: true,
-                      rows: 5
-                    }}
-                    name="stratum.description"
-                    label="Description"
-                  />
-                </Box>
-              </>
+              <CustomTextField
+                other={{
+                  sx: { mb: 4 },
+                  required: true
+                }}
+                name="stratum.name"
+                label="Name"
+              />
+              <CustomTextField
+                other={{
+                  multiline: true,
+                  required: true,
+                  rows: 5
+                }}
+                name="stratum.description"
+                label="Description"
+              />
             </DialogContent>
             <DialogActions>
               <Button onClick={() => formikProps.submitForm()} variant="contained" color="primary">
