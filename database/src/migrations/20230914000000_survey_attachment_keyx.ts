@@ -18,7 +18,7 @@ export async function up(knex: Knex): Promise<void> {
   CREATE TABLE survey_attachment_keyx(
     survey_attachment_keyx_id       integer     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     survey_attachment_id            integer     NOT NULL,
-    processed_at                    timestamptz(6),
+    processed_at                    timestamptz(6)
   );
   
   COMMENT ON COLUMN survey_attachment_keyx.survey_attachment_keyx_id       IS 'System generated surrogate primary key identifier.';

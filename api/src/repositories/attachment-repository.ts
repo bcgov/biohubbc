@@ -1506,7 +1506,58 @@ export class AttachmentRepository extends BaseRepository {
     return response;
   }
 
-  // TODO: Insert a new keyx record into the survey_attachment_keyx table. It should reference an attachment in the survey_attachment table.
+  /**
+   * Insert Survey Attachment Keyx Record
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async insertSurveyAttachmentKeyx(attachmentId: number): Promise<{ survey_attachment_keyx_id: number }> {
+    const sqlStatement = SQL`
+      INSERT INTO survey_attachment_keyx (
+        survey_attachment_id
+      ) VALUES (
+        ${attachmentId}
+      ) RETURNING survey_attachment_keyx_id;
+    `;
 
-  // TODO: Update the keyx record to indicate that it has been processed (sent to BCTW API).
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert survey attachment keyx data', [
+        'AttachmentRepository->insertSurveyAttachmentKeyx',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
+   * Update Survey Attachment Keyx Record
+   *
+   * @param {number} attachmentId
+   * @return {*}  {Promise<void>}
+   * @memberof AttachmentRepository
+   */
+  async updateSurveyAttachmentKeyx(attachmentId: number): Promise<void> {
+    const sqlStatement = SQL`
+      UPDATE
+        survey_attachment_keyx
+      SET
+        processed_at = now()
+      WHERE
+        survey_attachment_id = ${attachmentId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response?.rowCount) {
+      throw new ApiExecuteSQLError('Failed to update survey attachment keyx data', [
+        'AttachmentRepository->updateSurveyAttachmentKeyx',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+  }
 }
