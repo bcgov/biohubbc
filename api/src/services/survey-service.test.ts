@@ -114,7 +114,7 @@ describe('SurveyService', () => {
           stakeholder_partnerships: []
         },
         participants: [{ data: 'participantData' } as any],
-        locations: [{ data: 'locationData' }],
+        locations: [],
         site_selection: { stratums: [], strategies: [] },
         blocks: []
       });
@@ -184,7 +184,6 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
-      const updateSurveyRegionStub = sinon.stub(SurveyService.prototype, 'insertRegion').resolves();
       const upsertSurveyParticipantDataStub = sinon
         .stub(SurveyService.prototype, 'upsertSurveyParticipantData')
         .resolves();
@@ -221,7 +220,6 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
       expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
-      expect(updateSurveyRegionStub).to.have.been.calledOnce;
       expect(upsertSurveyParticipantDataStub).to.have.been.calledOnce;
       expect(upsertBlocks).to.have.been.calledOnce;
       expect(replaceSurveyStratumsStub).to.have.been.calledOnce;

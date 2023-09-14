@@ -65,8 +65,8 @@ describe('survey/{surveyId}/view', () => {
             locations: [
               {
                 name: 'location name',
-                desciption: 'location description',
-                geometry: []
+                description: 'location description',
+                geojson: []
               }
             ],
             site_selection: {
@@ -135,7 +135,7 @@ describe('survey/{surveyId}/view', () => {
               {
                 name: 'location name',
                 description: 'location description',
-                geometry: [],
+                geojson: [],
                 revision_count: 0
               }
             ],

@@ -314,8 +314,8 @@ describe('GetSurveyLocationData', () => {
       expect(data.description).to.equal(null);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql([]);
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql([]);
     });
   });
 
@@ -325,7 +325,7 @@ describe('GetSurveyLocationData', () => {
     const obj = {
       name: 'area name',
       description: 'area description',
-      geometry: [{}]
+      geojson: []
     };
 
     before(() => {
@@ -340,8 +340,8 @@ describe('GetSurveyLocationData', () => {
       expect(data.description).to.equal(obj.description);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql(obj.geometry);
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql(obj.geojson);
     });
   });
 });

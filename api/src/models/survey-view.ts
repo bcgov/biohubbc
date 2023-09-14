@@ -173,14 +173,14 @@ export class GetSurveyLocationData {
   survey_spatial_component_id: number;
   name: string;
   description: string;
-  geometry: Feature[];
+  geojson: Feature[];
   revision_count: number;
 
   constructor(obj?: any) {
     this.survey_spatial_component_id = obj?.survey_spatial_component_id || null;
     this.name = obj?.name || null;
     this.description = obj?.description || null;
-    this.geometry = (obj?.geojson?.length && obj.geojson) || [];
+    this.geojson = (obj?.geojson?.length && obj.geojson) || [];
     this.revision_count = obj?.revision_count || 0;
   }
 }

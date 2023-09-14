@@ -40,7 +40,7 @@ describe('PutSurveyObject', () => {
     });
 
     it('sets location', () => {
-      expect(data.locations).to.equal([]);
+      expect(data.locations).to.eql([]);
     });
   });
 
@@ -442,7 +442,7 @@ describe('PutLocationData', () => {
       expect(data.description).to.equal(null);
     });
 
-    it('sets geometry', () => {
+    it('sets geojson', () => {
       expect(data.geojson).to.eql([]);
     });
 
@@ -457,7 +457,7 @@ describe('PutLocationData', () => {
     const obj = {
       name: 'area name',
       description: 'area description',
-      geometry: [{}],
+      geojson: [{}],
       revision_count: 0
     };
 
@@ -473,8 +473,8 @@ describe('PutLocationData', () => {
       expect(data.description).to.equal(obj.description);
     });
 
-    it('sets geometry', () => {
-      expect(data.geojson).to.eql(obj.geometry);
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql(obj.geojson);
     });
 
     it('sets revision_count', () => {
