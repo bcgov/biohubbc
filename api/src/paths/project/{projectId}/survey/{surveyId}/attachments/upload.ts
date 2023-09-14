@@ -1,3 +1,4 @@
+import AdmZip from 'adm-zip';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
@@ -139,6 +140,23 @@ export function uploadMedia(): RequestHandler {
         Number(req.params.surveyId),
         ATTACHMENT_TYPE.OTHER
       );
+
+      // If the uploaded file is a keyx file or zip of mutliple keyx's, extract it and upload the extracted keyx files
+      const keyxArray = [];
+
+      if (rawMediaFile.filename.endsWith('.keyx')) {
+        keyxArray.push(rawMediaFile);
+      } else if (rawMediaFile.mimetype === 'application/zip') {
+        const zip = new AdmZip(rawMediaFile.buffer);
+        const zipEntries = zip.getEntries();
+        for (const zipEntry of zipEntries) {
+          if (zipEntry.entryName.endsWith('.keyx')) {
+            keyxArray.push(zipEntry);
+          }
+        }
+      }
+
+      // TODO: call attachment-service function to add the keyx files to new table
 
       const metadata = {
         filename: rawMediaFile.originalname,

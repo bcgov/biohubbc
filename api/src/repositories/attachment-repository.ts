@@ -1505,4 +1505,8 @@ export class AttachmentRepository extends BaseRepository {
 
     return response;
   }
+
+  // TODO: Insert a new keyx record into the survey_attachment_keyx table. It should reference an attachment in the survey_attachment table.
+
+  // TODO: Update the keyx record to indicate that it has been processed (sent to BCTW API).
 }
