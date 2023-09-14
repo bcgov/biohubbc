@@ -667,46 +667,38 @@ export class SurveyService extends DBService {
    */
   async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
-    console.log('Here 1');
     if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyDetailsData(surveyId, putSurveyData));
     }
 
-    console.log('Here 2');
     if (putSurveyData?.survey_details) {
       promises.push(this.updateSurveyTypesData(surveyId, putSurveyData));
     }
 
-    console.log('Here 3');
     if (putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyVantageCodesData(surveyId, putSurveyData));
     }
 
-    console.log('Here 4');
     if (putSurveyData?.partnerships) {
       promises.push(this.updatePartnershipsData(surveyId, putSurveyData));
     }
-    console.log('Here 5');
+
     if (putSurveyData?.species) {
       promises.push(this.updateSurveySpeciesData(surveyId, putSurveyData));
     }
-    console.log('Here 6');
+
     if (putSurveyData?.permit) {
       promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
     }
 
-    console.log('Here 7');
     if (putSurveyData?.funding_sources) {
       promises.push(this.upsertSurveyFundingSourceData(surveyId, putSurveyData));
     }
-    console.log('Here 8');
     if (putSurveyData?.proprietor) {
       promises.push(this.updateSurveyProprietorData(surveyId, putSurveyData));
     }
-    console.log('Here 9');
-    console.log(putSurveyData?.locations);
+
     if (putSurveyData?.locations) {
-      console.log('GOT HERE');
       promises.push(Promise.all(putSurveyData.locations.map((item) => this.updateSurveyLocation(item))));
     }
 

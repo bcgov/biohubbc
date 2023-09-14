@@ -384,12 +384,8 @@ export function updateSurvey(): RequestHandler {
     const projectId = Number(req.params.projectId);
     const surveyId = Number(req.params.surveyId);
 
-    console.log('_PRE REQUEST_');
-    console.log(req.body);
     const sanitizedPutSurveyData = new PutSurveyObject(req.body);
 
-    console.log('_ SANITIZED _');
-    console.log(sanitizedPutSurveyData);
     const connection = getDBConnection(req['keycloak_token']);
 
     try {

@@ -577,7 +577,6 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
-    console.log(surveyData);
     const sqlStatement = SQL`
       INSERT INTO survey (
         project_id,

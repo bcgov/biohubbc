@@ -214,7 +214,6 @@ const CreateSurveyPage = () => {
    * @return {*}
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
-    console.log('ARE WE GETTING HERE?');
     try {
       const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), values);
 
@@ -267,7 +266,6 @@ const CreateSurveyPage = () => {
   if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-  console.log(formikRef.current?.values);
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -432,7 +430,6 @@ const CreateSurveyPage = () => {
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                      console.log(formikRef.current?.errors);
                       formikRef.current?.submitForm();
                     }}
                     className={classes.actionButton}>
