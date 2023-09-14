@@ -6,6 +6,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { AttachmentKeyxService } from '../../../../../../services/attachment-keyx-service';
 import { AttachmentService } from '../../../../../../services/attachment-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
@@ -141,7 +142,7 @@ export function uploadMedia(): RequestHandler {
         ATTACHMENT_TYPE.OTHER
       );
 
-      // If the uploaded file is a keyx file or zip of mutliple keyx's, extract it and upload the extracted keyx files
+      // Check for keyx files in the raw media
       const keyxArray = [];
 
       if (rawMediaFile.filename.endsWith('.keyx')) {
@@ -156,7 +157,11 @@ export function uploadMedia(): RequestHandler {
         }
       }
 
-      // TODO: call attachment-service function to add the keyx files to new table
+      // If there are keyx files, add the keyx reference to the survey_attachment_keyx table
+      if (keyxArray.length) {
+        const attachmentKeyxService = new AttachmentKeyxService(connection);
+        attachmentKeyxService.insertKeyxReference(upsertResult.survey_attachment_id);
+      }
 
       const metadata = {
         filename: rawMediaFile.originalname,
