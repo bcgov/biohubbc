@@ -84,6 +84,7 @@ const SurveyAnimals: React.FC = () => {
     device_model: '',
     deployments: [
       {
+        deployment_id: '',
         attachment_start: '',
         attachment_end: undefined
       }
@@ -93,17 +94,21 @@ const SurveyAnimals: React.FC = () => {
   const obtainDeviceFormInitialValues = (mode: TelemetryDeviceFormMode) => {
     switch (mode) {
       case 'add':
-        return DeviceFormValues;
+        return [DeviceFormValues];
       case 'edit': {
         const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId);
         if (deployments) {
+          //Any suggestions on something better than this reduce is welcome.
+          //Idea is to transform flat rows of {device_id, ... , attachment_end, attachment_start}
+          //to {device_id, ..., deployments: [{deployments, attachment_start, attachment_end}]}
           const red = deployments.reduce((acc, curr) => {
             const currObj = acc.find((a) => a.device_id === curr.device_id);
-            const { attachment_end, attachment_start, ...rest } = curr;
+            const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
+            const deployment = { deployment_id, attachment_start, attachment_end };
             if (!currObj) {
-              acc.push({ ...rest, deployments: [{ attachment_start, attachment_end }] });
+              acc.push({ ...rest, deployments: [deployment] });
             } else {
-              currObj.deployments?.push({ attachment_start, attachment_end });
+              currObj.deployments?.push(deployment);
             }
             return acc;
           }, [] as IAnimalTelemetryDevice[]);
@@ -153,6 +158,8 @@ const SurveyAnimals: React.FC = () => {
           )
         });
       }
+    } else if (telemetryFormMode === 'edit') {
+      console.log('Not implemented.');
     }
 
     setOpenDeviceDialog(false);
@@ -191,13 +198,7 @@ const SurveyAnimals: React.FC = () => {
         dialogTitle={telemetryFormMode === 'add' ? 'Add Telemetry Device' : 'Edit Telemetry Devices'}
         open={openDeviceDialog}
         component={{
-          element: (
-            <TelemetryDeviceForm
-              deployments={deploymentData ?? []}
-              critter_id={currentCritterbaseCritterId}
-              mode={telemetryFormMode}
-            />
-          ),
+          element: <TelemetryDeviceForm />,
           initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
           validationSchema: AnimalTelemetryDeviceSchema
         }}

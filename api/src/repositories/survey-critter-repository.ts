@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
+import SQL from 'sql-template-strings';
 
 export const SurveyCritterRecord = z.object({
   critter_id: z.number(),
@@ -51,10 +52,22 @@ export class SurveyCritterRepository extends BaseRepository {
    * @returns {*}
    * @member SurveyRepository
    */
-  async removeCritterFromSurvey(surveyId: number, critterId: number): Promise<number> {
-    defaultLog.debug({ label: 'removeCritterFromSurvey', surveyId });
-    const queryBuilder = getKnex().table('critter').delete().where({ survey_id: surveyId, critter_id: critterId });
-    const response = await this.connection.knex(queryBuilder);
+  async removeCritterFromSurvey(critterId: number): Promise<number> {
+    defaultLog.debug({ label: 'removeCritterFromSurvey', critterId });
+    const sqlStatement = SQL`
+        DELETE
+        FROM
+          critter
+        WHERE
+          critter_id = ${critterId}
+        RETURNING
+          critter_id;
+      `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyCritterRecord.pick({ critter_id: true }));
+    //const queryBuilder = getKnex().table('critter').where({ survey_id: surveyId, critter_id: critterId }).del();
+    //console.log(queryBuilder.toSQL());
+    //const response = await this.connection.knex(queryBuilder);
     return response.rowCount;
   }
 

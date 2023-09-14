@@ -32,7 +32,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description:
-    'Creates a new critter in critterbase, and if successful, adds the a link to the critter_id under this survey.',
+    'Deploys a device, creating a record of the insertion in the SIMS deployment table. Will also upsert a collar in BCTW as well as insert a new deployment under the resultant collar_id.',
   tags: ['critterbase'],
   security: [
     {
@@ -151,4 +151,13 @@ export function deployDevice(): RequestHandler {
       connection.release();
     }
   };
+}
+
+//Techincally this one doesn't really need to touch anything in SIMS I don't think, so maybe it could go in the telemetry api?
+//But I think for consistency this might be better, otherwise we are gonna have a 'deployments' endpoint in three places
+// (this one, the survey level one, and one for telemetry)
+export function updateDepoyment(): RequestHandler {
+  return async (req, res) => {
+    return res.status(200);
+  }
 }

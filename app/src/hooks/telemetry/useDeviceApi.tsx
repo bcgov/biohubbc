@@ -50,6 +50,18 @@ const useDeviceApi = (axios: AxiosInstance) => {
     return { device: undefined, deployments: [] };
   };
 
+  const upsertCollar = async (body: any): Promise<any> => {
+    try {
+      const { data } = await axios.post(`/api/telemetry/collar`, body);
+      return data;
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log(e.message);
+      }
+    }
+    return {};
+  };
+
   return {
     getDeviceDetails,
     getCollarVendors,

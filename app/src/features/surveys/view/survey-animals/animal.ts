@@ -149,6 +149,7 @@ export const AnimalRelationshipSchema = yup.object({}).shape({
 });
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
+  deployment_id: yup.string().required(req),
   attachment_start: yup.string().required(req),
   attachment_end: yup.string()
 });
