@@ -1,13 +1,16 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, ListItemIcon, Menu, MenuItem, MenuProps } from '@mui/material';
+import { ListItemIcon, Menu, MenuItem, MenuProps } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
+import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import { FormikProps, useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 import StratumCreateOrEditDialog from './StratumCreateOrEditDialog';
 import { IStratum } from './SurveySiteSelectionForm';
@@ -134,68 +137,57 @@ const SurveyStratumForm = () => {
         </MenuItem>
       </Menu>
       <form onSubmit={handleSubmit}>
-        <Box mt={4}>
+        <TransitionGroup>
           {values.site_selection.stratums.map((stratum: IStratum, index: number) => {
             const key = `${stratum.name}-${index}`;
 
             return (
-              <Box mt={2} key={key}>
-                <Card variant="outlined">
-                  <Box display="flex" alignItems="flex-start" px={2} py={1.5}>
-                    <Box flex="1 1 auto">
-                      <Typography
-                        variant="subtitle1"
-                        fontWeight="bold"
-                        sx={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          display: '-webkit-box',
-                          WebkitLineClamp: '1',
-                          WebkitBoxOrient: 'vertical',
-                          mb: 1
-                        }}>
-                        {stratum.name}
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        color="textSecondary"
-                        sx={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          display: '-webkit-box',
-                          WebkitLineClamp: '2',
-                          WebkitBoxOrient: 'vertical'
-                        }}>
-                        {stratum.description}
-                      </Typography>
-                    </Box>
-                    <Box flex="0 0 auto">
-                      <IconButton
-                        sx={{ ml: 2 }}
-                        aria-label="remove user from project team"
-                        onClick={(event) => handleClickContextMenu(event, index)}>
+              <Collapse key={key}>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    background: grey[100],
+                    '& .MuiCardHeader-subheader': {
+                      display: '-webkit-box',
+                      WebkitLineClamp: '2',
+                      WebkitBoxOrient: 'vertical',
+                      maxWidth: '92ch',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      fontSize: '14px'
+                    },
+                    mt: 1,
+                    '& .MuiCardHeader-title': {
+                      mb: 0.5
+                    }
+                  }}>
+                  <CardHeader
+                    action={
+                      <IconButton onClick={(event) => handleClickContextMenu(event, index)} aria-label="settings">
                         <Icon path={mdiDotsVertical} size={1}></Icon>
                       </IconButton>
-                    </Box>
-                  </Box>
+                    }
+                    title={stratum.name}
+                    subheader={stratum.description}
+                  />
                 </Card>
-              </Box>
+              </Collapse>
             );
           })}
-
-          <Box mt={4}>
-            <Button
-              data-testid="stratum-add-button"
-              variant="outlined"
-              color="primary"
-              title="Create Stratum"
-              aria-label="Create Stratum"
-              startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => handleCreateNewStratum()}>
-              Add Stratum
-            </Button>
-          </Box>
-        </Box>
+        </TransitionGroup>
+        <Button
+          sx={{
+            mt: 1
+          }}
+          data-testid="stratum-add-button"
+          variant="outlined"
+          color="primary"
+          title="Create Stratum"
+          aria-label="Create Stratum"
+          startIcon={<Icon path={mdiPlus} size={1} />}
+          onClick={() => handleCreateNewStratum()}>
+          Add Stratum
+        </Button>
       </form>
     </>
   );

@@ -142,7 +142,7 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           sx={{
             maxWidth: '72ch'
           }}>
-          Add people and their associated job for this survey.
+          Add particpants to this survey and assign each a role.
         </Typography>
       </Box>
       {errors?.['participants'] && selectedUsers.length > 0 && (
