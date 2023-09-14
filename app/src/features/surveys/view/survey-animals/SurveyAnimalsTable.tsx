@@ -81,7 +81,6 @@ export const SurveyAnimalsTable = ({
           critter_id={params.row.survey_critter_id}
           devices={params.row?.telemetry_device}
           onAddDevice={onAddDevice}
-          onRemoveDevice={noOpPlaceHolder}
           onEditCritter={noOpPlaceHolder}
           onEditDevice={noOpPlaceHolder}
           onRemoveCritter={onRemoveCritter}

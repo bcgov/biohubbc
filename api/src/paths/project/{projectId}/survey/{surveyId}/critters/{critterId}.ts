@@ -91,6 +91,7 @@ export function removeCritterFromSurvey(): RequestHandler {
     try {
       await connection.open();
       const result = await surveyService.removeCritterFromSurvey(surveyId, critterId);
+      await connection.commit();
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'removeCritterFromSurvey', message: 'error', error });
