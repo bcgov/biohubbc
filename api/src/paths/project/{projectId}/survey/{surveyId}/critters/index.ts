@@ -60,7 +60,7 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer'
       },
       required: true
     },
@@ -179,7 +179,9 @@ export function getCrittersFromSurvey(): RequestHandler {
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
 
       // Exit early if surveyCritters list is empty
-      if (!surveyCritters.length) return res.status(200).json([]);
+      if (!surveyCritters.length) {
+        return res.status(200).json([]);
+      }
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
       const result = await critterbaseService.filterCritters(

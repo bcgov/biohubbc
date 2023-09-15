@@ -9,7 +9,18 @@ interface ICodeResponse {
   description: string;
   long_description: string;
 }
+/**
+ * Returns a set of functions for making device-related API calls.
+ *
+ * @param {AxiosInstance} axios
+ * @return {*}
+ */
 const useDeviceApi = (axios: AxiosInstance) => {
+  /**
+   * Returns a list of supported collar vendors.
+   *
+   * @return {*}  {Promise<string[]>}
+   */
   const getCollarVendors = async (): Promise<string[]> => {
     try {
       const { data } = await axios.get('/api/telemetry/vendors');
@@ -21,6 +32,13 @@ const useDeviceApi = (axios: AxiosInstance) => {
     }
     return [];
   };
+
+  /**
+   * Returns a list of code values for a given code header.
+   *
+   * @param {string} codeHeader
+   * @return {*}  {Promise<ICodeResponse[]>}
+   */
   const getCodeValues = async (codeHeader: string): Promise<ICodeResponse[]> => {
     try {
       const { data } = await axios.get(`/api/telemetry/code?codeHeader=${codeHeader}`);
@@ -38,6 +56,12 @@ const useDeviceApi = (axios: AxiosInstance) => {
     deployments: Omit<IAnimalDeployment, 'device_id'>[];
   }
 
+  /**
+   * Returns details for a given device.
+   *
+   * @param {number} deviceId
+   * @return {*}  {Promise<IGetDeviceDetailsResponse>}
+   */
   const getDeviceDetails = async (deviceId: number): Promise<IGetDeviceDetailsResponse> => {
     try {
       const { data } = await axios.get(`/api/telemetry/device/${deviceId}`);
@@ -50,6 +74,11 @@ const useDeviceApi = (axios: AxiosInstance) => {
     return { device: undefined, deployments: [] };
   };
 
+  /**
+   * Allows you to update a collar in bctw, invalidating the old record.
+   * @param {Device} body
+   * @returns {*}
+   */
   const upsertCollar = async (body: Device): Promise<any> => {
     try {
       const { data } = await axios.post(`/api/telemetry/device`, body);

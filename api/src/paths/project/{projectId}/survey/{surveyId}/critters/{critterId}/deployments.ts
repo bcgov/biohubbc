@@ -75,7 +75,7 @@ POST.apiDoc = {
               type: 'string'
             },
             device_id: {
-              type: 'number'
+              type: 'integer'
             },
             frequency: {
               type: 'number'

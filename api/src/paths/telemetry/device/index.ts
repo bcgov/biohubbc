@@ -95,7 +95,6 @@ export function upsertDevice(): RequestHandler {
     const bctwService = new BctwService(user);
     try {
       const results = await bctwService.updateDevice(req.body);
-      console.log(Object.keys(results));
       return res.status(200).json(results);
     } catch (error) {
       defaultLog.error({ label: 'upsertDevice', message: 'error', error });

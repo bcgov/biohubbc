@@ -49,7 +49,7 @@ describe('getDeploymentsInSurvey', () => {
     expect(mockGetCrittersInSurvey.calledOnce).to.be.true;
     expect(getDeploymentsByCritterId.calledOnce).to.be.true;
     expect(mockRes.json.calledWith(mockDeployments)).to.be.true;
-    expect(mockRes.status.calledWith(201)).to.be.true;
+    expect(mockRes.status.calledWith(200)).to.be.true;
   });
 
   it('catches and re-throws errors', async () => {

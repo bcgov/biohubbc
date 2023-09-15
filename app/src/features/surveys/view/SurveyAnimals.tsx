@@ -200,7 +200,7 @@ const SurveyAnimals: React.FC = () => {
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
               {`${
                 animalCount
-                  ? `${pluralize('Animal', animalCount)} reported in this survey`
+                  ? `${animalCount} ${pluralize('Animal', animalCount)} reported in this survey`
                   : `No individual animals were captured or reported in this survey`
               }`}
             </Typography>

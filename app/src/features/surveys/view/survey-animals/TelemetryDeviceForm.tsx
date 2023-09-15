@@ -30,7 +30,6 @@ const DeploymentFormSection = ({
                   name={`${index}.deployments.${i}.attachment_start`}
                   required={true}
                   label={'Attachment Start'}
-                  other={{ size: 'small' }}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -38,7 +37,6 @@ const DeploymentFormSection = ({
                   name={`${index}.deployments.${i}.attachment_end`}
                   required={true}
                   label={'Attachment End'}
-                  other={{ size: 'small' }}
                 />
               </Grid>
             </Fragment>
@@ -106,14 +104,10 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
     <>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <CustomTextField
-            label="Device ID"
-            name={`${index}.device_id`}
-            other={{ size: 'small', disabled: mode === 'edit' }}
-          />
+          <CustomTextField label="Device ID" name={`${index}.device_id`} other={{ disabled: mode === 'edit' }} />
         </Grid>
         <Grid item xs={4}>
-          <CustomTextField label="Device Frequency" name={`${index}.frequency`} other={{ size: 'small' }} />
+          <CustomTextField label="Device Frequency" name={`${index}.frequency`} />
         </Grid>
         <Grid item xs={2}>
           <TelemetrySelectField
@@ -124,7 +118,6 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
               const codeVals = await api.devices.getCodeValues('frequency_unit');
               return codeVals.map((a) => a.description);
             }}
-            controlProps={{ size: 'small' }}
           />
         </Grid>
         <Grid item xs={6}>
@@ -133,11 +126,10 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
             name={`${index}.device_make`}
             id="manufacturer"
             fetchData={api.devices.getCollarVendors}
-            controlProps={{ size: 'small' }}
           />
         </Grid>
         <Grid item xs={6}>
-          <CustomTextField label="Device Model" name={`${index}.device_model`} other={{ size: 'small' }} />
+          <CustomTextField label="Device Model" name={`${index}.device_model`} />
         </Grid>
       </Grid>
       <Box marginTop={'12px'}>

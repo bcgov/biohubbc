@@ -36,7 +36,8 @@ GET.apiDoc = {
               'field_methods',
               'ecological_seasons',
               'intended_outcomes',
-              'vantage_codes'
+              'vantage_codes',
+              'site_selection_strategies'
             ],
             properties: {
               management_action_type: {
@@ -305,6 +306,20 @@ GET.apiDoc = {
                 }
               },
               vantage_codes: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              site_selection_strategies: {
                 type: 'array',
                 items: {
                   type: 'object',
