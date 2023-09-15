@@ -1,7 +1,12 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { Critter, IAnimalDeployment, IAnimalTelemetryDevice } from 'features/surveys/view/survey-animals/animal';
+import { Critter } from 'features/surveys/view/survey-animals/animal';
+import {
+  IAnimalDeployment,
+  IAnimalTelemetryDevice,
+  IDeploymentTimespan
+} from 'features/surveys/view/survey-animals/device';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,
@@ -480,6 +485,19 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const updateDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    body: IDeploymentTimespan
+  ): Promise<number> => {
+    const { data } = await axios.patch(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
+      body
+    );
+    return data;
+  };
+
   const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
     return data;
@@ -508,7 +526,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     createCritterAndAddToSurvey,
     removeCritterFromSurvey,
     addDeployment,
-    getDeploymentsInSurvey
+    getDeploymentsInSurvey,
+    updateDeployment
   };
 };
 

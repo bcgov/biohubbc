@@ -6,15 +6,18 @@ import { KeycloakService } from './keycloak-service';
 
 export const IDeployDevice = z.object({
   device_id: z.number(),
-  frequency: z.number(),
-  manufacturer: z.string(),
-  model: z.string(),
+  frequency: z.number().optional(),
+  frequency_unit: z.string().optional(),
+  device_make: z.string().optional(),
+  device_model: z.string().optional(),
   attachment_start: z.string(),
-  attachment_end: z.string(),
+  attachment_end: z.string().nullable(),
   critter_id: z.string()
 });
 
 export type IDeployDevice = z.infer<typeof IDeployDevice>;
+
+export type IDevice = Omit<IDeployDevice, 'attachment_start' | 'attachment_end' | 'critter_id'> & { collar_id: string };
 
 export const IDeploymentUpdate = z.object({
   deployment_id: z.string(),
@@ -60,6 +63,7 @@ export type IBctwUser = z.infer<typeof IBctwUser>;
 
 export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
 export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
+export const UPSERT_DEVICE_ENDPOINT = '/upsert-collar';
 export const GET_DEPLOYMENTS_ENDPOINT = '/get-deployments';
 export const GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT = '/get-deployments-by-critter-id';
 export const GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT = '/get-deployments-by-device-id';
@@ -161,10 +165,39 @@ export class BctwService {
     return await this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
   }
 
-  async getDeviceDetails(deviceId: number): Promise<Record<string, unknown>[]> {
+  /**
+   * Update device hardware details in BCTW.
+   *
+   * @param {IDevice} device
+   * @returns {*} {IDevice}
+   * @memberof BctwService
+   */
+  async updateDevice(device: IDevice): Promise<IDevice> {
+    const { data } = await this.axiosInstance.post(UPSERT_DEVICE_ENDPOINT, device);
+    if (data.errors.length) {
+      throw Error(JSON.stringify(data.errors));
+    }
+    return data;
+  }
+
+  /**
+   * Get device hardware details by device id.
+   *
+   * @param deviceId
+   * @returns {*} {Promise<IDevice[]>}
+   * @memberof BctwService
+   */
+  async getDeviceDetails(deviceId: number): Promise<IDevice[]> {
     return await this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`);
   }
 
+  /**
+   * Get deployments by device id, may return results for multiple critters.
+   *
+   * @param {number} deviceId
+   * @returns {*} {Promise<IDeploymentRecord[]>}
+   * @memberof BctwService
+   */
   async getDeviceDeployments(deviceId: number): Promise<IDeploymentRecord[]> {
     return await this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, { device_id: String(deviceId) });
   }

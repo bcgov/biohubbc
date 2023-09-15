@@ -1,8 +1,8 @@
+import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
-import SQL from 'sql-template-strings';
 
 export const SurveyCritterRecord = z.object({
   critter_id: z.number(),
@@ -71,12 +71,34 @@ export class SurveyCritterRepository extends BaseRepository {
     return response.rowCount;
   }
 
-  async addDeployment(critterId: number, deplyomentId: string): Promise<number> {
+  /**
+   * Will insert a new critter - deployment uuid association, or update if it already exists.
+   *
+   * @param {number} critterId
+   * @param {string} deplyomentId
+   * @returns {*}
+   * @memberof SurveyCritterRepository
+   */
+  async upsertDeployment(critterId: number, deplyomentId: string): Promise<number> {
     defaultLog.debug({ label: 'addDeployment', deplyomentId });
-    const queryBuilder = getKnex()
+    const checkExists = getKnex()
       .table('deployment')
-      .insert({ critter_id: critterId, bctw_deployment_id: deplyomentId });
-    const response = await this.connection.knex(queryBuilder);
+      .where({ critter_id: critterId, bctw_deployment_id: deplyomentId })
+      .select();
+    const inserter = getKnex().table('deployment').insert({ critter_id: critterId, bctw_deployment_id: deplyomentId });
+    const updater = getKnex()
+      .table('deployment')
+      .where({ critter_id: critterId, bctw_deployment_id: deplyomentId })
+      .update({ bctw_deployment_id: deplyomentId });
+    //Maybe in the future we will do more with this update, but for now you can at least see the update fields get populated.
+
+    const exists = await this.connection.knex(checkExists);
+    let response;
+    if (exists.rowCount) {
+      response = await this.connection.knex(updater);
+    } else {
+      response = await this.connection.knex(inserter);
+    }
     return response.rowCount;
   }
 }

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Critter, IAnimal, IAnimalDeployment } from 'features/surveys/view/survey-animals/animal';
+import { Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
+import { IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
 
@@ -61,8 +62,13 @@ describe('useSurveyApi', () => {
         device_model: 'E',
         frequency: 1,
         frequency_unit: 'Hz',
-        attachment_start: '2023-01-01',
-        attachment_end: undefined,
+        deployments: [
+          {
+            deployment_id: '',
+            attachment_start: '2023-01-01',
+            attachment_end: undefined
+          }
+        ],
         critter_id: v4()
       });
 
@@ -76,16 +82,14 @@ describe('useSurveyApi', () => {
         assignment_id: v4(),
         collar_id: v4(),
         critter_id: v4(),
-        created_at: '2023-01-01',
-        created_by_user_id: v4(),
-        updated_at: undefined,
-        updated_by_user_id: undefined,
-        valid_from: undefined,
-        valid_to: undefined,
         attachment_start: '2023-01-01',
         attachment_end: '2023-01-01',
         deployment_id: v4(),
-        device_id: 123
+        device_id: 123,
+        device_make: '',
+        device_model: 'a',
+        frequency: 1,
+        frequency_unit: 'Hz'
       };
 
       mock.onGet(`/api/project/${projectId}/survey/${surveyId}/deployments`).reply(200, [response]);

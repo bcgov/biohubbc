@@ -4,7 +4,7 @@ import { CustomDataGrid } from 'components/tables/CustomDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { getFormattedDate } from 'utils/Utils';
-import { IAnimalDeployment } from './animal';
+import { IAnimalDeployment } from './device';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 
 interface ISurveyAnimalsTableEntry {

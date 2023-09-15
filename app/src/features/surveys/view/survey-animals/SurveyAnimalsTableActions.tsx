@@ -6,7 +6,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
-import { IAnimalDeployment } from './animal';
+import { IAnimalDeployment } from './device';
 
 interface IDisableItems {
   editDevice: boolean;

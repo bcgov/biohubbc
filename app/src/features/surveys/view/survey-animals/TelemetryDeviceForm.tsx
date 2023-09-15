@@ -4,17 +4,14 @@ import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import { Form, useFormikContext } from 'formik';
+import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { Fragment, useState } from 'react';
-import { IAnimalDeployment, IAnimalTelemetryDevice } from './animal';
+import moment from 'moment';
+import { Fragment, useEffect, useState } from 'react';
+import { IAnimalDeployment, IAnimalTelemetryDevice } from './device';
 
 export type TelemetryDeviceFormMode = 'add' | 'edit';
 
-// interface ITelemetryDeviceFormProps {
-//   mode: TelemetryDeviceFormMode;
-//   critter_id?: string;
-//   deployments: IAnimalDeployment[];
-// }
 const DeploymentFormSection = ({
   index,
   deployments
@@ -52,52 +49,68 @@ const DeploymentFormSection = ({
   );
 };
 
-const DeviceFormSection = ({ values, index }: { values: IAnimalTelemetryDevice[]; index: number }): JSX.Element => {
-  // const { values, setStatus } = useFormikContext<{ formValues: IAnimalTelemetryDevice[] }>();
+interface IDeviceFormSectionProps {
+  mode: TelemetryDeviceFormMode;
+  values: IAnimalTelemetryDevice[];
+  index: number;
+}
+
+const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JSX.Element => {
+  const { setStatus } = useFormikContext<{ formValues: IAnimalTelemetryDevice[] }>();
   const [bctwErrors, setBctwErrors] = useState<Record<string, string | undefined>>({});
   const api = useTelemetryApi();
 
-  // const {
-  //   data: bctwDeviceData,
-  //   load: loadDevice,
-  //   refresh
-  // } = useDataLoader(() => api.devices.getDeviceDetails(values.formValues[index].device_id));
+  const {
+    data: bctwDeviceData,
+    load: loadDevice,
+    refresh
+  } = useDataLoader(() => api.devices.getDeviceDetails(values[index].device_id));
 
-  // useEffect(() => {
-  //   loadDevice();
-  //   refresh();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [values.formValues[index].device_id]);
+  useEffect(() => {
+    loadDevice();
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values[index].device_id]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     const errors: { device_make?: string; attachment_start?: string } = {};
-    if (bctwDeviceData?.device && bctwDeviceData.device?.device_make !== values.device_make) {
-      errors.device_make = `Submitting this form would change the registered device make of device ${values.device_id}, which is disallowed.`;
+    if (bctwDeviceData?.device && bctwDeviceData.device?.device_make !== values[index].device_make) {
+      errors.device_make = `Submitting this form would change the registered device make of device ${values[index].device_id}, which is disallowed.`;
     }
 
-    const existingDeployment = bctwDeviceData?.deployments?.find(
-      (a) =>
-        (moment(values.attachment_start).isSameOrAfter(moment(a.attachment_start)) &&
-          moment(values.attachment_start).isSameOrBefore(moment(a.attachment_end))) ||
-        a.attachment_end == null
-    );
-    if (existingDeployment) {
-      errors.attachment_start = `Cannot make a deployment starting on this date, it will conflict with deployment ${
-        existingDeployment.deployment_id
-      } 
-      running from ${existingDeployment.attachment_start} until ${
-        existingDeployment.attachment_end ?? 'indefinite'
-      }.`;
+    for (const deployment of values[index].deployments ?? []) {
+      const existingDeployment = bctwDeviceData?.deployments?.find(
+        (a) =>
+          deployment.deployment_id !== a.deployment_id &&
+          moment(deployment.attachment_start).isSameOrAfter(moment(a.attachment_start)) &&
+          (moment(deployment.attachment_start).isSameOrBefore(moment(a.attachment_end)) || a.attachment_end == null)
+      ); //Check if there is already a deployment that is not the same id as this one and overlaps the time we are trying to upload.
+      if (existingDeployment) {
+        console.log(
+          `Existing: ${JSON.stringify(existingDeployment, null, 2)}, Form: ${JSON.stringify(deployment, null, 2)}`
+        );
+        errors.attachment_start = `Cannot make a deployment starting on this date, it will conflict with deployment ${
+          existingDeployment.deployment_id
+        } 
+        running from ${existingDeployment.attachment_start} until ${
+          existingDeployment.attachment_end ?? 'indefinite'
+        }.`;
+      }
     }
+
     setBctwErrors(errors);
     setStatus({ forceDisable: Object.entries(errors).length > 0 });
-  }, [bctwDeviceData, setStatus, values]);*/
+  }, [bctwDeviceData, index, setStatus, values]);
 
   return (
     <>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <CustomTextField label="Device ID" name={`${index}.device_id`} other={{ size: 'small' }} />
+          <CustomTextField
+            label="Device ID"
+            name={`${index}.device_id`}
+            other={{ size: 'small', disabled: mode === 'edit' }}
+          />
         </Grid>
         <Grid item xs={4}>
           <CustomTextField label="Device Frequency" name={`${index}.frequency`} other={{ size: 'small' }} />
@@ -148,7 +161,11 @@ const DeviceFormSection = ({ values, index }: { values: IAnimalTelemetryDevice[]
   );
 };
 
-const TelemetryDeviceForm = () => {
+interface ITelemetryDeviceFormProps {
+  mode: TelemetryDeviceFormMode;
+}
+
+const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
   const { values } = useFormikContext<IAnimalTelemetryDevice[]>();
 
   return (
@@ -159,12 +176,11 @@ const TelemetryDeviceForm = () => {
             <Typography marginLeft={'12px'} marginBottom={'12px'}>
               Device Metadata
             </Typography>
-            <DeviceFormSection values={values} key={`device-form-section-${i}`} index={i} />
+            <DeviceFormSection mode={mode} values={values} key={`device-form-section-${i}`} index={i} />
             <Divider sx={{ mt: '24px' }} />
           </Box>
         ))}
       </>
-      <pre>{JSON.stringify(values, null, 2)}</pre>
     </Form>
   );
 };

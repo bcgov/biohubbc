@@ -10,15 +10,12 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { isEqual as _isEqual } from 'lodash-es';
 import React, { useContext, useState } from 'react';
+import { datesSameNullable } from 'utils/Utils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import {
-  AnimalSchema,
-  AnimalTelemetryDeviceSchema,
-  Critter,
-  IAnimal,
-  IAnimalTelemetryDevice
-} from './survey-animals/animal';
+import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
+import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
 import TelemetryDeviceForm, { TelemetryDeviceFormMode } from './survey-animals/TelemetryDeviceForm';
@@ -65,6 +62,17 @@ const SurveyAnimals: React.FC = () => {
   const pluralize = (str: string, count: number) =>
     count > 1 || count === 0 ? `${count} ${str}'s` : `${count} ${str}`;
 
+  const setPopup = (message: string) => {
+    dialogContext.setSnackbar({
+      open: true,
+      snackbarMessage: (
+        <Typography variant="body2" component="div">
+          {message}
+        </Typography>
+      )
+    });
+  };
+
   const AnimalFormValues: IAnimal = {
     general: { taxon_id: '', taxon_name: '', animal_id: '' },
     captures: [],
@@ -99,10 +107,10 @@ const SurveyAnimals: React.FC = () => {
         const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId);
         if (deployments) {
           //Any suggestions on something better than this reduce is welcome.
-          //Idea is to transform flat rows of {device_id, ... , attachment_end, attachment_start}
-          //to {device_id, ..., deployments: [{deployments, attachment_start, attachment_end}]}
+          //Idea is to transform flat rows of {device_id, ..., deployment_id, attachment_end, attachment_start}
+          //to {device_id, ..., deployments: [{deployment_id, attachment_start, attachment_end}]}
           const red = deployments.reduce((acc, curr) => {
-            const currObj = acc.find((a) => a.device_id === curr.device_id);
+            const currObj = acc.find((a: any) => a.device_id === curr.device_id);
             const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
             const deployment = { deployment_id, attachment_start, attachment_end };
             if (!currObj) {
@@ -142,24 +150,39 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
-  const handleTelemetrySave = async (survey_critter_id: number, data: any) => {
+  const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDevice[]) => {
     const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
-    const critterTelemetryDevice = { ...data, critter_id: critter?.critter_id ?? '' };
+    const critterTelemetryDevice = { ...data[0], critter_id: critter?.critter_id ?? '' };
     if (telemetryFormMode === 'add') {
       try {
         await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
+        setPopup(`Successfully added deployment.`);
       } catch (e) {
-        dialogContext.setSnackbar({
-          open: true,
-          snackbarMessage: (
-            <Typography variant="body2" component="div">
-              {`Could not add deployment.`}
-            </Typography>
-          )
-        });
+        setPopup(`Failed to add deployment.`);
       }
     } else if (telemetryFormMode === 'edit') {
-      console.log('Not implemented.');
+      try {
+        //Better to do a high level try catch or try catch calls individually? Not sure.
+        for (const formValues of data) {
+          const existingDevice = deploymentData?.find((a) => a.device_id === formValues.device_id);
+          const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
+          if (existingDevice && !_isEqual(new Device(existingDevice), formDevice)) {
+            await telemetryApi.devices.upsertCollar(formDevice);
+          }
+          for (const formDeployment of formValues.deployments ?? []) {
+            const existingDeployment = deploymentData?.find((a) => a.deployment_id === formDeployment.deployment_id);
+            if (
+              !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
+              !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
+            ) {
+              await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
+            }
+          }
+        }
+        setPopup(`Updated deployment and device data successfully.`);
+      } catch (e) {
+        setPopup(`Failed to finish editing device and deployment data.`);
+      }
     }
 
     setOpenDeviceDialog(false);
@@ -198,7 +221,7 @@ const SurveyAnimals: React.FC = () => {
         dialogTitle={telemetryFormMode === 'add' ? 'Add Telemetry Device' : 'Edit Telemetry Devices'}
         open={openDeviceDialog}
         component={{
-          element: <TelemetryDeviceForm />,
+          element: <TelemetryDeviceForm mode={telemetryFormMode} />,
           initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
           validationSchema: AnimalTelemetryDeviceSchema
         }}

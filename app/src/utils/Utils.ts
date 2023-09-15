@@ -309,3 +309,11 @@ export const formatLabel = (str: string): string => {
     .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
     .join(' ');
 };
+
+export const datesSameNullable = (date1: string | undefined, date2: string | undefined): boolean => {
+  if (date1 == null && date2 == null) {
+    return true;
+  } else {
+    return moment(date1).isSame(moment(date2));
+  }
+};

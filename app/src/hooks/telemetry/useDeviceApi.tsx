@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/animal';
+import { Device, IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
 
 interface ICodeResponse {
   code_header_title: string;
@@ -50,9 +50,9 @@ const useDeviceApi = (axios: AxiosInstance) => {
     return { device: undefined, deployments: [] };
   };
 
-  const upsertCollar = async (body: any): Promise<any> => {
+  const upsertCollar = async (body: Device): Promise<any> => {
     try {
-      const { data } = await axios.post(`/api/telemetry/collar`, body);
+      const { data } = await axios.post(`/api/telemetry/device`, body);
       return data;
     } catch (e) {
       if (e instanceof Error) {
@@ -65,7 +65,8 @@ const useDeviceApi = (axios: AxiosInstance) => {
   return {
     getDeviceDetails,
     getCollarVendors,
-    getCodeValues
+    getCodeValues,
+    upsertCollar
   };
 };
 

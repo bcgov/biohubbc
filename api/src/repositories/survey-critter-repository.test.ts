@@ -46,7 +46,7 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyCritterRepository(dbConnection);
 
-      const response = await repository.removeCritterFromSurvey(1, 1);
+      const response = await repository.removeCritterFromSurvey(1);
 
       expect(response).to.eql(1);
     });
@@ -59,7 +59,7 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyCritterRepository(dbConnection);
 
-      const response = await repository.addDeployment(1, 'deployment_id');
+      const response = await repository.upsertDeployment(1, 'deployment_id');
 
       expect(response).to.eql(1);
     });

@@ -102,8 +102,8 @@ describe('BctwService', () => {
     const mockDevice: IDeployDevice = {
       device_id: 1,
       frequency: 100,
-      manufacturer: 'Lotek',
-      model: 'model',
+      device_make: 'Lotek',
+      device_model: 'model',
       attachment_start: '2020-01-01',
       attachment_end: '2020-01-02',
       critter_id: 'abc123'
