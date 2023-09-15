@@ -139,6 +139,14 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
         <Grid item xs={6}>
           <CustomTextField label="Device Model" name={`${index}.device_model`} other={{ size: 'small' }} />
         </Grid>
+      </Grid>
+      <Box marginTop={'12px'}>
+        <Paper sx={{ padding: '12px' }}>
+          <Typography marginLeft={'6px'} marginBottom={'12px'}>
+            Deployments
+          </Typography>
+          {<DeploymentFormSection index={index} deployments={values[index].deployments ?? []} />}
+        </Paper>
         {Object.entries(bctwErrors).length > 0 && (
           <Grid item xs={12}>
             {Object.values(bctwErrors).map((a, i) => (
@@ -148,14 +156,6 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
             ))}
           </Grid>
         )}
-      </Grid>
-      <Box marginTop={'12px'}>
-        <Paper sx={{ padding: '12px' }}>
-          <Typography marginLeft={'6px'} marginBottom={'12px'}>
-            Deployments
-          </Typography>
-          {<DeploymentFormSection index={index} deployments={values[index].deployments ?? []} />}
-        </Paper>
       </Box>
     </>
   );
