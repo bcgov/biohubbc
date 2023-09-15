@@ -2,11 +2,14 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MapBoundary from 'components/boundary/MapBoundary';
 import { useFormikContext } from 'formik';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const SurveySamplingSiteImportForm = () => {
   const formikProps = useFormikContext<any>();
   const [features, setFeatures] = useState<any[]>([]);
+  useEffect(() => {
+    setFeatures([]);
+  }, []);
   return (
     <>
       <Box component="fieldset">

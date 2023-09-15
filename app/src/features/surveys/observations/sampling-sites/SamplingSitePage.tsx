@@ -10,6 +10,7 @@ import { makeStyles } from '@mui/styles';
 import { Container } from '@mui/system';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
+import SamplingSiteMethodForm from 'features/surveys/components/SamplingSiteMethodForm';
 import SamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { Formik, FormikProps } from 'formik';
 import { useContext, useRef, useState } from 'react';
@@ -99,7 +100,7 @@ const SamplingSitePage = () => {
               <HorizontalSplitFormComponent
                 title="Sampling Methods"
                 summary="Specify sampling methods used to collect data at each sampling site."
-                component={<>Specify Sampling Methods</>}></HorizontalSplitFormComponent>
+                component={<SamplingSiteMethodForm />}></HorizontalSplitFormComponent>
 
               <Divider className={classes.sectionDivider} />
 
