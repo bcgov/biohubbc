@@ -142,11 +142,13 @@ const SurveyUserForm: React.FC<ISurveyUser> = (props) => {
           sx={{
             maxWidth: '72ch'
           }}>
-          Add people and their associated job for this survey.
+          Add particpants to this survey and assign each a role.
         </Typography>
       </Box>
       {errors?.['participants'] && selectedUsers.length > 0 && (
-        <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+        <Box mt={3}>
+          <AlertBar severity="error" variant="standard" title={alertBarText().title} text={alertBarText().text} />
+        </Box>
       )}
       <Box mt={3}>
         <Autocomplete

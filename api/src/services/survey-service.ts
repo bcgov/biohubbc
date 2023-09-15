@@ -20,6 +20,7 @@ import {
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PublishStatus } from '../repositories/history-publish-repository';
+import { PostSurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -35,6 +36,8 @@ import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { RegionService } from './region-service';
+import { SiteSelectionStrategyService } from './site-selection-strategy-service';
+import { SurveyBlockService } from './survey-block-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -53,6 +56,7 @@ export class SurveyService extends DBService {
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
   fundingSourceService: FundingSourceService;
+  siteSelectionStrategyService: SiteSelectionStrategyService;
   surveyParticipationService: SurveyParticipationService;
 
   constructor(connection: IDBConnection) {
@@ -63,6 +67,7 @@ export class SurveyService extends DBService {
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
     this.fundingSourceService = new FundingSourceService(connection);
+    this.siteSelectionStrategyService = new SiteSelectionStrategyService(connection);
     this.surveyParticipationService = new SurveyParticipationService(connection);
   }
 
@@ -94,8 +99,15 @@ export class SurveyService extends DBService {
       purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
       proprietor: await this.getSurveyProprietorDataForView(surveyId),
       location: await this.getSurveyLocationData(surveyId),
-      participants: await this.surveyParticipationService.getSurveyParticipants(surveyId)
+      site_selection: await this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
+      participants: await this.surveyParticipationService.getSurveyParticipants(surveyId),
+      blocks: await this.getSurveyBlocksForSurveyId(surveyId)
     };
+  }
+
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
+    const service = new SurveyBlockService(this.connection);
+    return service.getSurveyBlocksForSurveyId(surveyId);
   }
 
   async getSurveyPartnershipsData(surveyId: number): Promise<ISurveyPartnerships> {
@@ -445,9 +457,45 @@ export class SurveyService extends DBService {
       promises.push(this.insertRegion(surveyId, postSurveyData.location.geometry));
     }
 
+    // Handle site selection strategies
+
+    if (postSurveyData.site_selection.strategies.length > 0) {
+      promises.push(
+        this.siteSelectionStrategyService.insertSurveySiteSelectionStrategies(
+          surveyId,
+          postSurveyData.site_selection.strategies
+        )
+      );
+    }
+
+    // Handle stratums
+    if (postSurveyData.site_selection.stratums.length > 0) {
+      promises.push(
+        this.siteSelectionStrategyService.insertSurveyStratums(surveyId, postSurveyData.site_selection.stratums)
+      );
+    }
+
+    // Handle blocks
+    if (postSurveyData.blocks) {
+      promises.push(this.upsertBlocks(surveyId, postSurveyData.blocks));
+    }
+
     await Promise.all(promises);
 
     return surveyId;
+  }
+
+  /**
+   * Insert, updates and deletes Survey Blocks for a given survey id
+   *
+   * @param {number} surveyId
+   * @param {SurveyBlock[]} blocks
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
+  async upsertBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
+    const service = new SurveyBlockService(this.connection);
+    return service.upsertSurveyBlocks(surveyId, blocks);
   }
 
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {
@@ -652,6 +700,31 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.participants.length) {
       promises.push(this.upsertSurveyParticipantData(surveyId, putSurveyData));
+    }
+
+    // Handle site selection strategies
+    if (putSurveyData?.site_selection?.strategies) {
+      promises.push(
+        this.siteSelectionStrategyService.replaceSurveySiteSelectionStrategies(
+          surveyId,
+          putSurveyData.site_selection.strategies
+        )
+      );
+    }
+
+    // Handle stratums
+    if (putSurveyData?.site_selection?.stratums) {
+      promises.push(
+        this.siteSelectionStrategyService.replaceSurveySiteSelectionStratums(
+          surveyId,
+          putSurveyData.site_selection.stratums
+        )
+      );
+    }
+
+    // Handle blocks
+    if (putSurveyData?.blocks) {
+      promises.push(this.upsertBlocks(surveyId, putSurveyData.blocks));
     }
 
     await Promise.all(promises);
