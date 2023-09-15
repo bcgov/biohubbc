@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
+import { critterCreateRequestObject } from '../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../services/critterbase-service';
 import { getLogger } from '../../../utils/logger';
@@ -38,76 +39,7 @@ POST.apiDoc = {
     description: 'Critterbase bulk creation request object',
     content: {
       'application/json': {
-        schema: {
-          title: 'Bulk post request object',
-          type: 'object',
-          properties: {
-            critters: {
-              title: 'critters',
-              type: 'array',
-              items: {
-                title: 'critter',
-                type: 'object'
-              }
-            },
-            captures: {
-              title: 'captures',
-              type: 'array',
-              items: {
-                title: 'capture',
-                type: 'object'
-              }
-            },
-            collections: {
-              title: 'collection units',
-              type: 'array',
-              items: {
-                title: 'collection unit',
-                type: 'object'
-              }
-            },
-            markings: {
-              title: 'markings',
-              type: 'array',
-              items: {
-                title: 'marking',
-                type: 'object'
-              }
-            },
-            locations: {
-              title: 'locations',
-              type: 'array',
-              items: {
-                title: 'location',
-                type: 'object'
-              }
-            },
-            mortalities: {
-              title: 'locations',
-              type: 'array',
-              items: {
-                title: 'location',
-                type: 'object'
-              }
-            },
-            qualitative_measurements: {
-              title: 'qualitative measurements',
-              type: 'array',
-              items: {
-                title: 'qualitative measurement',
-                type: 'object'
-              }
-            },
-            quantitative_measurements: {
-              title: 'quantitative measurements',
-              type: 'array',
-              items: {
-                title: 'quantitative measurement',
-                type: 'object'
-              }
-            }
-          }
-        }
+        schema: critterCreateRequestObject
       }
     }
   },

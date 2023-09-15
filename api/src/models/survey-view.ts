@@ -1,6 +1,8 @@
 import { Feature } from 'geojson';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
+import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
+import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 
 export type SurveyObject = {
@@ -13,6 +15,8 @@ export type SurveyObject = {
   location: GetSurveyLocationData;
   participants: SurveyUser[];
   partnerships: ISurveyPartnerships;
+  site_selection: SiteSelectionData;
+  blocks: SurveyBlockRecord[];
 };
 
 export interface ISurveyPartnerships {
@@ -39,8 +43,8 @@ export class GetSurveyData {
     this.project_id = obj?.project_id || null;
     this.uuid = obj?.uuid || null;
     this.survey_name = obj?.name || '';
-    this.start_date = obj?.start_date || null;
-    this.end_date = obj?.end_date || null;
+    this.start_date = String(obj?.start_date) || '';
+    this.end_date = String(obj?.end_date) || '';
     this.geometry = (obj?.geojson?.length && obj.geojson) || [];
     this.biologist_first_name = obj?.lead_first_name || '';
     this.biologist_last_name = obj?.lead_last_name || '';
