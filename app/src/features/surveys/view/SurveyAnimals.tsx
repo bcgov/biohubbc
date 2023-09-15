@@ -152,6 +152,7 @@ const SurveyAnimals: React.FC = () => {
       <EditDialog
         dialogTitle={'Add Telemetry Device'}
         open={openAddDeviceDialog}
+        dialogSaveButtonLabel="Add Device"
         component={{
           element: <TelemetryDeviceForm />,
           initialValues: DeviceFormValues,
@@ -178,8 +179,8 @@ const SurveyAnimals: React.FC = () => {
           <SurveyAnimalsTable
             animalData={critterData}
             deviceData={deploymentData}
-            onRemoveCritter={(critter_id) => {
-              bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
+            onRemoveCritter={async (critter_id) => {
+              await bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
               refreshCritters();
             }}
             onAddDevice={(critter_id) => {
