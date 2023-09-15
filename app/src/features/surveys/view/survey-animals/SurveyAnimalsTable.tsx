@@ -94,10 +94,6 @@ export const SurveyAnimalsTable = ({
         <SurveyAnimalsTableActions
           critter_id={params.row.survey_critter_id}
           devices={params.row?.deployments}
-          disabledFields={{
-            editDevice: !params.row.deployments?.length,
-            removeDevice: !params.row.deployments?.length
-          }}
           onMenuOpen={onMenuOpen}
           onAddDevice={onAddDevice}
           onRemoveDevice={noOpPlaceHolder}

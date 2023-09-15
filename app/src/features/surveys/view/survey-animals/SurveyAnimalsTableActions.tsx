@@ -8,15 +8,9 @@ import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
 import { IAnimalDeployment } from './device';
 
-interface IDisableItems {
-  editDevice: boolean;
-  removeDevice: boolean;
-}
-
 export interface ITableActionsMenuProps {
   critter_id: number;
   devices?: IAnimalDeployment[];
-  disabledFields?: IDisableItems;
   onMenuOpen: (critter_id: number) => void;
   onAddDevice: (critter_id: number) => void;
   onRemoveDevice: (critter_id: number) => void;
@@ -70,20 +64,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           </ListItemIcon>
           <Typography variant="inherit">Add Telemetry Device</Typography>
         </MenuItem>
-        {!props.disabledFields?.removeDevice && (
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              props.onRemoveDevice(props.critter_id);
-            }}
-            data-testid="animal-table-row-remove-device">
-            <ListItemIcon>
-              <Icon path={mdiTrashCanOutline} size={1} />
-            </ListItemIcon>
-            <Typography variant="inherit">Remove Telemetry Device</Typography>
-          </MenuItem>
-        )}
-        {!props.disabledFields?.editDevice && (
+        {props.devices?.length ? (
           <MenuItem
             onClick={() => {
               handleClose();
@@ -95,8 +76,12 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             </ListItemIcon>
             <Typography variant="inherit">Edit Deployment Timespan</Typography>
           </MenuItem>
+        ) : (
+          <></>
         )}
-        <MenuItem
+        {
+          //To be implemented in another ticket
+          /*<MenuItem
           onClick={() => {
             handleClose();
             props.onEditCritter(props.critter_id);
@@ -106,18 +91,21 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
           <Typography variant="inherit">Edit Critter Details</Typography>
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            props.onRemoveCritter(props.critter_id);
-          }}
-          data-testid="animal-table-row-remove-critter">
-          <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </ListItemIcon>
-          <Typography variant="inherit">Remove Critter From Survey</Typography>
-        </MenuItem>
+        </MenuItem>*/
+        }
+        {!props.devices?.length && (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              props.onRemoveCritter(props.critter_id);
+            }}
+            data-testid="animal-table-row-remove-critter">
+            <ListItemIcon>
+              <Icon path={mdiTrashCanOutline} size={1} />
+            </ListItemIcon>
+            <Typography variant="inherit">Remove Critter From Survey</Typography>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );
