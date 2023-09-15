@@ -4,6 +4,7 @@ import { Theme } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import { makeStyles } from "@mui/styles";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { pluralize as p } from "utils/Utils";
 
 export interface IObservationRecord {
   observation_id: number;
@@ -180,8 +181,8 @@ const ObservationsTable = (props: IObservationsTableProps) => {
         noRowsLabel: "No Records",
         footerRowSelected: (numSelected: number) => {
           return [
-            numSelected > 0 && `${numSelected} rows selected`,
-            numModified > 0 && `${numModified} unsaved changes`
+            numSelected > 0 && `${numSelected} ${p(numSelected, 'row')} selected`,
+            numModified > 0 && `${numModified} unsaved ${p(numModified, 'row')}`
           ].filter(Boolean).join(', ')
         }
       }}
