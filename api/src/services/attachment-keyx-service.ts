@@ -26,6 +26,7 @@ export class AttachmentKeyxService extends DBService {
 
   /**
    * Processes keyx records.
+   * TODO: This can likely be made much more efficient.
    *
    * @param {IBctwUser} user
    * @return {*}  {Promise<void>}

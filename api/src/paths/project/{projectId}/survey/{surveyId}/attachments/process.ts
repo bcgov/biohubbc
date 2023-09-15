@@ -7,7 +7,9 @@ import { AttachmentKeyxService } from '../../../../../../services/attachment-key
 import { IBctwUser } from '../../../../../../services/bctw-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/list');
+// TODO: It may make more sense to move this to the /telemetry endpoint.
+
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/process');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
