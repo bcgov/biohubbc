@@ -42,7 +42,7 @@ export const SamplingSiteList = () => {
           }}
           variant="contained"
           color="primary"
-          action={() => {
+          onClick={() => {
             history.push('sampling');
           }}
           startIcon={<Icon path={mdiPlus} size={1} />}>

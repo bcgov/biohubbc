@@ -10,7 +10,10 @@ import { makeStyles } from '@mui/styles';
 import { Container } from '@mui/system';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
-import { useContext } from 'react';
+import SamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
+import { Formik, FormikProps } from 'formik';
+import { useContext, useRef, useState } from 'react';
+import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -29,13 +32,19 @@ const useStyles = makeStyles((theme: Theme) => ({
 const SamplingSitePage = () => {
   const classes = useStyles();
   const surveyContext = useContext(SurveyContext);
+  const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  const samplingSiteYupSchema = yup.object({
+    sites: yup.array(yup.object({}))
+  });
+
   return (
     <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
+      {/* HEADER FOR SITE SAMPLING */}
       <>
         <Paper
           square
@@ -72,39 +81,47 @@ const SamplingSitePage = () => {
       </>
       <Box display="flex" flex="1 1 auto">
         <Container maxWidth="xl">
-          <Box p={5} component={Paper} display="block">
-            <HorizontalSplitFormComponent
-              title="Site Boundaries"
-              summary="Drag files here or Browse Files Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem"
-              component={<>What happened?</>}></HorizontalSplitFormComponent>
+          <Formik
+            innerRef={formikRef}
+            initialValues={{ sites: [] }}
+            validationSchema={samplingSiteYupSchema}
+            validateOnBlur={true}
+            validateOnChange={false}
+            onSubmit={() => console.log('SUBMIT ME PLEASE')}>
+            <Box p={5} component={Paper} display="block">
+              <HorizontalSplitFormComponent
+                title="Site Boundaries"
+                summary="Drag files here or Browse Files Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem"
+                component={<SamplingSiteImportForm />}></HorizontalSplitFormComponent>
 
-            <Divider className={classes.sectionDivider} />
+              <Divider className={classes.sectionDivider} />
 
-            <HorizontalSplitFormComponent
-              title="Sampling Methods"
-              summary="Specify sampling methods used to collect data at each sampling site."
-              component={<>Specify Sampling Methods</>}></HorizontalSplitFormComponent>
+              <HorizontalSplitFormComponent
+                title="Sampling Methods"
+                summary="Specify sampling methods used to collect data at each sampling site."
+                component={<>Specify Sampling Methods</>}></HorizontalSplitFormComponent>
 
-            <Divider className={classes.sectionDivider} />
+              <Divider className={classes.sectionDivider} />
 
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                onClick={() => console.log('Submit Form')}
-                className={classes.actionButton}>
-                Save and Exit
-              </Button>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => console.log('Cancel Button')}
-                className={classes.actionButton}>
-                Cancel
-              </Button>
+              <Box display="flex" justifyContent="flex-end">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => console.log('Submit Form')}
+                  className={classes.actionButton}>
+                  Save and Exit
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => console.log('Cancel Button')}
+                  className={classes.actionButton}>
+                  Cancel
+                </Button>
+              </Box>
             </Box>
-          </Box>
+          </Formik>
         </Container>
       </Box>
     </Box>
