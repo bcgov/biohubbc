@@ -109,7 +109,6 @@ export function processAttachments(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'processAttachments', message: 'error', error });
       await connection.rollback();
-      throw error;
     } finally {
       connection.release();
     }

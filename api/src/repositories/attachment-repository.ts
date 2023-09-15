@@ -1261,6 +1261,12 @@ export class AttachmentRepository extends BaseRepository {
    */
   async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
+      WITH deleted_keyx AS (
+        DELETE
+          from survey_attachment_keyx
+        WHERE
+          survey_attachment_id = ${attachmentId}
+      )
       DELETE
         from survey_attachment
       WHERE
@@ -1571,16 +1577,15 @@ export class AttachmentRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT 
         survey_attachment.survey_attachment_id,
-        survey_attachment.key,
-        s 
+        survey_attachment.key
       FROM 
         survey_attachment 
-      LEFT JOIN 
+      INNER JOIN 
         survey_attachment_keyx 
       ON 
-        survey_attachment.key = survey_attachment_keyx.key 
+        survey_attachment.survey_attachment_id = survey_attachment_keyx.survey_attachment_id 
       WHERE 
-        survey_attachment_keyx.key IS NULL`;
+        survey_attachment_keyx.processed_at IS NULL`;
 
     const response = await this.connection.sql(sqlStatement);
 

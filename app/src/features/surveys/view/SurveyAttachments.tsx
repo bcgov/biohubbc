@@ -64,6 +64,7 @@ const SurveyAttachments: React.FC = () => {
         onClose={() => {
           setOpenUploadAttachments(false);
           surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+          biohubApi.survey.processSurveyAttachments(projectId, surveyId);
         }}
         uploadHandler={getUploadHandler()}
       />

@@ -218,6 +218,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Trigger processing of survey attachments
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}
+   */
+  const processSurveyAttachments = async (projectId: number, surveyId: number) => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/process`);
+    return data;
+  };
+
+  /**
    * Delete survey attachment based on survey and attachment ID
    *
    * @param {number} projectId
@@ -532,7 +544,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     createCritterAndAddToSurvey,
     removeCritterFromSurvey,
     addDeployment,
-    getDeploymentsInSurvey
+    getDeploymentsInSurvey,
+    processSurveyAttachments
   };
 };
 

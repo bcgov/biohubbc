@@ -144,10 +144,11 @@ export function uploadMedia(): RequestHandler {
 
       // Check for keyx files in the raw media
       const keyxArray = [];
+      const ZIP = ['application/zip', 'application/x-zip-compressed', 'application/zip-compressed'];
 
-      if (rawMediaFile.filename.endsWith('.keyx')) {
+      if (rawMediaFile?.originalname.endsWith('.keyx')) {
         keyxArray.push(rawMediaFile);
-      } else if (rawMediaFile.mimetype === 'application/zip') {
+      } else if (ZIP.includes(rawMediaFile?.mimetype)) {
         const zip = new AdmZip(rawMediaFile.buffer);
         const zipEntries = zip.getEntries();
         for (const zipEntry of zipEntries) {

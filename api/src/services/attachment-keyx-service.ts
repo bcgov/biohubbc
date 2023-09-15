@@ -36,7 +36,6 @@ export class AttachmentKeyxService extends DBService {
 
     // get list of unprocessed records
     const records = await this.attachmentRepository.getSurveyKeyxAttachmentsToProcess();
-
     // get files from s3
     for (const record of records) {
       const file = await getFileFromS3(record.key);
