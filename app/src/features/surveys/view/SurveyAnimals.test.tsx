@@ -1,11 +1,14 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import SurveyAnimals from './SurveyAnimals';
 
 jest.mock('../../../hooks/useBioHubApi');
+jest.mock('../../../hooks/useTelemetryApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
+const mockTelemetryApi = useTelemetryApi as jest.Mock;
 
-const mockUseApi = {
+const mockUseBiohub = {
   survey: {
     getSurveyCritters: jest.fn(),
     getDeploymentsInSurvey: jest.fn(),
@@ -14,13 +17,22 @@ const mockUseApi = {
   }
 };
 
+const mockUseTelemetry = {
+  devices: {
+    getDeviceDetails: jest.fn()
+  }
+};
+
 describe('SurveyAnimals', () => {
   beforeEach(() => {
-    mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.survey.getDeploymentsInSurvey.mockClear();
-    mockUseApi.survey.getSurveyCritters.mockClear();
-    mockUseApi.survey.createCritterAndAddToSurvey.mockClear();
-    mockUseApi.survey.addDeployment.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseBiohub);
+    mockUseBiohub.survey.getDeploymentsInSurvey.mockClear();
+    mockUseBiohub.survey.getSurveyCritters.mockClear();
+    mockUseBiohub.survey.createCritterAndAddToSurvey.mockClear();
+    mockUseBiohub.survey.addDeployment.mockClear();
+
+    mockTelemetryApi.mockImplementation(() => mockUseTelemetry);
+    mockUseTelemetry.devices.getDeviceDetails.mockClear();
   });
 
   afterEach(() => {
@@ -36,7 +48,7 @@ describe('SurveyAnimals', () => {
   });
 
   it('renders correctly with animals', async () => {
-    mockUseApi.survey.getSurveyCritters.mockResolvedValueOnce([{ critter_id: 'abc', survey_critter_id: 1 }]);
+    mockUseBiohub.survey.getSurveyCritters.mockResolvedValueOnce([{ critter_id: 'abc', survey_critter_id: 1 }]);
 
     const { getByText } = render(<SurveyAnimals />);
 

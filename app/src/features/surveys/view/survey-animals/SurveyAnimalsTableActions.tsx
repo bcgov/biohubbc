@@ -76,9 +76,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             </ListItemIcon>
             <Typography variant="inherit">Edit Deployment Timespan</Typography>
           </MenuItem>
-        ) : (
-          <></>
-        )}
+        ) : null}
         {
           //To be implemented in another ticket
           /*<MenuItem
