@@ -20,7 +20,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import ObservationsTable from './ObservationsTable';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { ObservationsContext } from 'contexts/observationsContext';
 
 export default function RenderHeaderGrid() {

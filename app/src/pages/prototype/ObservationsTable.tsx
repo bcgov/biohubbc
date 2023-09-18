@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPlus } from "@mdi/js";
+import { mdiDotsVertical } from "@mdi/js";
 import Icon from "@mdi/react";
 import { Theme } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
@@ -119,7 +119,7 @@ export const observationColumns: GridColDef<IObservationTableRow>[] = [
 const ObservationsTable = (props: IObservationsTableProps) => {
   const classes = useStyles();
   
-  const { _rows } = useContext(ObservationsContext);
+  const { _rows, _setRowModesModel } = useContext(ObservationsContext);
 
   
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
@@ -134,6 +134,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       processRowUpdate={(newRow, oldRow) => ({ ...newRow, _isModified: true })}
       columns={observationColumns}
       rows={_rows}
+      onRowModesModelChange={_setRowModesModel}
       localeText={{
         noRowsLabel: "No Records",
         footerRowSelected: (numSelected: number) => {

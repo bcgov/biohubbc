@@ -1,6 +1,6 @@
 import { GridRowModes, GridRowModesModel } from '@mui/x-data-grid';
 import useDataLoader from 'hooks/useDataLoader';
-import { createContext, PropsWithChildren, useState } from 'react';
+import { createContext, Dispatch, PropsWithChildren, SetStateAction, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface IObservationRecord {
@@ -59,10 +59,8 @@ export type IObservationsContext = {
   createNewRecord: () => void;
   _rows: IObservationTableRow[]
   _rowModesModel: GridRowModesModel;
-  _setRows: any // (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
-  _setRowModesModel: (
-    newModel: (oldModel: GridRowModesModel) => GridRowModesModel,
-  ) => void;
+  _setRows: Dispatch<SetStateAction<IObservationTableRow[]>> // (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
+  _setRowModesModel: Dispatch<SetStateAction<GridRowModesModel>>
 }
 
 export const ObservationsContext = createContext<IObservationsContext>({
@@ -80,6 +78,17 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   const observationsDataLoader = useDataLoader(fetchObservationDemoRows);
   observationsDataLoader.load()
+
+  useEffect(() => {
+    if (observationsDataLoader.data) {
+      const rows: IObservationTableRow[] = observationsDataLoader.data.map((row) => ({
+        ...row,
+        id: String(row.observation_id),
+        _isModified: false
+      }));
+      _setRows(rows);
+    }
+  }, [observationsDataLoader.data])
 
   const createNewRecord = () => {
     const id = uuidv4();
