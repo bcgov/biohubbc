@@ -1,6 +1,6 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Divider, MenuItem, Select, Typography } from '@mui/material';
+import { MenuItem, Select, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -32,7 +32,7 @@ const MethodForm = () => {
       ? formikProps.values.periods
       : [{ sample_method_id: null, start_date: '', end_date: '' }]
   );
-  console.log(formikProps.values);
+
   return (
     <form>
       <Box component={'fieldset'} mb={3}>
@@ -53,8 +53,6 @@ const MethodForm = () => {
           other={{ multiline: true, placeholder: 'Maximum 250 characters', required: true, rows: 3 }}
         />
       </Box>
-
-      {/* {currentPeriods.map((item) => {})} */}
 
       <Box component={'fieldset'}>
         <Typography component="legend">Add Time Periods</Typography>
@@ -82,11 +80,11 @@ const MethodForm = () => {
         title="Add Period"
         aria-label="Create Sample Period"
         startIcon={<Icon path={mdiPlus} size={1} />}
-        onClick={() => setCurrentPeriods([])}>
+        onClick={() =>
+          setCurrentPeriods([...currentPeriods, { sample_method_id: null, start_date: '', end_date: '' }])
+        }>
         Add Period
       </Button>
-
-      <Divider sx={{ mt: 3 }}></Divider>
     </form>
   );
 };
