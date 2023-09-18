@@ -9,7 +9,7 @@ import { getLogger } from '../../../../../../utils/logger';
 
 // TODO: It may make more sense to move this to the /telemetry endpoint.
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/process');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/process-keyx');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -31,7 +31,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  processAttachments()
+  processKeyxAttachments()
 ];
 
 POST.apiDoc = {
@@ -67,7 +67,7 @@ POST.apiDoc = {
       description: 'Survey process attachments response.',
       content: {
         'application/json': {
-          schema: {}
+          schema: { type: 'object', properties: {} }
         }
       }
     },
@@ -89,7 +89,7 @@ POST.apiDoc = {
   }
 };
 
-export function processAttachments(): RequestHandler {
+export function processKeyxAttachments(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Process attachments', message: 'params', req_params: req.params });
 
@@ -109,7 +109,7 @@ export function processAttachments(): RequestHandler {
 
       return res.status(200).json({});
     } catch (error) {
-      defaultLog.error({ label: 'processAttachments', message: 'error', error });
+      defaultLog.error({ label: 'processKeyxAttachments', message: 'error', error });
       await connection.rollback();
     } finally {
       connection.release();
