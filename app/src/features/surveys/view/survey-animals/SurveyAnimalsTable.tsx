@@ -119,6 +119,7 @@ export const SurveyAnimalsTable = ({
       disableColumnSelector
       disableColumnFilter
       disableColumnMenu
+      disableVirtualization
       sortingOrder={['asc', 'desc']}
       data-testid="survey-animal-table"
     />
