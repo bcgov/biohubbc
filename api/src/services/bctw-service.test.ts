@@ -211,7 +211,7 @@ describe('BctwService', () => {
 
     describe('updateDevice', () => {
       it('should send a post request', async () => {
-        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: []} });
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [] } });
 
         const body = {
           device_id: 1,
