@@ -57,7 +57,7 @@ const MethodForm = () => {
       <Box component={'fieldset'}>
         <Typography component="legend">Add Time Periods</Typography>
 
-        {currentPeriods.map((item, index) => (
+        {currentPeriods.map((_, index) => (
           <Box mt={1}>
             <StartEndDateFields
               formikProps={formikProps}

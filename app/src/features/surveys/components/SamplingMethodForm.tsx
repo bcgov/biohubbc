@@ -12,6 +12,9 @@ const SamplingMethodForm = () => {
     <>
       <CreateSamplingMethod
         open={isCreateModalOpen}
+        onSubmit={(data) => {
+          setIsCreateModalOpen(false);
+        }}
         onClose={() => {
           setIsCreateModalOpen(false);
         }}

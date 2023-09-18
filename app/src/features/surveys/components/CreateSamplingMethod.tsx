@@ -1,19 +1,31 @@
 import EditDialog from 'components/dialog/EditDialog';
 import { useState } from 'react';
 import yup from 'utils/YupSchema';
-import MethodForm from './MethodForm';
+import MethodForm, { ISamplingMethodData } from './MethodForm';
 
-interface ISamplingMethodYupSchemaProps {
+interface ISamplingMethodProps {
   open: boolean;
+  onSubmit: (data: ISamplingMethodData) => void;
   onClose: () => void;
 }
 
-const SamplingMethodYupSchema = yup.object().shape({});
-const CreateSamplingMethod: React.FC<ISamplingMethodYupSchemaProps> = (props) => {
+const SamplingSiteMethodYupSchema = yup.object({
+  method: yup.string(),
+  description: yup.string(),
+  time_periods: yup.array(
+    yup.object({
+      start_date: yup.string().isValidDateString().required(),
+      end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').required()
+    })
+  )
+});
+
+const CreateSamplingMethod: React.FC<ISamplingMethodProps> = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (values: any) => {
     setIsSubmitting(true);
+
     setIsSubmitting(false);
   };
 
@@ -34,7 +46,7 @@ const CreateSamplingMethod: React.FC<ISamplingMethodYupSchemaProps> = (props) =>
             description: '',
             periods: []
           },
-          validationSchema: SamplingMethodYupSchema
+          validationSchema: SamplingSiteMethodYupSchema
         }}
         dialogSaveButtonLabel="Add"
         onCancel={() => props.onClose()}
