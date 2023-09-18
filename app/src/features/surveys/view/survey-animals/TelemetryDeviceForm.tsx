@@ -36,11 +36,7 @@ const DeploymentFormSection = ({
                 />
               </Grid>
               <Grid item xs={6}>
-                <SingleDateField
-                  name={`${index}.deployments.${i}.attachment_end`}
-                  required={true}
-                  label={'Attachment End'}
-                />
+                <SingleDateField name={`${index}.deployments.${i}.attachment_end`} label={'Attachment End'} />
               </Grid>
             </Fragment>
           );
@@ -82,9 +78,6 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
           (moment(deployment.attachment_start).isSameOrBefore(moment(a.attachment_end)) || a.attachment_end == null)
       ); //Check if there is already a deployment that is not the same id as this one and overlaps the time we are trying to upload.
       if (existingDeployment) {
-        console.log(
-          `Existing: ${JSON.stringify(existingDeployment, null, 2)}, Form: ${JSON.stringify(deployment, null, 2)}`
-        );
         errors.attachment_start = `Cannot make a deployment starting on this date, it will conflict with deployment ${
           existingDeployment.deployment_id
         } 
@@ -156,19 +149,20 @@ interface ITelemetryDeviceFormProps {
 }
 
 const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
-  const { values } = useFormikContext<IAnimalTelemetryDevice[]>();
+  const { values, errors } = useFormikContext<IAnimalTelemetryDevice[]>();
 
   return (
     <Form>
       <>
         {values.map((a, idx) => (
-          <Box key={`device-form-section-${idx}`} sx={{ mt: 6 }}>
-            <Typography sx={{ ml: 6, mt: 6 }}>Device Metadata</Typography>
+          <Box key={`device-form-section-${idx}`}>
+            <Typography sx={{ mt: 2, mb: 2 }}>Device Metadata</Typography>
             <DeviceFormSection mode={mode} values={values} key={`device-form-section-${idx}`} index={idx} />
-            <Divider sx={{ mt: 6 }} />
+            <Divider sx={{ mt: 3 }} />
           </Box>
         ))}
       </>
+      <pre>{JSON.stringify(errors, null, 2)}</pre>
     </Form>
   );
 };

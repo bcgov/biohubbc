@@ -12,7 +12,7 @@ const mustBeNum = 'Must be a number';
 const numSchema = yup.number().typeError(mustBeNum);
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
-  deployment_id: yup.string().required(req),
+  deployment_id: yup.string(),
   attachment_start: yup.string().required(req),
   attachment_end: yup.string()
 });
@@ -21,7 +21,7 @@ export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
   device_id: numSchema.required(req),
   device_make: yup.string().required(req),
   frequency: numSchema,
-  frequency_unit: yup.string(),
+  frequency_unit: yup.string().nullable(),
   device_model: yup.string(),
   deployments: yup.array(AnimalDeploymentTimespanSchema)
 });

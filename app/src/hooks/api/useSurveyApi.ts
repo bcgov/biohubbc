@@ -478,9 +478,14 @@ const useSurveyApi = (axios: AxiosInstance) => {
   ): Promise<number> => {
     body.device_id = Number(body.device_id); //Turn this into validation class soon
     body.frequency = Number(body.frequency);
+    body.frequency_unit = body.frequency_unit?.length ? body.frequency_unit : undefined;
+    if (!body.deployments || body.deployments.length !== 1) {
+      throw Error('Calling this with any amount other than 1 deployments currently unsupported.');
+    }
+    const flattened = { ...body, ...body.deployments[0] };
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
-      body
+      flattened
     );
     return data;
   };

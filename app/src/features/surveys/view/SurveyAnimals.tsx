@@ -13,6 +13,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
 import { datesSameNullable, pluralize } from 'utils/Utils';
+import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
 import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
@@ -227,7 +228,7 @@ const SurveyAnimals: React.FC = () => {
         component={{
           element: <TelemetryDeviceForm mode={telemetryFormMode} />,
           initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
-          validationSchema: AnimalTelemetryDeviceSchema
+          validationSchema: yup.array(AnimalTelemetryDeviceSchema)
         }}
         onCancel={() => setOpenDeviceDialog(false)}
         onSave={(values) => {
