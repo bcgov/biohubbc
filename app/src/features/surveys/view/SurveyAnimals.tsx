@@ -10,15 +10,15 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { isEqual as _isEqual } from 'lodash-es';
+import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
-import { datesSameNullable } from 'utils/Utils';
+import { datesSameNullable, pluralize } from 'utils/Utils';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
 import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
-import TelemetryDeviceForm, { TelemetryDeviceFormMode } from './survey-animals/TelemetryDeviceForm';
+import TelemetryDeviceForm, { TELEMETRY_DEVICE_FORM_MODE } from './survey-animals/TelemetryDeviceForm';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
@@ -30,7 +30,9 @@ const SurveyAnimals: React.FC = () => {
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
-  const [telemetryFormMode, setTelemetryFormMode] = useState<'add' | 'edit'>('add');
+  const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
+    TELEMETRY_DEVICE_FORM_MODE.ADD
+  );
 
   const { projectId, surveyId } = surveyContext;
   const {
@@ -58,9 +60,6 @@ const SurveyAnimals: React.FC = () => {
   const toggleDialog = () => {
     setOpenAddCritterDialog((d) => !d);
   };
-
-  const pluralize = (str: string, count: number) =>
-    count > 1 || count === 0 ? `${count} ${str}'s` : `${count} ${str}`;
 
   const setPopup = (message: string) => {
     dialogContext.setSnackbar({
@@ -99,17 +98,17 @@ const SurveyAnimals: React.FC = () => {
     ]
   };
 
-  const obtainDeviceFormInitialValues = (mode: TelemetryDeviceFormMode) => {
+  const obtainDeviceFormInitialValues = (mode: TELEMETRY_DEVICE_FORM_MODE) => {
     switch (mode) {
-      case 'add':
+      case TELEMETRY_DEVICE_FORM_MODE.ADD:
         return [DeviceFormValues];
-      case 'edit': {
+      case TELEMETRY_DEVICE_FORM_MODE.EDIT: {
         const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId);
         if (deployments) {
           //Any suggestions on something better than this reduce is welcome.
           //Idea is to transform flat rows of {device_id, ..., deployment_id, attachment_end, attachment_start}
           //to {device_id, ..., deployments: [{deployment_id, attachment_start, attachment_end}]}
-          const red = deployments.reduce((acc, curr) => {
+          const red = deployments.reduce((acc: IAnimalTelemetryDevice[], curr) => {
             const currObj = acc.find((a: any) => a.device_id === curr.device_id);
             const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
             const deployment = { deployment_id, attachment_start, attachment_end };
@@ -119,7 +118,7 @@ const SurveyAnimals: React.FC = () => {
               currObj.deployments?.push(deployment);
             }
             return acc;
-          }, [] as IAnimalTelemetryDevice[]);
+          }, []);
           return red;
         } else {
           return [DeviceFormValues];
@@ -137,7 +136,7 @@ const SurveyAnimals: React.FC = () => {
         open: true,
         snackbarMessage: (
           <Typography variant="body2" component="div">
-            {`Animal added to Survey`}
+            {'Animal added to Survey'}
           </Typography>
         )
       });
@@ -156,33 +155,38 @@ const SurveyAnimals: React.FC = () => {
     if (telemetryFormMode === 'add') {
       try {
         await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
-        setPopup(`Successfully added deployment.`);
+        setPopup('Successfully added deployment.');
       } catch (e) {
-        setPopup(`Failed to add deployment.`);
+        setPopup('Failed to add deployment.');
       }
     } else if (telemetryFormMode === 'edit') {
-      try {
-        //Better to do a high level try catch or try catch calls individually? Not sure.
-        for (const formValues of data) {
-          const existingDevice = deploymentData?.find((a) => a.device_id === formValues.device_id);
-          const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
-          if (existingDevice && !_isEqual(new Device(existingDevice), formDevice)) {
-            await telemetryApi.devices.upsertCollar(formDevice);
+      for (const formValues of data) {
+        const existingDevice = deploymentData?.find((a) => a.device_id === formValues.device_id);
+        const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
+        if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
+          //Verify whether the data entered in the form changed from the device metadata we already have.
+          try {
+            await telemetryApi.devices.upsertCollar(formDevice); //If it's different, upsert. Note that this alone does not touch a deployment.
+          } catch (e) {
+            setPopup(`Failed to update device ${formDevice.device_id}`);
           }
-          for (const formDeployment of formValues.deployments ?? []) {
-            const existingDeployment = deploymentData?.find((a) => a.deployment_id === formDeployment.deployment_id);
-            if (
-              !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
-              !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
-            ) {
+        }
+        for (const formDeployment of formValues.deployments ?? []) {
+          //Iterate over the deployments under this device.
+          const existingDeployment = deploymentData?.find((a) => a.deployment_id === formDeployment.deployment_id); //Find the deployment info we already have.
+          if (
+            !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
+            !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end) //Helper function necessary for this date comparison since moment(null) !== moment(null) normally.
+          ) {
+            try {
               await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
+            } catch (e) {
+              setPopup(`Failed to update deployment ${formDeployment.deployment_id}`);
             }
           }
         }
-        setPopup(`Updated deployment and device data successfully.`);
-      } catch (e) {
-        setPopup(`Failed to finish editing device and deployment data.`);
       }
+      setPopup('Updated deployment and device data successfully.');
     }
 
     setOpenDeviceDialog(false);
@@ -200,7 +204,7 @@ const SurveyAnimals: React.FC = () => {
             <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
               {`${
                 animalCount
-                  ? `${animalCount} ${pluralize('Animal', animalCount)} reported in this survey`
+                  ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
                   : `No individual animals were captured or reported in this survey`
               }`}
             </Typography>
@@ -252,11 +256,11 @@ const SurveyAnimals: React.FC = () => {
               refreshCritters();
             }}
             onAddDevice={(critter_id) => {
-              setTelemetryFormMode('add');
+              setTelemetryFormMode(TELEMETRY_DEVICE_FORM_MODE.ADD);
               setOpenDeviceDialog(true);
             }}
             onEditDevice={(device_id) => {
-              setTelemetryFormMode('edit');
+              setTelemetryFormMode(TELEMETRY_DEVICE_FORM_MODE.EDIT);
               setOpenDeviceDialog(true);
             }}
           />

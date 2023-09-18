@@ -78,7 +78,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           </MenuItem>
         ) : null}
         {
-          //To be implemented in another ticket
+          //To be implemented in 217 - Edit Critters
           /*<MenuItem
           onClick={() => {
             handleClose();

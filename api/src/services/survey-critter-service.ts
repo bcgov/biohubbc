@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { SurveyCritterRepository } from '../repositories/survey-critter-repository';
+import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { DBService } from './db-service';
 
 export class SurveyCritterService extends DBService {
@@ -15,7 +15,7 @@ export class SurveyCritterService extends DBService {
    * @param {number} surveyId
    * @returns {*}
    */
-  async getCrittersInSurvey(surveyId: number) {
+  async getCrittersInSurvey(surveyId: number): Promise<SurveyCritterRecord[]> {
     return this.critterRepository.getCrittersInSurvey(surveyId);
   }
 
@@ -26,7 +26,7 @@ export class SurveyCritterService extends DBService {
    * @param {string} critterId
    * @returns {*}
    */
-  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string) {
+  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<number> {
     return this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
   }
 
@@ -35,7 +35,7 @@ export class SurveyCritterService extends DBService {
    * @param {string} critterId
    * @returns {*}
    */
-  async removeCritterFromSurvey(critterId: number) {
+  async removeCritterFromSurvey(critterId: number): Promise<number> {
     return this.critterRepository.removeCritterFromSurvey(critterId);
   }
 
@@ -46,7 +46,7 @@ export class SurveyCritterService extends DBService {
    * @param {id} deplyomentId
    * @returns {*}
    */
-  async upsertDeployment(critterId: number, deplyomentId: string) {
+  async upsertDeployment(critterId: number, deplyomentId: string): Promise<number> {
     return this.critterRepository.upsertDeployment(critterId, deplyomentId);
   }
 }

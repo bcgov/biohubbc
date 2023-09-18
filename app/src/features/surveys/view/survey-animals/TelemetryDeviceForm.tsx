@@ -10,7 +10,10 @@ import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
 import { IAnimalDeployment, IAnimalTelemetryDevice } from './device';
 
-export type TelemetryDeviceFormMode = 'add' | 'edit';
+export enum TELEMETRY_DEVICE_FORM_MODE {
+  ADD = 'add',
+  EDIT = 'edit'
+}
 
 const DeploymentFormSection = ({
   index,
@@ -48,7 +51,7 @@ const DeploymentFormSection = ({
 };
 
 interface IDeviceFormSectionProps {
-  mode: TelemetryDeviceFormMode;
+  mode: TELEMETRY_DEVICE_FORM_MODE;
   values: IAnimalTelemetryDevice[];
   index: number;
 }
@@ -58,14 +61,9 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
   const [bctwErrors, setBctwErrors] = useState<Record<string, string | undefined>>({});
   const api = useTelemetryApi();
 
-  const {
-    data: bctwDeviceData,
-    load: loadDevice,
-    refresh
-  } = useDataLoader(() => api.devices.getDeviceDetails(values[index].device_id));
+  const { data: bctwDeviceData, refresh } = useDataLoader(() => api.devices.getDeviceDetails(values[index].device_id));
 
   useEffect(() => {
-    loadDevice();
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values[index].device_id]);
@@ -141,9 +139,9 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
         </Paper>
         {Object.entries(bctwErrors).length > 0 && (
           <Grid item xs={12}>
-            {Object.values(bctwErrors).map((a, i) => (
-              <FormHelperText key={`form-error-text-${i}`} error={true}>
-                {a}
+            {Object.values(bctwErrors).map((bctwError, idx) => (
+              <FormHelperText key={`form-error-text-${idx}`} error={true}>
+                {bctwError}
               </FormHelperText>
             ))}
           </Grid>
@@ -154,7 +152,7 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
 };
 
 interface ITelemetryDeviceFormProps {
-  mode: TelemetryDeviceFormMode;
+  mode: TELEMETRY_DEVICE_FORM_MODE;
 }
 
 const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
@@ -163,13 +161,11 @@ const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
   return (
     <Form>
       <>
-        {values.map((a, i) => (
-          <Box key={`device-form-section-${i}`} marginTop={'12px'}>
-            <Typography marginLeft={'12px'} marginBottom={'12px'}>
-              Device Metadata
-            </Typography>
-            <DeviceFormSection mode={mode} values={values} key={`device-form-section-${i}`} index={i} />
-            <Divider sx={{ mt: '24px' }} />
+        {values.map((a, idx) => (
+          <Box key={`device-form-section-${idx}`} sx={{ mt: 6 }}>
+            <Typography sx={{ ml: 6, mt: 6 }}>Device Metadata</Typography>
+            <DeviceFormSection mode={mode} values={values} key={`device-form-section-${idx}`} index={idx} />
+            <Divider sx={{ mt: 6 }} />
           </Box>
         ))}
       </>

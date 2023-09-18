@@ -68,24 +68,14 @@ export class SurveyCritterRepository extends BaseRepository {
    */
   async upsertDeployment(critterId: number, deplyomentId: string): Promise<number> {
     defaultLog.debug({ label: 'addDeployment', deplyomentId });
-    const checkExists = getKnex()
+    const queryBuilder = getKnex()
       .table('deployment')
-      .where({ critter_id: critterId, bctw_deployment_id: deplyomentId })
-      .select();
-    const inserter = getKnex().table('deployment').insert({ critter_id: critterId, bctw_deployment_id: deplyomentId });
-    const updater = getKnex()
-      .table('deployment')
-      .where({ critter_id: critterId, bctw_deployment_id: deplyomentId })
-      .update({ bctw_deployment_id: deplyomentId });
-    //Maybe in the future we will do more with this update, but for now you can at least see the update fields get populated.
+      .insert({ critter_id: critterId, bctw_deployment_id: deplyomentId })
+      .onConflict(['critter_id', 'bctw_deployment_id'])
+      .merge(['critter_id', 'bctw_deployment_id']);
 
-    const exists = await this.connection.knex(checkExists);
-    let response;
-    if (exists.rowCount) {
-      response = await this.connection.knex(updater);
-    } else {
-      response = await this.connection.knex(inserter);
-    }
+    const response = await this.connection.knex(queryBuilder);
+
     return response.rowCount;
   }
 }

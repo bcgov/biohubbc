@@ -188,7 +188,7 @@ export class BctwService {
    * @memberof BctwService
    */
   async getDeviceDetails(deviceId: number): Promise<IDevice[]> {
-    return await this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`);
+    return this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`);
   }
 
   /**
