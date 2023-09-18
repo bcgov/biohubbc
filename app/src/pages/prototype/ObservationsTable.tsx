@@ -1,34 +1,15 @@
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical, mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
 import { Theme } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import { makeStyles } from "@mui/styles";
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener } from '@mui/x-data-grid';
+import { IObservationTableRow, ObservationsContext } from "contexts/observationsContext";
+import { useContext } from "react";
+// import { useEffect, useState } from "react";
 import { pluralize as p } from "utils/Utils";
 
-export interface IObservationRecord {
-  observation_id: number;
-  speciesName: string;
-  samplingSite: string;
-  samplingMethod: string;
-  samplingPeriod: string;
-  count?: number;
-  date?: string;
-  time?: string;
-  lat?: number;
-  long?: number;
-}
-
-export interface IObservationTableRow extends Omit<IObservationRecord, 'observation_id'> {
-  id: string;
-  observation_id: number | null;
-  isModified: boolean;
-}
-
-export type IObservationsTableProps = {
-  observations: IObservationTableRow[]
-  onChangeObservations: (observations: IObservationTableRow[]) => void
-}
+export type IObservationsTableProps = Record<never, any>;
 
 const useStyles = makeStyles((theme: Theme) => ({
   modifiedRow: {} // { background: 'rgba(65, 168, 3, 0.16)' }
@@ -127,56 +108,32 @@ export const observationColumns: GridColDef<IObservationTableRow>[] = [
       </IconButton>
     ],
   },
+  /*
   {
-    field: 'isModified',
+    field: '_isModified',
     type: 'boolean'
   }
-]
-
-export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> => {
-  await setTimeout(() => {}, 100 * (Math.random() + 1));
-  return [
-    {
-      observation_id: 1,
-      speciesName: 'Moose (Alces Americanus)',
-      samplingSite: 'Site 1',
-      samplingMethod: 'Method 1',
-      samplingPeriod: '',
-    },
-    {
-      observation_id: 2,
-      speciesName: 'Moose (Alces Americanus)',
-      samplingSite: 'Site 1',
-      samplingMethod: 'Method 1',
-      samplingPeriod: '',
-    },
-    {
-      observation_id: 3,
-      speciesName: 'Moose (Alces Americanus)',
-      samplingSite: 'Site 1',
-      samplingMethod: 'Method 1',
-      samplingPeriod: '',
-    }
-  ]
-}
+  */
+];
 
 const ObservationsTable = (props: IObservationsTableProps) => {
   const classes = useStyles();
+  
+  const { _rows } = useContext(ObservationsContext);
 
-  // const handleChangeState = (params: any) => {
-  //   // props.onChangeObservations(Object.values(params.rows.dataRowIdToModelLookup));
-  // }
+  
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
+    event.defaultMuiPrevented = true;
+  };
 
-  const numModified = props.observations.filter((row) => row.isModified).length;
+  const numModified = _rows.filter((row) => row._isModified).length;
 
   return (
     <DataGrid
-      onRowEditStop={(params) => console.log('Edit stop', params)}
-      onRowEditStart={(params) => console.log('Edit start', params)}
-      onRowEditCommit={(params) => console.log('Edit commit', params)}
-      processRowUpdate={(newRow, oldRow) => ({ ...newRow, isModified: true })}
+      onRowEditStop={handleRowEditStop}
+      processRowUpdate={(newRow, oldRow) => ({ ...newRow, _isModified: true })}
       columns={observationColumns}
-      rows={props.observations}
+      rows={_rows}
       localeText={{
         noRowsLabel: "No Records",
         footerRowSelected: (numSelected: number) => {
@@ -186,7 +143,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
           ].filter(Boolean).join(', ')
         }
       }}
-      getRowClassName={(params) => params.row.isModified ? classes.modifiedRow : ''}
+      getRowClassName={(params) => params.row._isModified ? classes.modifiedRow : ''}
       
       // onStateChange={handleChangeState}
       sx={{

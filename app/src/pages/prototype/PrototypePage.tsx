@@ -19,9 +19,9 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
-import ObservationsTable, { IObservationTableRow, fetchObservationDemoRows } from './ObservationsTable';
-import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import ObservationsTable from './ObservationsTable';
+import { useContext, useEffect, useState } from 'react';
+import { ObservationsContext } from 'contexts/observationsContext';
 
 export default function RenderHeaderGrid() {
   return (
@@ -32,18 +32,20 @@ export default function RenderHeaderGrid() {
 }
 
 export const PrototypePage = () => {
-  const [observationRows, setObservationRows] = useState<IObservationTableRow[]>([]);
-
+  const observationsContext = useContext(ObservationsContext)
+  /*
   useEffect(() => {
     fetchObservationDemoRows().then((rows) => {
-      setObservationRows(rows.map((row) => ({
+      setRows(rows.map((row) => ({
         ...row,
         id: String(row.observation_id),
         isModified: false
       })))
     })
   }, []);
+  */
 
+  /*
   const createNewRecord = () => {
     setObservationRows([
       ...observationRows,
@@ -58,6 +60,7 @@ export const PrototypePage = () => {
       }
     ])
   }
+  */
 
   return (
 
@@ -340,7 +343,7 @@ export const PrototypePage = () => {
               variant="contained"
               color="primary"
               startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => createNewRecord()}>
+              onClick={() => observationsContext.createNewRecord()}>
               Add Record
             </Button>
             <Button
@@ -391,10 +394,7 @@ export const PrototypePage = () => {
                 <Typography variant="body2"><strong>Records</strong></Typography>
               </Toolbar> */}
               <Box flex="1 1 auto" px={2} height="100%">
-              <ObservationsTable
-                observations={observationRows}
-                onChangeObservations={setObservationRows}
-              />
+              <ObservationsTable />
               </Box>
             </Box>
           

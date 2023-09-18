@@ -5,6 +5,7 @@ import {
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
+import { ObservationsContextProvider } from 'contexts/observationsContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
@@ -117,7 +118,9 @@ const AppRouter: React.FC = () => {
       </RouteWithTitle>
 
       <RouteWithTitle title="prototype" path="/prototype">
-        <PrototypePage />
+        <ObservationsContextProvider>
+          <PrototypePage />
+        </ObservationsContextProvider>
       </RouteWithTitle>
 
       <Route path="/login">
