@@ -4,11 +4,18 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
+import CreateSamplingMethod from './CreateSamplingMethod';
 
 const SamplingMethodForm = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   return (
     <>
+      <CreateSamplingMethod
+        open={isCreateModalOpen}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+        }}
+      />
       <Box component="fieldset">
         <Typography component="legend">Specify Sampling Methods</Typography>
         <Typography
@@ -32,7 +39,9 @@ const SamplingMethodForm = () => {
             title="Create Stratum"
             aria-label="Create Stratum"
             startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => console.log('ADD METHOD')}>
+            onClick={() => {
+              setIsCreateModalOpen(true);
+            }}>
             Add Method
           </Button>
         </form>
@@ -41,4 +50,4 @@ const SamplingMethodForm = () => {
   );
 };
 
-export default SamplingSiteMethodForm;
+export default SamplingMethodForm;

@@ -1,10 +1,12 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { MenuItem, Select } from '@mui/material';
+import { Divider, MenuItem, Select, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CustomTextField from 'components/fields/CustomTextField';
+import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { CodesContext } from 'contexts/codesContext';
+import { useFormikContext } from 'formik';
 import { useContext, useState } from 'react';
 
 interface MethodPeriod {
@@ -21,17 +23,21 @@ export interface ISamplingMethodData {
 }
 
 // THIS WILL SIT INSIDE OF THE DIALOG
-const MethodForm = (props: ISamplingMethodData) => {
+const MethodForm = () => {
+  const formikProps = useFormikContext<ISamplingMethodData>();
   const dataLoader = useContext(CodesContext);
   dataLoader.codesDataLoader.load();
   const [currentPeriods, setCurrentPeriods] = useState<MethodPeriod[]>(
-    props.periods.length ? props.periods : [{ sample_method_id: null, start_date: '', end_date: '' }]
+    formikProps.values.periods.length
+      ? formikProps.values.periods
+      : [{ sample_method_id: null, start_date: '', end_date: '' }]
   );
-
+  console.log(formikProps.values);
   return (
     <form>
-      <Box mb={3}>
-        <Select size="small" sx={{ width: '200px', backgroundColor: '#fff' }} displayEmpty onChange={(event) => {}}>
+      <Box component={'fieldset'} mb={3}>
+        <Typography component="legend">Sampling Method Details</Typography>
+        <Select sx={{ width: '100%', backgroundColor: '#fff' }} displayEmpty onChange={(event) => {}}>
           {dataLoader.codesDataLoader.data?.field_methods.map((item) => (
             <MenuItem key={item.id} value={item.name}>
               {item.name}
@@ -50,9 +56,25 @@ const MethodForm = (props: ISamplingMethodData) => {
 
       {/* {currentPeriods.map((item) => {})} */}
 
+      <Box component={'fieldset'}>
+        <Typography component="legend">Add Time Periods</Typography>
+
+        {currentPeriods.map((item, index) => (
+          <Box mt={1}>
+            <StartEndDateFields
+              formikProps={formikProps}
+              startName={`periods[${index}].start_date`}
+              endName={`periods[${index}].end_date`}
+              startRequired={false}
+              endRequired={false}
+            />
+          </Box>
+        ))}
+      </Box>
+
       <Button
         sx={{
-          mt: 1
+          mt: 2
         }}
         data-testid="sampling-period-add-button"
         variant="outlined"
@@ -60,9 +82,11 @@ const MethodForm = (props: ISamplingMethodData) => {
         title="Add Period"
         aria-label="Create Sample Period"
         startIcon={<Icon path={mdiPlus} size={1} />}
-        onClick={() => console.log('ADD PERIOD')}>
+        onClick={() => setCurrentPeriods([])}>
         Add Period
       </Button>
+
+      <Divider sx={{ mt: 3 }}></Divider>
     </form>
   );
 };

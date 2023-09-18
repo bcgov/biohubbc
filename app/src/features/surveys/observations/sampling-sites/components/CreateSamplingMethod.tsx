@@ -1,37 +1,42 @@
 import EditDialog from 'components/dialog/EditDialog';
-import { FundingSourceI18N } from 'constants/i18n';
 import { useState } from 'react';
 import yup from 'utils/YupSchema';
+import MethodForm from './MethodForm';
 
-interface ICreateFundingSourceProps {
+interface ISamplingMethodYupSchemaProps {
   open: boolean;
-  onClose: (refresh?: boolean) => void;
+  onClose: () => void;
 }
 
 const SamplingMethodYupSchema = yup.object().shape({});
-const CreateSamplingMethod: React.FC<ICreateFundingSourceProps> = (props) => {
+const CreateSamplingMethod: React.FC<ISamplingMethodYupSchemaProps> = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = (values: any) => {};
+
+  const handleSubmit = (values: any) => {
+    setIsSubmitting(true);
+    setIsSubmitting(false);
+  };
+
   return (
     <>
       <EditDialog
-        dialogTitle={FundingSourceI18N.createFundingSourceDialogTitle}
-        dialogText={FundingSourceI18N.createFundingSourceDialogText}
+        dialogTitle={'Add Sampling Method'}
+        dialogText={
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.'
+        }
         open={props.open}
         dialogLoading={isSubmitting}
         component={{
-          element: <SamplingMethodForm />,
+          element: <MethodForm />,
           initialValues: {
-            funding_source_id: null,
-            name: '',
+            sample_method_id: null,
+            method_lookup_id: null,
             description: '',
-            start_date: null,
-            end_date: null,
-            revision_count: null
+            periods: []
           },
           validationSchema: SamplingMethodYupSchema
         }}
-        dialogSaveButtonLabel="Create"
+        dialogSaveButtonLabel="Add"
         onCancel={() => props.onClose()}
         onSave={(formValues) => {
           handleSubmit(formValues);
