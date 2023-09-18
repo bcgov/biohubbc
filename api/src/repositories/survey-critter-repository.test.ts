@@ -52,10 +52,25 @@ describe('SurveyRepository', () => {
     });
   });
 
-  describe('addDeployment', () => {
-    it('should return result', async () => {
+  describe('upsertDeployment', () => {
+    it('should update existing row', async () => {
       const mockResponse = ({ rows: [{ submissionId: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyCritterRepository(dbConnection);
+
+      const response = await repository.upsertDeployment(1, 'deployment_id');
+
+      expect(response).to.eql(1);
+    });
+
+    it('should insert', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as QueryResult<any>;
+      const secondResponse = ({ rows: [{ submissionId: 1 }], rowCount: 1 } as any) as QueryResult<any>;
+      const dbConnection = getMockDBConnection({});
+      const knexStub = sinon.stub(dbConnection, 'knex');
+      knexStub.onFirstCall().resolves(mockResponse);
+      knexStub.onSecondCall().resolves(secondResponse);
 
       const repository = new SurveyCritterRepository(dbConnection);
 

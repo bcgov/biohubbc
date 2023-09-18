@@ -16,7 +16,8 @@ import {
   HEALTH_ENDPOINT,
   IDeployDevice,
   IDeploymentUpdate,
-  UPDATE_DEPLOYMENT_ENDPOINT
+  UPDATE_DEPLOYMENT_ENDPOINT,
+  UPSERT_DEVICE_ENDPOINT
 } from './bctw-service';
 import { KeycloakService } from './keycloak-service';
 
@@ -205,6 +206,20 @@ describe('BctwService', () => {
         expect(mockGetRequest).to.have.been.calledOnceWith(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, {
           device_id: '123'
         });
+      });
+    });
+
+    describe('updateDevice', () => {
+      it('should send a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: []} });
+
+        const body = {
+          device_id: 1,
+          collar_id: ''
+        };
+        await bctwService.updateDevice(body);
+
+        expect(mockAxios).to.have.been.calledOnceWith(UPSERT_DEVICE_ENDPOINT, body);
       });
     });
   });
