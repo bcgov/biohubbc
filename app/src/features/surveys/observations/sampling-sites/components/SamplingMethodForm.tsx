@@ -3,8 +3,10 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 
-const SamplingSiteMethodForm = () => {
+const SamplingMethodForm = () => {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   return (
     <>
       <Box component="fieldset">

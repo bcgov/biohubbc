@@ -1,9 +1,11 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import { MenuItem, Select } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CustomTextField from 'components/fields/CustomTextField';
-import { useState } from 'react';
+import { CodesContext } from 'contexts/codesContext';
+import { useContext, useState } from 'react';
 
 interface MethodPeriod {
   sample_method_id: number | null;
@@ -18,7 +20,10 @@ export interface ISamplingMethodData {
   periods: MethodPeriod[];
 }
 
+// THIS WILL SIT INSIDE OF THE DIALOG
 const MethodForm = (props: ISamplingMethodData) => {
+  const dataLoader = useContext(CodesContext);
+  dataLoader.codesDataLoader.load();
   const [currentPeriods, setCurrentPeriods] = useState<MethodPeriod[]>(
     props.periods.length ? props.periods : [{ sample_method_id: null, start_date: '', end_date: '' }]
   );
@@ -26,12 +31,13 @@ const MethodForm = (props: ISamplingMethodData) => {
   return (
     <form>
       <Box mb={3}>
-        <CustomTextField
-          name="name"
-          label="Name"
-          maxLength={50}
-          other={{ placeholder: 'Maximum 50 characters', required: true }}
-        />
+        <Select size="small" sx={{ width: '200px', backgroundColor: '#fff' }} displayEmpty onChange={(event) => {}}>
+          {dataLoader.codesDataLoader.data?.field_methods.map((item) => (
+            <MenuItem key={item.id} value={item.name}>
+              {item.name}
+            </MenuItem>
+          ))}
+        </Select>
       </Box>
       <Box mb={3}>
         <CustomTextField
