@@ -22,7 +22,6 @@ export interface ISamplingMethodData {
   periods: MethodPeriod[];
 }
 
-// THIS WILL SIT INSIDE OF THE DIALOG
 const MethodForm = () => {
   const formikProps = useFormikContext<ISamplingMethodData>();
   const dataLoader = useContext(CodesContext);

@@ -10,9 +10,9 @@ interface ISamplingMethodProps {
 }
 
 const SamplingSiteMethodYupSchema = yup.object({
-  method: yup.string(),
+  method_id: yup.number(),
   description: yup.string(),
-  time_periods: yup.array(
+  periods: yup.array(
     yup.object({
       start_date: yup.string().isValidDateString().required(),
       end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').required()
@@ -23,10 +23,9 @@ const SamplingSiteMethodYupSchema = yup.object({
 const CreateSamplingMethod: React.FC<ISamplingMethodProps> = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (values: any) => {
-    setIsSubmitting(true);
-
+  const handleSubmit = (values: ISamplingMethodData) => {
     setIsSubmitting(false);
+    props.onSubmit(values);
   };
 
   return (
