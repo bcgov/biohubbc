@@ -8,7 +8,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
-import { IAnimalDeployment, IAnimalTelemetryDevice } from './device';
+import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 
 export enum TELEMETRY_DEVICE_FORM_MODE {
   ADD = 'add',
@@ -20,14 +20,14 @@ const DeploymentFormSection = ({
   deployments
 }: {
   index: number;
-  deployments: Pick<IAnimalDeployment, 'attachment_start' | 'attachment_end'>[];
+  deployments: IDeploymentTimespan[];
 }): JSX.Element => {
   return (
     <>
       <Grid container spacing={2}>
-        {deployments.map((a, i) => {
+        {deployments.map((deploy, i) => {
           return (
-            <Fragment key={`deployment-item-${i}`}>
+            <Fragment key={`deployment-item-${deploy.deployment_id}`}>
               <Grid item xs={6}>
                 <SingleDateField
                   name={`${index}.deployments.${i}.attachment_start`}
@@ -130,9 +130,9 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
         </Paper>
         {Object.entries(bctwErrors).length > 0 && (
           <Grid item xs={12}>
-            {Object.values(bctwErrors).map((bctwError, idx) => (
-              <FormHelperText key={`form-error-text-${idx}`} error={true}>
-                {bctwError}
+            {Object.entries(bctwErrors).map((bctwError) => (
+              <FormHelperText key={`bctw-error-${bctwError[0]}`} error={true}>
+                {bctwError[1]}
               </FormHelperText>
             ))}
           </Grid>
@@ -147,20 +147,24 @@ interface ITelemetryDeviceFormProps {
 }
 
 const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
-  const { values, errors } = useFormikContext<IAnimalTelemetryDevice[]>();
+  const { values } = useFormikContext<IAnimalTelemetryDevice[]>();
 
   return (
     <Form>
       <>
-        {values.map((a, idx) => (
-          <Box key={`device-form-section-${idx}`}>
+        {values.map((device, idx) => (
+          <Box key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}>
             <Typography sx={{ mt: 2, mb: 2 }}>Device Metadata</Typography>
-            <DeviceFormSection mode={mode} values={values} key={`device-form-section-${idx}`} index={idx} />
+            <DeviceFormSection
+              mode={mode}
+              values={values}
+              key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
+              index={idx}
+            />
             <Divider sx={{ mt: 3 }} />
           </Box>
         ))}
       </>
-      <pre>{JSON.stringify(errors, null, 2)}</pre>
     </Form>
   );
 };
