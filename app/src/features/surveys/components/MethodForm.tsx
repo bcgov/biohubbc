@@ -1,6 +1,6 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { MenuItem, Select, Typography } from '@mui/material';
+import { CircularProgress, MenuItem, Select, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -33,6 +33,10 @@ const MethodForm = () => {
     formikProps.values.periods.length ? formikProps.values.periods : [blankPeriod]
   );
 
+  if (!dataLoader.codesDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+  console.log(formikProps.values);
   return (
     <form>
       <Box component={'fieldset'} mb={3}>
@@ -42,26 +46,12 @@ const MethodForm = () => {
           displayEmpty
           value={formikProps.values.method_lookup_id}
           name={`method_lookup_id`}
-          onChange={formikProps.handleChange}>
-          {[
-            {
-              method_lookup_id: 1,
-              name: 'Camera Trap'
-            },
-            {
-              method_lookup_id: 2,
-              name: 'Electro Fishing'
-            },
-            {
-              method_lookup_id: 3,
-              name: 'Dip Net'
-            },
-            {
-              method_lookup_id: 4,
-              name: 'Box Trap'
-            }
-          ].map((item) => (
-            <MenuItem key={item.method_lookup_id} value={item.method_lookup_id}>
+          onChange={(event) => {
+            console.log(event);
+            formikProps.setFieldValue(`method_lookup_id`, 1);
+          }}>
+          {dataLoader.codesDataLoader.data.sample_methods.map((item) => (
+            <MenuItem key={item.id} value={item.id}>
               {item.name}
             </MenuItem>
           ))}

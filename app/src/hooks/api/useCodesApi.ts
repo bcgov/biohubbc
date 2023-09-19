@@ -16,6 +16,24 @@ const useCodesApi = (axios: AxiosInstance) => {
   const getAllCodeSets = async (): Promise<IGetAllCodeSetsResponse> => {
     const { data } = await axios.get('/api/codes/');
 
+    data.sample_methods = [
+      {
+        id: 1,
+        name: 'Camera Trap'
+      },
+      {
+        id: 2,
+        name: 'Electro Fishing'
+      },
+      {
+        id: 3,
+        name: 'Dip Net'
+      },
+      {
+        id: 4,
+        name: 'Box Trap'
+      }
+    ];
     return data;
   };
 
