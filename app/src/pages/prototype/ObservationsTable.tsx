@@ -3,7 +3,7 @@ import Icon from "@mdi/react";
 import { Theme } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import { makeStyles } from "@mui/styles";
-import { DataGrid, GridColDef, GridEventListener } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons } from '@mui/x-data-grid';
 import { IObservationTableRow, ObservationsContext } from "contexts/observationsContext";
 import { useContext } from "react";
 // import { useEffect, useState } from "react";
@@ -119,21 +119,26 @@ export const observationColumns: GridColDef<IObservationTableRow>[] = [
 const ObservationsTable = (props: IObservationsTableProps) => {
   const classes = useStyles();
   
-  const { _rows, _setRowModesModel } = useContext(ObservationsContext);
+  const { _rows, _setRowModesModel, _rowModesModel } = useContext(ObservationsContext);
+  console.log('rowModesModel:', _rowModesModel);
 
   
-  const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
-    event.defaultMuiPrevented = true;
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true;
+    }
   };
 
   const numModified = _rows.filter((row) => row._isModified).length;
 
   return (
     <DataGrid
+      editMode="row"
       onRowEditStop={handleRowEditStop}
       processRowUpdate={(newRow, oldRow) => ({ ...newRow, _isModified: true })}
       columns={observationColumns}
       rows={_rows}
+      rowModesModel={_rowModesModel}
       onRowModesModelChange={_setRowModesModel}
       localeText={{
         noRowsLabel: "No Records",
@@ -145,8 +150,6 @@ const ObservationsTable = (props: IObservationsTableProps) => {
         }
       }}
       getRowClassName={(params) => params.row._isModified ? classes.modifiedRow : ''}
-      
-      // onStateChange={handleChangeState}
       sx={{
         background: '#fff',
         border: 'none',
