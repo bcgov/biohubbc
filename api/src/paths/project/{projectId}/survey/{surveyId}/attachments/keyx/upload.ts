@@ -1,15 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../../services/attachment-service';
-import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../utils/logger';
+import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/http-error';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../../services/attachment-service';
+import { BctwService, IBctwUser } from '../../../../../../../services/bctw-service';
+import { scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/keyx/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -131,13 +132,23 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
+      // Send the file to BCTW Api
+      const user: IBctwUser = {
+        keycloak_guid: req['system_user']?.user_guid,
+        username: req['system_user']?.user_identifier
+      };
+      const bctwService = new BctwService(user);
+      const bctwUploadResult = await bctwService.uploadKeyX(rawMediaFile);
+      console.log('bctwUploadResult', bctwUploadResult);
+
+      // Upsert attachment
       const attachmentService = new AttachmentService(connection);
 
       const upsertResult = await attachmentService.upsertSurveyAttachment(
         rawMediaFile,
         Number(req.params.projectId),
         Number(req.params.surveyId),
-        ATTACHMENT_TYPE.OTHER
+        ATTACHMENT_TYPE.KEYX
       );
 
       const metadata = {
