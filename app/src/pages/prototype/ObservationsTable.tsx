@@ -107,26 +107,30 @@ export const observationColumns: GridColDef<IObservationTableRow>[] = [
         <Icon path={mdiDotsVertical} size={1} />
       </IconButton>
     ],
-  },
-  /*
-  {
-    field: '_isModified',
-    type: 'boolean'
   }
-  */
 ];
 
 const ObservationsTable = (props: IObservationsTableProps) => {
   const classes = useStyles();
   
-  const { _rows, _setRowModesModel, _rowModesModel } = useContext(ObservationsContext);
+  const { _rows, _setRows, _setRowModesModel, _rowModesModel } = useContext(ObservationsContext);
   console.log('rowModesModel:', _rowModesModel);
 
-  
+  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, event) => {
+    console.log({ params })
+  }
+
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
     }
+  };
+
+  const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
+    const updatedRow: IObservationTableRow = { ...newRow, _isModified: true };
+
+    _setRows(_rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+    return updatedRow;
   };
 
   const numModified = _rows.filter((row) => row._isModified).length;
@@ -134,11 +138,13 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   return (
     <DataGrid
       editMode="row"
+      onRowEditStart={handleRowEditStart}
       onRowEditStop={handleRowEditStop}
-      processRowUpdate={(newRow, oldRow) => ({ ...newRow, _isModified: true })}
+      processRowUpdate={handleProcessRowUpdate}
       columns={observationColumns}
       rows={_rows}
       rowModesModel={_rowModesModel}
+      disableRowSelectionOnClick
       onRowModesModelChange={_setRowModesModel}
       localeText={{
         noRowsLabel: "No Records",
@@ -149,7 +155,13 @@ const ObservationsTable = (props: IObservationsTableProps) => {
           ].filter(Boolean).join(', ')
         }
       }}
-      getRowClassName={(params) => params.row._isModified ? classes.modifiedRow : ''}
+      getRowClassName={(params) => {
+        if (params.row._isModified || _rowModesModel) {
+          return classes.modifiedRow;
+        }
+
+        return '';
+      }}
       sx={{
         background: '#fff',
         border: 'none',
