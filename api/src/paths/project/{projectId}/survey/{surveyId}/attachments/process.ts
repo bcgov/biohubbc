@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { AttachmentKeyxService } from '../../../../../../services/attachment-keyx-service';
+import { AttachmentService } from '../../../../../../services/attachment-service';
 import { IBctwUser } from '../../../../../../services/bctw-service';
 import { getLogger } from '../../../../../../utils/logger';
 
@@ -102,8 +102,8 @@ export function processAttachments(): RequestHandler {
     try {
       await connection.open();
 
-      const attachmentKeyxService = new AttachmentKeyxService(connection);
-      await attachmentKeyxService.processKeyxRecords(user);
+      const attachmentService = new AttachmentService(connection);
+      await attachmentService.processKeyxRecords(user);
 
       await connection.commit();
 
