@@ -3,7 +3,7 @@ import Icon from "@mdi/react";
 import { Theme } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import { makeStyles } from "@mui/styles";
-import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { IObservationTableRow, ObservationsContext } from "contexts/observationsContext";
 import { useContext } from "react";
 // import { useEffect, useState } from "react";
@@ -121,9 +121,9 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true;
-    }
+    event.defaultMuiPrevented = true;
+    //if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+    // }
   };
 
   const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
