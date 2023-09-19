@@ -53,6 +53,7 @@ const SamplingSitePage = () => {
     methods: yup.array(yup.object().concat(SamplingSiteMethodYupSchema))
   });
 
+  console.log('SITE PAGE', formikRef.current?.values);
   return (
     <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
       <SamplingSiteHeader />

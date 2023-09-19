@@ -49,6 +49,13 @@ const MethodForm = () => {
           sx={{ width: '100%', backgroundColor: '#fff' }}
           displayEmpty
           value={formikProps.values.survey_sample_method_id}
+          renderValue={(selected) => {
+            if (selected) {
+              return dataLoader.codesDataLoader.data?.sample_methods.find((item) => item.id === selected)?.name;
+            } else {
+              return 'Select Method';
+            }
+          }}
           name={`survey_sample_method_id`}
           onChange={formikProps.handleChange}>
           {dataLoader.codesDataLoader.data.sample_methods.map((item) => (
