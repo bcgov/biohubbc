@@ -88,69 +88,17 @@ const SamplingMethodForm = () => {
       </Menu>
 
       <Box component="fieldset">
-        <Typography component="legend">Specify Sampling Methods</Typography>
-        <Typography
-          variant="body1"
-          color="textSecondary"
-          sx={{
-            maxWidth: '72ch'
-          }}>
-          Methods defined below will be applied to all imported sampling sites boundaries. This information can be
-          modified later if required.
-        </Typography>
-
-        {values.methods.map((item, index) => (
-          <Card
-            variant="outlined"
-            sx={{
-              background: grey[100],
-              '& .MuiCardHeader-subheader': {
-                display: '-webkit-box',
-                WebkitLineClamp: '2',
-                WebkitBoxOrient: 'vertical',
-                maxWidth: '92ch',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                fontSize: '14px'
-              },
-              mt: 1,
-              '& .MuiCardHeader-title': {
-                mb: 0.5
-              }
-            }}>
-            <CardHeader
-              title={`Sampling Method ${index + 1}`}
-              subheader={item.description}
-              action={
-                <IconButton
-                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleMenuClick(event, index)}
-                  aria-label="settings">
-                  <MoreVertIcon />
-                </IconButton>
-              }
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Time Periods
-              </Typography>
-              <List dense>
-                {item.periods.map((period) => (
-                  <>
-                    <Divider />
-                    <ListItem>
-                      <ListItemIcon>
-                        <Icon path={mdiCalendarRangeOutline} size={1} />
-                      </ListItemIcon>
-                      <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
-                    </ListItem>
-                  </>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
-        ))}
-
         <form>
+          <Typography component="legend">Specify Sampling Methods</Typography>
+          <Typography
+            variant="body1"
+            color="textSecondary"
+            sx={{
+              maxWidth: '72ch'
+            }}>
+            Methods defined below will be applied to all imported sampling sites boundaries. This information can be
+            modified later if required.
+          </Typography>
           <Button
             sx={{
               mt: 1
@@ -166,6 +114,57 @@ const SamplingMethodForm = () => {
             }}>
             Add Method
           </Button>
+
+          {values.methods.map((item, index) => (
+            <Card
+              variant="outlined"
+              sx={{
+                background: grey[100],
+                '& .MuiCardHeader-subheader': {
+                  display: '-webkit-box',
+                  WebkitLineClamp: '2',
+                  WebkitBoxOrient: 'vertical',
+                  maxWidth: '92ch',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  fontSize: '14px'
+                },
+                mt: 1,
+                '& .MuiCardHeader-title': {
+                  mb: 0.5
+                }
+              }}>
+              <CardHeader
+                title={`Sampling Method ${index + 1}`}
+                subheader={item.description}
+                action={
+                  <IconButton
+                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleMenuClick(event, index)}
+                    aria-label="settings">
+                    <MoreVertIcon />
+                  </IconButton>
+                }
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  Time Periods
+                </Typography>
+                <List dense>
+                  {item.periods.map((period) => (
+                    <>
+                      <Divider />
+                      <ListItem>
+                        <ListItemIcon>
+                          <Icon path={mdiCalendarRangeOutline} size={1} />
+                        </ListItemIcon>
+                        <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
+                      </ListItem>
+                    </>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+          ))}
         </form>
       </Box>
     </>
