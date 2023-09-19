@@ -1,29 +1,31 @@
 import EditDialog from 'components/dialog/EditDialog';
 import { useState } from 'react';
 import yup from 'utils/YupSchema';
-import MethodForm, { ISamplingMethodData } from './MethodForm';
+import MethodForm, { ISurveySampleMethodData } from './MethodForm';
 
 interface ISamplingMethodProps {
   open: boolean;
-  onSubmit: (data: ISamplingMethodData) => void;
+  onSubmit: (data: ISurveySampleMethodData) => void;
   onClose: () => void;
 }
 
-const SamplingSiteMethodYupSchema = yup.object({
-  method_id: yup.number(),
-  description: yup.string(),
-  periods: yup.array(
-    yup.object({
-      start_date: yup.string().isValidDateString().required(),
-      end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').required()
-    })
-  )
+export const SamplingSiteMethodYupSchema = yup.object({
+  method_lookup_id: yup.number().required(),
+  description: yup.string().required(),
+  periods: yup
+    .array(
+      yup.object({
+        start_date: yup.string().isValidDateString().required(),
+        end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').required()
+      })
+    )
+    .min(1, 'At least 1 filled in time period is required for a Sampling Method')
 });
 
 const CreateSamplingMethod: React.FC<ISamplingMethodProps> = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (values: ISamplingMethodData) => {
+  const handleSubmit = (values: ISurveySampleMethodData) => {
     setIsSubmitting(false);
     props.onSubmit(values);
   };
@@ -40,7 +42,8 @@ const CreateSamplingMethod: React.FC<ISamplingMethodProps> = (props) => {
         component={{
           element: <MethodForm />,
           initialValues: {
-            sample_method_id: null,
+            survey_sample_method_id: null,
+            survey_sample_site_id: null,
             method_lookup_id: null,
             description: '',
             periods: []

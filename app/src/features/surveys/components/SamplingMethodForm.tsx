@@ -3,16 +3,22 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { useFormikContext } from 'formik';
 import { useState } from 'react';
+import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
 
 const SamplingMethodForm = () => {
+  const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
+  const { values } = formikProps;
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  console.log(values.methods.length);
   return (
     <>
       <CreateSamplingMethod
         open={isCreateModalOpen}
         onSubmit={(data) => {
+          console.log(data);
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
@@ -31,16 +37,20 @@ const SamplingMethodForm = () => {
           modified later if required.
         </Typography>
 
+        {/* {values.methods.map((item) => {
+            
+          })} */}
+
         <form>
           <Button
             sx={{
               mt: 1
             }}
-            data-testid="stratum-add-button"
+            data-testid="sample-method-add-button"
             variant="outlined"
             color="primary"
-            title="Create Stratum"
-            aria-label="Create Stratum"
+            title="Add Sample Method"
+            aria-label="Add Sample Method"
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => {
               setIsCreateModalOpen(true);
