@@ -123,11 +123,9 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
           <CustomTextField label="Device Model" name={`${index}.device_model`} />
         </Grid>
       </Grid>
-      <Box marginTop={'12px'}>
-        <Paper sx={{ padding: '12px' }}>
-          <Typography marginLeft={'6px'} marginBottom={'12px'}>
-            Deployments
-          </Typography>
+      <Box sx={{ mt: 3 }}>
+        <Paper sx={{ padding: 3 }}>
+          <Typography sx={{ ml: 1, mb: 3 }}>Deployments</Typography>
           {<DeploymentFormSection index={index} deployments={values[index].deployments ?? []} />}
         </Paper>
         {Object.entries(bctwErrors).length > 0 && (

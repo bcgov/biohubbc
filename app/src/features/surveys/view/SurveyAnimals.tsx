@@ -153,14 +153,14 @@ const SurveyAnimals: React.FC = () => {
   const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDevice[]) => {
     const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
     const critterTelemetryDevice = { ...data[0], critter_id: critter?.critter_id ?? '' };
-    if (telemetryFormMode === 'add') {
+    if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
       try {
         await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
         setPopup('Successfully added deployment.');
       } catch (e) {
         setPopup('Failed to add deployment.');
       }
-    } else if (telemetryFormMode === 'edit') {
+    } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
       for (const formValues of data) {
         const existingDevice = deploymentData?.find((a) => a.device_id === formValues.device_id);
         const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
@@ -223,7 +223,9 @@ const SurveyAnimals: React.FC = () => {
         }}
       />
       <EditDialog
-        dialogTitle={telemetryFormMode === 'add' ? 'Add Telemetry Device' : 'Edit Telemetry Devices'}
+        dialogTitle={
+          telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'Add Telemetry Device' : 'Edit Telemetry Devices'
+        }
         open={openDeviceDialog}
         component={{
           element: <TelemetryDeviceForm mode={telemetryFormMode} />,

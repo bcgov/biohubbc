@@ -1,12 +1,21 @@
+import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { BctwService } from '../../../services/bctw-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
-import { upsertDevice } from './index';
+import { POST, upsertDevice } from './index';
 
 describe('upsertDevice', () => {
   afterEach(() => {
     sinon.restore();
+  });
+
+  describe('openapi schema', () => {
+    const ajv = new Ajv();
+
+    it('is valid openapi v3 schema', () => {
+      expect(ajv.validateSchema((POST.apiDoc as unknown) as object)).to.be.true;
+    });
   });
 
   it('upsert device details', async () => {
@@ -19,5 +28,20 @@ describe('upsertDevice', () => {
 
     expect(mockRes.statusValue).to.equal(200);
     expect(mockUpsertDevice).to.have.been.calledOnce;
+  });
+
+  it('catches and re-throws errors', async () => {
+    const mockError = new Error('a test error');
+    const mockBctwService = sinon.stub(BctwService.prototype, 'updateDevice').rejects(mockError);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    const requestHandler = upsertDevice();
+    try {
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect(mockBctwService.calledOnce).to.be.true;
+    }
   });
 });
