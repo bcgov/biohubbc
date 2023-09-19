@@ -300,11 +300,10 @@ export function checkFileForKeyx(file: Express.Multer.File): boolean {
     const zip = new AdmZip(file.buffer);
     const zipEntries = zip.getEntries();
     for (const zipEntry of zipEntries) {
-      if (zipEntry.entryName.endsWith('.keyx')) {
-        return true;
+      if (!zipEntry.entryName.endsWith('.keyx')) {
+        return false;
       }
     }
   }
-
-  return false;
+  return true;
 }

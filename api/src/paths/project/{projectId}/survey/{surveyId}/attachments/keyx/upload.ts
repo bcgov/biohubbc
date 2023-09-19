@@ -7,7 +7,7 @@ import { HTTP400 } from '../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { BctwService, IBctwUser } from '../../../../../../../services/bctw-service';
-import { scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { checkFileForKeyx, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/keyx/upload');
@@ -133,6 +133,10 @@ export function uploadMedia(): RequestHandler {
       }
 
       // Send the file to BCTW Api
+      if (!checkFileForKeyx(rawMediaFile)) {
+        throw new HTTP400('The file must either be a keyx file or a zip containing only keyx files.');
+      }
+
       const user: IBctwUser = {
         keycloak_guid: req['system_user']?.user_guid,
         username: req['system_user']?.user_identifier
