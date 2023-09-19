@@ -262,6 +262,20 @@ export class CritterbaseService {
     ]);
   }
 
+  async getCollectionUnits(category_id: string) {
+    return this._makeGetRequest(CbRoutes['collection-units'], [
+      { key: 'category_id', value: category_id },
+      { key: 'format', value: 'asSelect' }
+    ]);
+  }
+
+  async getTaxonCollectionCategories(taxon_id: string) {
+    return this._makeGetRequest(CbRoutes['taxon-collection-categories'], [
+      { key: 'taxon_id', value: taxon_id },
+      { key: 'format', value: 'asSelect' }
+    ]);
+  }
+
   async getQualitativeOptions(taxon_measurement_id: string, format = 'asSelect') {
     return this._makeGetRequest(CbRoutes['taxon-qualitative-measurement-options'], [
       { key: 'taxon_measurement_id', value: taxon_measurement_id },

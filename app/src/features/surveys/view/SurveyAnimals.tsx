@@ -78,6 +78,7 @@ const SurveyAnimals: React.FC = () => {
     captures: [],
     markings: [],
     mortality: [],
+    collectionUnits: [],
     measurements: [],
     family: [],
     images: [],

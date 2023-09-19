@@ -19,6 +19,7 @@ export interface ICbSelectField extends ICbSelectSharedProps {
   route: string;
   param?: string;
   query?: string;
+  disabledValues?: Record<string, boolean>;
   handleChangeSideEffect?: (value: string, label: string) => void;
 }
 
@@ -35,7 +36,7 @@ interface ICbSelectOption {
  **/
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
-  const { name, label, route, param, query, handleChangeSideEffect, controlProps } = props;
+  const { name, label, route, param, query, handleChangeSideEffect, controlProps, disabledValues } = props;
 
   const api = useCritterbaseApi();
   const isMounted = useIsMounted();
@@ -89,7 +90,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
       {data?.map((a) => {
         const item = typeof a === 'string' ? { label: a, value: a } : { label: a.value, value: a.id };
         return (
-          <MenuItem key={item.value} value={item.value}>
+          <MenuItem disabled={disabledValues?.[item.value]} key={item.value} value={item.value}>
             {item.label}
           </MenuItem>
         );
