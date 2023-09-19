@@ -103,7 +103,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
     }
   };
 
-  const getExistingValue = (existingValues: (number | string)[]): IMultiAutocompleteFieldOption[] => {
+  const getExistingValue = (existingValues?: (number | string)[]): IMultiAutocompleteFieldOption[] => {
     if (existingValues) {
       return options.filter((option) => existingValues.includes(option.value));
     }
@@ -134,8 +134,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
               icon={<CheckBoxOutlineBlank fontSize="small" />}
               checkedIcon={<CheckBox fontSize="small" />}
               checked={selected}
-              // Always seem to be disabled
-              disabled={(props.options && props.options?.indexOf(renderOption) !== -1) || false}
+              disabled={props.options.includes(renderOption) || false}
               value={renderOption.value}
               color="default"
             />

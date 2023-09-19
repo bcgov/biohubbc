@@ -20,7 +20,8 @@ export const SurveyLocationInitialValues: ISurveyLocationForm = {
     {
       survey_location_id: null as unknown as number,
       name: '',
-      // TODO description is temporarily hardcoded until the new UI to populate this field is implemented
+      // TODO description is temporarily hardcoded until the new UI to populate this field is implemented in
+      // https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-219
       description: 'Insert description here',
       geojson: [],
       revision_count: 0

@@ -486,6 +486,14 @@ export class SurveyService extends DBService {
     return surveyId;
   }
 
+  /**
+   * Inserts location data.
+   *
+   * @param {number} surveyId
+   * @param {PostLocationData} data
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
   async insertSurveyLocations(surveyId: number, data: PostLocationData): Promise<void> {
     const service = new SurveyLocationService(this.connection);
     return service.insertSurveyLocation(surveyId, data);
@@ -504,6 +512,14 @@ export class SurveyService extends DBService {
     return service.upsertSurveyBlocks(surveyId, blocks);
   }
 
+  /**
+   * Insert region data.
+   *
+   * @param {number} projectId
+   * @param {Feature[]} features
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {
     const regionService = new RegionService(this.connection);
     return regionService.addRegionsToSurveyFromFeatures(projectId, features);

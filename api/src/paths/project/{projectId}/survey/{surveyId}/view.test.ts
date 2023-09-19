@@ -95,7 +95,6 @@ describe('survey/{surveyId}/view', () => {
 
         const response = responseValidator.validateResponse(200, apiResponse);
 
-        console.log(response);
         expect(response).to.equal(undefined);
       });
 

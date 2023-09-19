@@ -19,11 +19,11 @@ interface IStartEndDateFieldsProps {
   endDateHelperText?: string;
 }
 
-const CalendarStartIcon: React.FC = () => {
+const CalendarStartIcon = () => {
   return <Icon path={mdiCalendarStart} size={1} />;
 };
 
-const CalendarEndIcon: React.FC = () => {
+const CalendarEndIcon = () => {
   return <Icon path={mdiCalendarEnd} size={1} />;
 };
 

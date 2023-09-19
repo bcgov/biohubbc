@@ -3,15 +3,16 @@ import { z } from 'zod';
 import { PostLocationData } from '../models/survey-create';
 import { PutSurveyLocationData } from '../models/survey-update';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
+import { jsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
 
 export const SurveyLocationRecord = z.object({
   survey_location_id: z.number(),
   name: z.string(),
   description: z.string(),
-  geography: z.any(),
-  geojson: z.any(),
-  geometry: z.any().nullable(),
+  geometry: z.record(z.any()).nullable(),
+  geography: z.string(),
+  geojson: jsonSchema,
   revision_count: z.number()
 });
 

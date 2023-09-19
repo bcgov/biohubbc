@@ -18,7 +18,7 @@ interface IDateProps {
   other?: TextFieldProps;
 }
 
-const CalendarIcon: React.FC = () => {
+const CalendarIcon = () => {
   return <Icon path={mdiCalendar} size={1} />;
 };
 

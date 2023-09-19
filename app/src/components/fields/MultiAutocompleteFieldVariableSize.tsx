@@ -272,7 +272,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
               checkedIcon={<CheckBox fontSize="small" />}
               checked={selected}
               // Always seem to be disabled
-              disabled={(props.options && props.options?.indexOf(renderOption) !== -1) || false}
+              disabled={props.options?.includes(renderOption) || false}
               value={renderOption.value}
               color="default"
             />
