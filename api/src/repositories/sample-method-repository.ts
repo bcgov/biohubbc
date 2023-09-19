@@ -5,8 +5,8 @@ import { BaseRepository } from './base-repository';
 
 export interface PostSampleMethod {
   survey_sample_method_id: number | null;
-  survey_id: number;
-  name: string;
+  survey_sample_site_id: number;
+  methodName: string;
   description: string;
 }
 
@@ -33,17 +33,17 @@ export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
  */
 export class SampleMethodRepository extends BaseRepository {
   /**
-   * Gets all survey Sample Locations.
+   * Gets all survey Sample Methods.
    *
-   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleMethodRecord[]>}
    * @memberof SampleMethodRepository
    */
-  async getSampleMethodsForSurveyId(surveyId: number): Promise<SampleMethodRecord[]> {
+  async getSampleMethodsForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleMethodRecord[]> {
     const sql = SQL`
       SELECT *
       FROM survey_sample_method
-      WHERE survey_id = ${surveyId};
+      WHERE survey_sample_site_id = ${surveySampleSiteId};
     `;
 
     const response = await this.connection.sql(sql, SampleMethodRecord);
@@ -51,7 +51,7 @@ export class SampleMethodRepository extends BaseRepository {
   }
 
   /**
-   * updates a survey Sample Location.
+   * updates a survey Sample method.
    *
    * @param {PostSampleMethod} sample
    * @return {*}  {Promise<SampleMethodRecord>}
@@ -61,12 +61,9 @@ export class SampleMethodRepository extends BaseRepository {
     const sql = SQL`
       UPDATE survey_sample_method
       SET
-        survey_id=${sample.survey_id},
-        name=${sample.name},
+        survey_sample_site_id=${sample.survey_sample_site_id},
+        method_lookup_id= ( SELECT method_lookup_id FROM method_lookup WHERE name = ${sample.methodName}),
         description=${sample.description},
-        geography=public.geography(
-          public.ST_Force2D(
-
         WHERE
         survey_sample_method_id = ${sample.survey_sample_method_id}
       RETURNING
@@ -85,7 +82,7 @@ export class SampleMethodRepository extends BaseRepository {
   }
 
   /**
-   * Inserts a new survey Sample Location.
+   * Inserts a new survey Sample method.
    *
    * @param {PostSampleMethod} sample
    * @return {*}  {Promise<SampleMethodRecord>}
@@ -94,14 +91,12 @@ export class SampleMethodRepository extends BaseRepository {
   async insertSampleMethod(sample: PostSampleMethod): Promise<SampleMethodRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_method (
-      survey_id,
-      name,
+      survey_sample_site_id,
+      method_lookup_id,
       description,
-      geojson,
-      geography,
     ) VALUES (
-      ${sample.survey_id},
-      ${sample.name},
+      ${sample.survey_sample_site_id},
+      ( SELECT method_lookup_id FROM method_lookup WHERE name = ${sample.methodName}),
       ${sample.description},
       )
       RETURNING
@@ -110,7 +105,7 @@ export class SampleMethodRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, SampleMethodRecord);
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert sample location', [
+      throw new ApiExecuteSQLError('Failed to insert sample method', [
         'SampleMethodRepository->insertSampleMethod',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -120,18 +115,18 @@ export class SampleMethodRepository extends BaseRepository {
   }
 
   /**
-   * Deletes a survey Sample Location.
+   * Deletes a survey Sample method.
    *
-   * @param {number} sampleLocationId
+   * @param {number} sampMethodId
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async deleteSampleMethodRecord(sampleLocationId: number): Promise<SampleMethodRecord> {
+  async deleteSampleMethodRecord(sampMethodId: number): Promise<SampleMethodRecord> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_sample_method
       WHERE
-        survey_sample_method_id = ${sampleLocationId}
+        survey_sample_method_id = ${sampMethodId}
       RETURNING
         *;
     `;
