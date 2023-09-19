@@ -1,7 +1,12 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { Critter, IAnimalDeployment, IAnimalTelemetryDevice } from 'features/surveys/view/survey-animals/animal';
+import { Critter } from 'features/surveys/view/survey-animals/animal';
+import {
+  IAnimalDeployment,
+  IAnimalTelemetryDevice,
+  IDeploymentTimespan
+} from 'features/surveys/view/survey-animals/device';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,
@@ -460,28 +465,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Remove critter from survey. This will remove the critter from the list of critters associated with this survey.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} critterId
-   * @return {*}  {Promise<number>}
-   */
   const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: number): Promise<number> => {
     const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
     return data;
   };
 
-  /**
-   * Deploy a device to a critter. This will add a device to the list of devices associated with a critter in BCTW.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} critterId
-   * @param {(IAnimalTelemetryDevice & { critter_id: string })} body
-   * @return {*}  {Promise<number>}
-   */
   const addDeployment = async (
     projectId: number,
     surveyId: number,
@@ -490,20 +478,31 @@ const useSurveyApi = (axios: AxiosInstance) => {
   ): Promise<number> => {
     body.device_id = Number(body.device_id); //Turn this into validation class soon
     body.frequency = Number(body.frequency);
+    body.frequency_unit = body.frequency_unit?.length ? body.frequency_unit : undefined;
+    if (!body.deployments || body.deployments.length !== 1) {
+      throw Error('Calling this with any amount other than 1 deployments currently unsupported.');
+    }
+    const flattened = { ...body, ...body.deployments[0] };
     const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
+      flattened
+    );
+    return data;
+  };
+
+  const updateDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    body: IDeploymentTimespan
+  ): Promise<number> => {
+    const { data } = await axios.patch(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
       body
     );
     return data;
   };
 
-  /**
-   * Retrieve a list of deployments associated with the given survey.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @return {*}  {Promise<IAnimalDeployment[]>}
-   */
   const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
     return data;
@@ -532,7 +531,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     createCritterAndAddToSurvey,
     removeCritterFromSurvey,
     addDeployment,
-    getDeploymentsInSurvey
+    getDeploymentsInSurvey,
+    updateDeployment
   };
 };
 

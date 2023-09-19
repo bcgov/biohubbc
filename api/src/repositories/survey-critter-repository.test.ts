@@ -46,20 +46,20 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyCritterRepository(dbConnection);
 
-      const response = await repository.removeCritterFromSurvey(1, 1);
+      const response = await repository.removeCritterFromSurvey(1);
 
       expect(response).to.eql(1);
     });
   });
 
-  describe('addDeployment', () => {
-    it('should return result', async () => {
+  describe('upsertDeployment', () => {
+    it('should update existing row', async () => {
       const mockResponse = ({ rows: [{ submissionId: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyCritterRepository(dbConnection);
 
-      const response = await repository.addDeployment(1, 'deployment_id');
+      const response = await repository.upsertDeployment(1, 'deployment_id');
 
       expect(response).to.eql(1);
     });
