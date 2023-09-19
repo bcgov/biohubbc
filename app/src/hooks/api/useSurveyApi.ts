@@ -224,8 +224,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}
    */
-  const processSurveyKeyxAttachments = async (projectId: number, surveyId: number) => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/processkeyx`);
+  const processSurveyAttachments = async (projectId: number, surveyId: number) => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/process`);
     return data;
   };
 
@@ -545,7 +545,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     removeCritterFromSurvey,
     addDeployment,
     getDeploymentsInSurvey,
-    processSurveyKeyxAttachments
+    processSurveyAttachments
   };
 };
 

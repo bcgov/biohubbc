@@ -31,7 +31,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  processKeyxAttachments()
+  processAttachments()
 ];
 
 POST.apiDoc = {
@@ -89,7 +89,7 @@ POST.apiDoc = {
   }
 };
 
-export function processKeyxAttachments(): RequestHandler {
+export function processAttachments(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Process attachments', message: 'params', req_params: req.params });
 
