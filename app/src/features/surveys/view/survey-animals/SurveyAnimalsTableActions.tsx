@@ -1,17 +1,19 @@
-import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
-import { IAnimalDeployment } from './animal';
+import { IAnimalDeployment } from './device';
 
 export interface ITableActionsMenuProps {
   critter_id: number;
   devices?: IAnimalDeployment[];
+  onMenuOpen: (critter_id: number) => void;
   onAddDevice: (critter_id: number) => void;
+  onRemoveDevice: (critter_id: number) => void;
   onEditDevice: (critter_id: number) => void;
   onEditCritter: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
@@ -23,6 +25,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
 
   const handleClick = (event: React.MouseEvent) => {
     setAnchorEl(event.currentTarget);
+    props.onMenuOpen(props.critter_id);
   };
 
   const handleClose = () => {
@@ -59,22 +62,24 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           <ListItemIcon>
             <Icon path={mdiPlus} size={1} />
           </ListItemIcon>
-          <ListItemText>Add Telemetry Device</ListItemText>
+          <Typography variant="inherit">Add Telemetry Device</Typography>
         </MenuItem>
+        {props.devices?.length ? (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              props.onEditDevice(props.critter_id);
+            }}
+            data-testid="animal-table-row-edit-timespan">
+            <ListItemIcon>
+              <Icon path={mdiPencilOutline} size={1} />
+            </ListItemIcon>
+            <Typography variant="inherit">Edit Deployment Timespan</Typography>
+          </MenuItem>
+        ) : null}
         {
-          //To be implemented later.
+          //To be implemented in 217 - Edit Critters
           /*<MenuItem
-          onClick={() => {
-            handleClose();
-            props.onEditDevice(props.critter_id);
-          }}
-          data-testid="animal-table-row-edit-timespan">
-          <ListItemIcon>
-            <Icon path={mdiPencilOutline} size={1} />
-          </ListItemIcon>
-          <ListItemText>Edit Deployment Timespan</ListItemText>
-        </MenuItem>
-        <MenuItem
           onClick={() => {
             handleClose();
             props.onEditCritter(props.critter_id);
@@ -83,7 +88,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
-          <ListItemText>Edit Critter Details</ListItemText>
+          <Typography variant="inherit">Edit Critter Details</Typography>
         </MenuItem>*/
         }
         {!props.devices?.length && (
@@ -96,7 +101,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             <ListItemIcon>
               <Icon path={mdiTrashCanOutline} size={1} />
             </ListItemIcon>
-            <ListItemText>Remove Critter From Survey</ListItemText>
+            <Typography variant="inherit">Remove Critter From Survey</Typography>
           </MenuItem>
         )}
       </Menu>
