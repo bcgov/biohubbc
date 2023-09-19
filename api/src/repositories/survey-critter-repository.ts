@@ -51,27 +51,31 @@ export class SurveyCritterRepository extends BaseRepository {
    * @returns {*}
    * @member SurveyRepository
    */
-  async removeCritterFromSurvey(surveyId: number, critterId: number): Promise<number> {
-    defaultLog.debug({ label: 'removeCritterFromSurvey', surveyId });
-    const queryBuilder = getKnex().table('critter').delete().where({ survey_id: surveyId, critter_id: critterId });
+  async removeCritterFromSurvey(critterId: number): Promise<number> {
+    defaultLog.debug({ label: 'removeCritterFromSurvey', critterId });
+    const queryBuilder = getKnex().table('critter').delete().where({ critter_id: critterId });
     const response = await this.connection.knex(queryBuilder);
     return response.rowCount;
   }
 
   /**
-   * Add a deployment to the critter.
+   * Will insert a new critter - deployment uuid association, or update if it already exists.
    *
    * @param {number} critterId
    * @param {string} deplyomentId
-   * @return {*}  {Promise<number>}
+   * @returns {*}
    * @memberof SurveyCritterRepository
    */
-  async addDeployment(critterId: number, deplyomentId: string): Promise<number> {
+  async upsertDeployment(critterId: number, deplyomentId: string): Promise<number> {
     defaultLog.debug({ label: 'addDeployment', deplyomentId });
     const queryBuilder = getKnex()
       .table('deployment')
-      .insert({ critter_id: critterId, bctw_deployment_id: deplyomentId });
+      .insert({ critter_id: critterId, bctw_deployment_id: deplyomentId })
+      .onConflict(['critter_id', 'bctw_deployment_id'])
+      .merge(['critter_id', 'bctw_deployment_id']);
+
     const response = await this.connection.knex(queryBuilder);
+
     return response.rowCount;
   }
 }
