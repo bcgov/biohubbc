@@ -19,14 +19,6 @@ interface IStartEndDateFieldsProps {
   endDateHelperText?: string;
 }
 
-const CalendarStartIcon = () => {
-  return <Icon path={mdiCalendarStart} size={1} />;
-};
-
-const CalendarEndIcon = () => {
-  return <Icon path={mdiCalendarEnd} size={1} />;
-};
-
 /**
  * Start/end date fields - commonly used throughout forms
  *
@@ -63,7 +55,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
         <Grid item xs={12} md={4}>
           <DatePicker
             slots={{
-              openPickerIcon: CalendarStartIcon
+              openPickerIcon: () => <Icon path={mdiCalendarStart} size={1} />
             }}
             slotProps={{
               textField: {
@@ -102,7 +94,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
         <Grid item xs={12} md={4}>
           <DatePicker
             slots={{
-              openPickerIcon: CalendarEndIcon
+              openPickerIcon: () => <Icon path={mdiCalendarEnd} size={1} />
             }}
             slotProps={{
               textField: {

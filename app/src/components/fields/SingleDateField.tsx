@@ -18,10 +18,6 @@ interface IDateProps {
   other?: TextFieldProps;
 }
 
-const CalendarIcon = () => {
-  return <Icon path={mdiCalendar} size={1} />;
-};
-
 /**
  * Single date field
  *
@@ -47,7 +43,7 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <DatePicker
         slots={{
-          openPickerIcon: CalendarIcon
+          openPickerIcon: () => <Icon path={mdiCalendar} size={1} />
         }}
         slotProps={{
           openPickerButton: { id: 'date_input_button' },
