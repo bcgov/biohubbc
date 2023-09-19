@@ -1,4 +1,3 @@
-import AdmZip from 'adm-zip';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
@@ -7,7 +6,7 @@ import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../services/attachment-service';
-import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { checkFileForKeyx, scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
@@ -141,24 +140,8 @@ export function uploadMedia(): RequestHandler {
         ATTACHMENT_TYPE.OTHER
       );
 
-      // Check for keyx files in the raw media
-      const keyxArray = [];
-      const zipMimeTypes = ['application/zip', 'application/x-zip-compressed', 'application/zip-compressed'];
-
-      if (rawMediaFile?.originalname.endsWith('.keyx')) {
-        keyxArray.push(rawMediaFile);
-      } else if (zipMimeTypes.includes(rawMediaFile?.mimetype)) {
-        const zip = new AdmZip(rawMediaFile.buffer);
-        const zipEntries = zip.getEntries();
-        for (const zipEntry of zipEntries) {
-          if (zipEntry.entryName.endsWith('.keyx')) {
-            keyxArray.push(zipEntry);
-          }
-        }
-      }
-
       // If there are keyx files, add the keyx reference to the survey_attachment_keyx table
-      if (keyxArray.length) {
+      if (checkFileForKeyx(rawMediaFile)) {
         attachmentService.insertKeyxReference(upsertResult.survey_attachment_id);
       }
 

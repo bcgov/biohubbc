@@ -1,3 +1,4 @@
+import AdmZip from 'adm-zip';
 import AWS from 'aws-sdk';
 import {
   DeleteObjectOutput,
@@ -281,4 +282,22 @@ export async function scanFileForVirus(file: Express.Multer.File): Promise<boole
 
   // no virus found in file
   return true;
+}
+
+export function checkFileForKeyx(file: Express.Multer.File): boolean {
+  const zipMimeTypes = ['application/zip', 'application/x-zip-compressed', 'application/zip-compressed'];
+
+  if (file?.originalname.endsWith('.keyx')) {
+    return true;
+  } else if (zipMimeTypes.includes(file?.mimetype)) {
+    const zip = new AdmZip(file.buffer);
+    const zipEntries = zip.getEntries();
+    for (const zipEntry of zipEntries) {
+      if (zipEntry.entryName.endsWith('.keyx')) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
