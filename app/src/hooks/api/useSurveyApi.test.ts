@@ -74,6 +74,33 @@ describe('useSurveyApi', () => {
 
       expect(result).toBe(1);
     });
+
+    it('should fail to add deployment to survey critter', async () => {
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`).reply(201, 1);
+
+      const result = useSurveyApi(axios).addDeployment(projectId, surveyId, critterId, {
+        device_id: 1,
+        device_make: 'ATS',
+        device_model: 'E',
+        frequency: 1,
+        frequency_unit: 'Hz',
+        deployments: [
+          {
+            deployment_id: '',
+            attachment_start: '2023-01-01',
+            attachment_end: undefined
+          },
+          {
+            deployment_id: '',
+            attachment_start: '2023-01-01',
+            attachment_end: undefined
+          }
+        ],
+        critter_id: v4()
+      });
+
+      await expect(result).rejects.toThrow();
+    });
   });
 
   describe('getDeploymentsInSurvey', () => {
@@ -99,6 +126,19 @@ describe('useSurveyApi', () => {
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBe(1);
       expect(result[0].device_id).toBe(123);
+    });
+  });
+
+  describe('updateDeployment', () => {
+    it('should update a deployment', async () => {
+      mock.onPatch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`).reply(200, 1);
+      const result = await useSurveyApi(axios).updateDeployment(projectId, surveyId, critterId, {
+        attachment_end: undefined,
+        deployment_id: 'a',
+        attachment_start: 'a'
+      });
+
+      expect(result).toBe(1);
     });
   });
 });
