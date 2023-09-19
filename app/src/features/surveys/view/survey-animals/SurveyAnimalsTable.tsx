@@ -3,6 +3,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/tables/CustomDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import moment from 'moment';
 import { getFormattedDate } from 'utils/Utils';
 import { IAnimalDeployment } from './device';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
@@ -48,15 +49,15 @@ export const SurveyAnimalsTable = ({
 
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
     {
-      field: 'critter_id',
-      headerName: 'Critter ID',
-      flex: 1,
-      minWidth: 300
+      field: 'animal_id',
+      headerName: 'Alias',
+      flex: 1
     },
     {
-      field: 'animal_id',
-      headerName: 'Animal ID',
-      flex: 1
+      field: 'wlh_id',
+      headerName: 'WLH ID',
+      flex: 1,
+      renderCell: (params) => <Typography>{params.value ? params.value : 'None'}</Typography>
     },
     {
       field: 'taxon',
@@ -72,16 +73,30 @@ export const SurveyAnimalsTable = ({
       )
     },
     {
-      field: 'deployments',
-      headerName: 'Device ID',
+      field: 'current_devices',
+      headerName: 'Current Devices',
       flex: 1,
-      renderCell: (params) => (
-        <Typography>
-          {params.value?.length
-            ? params.value?.map((device: IAnimalDeployment) => device.device_id).join(', ')
-            : 'No Device'}
-        </Typography>
-      )
+      valueGetter: (params) => {
+        const currentDeploys = params.row.deployments?.filter(
+          (device: IAnimalDeployment) => !device.attachment_end || moment(device.attachment_end).isAfter(moment())
+        );
+        return currentDeploys?.length
+          ? currentDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
+          : 'No Device';
+      }
+    },
+    {
+      field: 'previous_devices',
+      headerName: 'Previous Devices',
+      flex: 1,
+      valueGetter: (params) => {
+        const previousDeploys = params.row.deployments?.filter(
+          (device: IAnimalDeployment) => device.attachment_end && moment(device.attachment_end).isBefore(moment())
+        );
+        return previousDeploys?.length
+          ? previousDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
+          : 'No Devices';
+      }
     },
     {
       field: 'actions',

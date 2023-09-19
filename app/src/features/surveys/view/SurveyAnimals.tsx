@@ -74,7 +74,7 @@ const SurveyAnimals: React.FC = () => {
   };
 
   const AnimalFormValues: IAnimal = {
-    general: { taxon_id: '', taxon_name: '', animal_id: '' },
+    general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '' },
     captures: [],
     markings: [],
     mortality: [],

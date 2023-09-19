@@ -56,7 +56,8 @@ export type ProjectionMode = 'wgs' | 'utm';
 export const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
   animal_id: yup.string().required(req),
-  taxon_name: yup.string()
+  taxon_name: yup.string(),
+  wlh_id: yup.string()
 });
 
 export const AnimalCaptureSchema = yup.object({}).shape({
@@ -256,6 +257,7 @@ export class Critter {
   critter_id: string;
   taxon_id: string;
   animal_id: string;
+  wlh_id?: string;
   captures: ICritterCapture[];
   markings: ICritterMarking[];
   measurements: {
@@ -421,6 +423,7 @@ export class Critter {
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;
     this.animal_id = animal.general.animal_id;
+    this.wlh_id = animal.general.wlh_id;
     const { captures, capture_locations } = this._formatCritterCaptures(animal.captures);
     const { mortalities, mortalities_locations } = this._formatCritterMortalities(animal.mortality);
 
