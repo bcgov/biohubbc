@@ -23,18 +23,19 @@ import { useFormikContext } from 'formik';
 import { useState } from 'react';
 import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
+import EditSamplingMethod from './EditSamplingMethod';
+import { IEditSurveySampleMethodData } from './MethodForm';
 
 const SamplingMethodForm = () => {
   const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  // const [editData, setEditData] = useState<ISurveySampleMethodData | undefined>(undefined);
-  console.log(values.methods.length);
+  const [editData, setEditData] = useState<IEditSurveySampleMethodData | undefined>(undefined);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    // setEditData({ index: index, block: values.blocks[index] });
+    setEditData({ ...values.methods[index], index });
   };
 
   return (
@@ -51,16 +52,20 @@ const SamplingMethodForm = () => {
           setIsCreateModalOpen(false);
         }}
       />
+
       {/* EDIT SAMPLE METHOD DIALOG */}
-      <CreateSamplingMethod
+      <EditSamplingMethod
+        initialData={editData}
         open={isEditModalOpen}
-        onSubmit={(data) => {
+        onSubmit={(data, index) => {
+          setFieldValue(`methods[${index}]`, data);
           setIsEditModalOpen(false);
         }}
         onClose={() => {
           setIsEditModalOpen(false);
         }}
       />
+
       <Menu
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}

@@ -19,9 +19,12 @@ interface ISurveySampleMethodPeriodData {
 export interface ISurveySampleMethodData {
   survey_sample_method_id: number | null;
   survey_sample_site_id: number | null;
-  method_lookup_id: number | null;
   description: string;
   periods: ISurveySampleMethodPeriodData[];
+}
+
+export interface IEditSurveySampleMethodData extends ISurveySampleMethodData {
+  index: number;
 }
 
 const MethodForm = () => {
@@ -36,7 +39,8 @@ const MethodForm = () => {
   if (!dataLoader.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-  console.log(formikProps.values);
+  console.log('Method Form Values', formikProps.values);
+  console.log('Method Form Errors', formikProps.errors);
   return (
     <form>
       <Box component={'fieldset'} mb={3}>
@@ -44,12 +48,9 @@ const MethodForm = () => {
         <Select
           sx={{ width: '100%', backgroundColor: '#fff' }}
           displayEmpty
-          value={formikProps.values.method_lookup_id}
-          name={`method_lookup_id`}
-          onChange={(event) => {
-            console.log(event);
-            formikProps.setFieldValue(`method_lookup_id`, 1);
-          }}>
+          value={formikProps.values.survey_sample_method_id}
+          name={`survey_sample_method_id`}
+          onChange={formikProps.handleChange}>
           {dataLoader.codesDataLoader.data.sample_methods.map((item) => (
             <MenuItem key={item.id} value={item.id}>
               {item.name}

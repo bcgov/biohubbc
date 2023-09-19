@@ -1,11 +1,11 @@
 import EditDialog from 'components/dialog/EditDialog';
-import { useState } from 'react';
 import yup from 'utils/YupSchema';
-import MethodForm, { ISurveySampleMethodData } from './MethodForm';
+import MethodForm, { IEditSurveySampleMethodData, ISurveySampleMethodData } from './MethodForm';
 
-interface ISamplingMethodProps {
+interface IEditSamplingMethodProps {
   open: boolean;
-  onSubmit: (data: ISurveySampleMethodData) => void;
+  initialData?: IEditSurveySampleMethodData;
+  onSubmit: (data: ISurveySampleMethodData, index?: number) => void;
   onClose: () => void;
 }
 
@@ -22,42 +22,35 @@ export const SamplingSiteMethodYupSchema = yup.object({
     .min(1, 'At least 1 filled in time period is required for a Sampling Method')
 });
 
-const CreateSamplingMethod: React.FC<ISamplingMethodProps> = (props) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = (values: ISurveySampleMethodData) => {
-    setIsSubmitting(false);
-    props.onSubmit(values);
-  };
-
+const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
+  const { open, initialData, onSubmit, onClose } = props;
   return (
     <>
       <EditDialog
-        dialogTitle={'Add Sampling Method'}
+        dialogTitle={'Edit Sampling Method'}
         dialogText={
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.'
         }
-        open={props.open}
-        dialogLoading={isSubmitting}
+        open={open}
+        dialogLoading={false}
         component={{
           element: <MethodForm />,
           initialValues: {
-            survey_sample_method_id: null,
-            survey_sample_site_id: null,
-            method_lookup_id: null,
-            description: '',
-            periods: []
+            survey_sample_method_id: initialData?.survey_sample_method_id || null,
+            survey_sample_site_id: initialData?.survey_sample_site_id || null,
+            description: initialData?.description || '',
+            periods: initialData?.periods || []
           },
           validationSchema: SamplingSiteMethodYupSchema
         }}
-        dialogSaveButtonLabel="Add"
-        onCancel={() => props.onClose()}
+        dialogSaveButtonLabel="Update"
+        onCancel={onClose}
         onSave={(formValues) => {
-          handleSubmit(formValues);
+          onSubmit(formValues, initialData?.index);
         }}
       />
     </>
   );
 };
 
-export default CreateSamplingMethod;
+export default EditSamplingMethod;
