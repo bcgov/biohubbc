@@ -70,6 +70,7 @@ export const GET_COLLAR_VENDORS_ENDPOINT = '/get-collar-vendors';
 export const HEALTH_ENDPOINT = '/health';
 export const GET_CODE_ENDPOINT = '/get-code';
 export const GET_DEVICE_DETAILS = '/get-collar-history-by-device/';
+export const UPLOAD_KEYX_ENDPOINT = '/import-xml';
 
 export class BctwService {
   user: IBctwUser;
@@ -239,7 +240,7 @@ export class BctwService {
         ...formData.getHeaders()
       }
     };
-    return await this.axiosInstance.post('/import-xml', formData, config);
+    return await this.axiosInstance.post(UPLOAD_KEYX_ENDPOINT, formData, config);
   }
 
   /**
