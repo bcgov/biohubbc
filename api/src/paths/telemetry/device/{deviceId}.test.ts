@@ -1,12 +1,21 @@
+import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { BctwService } from '../../../services/bctw-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
-import { getDeviceDetails } from './{deviceId}';
+import { GET, getDeviceDetails } from './{deviceId}';
 
 describe('getDeviceDetails', () => {
   afterEach(() => {
     sinon.restore();
+  });
+
+  describe('openapi schema', () => {
+    const ajv = new Ajv();
+
+    it('is valid openapi v3 schema', () => {
+      expect(ajv.validateSchema((GET.apiDoc as unknown) as object)).to.be.true;
+    });
   });
 
   it('gets device details', async () => {

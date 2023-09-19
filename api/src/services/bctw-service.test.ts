@@ -221,6 +221,17 @@ describe('BctwService', () => {
 
         expect(mockAxios).to.have.been.calledOnceWith(UPSERT_DEVICE_ENDPOINT, body);
       });
+      it('should send a post request and get some errors back', async () => {
+        sinon
+          .stub(bctwService.axiosInstance, 'post')
+          .resolves({ data: { results: [], errors: [{ device_id: 'error' }] } });
+
+        const body = {
+          device_id: 1,
+          collar_id: ''
+        };
+        await bctwService.updateDevice(body).catch((e) => expect(e.message).to.equal('[{"device_id":"error"}]'));
+      });
     });
   });
 });

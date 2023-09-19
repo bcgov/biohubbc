@@ -1,6 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { useDeviceApi } from './useDeviceApi';
+import { Device } from 'features/surveys/view/survey-animals/device';
 
 describe('useDeviceApi', () => {
   let mock: any;
@@ -39,5 +40,12 @@ describe('useDeviceApi', () => {
     mock.onGet(`/api/telemetry/device/${123}`).reply(200, { device: undefined, deployments: [] });
     const result = await useDeviceApi(axios).getDeviceDetails(123);
     expect(result.deployments.length).toBe(0);
+  });
+
+  it('should upsert a collar', async () => {
+    const device = new Device({ device_id: 123, collar_id: 'abc' });
+    mock.onPost(`/api/telemetry/device`).reply(200, { device_id: 123, collar_id: 'abc' });
+    const result = await useDeviceApi(axios).upsertCollar(device);
+    expect(result.device_id).toBe(123);
   });
 });
