@@ -25,7 +25,7 @@ export class SurveyLocationRepository extends BaseRepository {
    * @memberof SurveyLocationRepository
    */
   async insertSurveyLocation(surveyId: number, data: PostLocationData): Promise<void> {
-    const sql = SQL`
+    const sqlStatement = SQL`
       INSERT INTO survey_location (
         survey_id,
         name, 
@@ -44,7 +44,7 @@ export class SurveyLocationRepository extends BaseRepository {
           )
         )
       );`);
-    await this.connection.sql(sql);
+    await this.connection.sql(sqlStatement);
   }
 
   /**
@@ -54,7 +54,7 @@ export class SurveyLocationRepository extends BaseRepository {
    * @memberof SurveyLocationRepository
    */
   async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
-    const sql = SQL`
+    const sqlStatement = SQL`
       UPDATE 
         survey_location
       SET 
@@ -69,7 +69,8 @@ export class SurveyLocationRepository extends BaseRepository {
       WHERE 
         survey_location_id = ${data.survey_location_id};
     `);
-    await this.connection.sql(sql);
+
+    await this.connection.sql(sqlStatement);
   }
 
   /**

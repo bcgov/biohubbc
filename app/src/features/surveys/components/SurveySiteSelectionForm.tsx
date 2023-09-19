@@ -1,6 +1,6 @@
 import assert from 'assert';
 import YesNoDialog from 'components/dialog/YesNoDialog';
-import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import MultiAutocompleteField from 'components/fields/MultiAutocompleteField';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
@@ -41,20 +41,20 @@ export const SurveySiteSelectionYupSchema = yup.object().shape({
             )
           : schema;
       }),
-    stratums: yup.array().of(
-      yup.object({
-        survey_stratum_id: yup.number().optional(),
-        name: yup.string().required('Must provide a name for stratum'),
-        description: yup.string().optional()
-      })
-    )
-    /*
+    stratums: yup
+      .array()
+      .of(
+        yup.object({
+          survey_stratum_id: yup.number().optional(),
+          name: yup.string().required('Must provide a name for stratum'),
+          description: yup.string().optional()
+        })
+      )
       // TODO assure that duplicate stratums cannot be created
       .test('duplicateStratums', 'Stratums must have unique names.', (stratums) => {
         const entries = (stratums || []).map((stratum) => new String(stratum.name).trim());
         return new Set(entries).size === stratums?.length;
       })
-      */
   })
 });
 
@@ -79,31 +79,34 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
   const siteStrategies = codesContext.codesDataLoader.data.site_selection_strategies.map((code) => {
     return { label: code.name, value: code.name };
   });
+  const selectedSiteStrategies = siteStrategies.filter((item) => values.site_selection.strategies.includes(item.value));
 
   const handleConfirmDeleteAllStratums = () => {
-    // Delete all Stratums and hide the Stratums form
+    // Delete all Stratums
     setFieldValue('site_selection.stratums', []);
+    // Remove 'Stratified' from the list of selected strategies
+    setFieldValue(
+      'site_selection.strategies',
+      values.site_selection.strategies.filter((item) => item !== 'Stratified')
+    );
+    // Hide Stratums form
     props.onChangeStratumEntryVisibility(false);
+    // Close dialogue
     setShowStratumDeleteConfirmModal(false);
   };
 
   const handleCancelDeleteAllStratums = () => {
+    // Close dialogue and do nothing
     setShowStratumDeleteConfirmModal(false);
-    setFieldValue('site_selection.strategies', [...values.site_selection.strategies, 'Stratified']);
   };
 
   useEffect(() => {
     if (values.site_selection.strategies.includes('Stratified')) {
       props.onChangeStratumEntryVisibility(true);
-    } else if (values.site_selection.stratums.length > 0) {
-      // Prompt to confirm removing all stratums
-      setShowStratumDeleteConfirmModal(true);
     } else {
       props.onChangeStratumEntryVisibility(false);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.site_selection.strategies]);
+  }, [props, values.site_selection.strategies]);
 
   return (
     <>
@@ -123,11 +126,31 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
         onClose={handleCancelDeleteAllStratums}
         onYes={handleConfirmDeleteAllStratums}
       />
-      <MultiAutocompleteFieldVariableSize
+      <MultiAutocompleteField
         id="site_selection.strategies"
         label="Site Selection Strategies"
         options={siteStrategies}
+        selectedOptions={selectedSiteStrategies}
         required={false}
+        onChange={(event, selectedOptions, reason) => {
+          // If the user clicks to remove the 'Stratified' option and there are Stratums already defined, then show
+          // a warning dialogue asking the user if they are sure they want to remove the option and delete the Stratums
+          if (
+            reason === 'removeOption' &&
+            values.site_selection.strategies.includes('Stratified') &&
+            !selectedOptions.map((item) => item.value).includes('Stratified') &&
+            values.site_selection.stratums.length
+          ) {
+            setShowStratumDeleteConfirmModal(true);
+            return;
+          }
+
+          // Update selected options
+          setFieldValue(
+            'site_selection.strategies',
+            selectedOptions.map((item) => item.value)
+          );
+        }}
       />
     </>
   );

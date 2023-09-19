@@ -43,7 +43,7 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import SamplingMethodsForm from './components/SamplingMethodsForm';
-import LocationForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from './components/StudyAreaForm';
+import StudyAreaForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from './components/StudyAreaForm';
 import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
@@ -393,7 +393,7 @@ const CreateSurveyPage = () => {
                 <HorizontalSplitFormComponent
                   title="Study Area"
                   summary=""
-                  component={<LocationForm />}></HorizontalSplitFormComponent>
+                  component={<StudyAreaForm />}></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
 

@@ -14,11 +14,11 @@ export class SurveyLocationService extends DBService {
   }
 
   async insertSurveyLocation(surveyId: number, data: PostLocationData): Promise<void> {
-    return await this.surveyLocationRepository.insertSurveyLocation(surveyId, data);
+    return this.surveyLocationRepository.insertSurveyLocation(surveyId, data);
   }
 
   async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
-    return await this.surveyLocationRepository.updateSurveyLocation(data);
+    return this.surveyLocationRepository.updateSurveyLocation(data);
   }
   /**
    * Get Survey location for a given survey ID

@@ -735,8 +735,8 @@ export class SurveyService extends DBService {
   }
 
   async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
-    const service = new SurveyLocationService(this.connection);
-    return service.updateSurveyLocation(data);
+    const surveyLocationService = new SurveyLocationService(this.connection);
+    return surveyLocationService.updateSurveyLocation(data);
   }
 
   /**

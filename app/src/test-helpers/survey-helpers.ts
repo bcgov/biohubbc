@@ -84,6 +84,7 @@ export const surveyObject: SurveyViewObject = {
   ],
   locations: [
     {
+      survey_location_id: 1,
       name: 'study area',
       description: 'study area description',
       geometry: [geoJsonFeature],

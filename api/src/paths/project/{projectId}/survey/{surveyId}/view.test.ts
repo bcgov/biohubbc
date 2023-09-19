@@ -64,9 +64,13 @@ describe('survey/{surveyId}/view', () => {
             },
             locations: [
               {
+                survey_location_id: 1,
                 name: 'location name',
                 description: 'location description',
-                geojson: []
+                geometry: '',
+                geography: '',
+                geojson: [],
+                revision_count: 0
               }
             ],
             site_selection: {
@@ -91,6 +95,7 @@ describe('survey/{surveyId}/view', () => {
 
         const response = responseValidator.validateResponse(200, apiResponse);
 
+        console.log(response);
         expect(response).to.equal(undefined);
       });
 
@@ -133,8 +138,11 @@ describe('survey/{surveyId}/view', () => {
             },
             locations: [
               {
+                survey_location_id: 1,
                 name: 'location name',
                 description: 'location description',
+                geometry: null,
+                geography: '',
                 geojson: [],
                 revision_count: 0
               }

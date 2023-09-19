@@ -188,6 +188,7 @@ describe('SurveyStudyArea', () => {
       expect(mockUseApi.survey.updateSurvey).toBeCalledWith(1, getSurveyForViewResponse.surveyData.survey_details.id, {
         locations: [
           {
+            survey_location_id: 1,
             geojson: [
               {
                 geometry: {

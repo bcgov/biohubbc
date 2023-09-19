@@ -102,6 +102,7 @@ export interface IGetSurveyForUpdateResponsePartnerships {
 }
 
 export interface IGetSurveyLocation {
+  survey_location_id: number;
   name: string;
   description: string;
   geometry: Feature[];

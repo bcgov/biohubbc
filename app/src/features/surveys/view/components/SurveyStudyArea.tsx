@@ -21,7 +21,7 @@ import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
-import LocationForm, {
+import StudyAreaForm, {
   ISurveyLocationForm,
   SurveyLocationInitialValues,
   SurveyLocationYupSchema
@@ -163,9 +163,11 @@ const SurveyStudyArea = () => {
     setStudyAreaFormData({
       locations: [
         {
+          survey_location_id: surveyLocation.survey_location_id,
           name: surveyLocation.name,
           description: surveyLocation.description,
-          geojson: surveyLocation.geojson
+          geojson: surveyLocation.geojson,
+          revision_count: surveyLocation.revision_count
         }
       ]
     });
@@ -182,6 +184,7 @@ const SurveyStudyArea = () => {
       const surveyData = {
         locations: values.locations.map((item) => {
           return {
+            survey_location_id: item.survey_location_id,
             name: item.name,
             description: item.description,
             geojson: item.geojson,
@@ -216,7 +219,7 @@ const SurveyStudyArea = () => {
         dialogTitle={EditSurveyStudyAreaI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: <LocationForm />,
+          element: <StudyAreaForm />,
           initialValues: studyAreaFormData,
           validationSchema: SurveyLocationYupSchema
         }}

@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { PostSurveyObject } from '../../../../models/survey-create';
-import { SurveyLocationPostRequestObject } from '../../../../openapi/schemas/survey';
+import { GeoJSONFeature } from '../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../services/survey-service';
 import { getLogger } from '../../../../utils/logger';
@@ -221,7 +221,28 @@ POST.apiDoc = {
               }
             },
             locations: {
-              ...(SurveyLocationPostRequestObject as object)
+              description: 'Survey location data',
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['name', 'description', 'geojson'],
+                properties: {
+                  name: {
+                    type: 'string',
+                    maxLength: 100
+                  },
+                  description: {
+                    type: 'string',
+                    maxLength: 250
+                  },
+                  geojson: {
+                    type: 'array',
+                    items: {
+                      ...(GeoJSONFeature as object)
+                    }
+                  }
+                }
+              }
             },
             site_selection: {
               type: 'object',

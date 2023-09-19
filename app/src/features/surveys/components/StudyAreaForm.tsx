@@ -7,19 +7,23 @@ import yup from 'utils/YupSchema';
 
 export interface ISurveyLocationForm {
   locations: {
+    survey_location_id?: number;
     name: string;
     description: string;
     geojson: Feature[];
+    revision_count?: number;
   }[];
 }
 
 export const SurveyLocationInitialValues: ISurveyLocationForm = {
   locations: [
     {
+      survey_location_id: null as unknown as number,
       name: '',
       // TODO description is temporarily hardcoded until the new UI to populate this field is implemented
       description: 'Insert description here',
-      geojson: []
+      geojson: [],
+      revision_count: 0
     }
   ]
 };
@@ -27,7 +31,7 @@ export const SurveyLocationInitialValues: ISurveyLocationForm = {
 export const SurveyLocationYupSchema = yup.object({
   locations: yup.array(
     yup.object({
-      name: yup.string().max(50, 'Name cannot exceed 50 characters').required('Name is Required'),
+      name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
       description: yup.string().max(250, 'Description cannot exceed 250 characters'),
       geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
     })
