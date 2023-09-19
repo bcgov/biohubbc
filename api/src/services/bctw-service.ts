@@ -1,4 +1,3 @@
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import FormData from 'form-data';
 import { URLSearchParams } from 'url';
@@ -43,6 +42,28 @@ export const IDeploymentRecord = z.object({
 });
 
 export type IDeploymentRecord = z.infer<typeof IDeploymentRecord>;
+
+export const IUploadKeyxResponse = z.object({
+  errors: z.array(
+    z.object({
+      row: z.string(),
+      error: z.string(),
+      rownum: z.number()
+    })
+  ),
+  results: z.array(
+    z.object({
+      idcollar: z.number(),
+      comtype: z.string(),
+      idcom: z.string(),
+      collarkey: z.string(),
+      collartype: z.number(),
+      dtlast_fetch: z.string().nullable()
+    })
+  )
+});
+
+export type IUploadKeyxResponse = z.infer<typeof IUploadKeyxResponse>;
 
 export const IBctwUser = z.object({
   keycloak_guid: z.string(),
@@ -232,15 +253,33 @@ export class BctwService {
    * @return {*}  {Promise<string>}
    * @memberof BctwService
    */
-  async uploadKeyX(keyX: GetObjectOutput, keyXName: string): Promise<string> {
+  async uploadKeyX(keyX: Express.Multer.File) {
     const formData = new FormData();
-    formData.append('xml', keyX.Body, keyXName);
+    formData.append('xml', keyX.buffer, keyX.originalname);
     const config = {
       headers: {
         ...formData.getHeaders()
       }
     };
-    return await this.axiosInstance.post(UPLOAD_KEYX_ENDPOINT, formData, config);
+    const response = await this.axiosInstance.post(UPLOAD_KEYX_ENDPOINT, formData, config);
+    const data: IUploadKeyxResponse = response.data;
+    if (data.errors.length) {
+      const actualErrors: string[] = [];
+      for (const error of data.errors) {
+        // Ignore errors that indicate that a keyX already exists
+        if (!error.error.endsWith('already exists')) {
+          actualErrors.push(error.error);
+        }
+      }
+      if (actualErrors.length) {
+        throw new ApiError(ApiErrorType.UNKNOWN, 'API request failed with errors', actualErrors);
+      }
+    }
+    return {
+      totalKeyxFiles: data.results.length + data.errors.length,
+      newRecords: data.results.length,
+      existingRecords: data.errors.length
+    };
   }
 
   /**
