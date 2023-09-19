@@ -284,6 +284,13 @@ export async function scanFileForVirus(file: Express.Multer.File): Promise<boole
   return true;
 }
 
+/**
+ * Returns true if the file is a keyx file, or a zip that contains a keyx file.
+ *
+ * @export
+ * @param {Express.Multer.File} file
+ * @return {*}  {boolean}
+ */
 export function checkFileForKeyx(file: Express.Multer.File): boolean {
   const zipMimeTypes = ['application/zip', 'application/x-zip-compressed', 'application/zip-compressed'];
 

@@ -106,13 +106,13 @@ export function processAttachments(): RequestHandler {
       await attachmentService.processKeyxRecords(user);
 
       await connection.commit();
-
-      return res.status(200).json({});
     } catch (error) {
       defaultLog.error({ label: 'processKeyxAttachments', message: 'error', error });
       await connection.rollback();
     } finally {
       connection.release();
     }
+    // ? Unsure what responses this endpoint should have / whether or not to throw an error.
+    return res.status(200);
   };
 }
