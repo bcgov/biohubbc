@@ -1,7 +1,23 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {
+  CardContent,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  MenuProps
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import { grey } from '@mui/material/colors';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
 import { useState } from 'react';
@@ -9,22 +25,68 @@ import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/Sampl
 import CreateSamplingMethod from './CreateSamplingMethod';
 
 const SamplingMethodForm = () => {
-  const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
-  const { values } = formikProps;
+  const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  // const [editData, setEditData] = useState<ISurveySampleMethodData | undefined>(undefined);
   console.log(values.methods.length);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+    setAnchorEl(event.currentTarget);
+    // setEditData({ index: index, block: values.blocks[index] });
+  };
+
   return (
     <>
+      {/* CREATE SAMPLE METHOD DIALOG */}
       <CreateSamplingMethod
         open={isCreateModalOpen}
         onSubmit={(data) => {
           console.log(data);
+          setFieldValue(`methods[${values.methods.length}]`, data);
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
           setIsCreateModalOpen(false);
         }}
       />
+      {/* EDIT SAMPLE METHOD DIALOG */}
+      <CreateSamplingMethod
+        open={isEditModalOpen}
+        onSubmit={(data) => {
+          setIsEditModalOpen(false);
+        }}
+        onClose={() => {
+          setIsEditModalOpen(false);
+        }}
+      />
+      <Menu
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}>
+        <MenuItem onClick={() => setIsEditModalOpen(true)}>
+          <ListItemIcon>
+            <Icon path={mdiPencilOutline} size={1} />
+          </ListItemIcon>
+          Edit Details
+        </MenuItem>
+        <MenuItem onClick={() => console.log('Delete me')}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          Remove
+        </MenuItem>
+      </Menu>
+
       <Box component="fieldset">
         <Typography component="legend">Specify Sampling Methods</Typography>
         <Typography
@@ -37,9 +99,56 @@ const SamplingMethodForm = () => {
           modified later if required.
         </Typography>
 
-        {/* {values.methods.map((item) => {
-            
-          })} */}
+        {values.methods.map((item, index) => (
+          <Card
+            variant="outlined"
+            sx={{
+              background: grey[100],
+              '& .MuiCardHeader-subheader': {
+                display: '-webkit-box',
+                WebkitLineClamp: '2',
+                WebkitBoxOrient: 'vertical',
+                maxWidth: '92ch',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                fontSize: '14px'
+              },
+              mt: 1,
+              '& .MuiCardHeader-title': {
+                mb: 0.5
+              }
+            }}>
+            <CardHeader
+              title={`Sampling Method ${index + 1}`}
+              subheader={item.description}
+              action={
+                <IconButton
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleMenuClick(event, index)}
+                  aria-label="settings">
+                  <MoreVertIcon />
+                </IconButton>
+              }
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                Time Periods
+              </Typography>
+              <List dense>
+                {item.periods.map((period) => (
+                  <>
+                    <Divider />
+                    <ListItem>
+                      <ListItemIcon>
+                        <Icon path={mdiCalendarRangeOutline} size={1} />
+                      </ListItemIcon>
+                      <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
+                    </ListItem>
+                  </>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        ))}
 
         <form>
           <Button
