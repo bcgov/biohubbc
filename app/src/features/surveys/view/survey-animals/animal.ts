@@ -4,6 +4,7 @@ import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
+import { AnimalTelemetryDeviceSchema } from './device';
 
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
@@ -148,32 +149,6 @@ export const AnimalRelationshipSchema = yup.object({}).shape({
   relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });
 
-export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
-  device_id: numSchema.required(req),
-  device_make: yup.string().required(req),
-  frequency: numSchema.required(req),
-  frequency_unit: yup.string().required(req),
-  device_model: yup.string().required(req),
-  attachment_start: yup.string().required(req),
-  attachment_end: yup.string()
-});
-
-export const AnimalDeploymentSchema = yup.object({}).shape({
-  assignment_id: yup.string(),
-  collar_id: yup.string(),
-  critter_id: yup.string(),
-  created_at: yup.string(),
-  created_by_user_id: yup.string(),
-  updated_at: yup.string(),
-  updated_by_user_id: yup.string(),
-  valid_from: yup.string(),
-  valid_to: yup.string(),
-  attachment_start: yup.string(),
-  attachment_end: yup.string(),
-  deployment_id: yup.string(),
-  device_id: yup.number()
-});
-
 const AnimalImageSchema = yup.object({}).shape({});
 
 export const AnimalSchema = yup.object({}).shape({
@@ -209,15 +184,11 @@ export type IAnimalMortality = InferType<typeof AnimalMortalitySchema>;
 
 export type IAnimalRelationship = InferType<typeof AnimalRelationshipSchema>;
 
-export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
-
 export type IAnimalImage = InferType<typeof AnimalImageSchema>;
 
 export type IAnimal = InferType<typeof AnimalSchema>;
 
 export type IAnimalKey = keyof IAnimal;
-
-export type IAnimalDeployment = InferType<typeof AnimalDeploymentSchema>;
 
 //Critterbase related types
 type ICritterID = { critter_id: string };

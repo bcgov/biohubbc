@@ -7,16 +7,16 @@ describe('SurveyAnimalsTableActions', () => {
 
   it('all buttons should be clickable', async () => {
     const { getByTestId } = render(
-      <>
-        <SurveyAnimalsTableActions
-          critter_id={1}
-          devices={[]}
-          onAddDevice={onAddDevice}
-          onEditDevice={() => {}}
-          onEditCritter={() => {}}
-          onRemoveCritter={onRemoveCritter}
-        />
-      </>
+      <SurveyAnimalsTableActions
+        critter_id={1}
+        devices={[]}
+        onAddDevice={onAddDevice}
+        onEditDevice={() => {}}
+        onEditCritter={() => {}}
+        onRemoveCritter={onRemoveCritter}
+        onMenuOpen={() => {}}
+        onRemoveDevice={() => {}}
+      />
     );
 
     fireEvent.click(getByTestId('animal actions'));
