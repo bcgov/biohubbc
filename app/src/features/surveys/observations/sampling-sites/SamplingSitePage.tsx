@@ -1,20 +1,20 @@
 import { Button, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { Container } from '@mui/system';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
+import { SamplingSiteMethodYupSchema } from 'features/surveys/components/CreateSamplingMethod';
+import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
 import SamplingSiteMethodForm from 'features/surveys/components/SamplingMethodForm';
 import SamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { Formik, FormikProps } from 'formik';
 import { useContext, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
+import SamplingSiteHeader from './SamplingSiteHeader';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -30,6 +30,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+export interface ICreateSamplingSiteRequest {
+  name: string;
+  description: string;
+  geojson: any[]; // extracted list from shape files
+  methods: ISurveySampleMethodData[];
+}
+
 const SamplingSitePage = () => {
   const classes = useStyles();
   const surveyContext = useContext(SurveyContext);
@@ -40,51 +47,20 @@ const SamplingSitePage = () => {
   }
 
   const samplingSiteYupSchema = yup.object({
-    sites: yup.array(yup.object({}))
+    name: yup.string().required(),
+    description: yup.string().required(),
+    sites: yup.array(yup.object({})),
+    methods: yup.array(yup.object().concat(SamplingSiteMethodYupSchema))
   });
 
   return (
     <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
-      {/* HEADER FOR SITE SAMPLING */}
-      <>
-        <Paper
-          square
-          sx={{
-            pt: 3,
-            pb: 3.5,
-            px: 3
-          }}>
-          <Breadcrumbs
-            aria-label="breadcrumb"
-            sx={{
-              mb: 1,
-              fontSize: '14px'
-            }}>
-            <Link underline="hover" href="#">
-              {surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            </Link>
-            <Link color="text.secondary" variant="body2" href="#">
-              Manage Survey Observations
-            </Link>
-            <Typography color="text.secondary" variant="body2">
-              New Sampling Site
-            </Typography>
-          </Breadcrumbs>
-          <Typography
-            variant="h3"
-            component="h1"
-            sx={{
-              ml: '-2px'
-            }}>
-            New Sampling Site
-          </Typography>
-        </Paper>
-      </>
+      <SamplingSiteHeader />
       <Box display="flex" flex="1 1 auto">
         <Container maxWidth="xl">
           <Formik
             innerRef={formikRef}
-            initialValues={{ sites: [] }}
+            initialValues={{ name: '', description: '', sites: [], methods: [] }}
             validationSchema={samplingSiteYupSchema}
             validateOnBlur={true}
             validateOnChange={false}
