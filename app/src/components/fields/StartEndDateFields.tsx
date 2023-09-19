@@ -80,7 +80,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
             maxDate={moment(DATE_LIMIT.max)}
             value={formattedStartDateValue}
             onChange={(value) => {
-              if (!value || value.creationData().input === 'Invalid Date') {
+              if (!value || String(value.creationData().input) === 'Invalid Date') {
                 // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
                 // contain an actual date string value if the field is not empty but is invalid.
                 setFieldValue(startName, null);
@@ -119,7 +119,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
             maxDate={moment(DATE_LIMIT.max)}
             value={formattedEndDateValue}
             onChange={(value: moment.Moment | null) => {
-              if (!value || value.creationData().input === 'Invalid Date') {
+              if (!value || String(value.creationData().input) === 'Invalid Date') {
                 // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
                 // contain an actual date string value if the field is not empty but is invalid.
                 setFieldValue(endName, null);
