@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { useDeviceApi } from './useDeviceApi';
 import { Device } from 'features/surveys/view/survey-animals/device';
+import { useDeviceApi } from './useDeviceApi';
 
 describe('useDeviceApi', () => {
   let mock: any;
