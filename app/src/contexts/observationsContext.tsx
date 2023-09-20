@@ -57,6 +57,7 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
  */
 export type IObservationsContext = {
   createNewRecord: () => void;
+  _commitRows: () => void;
   _rows: IObservationTableRow[]
   _rowModesModel: GridRowModesModel;
   _setRows: Dispatch<SetStateAction<IObservationTableRow[]>> // (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -68,6 +69,7 @@ export const ObservationsContext = createContext<IObservationsContext>({
   _rowModesModel: {},
   _setRows: () => {},
   _setRowModesModel: () => {},
+  _commitRows: () => {},
   createNewRecord: () => {},
 
 });
@@ -92,7 +94,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   const createNewRecord = () => {
     const id = uuidv4();
-
     _setRows((oldRows) => [
       ...oldRows,
       {
@@ -105,19 +106,32 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         samplingPeriod: '',
       }
     ]);
-
     _setRowModesModel((oldModel) => ({
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: 'speciesName' },
     }));
   };
 
+  const handleCommitRows = () => {
+    /*
+    _setRowModesModel((oldModel) => {
+      return Object.keys(oldModel)
+        .reduce((newModel: GridRowModesModel, key) => {
+          newModel[key] = { ...oldModel[key], mode: '' };
+
+          return newModel;
+        }, {});
+    })
+    */
+  }
+
   const observationsContext: IObservationsContext = {
     createNewRecord,
     _rows,
     _rowModesModel,
     _setRows,
-    _setRowModesModel
+    _setRowModesModel,
+    _commitRows: handleCommitRows
   };
 
   return (

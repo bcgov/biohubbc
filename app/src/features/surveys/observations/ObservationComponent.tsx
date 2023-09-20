@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiImport, mdiPlus } from '@mdi/js';
+import { mdiCogOutline, mdiFloppy, mdiImport, mdiPlus, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,7 +9,9 @@ import ObservationsTable from 'features/surveys/observations/ObservationsTable';
 import { useContext } from 'react';
 
 export const ObservationComponent = () => {
-  const observationsContext = useContext(ObservationsContext)
+  const observationsContext = useContext(ObservationsContext);
+
+  const showSaveButton = true;
 
   return (
     <Box
@@ -34,6 +36,16 @@ export const ObservationComponent = () => {
           }}>
           <strong>Observations</strong>
         </Typography>
+        {showSaveButton && (
+          <>  
+            <Button variant="contained" color="success" startIcon={<Icon path={mdiFloppy} size={1} />}>
+              Save Changes
+            </Button>
+            <Button variant="contained" color="error" startIcon={<Icon path={mdiTrashCan} size={1} />}>
+              Cancel
+            </Button>
+          </>
+        )}
         <Button variant="contained" color="primary" startIcon={<Icon path={mdiImport} size={1} />}>
           Import
         </Button>
