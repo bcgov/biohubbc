@@ -51,6 +51,17 @@ const GeneralAnimalForm = () => {
             />
           </HelpButtonTooltip>
         </Box>
+        <Box mb={2}>
+          <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
+            <CbSelectField
+              name={getAnimalFieldName<IAnimalGeneral>(name, 'sex')}
+              controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'sex'), size: 'small' }}
+              label={'Sex'}
+              id={'sex'}
+              route={'lookups/sex'}
+            />
+          </HelpButtonTooltip>
+        </Box>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
           <CustomTextField
             other={{ size: 'small', required: isRequiredInSchema(AnimalGeneralSchema, 'wlh_id') }}

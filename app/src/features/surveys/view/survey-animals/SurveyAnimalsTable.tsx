@@ -82,7 +82,7 @@ export const SurveyAnimalsTable = ({
         );
         return currentDeploys?.length
           ? currentDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
-          : 'No Device';
+          : 'No Devices';
       }
     },
     {

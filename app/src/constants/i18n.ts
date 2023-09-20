@@ -339,7 +339,9 @@ export const SurveyAnimalsI18N = {
   // Input help strings
   taxonHelp:
     'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family',
-  taxonLabelHelp: 'A custom and unique name for you to recognize this individual'
+  taxonLabelHelp: 'A custom and unique name for you to recognize this individual',
+  wlhIdHelp: 'The wildlife health ID associated with this critter.',
+  sexHelp: 'The sex of this critter. Leave as default Unknown if unsure.'
 };
 
 export const FundingSourceI18N = {

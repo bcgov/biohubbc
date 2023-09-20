@@ -57,7 +57,8 @@ export const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
   animal_id: yup.string().required(req),
   taxon_name: yup.string(),
-  wlh_id: yup.string()
+  wlh_id: yup.string(),
+  sex: yup.string()
 });
 
 export const AnimalCaptureSchema = yup.object({}).shape({
@@ -269,6 +270,7 @@ export class Critter {
   taxon_id: string;
   animal_id: string;
   wlh_id?: string;
+  sex?: string;
   captures: ICritterCapture[];
   markings: ICritterMarking[];
   measurements: {
@@ -443,6 +445,7 @@ export class Critter {
     this.taxon_name = animal.general.taxon_name;
     this.animal_id = animal.general.animal_id;
     this.wlh_id = animal.general.wlh_id;
+    this.sex = animal.general.sex;
     const { captures, capture_locations } = this._formatCritterCaptures(animal.captures);
     const { mortalities, mortalities_locations } = this._formatCritterMortalities(animal.mortality);
 

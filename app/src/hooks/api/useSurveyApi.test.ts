@@ -23,7 +23,7 @@ describe('useSurveyApi', () => {
   describe('createCritterAndAddToSurvey', () => {
     it('creates a critter successfully', async () => {
       const animal: IAnimal = {
-        general: { animal_id: '1', taxon_id: v4(), taxon_name: '1', wlh_id: 'a' },
+        general: { animal_id: '1', taxon_id: v4(), taxon_name: '1', wlh_id: 'a', sex: 'Male' },
         captures: [],
         markings: [],
         measurements: [],

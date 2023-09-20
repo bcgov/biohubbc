@@ -11,7 +11,7 @@ import {
 } from './animal';
 
 const animal: IAnimal = {
-  general: { taxon_id: 'a', taxon_name: 'taxon', animal_id: 'animal', wlh_id: 'a' },
+  general: { taxon_id: 'a', taxon_name: 'taxon', animal_id: 'animal', wlh_id: 'a', sex: 'Male' },
   captures: [
     {
       _id: v4(),
@@ -179,12 +179,7 @@ describe('Animal', () => {
       expect(c_marking.secondary_colour_id).toBe(a_marking.secondary_colour_id);
       expect(c_marking.marking_comment).toBe(a_marking.marking_comment);
     });
-    /*
-marking_type_id: '274fe690-e253-4987-b11a-5b762d38adf3',
-      taxon_marking_body_location_id: '372020d9-b9ee-4eb3-abdd-b476711bd1aa',
-      primary_colour_id: '4aa3cce7-94d0-42d0-a183-078db5fbdd34',
-      secondary_colour_id: '0b0dbfaa-fcc9-443f-8ac9-a22106663cba',
-      marking_comment: 'asdf'*/
+
     it('constructor should create collections and strip extra vals', () => {
       const c_collection = critter.collections[0];
       const a_collection = animal.collectionUnits[0];
