@@ -51,9 +51,12 @@ const SamplingSitePage = () => {
     name: yup.string().required(),
     description: yup.string().required(),
     sites: yup.array(yup.object({})),
-    methods: yup.array(yup.object().concat(SamplingSiteMethodYupSchema))
+    methods: yup.array(yup.object().concat(SamplingSiteMethodYupSchema)).min(1, 'At least 1 Sampling Method is required')
   });
 
+  const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
+    console.log(values);
+  };
   return (
     <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
       <SamplingSiteHeader />
@@ -65,7 +68,7 @@ const SamplingSitePage = () => {
             validationSchema={samplingSiteYupSchema}
             validateOnBlur={true}
             validateOnChange={false}
-            onSubmit={() => console.log('SUBMIT ME PLEASE')}>
+            onSubmit={handleSubmit}>
             <Box p={5} component={Paper} display="block">
               <HorizontalSplitFormComponent
                 title="Site Boundaries"
@@ -86,7 +89,7 @@ const SamplingSitePage = () => {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  onClick={() => console.log('Submit Form', formikRef.current?.values)}
+                  onClick={() => formikRef.current?.submitForm()}
                   className={classes.actionButton}>
                   Save and Exit
                 </Button>

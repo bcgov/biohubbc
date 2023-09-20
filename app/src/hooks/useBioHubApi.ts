@@ -12,6 +12,7 @@ import useProjectApi from './api/useProjectApi';
 import useProjectParticipationApi from './api/useProjectParticipationApi';
 import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
+import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSearchApi from './api/useSearchApi';
 import useSpatialApi from './api/useSpatialApi';
 import useSurveyApi from './api/useSurveyApi';
@@ -57,6 +58,8 @@ export const useBiohubApi = () => {
 
   const funding = useFundingSourceApi(apiAxios);
 
+  const samplingSite = useSamplingSiteApi(apiAxios);
+
   return useMemo(
     () => ({
       project,
@@ -73,7 +76,8 @@ export const useBiohubApi = () => {
       external,
       publish,
       spatial,
-      funding
+      funding,
+      samplingSite
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
