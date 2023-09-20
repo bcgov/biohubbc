@@ -7,7 +7,7 @@ import get from 'lodash-es/get';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
 
-export const isZipfile = (file: File): boolean => {
+export const isZipFile = (file: File): boolean => {
   if (!file?.type.match(/zip/) || !file?.name.includes('.zip')) {
     return false;
   }
@@ -23,9 +23,9 @@ export const isZipfile = (file: File): boolean => {
  * @param {File} file
  * @return {*}  {Promise<Feature[]>}
  */
-export const parseShapefile = async (file: File): Promise<Feature[]> => {
+export const parseShapeFile = async (file: File): Promise<Feature[]> => {
   return new Promise((resolve, reject) => {
-    if (!isZipfile(file)) {
+    if (!isZipFile(file)) {
       reject(new Error('Not a .zip file.'));
       return;
     }
@@ -83,11 +83,11 @@ export const parseShapefile = async (file: File): Promise<Feature[]> => {
  * @param {string} name The name of the formik field that the parsed geometry will be saved to
  * @param {FormikContextType<T>} formikProps The formik props
  */
-export const handleShapefileUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
+export const handleShapeFileUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
   const { values, setFieldValue, setFieldError } = formikProps;
 
   try {
-    const features = await parseShapefile(file);
+    const features = await parseShapeFile(file);
 
     setFieldValue(name, [...features, ...get(values, name)]);
   } catch (error) {

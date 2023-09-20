@@ -2,14 +2,11 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MapBoundary from 'components/boundary/MapBoundary';
 import { useFormikContext } from 'formik';
-import { useEffect, useState } from 'react';
+import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 
 const SurveySamplingSiteImportForm = () => {
-  const formikProps = useFormikContext<any>();
-  const [features, setFeatures] = useState<any[]>([]);
-  useEffect(() => {
-    setFeatures([]);
-  }, []);
+  const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
+
   return (
     <>
       <Box component="fieldset">
@@ -23,8 +20,11 @@ const SurveySamplingSiteImportForm = () => {
           Import a file
         </Typography>
         <MapBoundary
-          name="site.geojson"
-          title={`Site Boundary Preview ` + (features.length > 0 ? `(${features.length}) boundaries detected` : '')}
+          name="sites"
+          title={
+            `Site Boundary Preview ` +
+            (formikProps.values.sites.length > 0 ? `(${formikProps.values.sites.length}) boundaries detected` : '')
+          }
           mapId="study_area_form_map"
           bounds={undefined}
           formikProps={formikProps}

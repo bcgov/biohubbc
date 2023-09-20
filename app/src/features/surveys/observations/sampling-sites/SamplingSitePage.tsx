@@ -12,6 +12,7 @@ import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm'
 import SamplingSiteMethodForm from 'features/surveys/components/SamplingMethodForm';
 import SamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { Formik, FormikProps } from 'formik';
+import { Feature } from 'geojson';
 import { useContext, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface ICreateSamplingSiteRequest {
   name: string;
   description: string;
-  geojson: any[]; // extracted list from shape files
+  sites: Feature[]; // extracted list from shape files
   methods: ISurveySampleMethodData[];
 }
 
@@ -53,7 +54,6 @@ const SamplingSitePage = () => {
     methods: yup.array(yup.object().concat(SamplingSiteMethodYupSchema))
   });
 
-  console.log('SITE PAGE', formikRef.current?.values);
   return (
     <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
       <SamplingSiteHeader />
@@ -86,7 +86,7 @@ const SamplingSitePage = () => {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  onClick={() => console.log('Submit Form')}
+                  onClick={() => console.log('Submit Form', formikRef.current?.values)}
                   className={classes.actionButton}>
                   Save and Exit
                 </Button>

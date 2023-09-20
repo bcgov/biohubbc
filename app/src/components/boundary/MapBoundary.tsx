@@ -26,7 +26,7 @@ import {
   calculateUpdatedMapBounds,
   handleGPXUpload,
   handleKMLUpload,
-  handleShapefileUpload
+  handleShapeFileUpload
 } from 'utils/mapBoundaryUploadHelpers';
 
 const useStyles = makeStyles(() => ({
@@ -87,7 +87,7 @@ const MapBoundary = (props: IMapBoundaryProps) => {
   const boundaryUploadHandler = (): IUploadHandler => {
     return async (file) => {
       if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        handleShapefileUpload(file, name, formikProps);
+        await handleShapeFileUpload(file, name, formikProps);
       } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
         await handleGPXUpload(file, name, formikProps);
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
