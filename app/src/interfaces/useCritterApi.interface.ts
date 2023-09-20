@@ -37,6 +37,8 @@ type IMarkingResponse = {
   capture_id: string;
   mortality_id: string | null;
   taxon_marking_body_location_id: string;
+  primary_colour_id: string | null;
+  secondary_colour_id: string | null;
   marking_type_id: string;
   marking_material_id: string;
   identifier: string;

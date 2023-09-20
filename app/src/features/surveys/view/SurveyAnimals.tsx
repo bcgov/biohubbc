@@ -10,6 +10,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
 import { datesSameNullable, pluralize } from 'utils/Utils';
@@ -20,12 +21,18 @@ import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './s
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
 import TelemetryDeviceForm, { TELEMETRY_DEVICE_FORM_MODE } from './survey-animals/TelemetryDeviceForm';
+import { v4 } from 'uuid';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
   const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
+
+  enum ANIMAL_FORM_MODE {
+    ADD = 'add',
+    EDIT = 'edit'
+  }
 
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
@@ -34,6 +41,7 @@ const SurveyAnimals: React.FC = () => {
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
     TELEMETRY_DEVICE_FORM_MODE.ADD
   );
+  const [animalFormMode, setAnimalFormMode] = useState<ANIMAL_FORM_MODE>(ANIMAL_FORM_MODE.ADD);
 
   const { projectId, surveyId } = surveyContext;
   const {
@@ -59,6 +67,7 @@ const SurveyAnimals: React.FC = () => {
   }
 
   const toggleDialog = () => {
+    setAnimalFormMode(ANIMAL_FORM_MODE.ADD);
     setOpenAddCritterDialog((d) => !d);
   };
 
@@ -98,6 +107,63 @@ const SurveyAnimals: React.FC = () => {
         attachment_end: undefined
       }
     ]
+  };
+
+  const obtainAnimalFormInitialvalues = (mode: ANIMAL_FORM_MODE): IAnimal => {
+    switch (mode) {
+      case ANIMAL_FORM_MODE.ADD:
+        return AnimalFormValues;
+      case ANIMAL_FORM_MODE.EDIT: {
+        const existingCritter = critterData?.find(
+          (critter: IDetailedCritterWithInternalId) => currentCritterbaseCritterId === critter.critter_id
+        );
+        if (!existingCritter) {
+          throw Error('This should not be reachable.');
+        }
+        return {
+          general: {
+            wlh_id: existingCritter.wlh_id ?? '',
+            taxon_id: existingCritter.taxon_id,
+            animal_id: existingCritter.animal_id ?? '',
+            sex: existingCritter.sex,
+            taxon_name: existingCritter.taxon
+          },
+          captures: existingCritter?.capture.map((a) => ({
+            ...a,
+            capture_comment: a.capture_comment ?? '',
+            release_comment: a.release_comment ?? '',
+            capture_timestamp: new Date(a.capture_timestamp),
+            release_timestamp: a.release_timestamp ? new Date(a.release_timestamp) : undefined,
+            capture_latitude: a.capture_location?.latitude,
+            capture_longitude: a.capture_location?.longitude,
+            capture_coordinate_uncertainty: a.capture_location?.coordinate_uncertainty ?? 0,
+            release_longitude: a.release_location?.longitude,
+            release_latitude: a.release_location?.latitude,
+            release_coordinate_uncertainty: a.release_location?.coordinate_uncertainty ?? 0,
+            capture_utm_northing: 0,
+            capture_utm_easting: 0,
+            release_utm_easting: 0,
+            release_utm_northing: 0,
+            projection_mode: 'wgs',
+            _id: v4(),
+            show_release: !!a.release_location
+          })),
+          markings: existingCritter.marking.map((a) => ({
+            ...a,
+            primary_colour_id: a.primary_colour_id ?? '',
+            secondary_colour_id: a.secondary_colour_id ?? '',
+            marking_comment: a.comment,
+            _id: v4()
+          })),
+          mortality: [], //existingCritter?.mortality,
+          collectionUnits: [], //existingCritter?.collection_units,
+          measurements: [], //existingCritter?.measurement,
+          family: [],
+          images: [],
+          device: undefined
+        };
+      }
+    }
   };
 
   const obtainDeviceFormInitialValues = (mode: TELEMETRY_DEVICE_FORM_MODE) => {
@@ -219,7 +285,7 @@ const SurveyAnimals: React.FC = () => {
         onCancel={toggleDialog}
         component={{
           element: <IndividualAnimalForm getAnimalCount={setAnimalCount} />,
-          initialValues: AnimalFormValues,
+          initialValues: obtainAnimalFormInitialvalues(animalFormMode),
           validationSchema: AnimalSchema
         }}
       />
@@ -266,6 +332,10 @@ const SurveyAnimals: React.FC = () => {
             onEditDevice={(device_id) => {
               setTelemetryFormMode(TELEMETRY_DEVICE_FORM_MODE.EDIT);
               setOpenDeviceDialog(true);
+            }}
+            onEditCritter={(critter_id) => {
+              setAnimalFormMode(ANIMAL_FORM_MODE.EDIT);
+              setOpenAddCritterDialog(true);
             }}
           />
         ) : (

@@ -23,6 +23,7 @@ interface ISurveyAnimalsTableProps {
   onRemoveCritter: (critter_id: number) => void;
   onAddDevice: (critter_id: number) => void;
   onEditDevice: (device_id: number) => void;
+  onEditCritter: (critter_id: number) => void;
 }
 
 const noOpPlaceHolder = (critter_id: number) => {
@@ -35,7 +36,8 @@ export const SurveyAnimalsTable = ({
   onMenuOpen,
   onRemoveCritter,
   onAddDevice,
-  onEditDevice
+  onEditDevice,
+  onEditCritter
 }: ISurveyAnimalsTableProps): JSX.Element => {
   const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
     ? animalData.map((animal) => {
@@ -112,7 +114,7 @@ export const SurveyAnimalsTable = ({
           onMenuOpen={onMenuOpen}
           onAddDevice={onAddDevice}
           onRemoveDevice={noOpPlaceHolder}
-          onEditCritter={noOpPlaceHolder}
+          onEditCritter={onEditCritter}
           onEditDevice={onEditDevice}
           onRemoveCritter={onRemoveCritter}
         />
