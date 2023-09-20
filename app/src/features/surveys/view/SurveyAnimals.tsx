@@ -15,7 +15,7 @@ import React, { useContext, useState } from 'react';
 import { datesSameNullable, pluralize } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
+import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
 import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
@@ -74,7 +74,7 @@ const SurveyAnimals: React.FC = () => {
   };
 
   const AnimalFormValues: IAnimal = {
-    general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: 'Unknown' },
+    general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: AnimalSex.UNKNOWN },
     captures: [],
     markings: [],
     mortality: [],

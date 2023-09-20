@@ -6,6 +6,13 @@ import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
 import { AnimalTelemetryDeviceSchema } from './device';
 
+export enum AnimalSex {
+  MALE = 'Male',
+  FEMALE = 'Female',
+  UNKNOWN = 'Unknown',
+  HERM = 'Hermaphroditic'
+}
+
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
  * Returns formatted field name in regular or array format
@@ -58,7 +65,7 @@ export const AnimalGeneralSchema = yup.object({}).shape({
   animal_id: yup.string().required(req),
   taxon_name: yup.string(),
   wlh_id: yup.string(),
-  sex: yup.string()
+  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex))
 });
 
 export const AnimalCaptureSchema = yup.object({}).shape({
@@ -270,7 +277,7 @@ export class Critter {
   taxon_id: string;
   animal_id: string;
   wlh_id?: string;
-  sex?: string;
+  sex?: AnimalSex;
   captures: ICritterCapture[];
   markings: ICritterMarking[];
   measurements: {

@@ -334,14 +334,14 @@ export const SurveyAnimalsI18N = {
   animalCollectionUnitTitle: 'Ecological Units',
   animalCollectionUnitTitle2: 'Ecological Unit',
   animalCollectionUnitHelp:
-    'Ecological units are groups like population units, herds, and packs. Different species may different units and unit names.',
+    'Ecological units are groups such as population units, herds, and packs. Different species may different units and unit names.',
   animalCollectionUnitAddBtn: 'Add Unit',
   // Input help strings
   taxonHelp:
     'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family',
   taxonLabelHelp: 'A custom and unique name for you to recognize this individual',
-  wlhIdHelp: 'The wildlife health ID associated with this critter.',
-  sexHelp: 'The sex of this critter. Leave as default Unknown if unsure.'
+  wlhIdHelp: 'The Wildlife Health ID associated with this critter.',
+  sexHelp: 'The sex of this critter. Leave as Unknown if unsure.'
 };
 
 export const FundingSourceI18N = {
