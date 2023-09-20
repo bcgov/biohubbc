@@ -11,6 +11,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IDraftResponse } from 'interfaces/useDraftApi.interface';
+import { ICreateProjectResponse } from 'interfaces/useProjectApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import {
@@ -40,6 +42,12 @@ const mockUseApi = {
   },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+  },
+  project: {
+    createProject: jest.fn<Promise<ICreateProjectResponse>, []>()
+  },
+  user: {
+    searchSystemUser: jest.fn<Promise<ISystemUser[]>, []>()
   }
 };
 
@@ -70,6 +78,8 @@ describe('CreateProjectPage', () => {
     mockUseApi.draft.getDraft.mockClear();
     mockUseApi.spatial.getRegions.mockClear();
     mockUseApi.codes.getAllCodeSets.mockClear();
+    mockUseApi.project.createProject.mockClear();
+    mockUseApi.user.searchSystemUser.mockClear();
 
     mockUseApi.spatial.getRegions.mockResolvedValue({
       regions: []

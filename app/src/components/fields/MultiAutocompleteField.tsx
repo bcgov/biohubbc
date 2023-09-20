@@ -1,11 +1,16 @@
 import CheckBox from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
-import { Chip } from '@mui/material';
-import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@mui/material/Autocomplete';
+import Autocomplete, {
+  AutocompleteChangeReason,
+  AutocompleteInputChangeReason,
+  createFilterOptions
+} from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
+import get from 'lodash-es/get';
 import { useEffect, useState } from 'react';
 
 export interface IMultiAutocompleteFieldOption {
@@ -17,9 +22,15 @@ export interface IMultiAutocompleteField {
   id: string;
   label: string;
   options: IMultiAutocompleteFieldOption[];
+  selectedOptions?: IMultiAutocompleteFieldOption[];
   required?: boolean;
   filterLimit?: number;
   chipVisible?: boolean;
+  onChange?: (
+    _event: React.ChangeEvent<any>,
+    selectedOptions: IMultiAutocompleteFieldOption[],
+    reason: AutocompleteChangeReason
+  ) => void;
   handleSearchResults?: (input: string) => Promise<void>;
 }
 
@@ -44,8 +55,7 @@ export const sortAutocompleteOptions = (
 };
 
 const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
-  const { getFieldMeta, setFieldValue } = useFormikContext();
-  const { value, touched, error } = getFieldMeta<IMultiAutocompleteFieldOption[]>(props.id);
+  const { values, touched, errors, setFieldValue } = useFormikContext<IMultiAutocompleteFieldOption>();
 
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState<IMultiAutocompleteFieldOption[]>(props.options || []); // store options if provided
@@ -65,12 +75,12 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValue]);
 
-  const handleOnChange = (_event: React.ChangeEvent<any>, selectedOptions: IMultiAutocompleteFieldOption[]) => {
+  const defaultHandleOnChange = (_event: React.ChangeEvent<any>, selectedOptions: IMultiAutocompleteFieldOption[]) => {
     setOptions(sortAutocompleteOptions(selectedOptions, options));
     setSelectedOptions(selectedOptions);
     setFieldValue(
       props.id,
-      selectedOptions.map((item) => item)
+      selectedOptions.map((item) => item.value)
     );
   };
 
@@ -93,45 +103,45 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
     }
   };
 
-  const defaultChipDisplay = (option: any, renderProps: any, checkedStatus: any) => {
-    return (
-      <Box component="li" {...renderProps}>
-        <Checkbox
-          icon={<CheckBoxOutlineBlank fontSize="small" />}
-          checkedIcon={<CheckBox fontSize="small" color="primary" />}
-          style={{ marginRight: 8 }}
-          checked={checkedStatus}
-          disabled={(options && options?.indexOf(option) !== -1) || false}
-          value={option.value}
-          color="default"
-        />
-        {option.label}
-      </Box>
-    );
+  const getExistingValue = (existingValues?: (number | string)[]): IMultiAutocompleteFieldOption[] => {
+    if (existingValues) {
+      return options.filter((option) => existingValues.includes(option.value));
+    }
+    return [];
   };
 
-  const existingValues: IMultiAutocompleteFieldOption[] =
-    value && value.length > 0 ? options.filter((option) => value.includes(option)) : [];
   return (
     <Autocomplete
       multiple
+      noOptionsText="No matching options"
       autoHighlight={true}
-      value={existingValues}
+      value={getExistingValue(get(values, props.id))}
       id={props.id}
+      data-testid={props.id}
       options={options}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={handleGetOptionSelected}
-      filterOptions={createFilterOptions({ limit: props.filterLimit })}
       disableCloseOnSelect
-      onChange={handleOnChange}
+      disableListWrap
       inputValue={inputValue}
       onInputChange={handleOnInputChange}
-      renderTags={(tagValue, getTagProps) => {
-        if (props.chipVisible) {
-          return tagValue.map((option, index) => <Chip label={option.label} {...getTagProps({ index })} />);
-        }
+      onChange={props.onChange ? props.onChange : defaultHandleOnChange}
+      filterOptions={createFilterOptions({ limit: props.filterLimit })}
+      renderOption={(renderProps, renderOption, { selected }) => {
+        return (
+          <Box component="li" {...renderProps}>
+            <Checkbox
+              icon={<CheckBoxOutlineBlank fontSize="small" />}
+              checkedIcon={<CheckBox fontSize="small" />}
+              checked={selected}
+              disabled={props.options.includes(renderOption) || false}
+              value={renderOption.value}
+              color="default"
+            />
+            {renderOption.label}
+          </Box>
+        );
       }}
-      renderOption={(_renderProps, option, { selected }) => defaultChipDisplay(option, _renderProps, selected)}
       renderInput={(params) => (
         <TextField
           onKeyDown={(event: any) => {
@@ -140,18 +150,23 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
             }
           }}
           {...params}
+          name={props.id}
           required={props.required}
           label={props.label}
           variant="outlined"
           fullWidth
-          error={touched && Boolean(error)}
-          helperText={touched && error}
-          placeholder={'Begin typing to filter results...'}
-          InputLabelProps={{
-            shrink: true
-          }}
+          placeholder="Type to start searching"
+          error={get(touched, props.id) && Boolean(get(errors, props.id))}
+          helperText={get(touched, props.id) && get(errors, props.id)}
         />
       )}
+      renderTags={(tagValue, getTagProps) => {
+        if (props.chipVisible === false) {
+          return;
+        }
+
+        return tagValue.map((option, index) => <Chip label={option.label} {...getTagProps({ index })} />);
+      }}
     />
   );
 };

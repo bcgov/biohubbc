@@ -6,12 +6,7 @@ import sinonChai from 'sinon-chai';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
-import {
-  GetAttachmentsData,
-  GetSurveyLocationData,
-  GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
-} from '../models/survey-view';
+import { GetAttachmentsData, GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../models/survey-view';
 import { getMockDBConnection } from '../__mocks__/db';
 import {
   IObservationSubmissionInsertDetails,
@@ -195,19 +190,6 @@ describe('SurveyRepository', () => {
       const response = await repository.getSurveyProprietorDataForView(1);
 
       expect(response).to.eql(null);
-    });
-  });
-
-  describe('getSurveyLocationData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveyLocationData(1);
-
-      expect(response).to.eql(new GetSurveyLocationData({ id: 1 }));
     });
   });
 
@@ -492,7 +474,7 @@ describe('SurveyRepository', () => {
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
-        location: { geometry: [{ id: 1 }] }
+        locations: [{ geometry: [{ id: 1 }] }]
       } as unknown) as PostSurveyObject;
 
       const response = await repository.insertSurveyData(1, input);
@@ -522,7 +504,7 @@ describe('SurveyRepository', () => {
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
-        location: { geometry: [] }
+        locations: [{ geometry: [] }]
       } as unknown) as PostSurveyObject;
 
       const response = await repository.insertSurveyData(1, input);
@@ -552,7 +534,7 @@ describe('SurveyRepository', () => {
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
-        location: { geometry: [{ id: 1 }] }
+        locations: [{ geometry: [{ id: 1 }] }]
       } as unknown) as PostSurveyObject;
 
       try {
@@ -881,7 +863,7 @@ describe('SurveyRepository', () => {
           surveyed_all_areas: 'Y',
           revision_count: 1
         },
-        location: { geometry: [{ id: 1 }] }
+        locations: [{ geometry: [{ id: 1 }] }]
       } as unknown) as PutSurveyObject;
 
       const response = await repository.updateSurveyDetailsData(1, input);
@@ -912,7 +894,7 @@ describe('SurveyRepository', () => {
           surveyed_all_areas: 'Y',
           revision_count: 1
         },
-        location: { geometry: [] }
+        locations: [{ geometry: [] }]
       } as unknown) as PutSurveyObject;
 
       const response = await repository.updateSurveyDetailsData(1, input);
@@ -943,7 +925,7 @@ describe('SurveyRepository', () => {
           surveyed_all_areas: 'Y',
           revision_count: 1
         },
-        location: { geometry: [] }
+        locations: [{ geometry: [] }]
       } as unknown) as PutSurveyObject;
 
       try {

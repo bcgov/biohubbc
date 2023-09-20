@@ -40,7 +40,7 @@ describe('PutSurveyObject', () => {
     });
 
     it('sets location', () => {
-      expect(data.location).to.equal(null);
+      expect(data.locations).to.eql([]);
     });
   });
 
@@ -53,7 +53,6 @@ describe('PutSurveyObject', () => {
       permit: {},
       proprietor: {},
       purpose_and_methodology: {},
-      location: {},
       agreements: {}
     };
 
@@ -79,10 +78,6 @@ describe('PutSurveyObject', () => {
 
     it('sets purpose_and_methodology', () => {
       expect(data.purpose_and_methodology).to.instanceOf(PutSurveyPurposeAndMethodologyData);
-    });
-
-    it('sets location', () => {
-      expect(data.location).to.instanceOf(PutSurveyLocationData);
     });
   });
 });
@@ -439,12 +434,16 @@ describe('PutLocationData', () => {
       data = new PutSurveyLocationData(null);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(null);
+    it('sets name', () => {
+      expect(data.name).to.equal(null);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql([]);
+    it('sets description', () => {
+      expect(data.description).to.equal(null);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql([]);
     });
 
     it('sets revision_count', () => {
@@ -456,8 +455,9 @@ describe('PutLocationData', () => {
     let data: PutSurveyLocationData;
 
     const obj = {
-      survey_area_name: 'area_name',
-      geometry: [{}],
+      name: 'area name',
+      description: 'area description',
+      geojson: [{}],
       revision_count: 0
     };
 
@@ -465,12 +465,16 @@ describe('PutLocationData', () => {
       data = new PutSurveyLocationData(obj);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(obj.survey_area_name);
+    it('sets name', () => {
+      expect(data.name).to.equal(obj.name);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql(obj.geometry);
+    it('sets description', () => {
+      expect(data.description).to.equal(obj.description);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql(obj.geojson);
     });
 
     it('sets revision_count', () => {

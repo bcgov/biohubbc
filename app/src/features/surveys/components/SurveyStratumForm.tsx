@@ -1,14 +1,19 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { ListItemIcon, Menu, MenuItem, MenuProps } from '@mui/material';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import { FormikProps, useFormikContext } from 'formik';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import get from 'lodash-es/get';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
@@ -51,7 +56,7 @@ const SurveyStratumForm = () => {
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { values, handleSubmit, setFieldValue } = formikProps;
+  const { values, errors, handleSubmit, setFieldValue } = formikProps;
 
   const handleSave = (formikProps: FormikProps<IStratumForm> | null) => {
     if (!formikProps) {
@@ -137,6 +142,14 @@ const SurveyStratumForm = () => {
         </MenuItem>
       </Menu>
       <form onSubmit={handleSubmit}>
+        {get(errors, 'site_selection.stratums') && (
+          // Show array level error, if any
+          <Box mb={2} ml={2}>
+            <Typography style={{ fontSize: '12px', color: '#f44336' }}>
+              {get(errors, 'site_selection.stratums') as string}
+            </Typography>
+          </Box>
+        )}
         <TransitionGroup>
           {values.site_selection.stratums.map((stratum: IStratum, index: number) => {
             const key = `${stratum.name}-${index}`;
