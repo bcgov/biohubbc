@@ -87,6 +87,34 @@ describe('CritterbaseService', () => {
       });
     });
 
+    describe('getTaxonCollectionCategories', () => {
+      it('should retrieve categories by taxon_id', async () => {
+        const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
+        await cb.getTaxonCollectionCategories('asdf');
+        expect(mockGetRequest).to.have.been.calledOnceWith('/xref/taxon-collection-categories', [
+          {
+            key: 'taxon_id',
+            value: 'asdf'
+          },
+          { key: 'format', value: 'asSelect' }
+        ]);
+      });
+    });
+
+    describe('getCollectionUnits', () => {
+      it('should retrieve collection units by category_id', async () => {
+        const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
+        await cb.getCollectionUnits('asdf');
+        expect(mockGetRequest).to.have.been.calledOnceWith('/xref/collection-units', [
+          {
+            key: 'category_id',
+            value: 'asdf'
+          },
+          { key: 'format', value: 'asSelect' }
+        ]);
+      });
+    });
+
     describe('getTaxonMeasurements', () => {
       it('should retrieve taxon measurements', async () => {
         const mockGetRequest = sinon.stub(cb, '_makeGetRequest');

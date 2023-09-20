@@ -64,12 +64,14 @@ describe('useCritterApi', () => {
       general: {
         taxon_id: mockCritter.taxon,
         animal_id: mockCritter.animal_id,
-        taxon_name: 'Joe'
+        taxon_name: 'Joe',
+        wlh_id: 'a'
       },
       mortality: [],
       family: [],
       images: [],
-      device: undefined
+      device: undefined,
+      collectionUnits: []
     };
     const payload = new Critter(forCritter);
 

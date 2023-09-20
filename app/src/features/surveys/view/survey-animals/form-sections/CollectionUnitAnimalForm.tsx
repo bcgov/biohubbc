@@ -27,7 +27,7 @@ const CollectionUnitAnimalForm = () => {
   useEffect(() => {
     refresh({ route: 'xref/taxon-collection-categories', query: `taxon_id=${values.general.taxon_id}` });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.general.taxon_id] );
+  }, [values.general.taxon_id]);
 
   const name: keyof IAnimal = 'collectionUnits';
   const newCollectionUnit: IAnimalCollectionUnit = {
@@ -38,12 +38,12 @@ const CollectionUnitAnimalForm = () => {
 
   //Animals may have multiple collection units, but only one instance of each category.
   //We use this and pass to the select component to ensure categories already used in the form can't be selected again.
-  const disabledCategories = values.collectionUnits.reduce((acc, curr) => {
+  const disabledCategories = values.collectionUnits.reduce((acc: Record<string, boolean>, curr) => {
     if (curr.collection_category_id) {
       acc[curr.collection_category_id] = true;
     }
     return acc;
-  }, {} as Record<string, boolean>);
+  }, {});
 
   return (
     <FieldArray name={name}>
