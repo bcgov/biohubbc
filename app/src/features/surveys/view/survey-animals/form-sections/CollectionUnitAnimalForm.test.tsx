@@ -24,7 +24,7 @@ describe('CollectionUnitAnimalForm', () => {
       { id: 'a', value: 'a', label: 'category_label' }
     ]);
 
-    const { getByText, getByLabelText } = render(
+    const { getByText } = render(
       <Formik initialValues={{ general: { taxon_id: 'a' }, collectionUnits: [] }} onSubmit={() => {}}>
         {() => <CollectionUnitAnimalForm />}
       </Formik>
