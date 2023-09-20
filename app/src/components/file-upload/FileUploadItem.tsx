@@ -78,6 +78,7 @@ export interface IFileUploadItemProps {
   onCancel: () => void;
   fileHandler?: IFileHandler;
   status?: UploadFileStatus;
+  enableErrorDetails?: boolean;
 }
 
 const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
@@ -217,7 +218,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
                   {error ? (
                     <>
                       {error}
-                      {errorDetails && errorDetails.length ? (
+                      {props.enableErrorDetails && errorDetails && errorDetails.length ? (
                         <IconButton size="small" onClick={() => setShowErrorDetails(!showErrorDetails)}>
                           {showErrorDetails ? (
                             <SvgIcon>
@@ -232,7 +233,11 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
                       ) : null}
                       <Collapse in={showErrorDetails}>
                         <Typography variant="caption" component="div" color="error">
-                          <List dense>{errorDetails}</List>
+                          <List dense>
+                            {errorDetails?.map((detail, index) => (
+                              <ListItem key={index}>{detail}</ListItem>
+                            ))}
+                          </List>
                         </Typography>
                       </Collapse>
                     </>

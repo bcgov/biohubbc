@@ -75,6 +75,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
             acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.KEYX
           }}
           replace={true}
+          errorDetails={true}
         />
       )}
       {props.attachmentType === AttachmentType.OTHER && (

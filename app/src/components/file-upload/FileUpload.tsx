@@ -100,6 +100,7 @@ export interface IFileUploadProps {
    */
   onReplace?: IReplaceHandler;
   dropZoneProps?: Partial<IDropZoneConfigProps>;
+  errorDetails?: boolean;
 }
 
 export const FileUpload: React.FC<IFileUploadProps> = (props) => {
@@ -179,6 +180,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
         onCancel={() => setFileToRemove(file.name)}
         fileHandler={props.fileHandler}
         status={props.status}
+        enableErrorDetails={props.errorDetails}
       />
     );
   };
