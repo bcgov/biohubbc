@@ -3,6 +3,7 @@ import FormData from 'form-data';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
+import { HTTP500 } from '../errors/http-error';
 import { KeycloakService } from './keycloak-service';
 
 export const IDeployDevice = z.object({
@@ -113,10 +114,18 @@ export class BctwService {
         return response;
       },
       (error: AxiosError) => {
+        if (error?.code === 'ECONNREFUSED') {
+          return Promise.reject(
+            new HTTP500('Connection to the BCTW API server was refused. Please try again later.', [error?.message])
+          );
+        }
+
         return Promise.reject(
-          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`, [
-            error?.response?.data
-          ])
+          new ApiError(
+            ApiErrorType.UNKNOWN,
+            `API request failed with status code ${error?.response?.status}`,
+            error?.request?.data
+          )
         );
       }
     );

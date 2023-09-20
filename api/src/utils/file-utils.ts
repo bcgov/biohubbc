@@ -299,6 +299,9 @@ export function checkFileForKeyx(file: Express.Multer.File): boolean {
   } else if (zipMimeTypes.includes(file?.mimetype)) {
     const zip = new AdmZip(file.buffer);
     const zipEntries = zip.getEntries();
+    if (zipEntries.length === 0) {
+      return false;
+    }
     for (const zipEntry of zipEntries) {
       if (!zipEntry.entryName.endsWith('.keyx')) {
         return false;

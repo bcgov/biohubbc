@@ -88,7 +88,10 @@ POST.apiDoc = {
       }
     },
     401: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/400'
+    },
+    500: {
+      $ref: '#/components/responses/500'
     },
     default: {
       $ref: '#/components/responses/default'
