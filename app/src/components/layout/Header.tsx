@@ -1,4 +1,4 @@
-import { mdiAccountCircle, mdiMenu, mdiLoginVariant } from '@mdi/js';
+import { mdiAccountCircle, mdiLoginVariant, mdiMenu } from '@mdi/js';
 import Icon from '@mdi/react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -8,6 +8,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
@@ -19,8 +21,6 @@ import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React, { useContext, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 
 const Header: React.FC = () => {
   const { keycloakWrapper } = useContext(AuthStateContext);
@@ -63,7 +63,7 @@ const Header: React.FC = () => {
     return (
       <>
         <Box
-          display={{xs: 'none', lg: 'flex'}}
+          display={{ xs: 'none', lg: 'flex' }}
           alignItems="center"
           sx={{
             fontSize: '16px',
@@ -82,7 +82,7 @@ const Header: React.FC = () => {
           <Divider
             orientation="vertical"
             sx={{
-              marginRight: '4px',
+              marginRight: '6px',
               height: '20px',
               borderColor: '#fff'
             }}
@@ -100,16 +100,14 @@ const Header: React.FC = () => {
             }}>
             Log Out
           </Button>
-
         </Box>
         <MenuItem
           component="a"
           color="#1a5a96"
           href="/logout"
           sx={{
-            display: {xs: 'block', lg: 'none'}
-          }}
-        >
+            display: { xs: 'block', lg: 'none' }
+          }}>
           Log out
         </MenuItem>
       </>
@@ -140,71 +138,65 @@ const Header: React.FC = () => {
     );
   };
 
-    // Unauthenticated public view
-    const AppBrand = () => {
-      return (
-        <Box
-          sx={{
-            '& a': {
-              display: 'flex',
-              alignItems: 'center',
-              overflow: 'hidden',
-              color: '#fff',
-              fontSize: {xs: '16px', lg: '18px'},
-              fontWeight: '400',
-              textDecoration: 'none'
-            },
-            '& img': {
-              mr: 2
-            }
-          }}
-        >
-          <RouterLink to="/" aria-label="Go to SIMS Home">
-            <picture>
-              <source srcSet={headerImageLarge} media="(min-width: 960px)"></source>
-              <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-              <img src={headerImageSmall} alt={'Government of British Columbia'} />
-            </picture>
-            <span>
-              Species Inventory Management System
-              <Box
-                component="sup"
-                sx={{
-                  marginLeft: '4px',
-                  color: '#fcba19',
-                  fontSize: '0.75rem',
-                  fontWeight: 400,
-                  textTransform: 'uppercase'
-                }}>
-                <BetaLabel />
-              </Box>
-            </span>
-          </RouterLink>
-        </Box>
-      );
-    };
+  // Unauthenticated public view
+  const AppBrand = () => {
+    return (
+      <Box
+        sx={{
+          '& a': {
+            display: 'flex',
+            alignItems: 'center',
+            overflow: 'hidden',
+            color: '#fff',
+            fontSize: { xs: '16px', lg: '18px' },
+            fontWeight: '400',
+            textDecoration: 'none'
+          },
+          '& img': {
+            mr: 2
+          }
+        }}>
+        <RouterLink to="/" aria-label="Go to SIMS Home">
+          <picture>
+            <source srcSet={headerImageLarge} media="(min-width: 960px)"></source>
+            <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+            <img src={headerImageSmall} alt={'Government of British Columbia'} />
+          </picture>
+          <span>
+            Species Inventory Management System
+            <Box
+              component="sup"
+              sx={{
+                marginLeft: '4px',
+                color: '#fcba19',
+                fontSize: '0.75rem',
+                fontWeight: 400,
+                textTransform: 'uppercase'
+              }}>
+              <BetaLabel />
+            </Box>
+          </span>
+        </RouterLink>
+      </Box>
+    );
+  };
 
   return (
     <>
       <AppBar
         position="relative"
-        elevation={1}
+        elevation={0}
         sx={{
           fontFamily: 'BCSans, Verdana, Arial, sans-serif',
-          backgroundColor: '#003366'
+          backgroundColor: '#003366',
+          borderBottom: '3px solid #fcba19'
         }}>
         <Toolbar
           sx={{
-            height: '80px'
-          }}
-        >
+            height: { xs: '60px', lg: '80px' }
+          }}>
           {/* Responsive Menu */}
-          <Box 
-            display={{sm: 'flex', lg: 'none'}}
-            justifyContent="space-between"
-            alignItems="center"
-            flex="1 1 auto"
-          >
+          <Box display={{ sm: 'flex', lg: 'none' }} justifyContent="space-between" alignItems="center" flex="1 1 auto">
             <Box
               sx={{
                 '& a': {
@@ -213,8 +205,7 @@ const Header: React.FC = () => {
                   fontSize: '18px',
                   fontWeight: '400'
                 }
-              }}
-            >
+              }}>
               <AppBrand></AppBrand>
             </Box>
 
@@ -224,9 +215,7 @@ const Header: React.FC = () => {
               </UnAuthGuard>
               <Button
                 color="inherit"
-                startIcon={
-                  <Icon path={mdiMenu} size={1.25}></Icon>
-                }
+                startIcon={<Icon path={mdiMenu} size={1.25}></Icon>}
                 sx={{
                   ml: 2,
                   fontSize: '16px',
@@ -236,8 +225,7 @@ const Header: React.FC = () => {
                 aria-controls={menuOpen ? 'mobileMenu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={menuOpen ? 'true' : undefined}
-                onClick={showMobileMenu}
-              >
+                onClick={showMobileMenu}>
                 Menu
               </Button>
               <Menu
@@ -246,49 +234,49 @@ const Header: React.FC = () => {
                 open={menuOpen}
                 onClose={hideMobileMenu}
                 MenuListProps={{
-                  'aria-labelledby': 'basic-button',
+                  'aria-labelledby': 'basic-button'
                 }}
-                  sx={{
-                    '& a': {
-                      color: '#1a5a96',
-                      fontWeight: 700,
-                      textDecoration: 'none'
-                    },
-                    '& button': {
-                      color: '#1a5a96',
-                      fontWeight: 700
-                    }
-                  }}
-                >
-                <UnAuthGuard>
-                  <MenuItem onClick={hideMobileMenu}>
-                    <RouterLink to="/" id="menu_home">
-                      Home
-                    </RouterLink>
-                  </MenuItem>
-                </UnAuthGuard>
+                sx={{
+                  '& a': {
+                    color: '#1a5a96',
+                    borderRadius: 0,
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    outline: 'none'
+                  },
+                  '& button': {
+                    color: '#1a5a96',
+                    fontWeight: 700
+                  }
+                }}>
+                <MenuItem tabIndex={1} component={RouterLink} to="/" id="menu_home_sm">
+                  Home
+                </MenuItem>
                 <AuthGuard>
-                  <MenuItem onClick={hideMobileMenu}>
-                    <RouterLink to="/admin/projects" id="menu_projects">
-                      Projects
-                    </RouterLink>
+                  <MenuItem
+                    tabIndex={1}
+                    component={RouterLink}
+                    to="/admin/projects"
+                    id="menu_projects_sm"
+                    onClick={hideMobileMenu}>
+                    Projects
                   </MenuItem>
                 </AuthGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem onClick={hideMobileMenu}>
-                    <RouterLink to="/admin/users" id="menu_admin_users">
-                      Manage Users
-                    </RouterLink>
-                  </MenuItem>
-                  <MenuItem onClick={hideMobileMenu}>
-                    <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
-                      Funding Sources
-                    </RouterLink>
-                  </MenuItem>
-                </SystemRoleGuard>
-                <MenuItem component="button" onClick={showSupportDialog}>
+                <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
                   Support
                 </MenuItem>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <MenuItem id="menu_admin_users" component={RouterLink} to="/admin/users" onClick={hideMobileMenu}>
+                    Manage Users
+                  </MenuItem>
+                  <MenuItem
+                    id="menu_admin_funding_sources_sm"
+                    component={RouterLink}
+                    to="/admin/funding-sources"
+                    onClick={hideMobileMenu}>
+                    Funding Sources
+                  </MenuItem>
+                </SystemRoleGuard>
                 <AuthGuard>
                   <LoggedInUser />
                 </AuthGuard>
@@ -297,17 +285,13 @@ const Header: React.FC = () => {
           </Box>
 
           {/* Desktop Menu */}
-          <Box 
-            display={{xs: 'none', lg: 'flex'}}
+          <Box
+            display={{ xs: 'none', lg: 'flex' }}
             flexDirection="row"
             alignItems="center"
-            justifyContent="space-between" 
-            width="100%"
-          >
-            <Box 
-              display="flex"
-              flexDirection="row"
-              alignItems="center">
+            justifyContent="space-between"
+            width="100%">
+            <Box display="flex" flexDirection="row" alignItems="center">
               <Box
                 sx={{
                   '& a': {
@@ -318,9 +302,8 @@ const Header: React.FC = () => {
                     fontWeight: '400',
                     textDecoration: 'none'
                   }
-                }}
-              >
-              <AppBrand></AppBrand>
+                }}>
+                <AppBrand></AppBrand>
               </Box>
               <Box
                 ml={8}
@@ -332,7 +315,7 @@ const Header: React.FC = () => {
                     color: 'inherit',
                     fontWeight: 700,
                     lineHeight: 1.75,
-                    textDecoration: 'none',
+                    textDecoration: 'none'
                   },
                   '& a + a': {
                     ml: 1
@@ -342,8 +325,7 @@ const Header: React.FC = () => {
                     fontWeight: 700,
                     textTransform: 'none'
                   }
-                }}
-              >
+                }}>
                 <UnAuthGuard>
                   <RouterLink to="/" id="menu_home">
                     Home
@@ -354,6 +336,17 @@ const Header: React.FC = () => {
                     Projects
                   </RouterLink>
                 </AuthGuard>
+                <Button
+                  color="inherit"
+                  variant="text"
+                  disableElevation
+                  onClick={showSupportDialog}
+                  sx={{
+                    m: '8px',
+                    p: 1
+                  }}>
+                  Support
+                </Button>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <RouterLink to="/admin/users" id="menu_admin_users">
                     Manage Users
@@ -364,17 +357,6 @@ const Header: React.FC = () => {
                     Funding Sources
                   </RouterLink>
                 </SystemRoleGuard>
-                <Button
-                  color="inherit"
-                  variant="text"
-                  disableElevation
-                  onClick={showSupportDialog}
-                  sx={{
-                    ml: '8px',
-                    p: 1
-                  }}>
-                  Support
-                </Button>
               </Box>
             </Box>
             <Box flex="0 0 auto">
@@ -386,7 +368,6 @@ const Header: React.FC = () => {
               </AuthGuard>
             </Box>
           </Box>
-
         </Toolbar>
       </AppBar>
 

@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
             <a href="https://www.gov.bc.ca/gov/content/home/copyright">Copyright</a>
           </li>
         </ul>
-        </Toolbar>
+      </Toolbar>
     </footer>
   );
 };

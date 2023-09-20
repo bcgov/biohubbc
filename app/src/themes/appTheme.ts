@@ -1,7 +1,7 @@
 import { grey } from '@mui/material/colors';
 import { createTheme } from '@mui/material/styles';
-import 'styles/fonts.scss';
 import 'styles.scss';
+import 'styles/fonts.scss';
 
 const appTheme = createTheme({
   breakpoints: {
@@ -134,8 +134,8 @@ const appTheme = createTheme({
     },
     MuiButtonBase: {
       defaultProps: {
-        disableRipple: true,
-      },
+        disableRipple: true
+      }
     },
     MuiChip: {
       styleOverrides: {
