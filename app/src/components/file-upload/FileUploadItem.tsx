@@ -1,6 +1,6 @@
-import { mdiCheck, mdiFileOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCheck, mdiChevronDown, mdiChevronUp, mdiFileOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
+import { Collapse, List, SvgIcon, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -88,6 +88,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
+  const [errorDetails, setErrorDetails] = useState<string[] | undefined>(undefined);
 
   const [status, setStatus] = useState<UploadFileStatus>(props.status || UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
@@ -97,6 +98,8 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   const [initiateCancel, setInitiateCancel] = useState<boolean>(false);
   // indicates that the active requests are in a state where they can be safely cancelled
   const [isSafeToCancel, setIsSafeToCancel] = useState<boolean>(false);
+
+  const [showErrorDetails, setShowErrorDetails] = useState<boolean>(false);
 
   const handleFileUploadError = useCallback(() => {
     setStatus(UploadFileStatus.FAILED);
@@ -146,6 +149,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
     uploadHandler(file, cancelToken, handleFileUploadProgress)
       .then(handleFileUploadSuccess, (error: APIError) => {
         setError(error?.message);
+        setErrorDetails(error?.errors?.map((e) => e?.toString()));
       })
       .catch();
 
@@ -203,13 +207,38 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
         <Box display="flex" flexDirection="row" alignItems="center" p={2} width="100%">
           <Icon path={mdiFileOutline} size={1.5} className={error ? classes.errorColor : classes.fileIconColor} />
           <Box pl={1.5} flex="1 1 auto">
-            <Box display="flex" flexDirection="row" flex="1 1 auto" alignItems="center" height="3rem">
+            <Box display="flex" flexDirection="row" flex="1 1 auto" alignItems="center" minHeight="3rem">
               <Box flex="1 1 auto">
                 <Typography variant="body2" component="div">
                   <strong>{file.name}</strong>
                 </Typography>
                 <Typography variant="caption" component="div">
-                  {error || status}
+                  {/* TODO: errorDetails sections needs some refinement */}
+                  {error ? (
+                    <>
+                      {error}
+                      {errorDetails && errorDetails.length ? (
+                        <IconButton size="small" onClick={() => setShowErrorDetails(!showErrorDetails)}>
+                          {showErrorDetails ? (
+                            <SvgIcon>
+                              <path d={mdiChevronUp} />
+                            </SvgIcon>
+                          ) : (
+                            <SvgIcon>
+                              <path d={mdiChevronDown} />
+                            </SvgIcon>
+                          )}
+                        </IconButton>
+                      ) : null}
+                      <Collapse in={showErrorDetails}>
+                        <Typography variant="caption" component="div" color="error">
+                          <List dense>{errorDetails}</List>
+                        </Typography>
+                      </Collapse>
+                    </>
+                  ) : (
+                    status
+                  )}
                 </Typography>
               </Box>
               <Box display="flex" alignItems="center">
