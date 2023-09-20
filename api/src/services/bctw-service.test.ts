@@ -17,7 +17,8 @@ import {
   IDeployDevice,
   IDeploymentUpdate,
   UPDATE_DEPLOYMENT_ENDPOINT,
-  UPLOAD_KEYX_ENDPOINT
+  UPLOAD_KEYX_ENDPOINT,
+  UPSERT_DEVICE_ENDPOINT
 } from './bctw-service';
 import { KeycloakService } from './keycloak-service';
 
@@ -103,8 +104,8 @@ describe('BctwService', () => {
     const mockDevice: IDeployDevice = {
       device_id: 1,
       frequency: 100,
-      manufacturer: 'Lotek',
-      model: 'model',
+      device_make: 'Lotek',
+      device_model: 'model',
       attachment_start: '2020-01-01',
       attachment_end: '2020-01-02',
       critter_id: 'abc123'
@@ -220,6 +221,31 @@ describe('BctwService', () => {
         await bctwService.uploadKeyX(mockS3Object, 'key');
 
         expect(mockAxios).to.have.been.calledOnceWith(UPLOAD_KEYX_ENDPOINT, mockS3Object);
+      });
+    });
+
+    describe('updateDevice', () => {
+      it('should send a post request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [] } });
+
+        const body = {
+          device_id: 1,
+          collar_id: ''
+        };
+        await bctwService.updateDevice(body);
+
+        expect(mockAxios).to.have.been.calledOnceWith(UPSERT_DEVICE_ENDPOINT, body);
+      });
+      it('should send a post request and get some errors back', async () => {
+        sinon
+          .stub(bctwService.axiosInstance, 'post')
+          .resolves({ data: { results: [], errors: [{ device_id: 'error' }] } });
+
+        const body = {
+          device_id: 1,
+          collar_id: ''
+        };
+        await bctwService.updateDevice(body).catch((e) => expect(e.message).to.equal('[{"device_id":"error"}]'));
       });
     });
   });
