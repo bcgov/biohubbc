@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { SurveyCritterRepository } from '../repositories/survey-critter-repository';
+import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { DBService } from './db-service';
 
 export class SurveyCritterService extends DBService {
@@ -15,7 +15,7 @@ export class SurveyCritterService extends DBService {
    * @param {number} surveyId
    * @returns {*}
    */
-  async getCrittersInSurvey(surveyId: number) {
+  async getCrittersInSurvey(surveyId: number): Promise<SurveyCritterRecord[]> {
     return this.critterRepository.getCrittersInSurvey(surveyId);
   }
 
@@ -26,29 +26,27 @@ export class SurveyCritterService extends DBService {
    * @param {string} critterId
    * @returns {*}
    */
-  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string) {
+  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<number> {
     return this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
   }
 
   /**
    * Removes a critter from the survey. Does not affect the critter in the external system.
-   * @param {number} surveyId
    * @param {string} critterId
    * @returns {*}
    */
-  async removeCritterFromSurvey(surveyId: number, critterId: number) {
-    return this.critterRepository.removeCritterFromSurvey(surveyId, critterId);
+  async removeCritterFromSurvey(critterId: number): Promise<number> {
+    return this.critterRepository.removeCritterFromSurvey(critterId);
   }
 
   /**
-   * Adds a deployment to a critter. Does not affect the critter or device in the external system.
+   * Upsert a deployment row into SIMS.
    *
-   * @param {number} critterId
-   * @param {string} deplyomentId
-   * @return {*}
-   * @memberof SurveyCritterService
+   * @param {id} critterId
+   * @param {id} deplyomentId
+   * @returns {*}
    */
-  async addDeployment(critterId: number, deplyomentId: string) {
-    return this.critterRepository.addDeployment(critterId, deplyomentId);
+  async upsertDeployment(critterId: number, deplyomentId: string): Promise<number> {
+    return this.critterRepository.upsertDeployment(critterId, deplyomentId);
   }
 }
