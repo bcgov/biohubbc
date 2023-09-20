@@ -1261,12 +1261,6 @@ export class AttachmentRepository extends BaseRepository {
    */
   async deleteSurveyAttachment(attachmentId: number): Promise<{ key: string; uuid: string }> {
     const sqlStatement = SQL`
-      WITH deleted_keyx AS (
-        DELETE
-          from survey_attachment_keyx
-        WHERE
-          survey_attachment_id = ${attachmentId}
-      )
       DELETE
         from survey_attachment
       WHERE
@@ -1510,85 +1504,5 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement);
 
     return response;
-  }
-
-  /**
-   * Insert Survey Attachment Keyx Record
-   *
-   * @param {number} attachmentId
-   * @return {*}  {Promise<void>}
-   * @memberof AttachmentRepository
-   */
-  async insertSurveyAttachmentKeyx(attachmentId: number): Promise<{ survey_attachment_keyx_id: number }> {
-    const sqlStatement = SQL`
-      INSERT INTO survey_attachment_keyx (
-        survey_attachment_id
-      ) VALUES (
-        ${attachmentId}
-      ) RETURNING survey_attachment_keyx_id;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response?.rows?.[0]) {
-      throw new ApiExecuteSQLError('Failed to insert survey attachment keyx data', [
-        'AttachmentRepository->insertSurveyAttachmentKeyx',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return response.rows[0];
-  }
-
-  /**
-   * Update Survey Attachment Keyx Record
-   *
-   * @param {number} attachmentId
-   * @return {*}  {Promise<void>}
-   * @memberof AttachmentRepository
-   */
-  async updateSurveyAttachmentKeyx(attachmentId: number): Promise<void> {
-    const sqlStatement = SQL`
-      UPDATE
-        survey_attachment_keyx
-      SET
-        processed_at = now()
-      WHERE
-        survey_attachment_id = ${attachmentId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response?.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update survey attachment keyx data', [
-        'AttachmentRepository->updateSurveyAttachmentKeyx',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-  }
-
-  /**
-   * Get survey attachments to process
-   *
-   * @return {*}  {Promise<string[]>}
-   * @memberof AttachmentRepository
-   */
-  async getSurveyKeyxAttachmentsToProcess(): Promise<{ survey_attachment_id: number; key: string }[]> {
-    const sqlStatement = SQL`
-      SELECT 
-        survey_attachment.survey_attachment_id,
-        survey_attachment.key
-      FROM 
-        survey_attachment 
-      INNER JOIN 
-        survey_attachment_keyx 
-      ON 
-        survey_attachment.survey_attachment_id = survey_attachment_keyx.survey_attachment_id 
-      WHERE 
-        survey_attachment_keyx.processed_at IS NULL`;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return response?.rows ?? [];
   }
 }
