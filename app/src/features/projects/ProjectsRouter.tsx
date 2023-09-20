@@ -15,6 +15,7 @@ import CreateProjectPage from './create/CreateProjectPage';
 import EditProjectPage from './edit/EditProjectPage';
 import ProjectsListPage from './list/ProjectsListPage';
 import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
+import { ObservationsContextProvider } from 'contexts/observationsContext';
 
 /**
  * Router for all `/admin/projects/*` pages.
@@ -99,7 +100,9 @@ const ProjectsRouter: React.FC = () => {
                   ]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <SurveyContextProvider>
-                    <SurveyRouter />
+                    <ObservationsContextProvider>
+                      <SurveyRouter />
+                    </ObservationsContextProvider>
                   </SurveyContextProvider>
                 </ProjectRoleRouteGuard>
               </ProjectsLayout>
