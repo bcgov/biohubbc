@@ -14,18 +14,17 @@ import {
   lastAnimalValueValid
 } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 
 const CollectionUnitAnimalForm = () => {
   const api = useCritterbaseApi();
   const { values } = useFormikContext<IAnimal>();
-  const { data: categoriesData, load, refresh } = useDataLoader(api.lookup.getSelectOptions);
-
-  if (values.general.taxon_id) {
-    load({ route: 'xref/taxon-collection-categories', query: `taxon_id=${values.general.taxon_id}` });
-  }
+  const { data: categoriesData, refresh } = useDataLoader(api.lookup.getSelectOptions);
 
   useEffect(() => {
-    refresh({ route: 'xref/taxon-collection-categories', query: `taxon_id=${values.general.taxon_id}` });
+    if (values.general.taxon_id) {
+      refresh({ route: 'lookups/taxon-collection-categories', query: `taxon_id=${values.general.taxon_id}` });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.general.taxon_id]);
 
@@ -50,10 +49,10 @@ const CollectionUnitAnimalForm = () => {
       {({ remove, push }: FieldArrayRenderProps) => (
         <>
           <FormSectionWrapper
-            title={'Ecological Units'}
-            titleHelp={'Add collection units here.'}
-            addedSectionTitle="Ecological Unit"
-            btnLabel="Add Unit"
+            title={SurveyAnimalsI18N.animalCollectionUnitTitle}
+            titleHelp={SurveyAnimalsI18N.animalCollectionUnitHelp}
+            addedSectionTitle={SurveyAnimalsI18N.animalCollectionUnitTitle2}
+            btnLabel={SurveyAnimalsI18N.animalCollectionUnitAddBtn}
             disableAddBtn={
               !categoriesData?.length ||
               Object.keys(disabledCategories).length === categoriesData.length ||
@@ -70,7 +69,7 @@ const CollectionUnitAnimalForm = () => {
                     id={'collection_category_id'}
                     disabledValues={disabledCategories}
                     query={`taxon_id=${values.general.taxon_id}`}
-                    route={'xref/taxon-collection-categories'}
+                    route={'lookups/taxon-collection-categories'}
                     controlProps={{
                       size: 'small',
                       required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_category_id')
@@ -81,7 +80,7 @@ const CollectionUnitAnimalForm = () => {
                   <CbSelectField
                     label="Unit Name"
                     id={'collection_unit_id'}
-                    route={'xref/collection-units'}
+                    route={'lookups/collection-units'}
                     query={`category_id=${unit.collection_category_id}`}
                     name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_unit_id', index)}
                     controlProps={{

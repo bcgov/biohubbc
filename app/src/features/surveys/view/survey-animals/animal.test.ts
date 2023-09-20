@@ -6,7 +6,6 @@ import {
   glt,
   IAnimal,
   IAnimalMarking,
-  ICritterMarking,
   isRequiredInSchema,
   lastAnimalValueValid
 } from './animal';
@@ -173,16 +172,24 @@ describe('Animal', () => {
       const c_marking = critter.markings[0];
       const a_marking = animal.markings[0];
       expect(c_marking.critter_id).toBe(critter.critter_id);
-      for (const prop in c_marking) {
-        expect(c_marking[prop as keyof ICritterMarking]).toBe(a_marking[prop as keyof IAnimalMarking]);
-      }
-    });
 
+      expect(c_marking.marking_type_id).toBe(a_marking.marking_type_id);
+      expect(c_marking.taxon_marking_body_location_id).toBe(a_marking.taxon_marking_body_location_id);
+      expect(c_marking.primary_colour_id).toBe(a_marking.primary_colour_id);
+      expect(c_marking.secondary_colour_id).toBe(a_marking.secondary_colour_id);
+      expect(c_marking.marking_comment).toBe(a_marking.marking_comment);
+    });
+    /*
+marking_type_id: '274fe690-e253-4987-b11a-5b762d38adf3',
+      taxon_marking_body_location_id: '372020d9-b9ee-4eb3-abdd-b476711bd1aa',
+      primary_colour_id: '4aa3cce7-94d0-42d0-a183-078db5fbdd34',
+      secondary_colour_id: '0b0dbfaa-fcc9-443f-8ac9-a22106663cba',
+      marking_comment: 'asdf'*/
     it('constructor should create collections and strip extra vals', () => {
       const c_collection = critter.collections[0];
       const a_collection = animal.collectionUnits[0];
       expect(c_collection.critter_id).toBe(critter.critter_id);
-      expect((c_collection as any)['collection_category_id'].not.toBeDefined());
+      expect((c_collection as any)['collection_category_id']).not.toBeDefined();
       expect(c_collection.collection_unit_id).toBe(a_collection.collection_unit_id);
     });
   });

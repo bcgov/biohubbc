@@ -331,7 +331,11 @@ export const SurveyAnimalsI18N = {
   animalMortalityHelp:
     "Mortality Events describe an individual's death, including the suspected location, date, and cause of death. An individual can only have one Mortality Event.",
   animalMortalityAddBtn: 'Add Mortality',
-
+  animalCollectionUnitTitle: 'Ecological Units',
+  animalCollectionUnitTitle2: 'Ecological Unit',
+  animalCollectionUnitHelp:
+    'Ecological units are groups like population units, herds, and packs. Different species may different units and unit names.',
+  animalCollectionUnitAddBtn: 'Add Unit',
   // Input help strings
   taxonHelp:
     'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family',
