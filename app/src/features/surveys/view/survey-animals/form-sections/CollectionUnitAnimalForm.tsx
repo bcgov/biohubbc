@@ -1,5 +1,6 @@
 import { Grid } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -14,7 +15,6 @@ import {
   lastAnimalValueValid
 } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
-import { SurveyAnimalsI18N } from 'constants/i18n';
 
 const CollectionUnitAnimalForm = () => {
   const api = useCritterbaseApi();
