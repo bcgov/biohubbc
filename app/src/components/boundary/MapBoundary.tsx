@@ -1,14 +1,11 @@
-import { mdiRefresh, mdiTrayArrowUp } from '@mdi/js';
+import { mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
-import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
-import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
@@ -96,6 +93,15 @@ const MapBoundary = (props: IMapBoundaryProps) => {
     };
   };
 
+  // TODO: First pass, this assumes only a single file will be uploaded at a time
+  // multiple files would require a way of referencing layers
+  const removeFile = () => {
+    console.log("REMOVE FILE PLS")
+    setFieldValue(name, []);
+  };
+
+  console.log(values);
+
   return (
     <>
       <ComponentDialog
@@ -133,16 +139,18 @@ const MapBoundary = (props: IMapBoundaryProps) => {
           and click a boundary on the map.
         </Typography>
         <Box mb={3}>
-          <Box mt={4} display="flex" alignItems="flex-start">
-            <Button
-              color="primary"
-              variant="outlined"
-              data-testid="boundary_file-upload"
-              startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-              onClick={() => setOpenUploadBoundary(true)}>
-              Import Boundary
-            </Button>
-            <Box ml={2}>
+          <Box mt={4} display="flex">
+            <FileUpload
+              uploadHandler={boundaryUploadHandler()}
+              onRemove={removeFile}
+              dropZoneProps={{
+                acceptedFileExtensions: '.zip',
+                maxNumFiles: 1,
+                multiple: false
+              }}
+            />
+            {/* TODO: Move this layer control onto the map as part of leaflets built in layer control */}
+            {/* <Box ml={2}>
               <FormControl variant="outlined" size="small">
                 <Select
                   size="small"
@@ -169,7 +177,7 @@ const MapBoundary = (props: IMapBoundaryProps) => {
                   </MenuItem>
                 </Select>
               </FormControl>
-            </Box>
+            </Box> */}
             <Box ml={1}>
               {selectedLayer && (
                 <Button variant="outlined" onClick={() => setSelectedLayer('')}>

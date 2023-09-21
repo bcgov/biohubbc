@@ -99,6 +99,8 @@ export interface IFileUploadProps {
    * @memberof IFileUploadProps
    */
   onReplace?: IReplaceHandler;
+
+  onRemove?: () => void;
   dropZoneProps?: Partial<IDropZoneConfigProps>;
 }
 
@@ -202,6 +204,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     }
 
     const removeFile = (fileName: string) => {
+      // need to hook into the map now
       const index = files.findIndex((item) => item.file.name === fileName);
 
       if (index === -1) {
@@ -221,16 +224,19 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
       });
 
       setFileToRemove('');
+      props.onRemove?.();
     };
 
     removeFile(fileToRemove);
   }, [fileToRemove, fileUploadItems, files]);
 
   return (
-    <Box>
-      <Box className={classes.dropZone}>
-        <DropZone onFiles={onFiles} {...props.dropZoneProps} />
-      </Box>
+    <Box width={'100%'}>
+      {fileUploadItems.length < (props.dropZoneProps?.maxNumFiles || 1) && (
+        <Box className={classes.dropZone}>
+          <DropZone onFiles={onFiles} {...props.dropZoneProps} />
+        </Box>
+      )}
       <Box>
         <List>{fileUploadItems}</List>
       </Box>

@@ -1,4 +1,4 @@
-import { mdiCheck, mdiFileOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiFileOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -265,7 +265,9 @@ const ActionButton: React.FC<IActionButtonProps> = (props) => {
   if (props.status === UploadFileStatus.COMPLETE) {
     return (
       <Box display="flex" alignItems="center" p={'12px'}>
-        <Icon path={mdiCheck} size={1} className={classes.completeColor} />
+        <IconButton title={'Delete Upload'} aria-label={'delete upload'} onClick={() => props.onCancel()}>
+          <Icon path={mdiTrashCanOutline} size={1} />
+        </IconButton>
       </Box>
     );
   }
@@ -305,7 +307,6 @@ interface IProgressBarProps {
  */
 const ProgressBar: React.FC<IProgressBarProps> = (props) => {
   const classes = useStyles();
-
   if (props.status === UploadFileStatus.STAGED) {
     return <></>;
   }
@@ -321,14 +322,7 @@ const ProgressBar: React.FC<IProgressBarProps> = (props) => {
   }
 
   if (props.status === UploadFileStatus.COMPLETE) {
-    return (
-      <LinearProgress
-        variant="determinate"
-        value={100}
-        className={classes.uploadProgress}
-        classes={{ colorPrimary: classes.completeBgColor, barColorPrimary: classes.completeBgColor }}
-      />
-    );
+    return <></>;
   }
 
   if (props.status === UploadFileStatus.FAILED) {
