@@ -16,7 +16,7 @@ import FormSectionWrapper from './FormSectionWrapper';
  */
 
 const GeneralAnimalForm = () => {
-  const { setFieldValue, handleBlur } = useFormikContext<IAnimal>();
+  const { setFieldValue, handleBlur, values } = useFormikContext<IAnimal>();
   const name: keyof IAnimal = 'general';
 
   const handleTaxonName = (_value: string, label: string) => {
@@ -33,7 +33,11 @@ const GeneralAnimalForm = () => {
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
             <CbSelectField
               name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
-              controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'), size: 'small' }}
+              controlProps={{
+                required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'),
+                size: 'small',
+                disabled: !!values.collectionUnits.length
+              }}
               label={'Taxon'}
               id={'taxon'}
               route={'lookups/taxons'}
@@ -41,11 +45,32 @@ const GeneralAnimalForm = () => {
             />
           </HelpButtonTooltip>
         </Box>
+        <Box mb={2}>
+          <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
+            <CustomTextField
+              other={{ size: 'small', required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
+              label="Alias"
+              name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
+              handleBlur={handleBlur}
+            />
+          </HelpButtonTooltip>
+        </Box>
+        <Box mb={2}>
+          <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
+            <CbSelectField
+              name={getAnimalFieldName<IAnimalGeneral>(name, 'sex')}
+              controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'sex'), size: 'small' }}
+              label={'Sex'}
+              id={'sex'}
+              route={'lookups/sex'}
+            />
+          </HelpButtonTooltip>
+        </Box>
         <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
           <CustomTextField
-            other={{ size: 'small', required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
-            label="Individual's Label"
-            name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
+            other={{ size: 'small', required: isRequiredInSchema(AnimalGeneralSchema, 'wlh_id') }}
+            label="Wildlife Health ID"
+            name={getAnimalFieldName<IAnimalGeneral>(name, 'wlh_id')}
             handleBlur={handleBlur}
           />
         </HelpButtonTooltip>
