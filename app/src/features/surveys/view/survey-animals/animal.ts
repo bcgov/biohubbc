@@ -4,6 +4,7 @@ import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
+import { AnimalTelemetryDeviceSchema } from './device';
 
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
@@ -148,14 +149,6 @@ export const AnimalRelationshipSchema = yup.object({}).shape({
   relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });
 
-const AnimalTelemetryDeviceSchema = yup.object({}).shape({
-  device_id: yup.string().required(req),
-  manufacturer: yup.string().required(req),
-  //I think this needs an additional field for hz
-  device_frequency: numSchema.required(req),
-  model: yup.string().required(req)
-});
-
 const AnimalImageSchema = yup.object({}).shape({});
 
 export const AnimalSchema = yup.object({}).shape({
@@ -190,8 +183,6 @@ export type IAnimalMeasurement = InferType<typeof AnimalMeasurementSchema>;
 export type IAnimalMortality = InferType<typeof AnimalMortalitySchema>;
 
 export type IAnimalRelationship = InferType<typeof AnimalRelationshipSchema>;
-
-export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
 
 export type IAnimalImage = InferType<typeof AnimalImageSchema>;
 

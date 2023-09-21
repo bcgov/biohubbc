@@ -17,8 +17,6 @@ export const surveyObject: SurveyViewObject = {
     end_date: '2021-02-26',
     biologist_first_name: 'first',
     biologist_last_name: 'last',
-    survey_area_name: 'study area',
-    geometry: [geoJsonFeature],
     survey_types: [1],
     revision_count: 0
   },
@@ -69,6 +67,10 @@ export const surveyObject: SurveyViewObject = {
     ancillary_species: [2],
     ancillary_species_names: ['ancillary species 2']
   },
+  site_selection: {
+    strategies: [],
+    stratums: []
+  },
   participants: [
     {
       system_user_id: 1,
@@ -78,6 +80,17 @@ export const surveyObject: SurveyViewObject = {
       agency: 'agency',
       survey_job_id: 1,
       survey_job_name: 'survey job name'
+    }
+  ],
+  locations: [
+    {
+      survey_location_id: 1,
+      name: 'study area',
+      description: 'study area description',
+      geometry: [geoJsonFeature],
+      geography: null,
+      geojson: [geoJsonFeature],
+      revision_count: 0
     }
   ]
 };

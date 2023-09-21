@@ -3,10 +3,12 @@ import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
 import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
 import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
-import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
+import { ISurveyLocationForm } from 'features/surveys/components/StudyAreaForm';
 import { ISurveyFundingSource, ISurveyFundingSourceForm } from 'features/surveys/components/SurveyFundingSourceForm';
+import { ISurveySiteSelectionForm } from 'features/surveys/components/SurveySiteSelectionForm';
 import { Feature } from 'geojson';
 import { StringBoolean } from 'types/misc';
+import { ICritterDetailedResponse } from './useCritterApi.interface';
 
 /**
  * Create survey post object.
@@ -17,10 +19,10 @@ import { StringBoolean } from 'types/misc';
 export interface ICreateSurveyRequest
   extends IGeneralInformationForm,
     IPurposeAndMethodologyForm,
-    IStudyAreaForm,
     IProprietaryDataForm,
     IAgreementsForm,
     IParticipantsJobForm,
+    ISurveyLocationForm,
     ISurveyBlockForm {}
 
 /**
@@ -56,8 +58,6 @@ export interface IGetSurveyForViewResponseDetails {
   end_date: string;
   biologist_first_name: string;
   biologist_last_name: string;
-  survey_area_name: string;
-  geometry: Feature[];
   survey_types: number[];
   revision_count: number;
 }
@@ -101,18 +101,30 @@ export interface IGetSurveyForUpdateResponsePartnerships {
   stakeholder_partnerships: string[];
 }
 
+export interface IGetSurveyLocation {
+  survey_location_id: number;
+  name: string;
+  description: string;
+  geometry: Feature[];
+  geography: string | null;
+  geojson: Feature[];
+  revision_count: number;
+}
+
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
   permit: ISurveyPermits;
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding_sources: ISurveyFundingSource[];
+  site_selection: ISurveySiteSelectionForm['site_selection'];
   proprietor: IGetSurveyForViewResponseProprietor | null;
   participants: IGetSurveyParticipant[];
   partnerships: IGetSurveyForViewResponsePartnerships;
+  locations: IGetSurveyLocation[];
 }
 
-export interface SurveyUpdateObject {
+export interface SurveyUpdateObject extends ISurveyLocationForm {
   survey_details?: {
     survey_name: string;
     start_date: string;
@@ -157,11 +169,6 @@ export interface SurveyUpdateObject {
     first_nations_id: number;
     category_rationale: string;
     disa_required: StringBoolean;
-  };
-  location?: {
-    survey_area_name: string;
-    geometry: Feature[];
-    revision_count: number;
   };
   participants?: {
     identity_source: string;
@@ -329,10 +336,14 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
 }
 
+export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
+  survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
+}
+
 export type IEditSurveyRequest = IGeneralInformationForm &
   IPurposeAndMethodologyForm &
   ISurveyFundingSourceForm &
-  IStudyAreaForm &
+  ISurveyLocationForm &
   IProprietaryDataForm &
-  IUpdateAgreementsForm &
+  IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
   IParticipantsJobForm;

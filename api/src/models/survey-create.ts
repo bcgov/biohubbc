@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { SurveyStratum } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
 
 export class PostSurveyObject {
@@ -8,10 +9,11 @@ export class PostSurveyObject {
   funding_sources: PostFundingSourceData[];
   proprietor: PostProprietorData;
   purpose_and_methodology: PostPurposeAndMethodologyData;
-  location: PostLocationData;
+  locations: PostLocationData[];
   agreements: PostAgreementsData;
   participants: PostParticipationData[];
   partnerships: PostPartnershipsData;
+  site_selection: PostSiteSelectionData;
   blocks: PostSurveyBlock[];
 
   constructor(obj?: any) {
@@ -23,12 +25,23 @@ export class PostSurveyObject {
     this.proprietor = (obj?.proprietor && new PostProprietorData(obj.proprietor)) || null;
     this.purpose_and_methodology =
       (obj?.purpose_and_methodology && new PostPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
-    this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.agreements = (obj?.agreements && new PostAgreementsData(obj.agreements)) || null;
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
+    this.locations = (obj?.locations && obj.locations.map((p: any) => new PostLocationData(p))) || [];
+    this.site_selection = (obj?.site_selection && new PostSiteSelectionData(obj)) || null;
     this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
+  }
+}
+
+export class PostSiteSelectionData {
+  strategies: string[];
+  stratums: SurveyStratum[];
+
+  constructor(obj?: any) {
+    this.strategies = obj?.site_selection?.strategies ?? [];
+    this.stratums = obj?.site_selection?.stratums ?? [];
   }
 }
 
@@ -112,12 +125,14 @@ export class PostProprietorData {
 }
 
 export class PostLocationData {
-  survey_area_name: string;
-  geometry: Feature[];
+  name: string;
+  description: string;
+  geojson: Feature[];
 
   constructor(obj?: any) {
-    this.survey_area_name = obj?.survey_area_name || null;
-    this.geometry = (obj?.geometry?.length && obj.geometry) || [];
+    this.name = obj?.name || null;
+    this.description = obj?.description || null;
+    this.geojson = (obj?.geojson?.length && obj.geojson) || [];
   }
 }
 

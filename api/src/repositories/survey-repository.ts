@@ -8,12 +8,10 @@ import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAttachmentsData,
   GetReportAttachmentsData,
-  GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
 import { getLogger } from '../utils/logger';
-import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
@@ -87,11 +85,6 @@ const SurveyRecord = z.object({
   additional_details: z.string().nullable(),
   ecological_season_id: z.number().nullable(),
   intended_outcome_id: z.number().nullable(),
-  location_name: z.string(),
-  location_description: z.string().nullable(),
-  geometry: z.any().nullable(),
-  geography: z.any().nullable(),
-  geojson: z.any().nullable(),
   comments: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
@@ -348,30 +341,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Get Survey location for a given survey ID
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<GetSurveyLocationDAta>
-   * @memberof SurveyRepository
-   */
-  async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
-    const sqlStatement = SQL`
-      SELECT
-        *
-      FROM
-        survey
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = response.rows?.[0];
-
-    return new GetSurveyLocationData(result);
-  }
-
-  /**
    * Get Occurrence submission for a given survey id.
    *
    * @param {number} surveyId
@@ -619,10 +588,7 @@ export class SurveyRepository extends BaseRepository {
         field_method_id,
         additional_details,
         ecological_season_id,
-        intended_outcome_id,
-        location_name,
-        geojson,
-        geography
+        intended_outcome_id
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
@@ -633,39 +599,13 @@ export class SurveyRepository extends BaseRepository {
         ${surveyData.purpose_and_methodology.field_method_id},
         ${surveyData.purpose_and_methodology.additional_details},
         ${surveyData.purpose_and_methodology.ecological_season_id},
-        ${surveyData.purpose_and_methodology.intended_outcome_id},
-        ${surveyData.location.survey_area_name},
-        ${JSON.stringify(surveyData.location.geometry)}
-    `;
-
-    if (surveyData?.location?.geometry?.length) {
-      const geometryCollectionSQL = generateGeometryCollectionSQL(surveyData.location.geometry);
-
-      sqlStatement.append(SQL`
-        ,public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-      sqlStatement.append(geometryCollectionSQL);
-
-      sqlStatement.append(SQL`
-        , 4326)))
-      `);
-    } else {
-      sqlStatement.append(SQL`
-      ,null
-      `);
-    }
-
-    sqlStatement.append(SQL`
+        ${surveyData.purpose_and_methodology.intended_outcome_id}
       )
       RETURNING
         survey_id as id;
-    `);
+    `;
 
     const response = await this.connection.sql(sqlStatement);
-
     const result = response.rows?.[0];
 
     if (!result) {
@@ -953,8 +893,7 @@ export class SurveyRepository extends BaseRepository {
         start_date: surveyData.survey_details.start_date,
         end_date: surveyData.survey_details.end_date,
         lead_first_name: surveyData.survey_details.lead_first_name,
-        lead_last_name: surveyData.survey_details.lead_last_name,
-        revision_count: surveyData.survey_details.revision_count
+        lead_last_name: surveyData.survey_details.lead_last_name
       };
     }
 
@@ -964,43 +903,14 @@ export class SurveyRepository extends BaseRepository {
         field_method_id: surveyData.purpose_and_methodology.field_method_id,
         additional_details: surveyData.purpose_and_methodology.additional_details,
         ecological_season_id: surveyData.purpose_and_methodology.ecological_season_id,
-        intended_outcome_id: surveyData.purpose_and_methodology.intended_outcome_id,
-        revision_count: surveyData.purpose_and_methodology.revision_count
+        intended_outcome_id: surveyData.purpose_and_methodology.intended_outcome_id
       };
     }
 
-    if (surveyData.location) {
-      const geometrySqlStatement = SQL``;
-
-      if (surveyData?.location?.geometry?.length) {
-        geometrySqlStatement.append(SQL`
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-        const geometryCollectionSQL = generateGeometryCollectionSQL(surveyData.location.geometry);
-        geometrySqlStatement.append(geometryCollectionSQL);
-
-        geometrySqlStatement.append(SQL`
-        , 4326)))
-      `);
-      } else {
-        geometrySqlStatement.append(SQL`
-        null
-      `);
-      }
-
-      fieldsToUpdate = {
-        ...fieldsToUpdate,
-        location_name: surveyData.location.survey_area_name,
-        geojson: JSON.stringify(surveyData.location.geometry),
-        geography: knex.raw(geometrySqlStatement.sql, geometrySqlStatement.values),
-        revision_count: surveyData.location.revision_count
-      };
-    }
-
-    const updateSurveyQueryBuilder = knex('survey').update(fieldsToUpdate).where('survey_id', surveyId);
+    const updateSurveyQueryBuilder = knex('survey')
+      .update(fieldsToUpdate)
+      .where('survey_id', surveyId)
+      .andWhere('revision_count', surveyData.survey_details.revision_count);
 
     const result = await this.connection.knex(updateSurveyQueryBuilder);
 

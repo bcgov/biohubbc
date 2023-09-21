@@ -1,6 +1,12 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { Critter } from 'features/surveys/view/survey-animals/animal';
+import {
+  IAnimalDeployment,
+  IAnimalTelemetryDevice,
+  IDeploymentTimespan
+} from 'features/surveys/view/survey-animals/device';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,
@@ -10,6 +16,7 @@ import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'inter
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
+  IDetailedCritterWithInternalId,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForListResponse,
   IGetSurveyForUpdateResponse,
@@ -405,6 +412,102 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Retrieve a list of critters associated with the given survey with details taken from critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {ICritterDetailedResponse[]}
+   */
+  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<IDetailedCritterWithInternalId[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters`);
+    return data;
+  };
+
+  type CritterBulkCreationResponse = {
+    create: {
+      critters: number;
+      collections: number;
+      markings: number;
+      locations: number;
+      captures: number;
+      mortalities: number;
+      qualitative_measurements: number;
+      quantitative_measurements: number;
+      families: number;
+      family_children: number;
+      family_parents: number;
+    };
+  };
+
+  /**
+   * Create a critter and add it to the list of critters associated with this survey. This will create a new critter in Critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {Critter} critter Critter payload type
+   * @returns Count of affected rows
+   */
+  const createCritterAndAddToSurvey = async (
+    projectId: number,
+    surveyId: number,
+    critter: Critter
+  ): Promise<CritterBulkCreationResponse> => {
+    const payload = {
+      critters: [
+        { critter_id: critter.critter_id, animal_id: critter.animal_id, sex: 'Unknown', taxon_id: critter.taxon_id }
+      ],
+      qualitative_measurements: critter.measurements.qualitative,
+      quantitative_measurements: critter.measurements.quantitative,
+      ...critter
+    };
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
+    return data;
+  };
+
+  const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: number): Promise<number> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
+    return data;
+  };
+
+  const addDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    body: IAnimalTelemetryDevice & { critter_id: string }
+  ): Promise<number> => {
+    body.device_id = Number(body.device_id); //Turn this into validation class soon
+    body.frequency = Number(body.frequency);
+    body.frequency_unit = body.frequency_unit?.length ? body.frequency_unit : undefined;
+    if (!body.deployments || body.deployments.length !== 1) {
+      throw Error('Calling this with any amount other than 1 deployments currently unsupported.');
+    }
+    const flattened = { ...body, ...body.deployments[0] };
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
+      flattened
+    );
+    return data;
+  };
+
+  const updateDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    body: IDeploymentTimespan
+  ): Promise<number> => {
+    const { data } = await axios.patch(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
+      body
+    );
+    return data;
+  };
+
+  const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -423,7 +526,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachmentSignedURL,
     deleteSurvey,
     getSummarySubmissionSignedURL,
-    deleteSummarySubmission
+    deleteSummarySubmission,
+    getSurveyCritters,
+    createCritterAndAddToSurvey,
+    removeCritterFromSurvey,
+    addDeployment,
+    getDeploymentsInSurvey,
+    updateDeployment
   };
 };
 

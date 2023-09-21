@@ -1,6 +1,7 @@
 import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, IconButton, MenuItem, Paper, Select } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
@@ -27,9 +28,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
         variant="outlined"
         className={error ? 'userRoleItemError' : 'userRoleItem'}
         sx={{
-          '&.userRoleItem': {
-            borderColor: 'grey.400'
-          },
+          background: grey[100],
           '&.userRoleItemError': {
             borderColor: 'error.main',
             '& .MuiOutlinedInput-notchedOutline': {

@@ -123,6 +123,7 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           <DialogActions>
             <LoadingButton
               loading={props.dialogLoading || formikProps.isValidating || false}
+              disabled={formikProps.status?.forceDisable}
               onClick={formikProps.submitForm}
               color="primary"
               variant="contained"

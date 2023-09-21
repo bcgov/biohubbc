@@ -63,7 +63,8 @@ POST.apiDoc = {
             'partnerships',
             'proprietor',
             'purpose_and_methodology',
-            'location',
+            'locations',
+            'site_selection',
             'agreements',
             'participants'
           ],
@@ -219,16 +220,53 @@ POST.apiDoc = {
                 }
               }
             },
-            location: {
+            locations: {
+              description: 'Survey location data',
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['name', 'description', 'geojson'],
+                properties: {
+                  name: {
+                    type: 'string',
+                    maxLength: 100
+                  },
+                  description: {
+                    type: 'string',
+                    maxLength: 250
+                  },
+                  geojson: {
+                    type: 'array',
+                    items: {
+                      ...(GeoJSONFeature as object)
+                    }
+                  }
+                }
+              }
+            },
+            site_selection: {
               type: 'object',
+              required: ['strategies', 'stratums'],
               properties: {
-                survey_area_name: {
-                  type: 'string'
-                },
-                geometry: {
+                strategies: {
                   type: 'array',
                   items: {
-                    ...(GeoJSONFeature as object)
+                    type: 'string'
+                  }
+                },
+                stratums: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['name', 'description'],
+                    properties: {
+                      name: {
+                        type: 'string'
+                      },
+                      description: {
+                        type: 'string'
+                      }
+                    }
                   }
                 }
               }
@@ -317,7 +355,6 @@ export function createSurvey(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyService(connection);
-
       const surveyId = await surveyService.createSurveyAndUploadMetadataToBioHub(projectId, sanitizedPostSurveyData);
 
       await connection.commit();

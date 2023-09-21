@@ -63,6 +63,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyStakeholderData(surveyId)}
       ${insertSurveyVantageData(surveyId)}
       ${insertSurveyParticipationData(surveyId)}
+      ${insertSurveyLocationData(surveyId)}
     `);
   }
 }
@@ -240,35 +241,21 @@ const insertSurveyPermitData = (surveyId: number) => `
 `;
 
 /**
- * SQL to insert Survey data
+ * SQL to insert Survey location data
  *
  */
-const insertSurveyData = (projectId: number) => `
-  INSERT into survey
+const insertSurveyLocationData = (surveyId: number) => `
+  INSERT into survey_location
     (
-      project_id,
+      survey_id,
       name,
-      field_method_id,
-      additional_details,
-      start_date,
-      end_date,
-      lead_first_name,
-      lead_last_name,
-      location_name,
+      description,
       geography,
-      geojson,
-      ecological_season_id,
-      intended_outcome_id
+      geojson
     )
   VALUES (
-    ${projectId},
-    'Seed Survey',
-    (select field_method_id from field_method order by random() limit 1),
-    $$${faker.lorem.sentences(2)}$$,
-    $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
-    $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,
-    $$${faker.person.firstName()}$$,
-    $$${faker.person.lastName()}$$,
+    ${surveyId},
+    $$${faker.lorem.words(2)}$$,
     $$${faker.lorem.words(6)}$$,
     'POLYGON ((-121.904297 50.930738, -121.904297 51.971346, -120.19043 51.971346, -120.19043 50.930738, -121.904297 50.930738))',
     '[
@@ -303,7 +290,37 @@ const insertSurveyData = (projectId: number) => `
         },
         "properties": {}
       }
-    ]',
+    ]'
+  );
+`;
+
+/**
+ * SQL to insert Survey data
+ *
+ */
+const insertSurveyData = (projectId: number) => `
+  INSERT into survey
+    (
+      project_id,
+      name,
+      field_method_id,
+      additional_details,
+      start_date,
+      end_date,
+      lead_first_name,
+      lead_last_name,
+      ecological_season_id,
+      intended_outcome_id
+    )
+  VALUES (
+    ${projectId},
+    'Seed Survey',
+    (select field_method_id from field_method order by random() limit 1),
+    $$${faker.lorem.sentences(2)}$$,
+    $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
+    $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,
+    $$${faker.person.firstName()}$$,
+    $$${faker.person.lastName()}$$,
     (select ecological_season_id from ecological_season order by random() limit 1),
     (select intended_outcome_id from intended_outcome order by random() limit 1)
   )

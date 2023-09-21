@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { SurveyStratum, SurveyStratumRecord } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
 
 export class PutSurveyObject {
@@ -8,9 +9,10 @@ export class PutSurveyObject {
   funding_sources: PutFundingSourceData[];
   proprietor: PutSurveyProprietorData;
   purpose_and_methodology: PutSurveyPurposeAndMethodologyData;
-  location: PutSurveyLocationData;
+  locations: PutSurveyLocationData[];
   participants: PutSurveyParticipantsData[];
   partnerships: PutPartnershipsData;
+  site_selection: PutSiteSelectionData;
   blocks: PostSurveyBlock[];
 
   constructor(obj?: any) {
@@ -22,11 +24,22 @@ export class PutSurveyObject {
     this.proprietor = (obj?.proprietor && new PutSurveyProprietorData(obj.proprietor)) || null;
     this.purpose_and_methodology =
       (obj?.purpose_and_methodology && new PutSurveyPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
-    this.location = (obj?.location && new PutSurveyLocationData(obj.location)) || null;
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PutSurveyParticipantsData(p))) || [];
+    this.locations = (obj?.locations && obj.locations.map((p: any) => new PutSurveyLocationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PutPartnershipsData(obj.partnerships)) || null;
+    this.site_selection = (obj?.site_selection && new PutSiteSelectionData(obj)) || null;
     this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
+  }
+}
+
+export class PutSiteSelectionData {
+  strategies: string[];
+  stratums: Array<SurveyStratum | SurveyStratumRecord>;
+
+  constructor(obj?: any) {
+    this.strategies = obj?.site_selection?.strategies ?? [];
+    this.stratums = obj?.site_selection?.stratums ?? [];
   }
 }
 
@@ -142,13 +155,17 @@ export class PutSurveyPurposeAndMethodologyData {
 }
 
 export class PutSurveyLocationData {
-  survey_area_name: string;
-  geometry: Feature[];
+  survey_location_id: number;
+  name: string;
+  description: string;
+  geojson: Feature[];
   revision_count: number;
 
   constructor(obj?: any) {
-    this.survey_area_name = obj?.survey_area_name || null;
-    this.geometry = (obj?.geometry?.length && obj.geometry) || [];
+    this.survey_location_id = obj?.survey_location_id || null;
+    this.name = obj?.name || null;
+    this.description = obj?.description || null;
+    this.geojson = (obj?.geojson?.length && obj.geojson) || [];
     this.revision_count = obj?.revision_count ?? null;
   }
 }
