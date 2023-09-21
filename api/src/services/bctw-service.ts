@@ -119,8 +119,6 @@ export class BctwService {
         return response;
       },
       (error: AxiosError) => {
-        console.log('*** BCTW ERROR *** ', error);
-        console.log('*** END OF BCTW ERROR ***');
         if (
           error?.code === 'ECONNREFUSED' ||
           error?.code === 'ECONNRESET' ||
