@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import chai, { expect } from 'chai';
+import FormData from 'form-data';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
@@ -17,7 +18,6 @@ import {
   IDeployDevice,
   IDeploymentUpdate,
   UPDATE_DEPLOYMENT_ENDPOINT,
-  UPLOAD_KEYX_ENDPOINT,
   UPSERT_DEVICE_ENDPOINT
 } from './bctw-service';
 import { KeycloakService } from './keycloak-service';
@@ -212,15 +212,29 @@ describe('BctwService', () => {
 
     describe('uploadKeyX', () => {
       it('should send a post request', async () => {
-        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post');
-        const mockS3Object = {
-          Body: Buffer.from(''),
-          Key: 'key'
-        };
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [] } });
+        const mockMulterFile = ({ buffer: 'buffer', originalname: 'originalname' } as unknown) as Express.Multer.File;
+        sinon.stub(FormData.prototype, 'append');
+        const mockGetFormDataHeaders = sinon
+          .stub(FormData.prototype, 'getHeaders')
+          .resolves({ 'content-type': 'multipart/form-data' });
 
-        await bctwService.uploadKeyX(mockS3Object, 'key');
+        const result = await bctwService.uploadKeyX(mockMulterFile);
 
-        expect(mockAxios).to.have.been.calledOnceWith(UPLOAD_KEYX_ENDPOINT, mockS3Object);
+        expect(mockGetFormDataHeaders).to.have.been.calledOnce;
+        expect(result).to.eql({ totalKeyxFiles: 0, newRecords: 0, existingRecords: 0 });
+        expect(mockAxios).to.have.been.calledOnce;
+      });
+
+      it('should throw an error if the response body has errors', async () => {
+        sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [{ error: 'error' }] } });
+        const mockMulterFile = ({ buffer: 'buffer', originalname: 'originalname' } as unknown) as Express.Multer.File;
+        sinon.stub(FormData.prototype, 'append');
+        sinon.stub(FormData.prototype, 'getHeaders').resolves({ 'content-type': 'multipart/form-data' });
+
+        await bctwService
+          .uploadKeyX(mockMulterFile)
+          .catch((e) => expect(e.message).to.equal('API request failed with errors'));
       });
     });
 
