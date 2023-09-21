@@ -11,6 +11,7 @@ import axios, { CancelTokenSource } from 'axios';
 import { APIError } from 'hooks/api/useAxios';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
+import { v4 } from 'uuid';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadProgress: {
@@ -89,7 +90,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
-  const [errorDetails, setErrorDetails] = useState<string[] | undefined>(undefined);
+  const [errorDetails, setErrorDetails] = useState<{ _id: string; message: string }[] | undefined>(undefined);
 
   const [status, setStatus] = useState<UploadFileStatus>(props.status || UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
@@ -150,7 +151,11 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
     uploadHandler(file, cancelToken, handleFileUploadProgress)
       .then(handleFileUploadSuccess, (error: APIError) => {
         setError(error?.message);
-        setErrorDetails(error?.errors?.map((e) => e?.toString()));
+        setErrorDetails(
+          error?.errors?.map((e) => {
+            return { _id: v4(), message: e?.toString() };
+          })
+        );
       })
       .catch();
 
@@ -240,8 +245,8 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
                       <Collapse in={showErrorDetails}>
                         <Typography variant="caption" component="div" color="error">
                           <List dense>
-                            {errorDetails?.map((detail, index) => (
-                              <ListItem key={index}>{detail}</ListItem>
+                            {errorDetails?.map((detail) => (
+                              <ListItem key={detail._id}>{detail.message}</ListItem>
                             ))}
                           </List>
                         </Typography>

@@ -61,18 +61,24 @@ const SurveyAttachments: React.FC = () => {
     };
   };
 
-  const dialogTitle =
-    attachmentType === AttachmentType.REPORT
-      ? 'Upload Report'
-      : attachmentType === AttachmentType.KEYX
-      ? 'Upload KeyX'
-      : 'Upload Attachments';
+  const getDialogTitle = () => {
+    switch (attachmentType) {
+      case AttachmentType.REPORT:
+        return 'Upload Report';
+      case AttachmentType.KEYX:
+        return 'Upload KeyX';
+      case AttachmentType.OTHER:
+        return 'Upload Attachments';
+      default:
+        return '';
+    }
+  };
 
   return (
     <>
       <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle={dialogTitle}
+        dialogTitle={getDialogTitle()}
         attachmentType={attachmentType}
         onFinish={getFinishHandler()}
         onClose={() => {
