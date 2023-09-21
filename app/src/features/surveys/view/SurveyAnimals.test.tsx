@@ -101,7 +101,14 @@ describe('SurveyAnimals', () => {
 
   it('renders correctly with animals', async () => {
     mockUseBiohub.survey.getSurveyCritters.mockResolvedValueOnce([
-      { critter_id: 'critter_uuid', survey_critter_id: 1, animal_id: 'a', taxon: 'a', created_at: 'a' }
+      {
+        critter_id: 'critter_uuid',
+        survey_critter_id: 1,
+        animal_id: 'a',
+        taxon: 'a',
+        created_at: 'a',
+        wlh_id: '123-45'
+      }
     ]);
 
     mockUseBiohub.survey.getDeploymentsInSurvey.mockResolvedValue([{ critter_id: 'critter_uuid', device_id: 123 }]);
@@ -119,7 +126,7 @@ describe('SurveyAnimals', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('critter_uuid')).toBeInTheDocument();
+      expect(getByText('123-45')).toBeInTheDocument();
       expect(getByTestId('survey-animal-table')).toBeInTheDocument();
       fireEvent.click(getByTestId('animal actions'));
       fireEvent.click(getByTestId('animal-table-row-edit-timespan'));

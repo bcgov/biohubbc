@@ -455,7 +455,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
   ): Promise<CritterBulkCreationResponse> => {
     const payload = {
       critters: [
-        { critter_id: critter.critter_id, animal_id: critter.animal_id, sex: 'Unknown', taxon_id: critter.taxon_id }
+        {
+          critter_id: critter.critter_id,
+          animal_id: critter.animal_id,
+          sex: critter.sex,
+          taxon_id: critter.taxon_id,
+          wlh_id: critter.wlh_id
+        }
       ],
       qualitative_measurements: critter.measurements.qualitative,
       quantitative_measurements: critter.measurements.quantitative,

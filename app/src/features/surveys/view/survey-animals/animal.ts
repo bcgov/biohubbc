@@ -6,6 +6,13 @@ import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
 import { AnimalTelemetryDeviceSchema } from './device';
 
+export enum AnimalSex {
+  MALE = 'Male',
+  FEMALE = 'Female',
+  UNKNOWN = 'Unknown',
+  HERM = 'Hermaphroditic'
+}
+
 /**
  * Provides an acceptable amount of type security with formik field names for animal forms
  * Returns formatted field name in regular or array format
@@ -56,7 +63,9 @@ export type ProjectionMode = 'wgs' | 'utm';
 export const AnimalGeneralSchema = yup.object({}).shape({
   taxon_id: yup.string().required(req),
   animal_id: yup.string().required(req),
-  taxon_name: yup.string()
+  taxon_name: yup.string(),
+  wlh_id: yup.string(),
+  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex))
 });
 
 export const AnimalCaptureSchema = yup.object({}).shape({
@@ -101,7 +110,13 @@ export const AnimalMarkingSchema = yup.object({}).shape({
   secondary_colour_id: yup.string().optional(),
   marking_comment: yup.string()
 });
-//proprietaryDataForm
+
+export const AnimalCollectionUnitSchema = yup.object({}).shape({
+  _id: yup.string().required(),
+  collection_unit_id: yup.string().required(),
+  collection_category_id: yup.string().required()
+});
+
 export const AnimalMeasurementSchema = yup.object({}).shape(
   {
     _id: yup.string().required(),
@@ -159,6 +174,7 @@ export const AnimalSchema = yup.object({}).shape({
   mortality: yup.array().of(AnimalMortalitySchema).required(),
   family: yup.array().of(AnimalRelationshipSchema).required(),
   images: yup.array().of(AnimalImageSchema).required(),
+  collectionUnits: yup.array().of(AnimalCollectionUnitSchema).required(),
   device: AnimalTelemetryDeviceSchema.default(undefined)
 });
 
@@ -177,6 +193,8 @@ export type IAnimalGeneral = InferType<typeof AnimalGeneralSchema>;
 export type IAnimalCapture = InferType<typeof AnimalCaptureSchema>;
 
 export type IAnimalMarking = InferType<typeof AnimalMarkingSchema>;
+
+export type IAnimalCollectionUnit = InferType<typeof AnimalCollectionUnitSchema>;
 
 export type IAnimalMeasurement = InferType<typeof AnimalMeasurementSchema>;
 
@@ -220,6 +238,8 @@ type ICritterCapture = Omit<
 
 export type ICritterMarking = Omit<ICritterID & IAnimalMarking, '_id'>;
 
+export type ICritterCollection = Omit<ICritterID & IAnimalCollectionUnit, '_id' | 'collection_category_id'>;
+
 type ICritterQualitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'value' | '_id'>;
 
 type ICritterQuantitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'qualitative_option_id' | '_id'>;
@@ -256,6 +276,8 @@ export class Critter {
   critter_id: string;
   taxon_id: string;
   animal_id: string;
+  wlh_id?: string;
+  sex?: AnimalSex;
   captures: ICritterCapture[];
   markings: ICritterMarking[];
   measurements: {
@@ -265,6 +287,7 @@ export class Critter {
   mortalities: Omit<ICritterMortality, '_id'>[];
   families: ICritterRelationships;
   locations: ICritterLocation[];
+  collections: ICritterCollection[];
 
   private taxon_name?: string;
 
@@ -355,6 +378,13 @@ export class Critter {
     });
   }
 
+  _formatCritterCollectionUnits(animal_collections: IAnimalCollectionUnit[]): ICritterCollection[] {
+    return animal_collections.map((collection) => ({
+      critter_id: this.critter_id,
+      ...omit(collection, ['_id', 'collection_category_id'])
+    }));
+  }
+
   _formatCritterQualitativeMeasurements(animal_measurements: IAnimalMeasurement[]): ICritterQualitativeMeasurement[] {
     const filteredQualitativeMeasurements = animal_measurements.filter((measurement) => {
       if (measurement.qualitative_option_id && measurement.value) {
@@ -421,6 +451,8 @@ export class Critter {
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;
     this.animal_id = animal.general.animal_id;
+    this.wlh_id = animal.general.wlh_id;
+    this.sex = animal.general.sex;
     const { captures, capture_locations } = this._formatCritterCaptures(animal.captures);
     const { mortalities, mortalities_locations } = this._formatCritterMortalities(animal.mortality);
 
@@ -429,6 +461,7 @@ export class Critter {
     this.locations = [...capture_locations, ...mortalities_locations];
 
     this.markings = this._formatCritterMarkings(animal.markings);
+    this.collections = this._formatCritterCollectionUnits(animal.collectionUnits);
 
     this.measurements = {
       qualitative: this._formatCritterQualitativeMeasurements(animal.measurements),
