@@ -110,3 +110,28 @@ export const isZipMimetype = (mimetype: string): boolean => {
     regex.test(mimetype)
   );
 };
+
+/**
+ * Returns true if the file is a keyx file, or a zip that contains a keyx file.
+ *
+ * @export
+ * @param {Express.Multer.File} file
+ * @return {*}  {boolean}
+ */
+export function checkFileForKeyx(file: Express.Multer.File): boolean {
+  const mimeType = mime.getType(file.originalname) ?? '';
+  if (file?.originalname.endsWith('.keyx')) {
+    return true;
+  } else if (isZipMimetype(mimeType)) {
+    const zipEntries = parseUnknownZipFile(file.buffer);
+    if (zipEntries.length === 0) {
+      return false;
+    }
+    for (const zipEntry of zipEntries) {
+      if (!zipEntry.fileName.endsWith('.keyx')) {
+        return false;
+      }
+    }
+  }
+  return true;
+}

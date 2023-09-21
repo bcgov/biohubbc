@@ -7,8 +7,9 @@ import { HTTP400 } from '../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { BctwService, IBctwUser } from '../../../../../../../services/bctw-service';
-import { checkFileForKeyx, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
+import { checkFileForKeyx } from '../../../../../../../utils/media/media-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/keyx/upload');
 
