@@ -15,13 +15,13 @@ import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
 import { datesSameNullable, pluralize } from 'utils/Utils';
 import yup from 'utils/YupSchema';
+import { v4 } from 'uuid';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
 import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
 import TelemetryDeviceForm, { TELEMETRY_DEVICE_FORM_MODE } from './survey-animals/TelemetryDeviceForm';
-import { v4 } from 'uuid';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
@@ -155,9 +155,44 @@ const SurveyAnimals: React.FC = () => {
             marking_comment: a.comment,
             _id: v4()
           })),
-          mortality: [], //existingCritter?.mortality,
-          collectionUnits: [], //existingCritter?.collection_units,
-          measurements: [], //existingCritter?.measurement,
+          mortality: existingCritter?.mortality.map((a) => ({
+            ...a,
+            _id: v4(),
+            mortality_comment: a.mortality_comment ?? '',
+            mortality_timestamp: new Date(a.mortality_timestamp),
+            mortality_latitude: a.location.latitude,
+            mortality_longitude: a.location.longitude,
+            mortality_utm_easting: 0,
+            mortality_utm_northing: 0,
+            mortality_coordinate_uncertainty: a.location.coordinate_uncertainty ?? 0,
+            mortality_pcod_confidence: a.proximate_cause_of_death_confidence,
+            mortality_pcod_reason: a.proximate_cause_of_death_id ?? '',
+            mortality_pcod_taxon_id: a.proximate_predated_by_taxon_id ?? '',
+            mortality_ucod_confidence: a.ultimate_cause_of_death_confidence ?? '',
+            mortality_ucod_reason: a.ultimate_cause_of_death_id ?? '',
+            mortality_ucod_taxon_id: a.ultimate_predated_by_taxon_id ?? '',
+            projection_mode: 'wgs'
+          })),
+          collectionUnits: existingCritter.collection_units.map((a) => ({
+            ...a,
+            _id: v4()
+          })),
+          measurements: [
+            ...existingCritter.measurement.qualitative.map((a) => ({
+              ...a,
+              _id: v4(),
+              value: undefined,
+              measured_timestamp: a.measured_timestamp ? new Date(a.measured_timestamp) : ('' as unknown as Date),
+              measurement_comment: a.measurement_comment ?? ''
+            })),
+            ...existingCritter.measurement.quantitative.map((a) => ({
+              ...a,
+              _id: v4(),
+              qualitative_option_id: undefined,
+              measured_timestamp: a.measured_timestamp ? new Date(a.measured_timestamp) : ('' as unknown as Date),
+              measurement_comment: a.measurement_comment ?? ''
+            }))
+          ],
           family: [],
           images: [],
           device: undefined

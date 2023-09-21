@@ -85,6 +85,7 @@ type IMortalityResponse = {
   critter_id: string;
   location_id: string | null;
   mortality_timestamp: string;
+  location: ILocationResponse;
   proximate_cause_of_death_id: string | null;
   proximate_cause_of_death_confidence: string;
   proximate_predated_by_taxon_id: string | null;
