@@ -146,7 +146,6 @@ export function uploadMedia(): RequestHandler {
       };
       const bctwService = new BctwService(user);
       const bctwUploadResult = await bctwService.uploadKeyX(rawMediaFile);
-      console.log('bctwUploadResult', bctwUploadResult);
 
       // Upsert attachment
       const attachmentService = new AttachmentService(connection);
@@ -170,9 +169,11 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res
-        .status(200)
-        .json({ attachmentId: upsertResult.survey_attachment_id, revision_count: upsertResult.revision_count });
+      return res.status(200).json({
+        attachmentId: upsertResult.survey_attachment_id,
+        revision_count: upsertResult.revision_count,
+        keyxResults: bctwUploadResult
+      });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
