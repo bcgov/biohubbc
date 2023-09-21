@@ -269,23 +269,63 @@ export class ProjectService extends DBService {
     return projectId;
   }
 
+  /**
+   * Insert project data.
+   *
+   * @param {PostProjectObject} postProjectData
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
   async insertProject(postProjectData: PostProjectObject): Promise<number> {
     return this.projectRepository.insertProject(postProjectData);
   }
 
+  /**
+   * Insert IUCN classification data.
+   *
+   * @param {number} iucn3_id
+   * @param {number} project_id
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
   async insertClassificationDetail(iucn3_id: number, project_id: number): Promise<number> {
     return this.projectRepository.insertClassificationDetail(iucn3_id, project_id);
   }
 
+  /**
+   * Insert participation data.
+   *
+   * @param {number} projectId
+   * @param {number} systemUserId
+   * @param {string} projectParticipantRole
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectService
+   */
   async postProjectParticipant(projectId: number, systemUserId: number, projectParticipantRole: string): Promise<void> {
     return this.projectParticipationService.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
   }
 
+  /**
+   * Insert region data.
+   *
+   * @param {number} projectId
+   * @param {Feature[]} features
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectService
+   */
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {
     const regionService = new RegionService(this.connection);
     return regionService.addRegionsToProjectFromFeatures(projectId, features);
   }
 
+  /**
+   * Insert programs data.
+   *
+   * @param {number} projectId
+   * @param {number[]} projectPrograms
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectService
+   */
   async insertPrograms(projectId: number, projectPrograms: number[]): Promise<void> {
     await this.projectRepository.deletePrograms(projectId);
     await this.projectRepository.insertProgram(projectId, projectPrograms);
