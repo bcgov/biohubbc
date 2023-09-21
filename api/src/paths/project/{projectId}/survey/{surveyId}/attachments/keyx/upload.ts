@@ -43,11 +43,19 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
       required: true
     },
     {
       in: 'path',
       name: 'surveyId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
       required: true
     }
   ],
@@ -68,6 +76,7 @@ POST.apiDoc = {
       }
     }
   },
+
   responses: {
     200: {
       description: 'Keyx Attachment upload response.',
@@ -75,14 +84,8 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['attachmentId', 'revision_count'],
+            required: ['attachmentId', 'revision_count', 'keyxResults'],
             properties: {
-              attachmentId: {
-                type: 'number'
-              },
-              revision_count: {
-                type: 'number'
-              },
               keyxResults: {
                 type: 'object',
                 required: ['totalKeyxFiles', 'newRecords', 'existingRecords'],
@@ -91,6 +94,12 @@ POST.apiDoc = {
                   newRecords: { type: 'number' },
                   existingRecords: { type: 'number' }
                 }
+              },
+              attachmentId: {
+                type: 'number'
+              },
+              revision_count: {
+                type: 'number'
               }
             }
           }
