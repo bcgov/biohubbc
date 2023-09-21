@@ -243,7 +243,6 @@ export function deployDevice(): RequestHandler {
       return res.status(201).json(surveyEntry);
     } catch (error) {
       defaultLog.error({ label: 'addDeployment', message: 'error', error });
-      console.log(JSON.stringify((error as Error).message));
       await connection.rollback();
       return res.status(500).json((error as AxiosError).response);
     } finally {

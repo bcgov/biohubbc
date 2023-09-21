@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
 /**
- * Added new program and project_program for tracking programs (used to be project type)
+ * Added new funding source and survey funding tables.
  *
  * @export
  * @param {Knex} knex

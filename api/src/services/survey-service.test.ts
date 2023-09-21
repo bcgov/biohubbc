@@ -13,7 +13,6 @@ import {
   GetAttachmentsData,
   GetFocalSpeciesData,
   GetSurveyData,
-  GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
   SurveyObject
@@ -21,6 +20,7 @@ import {
 import { FundingSourceRepository } from '../repositories/funding-source-repository';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
+import { SurveyLocationRecord, SurveyLocationRepository } from '../repositories/survey-location-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IGetSpeciesData,
@@ -74,9 +74,7 @@ describe('SurveyService', () => {
       const getSurveyProprietorDataForViewStub = sinon
         .stub(SurveyService.prototype, 'getSurveyProprietorDataForView')
         .resolves(({ data: 'proprietorData' } as unknown) as any);
-      const getSurveyLocationDataStub = sinon
-        .stub(SurveyService.prototype, 'getSurveyLocationData')
-        .resolves(({ data: 'locationData' } as unknown) as any);
+      const getSurveyLocationsDataStub = sinon.stub(SurveyService.prototype, 'getSurveyLocationsData').resolves([]);
       const getSurveyParticipantsStub = sinon
         .stub(SurveyParticipationService.prototype, 'getSurveyParticipants')
         .resolves([{ data: 'participantData' } as any]);
@@ -98,7 +96,7 @@ describe('SurveyService', () => {
       expect(getSurveyFundingSourceDataStub).to.be.calledOnce;
       expect(getSurveyPurposeAndMethodologyStub).to.be.calledOnce;
       expect(getSurveyProprietorDataForViewStub).to.be.calledOnce;
-      expect(getSurveyLocationDataStub).to.be.calledOnce;
+      expect(getSurveyLocationsDataStub).to.be.calledOnce;
       expect(getSurveyParticipantsStub).to.be.calledOnce;
       expect(getSurveyPartnershipsDataStub).to.be.calledOnce;
       expect(getSurveyBlockStub).to.be.calledOnce;
@@ -116,7 +114,7 @@ describe('SurveyService', () => {
           stakeholder_partnerships: []
         },
         participants: [{ data: 'participantData' } as any],
-        location: { data: 'locationData' },
+        locations: [],
         site_selection: { stratums: [], strategies: [] },
         blocks: []
       });
@@ -186,7 +184,6 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
-      const updateSurveyRegionStub = sinon.stub(SurveyService.prototype, 'insertRegion').resolves();
       const upsertSurveyParticipantDataStub = sinon
         .stub(SurveyService.prototype, 'upsertSurveyParticipantData')
         .resolves();
@@ -208,9 +205,9 @@ describe('SurveyService', () => {
         funding_sources: [{}],
         proprietor: {},
         purpose_and_methodology: {},
-        location: {},
-        site_selection: { stratums: [], strategies: [] },
+        locations: [],
         participants: [{}],
+        site_selection: { stratums: [], strategies: [] },
         blocks: [{}]
       });
 
@@ -223,7 +220,6 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
       expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
-      expect(updateSurveyRegionStub).to.have.been.calledOnce;
       expect(upsertSurveyParticipantDataStub).to.have.been.calledOnce;
       expect(upsertBlocks).to.have.been.calledOnce;
       expect(replaceSurveyStratumsStub).to.have.been.calledOnce;
@@ -458,11 +454,11 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const data = new GetSurveyLocationData([{ id: 1 }]);
+      const data = ([{ survey_location_id: 1 }] as any) as SurveyLocationRecord[];
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSurveyLocationData').resolves(data);
+      const repoStub = sinon.stub(SurveyLocationRepository.prototype, 'getSurveyLocationsData').resolves(data);
 
-      const response = await service.getSurveyLocationData(1);
+      const response = await service.getSurveyLocationsData(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(data);

@@ -248,7 +248,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
   return (
     <Autocomplete
       multiple
-      noOptionsText="Type to start searching"
+      noOptionsText="No matching options"
       autoHighlight={true}
       value={getExistingValue(get(values, props.id))}
       ListboxComponent={ListboxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
@@ -272,7 +272,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
               checkedIcon={<CheckBox fontSize="small" />}
               checked={selected}
               // Always seem to be disabled
-              disabled={(props.options && props.options?.indexOf(renderOption) !== -1) || false}
+              disabled={props.options?.includes(renderOption) || false}
               value={renderOption.value}
               color="default"
             />
@@ -288,6 +288,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
           label={props.label}
           variant="outlined"
           fullWidth
+          placeholder="Type to start searching"
           error={get(touched, props.id) && Boolean(get(errors, props.id))}
           helperText={get(touched, props.id) && get(errors, props.id)}
         />

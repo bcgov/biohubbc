@@ -62,13 +62,20 @@ describe('survey/{surveyId}/view', () => {
               indigenous_partnerships: [],
               stakeholder_partnerships: []
             },
+            locations: [
+              {
+                survey_location_id: 1,
+                name: 'location name',
+                description: 'location description',
+                geometry: '',
+                geography: '',
+                geojson: [],
+                revision_count: 0
+              }
+            ],
             site_selection: {
               strategies: ['strat1'],
               stratums: [{ name: 'startum1', description: 'desc' }]
-            },
-            location: {
-              survey_area_name: 'location',
-              geometry: []
             }
           },
           surveySupplementaryData: {
@@ -128,13 +135,20 @@ describe('survey/{surveyId}/view', () => {
               indigenous_partnerships: [],
               stakeholder_partnerships: []
             },
+            locations: [
+              {
+                survey_location_id: 1,
+                name: 'location name',
+                description: 'location description',
+                geometry: null,
+                geography: '',
+                geojson: [],
+                revision_count: 0
+              }
+            ],
             site_selection: {
               strategies: ['strat1'],
               stratums: [{ name: 'startum1', description: null }]
-            },
-            location: {
-              survey_area_name: 'location',
-              geometry: []
             }
           },
           surveySupplementaryData: {
