@@ -31,9 +31,10 @@ export const POST: Operation = [
   }),
   uploadKeyxMedia()
 ];
+
 POST.apiDoc = {
-  description: 'Upload a survey-specific keyx attachment.',
   tags: ['attachment'],
+  description: 'Upload a survey-specific keyx attachment.',
   security: [
     {
       Bearer: []
@@ -42,7 +43,7 @@ POST.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'projectId',
+      name: 'surveyId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -51,7 +52,7 @@ POST.apiDoc = {
     },
     {
       in: 'path',
-      name: 'surveyId',
+      name: 'projectId',
       schema: {
         type: 'integer',
         minimum: 1
