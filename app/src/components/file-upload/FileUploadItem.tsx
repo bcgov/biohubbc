@@ -208,13 +208,19 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
         <Box display="flex" flexDirection="row" alignItems="center" p={2} width="100%">
           <Icon path={mdiFileOutline} size={1.5} className={error ? classes.errorColor : classes.fileIconColor} />
           <Box pl={1.5} flex="1 1 auto">
-            <Box display="flex" flexDirection="row" flex="1 1 auto" alignItems="center" minHeight="3rem">
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                flex: '1 1 auto',
+                alignItems: 'center',
+                minHeight: '48px'
+              }}>
               <Box flex="1 1 auto">
                 <Typography variant="body2" component="div">
                   <strong>{file.name}</strong>
                 </Typography>
                 <Typography variant="caption" component="div">
-                  {/* TODO: errorDetails sections needs some refinement */}
                   {error ? (
                     <>
                       {error}

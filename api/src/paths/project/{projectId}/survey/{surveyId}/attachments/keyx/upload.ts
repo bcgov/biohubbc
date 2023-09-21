@@ -119,7 +119,7 @@ export function uploadKeyxMedia(): RequestHandler {
   return async (req, res) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
-    if (!rawMediaArray || !rawMediaArray.length) {
+    if (!rawMediaArray?.length) {
       // no media objects included, skipping media upload step
       throw new HTTP400('Missing upload data');
     }
@@ -168,8 +168,8 @@ export function uploadKeyxMedia(): RequestHandler {
 
       const metadata = {
         filename: rawMediaFile.originalname,
-        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
-        email: (req['auth_payload'] && req['auth_payload'].email) || ''
+        username: req['auth_payload']?.preferred_username ?? '',
+        email: req['auth_payload']?.email ?? ''
       };
 
       const result = await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);
