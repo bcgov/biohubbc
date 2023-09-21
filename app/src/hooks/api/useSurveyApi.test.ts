@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
+import { AnimalSex, Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
@@ -23,14 +23,15 @@ describe('useSurveyApi', () => {
   describe('createCritterAndAddToSurvey', () => {
     it('creates a critter successfully', async () => {
       const animal: IAnimal = {
-        general: { animal_id: '1', taxon_id: v4(), taxon_name: '1' },
+        general: { animal_id: '1', taxon_id: v4(), taxon_name: '1', wlh_id: 'a', sex: AnimalSex.UNKNOWN },
         captures: [],
         markings: [],
         measurements: [],
         mortality: [],
         family: [],
         images: [],
-        device: undefined
+        device: undefined,
+        collectionUnits: []
       };
       const critter = new Critter(animal);
 
