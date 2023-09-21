@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
+import { AnimalSex, Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
 import { v4 } from 'uuid';
 import { useCritterApi } from './useCritterApi';
 
@@ -21,7 +21,7 @@ describe('useCritterApi', () => {
     critter_id: mockId,
     wlh_id: '17-10748',
     animal_id: '6',
-    sex: 'Female',
+    sex: AnimalSex.FEMALE,
     taxon: 'Caribou',
     collection_units: [
       {
@@ -64,12 +64,15 @@ describe('useCritterApi', () => {
       general: {
         taxon_id: mockCritter.taxon,
         animal_id: mockCritter.animal_id,
-        taxon_name: 'Joe'
+        taxon_name: 'Joe',
+        wlh_id: 'a',
+        sex: AnimalSex.MALE
       },
       mortality: [],
       family: [],
       images: [],
-      device: undefined
+      device: undefined,
+      collectionUnits: []
     };
     const payload = new Critter(forCritter);
 

@@ -4,6 +4,7 @@ import { Form, useFormikContext } from 'formik';
 import { useEffect } from 'react';
 import { Critter, IAnimal } from './animal';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
+import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
@@ -37,6 +38,7 @@ const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => 
     <Form>
       <Typography variant="h4">Add New Individual</Typography>
       <GeneralAnimalForm />
+      <CollectionUnitAnimalForm />
       <CaptureAnimalForm />
       <MortalityAnimalForm />
       <MarkingAnimalForm />
