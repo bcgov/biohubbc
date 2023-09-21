@@ -28,10 +28,10 @@ export const POST: Operation = [
       ]
     };
   }),
-  uploadMedia()
+  uploadKeyxMedia()
 ];
 POST.apiDoc = {
-  description: 'Upload a survey-specific attachment.',
+  description: 'Upload a survey-specific keyx attachment.',
   tags: ['attachment'],
   security: [
     {
@@ -51,7 +51,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Attachment upload post request object.',
+    description: 'Keyx Attachment upload post request object.',
     content: {
       'multipart/form-data': {
         schema: {
@@ -69,7 +69,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Attachment upload response.',
+      description: 'Keyx Attachment upload response.',
       content: {
         'application/json': {
           schema: {
@@ -81,6 +81,15 @@ POST.apiDoc = {
               },
               revision_count: {
                 type: 'number'
+              },
+              keyxResults: {
+                type: 'object',
+                required: ['totalKeyxFiles', 'newRecords', 'existingRecords'],
+                properties: {
+                  totalKeyxFiles: { type: 'number' },
+                  newRecords: { type: 'number' },
+                  existingRecords: { type: 'number' }
+                }
               }
             }
           }
@@ -106,7 +115,7 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function uploadMedia(): RequestHandler {
+export function uploadKeyxMedia(): RequestHandler {
   return async (req, res) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
@@ -118,7 +127,7 @@ export function uploadMedia(): RequestHandler {
     const rawMediaFile: Express.Multer.File = rawMediaArray[0];
 
     defaultLog.debug({
-      label: 'uploadMedia',
+      label: 'uploadKeyxMedia',
       message: 'files',
       files: { ...rawMediaFile, buffer: 'Too big to print' }
     });
