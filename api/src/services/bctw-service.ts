@@ -110,7 +110,8 @@ export class BctwService {
       headers: {
         user: this.getUserHeader()
       },
-      baseURL: BCTW_API_HOST
+      baseURL: BCTW_API_HOST,
+      timeout: 10000
     });
 
     this.axiosInstance.interceptors.response.use(
@@ -118,7 +119,14 @@ export class BctwService {
         return response;
       },
       (error: AxiosError) => {
-        if (error?.code === 'ECONNREFUSED') {
+        console.log('*** BCTW ERROR *** ', error);
+        console.log('*** END OF BCTW ERROR ***');
+        if (
+          error?.code === 'ECONNREFUSED' ||
+          error?.code === 'ECONNRESET' ||
+          error?.code === 'ETIMEOUT' ||
+          error?.code === 'ECONNABORTED'
+        ) {
           return Promise.reject(
             new HTTP500('Connection to the BCTW API server was refused. Please try again later.', [error?.message])
           );
