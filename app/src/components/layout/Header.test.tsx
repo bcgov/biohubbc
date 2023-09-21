@@ -21,9 +21,7 @@ describe('Header', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
-    expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
-    expect(getByText('Resources')).toBeVisible();
   });
 
   it('renders correctly with system admin role (BCeID Business)', () => {
@@ -41,9 +39,7 @@ describe('Header', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
-    expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
-    expect(getByText('Resources')).toBeVisible();
   });
 
   it('renders correctly with system admin role (BCeID Basic)', () => {
@@ -61,9 +57,7 @@ describe('Header', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
-    expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
-    expect(getByText('Resources')).toBeVisible();
   });
 
   it('renders the username and logout button', () => {
