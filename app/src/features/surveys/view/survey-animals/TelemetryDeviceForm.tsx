@@ -1,9 +1,13 @@
 import { Box, Divider, FormHelperText, Paper, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { AttachmentType } from 'constants/attachments';
 import { Form, useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import moment from 'moment';
@@ -14,6 +18,31 @@ export enum TELEMETRY_DEVICE_FORM_MODE {
   ADD = 'add',
   EDIT = 'edit'
 }
+
+const AttchmentFormSection = ({
+  index,
+  projectId,
+  surveyId
+}: {
+  index: number;
+  projectId: number;
+  surveyId: number;
+}): JSX.Element => {
+  const biohubApi = useBiohubApi();
+  const getUploadHandler = (): IUploadHandler => {
+    return (file, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.survey.uploadSurveyKeyx(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
+    };
+  };
+  return (
+    <Box sx={{ mt: 3 }}>
+      <Paper sx={{ padding: 3 }}>
+        <Typography sx={{ ml: 1, mb: 3 }}>Attachments</Typography>
+        <FileUploadWithMeta attachmentType={AttachmentType.KEYX} uploadHandler={getUploadHandler()} />
+      </Paper>
+    </Box>
+  );
+};
 
 const DeploymentFormSection = ({
   index,
