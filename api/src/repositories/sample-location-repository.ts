@@ -25,9 +25,10 @@ export interface PostSampleLocations {
 export const SampleLocationRecord = z.object({
   survey_sample_site_id: z.number(),
   survey_id: z.number(),
+  name: z.string(),
+  description: z.string(),
   geojson: z.any(),
   geography: z.any(),
-  description: z.string(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -85,8 +86,7 @@ export class SampleLocationRepository extends BaseRepository {
     sql.append(geometryCollectionSQL);
     sql.append(SQL`, 4326)))`);
     sql.append(SQL`
-        )
-        WHERE
+      WHERE
         survey_sample_site_id = ${sample.survey_sample_site_id}
       RETURNING
         *;`);
@@ -94,7 +94,7 @@ export class SampleLocationRepository extends BaseRepository {
     const response = await this.connection.sql(sql, SampleLocationRecord);
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update survey block', [
+      throw new ApiExecuteSQLError('Failed to update sample location record', [
         'SampleLocationRepository->updateSampleLocation',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -117,7 +117,7 @@ export class SampleLocationRepository extends BaseRepository {
       name,
       description,
       geojson,
-      geography,
+      geography
     ) VALUES (
       ${sample.survey_id},
       ${sample.name},
@@ -127,16 +127,17 @@ export class SampleLocationRepository extends BaseRepository {
     const geometryCollectionSQL = generateGeometryCollectionSQL(sample.survey_sample_site);
 
     sqlStatement.append(SQL`
-        ,public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
+      public.geography(
+        public.ST_Force2D(
+          public.ST_SetSRID(
+    `);
 
     sqlStatement.append(geometryCollectionSQL);
 
     sqlStatement.append(SQL`
-        , 4326)))
-      `);
+      , 4326)))
+    `);
+
     sqlStatement.append(SQL`
       )
       RETURNING

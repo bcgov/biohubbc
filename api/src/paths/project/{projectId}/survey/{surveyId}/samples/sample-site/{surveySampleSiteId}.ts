@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
+import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
 import { PostSampleLocation } from '../../../../../../../repositories/sample-location-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { SampleLocationService } from '../../../../../../../services/sample-location-service';
@@ -82,18 +83,7 @@ PUT.apiDoc = {
                   type: 'string'
                 },
                 survey_sample_site: {
-                  type: 'object',
-                  properties: {
-                    type: {
-                      type: 'string'
-                    },
-                    coordinates: {
-                      type: 'array',
-                      items: {
-                        type: 'number'
-                      }
-                    }
-                  }
+                  ...(GeoJSONFeature as object)
                 }
               }
             }
@@ -104,7 +94,7 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project participants added OK.'
+      description: 'Sample site updated OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -126,6 +116,14 @@ PUT.apiDoc = {
 
 export function updateSurveySampleSite(): RequestHandler {
   return async (req, res) => {
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing required path param `surveyId`');
+    }
+
+    if (!req.params.surveySampleSiteId) {
+      throw new HTTP400('Missing required path param `surveySampleSiteId`');
+    }
+
     if (!req.body.sampleSite) {
       throw new HTTP400('Missing required body param `sampleSite`');
     }
@@ -134,6 +132,9 @@ export function updateSurveySampleSite(): RequestHandler {
 
     try {
       const sampleSite: PostSampleLocation = req.body.sampleSite;
+
+      sampleSite.survey_id = Number(req.params.surveyId);
+      sampleSite.survey_sample_site_id = Number(req.params.surveySampleSiteId);
 
       await connection.open();
 
@@ -246,11 +247,11 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
 
       const sampleLocationService = new SampleLocationService(connection);
 
-      const result = await sampleLocationService.deleteSampleLocationRecord(surveySampleSiteId);
+      await sampleLocationService.deleteSampleLocationRecord(surveySampleSiteId);
 
       await connection.commit();
 
-      return res.status(200).send(result);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySampleSiteRecord', message: 'error', error });
       throw error;
