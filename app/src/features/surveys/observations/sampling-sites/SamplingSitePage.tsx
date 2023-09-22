@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import { Button, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -5,7 +6,9 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
 import { Container } from '@mui/system';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SamplingSiteMethodYupSchema } from 'features/surveys/components/CreateSamplingMethod';
 import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
@@ -13,8 +16,10 @@ import SamplingMethodForm from 'features/surveys/components/SamplingMethodForm';
 import SurveySamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useRef, useState } from 'react';
+import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
 
@@ -42,9 +47,12 @@ export interface ICreateSamplingSiteRequest {
 
 const SamplingSitePage = () => {
   const classes = useStyles();
+  const history = useHistory();
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
+  const dialogContext = useContext(DialogContext);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -59,18 +67,46 @@ const SamplingSitePage = () => {
       .min(1, 'At least 1 Sampling Method is required')
   });
 
+  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      dialogTitle: 'Error Creating Sampling Site(s)',
+      dialogText:
+        'An error has occurred while attempting to create your sampling site, please try again. If the error persists, please contact your system administrator.',
+      onClose: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      onOk: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      ...textDialogProps,
+      open: true
+    });
+  };
+
   const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
+    setIsSubmitting(true);
     try {
       await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
+      // create complete, navigate back to observations page
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
     } catch (error) {
-      console.log('________API ERROR____________');
-      console.log(error);
+      showCreateErrorDialog({
+        dialogTitle: 'Error Creating Sampling Site(s)',
+        dialogError: (error as APIError).message,
+        dialogErrorDetails: (error as APIError)?.errors
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
-  console.log(formikRef.current?.errors);
+
   return (
     <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
-      <SamplingSiteHeader />
+      <SamplingSiteHeader
+        project_id={surveyContext.projectId}
+        survey_id={surveyContext.surveyId}
+        survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+      />
       <Box display="flex" flex="1 1 auto">
         <Container maxWidth="xl">
           <Formik
@@ -102,20 +138,25 @@ const SamplingSitePage = () => {
               <Divider className={classes.sectionDivider} />
 
               <Box display="flex" justifyContent="flex-end">
-                <Button
+                <LoadingButton
                   type="submit"
                   variant="contained"
                   color="primary"
+                  loading={isSubmitting}
                   onClick={() => {
                     formikRef.current?.submitForm();
                   }}
                   className={classes.actionButton}>
                   Save and Exit
-                </Button>
+                </LoadingButton>
                 <Button
                   variant="outlined"
                   color="primary"
-                  onClick={() => console.log('Cancel Button')}
+                  onClick={() => {
+                    history.push(
+                      `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
+                    );
+                  }}
                   className={classes.actionButton}>
                   Cancel
                 </Button>

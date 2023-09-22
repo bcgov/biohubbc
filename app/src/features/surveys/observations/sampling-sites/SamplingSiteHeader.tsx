@@ -1,12 +1,12 @@
-import { Breadcrumbs, CircularProgress, Link, Paper, Typography } from '@mui/material';
-import { SurveyContext } from 'contexts/surveyContext';
-import { useContext } from 'react';
+import { Breadcrumbs, Link, Paper, Typography } from '@mui/material';
 
-const SamplingSiteHeader = () => {
-  const surveyContext = useContext(SurveyContext);
-  if (!surveyContext.surveyDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
+export interface ISamplingSiteHeaderProps {
+  project_id: number;
+  survey_id: number;
+  survey_name: string;
+}
+export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) => {
+  const { project_id, survey_id, survey_name } = props;
   return (
     <>
       <Paper
@@ -22,10 +22,13 @@ const SamplingSiteHeader = () => {
             mb: 1,
             fontSize: '14px'
           }}>
-          <Link underline="hover" href="#">
-            {surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+          <Link underline="hover" href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+            {survey_name}
           </Link>
-          <Link color="text.secondary" variant="body2" href="#">
+          <Link
+            color="text.secondary"
+            variant="body2"
+            href={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}>
             Manage Survey Observations
           </Link>
           <Typography color="text.secondary" variant="body2">
