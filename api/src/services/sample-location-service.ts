@@ -74,7 +74,7 @@ export class SampleLocationService extends DBService {
         const sampleMethod: PostSampleMethod = {
           survey_sample_method_id: null,
           survey_sample_site_id: sampleSite.survey_sample_site_id,
-          method_name: item.method_name,
+          method_lookup_id: item.method_lookup_id,
           description: item.description,
           periods: item.periods
         };

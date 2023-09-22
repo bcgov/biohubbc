@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
-import { GeoJSONFeature, GeoJSONFeatureCollection } from '../../../../../../openapi/schemas/geoJson';
+import { GeoJSONFeature } from '../../../../../../openapi/schemas/geoJson';
 import { PostSampleLocations } from '../../../../../../repositories/sample-location-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { SampleLocationService } from '../../../../../../services/sample-location-service';
@@ -219,18 +219,22 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           properties: {
-            sampleSite: {
-              type: 'object',
-              properties: {
-                name: {
-                  type: 'string'
-                },
-                description: {
-                  type: 'string'
-                },
-                survey_sample_sites: {
-                  ...(GeoJSONFeatureCollection as object)
-                }
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            methods: {
+              type: 'array',
+              items: {
+                type: 'object'
+              }
+            },
+            survey_sample_sites: {
+              type: 'array',
+              items: {
+                type: 'object'
               }
             }
           }
@@ -266,14 +270,10 @@ export function createSurveySampleSiteRecord(): RequestHandler {
       throw new HTTP400('Missing required path param `surveyId`');
     }
 
-    if (!req.body.sampleSite) {
-      throw new HTTP400('Missing required body param `sampleSite`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleSite: PostSampleLocations = req.body.sampleSite;
+      const sampleSite: PostSampleLocations = req.body;
 
       sampleSite.survey_id = Number(req.params.surveyId);
 
@@ -281,7 +281,6 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       const sampleLocationService = new SampleLocationService(connection);
 
-      console.log(sampleSite);
       await sampleLocationService.insertSampleLocations(sampleSite);
 
       await connection.commit();

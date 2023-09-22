@@ -19,6 +19,7 @@ interface ISurveySampleMethodPeriodData {
 export interface ISurveySampleMethodData {
   survey_sample_method_id: number | null;
   survey_sample_site_id: number | null;
+  method_lookup_id: number | null;
   description: string;
   periods: ISurveySampleMethodPeriodData[];
 }
@@ -28,7 +29,13 @@ export interface IEditSurveySampleMethodData extends ISurveySampleMethodData {
 }
 
 const MethodForm = () => {
-  const blankPeriod = { survey_sample_period_id: null, survey_sample_method_id: null, start_date: '', end_date: '' };
+  const blankPeriod = {
+    method_lookup_id: null,
+    survey_sample_period_id: null,
+    survey_sample_method_id: null,
+    start_date: '',
+    end_date: ''
+  };
   const formikProps = useFormikContext<ISurveySampleMethodData>();
   const dataLoader = useContext(CodesContext);
   dataLoader.codesDataLoader.load();
@@ -39,8 +46,7 @@ const MethodForm = () => {
   if (!dataLoader.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-  console.log('Method Form Values', formikProps.values);
-  console.log('Method Form Errors', formikProps.errors);
+
   return (
     <form>
       <Box component={'fieldset'} mb={3}>
@@ -48,7 +54,7 @@ const MethodForm = () => {
         <Select
           sx={{ width: '100%', backgroundColor: '#fff' }}
           displayEmpty
-          value={formikProps.values.survey_sample_method_id}
+          value={formikProps.values.method_lookup_id}
           renderValue={(selected) => {
             if (selected) {
               return dataLoader.codesDataLoader.data?.sample_methods.find((item) => item.id === selected)?.name;
@@ -56,7 +62,7 @@ const MethodForm = () => {
               return 'Select Method';
             }
           }}
-          name={`survey_sample_method_id`}
+          name={`method_lookup_id`}
           onChange={formikProps.handleChange}>
           {dataLoader.codesDataLoader.data.sample_methods.map((item) => (
             <MenuItem key={item.id} value={item.id}>

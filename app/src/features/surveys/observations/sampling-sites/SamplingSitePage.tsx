@@ -60,11 +60,12 @@ const SamplingSitePage = () => {
   });
 
   const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
-    const temp = await biohubApi.samplingSite.createSamplingSites(
-      surveyContext.projectId,
-      surveyContext.surveyId,
-      values
-    );
+    try {
+      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
+    } catch (error) {
+      console.log('________API ERROR____________');
+      console.log(error);
+    }
   };
   console.log(formikRef.current?.errors);
   return (
@@ -105,7 +106,9 @@ const SamplingSitePage = () => {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  onClick={() => formikRef.current?.submitForm}
+                  onClick={() => {
+                    formikRef.current?.submitForm();
+                  }}
                   className={classes.actionButton}>
                   Save and Exit
                 </Button>

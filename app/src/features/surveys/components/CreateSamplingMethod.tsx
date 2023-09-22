@@ -10,7 +10,7 @@ interface ISamplingMethodProps {
 }
 
 export const SamplingSiteMethodYupSchema = yup.object({
-  survey_sample_method_id: yup.number().required(),
+  method_lookup_id: yup.number().required(),
   description: yup.string().required(),
   periods: yup
     .array(
