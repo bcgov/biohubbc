@@ -1,18 +1,20 @@
-import { mdiRefresh } from '@mdi/js';
+import { mdiRefresh, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
-import FileUploadItem, { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import FileUploadItemProgressBar from 'components/file-upload/FileUploadItemProgressBar';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import MapContainer from 'components/map/MapContainer';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
@@ -26,7 +28,6 @@ import {
   handleKMLUpload,
   handleShapeFileUpload
 } from 'utils/mapBoundaryUploadHelpers';
-import SampleSiteFileUploadItemActionButton from '../../features/surveys/observations/sampling-sites/SampleSiteFileUploadItemActionButton';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -86,7 +87,7 @@ const MapBoundary = (props: IMapBoundaryProps) => {
   const boundaryUploadHandler = (): IUploadHandler => {
     return async (file) => {
       if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        await handleShapeFileUpload(file, name, formikProps);
+        handleShapeFileUpload(file, name, formikProps);
       } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
         await handleGPXUpload(file, name, formikProps);
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
@@ -94,14 +95,6 @@ const MapBoundary = (props: IMapBoundaryProps) => {
       }
     };
   };
-
-  // TODO: First pass, this assumes only a single file will be uploaded at a time
-  // multiple files would require a way of referencing layers
-  const removeFile = () => {
-    setFieldValue(name, []);
-  };
-
-  console.log(values);
 
   return (
     <>
@@ -140,24 +133,16 @@ const MapBoundary = (props: IMapBoundaryProps) => {
           and click a boundary on the map.
         </Typography>
         <Box mb={3}>
-          <Box mt={4} display="flex">
-            <FileUpload
-              uploadHandler={boundaryUploadHandler()}
-              onRemove={removeFile}
-              dropZoneProps={{
-                acceptedFileExtensions: '.zip',
-                maxNumFiles: 1,
-                multiple: false
-              }}
-              hideDropZoneOnMaxFiles={true}
-              FileUploadItemComponent={FileUploadItem}
-              FileUploadItemComponentProps={{
-                ActionButtonComponent: SampleSiteFileUploadItemActionButton,
-                ProgressBarComponent: FileUploadItemProgressBar
-              }}
-            />
-            {/* TODO: Move this layer control onto the map as part of leaflets built in layer control */}
-            {/* <Box ml={2}>
+          <Box mt={4} display="flex" alignItems="flex-start">
+            <Button
+              color="primary"
+              variant="outlined"
+              data-testid="boundary_file-upload"
+              startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+              onClick={() => setOpenUploadBoundary(true)}>
+              Import Boundary
+            </Button>
+            <Box ml={2}>
               <FormControl variant="outlined" size="small">
                 <Select
                   size="small"
@@ -184,7 +169,7 @@ const MapBoundary = (props: IMapBoundaryProps) => {
                   </MenuItem>
                 </Select>
               </FormControl>
-            </Box> */}
+            </Box>
             <Box ml={1}>
               {selectedLayer && (
                 <Button variant="outlined" onClick={() => setSelectedLayer('')}>

@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import MapBoundary from 'components/boundary/MapBoundary';
+import SamplingSiteMapControl from 'features/surveys/observations/sampling-sites/components/SamplingSiteMapControl';
 import { useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 
@@ -19,7 +19,7 @@ const SurveySamplingSiteImportForm = () => {
           }}>
           Import a file
         </Typography>
-        <MapBoundary
+        <SamplingSiteMapControl
           name="survey_sample_sites"
           title={
             `Site Boundary Preview ` +

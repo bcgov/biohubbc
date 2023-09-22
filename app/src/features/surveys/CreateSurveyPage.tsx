@@ -126,7 +126,7 @@ const CreateSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectData?.project.project_id}/surveys`);
+      history.push(`/admin/projects/${projectData?.project.project_id}`);
     }
   };
 
@@ -190,7 +190,7 @@ const CreateSurveyPage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectData?.project.project_id}/surveys`);
+    history.push(`/admin/projects/${projectData?.project.project_id}`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {

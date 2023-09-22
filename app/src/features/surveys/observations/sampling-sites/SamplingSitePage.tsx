@@ -9,8 +9,8 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { SurveyContext } from 'contexts/surveyContext';
 import { SamplingSiteMethodYupSchema } from 'features/surveys/components/CreateSamplingMethod';
 import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
-import SamplingSiteMethodForm from 'features/surveys/components/SamplingMethodForm';
-import SamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
+import SamplingMethodForm from 'features/surveys/components/SamplingMethodForm';
+import SurveySamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -90,14 +90,14 @@ const SamplingSitePage = () => {
               <HorizontalSplitFormComponent
                 title="Site Boundaries"
                 summary="Drag files here or Browse Files Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem"
-                component={<SamplingSiteImportForm />}></HorizontalSplitFormComponent>
+                component={<SurveySamplingSiteImportForm />}></HorizontalSplitFormComponent>
 
               <Divider className={classes.sectionDivider} />
 
               <HorizontalSplitFormComponent
                 title="Sampling Methods"
                 summary="Specify sampling methods used to collect data at each sampling site."
-                component={<SamplingSiteMethodForm />}></HorizontalSplitFormComponent>
+                component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
 
               <Divider className={classes.sectionDivider} />
 
