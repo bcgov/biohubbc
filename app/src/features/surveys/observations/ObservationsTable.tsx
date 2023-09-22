@@ -3,11 +3,11 @@ import Icon from "@mdi/react";
 import { Theme } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import { makeStyles } from "@mui/styles";
-import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowModes } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons } from '@mui/x-data-grid';
 import { IObservationTableRow, ObservationsContext } from "contexts/observationsContext";
 import { useContext } from "react";
 // import { useEffect, useState } from "react";
-import { pluralize as p } from "utils/Utils";
+// import { pluralize as p } from "utils/Utils";
 
 export type IObservationsTableProps = Record<never, any>;
 
@@ -118,23 +118,16 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       ],
     }
   ];
-  
-  const { _rows, _setRows, _setRowModesModel, _rowModesModel } = useContext(ObservationsContext);
+
+  const apiRef = useContext(ObservationsContext)._muiDataGridApiRef;
   
   const handleDeleteRow = (id: string | number) => {
-    _setRows(_rows.filter((row) => row.id !== id));
+    apiRef.current.setRows(Object.values(apiRef.current.state.rows).filter((row) => row.id !== id));
   }
-
-  // console.log('rowModesModel:', _rowModesModel);
-
-  /*
-  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, event) => {
-    console.log({ params })
-  }
-  */
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
     event.defaultMuiPrevented = true;
+    return;
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       //
     }
@@ -143,49 +136,48 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
     const updatedRow: IObservationTableRow = { ...newRow, _isModified: true };
 
-    _setRows(_rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+    apiRef.current.setRows(Object.values(apiRef.current.state.rows).map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
 
-  /*
-  const handleStateChange: GridEventListener<'stateChange'> = (params, event) => {
-    // console.log('handleStateChange:', params);
+  const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
+    apiRef.current.startRowEditMode({ id: params.row.id, fieldToFocus: params.field });
   }
+
+  /*
+  const modifiedKeys = new Set<string>([
+    ...Object.keys(apiRef.current.state.editRows),
+    ...apiRef.current.get
+  ]);
   */
 
-  const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
-    _setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [params.row.id]: { mode: GridRowModes.Edit, fieldToFocus: params.field }
-    }))
-  }
-
-  const numModified = _rows.filter((row) => row._isModified).length;
 
   return (
     <DataGrid
-      // onStateChange={handleStateChange}
+      apiRef={apiRef}
       editMode="row"
       onCellClick={handleCellClick}
       // onRowEditStart={handleRowEditStart}
       onRowEditStop={handleRowEditStop}
       processRowUpdate={handleProcessRowUpdate}
       columns={observationColumns}
-      rows={_rows}
-      rowModesModel={_rowModesModel}
+      rows={[]}
+      // rowModesModel={_rowModesModel}
       disableRowSelectionOnClick
-      onRowModesModelChange={_setRowModesModel}
+      // onRowModesModelChange={_setRowModesModel}
       localeText={{
         noRowsLabel: "No Records",
+        /*
         footerRowSelected: (numSelected: number) => {
           return [
             numSelected > 0 && `${numSelected} ${p(numSelected, 'row')} selected`,
             numModified > 0 && `${numModified} unsaved ${p(numModified, 'row')}`
           ].filter(Boolean).join(', ')
         }
+        */
       }}
       getRowClassName={(params) => {
-        if (params.row._isModified || _rowModesModel) {
+        if (params.row._isModified) {
           return classes.modifiedRow;
         }
 

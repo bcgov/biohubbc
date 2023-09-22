@@ -1,6 +1,7 @@
-import { GridRowModes, GridRowModesModel } from '@mui/x-data-grid';
+import { useGridApiRef } from '@mui/x-data-grid';
+import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import useDataLoader from 'hooks/useDataLoader';
-import { createContext, Dispatch, PropsWithChildren, SetStateAction, useEffect, useState } from 'react';
+import { createContext, PropsWithChildren, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface IObservationRecord {
@@ -57,45 +58,36 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
  */
 export type IObservationsContext = {
   createNewRecord: () => void;
-  _commitRows: () => void;
-  _rows: IObservationTableRow[]
-  _rowModesModel: GridRowModesModel;
-  _setRows: Dispatch<SetStateAction<IObservationTableRow[]>> // (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
-  _setRowModesModel: Dispatch<SetStateAction<GridRowModesModel>>
+  _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>
 }
 
 export const ObservationsContext = createContext<IObservationsContext>({
-  _rows: [],
-  _rowModesModel: {},
-  _setRows: () => {},
-  _setRowModesModel: () => {},
-  _commitRows: () => {},
+  _muiDataGridApiRef: { current: null as unknown as GridApiCommunity },
   createNewRecord: () => {},
-
 });
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
-  const [_rows, _setRows] = useState<IObservationTableRow[]>([]);
-  const [_rowModesModel, _setRowModesModel] = useState<GridRowModesModel>({});
+  const _muiDataGridApiRef = useGridApiRef();
 
   const observationsDataLoader = useDataLoader(fetchObservationDemoRows);
   observationsDataLoader.load()
 
   useEffect(() => {
-    if (observationsDataLoader.data) {
+    if (observationsDataLoader.data && _muiDataGridApiRef.current.setRows) {
       const rows: IObservationTableRow[] = observationsDataLoader.data.map((row) => ({
         ...row,
         id: String(row.observation_id),
         _isModified: false
       }));
-      _setRows(rows);
+
+      _muiDataGridApiRef.current.setRows(rows);
     }
   }, [observationsDataLoader.data])
 
   const createNewRecord = () => {
     const id = uuidv4();
-    _setRows((oldRows) => [
-      ...oldRows,
+    _muiDataGridApiRef.current.setRows([
+      _muiDataGridApiRef.current.state.rows,
       {
         id,
         _isModified: true,
@@ -106,32 +98,13 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         samplingPeriod: '',
       }
     ]);
-    _setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: 'speciesName' },
-    }));
+
+    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'speciesName' });
   };
-
-  const handleCommitRows = () => {
-    /*
-    _setRowModesModel((oldModel) => {
-      return Object.keys(oldModel)
-        .reduce((newModel: GridRowModesModel, key) => {
-          newModel[key] = { ...oldModel[key], mode: '' };
-
-          return newModel;
-        }, {});
-    })
-    */
-  }
 
   const observationsContext: IObservationsContext = {
     createNewRecord,
-    _rows,
-    _rowModesModel,
-    _setRows,
-    _setRowModesModel,
-    _commitRows: handleCommitRows
+    _muiDataGridApiRef
   };
 
   return (
