@@ -3,12 +3,12 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
-import { PostSampleLocation } from '../../../../../../../repositories/sample-location-repository';
+import { PostSampleMethod } from '../../../../../../../repositories/sample-method-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SampleLocationService } from '../../../../../../../services/sample-location-service';
+import { SampleMethodService } from '../../../../../../../services/sample-method-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-site/{surveySampleSiteId}');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-site/{surveySampleMethodId}');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
@@ -26,11 +26,11 @@ export const PUT: Operation = [
       ]
     };
   }),
-  updateSurveySampleSite()
+  updateSurveySampleMethod()
 ];
 
 PUT.apiDoc = {
-  description: 'update survey sample site',
+  description: 'update survey sample method',
   tags: ['survey'],
   security: [
     {
@@ -58,7 +58,7 @@ PUT.apiDoc = {
     },
     {
       in: 'path',
-      name: 'surveySampleSiteId',
+      name: 'surveySampleMethodId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -72,28 +72,17 @@ PUT.apiDoc = {
         schema: {
           type: 'object',
           properties: {
-            sampleSite: {
+            sampleMethod: {
               type: 'object',
               properties: {
-                name: {
-                  type: 'string'
+                survey_sample_site_id: {
+                  type: 'integer'
+                },
+                method_lookup_id: {
+                  type: 'integer'
                 },
                 description: {
                   type: 'string'
-                },
-                survey_sample_site: {
-                  type: 'object',
-                  properties: {
-                    type: {
-                      type: 'string'
-                    },
-                    coordinates: {
-                      type: 'array',
-                      items: {
-                        type: 'number'
-                      }
-                    }
-                  }
                 }
               }
             }
@@ -104,7 +93,7 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project participants added OK.'
+      description: 'Updated sample method OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -124,28 +113,27 @@ PUT.apiDoc = {
   }
 };
 
-export function updateSurveySampleSite(): RequestHandler {
+export function updateSurveySampleMethod(): RequestHandler {
   return async (req, res) => {
-    if (!req.body.sampleSite) {
-      throw new HTTP400('Missing required body param `sampleSite`');
+    if (!req.body.sampleMethod) {
+      throw new HTTP400('Missing required body param `sampleMethod`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleSite: PostSampleLocation = req.body.sampleSite;
+      const sampleMethod: PostSampleMethod = req.body.sampleMethod;
 
       await connection.open();
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleMethodService = new SampleMethodService(connection);
 
-      await sampleLocationService.updateSampleLocation(sampleSite);
+      const result = await sampleMethodService.updateSampleMethod(sampleMethod);
 
       await connection.commit();
-
-      return res.status(200).send();
+      return res.status(200).send(result);
     } catch (error) {
-      defaultLog.error({ label: 'updateSurveySampleSite', message: 'error', error });
+      defaultLog.error({ label: 'updateSurveySampleMethod', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -169,11 +157,11 @@ export const DELETE: Operation = [
       ]
     };
   }),
-  deleteSurveySampleSiteRecord()
+  deleteSurveySampleMethodRecord()
 ];
 
 DELETE.apiDoc = {
-  description: 'Delete a survey sample site.',
+  description: 'Delete a survey sample method record.',
   tags: ['survey'],
   security: [
     {
@@ -201,7 +189,7 @@ DELETE.apiDoc = {
     },
     {
       in: 'path',
-      name: 'surveySampleSiteId',
+      name: 'surveySampleMethodId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -231,12 +219,12 @@ DELETE.apiDoc = {
   }
 };
 
-export function deleteSurveySampleSiteRecord(): RequestHandler {
+export function deleteSurveySampleMethodRecord(): RequestHandler {
   return async (req, res) => {
-    const surveySampleSiteId = Number(req.params.surveySampleSiteId);
+    const surveySampleMethodId = Number(req.params.surveySampleMethodId);
 
-    if (!surveySampleSiteId) {
-      throw new HTTP400('Missing required param `surveySampleSiteId`');
+    if (!surveySampleMethodId) {
+      throw new HTTP400('Missing required param `surveySampleMethodId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -244,15 +232,15 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
     try {
       await connection.open();
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleMethodService = new SampleMethodService(connection);
 
-      const result = await sampleLocationService.deleteSampleLocationRecord(surveySampleSiteId);
+      const result = await sampleMethodService.deleteSampleMethodRecord(surveySampleMethodId);
 
       await connection.commit();
 
       return res.status(200).send(result);
     } catch (error) {
-      defaultLog.error({ label: 'deleteSurveySampleSiteRecord', message: 'error', error });
+      defaultLog.error({ label: 'deleteSurveySampleMethodRecord', message: 'error', error });
       throw error;
     } finally {
       connection.release();

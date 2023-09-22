@@ -245,7 +245,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project participants added OK.'
+      description: 'Sample site added OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -267,12 +267,6 @@ POST.apiDoc = {
 
 export function createSurveySampleSiteRecord(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
-
-    if (!surveyId) {
-      throw new HTTP400('Missing required param `surveyId`');
-    }
-
     if (!req.body.sampleSite) {
       throw new HTTP400('Missing required body param `sampleSite`');
     }

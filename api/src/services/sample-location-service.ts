@@ -36,12 +36,12 @@ export class SampleLocationService extends DBService {
   /**
    * Deletes a survey Sample Location.
    *
-   * @param {number} sampleLocationId
+   * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleLocationRecord>}
    * @memberof SampleLocationService
    */
-  async deleteSampleLocationRecord(sampleLocationId: number): Promise<SampleLocationRecord> {
-    return this.sampleLocationRepository.deleteSampleLocationRecord(sampleLocationId);
+  async deleteSampleLocationRecord(surveySampleSiteId: number): Promise<SampleLocationRecord> {
+    return this.sampleLocationRepository.deleteSampleLocationRecord(surveySampleSiteId);
   }
 
   /**
