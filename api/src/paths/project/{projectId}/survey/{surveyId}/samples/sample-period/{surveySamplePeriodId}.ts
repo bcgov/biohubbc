@@ -3,12 +3,12 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
-import { PostSampleLocation } from '../../../../../../../repositories/sample-location-repository';
+import { PostSamplePeriod } from '../../../../../../../repositories/sample-period-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SampleLocationService } from '../../../../../../../services/sample-location-service';
+import { SamplePeriodService } from '../../../../../../../services/sample-period-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-site/{surveySampleSiteId}');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-site/{surveySamplePeriodId}');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
@@ -26,11 +26,11 @@ export const PUT: Operation = [
       ]
     };
   }),
-  updateSurveySampleSite()
+  updateSurveySamplePeriod()
 ];
 
 PUT.apiDoc = {
-  description: 'update survey sample site',
+  description: 'update survey sample period',
   tags: ['survey'],
   security: [
     {
@@ -58,7 +58,7 @@ PUT.apiDoc = {
     },
     {
       in: 'path',
-      name: 'surveySampleSiteId',
+      name: 'surveySamplePeriodId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -72,28 +72,17 @@ PUT.apiDoc = {
         schema: {
           type: 'object',
           properties: {
-            sampleSite: {
+            samplePeriod: {
               type: 'object',
               properties: {
-                name: {
+                survey_sample_method_id: {
+                  type: 'integer'
+                },
+                start_date: {
                   type: 'string'
                 },
-                description: {
+                end_date: {
                   type: 'string'
-                },
-                survey_sample_site: {
-                  type: 'object',
-                  properties: {
-                    type: {
-                      type: 'string'
-                    },
-                    coordinates: {
-                      type: 'array',
-                      items: {
-                        type: 'number'
-                      }
-                    }
-                  }
                 }
               }
             }
@@ -124,28 +113,28 @@ PUT.apiDoc = {
   }
 };
 
-export function updateSurveySampleSite(): RequestHandler {
+export function updateSurveySamplePeriod(): RequestHandler {
   return async (req, res) => {
-    if (!req.body.sampleSite) {
-      throw new HTTP400('Missing required body param `sampleSite`');
+    if (!req.body.samplePeriod) {
+      throw new HTTP400('Missing required body param `samplePeriod`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleSite: PostSampleLocation = req.body.sampleSite;
+      const samplePeriod: PostSamplePeriod = req.body.samplePeriod;
 
       await connection.open();
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const samplePeriodService = new SamplePeriodService(connection);
 
-      await sampleLocationService.updateSampleLocation(sampleSite);
+      const result = await samplePeriodService.updateSamplePeriod(samplePeriod);
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(200).send(result);
     } catch (error) {
-      defaultLog.error({ label: 'updateSurveySampleSite', message: 'error', error });
+      defaultLog.error({ label: 'updateSurveySamplePeriod', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -169,11 +158,11 @@ export const DELETE: Operation = [
       ]
     };
   }),
-  deleteSurveySampleSiteRecord()
+  deleteSurveySamplePeriodRecord()
 ];
 
 DELETE.apiDoc = {
-  description: 'Delete a survey sample site.',
+  description: 'Delete a survey sample period record.',
   tags: ['survey'],
   security: [
     {
@@ -201,7 +190,7 @@ DELETE.apiDoc = {
     },
     {
       in: 'path',
-      name: 'surveySampleSiteId',
+      name: 'surveySamplePeriodId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -231,12 +220,12 @@ DELETE.apiDoc = {
   }
 };
 
-export function deleteSurveySampleSiteRecord(): RequestHandler {
+export function deleteSurveySamplePeriodRecord(): RequestHandler {
   return async (req, res) => {
-    const surveySampleSiteId = Number(req.params.surveySampleSiteId);
+    const surveySamplePeriodId = Number(req.params.surveySamplePeriodId);
 
-    if (!surveySampleSiteId) {
-      throw new HTTP400('Missing required param `surveySampleSiteId`');
+    if (!surveySamplePeriodId) {
+      throw new HTTP400('Missing required param `surveySamplePeriodId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -244,15 +233,15 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
     try {
       await connection.open();
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const samplePeriodService = new SamplePeriodService(connection);
 
-      const result = await sampleLocationService.deleteSampleLocationRecord(surveySampleSiteId);
+      const result = await samplePeriodService.deleteSamplePeriodRecord(surveySamplePeriodId);
 
       await connection.commit();
 
       return res.status(200).send(result);
     } catch (error) {
-      defaultLog.error({ label: 'deleteSurveySampleSiteRecord', message: 'error', error });
+      defaultLog.error({ label: 'deleteSurveySamplePeriodRecord', message: 'error', error });
       throw error;
     } finally {
       connection.release();

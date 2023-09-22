@@ -1,4 +1,4 @@
-import { Feature } from 'geojson';
+import { Feature, FeatureCollection } from 'geojson';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -11,6 +11,14 @@ export interface PostSampleLocation {
   name: string;
   description: string;
   survey_sample_site: Feature;
+}
+
+export interface PostSampleLocations {
+  survey_sample_site_id: number | null;
+  survey_id: number;
+  name: string;
+  description: string;
+  survey_sample_sites: FeatureCollection;
 }
 
 // This describes the a row in the database for Survey Block
@@ -150,16 +158,16 @@ export class SampleLocationRepository extends BaseRepository {
   /**
    * Deletes a survey Sample Location.
    *
-   * @param {number} sampleLocationId
+   * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleLocationRecord>}
    * @memberof SampleLocationRepository
    */
-  async deleteSampleLocationRecord(sampleLocationId: number): Promise<SampleLocationRecord> {
+  async deleteSampleLocationRecord(surveySampleSiteId: number): Promise<SampleLocationRecord> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_sample_site
       WHERE
-        survey_sample_site_id = ${sampleLocationId}
+        survey_sample_site_id = ${surveySampleSiteId}
       RETURNING
         *;
     `;
