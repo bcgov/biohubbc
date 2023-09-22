@@ -1,8 +1,6 @@
 import { mdiDotsVertical, mdiTrashCan } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Theme } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
-import { makeStyles } from "@mui/styles";
 import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons } from '@mui/x-data-grid';
 import { IObservationTableRow, ObservationsContext, fetchObservationDemoRows } from "contexts/observationsContext";
 import useDataLoader from "hooks/useDataLoader";
@@ -12,12 +10,14 @@ import { useContext, useEffect, useState } from "react";
 
 export type IObservationsTableProps = Record<never, any>;
 
+/*
 const useStyles = makeStyles((theme: Theme) => ({
   modifiedRow: {} // { background: 'rgba(65, 168, 3, 0.16)' }
 }));
+*/
 
 const ObservationsTable = (props: IObservationsTableProps) => {
-  const classes = useStyles();
+  // const classes = useStyles();
   const observationsDataLoader = useDataLoader(fetchObservationDemoRows);
   const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
 
@@ -143,18 +143,11 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
-    // event.defaultMuiPrevented = true;
+    event.defaultMuiPrevented = true;
     return;
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       //
     }
-  };
-
-  const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
-    const updatedRow: IObservationTableRow = { ...newRow, _isModified: true };
-
-    // apiRef.current.setRows(Object.values(apiRef.current.state.rows).map((row) => (row.id === newRow.id ? updatedRow : row)));
-    return updatedRow;
   };
 
   const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
@@ -180,7 +173,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       onCellClick={handleCellClick}
       // onRowEditStart={handleRowEditStart}
       onRowEditStop={handleRowEditStop}
-      processRowUpdate={handleProcessRowUpdate}
+      // processRowUpdate={handleProcessRowUpdate}
       columns={observationColumns}
       rows={initialRows}
       // rowModesModel={_rowModesModel}
@@ -196,13 +189,6 @@ const ObservationsTable = (props: IObservationsTableProps) => {
           ].filter(Boolean).join(', ')
         }
         */
-      }}
-      getRowClassName={(params) => {
-        if (params.row._isModified) {
-          return classes.modifiedRow;
-        }
-
-        return '';
       }}
       sx={{
         background: '#fff',

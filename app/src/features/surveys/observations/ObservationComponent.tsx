@@ -38,10 +38,19 @@ export const ObservationComponent = () => {
         </Typography>
         {showSaveButton && (
           <>  
-            <Button variant="contained" color="success" startIcon={<Icon path={mdiFloppy} size={1} />}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiFloppy}
+              size={1} />}
+              onClick={() => observationsContext.saveRecords()}>
               Save Changes
             </Button>
-            <Button variant="contained" color="error" startIcon={<Icon path={mdiTrashCan} size={1} />}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiTrashCan} size={1} />}
+              onClick={() => observationsContext.revertRecords()}>
               Cancel
             </Button>
           </>
