@@ -13,15 +13,20 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
    *
    * @return {*}  {Promise<IGetSearchResultsResponse[]>}
    */
-  const createSamplingSite = async (samplingSite: ICreateSamplingSiteRequest): Promise<any> => {
-    //TODO: hook this up with real API
-    const { data } = await axios.post(`/api/search`, samplingSite);
+  const createSamplingSites = async (
+    projectId: number,
+    surveyId: number,
+    samplingSite: ICreateSamplingSiteRequest
+  ): Promise<any> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/samples/sample-site`, {
+      sampleSite: samplingSite
+    });
 
     return data;
   };
 
   return {
-    createSamplingSite
+    createSamplingSites
   };
 };
 

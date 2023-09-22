@@ -281,6 +281,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       const sampleLocationService = new SampleLocationService(connection);
 
+      console.log(sampleSite);
       await sampleLocationService.insertSampleLocations(sampleSite);
 
       await connection.commit();

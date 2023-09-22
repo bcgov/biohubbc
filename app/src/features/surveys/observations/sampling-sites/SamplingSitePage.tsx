@@ -13,6 +13,7 @@ import SamplingSiteMethodForm from 'features/surveys/components/SamplingMethodFo
 import SamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
@@ -34,12 +35,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface ICreateSamplingSiteRequest {
   name: string;
   description: string;
-  sites: Feature[]; // extracted list from shape files
+  survey_id: number;
+  survey_sample_sites: Feature[]; // extracted list from shape files
   methods: ISurveySampleMethodData[];
 }
 
 const SamplingSitePage = () => {
   const classes = useStyles();
+  const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
@@ -48,15 +51,22 @@ const SamplingSitePage = () => {
   }
 
   const samplingSiteYupSchema = yup.object({
-    name: yup.string().required(),
-    description: yup.string().required(),
-    sites: yup.array(yup.object({})),
-    methods: yup.array(yup.object().concat(SamplingSiteMethodYupSchema)).min(1, 'At least 1 Sampling Method is required')
+    name: yup.string().default(''),
+    description: yup.string().default(''),
+    survey_sample_sites: yup.array(yup.object({})),
+    methods: yup
+      .array(yup.object().concat(SamplingSiteMethodYupSchema))
+      .min(1, 'At least 1 Sampling Method is required')
   });
 
   const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
-    console.log(values);
+    const temp = await biohubApi.samplingSite.createSamplingSites(
+      surveyContext.projectId,
+      surveyContext.surveyId,
+      values
+    );
   };
+  console.log(formikRef.current?.errors);
   return (
     <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
       <SamplingSiteHeader />
@@ -64,7 +74,13 @@ const SamplingSitePage = () => {
         <Container maxWidth="xl">
           <Formik
             innerRef={formikRef}
-            initialValues={{ name: '', description: '', sites: [], methods: [] }}
+            initialValues={{
+              survey_id: surveyContext.surveyId,
+              name: '',
+              description: '',
+              survey_sample_sites: [],
+              methods: []
+            }}
             validationSchema={samplingSiteYupSchema}
             validateOnBlur={true}
             validateOnChange={false}
@@ -89,7 +105,7 @@ const SamplingSitePage = () => {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  onClick={() => formikRef.current?.submitForm()}
+                  onClick={() => formikRef.current?.submitForm}
                   className={classes.actionButton}>
                   Save and Exit
                 </Button>

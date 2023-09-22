@@ -5,7 +5,9 @@ import {
   SampleLocationRecord,
   SampleLocationRepository
 } from '../repositories/sample-location-repository';
+import { PostSampleMethod } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
+import { SampleMethodService } from './sample-method-service';
 
 /**
  * Sample Location Repository
@@ -52,19 +54,35 @@ export class SampleLocationService extends DBService {
    * @memberof SampleLocationService
    */
   async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleLocationRecord[]> {
-    const promises = sampleLocations.survey_sample_sites.features.map((feature) => {
+    const methodService = new SampleMethodService(this.connection);
+
+    const promises = sampleLocations.survey_sample_sites.map((item, index) => {
       const sampleLocation: PostSampleLocation = {
         survey_sample_site_id: null,
         survey_id: sampleLocations.survey_id,
-        name: sampleLocations.name,
+        name: `Sample Site ${index + 1}`,
         description: sampleLocations.description,
-        survey_sample_site: feature
+        survey_sample_site: item
       };
 
       return this.sampleLocationRepository.insertSampleLocation(sampleLocation);
     });
+    const results = await Promise.all<SampleLocationRecord>(promises);
 
-    const results = await Promise.all(promises);
+    const methodPromises = results.map((sampleSite) =>
+      sampleLocations.methods.map((item) => {
+        const sampleMethod: PostSampleMethod = {
+          survey_sample_method_id: null,
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          method_name: item.method_name,
+          description: item.description,
+          periods: item.periods
+        };
+        return methodService.insertSampleMethod(sampleMethod);
+      })
+    );
+    await Promise.all(methodPromises);
+
     return results;
   }
 

@@ -1,9 +1,10 @@
-import { Feature, FeatureCollection } from 'geojson';
+import { Feature } from 'geojson';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
+import { PostSampleMethod } from './sample-method-repository';
 
 export interface PostSampleLocation {
   survey_sample_site_id: number | null;
@@ -18,7 +19,8 @@ export interface PostSampleLocations {
   survey_id: number;
   name: string;
   description: string;
-  survey_sample_sites: FeatureCollection;
+  survey_sample_sites: Feature[];
+  methods: PostSampleMethod[];
 }
 
 // This describes the a row in the database for Survey Block

@@ -2,12 +2,14 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
+import { PostSamplePeriod } from './sample-period-repository';
 
 export interface PostSampleMethod {
   survey_sample_method_id: number | null;
   survey_sample_site_id: number;
-  methodName: string;
+  method_name: string;
   description: string;
+  periods: PostSamplePeriod[];
 }
 
 // This describes the a row in the database for Survey Block
@@ -62,7 +64,7 @@ export class SampleMethodRepository extends BaseRepository {
       UPDATE survey_sample_method
       SET
         survey_sample_site_id=${sample.survey_sample_site_id},
-        method_lookup_id= ( SELECT method_lookup_id FROM method_lookup WHERE name = ${sample.methodName}),
+        method_lookup_id= ( SELECT method_lookup_id FROM method_lookup WHERE name = ${sample.method_name}),
         description=${sample.description}
       WHERE
         survey_sample_method_id = ${sample.survey_sample_method_id}
@@ -97,7 +99,7 @@ export class SampleMethodRepository extends BaseRepository {
     ) VALUES (
       ${sample.survey_sample_site_id},
       (
-        SELECT method_lookup_id FROM method_lookup WHERE name = ${sample.methodName}
+        SELECT method_lookup_id FROM method_lookup WHERE name = ${sample.method_name}
       ),
       ${sample.description}
       )

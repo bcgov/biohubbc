@@ -44,7 +44,6 @@ const SamplingMethodForm = () => {
       <CreateSamplingMethod
         open={isCreateModalOpen}
         onSubmit={(data) => {
-          console.log(data);
           setFieldValue(`methods[${values.methods.length}]`, data);
           setIsCreateModalOpen(false);
         }}

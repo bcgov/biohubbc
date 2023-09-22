@@ -20,10 +20,12 @@ const SurveySamplingSiteImportForm = () => {
           Import a file
         </Typography>
         <MapBoundary
-          name="sites"
+          name="survey_sample_sites"
           title={
             `Site Boundary Preview ` +
-            (formikProps.values.sites.length > 0 ? `(${formikProps.values.sites.length}) boundaries detected` : '')
+            (formikProps.values.survey_sample_sites.length > 0
+              ? `(${formikProps.values.survey_sample_sites.length}) boundaries detected`
+              : '')
           }
           mapId="study_area_form_map"
           bounds={undefined}
