@@ -2,16 +2,18 @@ import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import { makeStyles } from '@mui/styles';
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { FileError, FileRejection } from 'react-dropzone';
 import DropZone, { IDropZoneConfigProps } from './DropZone';
-import {
+import FileUploadItem, {
   IFileHandler,
+  IFileUploadItemProps,
   IOnUploadSuccess,
   IUploadHandler,
-  MemoizedFileUploadItem,
   UploadFileStatus
 } from './FileUploadItem';
+import FileUploadItemActionButton from './FileUploadItemActionButton';
+import FileUploadItemProgressBar from './FileUploadItemProgressBar';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
@@ -99,19 +101,51 @@ export interface IFileUploadProps {
    * @memberof IFileUploadProps
    */
   onReplace?: IReplaceHandler;
-
-  onRemove?: () => void;
+  /**
+   * Callback fired when files are removed.
+   *
+   * @memberof IFileUploadProps
+   */
+  onRemove?: (fileName: string) => void;
+  /**
+   * If `true`, hides the drop zone when the maximum number of allowed files has been reached.
+   *
+   * @type {boolean}
+   * @memberof IFileUploadProps
+   */
+  hideDropZoneOnMaxFiles?: boolean;
+  /**
+   * Optional drop zone props.
+   *
+   * @type {Partial<IDropZoneConfigProps>}
+   * @memberof IFileUploadProps
+   */
   dropZoneProps?: Partial<IDropZoneConfigProps>;
+  /**
+   * A component that renders a file Upload item.
+   *
+   * @memberof IFileUploadProps
+   */
+  FileUploadItemComponent?: (props: IFileUploadItemProps) => JSX.Element;
+  /**
+   * Optional prop overrides for `FileUploadItemComponent`.
+   *
+   * @type {Partial<IFileUploadItemProps>}
+   * @memberof IFileUploadProps
+   */
+  FileUploadItemComponentProps?: Partial<IFileUploadItemProps>;
 }
 
-export const FileUpload: React.FC<IFileUploadProps> = (props) => {
+export const FileUpload = (props: IFileUploadProps) => {
   const classes = useStyles();
 
-  const [files, setFiles] = useState<IUploadFile[]>([]);
+  const files = useRef<IUploadFile[]>([]);
 
   const [fileUploadItems, setFileUploadItems] = useState<any[]>([]);
 
-  const [fileToRemove, setFileToRemove] = useState<string>('');
+  const MemoizedFileUploadItem = React.memo(props.FileUploadItemComponent || FileUploadItem, (prevProps, nextProps) => {
+    return prevProps.file.name === nextProps.file.name;
+  });
 
   /**
    * Handles files which are added (via either drag/drop or browsing).
@@ -125,7 +159,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
 
     // Parse out any files that have already been added
     acceptedFiles.forEach((item) => {
-      const isAlreadyAdded = files.some((existingFile) => existingFile.file.name === item.name);
+      const isAlreadyAdded = files.current.some((existingFile) => existingFile.file.name === item.name);
 
       if (isAlreadyAdded) {
         return;
@@ -138,7 +172,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
 
     // Parse out any rejected files that have already been added
     rejectedFiles.forEach((item) => {
-      const isAlreadyRejected = files.some((existingFile) => existingFile.file.name === item.file.name);
+      const isAlreadyRejected = files.current.some((existingFile) => existingFile.file.name === item.file.name);
 
       if (isAlreadyRejected) {
         return;
@@ -152,7 +186,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
 
     if (props.replace) {
       // Replace current files with new files
-      setFiles([...newAcceptedFiles, ...newRejectedFiles]);
+      files.current = [...newAcceptedFiles, ...newRejectedFiles];
       setFileUploadItems([
         ...newAcceptedFiles.map((item) => getFileUploadItem(item.file, item.error)),
         ...newRejectedFiles.map((item) => getFileUploadItem(item.file, item.error))
@@ -160,7 +194,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
       props.onReplace?.();
     } else {
       // Append new files to current files
-      setFiles((currentFiles) => [...currentFiles, ...newAcceptedFiles, ...newRejectedFiles]);
+      files.current = [...files.current, ...newAcceptedFiles, ...newRejectedFiles];
       setFileUploadItems(
         fileUploadItems.concat([
           ...newAcceptedFiles.map((item) => getFileUploadItem(item.file, item.error)),
@@ -178,9 +212,12 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
         onSuccess={props.onSuccess}
         file={file}
         error={error}
-        onCancel={() => setFileToRemove(file.name)}
+        onCancel={() => removeFile(file.name)}
         fileHandler={props.fileHandler}
         status={props.status}
+        ActionButtonComponent={FileUploadItemActionButton}
+        ProgressBarComponent={FileUploadItemProgressBar}
+        {...props.FileUploadItemComponentProps}
       />
     );
   };
@@ -198,41 +235,39 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (!fileToRemove) {
+  const removeFile = (fileName: string) => {
+    // Find index of file to remove
+    const index = files.current.findIndex((item) => item.file.name === fileName);
+
+    if (index === -1) {
       return;
     }
 
-    const removeFile = (fileName: string) => {
-      // need to hook into the map now
-      const index = files.findIndex((item) => item.file.name === fileName);
+    // Update array of files
+    const newFiles = [...files.current];
+    newFiles.splice(index, 1);
+    files.current = newFiles;
 
-      if (index === -1) {
-        return;
-      }
+    // Update array of file item components
+    setFileUploadItems((currentFileUploadItems) => {
+      const newFileUploadItems = [...currentFileUploadItems];
+      newFileUploadItems.splice(index, 1);
+      return newFileUploadItems;
+    });
 
-      setFiles((currentFiles) => {
-        const newFiles = [...currentFiles];
-        newFiles.splice(index, 1);
-        return newFiles;
-      });
+    // If provided, call parent onRemove callback
+    props.onRemove?.(fileName);
+  };
 
-      setFileUploadItems((currentFileUploadItems) => {
-        const newFileUploadItems = [...currentFileUploadItems];
-        newFileUploadItems.splice(index, 1);
-        return newFileUploadItems;
-      });
-
-      setFileToRemove('');
-      props.onRemove?.();
-    };
-
-    removeFile(fileToRemove);
-  }, [fileToRemove, fileUploadItems, files]);
+  // Whether or not to hide the drop zone when the maximum number of allowed files has been reached
+  const hideDropZoneOnMaxFiles =
+    props.hideDropZoneOnMaxFiles &&
+    props.dropZoneProps?.maxNumFiles &&
+    files.current.length >= props.dropZoneProps.maxNumFiles;
 
   return (
     <Box width={'100%'}>
-      {fileUploadItems.length < (props.dropZoneProps?.maxNumFiles || 1) && (
+      {!hideDropZoneOnMaxFiles && (
         <Box className={classes.dropZone}>
           <DropZone onFiles={onFiles} {...props.dropZoneProps} />
         </Box>

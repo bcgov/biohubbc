@@ -11,7 +11,8 @@ import { makeStyles } from '@mui/styles';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
-import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import FileUploadItem, { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import FileUploadItemProgressBar from 'components/file-upload/FileUploadItemProgressBar';
 import MapContainer from 'components/map/MapContainer';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
@@ -25,6 +26,7 @@ import {
   handleKMLUpload,
   handleShapeFileUpload
 } from 'utils/mapBoundaryUploadHelpers';
+import SampleSiteFileUploadItemActionButton from '../../features/surveys/observations/sampling-sites/SampleSiteFileUploadItemActionButton';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -96,7 +98,6 @@ const MapBoundary = (props: IMapBoundaryProps) => {
   // TODO: First pass, this assumes only a single file will be uploaded at a time
   // multiple files would require a way of referencing layers
   const removeFile = () => {
-    console.log("REMOVE FILE PLS")
     setFieldValue(name, []);
   };
 
@@ -147,6 +148,12 @@ const MapBoundary = (props: IMapBoundaryProps) => {
                 acceptedFileExtensions: '.zip',
                 maxNumFiles: 1,
                 multiple: false
+              }}
+              hideDropZoneOnMaxFiles={true}
+              FileUploadItemComponent={FileUploadItem}
+              FileUploadItemComponentProps={{
+                ActionButtonComponent: SampleSiteFileUploadItemActionButton,
+                ProgressBarComponent: FileUploadItemProgressBar
               }}
             />
             {/* TODO: Move this layer control onto the map as part of leaflets built in layer control */}
