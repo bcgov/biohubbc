@@ -38,6 +38,15 @@ const SamplingMethodForm = () => {
     setEditData({ ...values.methods[index], index });
   };
 
+  const handleDelete = () => {
+    if (editData) {
+      const data = values.methods;
+      data.splice(editData.index, 1);
+      setFieldValue('methods', data);
+    }
+    setAnchorEl(null);
+  };
+
   return (
     <>
       {/* CREATE SAMPLE METHOD DIALOG */}
@@ -83,7 +92,7 @@ const SamplingMethodForm = () => {
           </ListItemIcon>
           Edit Details
         </MenuItem>
-        <MenuItem onClick={() => console.log('Delete me')}>
+        <MenuItem onClick={() => handleDelete()}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
