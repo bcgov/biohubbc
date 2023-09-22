@@ -15,7 +15,11 @@ export const SurveyObservationPage = () => {
 
   return (
     <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
-      <SurveyObservationHeader surveyName={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name} />
+      <SurveyObservationHeader
+        project_id={surveyContext.projectId}
+        survey_id={surveyContext.surveyId}
+        survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+      />
 
       <Box display="flex" flex="1 1 auto">
         {/* Sampling Site List */}
