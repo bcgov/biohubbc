@@ -1,6 +1,5 @@
 import { Box, Divider, FormHelperText, Paper, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
@@ -13,6 +12,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
 import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
+import TelemetryFileUploadWithMeta from './TelemetryFileUploadWithMeta';
 
 export enum TELEMETRY_DEVICE_FORM_MODE {
   ADD = 'add',
@@ -20,27 +20,40 @@ export enum TELEMETRY_DEVICE_FORM_MODE {
 }
 
 const AttchmentFormSection = ({
-  index,
+  deviceMake,
   projectId,
   surveyId
 }: {
-  index: number;
+  deviceMake: string;
   projectId: number;
   surveyId: number;
 }): JSX.Element => {
   const biohubApi = useBiohubApi();
-  const getUploadHandler = (): IUploadHandler => {
+  const getKeyxUploadHandler = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.survey.uploadSurveyKeyx(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
     };
   };
+  const getCfgUploadHandler = (): IUploadHandler => {
+    return (file, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
+    };
+  };
   return (
-    <Box sx={{ mt: 3 }}>
-      <Paper sx={{ padding: 3 }}>
-        <Typography sx={{ ml: 1, mb: 3 }}>Attachments</Typography>
-        <FileUploadWithMeta attachmentType={AttachmentType.KEYX} uploadHandler={getUploadHandler()} />
-      </Paper>
-    </Box>
+    <Paper sx={{ padding: 3 }}>
+      {deviceMake === 'Vectronic' && (
+        <>
+          <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Vectronic KeyX File`}</Typography>
+          <TelemetryFileUploadWithMeta attachmentType={AttachmentType.KEYX} uploadHandler={getKeyxUploadHandler()} />
+        </>
+      )}
+      {deviceMake === 'Lotek' && (
+        <>
+          <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Lotek Config File`}</Typography>
+          <TelemetryFileUploadWithMeta attachmentType={AttachmentType.OTHER} uploadHandler={getCfgUploadHandler()} />
+        </>
+      )}
+    </Paper>
   );
 };
 
@@ -152,6 +165,11 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
           <CustomTextField label="Device Model" name={`${index}.device_model`} />
         </Grid>
       </Grid>
+      {(values[index].device_make === 'Vectronic' || values[index].device_make === 'Lotek') && (
+        <Box sx={{ mt: 3 }}>
+          <AttchmentFormSection deviceMake={values[index].device_make} projectId={1} surveyId={1} />
+        </Box>
+      )}
       <Box sx={{ mt: 3 }}>
         <Paper sx={{ padding: 3 }}>
           <Typography sx={{ ml: 1, mb: 3 }}>Deployments</Typography>
