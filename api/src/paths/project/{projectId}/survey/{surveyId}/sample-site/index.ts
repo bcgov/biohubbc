@@ -1,15 +1,15 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { GeoJSONFeature, GeoJSONFeatureCollection } from '../../../../../../../openapi/schemas/geoJson';
-import { PostSampleLocations } from '../../../../../../../repositories/sample-location-repository';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SampleLocationService } from '../../../../../../../services/sample-location-service';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../database/db';
+import { HTTP400 } from '../../../../../../errors/http-error';
+import { GeoJSONFeature, GeoJSONFeatureCollection } from '../../../../../../openapi/schemas/geoJson';
+import { PostSampleLocations } from '../../../../../../repositories/sample-location-repository';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-site/');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {

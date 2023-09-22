@@ -1,14 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { PostSamplePeriod } from '../../../../../../../repositories/sample-period-repository';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SamplePeriodService } from '../../../../../../../services/sample-period-service';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../../../errors/http-error';
+import { PostSamplePeriod } from '../../../../../../../../../../repositories/sample-period-repository';
+import { authorizeRequestHandler } from '../../../../../../../../../../request-handlers/security/authorization';
+import { SamplePeriodService } from '../../../../../../../../../../services/sample-period-service';
+import { getLogger } from '../../../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-period/');
+const defaultLog = getLogger(
+  'paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}/sample-method/{surveySampleMethodId}/sample-period/'
+);
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -55,22 +57,26 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleSiteId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleMethodId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
-  requestBody: {
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            surveySampleMethodId: {
-              type: 'integer'
-            }
-          }
-        }
-      }
-    }
-  },
   responses: {
     200: {
       description: 'List of survey sample periods.',
@@ -103,10 +109,12 @@ GET.apiDoc = {
                       type: 'integer'
                     },
                     update_date: {
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     },
                     update_user: {
-                      type: 'integer'
+                      type: 'integer',
+                      nullable: true
                     },
                     revision_count: {
                       type: 'integer'
@@ -144,14 +152,14 @@ GET.apiDoc = {
  */
 export function getSurveySamplePeriodRecords(): RequestHandler {
   return async (req, res) => {
-    if (!req.body.surveySampleMethodId) {
-      throw new HTTP400('Missing required body param `surveySampleMethodId`');
+    if (!req.params.surveySampleMethodId) {
+      throw new HTTP400('Missing required path param `surveySampleMethodId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveySampleMethodId = Number(req.body.surveySampleMethodId);
+      const surveySampleMethodId = Number(req.params.surveySampleMethodId);
 
       await connection.open();
 
@@ -216,6 +224,24 @@ POST.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleSiteId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleMethodId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
   requestBody: {
@@ -227,9 +253,6 @@ POST.apiDoc = {
             samplePeriod: {
               type: 'object',
               properties: {
-                survey_sample_method_id: {
-                  type: 'integer'
-                },
                 start_date: {
                   type: 'string'
                 },
@@ -275,16 +298,17 @@ export function createSurveySamplePeriodRecord(): RequestHandler {
 
     try {
       const samplePeriod: PostSamplePeriod = req.body.samplePeriod;
+      samplePeriod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
 
       await connection.open();
 
       const samplePeriodService = new SamplePeriodService(connection);
 
-      const result = await samplePeriodService.insertSamplePeriod(samplePeriod);
+      await samplePeriodService.insertSamplePeriod(samplePeriod);
 
       await connection.commit();
 
-      return res.status(200).send(result);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'createSurveySamplePeriodRecord', message: 'error', error });
       throw error;

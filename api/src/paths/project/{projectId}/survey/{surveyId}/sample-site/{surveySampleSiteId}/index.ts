@@ -9,7 +9,7 @@ import { authorizeRequestHandler } from '../../../../../../../request-handlers/s
 import { SampleLocationService } from '../../../../../../../services/sample-location-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-site/{surveySampleSiteId}');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {

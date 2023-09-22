@@ -1,14 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { PostSamplePeriod } from '../../../../../../../repositories/sample-period-repository';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SamplePeriodService } from '../../../../../../../services/sample-period-service';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../../errors/http-error';
+import { PostSampleMethod } from '../../../../../../../../../repositories/sample-method-repository';
+import { authorizeRequestHandler } from '../../../../../../../../../request-handlers/security/authorization';
+import { SampleMethodService } from '../../../../../../../../../services/sample-method-service';
+import { getLogger } from '../../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-site/{surveySamplePeriodId}');
+const defaultLog = getLogger(
+  'paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}/sample-method/{surveySampleMethodId}'
+);
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
@@ -26,11 +28,11 @@ export const PUT: Operation = [
       ]
     };
   }),
-  updateSurveySamplePeriod()
+  updateSurveySampleMethod()
 ];
 
 PUT.apiDoc = {
-  description: 'update survey sample period',
+  description: 'update survey sample method',
   tags: ['survey'],
   security: [
     {
@@ -58,7 +60,7 @@ PUT.apiDoc = {
     },
     {
       in: 'path',
-      name: 'surveySamplePeriodId',
+      name: 'surveySampleMethodId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -72,16 +74,13 @@ PUT.apiDoc = {
         schema: {
           type: 'object',
           properties: {
-            samplePeriod: {
+            sampleMethod: {
               type: 'object',
               properties: {
-                survey_sample_method_id: {
+                method_lookup_id: {
                   type: 'integer'
                 },
-                start_date: {
-                  type: 'string'
-                },
-                end_date: {
+                description: {
                   type: 'string'
                 }
               }
@@ -93,7 +92,7 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project participants added OK.'
+      description: 'Updated sample method OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -113,28 +112,37 @@ PUT.apiDoc = {
   }
 };
 
-export function updateSurveySamplePeriod(): RequestHandler {
+export function updateSurveySampleMethod(): RequestHandler {
   return async (req, res) => {
-    if (!req.body.samplePeriod) {
-      throw new HTTP400('Missing required body param `samplePeriod`');
+    if (!req.params.surveySampleSiteId) {
+      throw new HTTP400('Missing required param `surveySampleMethodId`');
+    }
+
+    if (!req.params.surveySampleMethodId) {
+      throw new HTTP400('Missing required param `surveySampleMethodId`');
+    }
+
+    if (!req.body.sampleMethod) {
+      throw new HTTP400('Missing required body param `sampleMethod`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const samplePeriod: PostSamplePeriod = req.body.samplePeriod;
+      const sampleMethod: PostSampleMethod = req.body.sampleMethod;
+      sampleMethod.survey_sample_site_id = Number(req.params.surveySampleSiteId);
+      sampleMethod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
 
       await connection.open();
 
-      const samplePeriodService = new SamplePeriodService(connection);
+      const sampleMethodService = new SampleMethodService(connection);
 
-      const result = await samplePeriodService.updateSamplePeriod(samplePeriod);
+      await sampleMethodService.updateSampleMethod(sampleMethod);
 
       await connection.commit();
-
-      return res.status(200).send(result);
+      return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'updateSurveySamplePeriod', message: 'error', error });
+      defaultLog.error({ label: 'updateSurveySampleMethod', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -158,11 +166,11 @@ export const DELETE: Operation = [
       ]
     };
   }),
-  deleteSurveySamplePeriodRecord()
+  deleteSurveySampleMethodRecord()
 ];
 
 DELETE.apiDoc = {
-  description: 'Delete a survey sample period record.',
+  description: 'Delete a survey sample method record.',
   tags: ['survey'],
   security: [
     {
@@ -190,7 +198,7 @@ DELETE.apiDoc = {
     },
     {
       in: 'path',
-      name: 'surveySamplePeriodId',
+      name: 'surveySampleMethodId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -220,12 +228,12 @@ DELETE.apiDoc = {
   }
 };
 
-export function deleteSurveySamplePeriodRecord(): RequestHandler {
+export function deleteSurveySampleMethodRecord(): RequestHandler {
   return async (req, res) => {
-    const surveySamplePeriodId = Number(req.params.surveySamplePeriodId);
+    const surveySampleMethodId = Number(req.params.surveySampleMethodId);
 
-    if (!surveySamplePeriodId) {
-      throw new HTTP400('Missing required param `surveySamplePeriodId`');
+    if (!surveySampleMethodId) {
+      throw new HTTP400('Missing required param `surveySampleMethodId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -233,15 +241,15 @@ export function deleteSurveySamplePeriodRecord(): RequestHandler {
     try {
       await connection.open();
 
-      const samplePeriodService = new SamplePeriodService(connection);
+      const sampleMethodService = new SampleMethodService(connection);
 
-      const result = await samplePeriodService.deleteSamplePeriodRecord(surveySamplePeriodId);
+      await sampleMethodService.deleteSampleMethodRecord(surveySampleMethodId);
 
       await connection.commit();
 
-      return res.status(200).send(result);
+      return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'deleteSurveySamplePeriodRecord', message: 'error', error });
+      defaultLog.error({ label: 'deleteSurveySampleMethodRecord', message: 'error', error });
       throw error;
     } finally {
       connection.release();

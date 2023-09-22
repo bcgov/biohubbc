@@ -63,8 +63,8 @@ export class SampleMethodRepository extends BaseRepository {
       SET
         survey_sample_site_id=${sample.survey_sample_site_id},
         method_lookup_id= ( SELECT method_lookup_id FROM method_lookup WHERE name = ${sample.methodName}),
-        description=${sample.description},
-        WHERE
+        description=${sample.description}
+      WHERE
         survey_sample_method_id = ${sample.survey_sample_method_id}
       RETURNING
         *;`;
@@ -93,11 +93,13 @@ export class SampleMethodRepository extends BaseRepository {
     INSERT INTO survey_sample_method (
       survey_sample_site_id,
       method_lookup_id,
-      description,
+      description
     ) VALUES (
       ${sample.survey_sample_site_id},
-      ( SELECT method_lookup_id FROM method_lookup WHERE name = ${sample.methodName}),
-      ${sample.description},
+      (
+        SELECT method_lookup_id FROM method_lookup WHERE name = ${sample.methodName}
+      ),
+      ${sample.description}
       )
       RETURNING
         *;`;
