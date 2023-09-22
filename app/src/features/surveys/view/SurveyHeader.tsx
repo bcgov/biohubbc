@@ -129,7 +129,7 @@ const SurveyHeader = () => {
       }
       projectContext.surveysListDataLoader.refresh(projectContext.projectId);
 
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys`);
+      history.push(`/admin/projects/${surveyContext.projectId}`);
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogText: apiError.message, open: true });

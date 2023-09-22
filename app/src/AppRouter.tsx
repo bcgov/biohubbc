@@ -98,7 +98,7 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle path="/admin/funding-sources" title={getTitle('Search')}>
+      <RouteWithTitle path="/admin/funding-sources" title={getTitle('Funding Sources')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>

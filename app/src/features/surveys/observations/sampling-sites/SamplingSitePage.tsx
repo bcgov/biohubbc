@@ -12,8 +12,8 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SamplingSiteMethodYupSchema } from 'features/surveys/components/CreateSamplingMethod';
 import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
-import SamplingSiteMethodForm from 'features/surveys/components/SamplingMethodForm';
-import SamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
+import SamplingMethodForm from 'features/surveys/components/SamplingMethodForm';
+import SurveySamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
@@ -109,60 +109,62 @@ const SamplingSitePage = () => {
       />
       <Box display="flex" flex="1 1 auto">
         <Container maxWidth="xl">
-          <Formik
-            innerRef={formikRef}
-            initialValues={{
-              survey_id: surveyContext.surveyId,
-              name: '',
-              description: '',
-              survey_sample_sites: [],
-              methods: []
-            }}
-            validationSchema={samplingSiteYupSchema}
-            validateOnBlur={true}
-            validateOnChange={false}
-            onSubmit={handleSubmit}>
-            <Box p={5} component={Paper} display="block">
-              <HorizontalSplitFormComponent
-                title="Site Boundaries"
-                summary="Drag files here or Browse Files Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem"
-                component={<SamplingSiteImportForm />}></HorizontalSplitFormComponent>
+          <Box py={3}>
+            <Formik
+              innerRef={formikRef}
+              initialValues={{
+                survey_id: surveyContext.surveyId,
+                name: '',
+                description: '',
+                survey_sample_sites: [],
+                methods: []
+              }}
+              validationSchema={samplingSiteYupSchema}
+              validateOnBlur={true}
+              validateOnChange={false}
+              onSubmit={handleSubmit}>
+              <Box p={5} component={Paper} display="block">
+                <HorizontalSplitFormComponent
+                  title="Site Boundaries"
+                  summary="Drag files here or Browse Files Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem"
+                  component={<SurveySamplingSiteImportForm />}></HorizontalSplitFormComponent>
 
-              <Divider className={classes.sectionDivider} />
+                <Divider className={classes.sectionDivider} />
 
-              <HorizontalSplitFormComponent
-                title="Sampling Methods"
-                summary="Specify sampling methods used to collect data at each sampling site."
-                component={<SamplingSiteMethodForm />}></HorizontalSplitFormComponent>
+                <HorizontalSplitFormComponent
+                  title="Sampling Methods"
+                  summary="Specify sampling methods used to collect data at each sampling site."
+                  component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
 
-              <Divider className={classes.sectionDivider} />
+                <Divider className={classes.sectionDivider} />
 
-              <Box display="flex" justifyContent="flex-end">
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  loading={isSubmitting}
-                  onClick={() => {
-                    formikRef.current?.submitForm();
-                  }}
-                  className={classes.actionButton}>
-                  Save and Exit
-                </LoadingButton>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => {
-                    history.push(
-                      `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
-                    );
-                  }}
-                  className={classes.actionButton}>
-                  Cancel
-                </Button>
+                <Box display="flex" justifyContent="flex-end">
+                  <LoadingButton
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    loading={isSubmitting}
+                    onClick={() => {
+                      formikRef.current?.submitForm();
+                    }}
+                    className={classes.actionButton}>
+                    Save and Exit
+                  </LoadingButton>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => {
+                      history.push(
+                        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
+                      );
+                    }}
+                    className={classes.actionButton}>
+                    Cancel
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-          </Formik>
+            </Formik>
+          </Box>
         </Container>
       </Box>
     </Box>
