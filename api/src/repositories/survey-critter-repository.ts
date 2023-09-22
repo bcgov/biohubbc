@@ -43,6 +43,16 @@ export class SurveyCritterRepository extends BaseRepository {
     return response.rowCount;
   }
 
+  async updateCritter(surveyId: number, critterId: string): Promise<number> {
+    defaultLog.debug({ label: 'updateCritter', surveyId });
+    const queryBuilder = getKnex()
+      .table('critter')
+      .update({ survey_id: surveyId, critterbase_critter_id: critterId })
+      .where({ survey_id: surveyId, critterbase_critter_id: critterId });
+    const response = await this.connection.knex(queryBuilder);
+    return response.rowCount;
+  }
+
   /**
    * Removes a critter from the survey.
    *

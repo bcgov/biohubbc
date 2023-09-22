@@ -45,7 +45,10 @@ const CaptureAnimalForm = () => {
     release_utm_easting: '' as unknown as number,
     release_comment: '',
     release_timestamp: '' as unknown as Date,
-    release_coordinate_uncertainty: 10
+    release_coordinate_uncertainty: 10,
+    capture_id: undefined,
+    capture_location_id: undefined,
+    release_location_id: undefined
   };
 
   const canAddNewCapture = () => {

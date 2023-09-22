@@ -19,7 +19,7 @@ import { v4 } from 'uuid';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
 import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
-import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
+import IndividualAnimalForm, { ANIMAL_FORM_MODE } from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
 import TelemetryDeviceForm, { TELEMETRY_DEVICE_FORM_MODE } from './survey-animals/TelemetryDeviceForm';
 
@@ -28,11 +28,6 @@ const SurveyAnimals: React.FC = () => {
   const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
-
-  enum ANIMAL_FORM_MODE {
-    ADD = 'add',
-    EDIT = 'edit'
-  }
 
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
@@ -83,7 +78,7 @@ const SurveyAnimals: React.FC = () => {
   };
 
   const AnimalFormValues: IAnimal = {
-    general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: 'Unknown' },
+    general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: 'Unknown', critter_id: '' },
     captures: [],
     markings: [],
     mortality: [],
@@ -126,7 +121,8 @@ const SurveyAnimals: React.FC = () => {
             taxon_id: existingCritter.taxon_id,
             animal_id: existingCritter.animal_id ?? '',
             sex: existingCritter.sex,
-            taxon_name: existingCritter.taxon
+            taxon_name: existingCritter.taxon,
+            critter_id: existingCritter.critter_id
           },
           captures: existingCritter?.capture.map((a) => ({
             ...a,
@@ -146,13 +142,15 @@ const SurveyAnimals: React.FC = () => {
             release_utm_northing: 0,
             projection_mode: 'wgs',
             _id: v4(),
-            show_release: !!a.release_location
+            show_release: !!a.release_location,
+            capture_location_id: a.capture_location_id ?? undefined,
+            release_location_id: a.release_location_id ?? undefined
           })),
           markings: existingCritter.marking.map((a) => ({
             ...a,
             primary_colour_id: a.primary_colour_id ?? '',
             secondary_colour_id: a.secondary_colour_id ?? '',
-            marking_comment: a.comment,
+            marking_comment: a.comment ?? '',
             _id: v4()
           })),
           mortality: existingCritter?.mortality.map((a) => ({
@@ -165,13 +163,14 @@ const SurveyAnimals: React.FC = () => {
             mortality_utm_easting: 0,
             mortality_utm_northing: 0,
             mortality_coordinate_uncertainty: a.location.coordinate_uncertainty ?? 0,
-            mortality_pcod_confidence: a.proximate_cause_of_death_confidence,
-            mortality_pcod_reason: a.proximate_cause_of_death_id ?? '',
-            mortality_pcod_taxon_id: a.proximate_predated_by_taxon_id ?? '',
-            mortality_ucod_confidence: a.ultimate_cause_of_death_confidence ?? '',
-            mortality_ucod_reason: a.ultimate_cause_of_death_id ?? '',
-            mortality_ucod_taxon_id: a.ultimate_predated_by_taxon_id ?? '',
-            projection_mode: 'wgs'
+            proximate_cause_of_death_confidence: a.proximate_cause_of_death_confidence,
+            proximate_cause_of_death_id: a.proximate_cause_of_death_id ?? '',
+            proximate_predated_by_taxon_id: a.proximate_predated_by_taxon_id ?? '',
+            ultimate_cause_of_death_confidence: a.ultimate_cause_of_death_confidence ?? '',
+            ultimate_cause_of_death_id: a.ultimate_cause_of_death_id ?? '',
+            ultimate_predated_by_taxon_id: a.ultimate_predated_by_taxon_id ?? '',
+            projection_mode: 'wgs',
+            location_id: a.location_id ?? undefined
           })),
           collectionUnits: existingCritter.collection_units.map((a) => ({
             ...a,
@@ -180,6 +179,7 @@ const SurveyAnimals: React.FC = () => {
           measurements: [
             ...existingCritter.measurement.qualitative.map((a) => ({
               ...a,
+              measurement_quantitative_id: undefined,
               _id: v4(),
               value: undefined,
               measured_timestamp: a.measured_timestamp ? new Date(a.measured_timestamp) : ('' as unknown as Date),
@@ -188,6 +188,7 @@ const SurveyAnimals: React.FC = () => {
             ...existingCritter.measurement.quantitative.map((a) => ({
               ...a,
               _id: v4(),
+              measurement_qualitative_id: undefined,
               qualitative_option_id: undefined,
               measured_timestamp: a.measured_timestamp ? new Date(a.measured_timestamp) : ('' as unknown as Date),
               measurement_comment: a.measurement_comment ?? ''
@@ -230,9 +231,17 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
+  const arrDiff = <T extends Record<K, any>, V extends Record<K, any>, K extends keyof T & keyof V>(
+    arr1: T[],
+    arr2: V[],
+    key: K
+  ) => {
+    return arr1.filter((a1: Record<K, any>) => !arr2.some((a2: Record<K, any>) => a1[key] === a2[key]));
+  };
+
   const handleCritterSave = async (animal: IAnimal) => {
-    const critter = new Critter(animal);
     const postCritterPayload = async () => {
+      const critter = new Critter(animal);
       await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
       refreshCritters();
       dialogContext.setSnackbar({
@@ -245,8 +254,87 @@ const SurveyAnimals: React.FC = () => {
       });
       toggleDialog();
     };
+    const patchCritterPayload = async () => {
+      const initialValues = new Critter(obtainAnimalFormInitialvalues(ANIMAL_FORM_MODE.EDIT));
+      const createCritter = new Critter({
+        ...animal,
+        captures: animal.captures.filter((a) => !a.capture_id),
+        mortality: animal.mortality.filter((a) => !a.mortality_id),
+        markings: animal.markings.filter((a) => !a.marking_id),
+        measurements: animal.measurements.filter(
+          (a) => !a.measurement_qualitative_id && !a.measurement_quantitative_id
+        ),
+        collectionUnits: animal.collectionUnits.filter((a) => !a.critter_collection_unit_id)
+      });
+      const updateCritter = new Critter({
+        ...animal,
+        captures: animal.captures.filter((a) => a.capture_id),
+        mortality: animal.mortality.filter((a) => a.mortality_id),
+        markings: animal.markings.filter((a) => a.marking_id),
+        measurements: animal.measurements.filter((a) => a.measurement_qualitative_id || a.measurement_quantitative_id),
+        collectionUnits: animal.collectionUnits.filter((a) => a.critter_collection_unit_id)
+      });
+
+      updateCritter.captures.push(
+        ...arrDiff(initialValues.captures, updateCritter.captures, 'capture_id').map((cap) => ({
+          ...cap,
+          _delete: true
+        }))
+      );
+      updateCritter.mortalities.push(
+        ...arrDiff(initialValues.mortalities, updateCritter.mortalities, 'mortality_id').map((mort) => ({
+          ...mort,
+          _delete: true
+        }))
+      );
+      updateCritter.collections.push(
+        ...arrDiff(initialValues.collections, updateCritter.collections, 'critter_collection_unit_id').map((col) => ({
+          ...col,
+          _delete: true
+        }))
+      );
+      updateCritter.markings.push(
+        ...arrDiff(initialValues.markings, updateCritter.markings, 'marking_id').map((mark) => ({
+          ...mark,
+          _delete: true
+        }))
+      );
+      updateCritter.measurements.qualitative.push(
+        ...arrDiff(
+          initialValues.measurements.qualitative,
+          updateCritter.measurements.qualitative,
+          'measurement_qualitative_id'
+        ).map((meas) => ({ ...meas, _delete: true }))
+      );
+      updateCritter.measurements.quantitative.push(
+        ...arrDiff(
+          initialValues.measurements.quantitative,
+          updateCritter.measurements.quantitative,
+          'measurement_quantitative_id'
+        ).map((meas) => ({ ...meas, _delete: true }))
+      );
+
+      console.log('initialValues: ' + JSON.stringify(initialValues, null, 2));
+      console.log('Create critter:' + JSON.stringify(createCritter, null, 2));
+      console.log('Update critter:' + JSON.stringify(updateCritter, null, 2));
+      await bhApi.survey.updateSurveyCritter(projectId, surveyId, updateCritter, createCritter);
+      refreshCritters();
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            {'Animal data updated.'}
+          </Typography>
+        )
+      });
+      toggleDialog();
+    };
     try {
-      await postCritterPayload();
+      if (animalFormMode === ANIMAL_FORM_MODE.ADD) {
+        await postCritterPayload();
+      } else {
+        await patchCritterPayload();
+      }
     } catch (err) {
       console.log(`Critter submission error ${JSON.stringify(err)}`);
     }
@@ -319,7 +407,13 @@ const SurveyAnimals: React.FC = () => {
         }}
         onCancel={toggleDialog}
         component={{
-          element: <IndividualAnimalForm getAnimalCount={setAnimalCount} />,
+          element: (
+            <IndividualAnimalForm
+              critter_id={currentCritterbaseCritterId}
+              mode={animalFormMode}
+              getAnimalCount={setAnimalCount}
+            />
+          ),
           initialValues: obtainAnimalFormInitialvalues(animalFormMode),
           validationSchema: AnimalSchema
         }}

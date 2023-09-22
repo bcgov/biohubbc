@@ -45,7 +45,7 @@ type IMarkingResponse = {
   frequency: string | null;
   frequency_unit: string | null;
   order: string | null;
-  comment: string;
+  comment: string | null;
   attached_timestamp: string;
   removed_timestamp: string | null;
   body_location: string;

@@ -30,6 +30,10 @@ export class SurveyCritterService extends DBService {
     return this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
   }
 
+  async updateCritter(surveyId: number, critterBaseCritterId: string): Promise<number> {
+    return this.critterRepository.updateCritter(surveyId, critterBaseCritterId);
+  }
+
   /**
    * Removes a critter from the survey. Does not affect the critter in the external system.
    * @param {string} critterId
