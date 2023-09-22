@@ -1,7 +1,6 @@
 import { useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
-import useDataLoader from 'hooks/useDataLoader';
-import { createContext, PropsWithChildren, useEffect } from 'react';
+import { createContext, PropsWithChildren } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface IObservationRecord {
@@ -69,25 +68,10 @@ export const ObservationsContext = createContext<IObservationsContext>({
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const _muiDataGridApiRef = useGridApiRef();
 
-  const observationsDataLoader = useDataLoader(fetchObservationDemoRows);
-  observationsDataLoader.load()
-
-  useEffect(() => {
-    if (observationsDataLoader.data && _muiDataGridApiRef.current.setRows) {
-      const rows: IObservationTableRow[] = observationsDataLoader.data.map((row) => ({
-        ...row,
-        id: String(row.observation_id),
-        _isModified: false
-      }));
-
-      _muiDataGridApiRef.current.setRows(rows);
-    }
-  }, [observationsDataLoader.data])
-
   const createNewRecord = () => {
     const id = uuidv4();
-    _muiDataGridApiRef.current.setRows([
-      _muiDataGridApiRef.current.state.rows,
+
+    _muiDataGridApiRef.current.updateRows([
       {
         id,
         _isModified: true,

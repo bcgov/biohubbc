@@ -4,8 +4,9 @@ import { Theme } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import { makeStyles } from "@mui/styles";
 import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons } from '@mui/x-data-grid';
-import { IObservationTableRow, ObservationsContext } from "contexts/observationsContext";
-import { useContext } from "react";
+import { IObservationTableRow, ObservationsContext, fetchObservationDemoRows } from "contexts/observationsContext";
+import useDataLoader from "hooks/useDataLoader";
+import { useContext, useEffect } from "react";
 // import { useEffect, useState } from "react";
 // import { pluralize as p } from "utils/Utils";
 
@@ -17,6 +18,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ObservationsTable = (props: IObservationsTableProps) => {
   const classes = useStyles();
+  const observationsDataLoader = useDataLoader(fetchObservationDemoRows);
+  observationsDataLoader.load()
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
@@ -120,13 +123,25 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   ];
 
   const apiRef = useContext(ObservationsContext)._muiDataGridApiRef;
+
+  useEffect(() => {
+    if (observationsDataLoader.data) {
+      const rows: IObservationTableRow[] = observationsDataLoader.data.map((row) => ({
+        ...row,
+        id: String(row.observation_id),
+        _isModified: false
+      }));
+
+      apiRef.current.setRows(rows);
+    }
+  }, [observationsDataLoader.data])
   
   const handleDeleteRow = (id: string | number) => {
     apiRef.current.setRows(Object.values(apiRef.current.state.rows).filter((row) => row.id !== id));
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
-    event.defaultMuiPrevented = true;
+    // event.defaultMuiPrevented = true;
     return;
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       //
@@ -141,6 +156,10 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   };
 
   const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
+    if (apiRef.current.state.editRows[params.row.id]) {
+      return;
+    }
+
     apiRef.current.startRowEditMode({ id: params.row.id, fieldToFocus: params.field });
   }
 
