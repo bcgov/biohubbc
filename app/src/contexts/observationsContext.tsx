@@ -23,30 +23,33 @@ export interface IObservationTableRow extends Omit<IObservationRecord, 'observat
 }
 
 export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> => {
-  await setTimeout(() => {}, 100 * (Math.random() + 1));
-  return [
-    {
-      observation_id: 1,
-      speciesName: 'Moose (Alces Americanus)',
-      samplingSite: 'Site 1',
-      samplingMethod: 'Method 1',
-      samplingPeriod: '',
-    },
-    {
-      observation_id: 2,
-      speciesName: 'Moose (Alces Americanus)',
-      samplingSite: 'Site 1',
-      samplingMethod: 'Method 1',
-      samplingPeriod: '',
-    },
-    {
-      observation_id: 3,
-      speciesName: 'Moose (Alces Americanus)',
-      samplingSite: 'Site 1',
-      samplingMethod: 'Method 1',
-      samplingPeriod: '',
-    }
-  ]
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve([
+        {
+          observation_id: 1,
+          speciesName: 'Moose (Alces Americanus)',
+          samplingSite: 'Site 1',
+          samplingMethod: 'Method 1',
+          samplingPeriod: '',
+        },
+        {
+          observation_id: 2,
+          speciesName: 'Moose (Alces Americanus)',
+          samplingSite: 'Site 1',
+          samplingMethod: 'Method 1',
+          samplingPeriod: '',
+        },
+        {
+          observation_id: 3,
+          speciesName: 'Moose (Alces Americanus)',
+          samplingSite: 'Site 1',
+          samplingMethod: 'Method 1',
+          samplingPeriod: '',
+        }
+      ])
+    }, 1000 * (Math.random() + 1));
+  })
 }
 
 /**

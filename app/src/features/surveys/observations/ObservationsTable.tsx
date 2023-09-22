@@ -6,7 +6,7 @@ import { makeStyles } from "@mui/styles";
 import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons } from '@mui/x-data-grid';
 import { IObservationTableRow, ObservationsContext, fetchObservationDemoRows } from "contexts/observationsContext";
 import useDataLoader from "hooks/useDataLoader";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 // import { useEffect, useState } from "react";
 // import { pluralize as p } from "utils/Utils";
 
@@ -19,6 +19,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ObservationsTable = (props: IObservationsTableProps) => {
   const classes = useStyles();
   const observationsDataLoader = useDataLoader(fetchObservationDemoRows);
+  const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
+
   observationsDataLoader.load()
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
@@ -132,12 +134,12 @@ const ObservationsTable = (props: IObservationsTableProps) => {
         _isModified: false
       }));
 
-      apiRef.current.setRows(rows);
+      setInitialRows(rows);
     }
   }, [observationsDataLoader.data])
-  
+
   const handleDeleteRow = (id: string | number) => {
-    apiRef.current.setRows(Object.values(apiRef.current.state.rows).filter((row) => row.id !== id));
+    apiRef.current.updateRows([{ id, _action: 'delete' }])
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
@@ -151,7 +153,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
     const updatedRow: IObservationTableRow = { ...newRow, _isModified: true };
 
-    apiRef.current.setRows(Object.values(apiRef.current.state.rows).map((row) => (row.id === newRow.id ? updatedRow : row)));
+    // apiRef.current.setRows(Object.values(apiRef.current.state.rows).map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
 
@@ -180,7 +182,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       onRowEditStop={handleRowEditStop}
       processRowUpdate={handleProcessRowUpdate}
       columns={observationColumns}
-      rows={[]}
+      rows={initialRows}
       // rowModesModel={_rowModesModel}
       disableRowSelectionOnClick
       // onRowModesModelChange={_setRowModesModel}
