@@ -1,14 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { PostSampleMethod } from '../../../../../../../repositories/sample-method-repository';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SampleMethodService } from '../../../../../../../services/sample-method-service';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../../../errors/http-error';
+import { PostSamplePeriod } from '../../../../../../../../../../repositories/sample-period-repository';
+import { authorizeRequestHandler } from '../../../../../../../../../../request-handlers/security/authorization';
+import { SamplePeriodService } from '../../../../../../../../../../services/sample-period-service';
+import { getLogger } from '../../../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-method/');
+const defaultLog = getLogger(
+  'paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}/sample-method/{surveySampleMethodId}/sample-period/'
+);
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -26,11 +28,11 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySampleMethodRecords()
+  getSurveySamplePeriodRecords()
 ];
 
 GET.apiDoc = {
-  description: 'Get all survey sample methods.',
+  description: 'Get all survey sample periods.',
   tags: ['survey'],
   security: [
     {
@@ -55,45 +57,49 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleSiteId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleMethodId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
-  requestBody: {
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            surveySampleSiteId: {
-              type: 'integer'
-            }
-          }
-        }
-      }
-    }
-  },
   responses: {
     200: {
-      description: 'List of survey sample sites.',
+      description: 'List of survey sample periods.',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             properties: {
-              sampleMethods: {
+              samplePeriods: {
                 type: 'array',
                 items: {
                   type: 'object',
                   properties: {
+                    survey_sample_period_id: {
+                      type: 'integer'
+                    },
                     survey_sample_method_id: {
                       type: 'integer'
                     },
-                    survey_sample_site_id: {
-                      type: 'integer'
+                    start_date: {
+                      type: 'string'
                     },
-                    method_lookup_id: {
-                      type: 'integer'
-                    },
-                    description: {
+                    end_date: {
                       type: 'string'
                     },
                     create_date: {
@@ -103,10 +109,12 @@ GET.apiDoc = {
                       type: 'integer'
                     },
                     update_date: {
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     },
                     update_user: {
-                      type: 'integer'
+                      type: 'integer',
+                      nullable: true
                     },
                     revision_count: {
                       type: 'integer'
@@ -138,32 +146,32 @@ GET.apiDoc = {
 };
 
 /**
- * Get all survey sample sites.
+ * Get all survey sample periods.
  *
  * @returns {RequestHandler}
  */
-export function getSurveySampleMethodRecords(): RequestHandler {
+export function getSurveySamplePeriodRecords(): RequestHandler {
   return async (req, res) => {
-    if (!req.body.surveySampleSiteId) {
-      throw new HTTP400('Missing required body param `surveySampleMethodId`');
+    if (!req.params.surveySampleMethodId) {
+      throw new HTTP400('Missing required path param `surveySampleMethodId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveySampleSiteId = Number(req.params.surveySampleSiteId);
+      const surveySampleMethodId = Number(req.params.surveySampleMethodId);
 
       await connection.open();
 
-      const sampleMethodService = new SampleMethodService(connection);
+      const samplePeriodService = new SamplePeriodService(connection);
 
-      const result = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+      const result = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
 
       await connection.commit();
 
-      return res.status(200).json({ sampleMethods: result });
+      return res.status(200).json({ samplePeriods: result });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleMethodRecords', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySamplePeriodRecords', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -187,7 +195,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  createSurveySampleSiteRecord()
+  createSurveySamplePeriodRecord()
 ];
 
 POST.apiDoc = {
@@ -216,6 +224,24 @@ POST.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleSiteId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleMethodId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
   requestBody: {
@@ -224,16 +250,13 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           properties: {
-            sampleMethod: {
+            samplePeriod: {
               type: 'object',
               properties: {
-                survey_sample_site_id: {
-                  type: 'integer'
+                start_date: {
+                  type: 'string'
                 },
-                method_lookup_id: {
-                  type: 'integer'
-                },
-                description: {
+                end_date: {
                   type: 'string'
                 }
               }
@@ -245,7 +268,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Sample Method added OK.'
+      description: 'Sample period added OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -265,28 +288,29 @@ POST.apiDoc = {
   }
 };
 
-export function createSurveySampleSiteRecord(): RequestHandler {
+export function createSurveySamplePeriodRecord(): RequestHandler {
   return async (req, res) => {
-    if (!req.body.sampleMethod) {
-      throw new HTTP400('Missing required body param `sampleMethod`');
+    if (!req.body.samplePeriod) {
+      throw new HTTP400('Missing required body param `samplePeriod`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleMethod: PostSampleMethod = req.body.sampleMethod;
+      const samplePeriod: PostSamplePeriod = req.body.samplePeriod;
+      samplePeriod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
 
       await connection.open();
 
-      const sampleMethodService = new SampleMethodService(connection);
+      const samplePeriodService = new SamplePeriodService(connection);
 
-      const result = await sampleMethodService.insertSampleMethod(sampleMethod);
+      await samplePeriodService.insertSamplePeriod(samplePeriod);
 
       await connection.commit();
 
-      return res.status(200).send(result);
+      return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
+      defaultLog.error({ label: 'createSurveySamplePeriodRecord', message: 'error', error });
       throw error;
     } finally {
       connection.release();

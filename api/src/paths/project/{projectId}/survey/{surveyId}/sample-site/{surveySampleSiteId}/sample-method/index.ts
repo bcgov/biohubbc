@@ -1,14 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { PostSampleLocations } from '../../../../../../../repositories/sample-location-repository';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SampleLocationService } from '../../../../../../../services/sample-location-service';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../errors/http-error';
+import { PostSampleMethod } from '../../../../../../../../repositories/sample-method-repository';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { SampleMethodService } from '../../../../../../../../services/sample-method-service';
+import { getLogger } from '../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-site/');
+const defaultLog = getLogger(
+  'paths/project/{projectId}/survey/{surveyId}/sample-site/{surveySampleSiteId}/sample-method/'
+);
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -26,11 +28,11 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySampleLocationRecords()
+  getSurveySampleMethodRecords()
 ];
 
 GET.apiDoc = {
-  description: 'Get all survey sample sites.',
+  description: 'Get all survey sample methods.',
   tags: ['survey'],
   security: [
     {
@@ -55,6 +57,15 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleSiteId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
   responses: {
@@ -65,22 +76,19 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             properties: {
-              sampleSites: {
+              sampleMethods: {
                 type: 'array',
                 items: {
                   type: 'object',
                   properties: {
+                    survey_sample_method_id: {
+                      type: 'integer'
+                    },
                     survey_sample_site_id: {
-                      type: 'number'
+                      type: 'integer'
                     },
-                    survey_id: {
-                      type: 'number'
-                    },
-                    geojson: {
-                      type: 'object'
-                    },
-                    geography: {
-                      type: 'object'
+                    method_lookup_id: {
+                      type: 'integer'
                     },
                     description: {
                       type: 'string'
@@ -89,16 +97,18 @@ GET.apiDoc = {
                       type: 'string'
                     },
                     create_user: {
-                      type: 'number'
+                      type: 'integer'
                     },
                     update_date: {
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     },
                     update_user: {
-                      type: 'number'
+                      type: 'integer',
+                      nullable: true
                     },
                     revision_count: {
-                      type: 'number'
+                      type: 'integer'
                     }
                   }
                 }
@@ -131,28 +141,28 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSurveySampleLocationRecords(): RequestHandler {
+export function getSurveySampleMethodRecords(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required param `surveyId`');
+    if (!req.params.surveySampleSiteId) {
+      throw new HTTP400('Missing required param `surveySampleMethodId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveyId = Number(req.params.surveyId);
+      const surveySampleSiteId = Number(req.params.surveySampleSiteId);
 
       await connection.open();
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleMethodService = new SampleMethodService(connection);
 
-      const result = await sampleLocationService.getSampleLocationsForSurveyId(surveyId);
+      const result = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
 
       await connection.commit();
 
-      return res.status(200).json({ sampleSites: result });
+      return res.status(200).json({ sampleMethods: result });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleMethodRecords', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -205,6 +215,15 @@ POST.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleSiteId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
   requestBody: {
@@ -213,28 +232,14 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           properties: {
-            sampleSite: {
+            sampleMethod: {
               type: 'object',
               properties: {
-                name: {
+                methodName: {
                   type: 'string'
                 },
                 description: {
                   type: 'string'
-                },
-                survey_sample_site: {
-                  type: 'object',
-                  properties: {
-                    type: {
-                      type: 'string'
-                    },
-                    coordinates: {
-                      type: 'array',
-                      items: {
-                        type: 'number'
-                      }
-                    }
-                  }
                 }
               }
             }
@@ -245,7 +250,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Sample site added OK.'
+      description: 'Sample Method added OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -267,24 +272,30 @@ POST.apiDoc = {
 
 export function createSurveySampleSiteRecord(): RequestHandler {
   return async (req, res) => {
-    if (!req.body.sampleSite) {
-      throw new HTTP400('Missing required body param `sampleSite`');
+    if (!req.params.surveySampleSiteId) {
+      throw new HTTP400('Missing required param `surveySampleSiteId`');
+    }
+
+    if (!req.body.sampleMethod) {
+      throw new HTTP400('Missing required body param `sampleMethod`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleSite: PostSampleLocations = req.body.sampleSite;
+      const sampleMethod: PostSampleMethod = req.body.sampleMethod;
+
+      sampleMethod.survey_sample_site_id = Number(req.params.surveySampleSiteId);
 
       await connection.open();
 
-      const sampleLocationService = new SampleLocationService(connection);
+      const sampleMethodService = new SampleMethodService(connection);
 
-      const result = await sampleLocationService.insertSampleLocations(sampleSite);
+      await sampleMethodService.insertSampleMethod(sampleMethod);
 
       await connection.commit();
 
-      return res.status(200).send(result);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
       throw error;

@@ -1,14 +1,15 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { PostSamplePeriod } from '../../../../../../../repositories/sample-period-repository';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SamplePeriodService } from '../../../../../../../services/sample-period-service';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../database/db';
+import { HTTP400 } from '../../../../../../errors/http-error';
+import { GeoJSONFeature, GeoJSONFeatureCollection } from '../../../../../../openapi/schemas/geoJson';
+import { PostSampleLocations } from '../../../../../../repositories/sample-location-repository';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/samples/sample-period/');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -26,11 +27,11 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySamplePeriodRecords()
+  getSurveySampleLocationRecords()
 ];
 
 GET.apiDoc = {
-  description: 'Get all survey sample periods.',
+  description: 'Get all survey sample sites.',
   tags: ['survey'],
   security: [
     {
@@ -57,59 +58,53 @@ GET.apiDoc = {
       required: true
     }
   ],
-  requestBody: {
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            surveySampleMethodId: {
-              type: 'integer'
-            }
-          }
-        }
-      }
-    }
-  },
   responses: {
     200: {
-      description: 'List of survey sample periods.',
+      description: 'List of survey sample sites.',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             properties: {
-              samplePeriods: {
+              sampleSites: {
                 type: 'array',
                 items: {
                   type: 'object',
                   properties: {
-                    survey_sample_period_id: {
-                      type: 'integer'
+                    survey_sample_site_id: {
+                      type: 'number'
                     },
-                    survey_sample_method_id: {
-                      type: 'integer'
+                    survey_id: {
+                      type: 'number'
                     },
-                    start_date: {
+                    name: {
                       type: 'string'
                     },
-                    end_date: {
+                    description: {
+                      type: 'string'
+                    },
+                    geojson: {
+                      ...(GeoJSONFeature as object)
+                    },
+                    geography: {
                       type: 'string'
                     },
                     create_date: {
                       type: 'string'
                     },
                     create_user: {
-                      type: 'integer'
+                      type: 'number'
                     },
                     update_date: {
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     },
                     update_user: {
-                      type: 'integer'
+                      type: 'number',
+                      nullable: true
                     },
                     revision_count: {
-                      type: 'integer'
+                      type: 'number'
                     }
                   }
                 }
@@ -138,32 +133,32 @@ GET.apiDoc = {
 };
 
 /**
- * Get all survey sample periods.
+ * Get all survey sample sites.
  *
  * @returns {RequestHandler}
  */
-export function getSurveySamplePeriodRecords(): RequestHandler {
+export function getSurveySampleLocationRecords(): RequestHandler {
   return async (req, res) => {
-    if (!req.body.surveySampleMethodId) {
-      throw new HTTP400('Missing required body param `surveySampleMethodId`');
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing required param `surveyId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveySampleMethodId = Number(req.body.surveySampleMethodId);
+      const surveyId = Number(req.params.surveyId);
 
       await connection.open();
 
-      const samplePeriodService = new SamplePeriodService(connection);
+      const sampleLocationService = new SampleLocationService(connection);
 
-      const result = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+      const result = await sampleLocationService.getSampleLocationsForSurveyId(surveyId);
 
       await connection.commit();
 
-      return res.status(200).json({ samplePeriods: result });
+      return res.status(200).json({ sampleSites: result });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySamplePeriodRecords', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -187,7 +182,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  createSurveySamplePeriodRecord()
+  createSurveySampleSiteRecord()
 ];
 
 POST.apiDoc = {
@@ -224,17 +219,17 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           properties: {
-            samplePeriod: {
+            sampleSite: {
               type: 'object',
               properties: {
-                survey_sample_method_id: {
-                  type: 'integer'
-                },
-                start_date: {
+                name: {
                   type: 'string'
                 },
-                end_date: {
+                description: {
                   type: 'string'
+                },
+                survey_sample_sites: {
+                  ...(GeoJSONFeatureCollection as object)
                 }
               }
             }
@@ -245,7 +240,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Sample period added OK.'
+      description: 'Sample site added OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -265,28 +260,34 @@ POST.apiDoc = {
   }
 };
 
-export function createSurveySamplePeriodRecord(): RequestHandler {
+export function createSurveySampleSiteRecord(): RequestHandler {
   return async (req, res) => {
-    if (!req.body.samplePeriod) {
-      throw new HTTP400('Missing required body param `samplePeriod`');
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing required path param `surveyId`');
+    }
+
+    if (!req.body.sampleSite) {
+      throw new HTTP400('Missing required body param `sampleSite`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const samplePeriod: PostSamplePeriod = req.body.samplePeriod;
+      const sampleSite: PostSampleLocations = req.body.sampleSite;
+
+      sampleSite.survey_id = Number(req.params.surveyId);
 
       await connection.open();
 
-      const samplePeriodService = new SamplePeriodService(connection);
+      const sampleLocationService = new SampleLocationService(connection);
 
-      const result = await samplePeriodService.insertSamplePeriod(samplePeriod);
+      await sampleLocationService.insertSampleLocations(sampleSite);
 
       await connection.commit();
 
-      return res.status(200).send(result);
+      return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'createSurveySamplePeriodRecord', message: 'error', error });
+      defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
       throw error;
     } finally {
       connection.release();
