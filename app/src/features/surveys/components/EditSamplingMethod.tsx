@@ -19,7 +19,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
         end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').required()
       })
     )
-    .min(1, 'At least 1 filled in time period is required for a Sampling Method')
+    .min(1, 'At least one time period is required')
 });
 
 const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
@@ -28,9 +28,7 @@ const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
     <>
       <EditDialog
         dialogTitle={'Edit Sampling Method'}
-        dialogText={
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem. Aliquam erat volutpat. Donec placerat nisl magna, et faucibus arcu condimentum sed.'
-        }
+        dialogText={'Specify sampling method information.'}
         open={open}
         dialogLoading={false}
         component={{
