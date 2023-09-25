@@ -103,11 +103,21 @@ const appTheme = createTheme({
     },
     MuiBreadcrumbs: {
       styleOverrides: {
+        root: {
+          marginTop: '-8px',
+          marginBottom: '4px',
+          marginLeft: '-4px'
+        },
         li: {
           maxWidth: '40ch',
+          padding: '4px',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis'
+        },
+        separator: {
+          marginLeft: '4px',
+          marginRight: '4px'
         }
       }
     },

@@ -118,6 +118,7 @@ const SamplingSitePage = () => {
         <Box
           position="sticky"
           top="0"
+          zIndex={1001}
           sx={{
             borderBottomStyle: 'solid',
             borderBottomWidth: '1px',
