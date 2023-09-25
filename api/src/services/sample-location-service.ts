@@ -60,7 +60,7 @@ export class SampleLocationService extends DBService {
       const sampleLocation: PostSampleLocation = {
         survey_sample_site_id: null,
         survey_id: sampleLocations.survey_id,
-        name: `Sample Site ${index + 1}`,
+        name: `Sample Site ${index + 1}`, // Business requirement to default the names to Sample Site # on creation
         description: sampleLocations.description,
         survey_sample_site: item
       };
