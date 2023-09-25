@@ -3,9 +3,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
-import { jsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
-import { InsertSampleMethodRecord } from './sample-method-repository';
 
 export interface PostSampleLocation {
   survey_sample_site_id: number | null;
@@ -21,7 +19,7 @@ export const SampleLocationRecord = z.object({
   survey_id: z.number(),
   name: z.string(),
   description: z.string(),
-  geojson: jsonSchema,
+  geojson: z.any(),
   geography: z.any(),
   create_date: z.string(),
   create_user: z.number(),

@@ -5,7 +5,7 @@ import {
   SampleLocationRepository,
   UpdateSampleLocationRecord
 } from '../repositories/sample-location-repository';
-import { InsertSampleMethod } from '../repositories/sample-method-repository';
+import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
 import { SampleMethodService } from './sample-method-service';
 
@@ -15,7 +15,7 @@ export interface PostSampleLocations {
   name: string;
   description: string;
   survey_sample_sites: Feature[];
-  methods: InsertSampleMethod[];
+  methods: InsertSampleMethodRecord[];
 }
 /**
  * Sample Location Repository
