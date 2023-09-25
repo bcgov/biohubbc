@@ -3,10 +3,8 @@ import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
-import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { AttachmentType } from 'constants/attachments';
 import { Form, useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import moment from 'moment';
@@ -19,38 +17,24 @@ export enum TELEMETRY_DEVICE_FORM_MODE {
   EDIT = 'edit'
 }
 
-const AttchmentFormSection = ({
-  deviceMake,
-  projectId,
-  surveyId
-}: {
-  deviceMake: string;
-  projectId: number;
-  surveyId: number;
-}): JSX.Element => {
-  const biohubApi = useBiohubApi();
-  const getKeyxUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadSurveyKeyx(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
-    };
-  };
-  const getCfgUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
-    };
-  };
+export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
+  attachmentFile?: File;
+  attachmentType?: AttachmentType;
+}
+
+const AttchmentFormSection = ({ index, deviceMake }: { index: number; deviceMake: string }): JSX.Element => {
   return (
     <Paper sx={{ padding: 3 }}>
       {deviceMake === 'Vectronic' && (
         <>
           <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Vectronic KeyX File`}</Typography>
-          <TelemetryFileUploadWithMeta attachmentType={AttachmentType.KEYX} uploadHandler={getKeyxUploadHandler()} />
+          <TelemetryFileUploadWithMeta attachmentType={AttachmentType.KEYX} index={index} />
         </>
       )}
       {deviceMake === 'Lotek' && (
         <>
           <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Lotek Config File`}</Typography>
-          <TelemetryFileUploadWithMeta attachmentType={AttachmentType.OTHER} uploadHandler={getCfgUploadHandler()} />
+          <TelemetryFileUploadWithMeta attachmentType={AttachmentType.OTHER} index={index} />
         </>
       )}
     </Paper>
@@ -90,12 +74,12 @@ const DeploymentFormSection = ({
 
 interface IDeviceFormSectionProps {
   mode: TELEMETRY_DEVICE_FORM_MODE;
-  values: IAnimalTelemetryDevice[];
+  values: IAnimalTelemetryDeviceFile[];
   index: number;
 }
 
 const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JSX.Element => {
-  const { setStatus } = useFormikContext<{ formValues: IAnimalTelemetryDevice[] }>();
+  const { setStatus } = useFormikContext<{ formValues: IAnimalTelemetryDeviceFile[] }>();
   const [bctwErrors, setBctwErrors] = useState<Record<string, string | undefined>>({});
   const api = useTelemetryApi();
 
@@ -165,9 +149,10 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
           <CustomTextField label="Device Model" name={`${index}.device_model`} />
         </Grid>
       </Grid>
-      {(values[index].device_make === 'Vectronic' || values[index].device_make === 'Lotek') && (
+      {((mode === TELEMETRY_DEVICE_FORM_MODE.ADD && values[index].device_make === 'Vectronic') ||
+        values[index].device_make === 'Lotek') && (
         <Box sx={{ mt: 3 }}>
-          <AttchmentFormSection deviceMake={values[index].device_make} projectId={1} surveyId={1} />
+          <AttchmentFormSection index={index} deviceMake={values[index].device_make} />
         </Box>
       )}
       <Box sx={{ mt: 3 }}>
@@ -194,7 +179,7 @@ interface ITelemetryDeviceFormProps {
 }
 
 const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
-  const { values } = useFormikContext<IAnimalTelemetryDevice[]>();
+  const { values } = useFormikContext<IAnimalTelemetryDeviceFile[]>();
 
   return (
     <Form>

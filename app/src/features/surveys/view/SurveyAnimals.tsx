@@ -4,6 +4,7 @@ import { Box, Divider, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import EditDialog from 'components/dialog/EditDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { AttachmentType } from 'constants/attachments';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -19,7 +20,10 @@ import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/anim
 import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
-import TelemetryDeviceForm, { TELEMETRY_DEVICE_FORM_MODE } from './survey-animals/TelemetryDeviceForm';
+import TelemetryDeviceForm, {
+  IAnimalTelemetryDeviceFile,
+  TELEMETRY_DEVICE_FORM_MODE
+} from './survey-animals/TelemetryDeviceForm';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
@@ -151,15 +155,24 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
-  const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDevice[]) => {
+  const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
     const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
-    const critterTelemetryDevice = { ...data[0], critter_id: critter?.critter_id ?? '' };
+    const { attachmentFile, attachmentType, ...critterTelemetryDevice } = {
+      ...data[0],
+      critter_id: critter?.critter_id ?? ''
+    };
     if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
       try {
+        if (attachmentFile && attachmentType === AttachmentType.KEYX) {
+          await bhApi.survey.uploadSurveyKeyx(projectId, surveyId, attachmentFile);
+        } else if (attachmentFile && attachmentType === AttachmentType.OTHER) {
+          await bhApi.survey.uploadSurveyAttachments(projectId, surveyId, attachmentFile);
+        }
         await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
         setPopup('Successfully added deployment.');
-      } catch (e) {
-        setPopup('Failed to add deployment.');
+        surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+      } catch (e: any) {
+        setPopup('Failed to add deployment' + (e?.message ? `: ${e.message}` : '.'));
       }
     } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
       for (const formValues of data) {
