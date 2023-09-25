@@ -62,15 +62,15 @@ export const SamplingSiteMethodYupSchema = yup.object({
   periods: yup
     .array(
       yup.object({
-        start_date: yup.string().isValidDateString().required('Start Date is Required'),
+        start_date: yup.string().isValidDateString().required('Start Date is required'),
         end_date: yup
           .string()
           .isValidDateString()
-          .required('End Date is Required')
+          .required('End Date is required')
           .isEndDateSameOrAfterStartDate('start_date')
       })
     )
-    .min(1, 'At least ones Time Period is required')
+    .min(1, 'At least one time period is required')
 });
 
 const MethodForm = () => {
@@ -87,21 +87,20 @@ const MethodForm = () => {
   return (
     <form>
       <Box component={'fieldset'} mb={3}>
-        <Typography component="legend">Sampling Method Details</Typography>
         <FormControl
           fullWidth
           variant="outlined"
           required={true}
           error={get(touched, 'method_lookup_id') && Boolean(get(errors, 'method_lookup_id'))}
           style={{ width: '100%' }}>
-          <InputLabel id={'method_lookup_id-label'}>Method</InputLabel>
+          <InputLabel id={'method_lookup_id-label'}>Method Type</InputLabel>
           <Select
             name={'method_lookup_id'}
             labelId={'method_lookup_id-label'}
-            label={'Method'}
+            label={'Method Type'}
             value={formikProps.values.method_lookup_id}
             displayEmpty
-            inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method' }}
+            inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method Type' }}
             onChange={handleChange}
             sx={{ width: '100%', backgroundColor: '#fff' }}>
             {codesContext.codesDataLoader.data.sample_methods_lookup.map((item) => (
@@ -123,7 +122,11 @@ const MethodForm = () => {
       </Box>
 
       <Box component="fieldset">
-        <Typography component="legend" id="time_periods">
+        <Typography component="legend" id="time_periods"
+          sx={{
+            mb: 1
+          }}
+        >
           Time Periods
         </Typography>
         <Box>
@@ -153,7 +156,11 @@ const MethodForm = () => {
                             endRequired={true}
                           />
                         </Box>
-                        <ListItemSecondaryAction>
+                        <ListItemSecondaryAction
+                          sx={{
+                            top: '36px'
+                          }}
+                        >
                           <IconButton
                             data-testid="delete-icon"
                             aria-label="remove time period"
@@ -170,21 +177,21 @@ const MethodForm = () => {
                     <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.periods}</Typography>
                   </Box>
                 )}
-                <Box>
-                  <Button
-                    sx={{
-                      mt: 1
-                    }}
-                    data-testid="sampling-period-add-button"
-                    variant="outlined"
-                    color="primary"
-                    title="Add Period"
-                    aria-label="Create Sample Period"
-                    startIcon={<Icon path={mdiPlus} size={1} />}
-                    onClick={() => arrayHelpers.push(SurveySampleMethodPeriodArrayItemInitialValues)}>
-                    Add Period
-                  </Button>
-                </Box>
+
+                <Button
+                  sx={{
+                    mt: 1
+                  }}
+                  data-testid="sampling-period-add-button"
+                  variant="outlined"
+                  color="primary"
+                  title="Add Period"
+                  aria-label="Create Sample Period"
+                  startIcon={<Icon path={mdiPlus} size={1} />}
+                  onClick={() => arrayHelpers.push(SurveySampleMethodPeriodArrayItemInitialValues)}>
+                  Add Time Period
+                </Button>
+
               </>
             )}
           />
