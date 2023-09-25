@@ -10,21 +10,20 @@ const SurveySamplingSiteImportForm = () => {
   return (
     <>
       <Box component="fieldset">
-        <Typography component="legend">Import Spatial File</Typography>
         <Typography
-          variant="body1"
-          color="textSecondary"
+          variant="h3"
+          component="h2"
           sx={{
-            maxWidth: '72ch'
+            marginBottom: '14px'
           }}>
-          Import a file
+          Import Spatial File
         </Typography>
         <SamplingSiteMapControl
           name="survey_sample_sites"
           title={
             `Site Boundary Preview ` +
             (formikProps.values.survey_sample_sites.length > 0
-              ? `(${formikProps.values.survey_sample_sites.length}) boundaries detected`
+              ? `(${formikProps.values.survey_sample_sites.length}) sampling sites founds`
               : '')
           }
           mapId="study_area_form_map"

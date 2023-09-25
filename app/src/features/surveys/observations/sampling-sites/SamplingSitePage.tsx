@@ -10,8 +10,7 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/components/CreateSamplingMethod';
-import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
+import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
 import SamplingMethodForm from 'features/surveys/components/SamplingMethodForm';
 import SurveySamplingSiteImportForm from 'features/surveys/components/SurveySamplingSiteImportForm';
 import { Formik, FormikProps } from 'formik';
@@ -126,7 +125,7 @@ const SamplingSitePage = () => {
               <Box p={5} component={Paper} display="block">
                 <HorizontalSplitFormComponent
                   title="Site Boundaries"
-                  summary="Drag files here or Browse Files Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem"
+                  summary="Import sampling site spatial information."
                   component={<SurveySamplingSiteImportForm />}></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />

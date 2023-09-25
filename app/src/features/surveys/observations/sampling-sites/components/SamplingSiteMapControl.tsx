@@ -34,6 +34,9 @@ const useStyles = makeStyles(() => ({
     '&:hover': {
       backgroundColor: '#eeeeee'
     }
+  },
+  toolbarCount: {
+    fontWeight: 400
   }
 }));
 
@@ -54,7 +57,7 @@ export interface ISamplingSiteMapControlProps {
 const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const classes = useStyles();
 
-  const { name, title, mapId, bounds, formikProps } = props;
+  const { name, mapId, bounds, formikProps } = props;
 
   const { values, errors, setFieldValue } = formikProps;
 
@@ -84,14 +87,6 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   return (
     <>
       <Grid item xs={12}>
-        <Typography
-          variant="h5"
-          component="h3"
-          sx={{
-            marginBottom: '14px'
-          }}>
-          {title}
-        </Typography>
         <Typography
           variant="body1"
           color="textSecondary"
@@ -125,6 +120,12 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
             </Box>
           )}
         </Box>
+        <Typography variant="h4" component="h2" data-testid="funding-source-list-found">
+          Sampling Sites Founds &zwnj;
+          <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+            ({formikProps.values.survey_sample_sites.length || 0})
+          </Typography>
+        </Typography>
         <Paper variant="outlined">
           <Box position="relative" height={500}>
             <MapContainer
