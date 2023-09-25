@@ -5,7 +5,7 @@ import { BaseRepository } from './base-repository';
 
 export interface PostSamplePeriod {
   survey_sample_period_id: number | null;
-  survey_sample_method_id: number | null;
+  survey_sample_method_id: number;
   start_date: string;
   end_date: string;
 }
