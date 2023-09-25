@@ -60,7 +60,7 @@ const SamplingSitePage = () => {
   const samplingSiteYupSchema = yup.object({
     name: yup.string().default(''),
     description: yup.string().default(''),
-    survey_sample_sites: yup.array(yup.object({})).min(1, 'At least 1 Sample Site needs to be uploaded '),
+    survey_sample_sites: yup.array(yup.object({})),
     methods: yup
       .array(yup.object().concat(SamplingSiteMethodYupSchema))
       .min(1, 'At least 1 Sampling Method is required')
@@ -100,28 +100,29 @@ const SamplingSitePage = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
-      <SamplingSiteHeader
-        project_id={surveyContext.projectId}
-        survey_id={surveyContext.surveyId}
-        survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-      />
-      <Box display="flex" flex="1 1 auto">
-        <Container maxWidth="xl">
-          <Box py={3}>
-            <Formik
-              innerRef={formikRef}
-              initialValues={{
-                survey_id: surveyContext.surveyId,
-                name: '',
-                description: '',
-                survey_sample_sites: [],
-                methods: []
-              }}
-              validationSchema={samplingSiteYupSchema}
-              validateOnBlur={true}
-              validateOnChange={false}
-              onSubmit={handleSubmit}>
+    <Formik
+      innerRef={formikRef}
+      initialValues={{
+        survey_id: surveyContext.surveyId,
+        name: '',
+        description: '',
+        survey_sample_sites: [],
+        methods: []
+      }}
+      validationSchema={samplingSiteYupSchema}
+      validateOnBlur={true}
+      validateOnChange={false}
+      onSubmit={handleSubmit}>
+      <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
+        <SamplingSiteHeader
+          project_id={surveyContext.projectId}
+          survey_id={surveyContext.surveyId}
+          survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+          is_submitting={isSubmitting}
+        />
+        <Box display="flex" flex="1 1 auto">
+          <Container maxWidth="xl">
+            <Box py={3}>
               <Box p={5} component={Paper} display="block">
                 <HorizontalSplitFormComponent
                   title="Site Boundaries"
@@ -162,11 +163,11 @@ const SamplingSitePage = () => {
                   </Button>
                 </Box>
               </Box>
-            </Formik>
-          </Box>
-        </Container>
+            </Box>
+          </Container>
+        </Box>
       </Box>
-    </Box>
+    </Formik>
   );
 };
 
