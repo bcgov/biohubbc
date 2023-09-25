@@ -95,7 +95,7 @@ export class DraftRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, WebformDraft);
 
-    return response.rows || [];
+    return response.rows;
   }
 
   /**

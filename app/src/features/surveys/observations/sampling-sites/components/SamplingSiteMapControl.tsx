@@ -104,7 +104,8 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
             onRemove={removeFile}
             dropZoneProps={{
               maxNumFiles: 1,
-              multiple: false
+              multiple: false,
+              acceptedFileExtensions: '.zip'
             }}
             hideDropZoneOnMaxFiles={true}
             FileUploadItemComponent={FileUploadItem}

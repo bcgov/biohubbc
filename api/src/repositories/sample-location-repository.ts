@@ -23,7 +23,7 @@ export interface PostSampleLocations {
   methods: PostSampleMethod[];
 }
 
-// This describes the a row in the database for Survey Block
+// This describes a row in the database for Survey Sample Location
 export const SampleLocationRecord = z.object({
   survey_sample_site_id: z.number(),
   survey_id: z.number(),
@@ -62,7 +62,7 @@ export class SampleLocationRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sql, SampleLocationRecord);
-    return response.rows || [];
+    return response.rows;
   }
 
   /**
