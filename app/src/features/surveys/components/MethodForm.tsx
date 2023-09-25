@@ -80,11 +80,11 @@ export const SamplingSiteMethodYupSchema = yup.object({
         end_date: yup
           .string()
           .isValidDateString()
-          .required('End Date is Required')
+          .required('End Date is required')
           .isEndDateSameOrAfterStartDate('start_date')
       })
     )
-    .min(1, 'At least ones Time Period is required')
+    .min(1, 'At least one time period is required')
 });
 
 const MethodForm = () => {
