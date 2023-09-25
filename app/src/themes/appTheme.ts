@@ -24,6 +24,12 @@ const appTheme = createTheme({
       dark: '#001949',
       contrastText: '#ffffff'
     },
+    success: {
+      main: '#2E8540'
+    },
+    error: {
+      main: '#D8292F'
+    },
     text: {
       primary: '#313132',
       secondary: '#757575'

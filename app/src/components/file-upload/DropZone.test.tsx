@@ -17,7 +17,7 @@ describe('DropZone', () => {
   it('renders default maximum file size text', () => {
     const { getByTestId } = renderContainer();
 
-    expect(getByTestId('dropzone-max-size-text').textContent).toEqual('Maximum file size: 50 MB');
+    expect(getByTestId('dropzone-max-size-text').textContent).toEqual('Maximum size: 50 MB');
   });
 
   it('renders default maximum file cunt text', () => {

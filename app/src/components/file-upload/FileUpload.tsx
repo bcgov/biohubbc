@@ -1,7 +1,6 @@
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
 import List from '@mui/material/List';
-import { makeStyles } from '@mui/styles';
 import React, { useRef, useState } from 'react';
 import { FileError, FileRejection } from 'react-dropzone';
 import DropZone, { IDropZoneConfigProps } from './DropZone';
@@ -14,23 +13,6 @@ import FileUploadItem, {
 } from './FileUploadItem';
 import FileUploadItemActionButton from './FileUploadItemActionButton';
 import FileUploadItemProgressBar from './FileUploadItemProgressBar';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  dropZone: {
-    clear: 'both',
-    borderRadius: '4px',
-    borderStyle: 'dashed',
-    borderWidth: '2px',
-    borderColor: theme.palette.text.disabled,
-    background: theme.palette.primary.main + '11',
-    transition: 'all ease-out 0.2s',
-    '&:hover, &:focus': {
-      borderColor: theme.palette.primary.main,
-      backgroundColor: theme.palette.primary.main + '22'
-    },
-    cursor: 'pointer'
-  }
-}));
 
 export interface IUploadFile {
   file: File;
@@ -137,8 +119,6 @@ export interface IFileUploadProps {
 }
 
 export const FileUpload = (props: IFileUploadProps) => {
-  const classes = useStyles();
-
   const files = useRef<IUploadFile[]>([]);
 
   const [fileUploadItems, setFileUploadItems] = useState<any[]>([]);
@@ -268,7 +248,20 @@ export const FileUpload = (props: IFileUploadProps) => {
   return (
     <Box width={'100%'}>
       {!hideDropZoneOnMaxFiles && (
-        <Box className={classes.dropZone}>
+        <Box
+          sx={{
+            clear: 'both',
+            borderRadius: '6px',
+            borderStyle: 'dashed',
+            borderWidth: '2px',
+            borderColor: grey[500],
+            transition: 'all ease-out 0.2s',
+            '&:hover, &:focus': {
+              borderColor: 'primary.main',
+              backgroundColor: grey[100]
+            },
+            cursor: 'pointer'
+          }}>
           <DropZone onFiles={onFiles} {...props.dropZoneProps} />
         </Box>
       )}
