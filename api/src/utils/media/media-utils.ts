@@ -112,26 +112,29 @@ export const isZipMimetype = (mimetype: string): boolean => {
 };
 
 /**
- * Returns true if the file is a keyx file, or a zip that contains a keyx file.
+ * Returns true if the file is a keyx file, or a zip that contains only keyx files.
  *
  * @export
  * @param {Express.Multer.File} file
  * @return {*}  {boolean}
  */
 export function checkFileForKeyx(file: Express.Multer.File): boolean {
-  const mimeType = mime.getType(file.originalname) ?? '';
+  // File is a KeyX file if it ends in '.keyx'
   if (file?.originalname.endsWith('.keyx')) {
     return true;
-  } else if (isZipMimetype(mimeType)) {
-    const zipEntries = parseUnknownZipFile(file.buffer);
-    if (zipEntries.length === 0) {
-      return false;
-    }
-    for (const zipEntry of zipEntries) {
-      if (!zipEntry.fileName.endsWith('.keyx')) {
-        return false;
-      }
-    }
   }
-  return true;
+  const mimeType = mime.getType(file.originalname) ?? '';
+  if (!isZipMimetype(mimeType)) {
+    // File cannot be a KeyX file, since it is not an archive nor does it have a .keyx extension
+    return false;
+  }
+
+  const zipEntries = parseUnknownZipFile(file.buffer);
+  if (zipEntries.length === 0) {
+    // File is a zip file, but it is empty
+    return false;
+  }
+
+  // Return false if any of the files in the zip are not keyx files
+  return zipEntries.every((zipEntry) => zipEntry.fileName.endsWith('.keyx'));
 }
