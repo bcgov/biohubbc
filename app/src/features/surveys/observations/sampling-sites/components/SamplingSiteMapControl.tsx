@@ -8,9 +8,10 @@ import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import FileUpload from 'components/file-upload/FileUpload';
 import FileUploadItem, { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import FileUploadItemProgressBar from 'components/file-upload/FileUploadItemProgressBar';
 import MapContainer from 'components/map/MapContainer';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
+import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemProgressBar';
+import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
@@ -109,8 +110,9 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
               hideDropZoneOnMaxFiles={true}
               FileUploadItemComponent={FileUploadItem}
               FileUploadItemComponentProps={{
+                SubtextComponent: SampleSiteFileUploadItemSubtext,
                 ActionButtonComponent: SampleSiteFileUploadItemActionButton,
-                ProgressBarComponent: FileUploadItemProgressBar
+                ProgressBarComponent: SampleSiteFileUploadItemProgressBar
               }}
             />
           </Box>
@@ -120,10 +122,12 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
             </Box>
           )}
         </Box>
-        <Typography variant="h4" component="h2" data-testid="funding-source-list-found">
-          Sampling Sites Founds &zwnj;
+        <Typography mb={1} variant="h4" component="h2" data-testid="funding-source-list-found">
+          Site Boundary Preview &zwnj;
           <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
-            ({formikProps.values.survey_sample_sites.length || 0})
+            {formikProps.values.survey_sample_sites.length > 0
+              ? `(${formikProps.values.survey_sample_sites.length} boundaries detected)`
+              : ''}
           </Typography>
         </Typography>
         <Paper variant="outlined">

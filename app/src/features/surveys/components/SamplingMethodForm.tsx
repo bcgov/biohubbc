@@ -27,7 +27,7 @@ import EditSamplingMethod from './EditSamplingMethod';
 import { IEditSurveySampleMethodData } from './MethodForm';
 
 const SamplingMethodForm = () => {
-  const { values, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
+  const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -54,6 +54,7 @@ const SamplingMethodForm = () => {
         open={isCreateModalOpen}
         onSubmit={(data) => {
           setFieldValue(`methods[${values.methods.length}]`, data);
+          validateField('methods');
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
@@ -112,6 +113,11 @@ const SamplingMethodForm = () => {
             Methods defined below will be applied to all imported sampling sites boundaries. This information can be
             modified later if required.
           </Typography>
+          {errors.methods && !Array.isArray(errors.methods) && (
+            <Box pt={2}>
+              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.methods}</Typography>
+            </Box>
+          )}
           <Button
             sx={{
               mt: 1
