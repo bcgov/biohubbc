@@ -36,12 +36,21 @@ export const IAllCodeSets = z.object({
   intended_outcomes: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   vantage_codes: CodeSet(),
   survey_jobs: CodeSet(),
-  site_selection_strategies: CodeSet()
+  site_selection_strategies: CodeSet(),
+  sample_methods_lookup: CodeSet()
 });
 
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 
 export class CodeRepository extends BaseRepository {
+  async getSampleMethods() {
+    const sql = SQL`
+    SELECT method_lookup_id as id, name FROM method_lookup;
+    `;
+    const response = await this.connection.sql(sql);
+    return response.rows;
+  }
+
   /**
    * Fetch management action type codes.
    *

@@ -104,12 +104,7 @@ const columns = [
 
 export const ObservationComponent = () => {
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      flex="1 1 auto"
-      height="100%">
-        
+    <Box display="flex" flexDirection="column" flex="1 1 auto" height="100%">
       {/* Observations Component */}
       <Toolbar
         sx={{

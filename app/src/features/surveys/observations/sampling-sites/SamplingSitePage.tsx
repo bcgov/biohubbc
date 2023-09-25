@@ -2,6 +2,7 @@ import { LoadingButton } from '@mui/lab';
 import { Button, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
@@ -60,7 +61,7 @@ const SamplingSitePage = () => {
   const samplingSiteYupSchema = yup.object({
     name: yup.string().default(''),
     description: yup.string().default(''),
-    survey_sample_sites: yup.array(yup.object({})).min(1, 'At least 1 Sample Site needs to be uploaded '),
+    survey_sample_sites: yup.array(yup.object({})),
     methods: yup
       .array(yup.object().concat(SamplingSiteMethodYupSchema))
       .min(1, 'At least 1 Sampling Method is required')
@@ -100,39 +101,53 @@ const SamplingSitePage = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
-      <SamplingSiteHeader
-        project_id={surveyContext.projectId}
-        survey_id={surveyContext.surveyId}
-        survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-      />
-      <Box display="flex" flex="1 1 auto">
-        <Container maxWidth="xl">
-          <Box py={3}>
-            <Formik
-              innerRef={formikRef}
-              initialValues={{
-                survey_id: surveyContext.surveyId,
-                name: '',
-                description: '',
-                survey_sample_sites: [],
-                methods: []
-              }}
-              validationSchema={samplingSiteYupSchema}
-              validateOnBlur={true}
-              validateOnChange={false}
-              onSubmit={handleSubmit}>
-              <Box p={5} component={Paper} display="block">
+    <Formik
+      innerRef={formikRef}
+      initialValues={{
+        survey_id: surveyContext.surveyId,
+        name: '',
+        description: '',
+        survey_sample_sites: [],
+        methods: []
+      }}
+      validationSchema={samplingSiteYupSchema}
+      validateOnBlur={true}
+      validateOnChange={false}
+      onSubmit={handleSubmit}>
+      <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
+        <Box
+          position="sticky"
+          top="0"
+          sx={{
+            borderBottomStyle: 'solid',
+            borderBottomWidth: '1px',
+            borderBottomColor: grey[300]
+          }}>
+          <SamplingSiteHeader
+            project_id={surveyContext.projectId}
+            survey_id={surveyContext.surveyId}
+            survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+            is_submitting={isSubmitting}
+          />
+        </Box>
+        <Box display="flex" flex="1 1 auto">
+          <Container maxWidth="xl">
+            <Box py={3}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 5
+                }}>
                 <HorizontalSplitFormComponent
-                  title="Site Boundaries"
-                  summary="Import sampling site spatial information."
+                  title="Site Location"
+                  summary="Select and import the location of sampling sites used for this survey."
                   component={<SurveySamplingSiteImportForm />}></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
                   title="Sampling Methods"
-                  summary="Specify sampling methods used to collect data at each sampling site."
+                  summary="Add sampling methods and associated time periods used for your sampling site locations. "
                   component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
@@ -161,12 +176,12 @@ const SamplingSitePage = () => {
                     Cancel
                   </Button>
                 </Box>
-              </Box>
-            </Formik>
-          </Box>
-        </Container>
+              </Paper>
+            </Box>
+          </Container>
+        </Box>
       </Box>
-    </Box>
+    </Formik>
   );
 };
 

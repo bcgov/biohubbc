@@ -72,7 +72,7 @@ export const SurveySampleMethodDataInitialValues = {
 
 export const SamplingSiteMethodYupSchema = yup.object({
   method_lookup_id: yup.number().typeError('Method is required').required('Method is required'),
-  description: yup.string().required('Description is required').max(250, 'Maximum 250 characters'),
+  description: yup.string().max(250, 'Maximum 250 characters'),
   periods: yup
     .array(
       yup.object({
@@ -120,7 +120,7 @@ const MethodForm = () => {
             inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method' }}
             onChange={handleChange}
             sx={{ width: '100%', backgroundColor: '#fff' }}>
-            {codesContext.codesDataLoader.data.sample_methods.map((item) => (
+            {codesContext.codesDataLoader.data.sample_methods_lookup.map((item) => (
               <MenuItem key={item.id} value={item.id}>
                 {item.name}
               </MenuItem>
@@ -134,7 +134,7 @@ const MethodForm = () => {
           name="description"
           label="Description"
           maxLength={250}
-          other={{ multiline: true, placeholder: 'Maximum 250 characters', required: true, rows: 3 }}
+          other={{ multiline: true, placeholder: 'Maximum 250 characters', rows: 3 }}
         />
       </Box>
 

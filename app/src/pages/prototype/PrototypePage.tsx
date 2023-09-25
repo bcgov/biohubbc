@@ -1,25 +1,25 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-// import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import { DataGrid } from '@mui/x-data-grid';
-import Typography from '@mui/material/Typography';
 import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+// import * as React from 'react';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
 // import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 // import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-// import * as React from 'react';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
+// import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { DataGrid } from '@mui/x-data-grid';
 
 const columns = [
   {
@@ -66,7 +66,7 @@ const columns = [
     editable: true,
     type: 'number',
     minWidth: 100,
-    disableColumnMenu: true,
+    disableColumnMenu: true
   },
   {
     field: 'date',
@@ -74,7 +74,7 @@ const columns = [
     editable: true,
     type: 'date',
     minWidth: 150,
-    disableColumnMenu: true,
+    disableColumnMenu: true
   },
   {
     field: 'time',
@@ -112,7 +112,7 @@ const columns = [
       <IconButton>
         <Icon path={mdiDotsVertical} size={1} />
       </IconButton>
-    ],
+    ]
   }
 ];
 
@@ -121,7 +121,6 @@ const columns = [
 //   { id: 2, speciesName: 'Moose (Alces Americanus', samplingSite: 'Site 1', samplingMethod: 'Method 1' },
 //   { id: 3, speciesName: 'Moose (Alces Americanus', samplingSite: 'Site 1', samplingMethod: 'Method 1' }
 // ];
-
 
 export default function RenderHeaderGrid() {
   return (
@@ -133,51 +132,44 @@ export default function RenderHeaderGrid() {
 
 export const PrototypePage = () => {
   return (
-
-    <Box display="flex" flexDirection="column"
+    <Box
+      display="flex"
+      flexDirection="column"
       sx={{
         position: 'absolute',
         top: 0,
         right: 0,
         bottom: 0,
         left: 0
-      }}
-    >
-      <Paper square
+      }}>
+      <Paper
+        square
         sx={{
           pt: 3,
           pb: 3.5,
           px: 3
-        }}
-      >
-        <Breadcrumbs aria-label="breadcrumb"
+        }}>
+        <Breadcrumbs
+          aria-label="breadcrumb"
           sx={{
             mb: 1,
             fontSize: '14px'
-          }}
-        >
-          <Link
-            underline="hover"
-            href="#"
-          >
+          }}>
+          <Link underline="hover" href="#">
             Survey Name
           </Link>
-          <Typography 
-            color="text.secondary" 
-            variant='body2'
-          >
+          <Typography color="text.secondary" variant="body2">
             Manage Survey Observations
-        </Typography>
+          </Typography>
         </Breadcrumbs>
-        <Typography 
-          variant="h3" 
+        <Typography
+          variant="h3"
           component="h1"
           sx={{
             ml: '-2px'
-          }}
-        >
+          }}>
           Manage Survey Observations
-      </Typography>
+        </Typography>
       </Paper>
 
       {/* <AppBar
@@ -201,10 +193,7 @@ export const PrototypePage = () => {
         </Toolbar>
       </AppBar> */}
 
-      <Box
-        display="flex"
-        flex='1 1 auto'
-      >
+      <Box display="flex" flex="1 1 auto">
         {/* Sampling Site List */}
         <Box
           display="flex"
@@ -217,13 +206,11 @@ export const PrototypePage = () => {
             sx={{
               flex: '0 0 auto',
               borderBottom: '1px solid #ccc'
-            }}
-          >
+            }}>
             <Typography
               sx={{
                 flexGrow: '1'
-              }}
-            >
+              }}>
               <strong>Sampling Sites</strong>
             </Typography>
             <Button
@@ -232,9 +219,7 @@ export const PrototypePage = () => {
               }}
               variant="contained"
               color="primary"
-              startIcon={
-                <Icon path={mdiPlus} size={1} />
-              }>
+              startIcon={<Icon path={mdiPlus} size={1} />}>
               Add
             </Button>
           </Toolbar>
@@ -249,14 +234,9 @@ export const PrototypePage = () => {
                 borderTopWidth: '1px',
                 borderTopColor: grey[300]
               }
-            }}
-          >
-            <Box 
-              display="flex" 
-              flex="1 1 auto"
-              alignItems="center"
-              justifyContent="center">
-              <Typography variant='body2'>No Sampling Sites</Typography>
+            }}>
+            <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center">
+              <Typography variant="body2">No Sampling Sites</Typography>
             </Box>
 
             <Accordion
@@ -275,27 +255,24 @@ export const PrototypePage = () => {
                   id="panel1bh-header"
                   sx={{
                     p: 0
-                  }}
-                >
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>Sampling Site 1</Typography>
+                  }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                    Sampling Site 1
+                  </Typography>
                 </AccordionSummary>
-                <IconButton
-                  edge="end"
-                >
+                <IconButton edge="end">
                   <Icon path={mdiDotsVertical} size={1}></Icon>
                 </IconButton>
               </Box>
               <AccordionDetails
                 sx={{
                   pt: 0
-                }}
-              >
+                }}>
                 <List component="div" disablePadding>
                   <ListItem
                     sx={{
                       background: grey[200]
-                    }}
-                  >
+                    }}>
                     <ListItemText>
                       <Typography variant="body2">Method 1</Typography>
                     </ListItemText>
@@ -332,27 +309,24 @@ export const PrototypePage = () => {
                   id="panel1bh-header"
                   sx={{
                     p: 0
-                  }}
-                >
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>Sampling Site 1</Typography>
+                  }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                    Sampling Site 1
+                  </Typography>
                 </AccordionSummary>
-                <IconButton
-                  edge="end"
-                >
+                <IconButton edge="end">
                   <Icon path={mdiDotsVertical} size={1}></Icon>
                 </IconButton>
               </Box>
               <AccordionDetails
                 sx={{
                   pt: 0
-                }}
-              >
+                }}>
                 <List disablePadding>
                   <ListItem
                     sx={{
                       background: grey[200]
-                    }}
-                  >
+                    }}>
                     <ListItemText>
                       <Typography variant="body2">Method 1</Typography>
                     </ListItemText>
@@ -372,7 +346,6 @@ export const PrototypePage = () => {
                 </List>
               </AccordionDetails>
             </Accordion>
-
           </Box>
         </Box>
 
@@ -384,7 +357,6 @@ export const PrototypePage = () => {
           sx={{
             overflow: 'hidden'
           }}>
-
           <Toolbar
             sx={{
               flex: '0 0 auto',
@@ -392,29 +364,17 @@ export const PrototypePage = () => {
               '& Button + Button': {
                 ml: 1
               }
-            }}
-          >
+            }}>
             <Typography
               sx={{
                 flexGrow: '1'
-              }}
-            >
+              }}>
               <strong>Observations</strong>
             </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={
-                <Icon path={mdiImport} size={1} />
-              }>
+            <Button variant="contained" color="primary" startIcon={<Icon path={mdiImport} size={1} />}>
               Import
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={
-                <Icon path={mdiPlus} size={1} />
-              }>
+            <Button variant="contained" color="primary" startIcon={<Icon path={mdiPlus} size={1} />}>
               Add Record
             </Button>
             <Button
@@ -422,21 +382,14 @@ export const PrototypePage = () => {
               sx={{
                 mr: -1
               }}
-              startIcon={
-                <Icon path={mdiCogOutline} size={1} />
-              }
-            >
+              startIcon={<Icon path={mdiCogOutline} size={1} />}>
               Configure
             </Button>
           </Toolbar>
 
-          <Box 
-            display="flex" 
-            flexDirection="column"
-            flex="1 1 auto"
-          >
+          <Box display="flex" flexDirection="column" flex="1 1 auto">
             {/* Map View */}
-            
+
             {/* <Box
               display="flex"
               justifyContent="center"
@@ -450,11 +403,7 @@ export const PrototypePage = () => {
             </Box> */}
 
             {/* Table View */}
-            <Box 
-              display="flex"
-              flex="1 1 auto"
-              flexDirection="column"
-            >
+            <Box display="flex" flex="1 1 auto" flexDirection="column">
               {/* <Toolbar
                 variant="dense"
                 sx={{
@@ -465,51 +414,47 @@ export const PrototypePage = () => {
                 <Typography variant="body2"><strong>Records</strong></Typography>
               </Toolbar> */}
               <Box flex="1 1 auto" px={2} height="100%">
-              <DataGrid
-                columns={columns}
-                rows={[]}
-                localeText={{ noRowsLabel: "No Records" }}
-                sx={{
-                  background: '#fff',
-                  border: 'none',
-                  '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
-                    background: '#fff'
-                  },
-                  '& .MuiDataGrid-columnHeaderTitle': {
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    color: '#999'
-                  },
-                  '& .test': {
-                    position: 'sticky',
-                    right: 0,
-                    top: 0,
-                    borderLeft: '1px solid #ccc',
-                    background: '#fff'
-                  },
-                  '& .MuiDataGrid-columnHeaders': {
-                    position: 'relative'
-                  },
-                  '& .MuiDataGrid-columnHeaders:after': {
-                    content: "''",
-                    position: 'absolute',
-                    right: 0,
-                    width: '79px',
-                    height: '80px',
-                    borderLeft: '1px solid #ccc',
-                    background: '#fff'
-                  }
-
-                }}
-              />
+                <DataGrid
+                  columns={columns}
+                  rows={[]}
+                  localeText={{ noRowsLabel: 'No Records' }}
+                  sx={{
+                    background: '#fff',
+                    border: 'none',
+                    '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
+                      background: '#fff'
+                    },
+                    '& .MuiDataGrid-columnHeaderTitle': {
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      color: '#999'
+                    },
+                    '& .test': {
+                      position: 'sticky',
+                      right: 0,
+                      top: 0,
+                      borderLeft: '1px solid #ccc',
+                      background: '#fff'
+                    },
+                    '& .MuiDataGrid-columnHeaders': {
+                      position: 'relative'
+                    },
+                    '& .MuiDataGrid-columnHeaders:after': {
+                      content: "''",
+                      position: 'absolute',
+                      right: 0,
+                      width: '79px',
+                      height: '80px',
+                      borderLeft: '1px solid #ccc',
+                      background: '#fff'
+                    }
+                  }}
+                />
               </Box>
             </Box>
-          
           </Box>
-
         </Box>
       </Box>
     </Box>
-
   );
 };

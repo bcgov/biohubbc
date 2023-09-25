@@ -41,7 +41,8 @@ export class CodeService extends DBService {
       intended_outcomes,
       vantage_codes,
       survey_jobs,
-      site_selection_strategies
+      site_selection_strategies,
+      sample_methods_lookup
     ] = await Promise.all([
       await this.codeRepository.getManagementActionType(),
       await this.codeRepository.getFirstNations(),
@@ -61,7 +62,8 @@ export class CodeService extends DBService {
       await this.codeRepository.getIntendedOutcomes(),
       await this.codeRepository.getVantageCodes(),
       await this.codeRepository.getSurveyJobs(),
-      await this.codeRepository.getSiteSelectionStrategies()
+      await this.codeRepository.getSiteSelectionStrategies(),
+      await this.codeRepository.getSampleMethods()
     ]);
 
     return {
@@ -83,7 +85,8 @@ export class CodeService extends DBService {
       intended_outcomes,
       vantage_codes,
       survey_jobs,
-      site_selection_strategies
+      site_selection_strategies,
+      sample_methods_lookup
     };
   }
 }

@@ -18,10 +18,7 @@ export const SamplingSiteList = () => {
   const history = useHistory();
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="100%">
+    <Box display="flex" flexDirection="column" height="100%">
       <Toolbar
         sx={{
           flex: '0 0 auto',
