@@ -48,7 +48,7 @@ export interface IFileUploadProps {
    * @type {IUploadHandler}
    * @memberof IFileUploadProps
    */
-  uploadHandler: IUploadHandler;
+  uploadHandler?: IUploadHandler;
   /**
    * Callback fired for each accepted file in the list (that do not have any `DropZone` errors (size, count, extension).
    *

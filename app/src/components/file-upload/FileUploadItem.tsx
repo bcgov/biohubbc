@@ -72,7 +72,7 @@ export type IFileHandler = (file: File | null) => void;
 export type IOnUploadSuccess = (response: any) => void;
 
 export interface IFileUploadItemProps {
-  uploadHandler: IUploadHandler;
+  uploadHandler?: IUploadHandler;
   onSuccess?: IOnUploadSuccess;
   file: File;
   error?: string;
@@ -148,16 +148,18 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       onSuccess?.(response);
     };
 
-    uploadHandler(file, cancelToken, handleFileUploadProgress)
-      .then(handleFileUploadSuccess, (error: APIError) => {
-        setError(error?.message);
-        setErrorDetails(
-          error?.errors?.map((e) => {
-            return { _id: v4(), message: e?.toString() };
-          })
-        );
-      })
-      .catch();
+    if (uploadHandler) {
+      uploadHandler(file, cancelToken, handleFileUploadProgress)
+        .then(handleFileUploadSuccess, (error: APIError) => {
+          setError(error?.message);
+          setErrorDetails(
+            error?.errors?.map((e) => {
+              return { _id: v4(), message: e?.toString() };
+            })
+          );
+        })
+        .catch();
+    }
 
     setStatus(UploadFileStatus.UPLOADING);
   }, [

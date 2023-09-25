@@ -17,15 +17,10 @@ export const TelemetryFileUploadWithMeta: React.FC<{ attachmentType: AttachmentT
     setFieldValue(`${props.index}.attachmentType`, props.attachmentType);
   };
 
-  const uploadHandler = async (file: File) => {
-    // TODO: Make uploadHandlers optional in FileUpload component because it is not used in STAGED mode
-  };
-
   return (
     <>
       {props.attachmentType === AttachmentType.KEYX && (
         <FileUpload
-          uploadHandler={uploadHandler}
           fileHandler={fileHandler}
           onReplace={replaceHandler}
           dropZoneProps={{
@@ -39,7 +34,6 @@ export const TelemetryFileUploadWithMeta: React.FC<{ attachmentType: AttachmentT
       )}
       {props.attachmentType === AttachmentType.OTHER && (
         <FileUpload
-          uploadHandler={uploadHandler}
           fileHandler={fileHandler}
           onReplace={replaceHandler}
           dropZoneProps={{
