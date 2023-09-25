@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { PostSamplePeriod, SamplePeriodRecord, SamplePeriodRepository } from '../repositories/sample-period-repository';
+import { InsertSamplePeriod, SamplePeriodRecord, SamplePeriodRepository } from '../repositories/sample-period-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SamplePeriodService } from './sample-period-service';
 
@@ -105,7 +105,7 @@ describe('SamplePeriodService', () => {
         .stub(SamplePeriodRepository.prototype, 'insertSamplePeriod')
         .resolves(mockSamplePeriodRecord);
 
-      const samplePeriod: Omit<PostSamplePeriod, 'survey_sample_period_id'> = {
+      const samplePeriod: InsertSamplePeriod = {
         survey_sample_method_id: 1,
         start_date: '2023-10-02',
         end_date: '2023-01-02'
@@ -141,7 +141,7 @@ describe('SamplePeriodService', () => {
         .stub(SamplePeriodRepository.prototype, 'updateSamplePeriod')
         .resolves(mockSamplePeriodRecord);
 
-      const samplePeriod: PostSamplePeriod = {
+      const samplePeriod: InsertSamplePeriod = {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
         start_date: '2023-10-02',

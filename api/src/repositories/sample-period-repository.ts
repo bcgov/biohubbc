@@ -3,12 +3,12 @@ import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
-export interface PostSamplePeriod {
-  survey_sample_period_id: number | null;
-  survey_sample_method_id: number | null;
-  start_date: string;
-  end_date: string;
-}
+export type InsertSamplePeriod = Pick<SamplePeriodRecord, 'survey_sample_method_id' | 'start_date' | 'end_date'>;
+
+export type UpdateSamplePeriod = Pick<
+  SamplePeriodRecord,
+  'survey_sample_period_id' | 'survey_sample_method_id' | 'start_date' | 'end_date'
+>;
 
 // This describes a row in the database for Survey Sample Period
 export const SamplePeriodRecord = z.object({
@@ -53,11 +53,11 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * updates a survey Sample Period.
    *
-   * @param {PostSamplePeriod} sample
+   * @param {UpdateSamplePeriod} sample
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodRepository
    */
-  async updateSamplePeriod(sample: PostSamplePeriod): Promise<SamplePeriodRecord> {
+  async updateSamplePeriod(sample: UpdateSamplePeriod): Promise<SamplePeriodRecord> {
     const sql = SQL`
       UPDATE survey_sample_period
       SET
@@ -84,11 +84,11 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Inserts a new survey Sample Period.
    *
-   * @param {Omit<PostSamplePeriod, 'survey_sample_period_id'>} sample
+   * @param {InsertSamplePeriod} sample
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodRepository
    */
-  async insertSamplePeriod(sample: Omit<PostSamplePeriod, 'survey_sample_period_id'>): Promise<SamplePeriodRecord> {
+  async insertSamplePeriod(sample: InsertSamplePeriod): Promise<SamplePeriodRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_period (
       survey_sample_method_id,

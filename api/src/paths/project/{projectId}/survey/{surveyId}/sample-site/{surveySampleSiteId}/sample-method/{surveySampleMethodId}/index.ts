@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../../errors/http-error';
-import { PostSampleMethod } from '../../../../../../../../../repositories/sample-method-repository';
+import { InsertSampleMethod } from '../../../../../../../../../repositories/sample-method-repository';
 import { authorizeRequestHandler } from '../../../../../../../../../request-handlers/security/authorization';
 import { SampleMethodService } from '../../../../../../../../../services/sample-method-service';
 import { getLogger } from '../../../../../../../../../utils/logger';
@@ -129,7 +129,7 @@ export function updateSurveySampleMethod(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sampleMethod: PostSampleMethod = req.body.sampleMethod;
+      const sampleMethod: InsertSampleMethod = req.body.sampleMethod;
       sampleMethod.survey_sample_site_id = Number(req.params.surveySampleSiteId);
       sampleMethod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
 

@@ -1,5 +1,10 @@
 import { IDBConnection } from '../database/db';
-import { PostSamplePeriod, SamplePeriodRecord, SamplePeriodRepository } from '../repositories/sample-period-repository';
+import {
+  InsertSamplePeriod,
+  SamplePeriodRecord,
+  SamplePeriodRepository,
+  UpdateSamplePeriod
+} from '../repositories/sample-period-repository';
 import { DBService } from './db-service';
 
 /**
@@ -42,24 +47,22 @@ export class SamplePeriodService extends DBService {
   /**
    * Inserts survey Sample Period.
    *
-   * @param {Omit<PostSamplePeriod, 'survey_sample_period_id'>} samplePeriod
+   * @param {InsertSamplePeriod} samplePeriod
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async insertSamplePeriod(
-    samplePeriod: Omit<PostSamplePeriod, 'survey_sample_period_id'>
-  ): Promise<SamplePeriodRecord> {
+  async insertSamplePeriod(samplePeriod: InsertSamplePeriod): Promise<SamplePeriodRecord> {
     return this.samplePeriodRepository.insertSamplePeriod(samplePeriod);
   }
 
   /**
    * updates a survey Sample Period.
    *
-   * @param {PostSamplePeriod} samplePeriod
+   * @param {UpdateSamplePeriod} samplePeriod
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async updateSamplePeriod(samplePeriod: PostSamplePeriod): Promise<SamplePeriodRecord> {
+  async updateSamplePeriod(samplePeriod: UpdateSamplePeriod): Promise<SamplePeriodRecord> {
     return this.samplePeriodRepository.updateSamplePeriod(samplePeriod);
   }
 }

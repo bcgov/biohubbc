@@ -1,7 +1,11 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { PostSampleMethod, SampleMethodRecord, SampleMethodRepository } from '../repositories/sample-method-repository';
+import {
+  InsertSampleMethod,
+  SampleMethodRecord,
+  SampleMethodRepository
+} from '../repositories/sample-method-repository';
 import { SamplePeriodRecord } from '../repositories/sample-period-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SampleMethodService } from './sample-method-service';
@@ -122,7 +126,7 @@ describe('SampleMethodService', () => {
         .stub(SamplePeriodService.prototype, 'insertSamplePeriod')
         .resolves(mockSamplePeriodRecord);
 
-      const sampleMethod: Omit<PostSampleMethod, 'survey_sample_method_id'> = {
+      const sampleMethod: InsertSampleMethod = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',
@@ -172,7 +176,7 @@ describe('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'updateSampleMethod')
         .resolves(mockSampleMethodRecord);
 
-      const sampleMethod: PostSampleMethod = {
+      const sampleMethod: UpdateSampleMethod = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,

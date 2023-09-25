@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
-import { PostSampleMethod } from './sample-method-repository';
+import { InsertSampleMethod } from './sample-method-repository';
 
 export interface PostSampleLocation {
   survey_sample_site_id: number | null;
@@ -20,7 +20,7 @@ export interface PostSampleLocations {
   name: string;
   description: string;
   survey_sample_sites: Feature[];
-  methods: PostSampleMethod[];
+  methods: InsertSampleMethod[];
 }
 
 // This describes a row in the database for Survey Sample Location

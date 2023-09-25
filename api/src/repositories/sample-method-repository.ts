@@ -2,15 +2,17 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
-import { PostSamplePeriod } from './sample-period-repository';
+import { InsertSamplePeriod } from './sample-period-repository';
 
-export interface PostSampleMethod {
-  survey_sample_method_id: number | null;
-  survey_sample_site_id: number | null;
-  method_lookup_id: number;
-  description: string;
-  periods: PostSamplePeriod[];
-}
+export type InsertSampleMethod = Pick<
+  SampleMethodRecord,
+  'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
+> & { periods: InsertSamplePeriod[] };
+
+export type UpdateSampleMethod = Pick<
+  SampleMethodRecord,
+  'survey_sample_method_id' | 'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
+> & { periods: InsertSamplePeriod[] };
 
 // This describes a row in the database for Survey Sample Method
 export const SampleMethodRecord = z.object({
@@ -55,11 +57,11 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * updates a survey Sample method.
    *
-   * @param {PostSampleMethod} sampleMethod
+   * @param {UpdateSampleMethod} sampleMethod
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async updateSampleMethod(sampleMethod: PostSampleMethod): Promise<SampleMethodRecord> {
+  async updateSampleMethod(sampleMethod: UpdateSampleMethod): Promise<SampleMethodRecord> {
     const sql = SQL`
       UPDATE survey_sample_method
       SET
@@ -86,13 +88,11 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * Inserts a new survey Sample method.
    *
-   * @param {Omit<PostSampleMethod, 'survey_sample_method_id'>} sampleMethod
+   * @param {InsertSampleMethod} sampleMethod
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async insertSampleMethod(
-    sampleMethod: Omit<PostSampleMethod, 'survey_sample_method_id'>
-  ): Promise<SampleMethodRecord> {
+  async insertSampleMethod(sampleMethod: InsertSampleMethod): Promise<SampleMethodRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_method (
       survey_sample_site_id,

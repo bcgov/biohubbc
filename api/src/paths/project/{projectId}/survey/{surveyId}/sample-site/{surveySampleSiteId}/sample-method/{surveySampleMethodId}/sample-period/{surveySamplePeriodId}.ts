@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../../../errors/http-error';
-import { PostSamplePeriod } from '../../../../../../../../../../repositories/sample-period-repository';
+import { InsertSamplePeriod } from '../../../../../../../../../../repositories/sample-period-repository';
 import { authorizeRequestHandler } from '../../../../../../../../../../request-handlers/security/authorization';
 import { SamplePeriodService } from '../../../../../../../../../../services/sample-period-service';
 import { getLogger } from '../../../../../../../../../../utils/logger';
@@ -147,7 +147,7 @@ export function updateSurveySamplePeriod(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const samplePeriod: PostSamplePeriod = req.body.samplePeriod;
+      const samplePeriod: InsertSamplePeriod = req.body.samplePeriod;
       samplePeriod.survey_sample_method_id = Number(req.params.surveySampleMethodId);
       samplePeriod.survey_sample_period_id = Number(req.params.surveySamplePeriodId);
 
