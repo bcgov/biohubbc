@@ -310,6 +310,14 @@ export const formatLabel = (str: string): string => {
     .join(' ');
 };
 
+export const datesSameNullable = (date1: string | undefined, date2: string | undefined): boolean => {
+  if (date1 == null && date2 == null) {
+    return true;
+  } else {
+    return moment(date1).isSame(moment(date2));
+  }
+};
+
 /**
  * Pluralizes a word.
  *
