@@ -1,4 +1,5 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
+import { IObservationTableRow } from 'contexts/observationsContext';
 import { GeoJsonProperties } from 'geojson';
 import {
   IGetObservationSubmissionResponse,
@@ -172,6 +173,29 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * TODO
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {IObservationTableRow[]} surveyObservations
+   * @return {*} 
+   */
+  const insertUpdateObservationRecords = async (projectId: number, surveyId: number, surveyObservations: IObservationTableRow[]) => {
+    const { data } = await axios.put(
+      `/api/project/${projectId}/survey/${surveyId}/observation`,
+      { surveyObservations }
+    );
+
+    return data;
+  }
+
+  const getObservationRecords = async (projectId: number, surveyId: number) => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation`);
+
+    return data;
+  }
+
   return {
     uploadObservationSubmission,
     getObservationSubmission,
@@ -181,7 +205,9 @@ const useObservationApi = (axios: AxiosInstance) => {
     getOccurrencesForView,
     processOccurrences,
     processDWCFile,
-    getSpatialMetadata
+    getSpatialMetadata,
+    insertUpdateObservationRecords,
+    getObservationRecords
   };
 };
 
