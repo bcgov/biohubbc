@@ -127,6 +127,39 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Upload survey keyx files.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<IUploadAttachmentResponse>}
+   */
+  const uploadSurveyKeyx = async (
+    projectId: number,
+    surveyId: number,
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<IUploadAttachmentResponse> => {
+    const req_message = new FormData();
+
+    req_message.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`,
+      req_message,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
    * Upload survey reports.
    *
    * @param {number} projectId
@@ -521,6 +554,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
+    uploadSurveyKeyx,
     uploadSurveyReports,
     updateSurveyReportMetadata,
     getSurveyReportDetails,
