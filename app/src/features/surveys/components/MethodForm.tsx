@@ -134,7 +134,7 @@ const MethodForm = () => {
           name="description"
           label="Description"
           maxLength={250}
-          other={{ multiline: true, placeholder: 'Maximum 250 characters', required: true, rows: 3 }}
+          other={{ multiline: true, placeholder: 'Maximum 250 characters', rows: 3 }}
         />
       </Box>
 
