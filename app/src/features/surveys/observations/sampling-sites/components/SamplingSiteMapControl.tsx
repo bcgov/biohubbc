@@ -45,7 +45,6 @@ export interface ISamplingSiteMapControlProps {
   name: string;
   title: string;
   mapId: string;
-  bounds: LatLngBoundsExpression | undefined;
   formikProps: FormikContextType<any>;
 }
 
@@ -58,16 +57,11 @@ export interface ISamplingSiteMapControlProps {
 const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const classes = useStyles();
 
-  const { name, mapId, bounds, formikProps } = props;
+  const { name, mapId, formikProps } = props;
 
   const { values, errors, setFieldValue } = formikProps;
 
-  const [shouldUpdateBounds, setShouldUpdateBounds] = useState<boolean>(false);
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
-
-  useEffect(() => {
-    setShouldUpdateBounds(false);
-  }, [updatedBounds]);
 
   const boundaryUploadHandler = (): IUploadHandler => {
     return async (file) => {
@@ -84,6 +78,13 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const removeFile = () => {
     setFieldValue(name, []);
   };
+
+  // Array of sampling site features
+  const samplingSiteGeoJsonFeatures = get(values, name);
+
+  useEffect(() => {
+    setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
+  }, [samplingSiteGeoJsonFeatures]);
 
   return (
     <>
@@ -135,20 +136,19 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
             <MapContainer
               mapId={mapId}
               drawControls={{
-                initialFeatures: get(values, name)
+                initialFeatures: samplingSiteGeoJsonFeatures
               }}
               onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
-              bounds={(shouldUpdateBounds && updatedBounds) || bounds}
+              bounds={updatedBounds}
             />
-            {get(values, name) && get(values, name).length > 0 && (
+            {samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length > 0 && (
               <Box position="absolute" top="126px" left="10px" zIndex="999">
                 <IconButton
                   aria-label="zoom to initial extent"
                   title="Zoom to initial extent"
                   className={classes.zoomToBoundaryExtentBtn}
                   onClick={() => {
-                    setUpdatedBounds(calculateUpdatedMapBounds(get(values, name)));
-                    setShouldUpdateBounds(true);
+                    setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
                   }}>
                   <Icon size={1} path={mdiRefresh} />
                 </IconButton>

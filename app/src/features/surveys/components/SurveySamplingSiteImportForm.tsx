@@ -27,7 +27,6 @@ const SurveySamplingSiteImportForm = () => {
               : '')
           }
           mapId="study_area_form_map"
-          bounds={undefined}
           formikProps={formikProps}
         />
       </Box>
