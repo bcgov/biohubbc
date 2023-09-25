@@ -19,8 +19,10 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import { grey } from '@mui/material/colors';
 import Typography from '@mui/material/Typography';
+import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { getCodesName } from 'utils/Utils';
 import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
 import EditSamplingMethod from './EditSamplingMethod';
@@ -32,6 +34,9 @@ const SamplingMethodForm = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [editData, setEditData] = useState<IEditSurveySampleMethodData | undefined>(undefined);
+
+  const codesContext = useContext(CodesContext);
+  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
@@ -111,7 +116,8 @@ const SamplingMethodForm = () => {
               mb: 2,
               maxWidth: '92ch'
             }}>
-            If you are importing multiple sampling site locations, these methods will be applied to ALL sampling locations and can be modified later if requried.
+            If you are importing multiple sampling site locations, these methods will be applied to ALL sampling
+            locations and can be modified later if required.
           </Typography>
           {errors.methods && !Array.isArray(errors.methods) && (
             <Box>
@@ -139,7 +145,11 @@ const SamplingMethodForm = () => {
                 }
               }}>
               <CardHeader
-                title={`Sampling Method ${index + 1}`}
+                title={`${getCodesName(
+                  codesContext.codesDataLoader.data,
+                  'sample_methods_lookup',
+                  item.method_lookup_id || 0
+                )}`}
                 subheader={item.description}
                 action={
                   <IconButton
@@ -185,7 +195,6 @@ const SamplingMethodForm = () => {
             }}>
             Add Method
           </Button>
-
         </form>
       </Box>
     </>
