@@ -332,6 +332,20 @@ GET.apiDoc = {
                     }
                   }
                 }
+              },
+              sample_methods_lookup: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
               }
             }
           }
