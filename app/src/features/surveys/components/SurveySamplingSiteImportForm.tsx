@@ -11,6 +11,14 @@ const SurveySamplingSiteImportForm = () => {
     <>
       <Box component="fieldset">
         <Typography component="legend">Import Spatial File</Typography>
+        <Typography
+          variant="body1"
+          color="textSecondary"
+          sx={{
+            maxWidth: '92ch'
+          }}>
+          Before importing, ensure your shapefile is compressed into a single zip file. Shapefiles can include one or more sampling site locations.
+        </Typography>
         <SamplingSiteMapControl
           name="survey_sample_sites"
           title={

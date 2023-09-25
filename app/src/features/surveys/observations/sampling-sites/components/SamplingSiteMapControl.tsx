@@ -88,19 +88,10 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   return (
     <>
       <Grid item xs={12}>
-        <Typography
-          variant="body1"
-          color="textSecondary"
-          sx={{
-            maxWidth: '90ch'
-          }}>
-          Before you import your site locations, you will need to ensure your shapefile is compressed into a single zip
-          file. Your shapefile can include one or more sampling site locations.
-        </Typography>
         <Box my={3}>
           {get(errors, name) && (
             <Alert sx={{
-              mb: 1
+              mb: 2
             }}
               severity="error">
               <AlertTitle>Missing sampling site location</AlertTitle>
