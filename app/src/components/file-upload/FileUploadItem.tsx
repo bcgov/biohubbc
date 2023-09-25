@@ -6,6 +6,7 @@ import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import axios, { CancelTokenSource } from 'axios';
+import FileUploadItemSubtext from 'components/file-upload/FileUploadItemSubtext';
 import { APIError } from 'hooks/api/useAxios';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -108,17 +109,33 @@ export interface IFileUploadItemProps {
    */
   status?: UploadFileStatus;
   /**
+   * A component that renders a subtext string for each file upload item.
+   * If not provided, a default will be used.
+   *
+   * @memberof IFileUploadItemProps
+   */
+  SubtextComponent?: (props: ISubtextProps) => JSX.Element;
+  /**
    * A component that renders an action button for each file upload item.
+   * If not provided, a default will be used.
    *
    * @memberof IFileUploadItemProps
    */
   ActionButtonComponent?: (props: IActionButtonProps) => JSX.Element;
   /**
    * A component that renders a progress bar for each file upload item.
+   * If not provided, a default will be used.
    *
    * @memberof IFileUploadItemProps
    */
   ProgressBarComponent?: (props: IProgressBarProps) => JSX.Element;
+}
+
+export interface ISubtextProps {
+  file: File;
+  status: UploadFileStatus;
+  progress: number;
+  error?: string;
 }
 
 export interface IActionButtonProps {
@@ -135,18 +152,8 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
   const isMounted = useIsMounted();
   const classes = useStyles();
 
-  const { uploadHandler, fileHandler, onSuccess, ActionButtonComponent, ProgressBarComponent } = props;
-
-  const MemoizedActionButton = React.memo(
-    ActionButtonComponent || FileUploadItemActionButton,
-    (prevProps, nextProps) => {
-      return prevProps.status === nextProps.status;
-    }
-  );
-
-  const MemoizedProgressBar = React.memo(ProgressBarComponent || FileUploadItemProgressBar, (prevProps, nextProps) => {
-    return prevProps.status === nextProps.status && prevProps.progress === nextProps.progress;
-  });
+  const { uploadHandler, fileHandler, onSuccess, SubtextComponent, ActionButtonComponent, ProgressBarComponent } =
+    props;
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
@@ -159,6 +166,21 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
   const [initiateCancel, setInitiateCancel] = useState<boolean>(false);
   // indicates that the active requests are in a state where they can be safely cancelled
   const [isSafeToCancel, setIsSafeToCancel] = useState<boolean>(false);
+
+  const Subtext = SubtextComponent || FileUploadItemSubtext;
+
+  const MemoizedActionButton = React.memo(
+    ActionButtonComponent || FileUploadItemActionButton,
+    (prevProps, nextProps) => {
+      // Only re-render if the status changes
+      return prevProps.status === nextProps.status;
+    }
+  );
+
+  const MemoizedProgressBar = React.memo(ProgressBarComponent || FileUploadItemProgressBar, (prevProps, nextProps) => {
+    // Only re-render if the status or progress changes
+    return prevProps.status === nextProps.status && prevProps.progress === nextProps.progress;
+  });
 
   const handleFileUploadError = useCallback(() => {
     setStatus(UploadFileStatus.FAILED);
@@ -270,9 +292,7 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
                 <Typography variant="body2" component="div">
                   <strong>{file.name}</strong>
                 </Typography>
-                <Typography variant="caption" component="div">
-                  {error || status}
-                </Typography>
+                <Subtext file={file} status={status} progress={progress} error={error} />
               </Box>
               <Box display="flex" alignItems="center">
                 <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />
