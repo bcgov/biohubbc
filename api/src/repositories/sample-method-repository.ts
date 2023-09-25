@@ -12,7 +12,7 @@ export interface PostSampleMethod {
   periods: PostSamplePeriod[];
 }
 
-// This describes the a row in the database for Survey Block
+// This describes a row in the database for Survey Sample Method
 export const SampleMethodRecord = z.object({
   survey_sample_method_id: z.number(),
   survey_sample_site_id: z.number(),
@@ -49,32 +49,32 @@ export class SampleMethodRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sql, SampleMethodRecord);
-    return response.rows || [];
+    return response.rows;
   }
 
   /**
    * updates a survey Sample method.
    *
-   * @param {PostSampleMethod} sample
+   * @param {PostSampleMethod} sampleMethod
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async updateSampleMethod(sample: PostSampleMethod): Promise<SampleMethodRecord> {
+  async updateSampleMethod(sampleMethod: PostSampleMethod): Promise<SampleMethodRecord> {
     const sql = SQL`
       UPDATE survey_sample_method
       SET
-        survey_sample_site_id=${sample.survey_sample_site_id},
-        method_lookup_id = ${sample.method_lookup_id},
-        description=${sample.description}
+        survey_sample_site_id=${sampleMethod.survey_sample_site_id},
+        method_lookup_id = ${sampleMethod.method_lookup_id},
+        description=${sampleMethod.description}
       WHERE
-        survey_sample_method_id = ${sample.survey_sample_method_id}
+        survey_sample_method_id = ${sampleMethod.survey_sample_method_id}
       RETURNING
         *;`;
 
     const response = await this.connection.sql(sql, SampleMethodRecord);
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update survey block', [
+      throw new ApiExecuteSQLError('Failed to update sample method', [
         'SampleMethodRepository->updateSampleMethod',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -86,20 +86,22 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * Inserts a new survey Sample method.
    *
-   * @param {Omit<PostSampleMethod, 'survey_sample_method_id'>} sample
+   * @param {Omit<PostSampleMethod, 'survey_sample_method_id'>} sampleMethod
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async insertSampleMethod(sample: Omit<PostSampleMethod, 'survey_sample_method_id'>): Promise<SampleMethodRecord> {
+  async insertSampleMethod(
+    sampleMethod: Omit<PostSampleMethod, 'survey_sample_method_id'>
+  ): Promise<SampleMethodRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_method (
       survey_sample_site_id,
       method_lookup_id,
       description
     ) VALUES (
-      ${sample.survey_sample_site_id},
-      ${sample.method_lookup_id},
-      ${sample.description}
+      ${sampleMethod.survey_sample_site_id},
+      ${sampleMethod.method_lookup_id},
+      ${sampleMethod.description}
       )
       RETURNING
         *;`;
@@ -135,8 +137,8 @@ export class SampleMethodRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, SampleMethodRecord);
 
-    if (!response?.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete survey block record', [
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete sample method', [
         'SampleMethodRepository->deleteSampleMethodRecord',
         'rows was null or undefined, expected rows != null'
       ]);

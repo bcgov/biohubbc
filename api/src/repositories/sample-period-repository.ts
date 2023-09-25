@@ -10,7 +10,7 @@ export interface PostSamplePeriod {
   end_date: string;
 }
 
-// This describes the a row in the database for Survey Block
+// This describes a row in the database for Survey Sample Period
 export const SamplePeriodRecord = z.object({
   survey_sample_period_id: z.number(),
   survey_sample_method_id: z.number(),
@@ -47,7 +47,7 @@ export class SamplePeriodRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sql, SamplePeriodRecord);
-    return response.rows || [];
+    return response.rows;
   }
 
   /**
@@ -72,7 +72,7 @@ export class SamplePeriodRepository extends BaseRepository {
     const response = await this.connection.sql(sql, SamplePeriodRecord);
 
     if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to update survey block', [
+      throw new ApiExecuteSQLError('Failed to update sample period', [
         'SamplePeriodRepository->updateSamplePeriod',
         'rows was null or undefined, expected rows != null'
       ]);
@@ -134,7 +134,7 @@ export class SamplePeriodRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
 
     if (!response?.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete survey block record', [
+      throw new ApiExecuteSQLError('Failed to delete sample period', [
         'SamplePeriodRepository->deleteSamplePeriodRecord',
         'rows was null or undefined, expected rows != null'
       ]);
