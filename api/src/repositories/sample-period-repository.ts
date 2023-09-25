@@ -84,11 +84,11 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Inserts a new survey Sample Period.
    *
-   * @param {PostSamplePeriod} sample
+   * @param {Omit<PostSamplePeriod, 'survey_sample_period_id'>} sample
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodRepository
    */
-  async insertSamplePeriod(sample: PostSamplePeriod): Promise<SamplePeriodRecord> {
+  async insertSamplePeriod(sample: Omit<PostSamplePeriod, 'survey_sample_period_id'>): Promise<SamplePeriodRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_period (
       survey_sample_method_id,

@@ -5,7 +5,6 @@ import {
   SampleLocationRecord,
   SampleLocationRepository
 } from '../repositories/sample-location-repository';
-import { PostSampleMethod } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
 import { SampleMethodService } from './sample-method-service';
 
@@ -71,8 +70,7 @@ export class SampleLocationService extends DBService {
 
     const methodPromises = results.map((sampleSite) =>
       sampleLocations.methods.map((item) => {
-        const sampleMethod: PostSampleMethod = {
-          survey_sample_method_id: null,
+        const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
           method_lookup_id: item.method_lookup_id,
           description: item.description,

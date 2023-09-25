@@ -42,11 +42,13 @@ export class SamplePeriodService extends DBService {
   /**
    * Inserts survey Sample Period.
    *
-   * @param {PostSamplePeriod} samplePeriod
+   * @param {Omit<PostSamplePeriod, 'survey_sample_period_id'>} samplePeriod
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async insertSamplePeriod(samplePeriod: PostSamplePeriod): Promise<SamplePeriodRecord> {
+  async insertSamplePeriod(
+    samplePeriod: Omit<PostSamplePeriod, 'survey_sample_period_id'>
+  ): Promise<SamplePeriodRecord> {
     return this.samplePeriodRepository.insertSamplePeriod(samplePeriod);
   }
 

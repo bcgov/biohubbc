@@ -86,11 +86,11 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * Inserts a new survey Sample method.
    *
-   * @param {PostSampleMethod} sample
+   * @param {Omit<PostSampleMethod, 'survey_sample_method_id'>} sample
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async insertSampleMethod(sample: PostSampleMethod): Promise<SampleMethodRecord> {
+  async insertSampleMethod(sample: Omit<PostSampleMethod, 'survey_sample_method_id'>): Promise<SampleMethodRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_method (
       survey_sample_site_id,
