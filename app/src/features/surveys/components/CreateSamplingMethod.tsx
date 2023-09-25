@@ -24,7 +24,6 @@ const CreateSamplingMethod: React.FC<ISamplingMethodProps> = (props) => {
     <>
       <EditDialog
         dialogTitle={'Add Sampling Method'}
-        dialogText={'Specify sampling method information.'}
         open={props.open}
         dialogLoading={isSubmitting}
         component={{

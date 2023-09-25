@@ -1,3 +1,5 @@
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -25,6 +27,8 @@ import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/Sampl
 import CreateSamplingMethod from './CreateSamplingMethod';
 import EditSamplingMethod from './EditSamplingMethod';
 import { IEditSurveySampleMethodData } from './MethodForm';
+import { TransitionGroup } from 'react-transition-group';
+import Collapse from '@mui/material/Collapse';
 
 const SamplingMethodForm = () => {
   const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
@@ -114,61 +118,76 @@ const SamplingMethodForm = () => {
             If you are importing multiple sampling site locations, these methods will be applied to ALL sampling locations and can be modified later if requried.
           </Typography>
           {errors.methods && !Array.isArray(errors.methods) && (
-            <Box>
-              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.methods}</Typography>
-            </Box>
+            <Alert sx={{
+              my: 1
+            }}
+              severity="error" >
+              <AlertTitle>Missing sampling method</AlertTitle>
+              {errors.methods}
+            </Alert>
           )}
-
-          {values.methods.map((item, index) => (
-            <Card
-              variant="outlined"
-              sx={{
-                mt: 1,
-                background: grey[100],
-                '& .MuiCardHeader-subheader': {
-                  display: '-webkit-box',
-                  WebkitLineClamp: '2',
-                  WebkitBoxOrient: 'vertical',
-                  maxWidth: '92ch',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  fontSize: '14px'
-                },
-                '& .MuiCardHeader-title': {
-                  mb: 0.5
-                }
-              }}>
-              <CardHeader
-                title={`Sampling Method ${index + 1}`}
-                subheader={item.description}
-                action={
-                  <IconButton
-                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleMenuClick(event, index)}
-                    aria-label="settings">
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Time Periods
-                </Typography>
-                <List dense>
-                  {item.periods.map((period) => (
-                    <>
-                      <Divider />
-                      <ListItem>
-                        <ListItemIcon>
-                          <Icon path={mdiCalendarRangeOutline} size={1} />
-                        </ListItemIcon>
-                        <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
-                      </ListItem>
-                    </>
-                  ))}
-                </List>
-              </CardContent>
-            </Card>
-          ))}
+          <TransitionGroup>
+            {values.methods.map((item, index) => (
+              <Collapse>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    mt: 1,
+                    background: grey[100],
+                    '& .MuiCardHeader-subheader': {
+                      display: '-webkit-box',
+                      WebkitLineClamp: '2',
+                      WebkitBoxOrient: 'vertical',
+                      maxWidth: '92ch',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      fontSize: '14px'
+                    },
+                    '& .MuiCardHeader-title': {
+                      mb: 0.5
+                    }
+                  }}>
+                  <CardHeader
+                    title={`Sampling Method ${index + 1}`}
+                    subheader={item.description}
+                    action={
+                      <IconButton
+                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleMenuClick(event, index)}
+                        aria-label="settings">
+                        <MoreVertIcon />
+                      </IconButton>
+                    }
+                  />
+                  <CardContent
+                    sx={{
+                      pt: 0,
+                      pb: '0 !important'
+                    }}
+                  >
+                    <Typography 
+                      variant="body1" 
+                      gutterBottom
+                    >
+                      Time Periods
+                    </Typography>
+                    <List>
+                      {item.periods.map((period) => (
+                        <>
+                          <Divider />
+                          <ListItem>
+                            <ListItemIcon>
+                              <Icon path={mdiCalendarRangeOutline} size={1} />
+                            </ListItemIcon>
+                            <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
+                          </ListItem>
+                        </>
+                      ))}
+                    </List>
+                  </CardContent>
+                </Card>
+              </Collapse>
+            ))}
+          </TransitionGroup>
 
           <Button
             sx={{
