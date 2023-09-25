@@ -1,17 +1,8 @@
-import { Feature } from 'geojson';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
-
-export interface PostSampleLocation {
-  survey_sample_site_id: number | null;
-  survey_id: number;
-  name: string;
-  description: string;
-  survey_sample_site: Feature;
-}
 
 // This describes a row in the database for Survey Sample Location
 export const SampleLocationRecord = z.object({
