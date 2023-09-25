@@ -55,7 +55,7 @@ describe('SurveyService', () => {
 
       const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'removeCritterFromSurvey').resolves(1);
 
-      const response = await service.removeCritterFromSurvey(1, 1);
+      const response = await service.removeCritterFromSurvey(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(1);
@@ -67,9 +67,9 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'addDeployment').resolves(1);
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'upsertDeployment').resolves(1);
 
-      const response = await service.addDeployment(1, 'deployment_id');
+      const response = await service.upsertDeployment(1, 'deployment_id');
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(1);

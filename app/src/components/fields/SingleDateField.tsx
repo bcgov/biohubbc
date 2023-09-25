@@ -1,3 +1,5 @@
+import { mdiCalendar } from '@mdi/js';
+import Icon from '@mdi/react';
 import { TextFieldProps } from '@mui/material/TextField';
 import { DatePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
@@ -15,6 +17,10 @@ interface IDateProps {
   helperText?: string;
   other?: TextFieldProps;
 }
+
+const CalendarIcon = () => {
+  return <Icon path={mdiCalendar} size={1} />;
+};
 
 /**
  * Single date field
@@ -40,6 +46,9 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <DatePicker
+        slots={{
+          openPickerIcon: CalendarIcon
+        }}
         slotProps={{
           openPickerButton: { id: 'date_input_button' },
           inputAdornment: {
@@ -70,6 +79,13 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
         maxDate={moment(DATE_LIMIT.max)}
         value={formattedDateValue}
         onChange={(value) => {
+          if (!value || String(value.creationData().input) === 'Invalid Date') {
+            // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
+            // contain an actual date string value if the field is not empty but is invalid.
+            setFieldValue(name, null);
+            return;
+          }
+
           setFieldValue(name, moment(value).format(DATE_FORMAT.ShortDateFormat));
         }}
       />

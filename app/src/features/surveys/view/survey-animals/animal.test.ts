@@ -1,18 +1,18 @@
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import {
+  AnimalSex,
   Critter,
   getAnimalFieldName,
   glt,
   IAnimal,
   IAnimalMarking,
-  ICritterMarking,
   isRequiredInSchema,
   lastAnimalValueValid
 } from './animal';
 
 const animal: IAnimal = {
-  general: { taxon_id: 'a', taxon_name: 'taxon', animal_id: 'animal' },
+  general: { taxon_id: 'a', taxon_name: 'taxon', animal_id: 'animal', wlh_id: 'a', sex: AnimalSex.MALE },
   captures: [
     {
       _id: v4(),
@@ -50,7 +50,8 @@ const animal: IAnimal = {
   measurements: [],
   family: [],
   images: [],
-  device: undefined
+  device: undefined,
+  collectionUnits: [{ collection_category_id: 'a', collection_unit_id: 'b', _id: v4() }]
 };
 
 describe('Animal', () => {
@@ -170,11 +171,22 @@ describe('Animal', () => {
 
     it('constructor should create critter markings', () => {
       const c_marking = critter.markings[0];
-      const a_marking = critter.markings[0];
+      const a_marking = animal.markings[0];
       expect(c_marking.critter_id).toBe(critter.critter_id);
-      for (const prop in c_marking) {
-        expect(c_marking[prop as keyof ICritterMarking]).toBe(a_marking[prop as keyof ICritterMarking]);
-      }
+
+      expect(c_marking.marking_type_id).toBe(a_marking.marking_type_id);
+      expect(c_marking.taxon_marking_body_location_id).toBe(a_marking.taxon_marking_body_location_id);
+      expect(c_marking.primary_colour_id).toBe(a_marking.primary_colour_id);
+      expect(c_marking.secondary_colour_id).toBe(a_marking.secondary_colour_id);
+      expect(c_marking.marking_comment).toBe(a_marking.marking_comment);
+    });
+
+    it('constructor should create collections and strip extra vals', () => {
+      const c_collection = critter.collections[0];
+      const a_collection = animal.collectionUnits[0];
+      expect(c_collection.critter_id).toBe(critter.critter_id);
+      expect((c_collection as any)['collection_category_id']).not.toBeDefined();
+      expect(c_collection.collection_unit_id).toBe(a_collection.collection_unit_id);
     });
   });
 });

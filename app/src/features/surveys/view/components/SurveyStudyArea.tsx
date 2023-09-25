@@ -22,9 +22,9 @@ import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import StudyAreaForm, {
-  IStudyAreaForm,
-  StudyAreaInitialValues,
-  StudyAreaYupSchema
+  ISurveyLocationForm,
+  SurveyLocationInitialValues,
+  SurveyLocationYupSchema
 } from 'features/surveys/components/StudyAreaForm';
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
@@ -79,11 +79,12 @@ const SurveyStudyArea = () => {
   const [markerLayers, setMarkerLayers] = useState<IMarkerLayer[]>([]);
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
-  const survey_details = surveyContext.surveyDataLoader.data?.surveyData?.survey_details;
-  const surveyGeometry = useMemo(() => survey_details?.geometry || [], [survey_details]);
+  const surveyLocations = surveyContext.surveyDataLoader.data?.surveyData?.locations;
+  const surveyLocation = surveyLocations[0] || null;
+  const surveyGeometry = useMemo(() => surveyLocation?.geojson || [], [surveyLocation]);
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
+  const [studyAreaFormData, setStudyAreaFormData] = useState<ISurveyLocationForm>(SurveyLocationInitialValues);
 
   const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
@@ -155,32 +156,41 @@ const SurveyStudyArea = () => {
   };
 
   const handleDialogEditOpen = () => {
-    if (!survey_details) {
+    if (!surveyLocation) {
       return;
     }
 
     setStudyAreaFormData({
-      location: {
-        survey_area_name: survey_details.survey_area_name,
-        geometry: survey_details.geometry
-      }
+      locations: [
+        {
+          survey_location_id: surveyLocation.survey_location_id,
+          name: surveyLocation.name,
+          description: surveyLocation.description,
+          geojson: surveyLocation.geojson,
+          revision_count: surveyLocation.revision_count
+        }
+      ]
     });
 
     setOpenEditDialog(true);
   };
 
-  const handleDialogEditSave = async (values: IStudyAreaForm) => {
-    if (!survey_details) {
+  const handleDialogEditSave = async (values: ISurveyLocationForm) => {
+    if (!surveyLocation) {
       return;
     }
 
     try {
       const surveyData = {
-        location: {
-          survey_area_name: values.location.survey_area_name,
-          geometry: values.location.geometry,
-          revision_count: survey_details.revision_count
-        }
+        locations: values.locations.map((item) => {
+          return {
+            survey_location_id: item.survey_location_id,
+            name: item.name,
+            description: item.description,
+            geojson: item.geojson,
+            revision_count: surveyLocation.revision_count
+          };
+        })
       };
 
       await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
@@ -211,7 +221,7 @@ const SurveyStudyArea = () => {
         component={{
           element: <StudyAreaForm />,
           initialValues: studyAreaFormData,
-          validationSchema: StudyAreaYupSchema
+          validationSchema: SurveyLocationYupSchema
         }}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
@@ -231,7 +241,7 @@ const SurveyStudyArea = () => {
             staticLayers={staticLayers}
           />
         }
-        description={survey_details?.survey_area_name}
+        description={surveyLocation?.name}
         layers={<InferredLocationDetails layers={inferredLayersInfo} />}
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
@@ -283,7 +293,7 @@ const SurveyStudyArea = () => {
             Study Area Name
           </Typography>
           <Divider></Divider>
-          <Typography variant="body1">{survey_details?.survey_area_name}</Typography>
+          <Typography variant="body1">{surveyLocation?.name}</Typography>
           <Box mt={3}>
             <InferredLocationDetails layers={inferredLayersInfo} />
           </Box>

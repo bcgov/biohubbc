@@ -43,7 +43,7 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
 import SamplingMethodsForm from './components/SamplingMethodsForm';
-import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
+import StudyAreaForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from './components/StudyAreaForm';
 import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
 import SurveyFundingSourceForm, {
   SurveyFundingSourceFormInitialValues,
@@ -134,11 +134,11 @@ const CreateSurveyPage = () => {
   const [surveyInitialValues] = useState<ICreateSurveyRequest>({
     ...GeneralInformationInitialValues,
     ...PurposeAndMethodologyInitialValues,
-    ...StudyAreaInitialValues,
     ...SurveyFundingSourceFormInitialValues,
     ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues,
+    ...SurveyLocationInitialValues,
     ...SurveySiteSelectionInitialValues,
     ...SurveyUserJobFormInitialValues,
     ...SurveyBlockInitialValues
@@ -179,12 +179,12 @@ const CreateSurveyPage = () => {
         `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
       )
   })
-    .concat(StudyAreaYupSchema)
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
+    .concat(SurveyLocationYupSchema)
     .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema);
 
@@ -266,7 +266,6 @@ const CreateSurveyPage = () => {
   if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -430,7 +429,9 @@ const CreateSurveyPage = () => {
                     type="submit"
                     variant="contained"
                     color="primary"
-                    onClick={() => formikRef.current?.submitForm()}
+                    onClick={() => {
+                      formikRef.current?.submitForm();
+                    }}
                     className={classes.actionButton}>
                     Save and Exit
                   </Button>
