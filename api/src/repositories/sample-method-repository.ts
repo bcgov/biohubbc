@@ -6,7 +6,7 @@ import { PostSamplePeriod } from './sample-period-repository';
 
 export interface PostSampleMethod {
   survey_sample_method_id: number | null;
-  survey_sample_site_id: number;
+  survey_sample_site_id: number | null;
   method_lookup_id: number;
   description: string;
   periods: PostSamplePeriod[];
