@@ -1,6 +1,7 @@
 import { grey } from '@mui/material/colors';
 import { createTheme } from '@mui/material/styles';
 import 'styles.scss';
+import 'styles/fonts.scss';
 
 const appTheme = createTheme({
   breakpoints: {
@@ -8,7 +9,7 @@ const appTheme = createTheme({
       xs: 0,
       sm: 600,
       md: 960,
-      lg: 1280,
+      lg: 1440,
       xl: 1720
     }
   },
@@ -19,7 +20,7 @@ const appTheme = createTheme({
     },
     primary: {
       light: '#5469a4',
-      main: '#003366', // BC ID: corporate blue
+      main: '#003366',
       dark: '#001949',
       contrastText: '#ffffff'
     },
@@ -55,6 +56,31 @@ const appTheme = createTheme({
     }
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        a: {
+          color: '#1a5a96',
+          '&:focus': {
+            outline: '2px solid #3B99FC',
+            outlineOffset: '-1px',
+            borderRadius: '4px'
+          }
+        },
+        fieldset: {
+          margin: 0,
+          padding: 0,
+          minWidth: 0,
+          border: 'none'
+        },
+        legend: {
+          '&.MuiTypography-root': {
+            marginBottom: '15px',
+            padding: 0,
+            fontWeight: 700
+          }
+        }
+      }
+    },
     MuiAlertTitle: {
       styleOverrides: {
         root: {
@@ -86,7 +112,7 @@ const appTheme = createTheme({
       styleOverrides: {
         root: {
           '&:focus': {
-            outline: '3px solid #3B99FC',
+            outline: '2px solid #3B99FC',
             outlineOffset: '-1px'
           }
         },
@@ -97,6 +123,10 @@ const appTheme = createTheme({
           fontSize: '1rem'
         },
         containedPrimary: {
+          fontWeight: 700,
+          letterSpacing: '0.02rem'
+        },
+        outlinedPrimary: {
           fontWeight: 700,
           letterSpacing: '0.02rem'
         }
