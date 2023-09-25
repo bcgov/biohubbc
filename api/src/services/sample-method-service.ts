@@ -2,7 +2,8 @@ import { IDBConnection } from '../database/db';
 import {
   InsertSampleMethodRecord,
   SampleMethodRecord,
-  SampleMethodRepository
+  SampleMethodRepository,
+  UpdateSampleMethod
 } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
 import { SamplePeriodService } from './sample-period-service';
@@ -75,7 +76,7 @@ export class SampleMethodService extends DBService {
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodService
    */
-  async updateSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SampleMethodRecord> {
+  async updateSampleMethod(sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
     return this.sampleMethodRepository.updateSampleMethod(sampleMethod);
   }
 }

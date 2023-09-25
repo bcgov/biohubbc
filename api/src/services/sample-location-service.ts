@@ -1,13 +1,22 @@
+import { Feature } from '@turf/helpers';
 import { IDBConnection } from '../database/db';
 import {
-  PostSampleLocation,
-  PostSampleLocations,
   SampleLocationRecord,
-  SampleLocationRepository
+  SampleLocationRepository,
+  UpdateSampleLocationRecord
 } from '../repositories/sample-location-repository';
+import { InsertSampleMethod } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
 import { SampleMethodService } from './sample-method-service';
 
+export interface PostSampleLocations {
+  survey_sample_site_id: number | null;
+  survey_id: number;
+  name: string;
+  description: string;
+  survey_sample_sites: Feature[];
+  methods: InsertSampleMethod[];
+}
 /**
  * Sample Location Repository
  *
@@ -56,19 +65,18 @@ export class SampleLocationService extends DBService {
     const methodService = new SampleMethodService(this.connection);
 
     const promises = sampleLocations.survey_sample_sites.map((item, index) => {
-      const sampleLocation: PostSampleLocation = {
-        survey_sample_site_id: null,
+      const sampleLocation = {
         survey_id: sampleLocations.survey_id,
         name: `Sample Site ${index + 1}`, // Business requirement to default the names to Sample Site # on creation
         description: sampleLocations.description,
-        survey_sample_site: item
+        geojson: item
       };
 
       return this.sampleLocationRepository.insertSampleLocation(sampleLocation);
     });
     const results = await Promise.all<SampleLocationRecord>(promises);
 
-    const methodPromises = results.map((sampleSite) =>
+    const methodPromises = results.map((sampleSite: SampleLocationRecord) =>
       sampleLocations.methods.map((item) => {
         const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
@@ -91,7 +99,7 @@ export class SampleLocationService extends DBService {
    * @return {*}  {Promise<SampleLocationRecord>}
    * @memberof SampleLocationService
    */
-  async updateSampleLocation(sampleLocation: PostSampleLocation): Promise<SampleLocationRecord> {
+  async updateSampleLocation(sampleLocation: UpdateSampleLocationRecord): Promise<SampleLocationRecord> {
     return this.sampleLocationRepository.updateSampleLocation(sampleLocation);
   }
 }

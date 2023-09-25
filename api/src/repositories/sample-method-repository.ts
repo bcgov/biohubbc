@@ -6,7 +6,7 @@ import { InsertSamplePeriodRecord } from './sample-period-repository';
 
 export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
-  'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
+  'survey_sample_site_id' | 'method_lookup_id' | 'description'
 > & { periods: InsertSamplePeriodRecord[] };
 
 export type UpdateSampleMethodRecord = Pick<
