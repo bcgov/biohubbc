@@ -80,7 +80,6 @@ const FamilyAnimalForm = () => {
             btnLabel={SurveyAnimalsI18N.animalFamilyAddBtn}
             disableAddBtn={!lastAnimalValueValid('family', values)}
             handleAddSection={() => push(newRelationship)}
-            maxSections={1}
             handleRemoveSection={remove}>
             {values.family.map((fam, index) => (
               <Fragment key={fam._id}>

@@ -194,7 +194,18 @@ const SurveyAnimals: React.FC = () => {
               measurement_comment: a.measurement_comment ?? ''
             }))
           ],
-          family: [],
+          family: [
+            ...existingCritter.family_child.map((ch) => ({
+              _id: v4(),
+              family_id: ch.family_id,
+              relationship: 'child'
+            })),
+            ...existingCritter.family_parent.map((par) => ({
+              _id: v4(),
+              family_id: par.family_id,
+              relationship: 'parent'
+            }))
+          ],
           images: [],
           device: undefined
         };
@@ -239,9 +250,9 @@ const SurveyAnimals: React.FC = () => {
     return arr1.filter((a1: Record<K, any>) => !arr2.some((a2: Record<K, any>) => a1[key] === a2[key]));
   };
 
-  const handleCritterSave = async (animal: IAnimal) => {
+  const handleCritterSave = async (currentFormValues: IAnimal) => {
     const postCritterPayload = async () => {
-      const critter = new Critter(animal);
+      const critter = new Critter(currentFormValues);
       await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
       refreshCritters();
       dialogContext.setSnackbar({
@@ -255,66 +266,109 @@ const SurveyAnimals: React.FC = () => {
       toggleDialog();
     };
     const patchCritterPayload = async () => {
-      const initialValues = new Critter(obtainAnimalFormInitialvalues(ANIMAL_FORM_MODE.EDIT));
+      const initialFormValues = obtainAnimalFormInitialvalues(ANIMAL_FORM_MODE.EDIT);
+      const initialCritter = new Critter(initialFormValues);
       const createCritter = new Critter({
-        ...animal,
-        captures: animal.captures.filter((a) => !a.capture_id),
-        mortality: animal.mortality.filter((a) => !a.mortality_id),
-        markings: animal.markings.filter((a) => !a.marking_id),
-        measurements: animal.measurements.filter(
+        ...currentFormValues,
+        captures: currentFormValues.captures.filter((a) => !a.capture_id),
+        mortality: currentFormValues.mortality.filter((a) => !a.mortality_id),
+        markings: currentFormValues.markings.filter((a) => !a.marking_id),
+        measurements: currentFormValues.measurements.filter(
           (a) => !a.measurement_qualitative_id && !a.measurement_quantitative_id
         ),
-        collectionUnits: animal.collectionUnits.filter((a) => !a.critter_collection_unit_id)
+        collectionUnits: currentFormValues.collectionUnits.filter((a) => !a.critter_collection_unit_id),
+        family: []
       });
       const updateCritter = new Critter({
-        ...animal,
-        captures: animal.captures.filter((a) => a.capture_id),
-        mortality: animal.mortality.filter((a) => a.mortality_id),
-        markings: animal.markings.filter((a) => a.marking_id),
-        measurements: animal.measurements.filter((a) => a.measurement_qualitative_id || a.measurement_quantitative_id),
-        collectionUnits: animal.collectionUnits.filter((a) => a.critter_collection_unit_id)
+        ...currentFormValues,
+        captures: currentFormValues.captures.filter((a) => a.capture_id),
+        mortality: currentFormValues.mortality.filter((a) => a.mortality_id),
+        markings: currentFormValues.markings.filter((a) => a.marking_id),
+        measurements: currentFormValues.measurements.filter(
+          (a) => a.measurement_qualitative_id || a.measurement_quantitative_id
+        ),
+        collectionUnits: currentFormValues.collectionUnits.filter((a) => a.critter_collection_unit_id),
+        family: []
+      });
+
+      initialFormValues.family.forEach((prevFam) => {
+        if (
+          !currentFormValues.family.some(
+            (currFam) => currFam.family_id === prevFam.family_id && currFam.relationship === prevFam.relationship
+          )
+        ) {
+          prevFam.relationship === 'parent'
+            ? updateCritter.families.parents.push({
+                family_id: prevFam.family_id,
+                parent_critter_id: initialCritter.critter_id,
+                _delete: true
+              })
+            : updateCritter.families.children.push({
+                family_id: prevFam.family_id,
+                child_critter_id: initialCritter.critter_id,
+                _delete: true
+              });
+        }
+      });
+
+      currentFormValues.family.forEach((currFam) => {
+        if (
+          !initialFormValues.family.some(
+            (prevFam) => currFam.family_id === prevFam.family_id && currFam.relationship === prevFam.relationship
+          )
+        ) {
+          currFam.relationship === 'parent'
+            ? createCritter.families.parents.push({
+                family_id: currFam.family_id,
+                parent_critter_id: initialCritter.critter_id
+              })
+            : createCritter.families.children.push({
+                family_id: currFam.family_id,
+                child_critter_id: initialCritter.critter_id
+              });
+        }
       });
 
       updateCritter.captures.push(
-        ...arrDiff(initialValues.captures, updateCritter.captures, 'capture_id').map((cap) => ({
+        ...arrDiff(initialCritter.captures, updateCritter.captures, 'capture_id').map((cap) => ({
           ...cap,
           _delete: true
         }))
       );
       updateCritter.mortalities.push(
-        ...arrDiff(initialValues.mortalities, updateCritter.mortalities, 'mortality_id').map((mort) => ({
+        ...arrDiff(initialCritter.mortalities, updateCritter.mortalities, 'mortality_id').map((mort) => ({
           ...mort,
           _delete: true
         }))
       );
       updateCritter.collections.push(
-        ...arrDiff(initialValues.collections, updateCritter.collections, 'critter_collection_unit_id').map((col) => ({
+        ...arrDiff(initialCritter.collections, updateCritter.collections, 'critter_collection_unit_id').map((col) => ({
           ...col,
           _delete: true
         }))
       );
       updateCritter.markings.push(
-        ...arrDiff(initialValues.markings, updateCritter.markings, 'marking_id').map((mark) => ({
+        ...arrDiff(initialCritter.markings, updateCritter.markings, 'marking_id').map((mark) => ({
           ...mark,
           _delete: true
         }))
       );
       updateCritter.measurements.qualitative.push(
         ...arrDiff(
-          initialValues.measurements.qualitative,
+          initialCritter.measurements.qualitative,
           updateCritter.measurements.qualitative,
           'measurement_qualitative_id'
         ).map((meas) => ({ ...meas, _delete: true }))
       );
       updateCritter.measurements.quantitative.push(
         ...arrDiff(
-          initialValues.measurements.quantitative,
+          initialCritter.measurements.quantitative,
           updateCritter.measurements.quantitative,
           'measurement_quantitative_id'
         ).map((meas) => ({ ...meas, _delete: true }))
       );
 
-      console.log('initialValues: ' + JSON.stringify(initialValues, null, 2));
+      console.log('initialValues: ' + JSON.stringify(initialCritter, null, 2));
       console.log('Create critter:' + JSON.stringify(createCritter, null, 2));
       console.log('Update critter:' + JSON.stringify(updateCritter, null, 2));
       await bhApi.survey.updateSurveyCritter(projectId, surveyId, updateCritter, createCritter);

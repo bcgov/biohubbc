@@ -256,11 +256,13 @@ export const newFamilyIdPlaceholder = 'New Family';
 type ICritterFamilyParent = {
   family_id: string;
   parent_critter_id: string;
+  _delete?: boolean;
 };
 
 type ICritterFamilyChild = {
   family_id: string;
   child_critter_id: string;
+  _delete?: boolean;
 };
 
 type ICritterFamily = {

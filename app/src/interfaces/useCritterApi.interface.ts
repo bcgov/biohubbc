@@ -95,6 +95,16 @@ type IMortalityResponse = {
   mortality_comment: string | null;
 };
 
+type IFamilyParentResponse = {
+  family_id: string;
+  parent_critter_id: string;
+};
+
+type IFamilyChildResponse = {
+  family_id: string;
+  child_critter_id: string;
+};
+
 export type ICritterDetailedResponse = {
   critter_id: string;
   taxon_id: string;
@@ -118,6 +128,8 @@ export type ICritterDetailedResponse = {
     qualitative: IQualitativeMeasurementResponse[];
     quantitative: IQuantitativeMeasurementResponse[];
   };
+  family_parent: IFamilyParentResponse[];
+  family_child: IFamilyChildResponse[];
 };
 
 export interface ICritterSimpleResponse {

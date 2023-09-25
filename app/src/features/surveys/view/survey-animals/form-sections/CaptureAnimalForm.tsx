@@ -124,6 +124,8 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
               <Field
                 as={Checkbox}
                 onChange={handleChange}
+                checked={values.captures[index].show_release}
+                disabled={values.captures[index].release_location_id}
                 name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
               />
             }
