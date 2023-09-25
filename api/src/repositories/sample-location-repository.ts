@@ -39,6 +39,15 @@ export const SampleLocationRecord = z.object({
 });
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
 
+// Insert Object for Sample Locations
+export type InsertSampleLocation = Pick<SampleLocationRecord, 'survey_id' | 'name' | 'description' | 'geojson'>;
+
+// Update Object for Sample Locations
+export type UpdateSampleLocation = Pick<
+  SampleLocationRecord,
+  'survey_sample_site_id' | 'survey_id' | 'name' | 'description' | 'geojson'
+>;
+
 /**
  * Sample Repository
  *
@@ -68,23 +77,23 @@ export class SampleLocationRepository extends BaseRepository {
   /**
    * updates a survey Sample Location.
    *
-   * @param {PostSampleLocation} sample
+   * @param {UpdateSampleLocation} sample
    * @return {*}  {Promise<SampleLocationRecord>}
    * @memberof SampleLocationRepository
    */
-  async updateSampleLocation(sample: PostSampleLocation): Promise<SampleLocationRecord> {
+  async updateSampleLocation(sample: UpdateSampleLocation): Promise<SampleLocationRecord> {
     const sql = SQL`
       UPDATE survey_sample_site
       SET
         survey_id=${sample.survey_id},
         name=${sample.name},
         description=${sample.description},
-        geojson=${sample.survey_sample_site},
+        geojson=${sample.geojson},
         geography=public.geography(
           public.ST_Force2D(
             public.ST_SetSRID(
     `;
-    const geometryCollectionSQL = generateGeometryCollectionSQL(sample.survey_sample_site);
+    const geometryCollectionSQL = generateGeometryCollectionSQL(sample.geojson);
     sql.append(geometryCollectionSQL);
     sql.append(SQL`, 4326)))`);
     sql.append(SQL`
@@ -108,11 +117,11 @@ export class SampleLocationRepository extends BaseRepository {
   /**
    * Inserts a new survey Sample Location.
    *
-   * @param {PostSampleLocation} sample
+   * @param {InsertSampleLocation} sample
    * @return {*}  {Promise<SampleLocationRecord>}
    * @memberof SampleLocationRepository
    */
-  async insertSampleLocation(sample: PostSampleLocation): Promise<SampleLocationRecord> {
+  async insertSampleLocation(sample: InsertSampleLocation): Promise<SampleLocationRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_site (
       survey_id,
@@ -124,9 +133,9 @@ export class SampleLocationRepository extends BaseRepository {
       ${sample.survey_id},
       ${sample.name},
       ${sample.description},
-      ${sample.survey_sample_site},
+      ${sample.geojson},
       `;
-    const geometryCollectionSQL = generateGeometryCollectionSQL(sample.survey_sample_site);
+    const geometryCollectionSQL = generateGeometryCollectionSQL(sample.geojson);
 
     sqlStatement.append(SQL`
       public.geography(
