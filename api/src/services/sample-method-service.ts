@@ -3,7 +3,7 @@ import {
   InsertSampleMethodRecord,
   SampleMethodRecord,
   SampleMethodRepository,
-  UpdateSampleMethod
+  UpdateSampleMethodRecord
 } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
 import { SamplePeriodService } from './sample-period-service';
