@@ -2,13 +2,14 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { PostSampleMethod, SampleMethodRecord, SampleMethodRepository } from '../repositories/sample-method-repository';
+import { SamplePeriodRecord } from '../repositories/sample-period-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SampleMethodService } from './sample-method-service';
 import { SamplePeriodService } from './sample-period-service';
 
 chai.use(sinonChai);
 
-describe.only('SampleMethodService', () => {
+describe('SampleMethodService', () => {
   it('constructs', () => {
     const mockDBConnection = getMockDBConnection();
 
@@ -42,11 +43,11 @@ describe.only('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'getSampleMethodsForSurveySampleSiteId')
         .resolves(mockSampleMethodRecords);
 
-      const surveyId = 1;
+      const surveySampleSiteId = 1;
       const sampleMethodService = new SampleMethodService(mockDBConnection);
-      const response = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveyId);
+      const response = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
 
-      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(surveyId);
+      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(surveySampleSiteId);
       expect(response).to.eql(mockSampleMethodRecords);
     });
   });
@@ -74,11 +75,11 @@ describe.only('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'deleteSampleMethodRecord')
         .resolves(mockSampleMethodRecord);
 
-      const surveyBlockId = 1;
+      const surveySampleMethodId = 1;
       const sampleMethodService = new SampleMethodService(mockDBConnection);
-      const response = await sampleMethodService.deleteSampleMethodRecord(surveyBlockId);
+      const response = await sampleMethodService.deleteSampleMethodRecord(surveySampleMethodId);
 
-      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(surveyBlockId);
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(surveySampleMethodId);
       expect(response).to.eql(mockSampleMethodRecord);
     });
   });
@@ -106,7 +107,7 @@ describe.only('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'insertSampleMethod')
         .resolves(mockSampleMethodRecord);
 
-      const mockSamplePeriodRecord = {
+      const mockSamplePeriodRecord: SamplePeriodRecord = {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
         start_date: '2023-10-04',
@@ -121,8 +122,7 @@ describe.only('SampleMethodService', () => {
         .stub(SamplePeriodService.prototype, 'insertSamplePeriod')
         .resolves(mockSamplePeriodRecord);
 
-      const sampleMethod: PostSampleMethod = {
-        survey_sample_method_id: 1,
+      const sampleMethod: Omit<PostSampleMethod, 'survey_sample_method_id'> = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',
@@ -136,12 +136,12 @@ describe.only('SampleMethodService', () => {
 
       expect(insertSampleMethodStub).to.be.calledOnceWith(sampleMethod);
       expect(insertSamplePeriodStub).to.be.calledWith({
-        survey_sample_method_id: sampleMethod.survey_sample_method_id,
+        survey_sample_method_id: mockSampleMethodRecord.survey_sample_method_id,
         start_date: sampleMethod.periods[0].start_date,
         end_date: sampleMethod.periods[0].end_date
       });
       expect(insertSamplePeriodStub).to.be.calledWith({
-        survey_sample_method_id: sampleMethod.survey_sample_method_id,
+        survey_sample_method_id: mockSampleMethodRecord.survey_sample_method_id,
         start_date: sampleMethod.periods[1].start_date,
         end_date: sampleMethod.periods[1].end_date
       });

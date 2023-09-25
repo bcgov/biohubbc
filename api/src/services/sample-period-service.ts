@@ -20,23 +20,23 @@ export class SamplePeriodService extends DBService {
   /**
    *  Gets all survey Sample periods.
    *
-   * @param {number} surveyId
+   * @param {number} surveySampleMethodId
    * @return {*}  {Promise<SamplePeriodRecord[]>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodsForSurveyMethodId(surveyId: number): Promise<SamplePeriodRecord[]> {
-    return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveyId);
+  async getSamplePeriodsForSurveyMethodId(surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
+    return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
   }
 
   /**
    * Deletes a survey Sample Period.
    *
-   * @param {number} surveyBlockId
+   * @param {number} samplePeriodId
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodRecord(surveyBlockId: number): Promise<SamplePeriodRecord> {
-    return this.samplePeriodRepository.deleteSamplePeriodRecord(surveyBlockId);
+  async deleteSamplePeriodRecord(samplePeriodId: number): Promise<SamplePeriodRecord> {
+    return this.samplePeriodRepository.deleteSamplePeriodRecord(samplePeriodId);
   }
 
   /**

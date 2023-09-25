@@ -21,23 +21,23 @@ export class SampleMethodService extends DBService {
   /**
    * Gets all survey Sample Methods.
    *
-   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleMethodRecord[]>}
    * @memberof SampleMethodService
    */
-  async getSampleMethodsForSurveySampleSiteId(surveyId: number): Promise<SampleMethodRecord[]> {
-    return await this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveyId);
+  async getSampleMethodsForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleMethodRecord[]> {
+    return await this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
   }
 
   /**
    * Deletes a survey Sample Method.
    *
-   * @param {number} surveyBlockId
+   * @param {number} surveySampleMethodId
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodService
    */
-  async deleteSampleMethodRecord(surveyBlockId: number): Promise<SampleMethodRecord> {
-    return this.sampleMethodRepository.deleteSampleMethodRecord(surveyBlockId);
+  async deleteSampleMethodRecord(surveySampleMethodId: number): Promise<SampleMethodRecord> {
+    return this.sampleMethodRepository.deleteSampleMethodRecord(surveySampleMethodId);
   }
 
   /**
