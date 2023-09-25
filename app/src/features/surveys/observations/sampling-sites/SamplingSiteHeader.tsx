@@ -55,7 +55,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             New Sampling Site
           </Typography>
         </Breadcrumbs>
-        <Box display="flex">
+        <Box display="flex" justifyContent='space-between'>
           <Typography
             variant="h3"
             component="h1"
