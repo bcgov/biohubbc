@@ -209,6 +209,12 @@ describe('checkFileForKeyx', () => {
     buffer: Buffer.alloc(0)
   } as unknown) as Express.Multer.File;
 
+  const invalidFile = ({
+    originalname: 'test.txt',
+    mimetype: 'text/plain',
+    buffer: Buffer.alloc(0)
+  } as unknown) as Express.Multer.File;
+
   const zipFile = ({
     originalname: 'test.zip',
     mimetype: 'application/zip',
@@ -217,6 +223,11 @@ describe('checkFileForKeyx', () => {
 
   it('should return true if the file extension is .keyx', () => {
     expect(media_utils.checkFileForKeyx(validKeyxFile)).to.equal(true);
+  });
+
+  it('should return false if the file is not a .keyx or zip mimetype', () => {
+    const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
+    expect(media_utils.checkFileForKeyx(multerFile)).to.equal(false);
   });
 
   it('should return false if the file is an empty zip file', () => {

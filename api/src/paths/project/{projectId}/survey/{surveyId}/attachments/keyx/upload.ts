@@ -91,16 +91,16 @@ POST.apiDoc = {
                 type: 'object',
                 required: ['totalKeyxFiles', 'newRecords', 'existingRecords'],
                 properties: {
-                  totalKeyxFiles: { type: 'number' },
-                  newRecords: { type: 'number' },
-                  existingRecords: { type: 'number' }
+                  totalKeyxFiles: { type: 'integer' },
+                  newRecords: { type: 'integer' },
+                  existingRecords: { type: 'integer' }
                 }
               },
               attachmentId: {
-                type: 'number'
+                type: 'integer'
               },
               revision_count: {
-                type: 'number'
+                type: 'integer'
               }
             }
           }

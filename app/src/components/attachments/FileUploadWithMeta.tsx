@@ -69,12 +69,10 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
         <FileUpload
           uploadHandler={props.uploadHandler}
           fileHandler={fileHandler}
-          onReplace={replaceHandler}
           onSuccess={props.onSuccess}
           dropZoneProps={{
             acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.KEYX
           }}
-          replace={true}
           errorDetails={true}
         />
       )}
