@@ -31,6 +31,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
     <>
       <Paper
         square
+        elevation={0}
         sx={{
           pt: 3,
           pb: 3.5,
@@ -39,20 +40,24 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
         <Breadcrumbs
           aria-label="breadcrumb"
           sx={{
-            mb: 1,
-            fontSize: '14px'
+            mb: 1
           }}>
-          <Link underline="hover" href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+          <Link
+            variant="body2"
+            underline="hover"
+            href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
           <Link
-            color="text.secondary"
             variant="body2"
             href={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}>
             Manage Survey Observations
           </Link>
-          <Typography color="text.secondary" variant="body2">
-            New Sampling Site
+          <Typography 
+            component="span"
+            color="text.secondary" 
+            variant="body2">
+            Add Sampling Sites
           </Typography>
         </Breadcrumbs>
         <Box display="flex" justifyContent='space-between'>

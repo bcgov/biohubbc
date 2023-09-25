@@ -21,6 +21,7 @@ import { useContext, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
+import { grey } from '@mui/material/colors';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -114,26 +115,40 @@ const SamplingSitePage = () => {
       validateOnChange={false}
       onSubmit={handleSubmit}>
       <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
-        <SamplingSiteHeader
-          project_id={surveyContext.projectId}
-          survey_id={surveyContext.surveyId}
-          survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-          is_submitting={isSubmitting}
-        />
+        <Box
+          position="sticky"
+          top="0"
+          sx={{
+            borderBottomStyle: 'solid',
+            borderBottomWidth: '1px',
+            borderBottomColor: grey[300]
+          }}
+        >
+          <SamplingSiteHeader
+            project_id={surveyContext.projectId}
+            survey_id={surveyContext.surveyId}
+            survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+            is_submitting={isSubmitting}
+          />
+        </Box>
         <Box display="flex" flex="1 1 auto">
           <Container maxWidth="xl">
             <Box py={3}>
-              <Box p={5} component={Paper} display="block">
+              <Paper elevation={0}
+                sx={{
+                  p: 5
+                }}
+              >
                 <HorizontalSplitFormComponent
-                  title="Site Boundaries"
-                  summary="Import sampling site spatial information."
+                  title="Site Location"
+                  summary="Select and import the location of sampling sites used for this survey."
                   component={<SurveySamplingSiteImportForm />}></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
                   title="Sampling Methods"
-                  summary="Specify sampling methods used to collect data at each sampling site."
+                  summary="Add sampling methods and associated time periods used for your sampling site locations. "
                   component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
@@ -162,7 +177,7 @@ const SamplingSitePage = () => {
                     Cancel
                   </Button>
                 </Box>
-              </Box>
+              </Paper>
             </Box>
           </Container>
         </Box>

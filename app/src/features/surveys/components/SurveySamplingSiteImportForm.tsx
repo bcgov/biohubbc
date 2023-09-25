@@ -11,11 +11,8 @@ const SurveySamplingSiteImportForm = () => {
     <>
       <Box component="fieldset">
         <Typography
-          variant="h3"
-          component="h2"
-          sx={{
-            marginBottom: '14px'
-          }}>
+          component="legend"
+        >
           Import Spatial File
         </Typography>
         <SamplingSiteMapControl

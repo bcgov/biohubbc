@@ -25,17 +25,17 @@ export const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (
           aria-label="breadcrumb"
           sx={{
             mb: 1,
-            fontSize: '14px'
           }}>
-          <Link 
+          <Link
+            variant="body2" 
             underline="hover" 
             href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
           <Typography
             component="span"
-            color="text.secondary" 
-            variant="body2">
+            variant="body2"
+            color="text.secondary" >
             Manage Survey Observations
           </Typography>
         </Breadcrumbs>
