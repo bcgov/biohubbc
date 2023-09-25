@@ -1,7 +1,7 @@
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
 import { mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -90,9 +90,10 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
       <Grid item xs={12}>
         <Box my={3}>
           {get(errors, name) && (
-            <Alert sx={{
-              mb: 2
-            }}
+            <Alert
+              sx={{
+                mb: 2
+              }}
               severity="error">
               <AlertTitle>Missing sampling site location</AlertTitle>
               {get(errors, name) as string}

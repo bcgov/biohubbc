@@ -120,7 +120,8 @@ const SamplingMethodForm = () => {
               mb: 2,
               maxWidth: '92ch'
             }}>
-            When importing multiple sampling site locations, these following methods will be applied to ALL sampling locations. These can be modified later if required.
+            When importing multiple sampling site locations, these following methods will be applied to ALL sampling
+            locations. These can be modified later if required.
           </Typography>
           {errors.methods && !Array.isArray(errors.methods) && (
             <Alert
