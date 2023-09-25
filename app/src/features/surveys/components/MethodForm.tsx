@@ -72,7 +72,7 @@ export const SurveySampleMethodDataInitialValues = {
 
 export const SamplingSiteMethodYupSchema = yup.object({
   method_lookup_id: yup.number().typeError('Method is required').required('Method is required'),
-  description: yup.string().required('Description is required').max(250, 'Maximum 250 characters'),
+  description: yup.string().max(250, 'Maximum 250 characters'),
   periods: yup
     .array(
       yup.object({
