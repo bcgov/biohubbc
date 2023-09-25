@@ -4,9 +4,8 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../openapi/schemas/geoJson';
-import { PostSampleLocations } from '../../../../../../repositories/sample-location-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { PostSampleLocations, SampleLocationService } from '../../../../../../services/sample-location-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/');
