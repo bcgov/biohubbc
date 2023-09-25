@@ -28,7 +28,6 @@ const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
     <>
       <EditDialog
         dialogTitle={'Edit Sampling Method'}
-        dialogText={'Specify sampling method information.'}
         open={open}
         dialogLoading={false}
         component={{

@@ -1,3 +1,5 @@
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import { mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
@@ -95,37 +97,38 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           Before you import your site locations, you will need to ensure your shapefile is compressed into a single zip
           file. Your shapefile can include one or more sampling site locations.
         </Typography>
-        <Box mb={3}>
-          <Box mt={4} display="flex">
-            <FileUpload
-              uploadHandler={boundaryUploadHandler()}
-              onRemove={removeFile}
-              dropZoneProps={{
-                acceptedFileExtensions: '.zip',
-                maxNumFiles: 1,
-                multiple: false
-              }}
-              hideDropZoneOnMaxFiles={true}
-              FileUploadItemComponent={FileUploadItem}
-              FileUploadItemComponentProps={{
-                SubtextComponent: SampleSiteFileUploadItemSubtext,
-                ActionButtonComponent: SampleSiteFileUploadItemActionButton,
-                ProgressBarComponent: SampleSiteFileUploadItemProgressBar
-              }}
-            />
-          </Box>
+        <Box my={3}>
           {get(errors, name) && (
-            <Box mt={1} mb={3} ml={2}>
-              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name) as string}</Typography>
-            </Box>
+            <Alert sx={{
+              mb: 1
+            }}
+              severity="error">
+              <AlertTitle>Missing sampling site location</AlertTitle>
+              {get(errors, name) as string}
+            </Alert>
           )}
+          <FileUpload
+            uploadHandler={boundaryUploadHandler()}
+            onRemove={removeFile}
+            dropZoneProps={{
+              maxNumFiles: 1,
+              multiple: false
+            }}
+            hideDropZoneOnMaxFiles={true}
+            FileUploadItemComponent={FileUploadItem}
+            FileUploadItemComponentProps={{
+              SubtextComponent: SampleSiteFileUploadItemSubtext,
+              ActionButtonComponent: SampleSiteFileUploadItemActionButton,
+              ProgressBarComponent: SampleSiteFileUploadItemProgressBar
+            }}
+          />
         </Box>
         <Box component="fieldset">
           <Typography component="legend" data-testid="funding-source-list-found">
-            Site Boundary Preview &zwnj;
+            Site Location Preview &zwnj;
             <Typography component="span" color="textSecondary" fontWeight="400">
               {formikProps.values.survey_sample_sites.length > 0
-                ? `(${formikProps.values.survey_sample_sites.length} boundaries detected)`
+                ? `(${formikProps.values.survey_sample_sites.length} locations detected)`
                 : ''}
             </Typography>
           </Typography>

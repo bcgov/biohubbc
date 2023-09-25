@@ -1,6 +1,5 @@
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -11,11 +10,9 @@ import InputLabel from '@mui/material/InputLabel';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import CustomTextField from 'components/fields/CustomTextField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { CodesContext } from 'contexts/codesContext';
@@ -23,17 +20,6 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  timePeriodList: {
-    '& li:first-of-type': {
-      marginTop: theme.spacing(-1.5)
-    },
-    '& .MuiListItemSecondaryAction-root': {
-      top: '35px'
-    }
-  }
-}));
 
 interface ISurveySampleMethodPeriodData {
   survey_sample_period_id: number | null;
@@ -76,7 +62,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
   periods: yup
     .array(
       yup.object({
-        start_date: yup.string().isValidDateString().required('Start Date is Required'),
+        start_date: yup.string().isValidDateString().required('Start Date is required'),
         end_date: yup
           .string()
           .isValidDateString()
@@ -88,8 +74,6 @@ export const SamplingSiteMethodYupSchema = yup.object({
 });
 
 const MethodForm = () => {
-  const classes = useStyles();
-
   const formikProps = useFormikContext<ISurveySampleMethodData>();
   const { values, errors, touched, handleChange } = formikProps;
 
@@ -103,21 +87,20 @@ const MethodForm = () => {
   return (
     <form>
       <Box component={'fieldset'} mb={3}>
-        <Typography component="legend">Sampling Method Details</Typography>
         <FormControl
           fullWidth
           variant="outlined"
           required={true}
           error={get(touched, 'method_lookup_id') && Boolean(get(errors, 'method_lookup_id'))}
           style={{ width: '100%' }}>
-          <InputLabel id={'method_lookup_id-label'}>Method</InputLabel>
+          <InputLabel id={'method_lookup_id-label'}>Method Type</InputLabel>
           <Select
             name={'method_lookup_id'}
             labelId={'method_lookup_id-label'}
-            label={'Method'}
+            label={'Method Type'}
             value={formikProps.values.method_lookup_id}
             displayEmpty
-            inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method' }}
+            inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method Type' }}
             onChange={handleChange}
             sx={{ width: '100%', backgroundColor: '#fff' }}>
             {codesContext.codesDataLoader.data.sample_methods_lookup.map((item) => (
@@ -138,20 +121,33 @@ const MethodForm = () => {
         />
       </Box>
 
-      <Box component={'fieldset'}>
-        <Typography component="legend" variant="body1" id="time_periods">
+      <Box component="fieldset">
+        <Typography component="legend" id="time_periods"
+          sx={{
+            mb: 1
+          }}
+        >
           Time Periods
         </Typography>
-        <FieldArray
-          name="periods"
-          render={(arrayHelpers: FieldArrayRenderProps) => (
-            <>
-              <List dense disablePadding className={classes.timePeriodList}>
-                {values.periods?.map((_, index) => {
-                  return (
-                    <ListItem disableGutters key={index}>
-                      <ListItemText>
-                        <Box>
+        <Box>
+          <FieldArray
+            name="periods"
+            render={(arrayHelpers: FieldArrayRenderProps) => (
+              <>
+                <List disablePadding>
+                  {values.periods?.map((_, index) => {
+                    return (
+                      <ListItem 
+                        alignItems="flex-start"
+                        disableGutters 
+                        key={index}
+                          sx={{
+                            '& .MuiListItemSecondaryAction-root': {
+                              top: '36px'
+                            }
+                          }}
+                        >
+                        <Box width="100%">
                           <StartEndDateFields
                             formikProps={formikProps}
                             startName={`periods[${index}].start_date`}
@@ -160,28 +156,31 @@ const MethodForm = () => {
                             endRequired={true}
                           />
                         </Box>
-                      </ListItemText>
-                      <ListItemSecondaryAction>
-                        <IconButton
-                          data-testid="delete-icon"
-                          aria-label="remove time period"
-                          onClick={() => arrayHelpers.remove(index)}>
-                          <Icon path={mdiTrashCanOutline} size={1} />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  );
-                })}
-              </List>
-              {errors.periods && !Array.isArray(errors.periods) && (
-                <Box pt={2}>
-                  <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.periods}</Typography>
-                </Box>
-              )}
-              <Box>
+                        <ListItemSecondaryAction
+                          sx={{
+                            top: '36px'
+                          }}
+                        >
+                          <IconButton
+                            data-testid="delete-icon"
+                            aria-label="remove time period"
+                            onClick={() => arrayHelpers.remove(index)}>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+                {errors.periods && !Array.isArray(errors.periods) && (
+                  <Box pt={2}>
+                    <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.periods}</Typography>
+                  </Box>
+                )}
+
                 <Button
                   sx={{
-                    mt: 2
+                    mt: 1
                   }}
                   data-testid="sampling-period-add-button"
                   variant="outlined"
@@ -190,12 +189,13 @@ const MethodForm = () => {
                   aria-label="Create Sample Period"
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   onClick={() => arrayHelpers.push(SurveySampleMethodPeriodArrayItemInitialValues)}>
-                  Add Period
+                  Add Time Period
                 </Button>
-              </Box>
-            </>
-          )}
-        />
+
+              </>
+            )}
+          />
+        </Box>
       </Box>
     </form>
   );
