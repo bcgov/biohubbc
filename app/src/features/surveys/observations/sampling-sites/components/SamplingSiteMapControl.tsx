@@ -122,10 +122,12 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
             </Box>
           )}
         </Box>
-        <Typography variant="h4" component="h2" data-testid="funding-source-list-found">
-          Sampling Sites Founds &zwnj;
+        <Typography mb={1} variant="h4" component="h2" data-testid="funding-source-list-found">
+          Site Boundary Preview &zwnj;
           <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
-            ({formikProps.values.survey_sample_sites.length || 0})
+            {formikProps.values.survey_sample_sites.length > 0
+              ? `(${formikProps.values.survey_sample_sites.length} boundaries detected)`
+              : ''}
           </Typography>
         </Typography>
         <Paper variant="outlined">

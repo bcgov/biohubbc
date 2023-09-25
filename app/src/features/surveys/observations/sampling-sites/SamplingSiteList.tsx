@@ -21,10 +21,7 @@ export const SamplingSiteList = () => {
     <Box
       display="flex"
       flexDirection="column"
-      flex="0 0 400px"
-      sx={{
-        borderRight: '1px solid #ccc'
-      }}>
+      height="100%">
       <Toolbar
         sx={{
           flex: '0 0 auto',
