@@ -50,12 +50,16 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   useEffect(() => {
     if (hasLoaded) {
       // Only refresh when the query or param changes
-      isMounted() && refresh({ route, param, query });
+      refresh({ route, param, query });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, param]);
 
   const isValueInRange = useMemo(() => {
+    if (!isMounted()) {
+      return false;
+    }
+
     if (val === '') {
       return true;
     }
@@ -69,6 +73,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
       setFieldTouched(name);
     }
     return inRange;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, val, setFieldValue, setFieldTouched, name]);
 
   const innerChangeHandler = (e: SelectChangeEvent<any>) => {

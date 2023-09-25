@@ -476,7 +476,6 @@ export class Critter {
   }
 
   constructor(animal: IAnimal) {
-    console.log('Called Critter constructor.');
     this.critter_id = animal.general.critter_id ? animal.general.critter_id : v4();
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;

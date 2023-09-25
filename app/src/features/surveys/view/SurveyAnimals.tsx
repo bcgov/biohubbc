@@ -155,9 +155,10 @@ const SurveyAnimals: React.FC = () => {
   const handleCritterSave = async (currentFormValues: IAnimal) => {
     const postCritterPayload = async () => {
       const critter = new Critter(currentFormValues);
+      toggleDialog();
       await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
       refreshCritters();
-      setPopup('Animal added to survey.')
+      setPopup('Animal added to survey.');
     };
     const patchCritterPayload = async () => {
       const initialFormValues = obtainAnimalFormInitialvalues(ANIMAL_FORM_MODE.EDIT);
@@ -165,6 +166,7 @@ const SurveyAnimals: React.FC = () => {
         initialFormValues,
         currentFormValues
       );
+      toggleDialog();
       await bhApi.survey.updateSurveyCritter(projectId, surveyId, updateCritter, createCritter);
       refreshCritters();
       setPopup('Animal data updated.');
@@ -176,6 +178,7 @@ const SurveyAnimals: React.FC = () => {
         await patchCritterPayload();
       }
     } catch (err) {
+      setPopup('Submission failed.');
       console.log(`Critter submission error ${JSON.stringify(err)}`);
     }
   };
