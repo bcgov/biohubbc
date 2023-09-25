@@ -119,7 +119,7 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
  * @param key A key present in objects from both arrays
  * @returns {*} subset of T[]
  */
-const arrDiff = <T extends Record<K, any>, V extends Record<K, any>, K extends keyof T & keyof V>(
+export const arrDiff = <T extends Record<K, any>, V extends Record<K, any>, K extends keyof T & keyof V>(
   arr1: T[],
   arr2: V[],
   key: K

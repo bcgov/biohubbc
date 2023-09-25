@@ -1,5 +1,5 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
-import { omit, omitBy } from 'lodash-es';
+import { omit, omitBy, isEqual as deepEquals } from 'lodash-es';
 import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
@@ -236,6 +236,7 @@ type ICritterCapture = Omit<
       release_location_id: string | undefined;
       capture_location?: ICritterLocation;
       release_location?: ICritterLocation;
+      force_create_release?: boolean;
     },
   '_id'
 >;
@@ -327,7 +328,13 @@ export class Critter {
         };
       }
 
+      let force_create_release = false;
+      if (release_location && !deepEquals(capture_location, release_location)) {
+        force_create_release = true;
+      }
+
       formattedCaptures.push({
+        force_create_release: force_create_release,
         capture_id: cleanedCapture.capture_id,
         critter_id: this.critter_id,
         capture_location_id: cleanedCapture.capture_location_id ?? c_loc_id,

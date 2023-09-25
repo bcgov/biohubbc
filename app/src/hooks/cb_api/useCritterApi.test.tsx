@@ -66,7 +66,8 @@ describe('useCritterApi', () => {
         animal_id: mockCritter.animal_id,
         taxon_name: 'Joe',
         wlh_id: 'a',
-        sex: 'Male'
+        sex: 'Male',
+        critter_id: v4()
       },
       mortality: [],
       family: [],
