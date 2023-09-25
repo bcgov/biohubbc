@@ -1,10 +1,10 @@
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
 import ListItem from '@mui/material/ListItem';
-import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import axios, { CancelTokenSource } from 'axios';
 import FileUploadItemSubtext from 'components/file-upload/FileUploadItemSubtext';
 import { APIError } from 'hooks/api/useAxios';
@@ -12,25 +12,6 @@ import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
 import FileUploadItemActionButton from './FileUploadItemActionButton';
 import FileUploadItemProgressBar from './FileUploadItemProgressBar';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  uploadProgress: {
-    marginTop: theme.spacing(0.5)
-  },
-  uploadListItemBox: {
-    width: '100%',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: theme.palette.action.disabled,
-    borderRadius: '4px'
-  },
-  errorColor: {
-    color: theme.palette.error.main
-  },
-  fileIconColor: {
-    color: theme.palette.action.disabled
-  }
-}));
 
 export enum UploadFileStatus {
   STAGED = 'Ready for upload',
@@ -150,7 +131,6 @@ export interface IProgressBarProps {
 
 const FileUploadItem = (props: IFileUploadItemProps) => {
   const isMounted = useIsMounted();
-  const classes = useStyles();
 
   const { uploadHandler, fileHandler, onSuccess, SubtextComponent, ActionButtonComponent, ProgressBarComponent } =
     props;
@@ -282,25 +262,57 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
   }, [initiateCancel, isSafeToCancel, props]);
 
   return (
-    <ListItem key={file.name} disableGutters>
-      <Box className={classes.uploadListItemBox}>
-        <Box display="flex" flexDirection="row" alignItems="center" p={2} width="100%">
-          <Icon path={mdiFileOutline} size={1.5} className={error ? classes.errorColor : classes.fileIconColor} />
-          <Box pl={1.5} flex="1 1 auto">
-            <Box display="flex" flexDirection="row" flex="1 1 auto" alignItems="center" height="3rem">
-              <Box flex="1 1 auto">
-                <Typography variant="body2" component="div">
-                  <strong>{file.name}</strong>
-                </Typography>
-                <Subtext file={file} status={status} progress={progress} error={error} />
-              </Box>
-              <Box display="flex" alignItems="center">
-                <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />
-              </Box>
-            </Box>
-            <MemoizedProgressBar status={status} progress={progress} />
-          </Box>
-        </Box>
+    <ListItem
+      key={file.name}
+      secondaryAction={<MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />}
+      sx={{
+        flexWrap: 'wrap',
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderRadius: '6px',
+        background: grey[100],
+        borderColor: grey[300],
+        '& + li': {
+          mt: 1
+        },
+        '& .MuiListItemSecondaryAction-root': {
+          top: '36px'
+        },
+        '&:last-child': {
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[300]
+        }
+      }}>
+      <ListItemIcon
+        sx={{
+          '&.fileIconColor': {
+            color: 'text.secondary'
+          },
+          '&.error': {
+            color: 'error.main'
+          }
+        }}>
+        <Icon path={mdiFileOutline} size={1.25} className={error ? 'errorColor' : 'fileIconColor'} />
+      </ListItemIcon>
+      <ListItemText
+        primary={file.name}
+        secondary={<Subtext file={file} status={status} progress={progress} error={error} />}
+        sx={{
+          '& .MuiListItemText-primary': {
+            fontWeight: 700
+          }
+        }}></ListItemText>
+
+      <Box
+        sx={{
+          ml: 5,
+          width: '100%',
+          '& .MuiLinearProgress-root': {
+            mb: 1
+          }
+        }}>
+        <MemoizedProgressBar status={status} progress={progress} />
       </Box>
     </ListItem>
   );

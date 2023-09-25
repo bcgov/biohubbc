@@ -44,13 +44,13 @@ describe('SampleLocationService', () => {
         methods: [
           {
             survey_sample_method_id: null,
-            survey_sample_site_id: null,
+            survey_sample_site_id: 1,
             method_lookup_id: 1,
             description: '',
             periods: [
               {
                 survey_sample_period_id: null,
-                survey_sample_method_id: null,
+                survey_sample_method_id: 1,
                 start_date: '2023-01-01',
                 end_date: '2023-01-03'
               }
