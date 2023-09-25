@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
-import { InsertSampleMethod } from './sample-method-repository';
 
 export interface PostSampleLocation {
   survey_sample_site_id: number | null;
@@ -12,15 +11,6 @@ export interface PostSampleLocation {
   name: string;
   description: string;
   survey_sample_site: Feature;
-}
-
-export interface PostSampleLocations {
-  survey_sample_site_id: number | null;
-  survey_id: number;
-  name: string;
-  description: string;
-  survey_sample_sites: Feature[];
-  methods: InsertSampleMethod[];
 }
 
 // This describes a row in the database for Survey Sample Location
@@ -40,10 +30,10 @@ export const SampleLocationRecord = z.object({
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
 
 // Insert Object for Sample Locations
-export type InsertSampleLocation = Pick<SampleLocationRecord, 'survey_id' | 'name' | 'description' | 'geojson'>;
+export type InsertSampleLocationRecord = Pick<SampleLocationRecord, 'survey_id' | 'name' | 'description' | 'geojson'>;
 
 // Update Object for Sample Locations
-export type UpdateSampleLocation = Pick<
+export type UpdateSampleLocationRecord = Pick<
   SampleLocationRecord,
   'survey_sample_site_id' | 'survey_id' | 'name' | 'description' | 'geojson'
 >;
@@ -77,11 +67,11 @@ export class SampleLocationRepository extends BaseRepository {
   /**
    * updates a survey Sample Location.
    *
-   * @param {UpdateSampleLocation} sample
+   * @param {UpdateSampleLocationRecord} sample
    * @return {*}  {Promise<SampleLocationRecord>}
    * @memberof SampleLocationRepository
    */
-  async updateSampleLocation(sample: UpdateSampleLocation): Promise<SampleLocationRecord> {
+  async updateSampleLocation(sample: UpdateSampleLocationRecord): Promise<SampleLocationRecord> {
     const sql = SQL`
       UPDATE survey_sample_site
       SET
@@ -117,11 +107,11 @@ export class SampleLocationRepository extends BaseRepository {
   /**
    * Inserts a new survey Sample Location.
    *
-   * @param {InsertSampleLocation} sample
+   * @param {InsertSampleLocationRecord} sample
    * @return {*}  {Promise<SampleLocationRecord>}
    * @memberof SampleLocationRepository
    */
-  async insertSampleLocation(sample: InsertSampleLocation): Promise<SampleLocationRecord> {
+  async insertSampleLocation(sample: InsertSampleLocationRecord): Promise<SampleLocationRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_site (
       survey_id,
