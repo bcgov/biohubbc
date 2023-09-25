@@ -84,11 +84,11 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Inserts a new survey Sample Period.
    *
-   * @param {PostSamplePeriod} sample
+   * @param {Omit<PostSamplePeriod, 'survey_sample_period_id'>} sample
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodRepository
    */
-  async insertSamplePeriod(sample: PostSamplePeriod): Promise<SamplePeriodRecord> {
+  async insertSamplePeriod(sample: Omit<PostSamplePeriod, 'survey_sample_period_id'>): Promise<SamplePeriodRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_period (
       survey_sample_method_id,
@@ -117,16 +117,16 @@ export class SamplePeriodRepository extends BaseRepository {
   /**
    * Deletes a survey Sample Period.
    *
-   * @param {number} sampMethodId
+   * @param {number} surveySamplePeriodId
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodRepository
    */
-  async deleteSamplePeriodRecord(sampMethodId: number): Promise<SamplePeriodRecord> {
+  async deleteSamplePeriodRecord(surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
     const sqlStatement = SQL`
       DELETE FROM
         survey_sample_period
       WHERE
-        survey_sample_period_id = ${sampMethodId}
+        survey_sample_period_id = ${surveySamplePeriodId}
       RETURNING
         *;
     `;

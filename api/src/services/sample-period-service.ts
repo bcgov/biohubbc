@@ -20,33 +20,35 @@ export class SamplePeriodService extends DBService {
   /**
    *  Gets all survey Sample periods.
    *
-   * @param {number} surveyId
+   * @param {number} surveySampleMethodId
    * @return {*}  {Promise<SamplePeriodRecord[]>}
    * @memberof SamplePeriodService
    */
-  async getSamplePeriodsForSurveyMethodId(surveyId: number): Promise<SamplePeriodRecord[]> {
-    return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveyId);
+  async getSamplePeriodsForSurveyMethodId(surveySampleMethodId: number): Promise<SamplePeriodRecord[]> {
+    return await this.samplePeriodRepository.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
   }
 
   /**
    * Deletes a survey Sample Period.
    *
-   * @param {number} surveyBlockId
+   * @param {number} surveySamplePeriodId
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async deleteSamplePeriodRecord(surveyBlockId: number): Promise<SamplePeriodRecord> {
-    return this.samplePeriodRepository.deleteSamplePeriodRecord(surveyBlockId);
+  async deleteSamplePeriodRecord(surveySamplePeriodId: number): Promise<SamplePeriodRecord> {
+    return this.samplePeriodRepository.deleteSamplePeriodRecord(surveySamplePeriodId);
   }
 
   /**
    * Inserts survey Sample Period.
    *
-   * @param {PostSamplePeriod} samplePeriod
+   * @param {Omit<PostSamplePeriod, 'survey_sample_period_id'>} samplePeriod
    * @return {*}  {Promise<SamplePeriodRecord>}
    * @memberof SamplePeriodService
    */
-  async insertSamplePeriod(samplePeriod: PostSamplePeriod): Promise<SamplePeriodRecord> {
+  async insertSamplePeriod(
+    samplePeriod: Omit<PostSamplePeriod, 'survey_sample_period_id'>
+  ): Promise<SamplePeriodRecord> {
     return this.samplePeriodRepository.insertSamplePeriod(samplePeriod);
   }
 

@@ -1,6 +1,5 @@
 import { IDBConnection } from '../database/db';
 import { PostSampleMethod, SampleMethodRecord, SampleMethodRepository } from '../repositories/sample-method-repository';
-import { PostSamplePeriod } from '../repositories/sample-period-repository';
 import { DBService } from './db-service';
 import { SamplePeriodService } from './sample-period-service';
 
@@ -22,43 +21,45 @@ export class SampleMethodService extends DBService {
   /**
    * Gets all survey Sample Methods.
    *
-   * @param {number} surveyId
+   * @param {number} surveySampleSiteId
    * @return {*}  {Promise<SampleMethodRecord[]>}
    * @memberof SampleMethodService
    */
-  async getSampleMethodsForSurveySampleSiteId(surveyId: number): Promise<SampleMethodRecord[]> {
-    return await this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveyId);
+  async getSampleMethodsForSurveySampleSiteId(surveySampleSiteId: number): Promise<SampleMethodRecord[]> {
+    return await this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
   }
 
   /**
    * Deletes a survey Sample Method.
    *
-   * @param {number} surveyBlockId
+   * @param {number} surveySampleMethodId
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodService
    */
-  async deleteSampleMethodRecord(surveyBlockId: number): Promise<SampleMethodRecord> {
-    return this.sampleMethodRepository.deleteSampleMethodRecord(surveyBlockId);
+  async deleteSampleMethodRecord(surveySampleMethodId: number): Promise<SampleMethodRecord> {
+    return this.sampleMethodRepository.deleteSampleMethodRecord(surveySampleMethodId);
   }
 
   /**
-   * Inserts survey Sample Method.
+   * Inserts survey Sample Method and associated Sample Periods.
    *
-   * @param {PostSampleMethod} sampleMethod
+   * @param {Omit<PostSampleMethod, 'survey_sample_method_id'>} sampleMethod
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodService
    */
-  async insertSampleMethod(sampleMethod: PostSampleMethod): Promise<SampleMethodRecord> {
+  async insertSampleMethod(
+    sampleMethod: Omit<PostSampleMethod, 'survey_sample_method_id'>
+  ): Promise<SampleMethodRecord> {
     const record = await this.sampleMethodRepository.insertSampleMethod(sampleMethod);
-    const periodService = new SamplePeriodService(this.connection);
+
+    const samplePeriodService = new SamplePeriodService(this.connection);
     const promises = sampleMethod.periods.map((item) => {
-      const samplePeriod: PostSamplePeriod = {
-        survey_sample_period_id: null,
+      const samplePeriod = {
         survey_sample_method_id: record.survey_sample_method_id,
         start_date: item.start_date,
         end_date: item.end_date
       };
-      return periodService.insertSamplePeriod(samplePeriod);
+      return samplePeriodService.insertSamplePeriod(samplePeriod);
     });
 
     await Promise.all(promises);
