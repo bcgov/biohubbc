@@ -97,6 +97,8 @@ export class SampleLocationRepository extends BaseRepository {
 
   /**
    * Inserts a new survey Sample Location.
+   * Business requirement to default all names to Sample Site #
+   * the # is based on the current number of sample sites associated to a survey
    *
    * @param {InsertSampleLocationRecord} sample
    * @return {*}  {Promise<SampleLocationRecord>}
@@ -112,7 +114,7 @@ export class SampleLocationRepository extends BaseRepository {
       geography
     ) VALUES (
       ${sample.survey_id},
-      ${sample.name},
+      (select concat('Sample Site ', (select count(survey_sample_site_id) from survey_sample_site sss where survey_id = ${sample.survey_id}))),
       ${sample.description},
       ${sample.geojson},
       `;
