@@ -10,7 +10,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
 import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
-import TelemetryFileUploadWithMeta from './TelemetryFileUploadWithMeta';
+import { TelemetryFileUpload } from './TelemetryFileUpload';
 
 export enum TELEMETRY_DEVICE_FORM_MODE {
   ADD = 'add',
@@ -28,13 +28,13 @@ const AttchmentFormSection = ({ index, deviceMake }: { index: number; deviceMake
       {deviceMake === 'Vectronic' && (
         <>
           <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Vectronic KeyX File`}</Typography>
-          <TelemetryFileUploadWithMeta attachmentType={AttachmentType.KEYX} index={index} />
+          <TelemetryFileUpload attachmentType={AttachmentType.KEYX} index={index} />
         </>
       )}
       {deviceMake === 'Lotek' && (
         <>
           <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Lotek Config File`}</Typography>
-          <TelemetryFileUploadWithMeta attachmentType={AttachmentType.OTHER} index={index} />
+          <TelemetryFileUpload attachmentType={AttachmentType.OTHER} index={index} />
         </>
       )}
     </Paper>
