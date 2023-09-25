@@ -15,9 +15,12 @@ import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
 import { datesSameNullable, pluralize } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import { v4 } from 'uuid';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, Critter, IAnimal } from './survey-animals/animal';
+import {
+  createCritterUpdatePayload,
+  transformCritterbaseAPIResponseToForm
+} from './survey-animals/animal-form-helpers';
 import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
 import IndividualAnimalForm, { ANIMAL_FORM_MODE } from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
@@ -115,100 +118,7 @@ const SurveyAnimals: React.FC = () => {
         if (!existingCritter) {
           throw Error('This should not be reachable.');
         }
-        return {
-          general: {
-            wlh_id: existingCritter.wlh_id ?? '',
-            taxon_id: existingCritter.taxon_id,
-            animal_id: existingCritter.animal_id ?? '',
-            sex: existingCritter.sex,
-            taxon_name: existingCritter.taxon,
-            critter_id: existingCritter.critter_id
-          },
-          captures: existingCritter?.capture.map((a) => ({
-            ...a,
-            capture_comment: a.capture_comment ?? '',
-            release_comment: a.release_comment ?? '',
-            capture_timestamp: new Date(a.capture_timestamp),
-            release_timestamp: a.release_timestamp ? new Date(a.release_timestamp) : undefined,
-            capture_latitude: a.capture_location?.latitude,
-            capture_longitude: a.capture_location?.longitude,
-            capture_coordinate_uncertainty: a.capture_location?.coordinate_uncertainty ?? 0,
-            release_longitude: a.release_location?.longitude,
-            release_latitude: a.release_location?.latitude,
-            release_coordinate_uncertainty: a.release_location?.coordinate_uncertainty ?? 0,
-            capture_utm_northing: 0,
-            capture_utm_easting: 0,
-            release_utm_easting: 0,
-            release_utm_northing: 0,
-            projection_mode: 'wgs',
-            _id: v4(),
-            show_release: !!a.release_location,
-            capture_location_id: a.capture_location_id ?? undefined,
-            release_location_id: a.release_location_id ?? undefined
-          })),
-          markings: existingCritter.marking.map((a) => ({
-            ...a,
-            primary_colour_id: a.primary_colour_id ?? '',
-            secondary_colour_id: a.secondary_colour_id ?? '',
-            marking_comment: a.comment ?? '',
-            _id: v4()
-          })),
-          mortality: existingCritter?.mortality.map((a) => ({
-            ...a,
-            _id: v4(),
-            mortality_comment: a.mortality_comment ?? '',
-            mortality_timestamp: new Date(a.mortality_timestamp),
-            mortality_latitude: a.location.latitude,
-            mortality_longitude: a.location.longitude,
-            mortality_utm_easting: 0,
-            mortality_utm_northing: 0,
-            mortality_coordinate_uncertainty: a.location.coordinate_uncertainty ?? 0,
-            proximate_cause_of_death_confidence: a.proximate_cause_of_death_confidence,
-            proximate_cause_of_death_id: a.proximate_cause_of_death_id ?? '',
-            proximate_predated_by_taxon_id: a.proximate_predated_by_taxon_id ?? '',
-            ultimate_cause_of_death_confidence: a.ultimate_cause_of_death_confidence ?? '',
-            ultimate_cause_of_death_id: a.ultimate_cause_of_death_id ?? '',
-            ultimate_predated_by_taxon_id: a.ultimate_predated_by_taxon_id ?? '',
-            projection_mode: 'wgs',
-            location_id: a.location_id ?? undefined
-          })),
-          collectionUnits: existingCritter.collection_units.map((a) => ({
-            ...a,
-            _id: v4()
-          })),
-          measurements: [
-            ...existingCritter.measurement.qualitative.map((a) => ({
-              ...a,
-              measurement_quantitative_id: undefined,
-              _id: v4(),
-              value: undefined,
-              measured_timestamp: a.measured_timestamp ? new Date(a.measured_timestamp) : ('' as unknown as Date),
-              measurement_comment: a.measurement_comment ?? ''
-            })),
-            ...existingCritter.measurement.quantitative.map((a) => ({
-              ...a,
-              _id: v4(),
-              measurement_qualitative_id: undefined,
-              qualitative_option_id: undefined,
-              measured_timestamp: a.measured_timestamp ? new Date(a.measured_timestamp) : ('' as unknown as Date),
-              measurement_comment: a.measurement_comment ?? ''
-            }))
-          ],
-          family: [
-            ...existingCritter.family_child.map((ch) => ({
-              _id: v4(),
-              family_id: ch.family_id,
-              relationship: 'child'
-            })),
-            ...existingCritter.family_parent.map((par) => ({
-              _id: v4(),
-              family_id: par.family_id,
-              relationship: 'parent'
-            }))
-          ],
-          images: [],
-          device: undefined
-        };
+        return transformCritterbaseAPIResponseToForm(existingCritter);
       }
     }
   };
@@ -242,146 +152,22 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
-  const arrDiff = <T extends Record<K, any>, V extends Record<K, any>, K extends keyof T & keyof V>(
-    arr1: T[],
-    arr2: V[],
-    key: K
-  ) => {
-    return arr1.filter((a1: Record<K, any>) => !arr2.some((a2: Record<K, any>) => a1[key] === a2[key]));
-  };
-
   const handleCritterSave = async (currentFormValues: IAnimal) => {
     const postCritterPayload = async () => {
       const critter = new Critter(currentFormValues);
       await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
       refreshCritters();
-      dialogContext.setSnackbar({
-        open: true,
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            {'Animal added to Survey'}
-          </Typography>
-        )
-      });
-      toggleDialog();
+      setPopup('Animal added to survey.')
     };
     const patchCritterPayload = async () => {
       const initialFormValues = obtainAnimalFormInitialvalues(ANIMAL_FORM_MODE.EDIT);
-      const initialCritter = new Critter(initialFormValues);
-      const createCritter = new Critter({
-        ...currentFormValues,
-        captures: currentFormValues.captures.filter((a) => !a.capture_id),
-        mortality: currentFormValues.mortality.filter((a) => !a.mortality_id),
-        markings: currentFormValues.markings.filter((a) => !a.marking_id),
-        measurements: currentFormValues.measurements.filter(
-          (a) => !a.measurement_qualitative_id && !a.measurement_quantitative_id
-        ),
-        collectionUnits: currentFormValues.collectionUnits.filter((a) => !a.critter_collection_unit_id),
-        family: []
-      });
-      const updateCritter = new Critter({
-        ...currentFormValues,
-        captures: currentFormValues.captures.filter((a) => a.capture_id),
-        mortality: currentFormValues.mortality.filter((a) => a.mortality_id),
-        markings: currentFormValues.markings.filter((a) => a.marking_id),
-        measurements: currentFormValues.measurements.filter(
-          (a) => a.measurement_qualitative_id || a.measurement_quantitative_id
-        ),
-        collectionUnits: currentFormValues.collectionUnits.filter((a) => a.critter_collection_unit_id),
-        family: []
-      });
-
-      initialFormValues.family.forEach((prevFam) => {
-        if (
-          !currentFormValues.family.some(
-            (currFam) => currFam.family_id === prevFam.family_id && currFam.relationship === prevFam.relationship
-          )
-        ) {
-          prevFam.relationship === 'parent'
-            ? updateCritter.families.parents.push({
-                family_id: prevFam.family_id,
-                parent_critter_id: initialCritter.critter_id,
-                _delete: true
-              })
-            : updateCritter.families.children.push({
-                family_id: prevFam.family_id,
-                child_critter_id: initialCritter.critter_id,
-                _delete: true
-              });
-        }
-      });
-
-      currentFormValues.family.forEach((currFam) => {
-        if (
-          !initialFormValues.family.some(
-            (prevFam) => currFam.family_id === prevFam.family_id && currFam.relationship === prevFam.relationship
-          )
-        ) {
-          currFam.relationship === 'parent'
-            ? createCritter.families.parents.push({
-                family_id: currFam.family_id,
-                parent_critter_id: initialCritter.critter_id
-              })
-            : createCritter.families.children.push({
-                family_id: currFam.family_id,
-                child_critter_id: initialCritter.critter_id
-              });
-        }
-      });
-
-      updateCritter.captures.push(
-        ...arrDiff(initialCritter.captures, updateCritter.captures, 'capture_id').map((cap) => ({
-          ...cap,
-          _delete: true
-        }))
+      const { create: createCritter, update: updateCritter } = createCritterUpdatePayload(
+        initialFormValues,
+        currentFormValues
       );
-      updateCritter.mortalities.push(
-        ...arrDiff(initialCritter.mortalities, updateCritter.mortalities, 'mortality_id').map((mort) => ({
-          ...mort,
-          _delete: true
-        }))
-      );
-      updateCritter.collections.push(
-        ...arrDiff(initialCritter.collections, updateCritter.collections, 'critter_collection_unit_id').map((col) => ({
-          ...col,
-          _delete: true
-        }))
-      );
-      updateCritter.markings.push(
-        ...arrDiff(initialCritter.markings, updateCritter.markings, 'marking_id').map((mark) => ({
-          ...mark,
-          _delete: true
-        }))
-      );
-      updateCritter.measurements.qualitative.push(
-        ...arrDiff(
-          initialCritter.measurements.qualitative,
-          updateCritter.measurements.qualitative,
-          'measurement_qualitative_id'
-        ).map((meas) => ({ ...meas, _delete: true }))
-      );
-      updateCritter.measurements.quantitative.push(
-        ...arrDiff(
-          initialCritter.measurements.quantitative,
-          updateCritter.measurements.quantitative,
-          'measurement_quantitative_id'
-        ).map((meas) => ({ ...meas, _delete: true }))
-      );
-
-      console.log('initialValues: ' + JSON.stringify(initialCritter, null, 2));
-      console.log('Create critter:' + JSON.stringify(createCritter, null, 2));
-      console.log('Update critter:' + JSON.stringify(updateCritter, null, 2));
       await bhApi.survey.updateSurveyCritter(projectId, surveyId, updateCritter, createCritter);
       refreshCritters();
-      dialogContext.setSnackbar({
-        open: true,
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            {'Animal data updated.'}
-          </Typography>
-        )
-      });
-      toggleDialog();
+      setPopup('Animal data updated.');
     };
     try {
       if (animalFormMode === ANIMAL_FORM_MODE.ADD) {

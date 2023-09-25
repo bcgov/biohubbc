@@ -57,7 +57,7 @@ const IndividualAnimalForm = ({ getAnimalCount, critter_id, mode }: IndividualAn
       <MeasurementAnimalForm />
       <FamilyAnimalForm />
 
-      <FormikDevDebugger custom_payload={new Critter(values)} />
+      <FormikDevDebugger custom_payload={undefined/*new Critter(values)*/} />
     </Form>
   );
 };
