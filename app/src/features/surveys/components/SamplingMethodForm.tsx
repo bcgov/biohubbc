@@ -103,41 +103,27 @@ const SamplingMethodForm = () => {
 
       <Box component="fieldset">
         <form>
-          <Typography component="legend">Specify Sampling Methods</Typography>
+          <Typography component="legend">Add Sampling Methods</Typography>
           <Typography
             variant="body1"
             color="textSecondary"
             sx={{
-              maxWidth: '72ch'
+              mb: 2,
+              maxWidth: '92ch'
             }}>
-            Methods defined below will be applied to all imported sampling sites boundaries. This information can be
-            modified later if required.
+            If you are importing multiple sampling site locations, these methods will be applied to ALL sampling locations and can be modified later if requried.
           </Typography>
           {errors.methods && !Array.isArray(errors.methods) && (
-            <Box pt={2}>
+            <Box>
               <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.methods}</Typography>
             </Box>
           )}
-          <Button
-            sx={{
-              mt: 1
-            }}
-            data-testid="sample-method-add-button"
-            variant="outlined"
-            color="primary"
-            title="Add Sample Method"
-            aria-label="Add Sample Method"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => {
-              setIsCreateModalOpen(true);
-            }}>
-            Add Method
-          </Button>
 
           {values.methods.map((item, index) => (
             <Card
               variant="outlined"
               sx={{
+                mt: 1,
                 background: grey[100],
                 '& .MuiCardHeader-subheader': {
                   display: '-webkit-box',
@@ -148,7 +134,6 @@ const SamplingMethodForm = () => {
                   textOverflow: 'ellipsis',
                   fontSize: '14px'
                 },
-                mt: 1,
                 '& .MuiCardHeader-title': {
                   mb: 0.5
                 }
@@ -184,6 +169,23 @@ const SamplingMethodForm = () => {
               </CardContent>
             </Card>
           ))}
+
+          <Button
+            sx={{
+              mt: 1
+            }}
+            data-testid="sample-method-add-button"
+            variant="outlined"
+            color="primary"
+            title="Add Sample Method"
+            aria-label="Add Sample Method"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            onClick={() => {
+              setIsCreateModalOpen(true);
+            }}>
+            Add Method
+          </Button>
+
         </form>
       </Box>
     </>

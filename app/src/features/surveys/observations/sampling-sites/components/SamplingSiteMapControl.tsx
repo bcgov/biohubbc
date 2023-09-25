@@ -35,9 +35,6 @@ const useStyles = makeStyles(() => ({
     '&:hover': {
       backgroundColor: '#eeeeee'
     }
-  },
-  toolbarCount: {
-    fontWeight: 400
   }
 }));
 
@@ -94,8 +91,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           sx={{
             maxWidth: '90ch'
           }}>
-          Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below
-          and click a boundary on the map.
+          Before you import your site locations, you will need to ensure your shapefile is compressed into a single zip file. Your shapefile can include one or more sampling site locations.
         </Typography>
         <Box mb={3}>
           <Box mt={4} display="flex">
@@ -122,40 +118,48 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
             </Box>
           )}
         </Box>
-        <Typography mb={1} variant="h4" component="h2" data-testid="funding-source-list-found">
-          Site Boundary Preview &zwnj;
-          <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
-            {formikProps.values.survey_sample_sites.length > 0
-              ? `(${formikProps.values.survey_sample_sites.length} boundaries detected)`
-              : ''}
+        <Box component="fieldset">
+          <Typography 
+            component="legend" 
+            data-testid="funding-source-list-found">
+            Site Boundary Preview &zwnj;
+            <Typography 
+              component="span" 
+              color="textSecondary"
+              fontWeight="400"
+            >
+              {formikProps.values.survey_sample_sites.length > 0
+                ? `(${formikProps.values.survey_sample_sites.length} boundaries detected)`
+                : ''}
+            </Typography>
           </Typography>
-        </Typography>
-        <Paper variant="outlined">
-          <Box position="relative" height={500}>
-            <MapContainer
-              mapId={mapId}
-              drawControls={{
-                initialFeatures: get(values, name)
-              }}
-              onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
-              bounds={(shouldUpdateBounds && updatedBounds) || bounds}
-            />
-            {get(values, name) && get(values, name).length > 0 && (
-              <Box position="absolute" top="126px" left="10px" zIndex="999">
-                <IconButton
-                  aria-label="zoom to initial extent"
-                  title="Zoom to initial extent"
-                  className={classes.zoomToBoundaryExtentBtn}
-                  onClick={() => {
-                    setUpdatedBounds(calculateUpdatedMapBounds(get(values, name)));
-                    setShouldUpdateBounds(true);
-                  }}>
-                  <Icon size={1} path={mdiRefresh} />
-                </IconButton>
-              </Box>
-            )}
-          </Box>
-        </Paper>
+          <Paper variant="outlined">
+            <Box position="relative" height={500}>
+              <MapContainer
+                mapId={mapId}
+                drawControls={{
+                  initialFeatures: get(values, name)
+                }}
+                onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
+                bounds={(shouldUpdateBounds && updatedBounds) || bounds}
+              />
+              {get(values, name) && get(values, name).length > 0 && (
+                <Box position="absolute" top="126px" left="10px" zIndex="999">
+                  <IconButton
+                    aria-label="zoom to initial extent"
+                    title="Zoom to initial extent"
+                    className={classes.zoomToBoundaryExtentBtn}
+                    onClick={() => {
+                      setUpdatedBounds(calculateUpdatedMapBounds(get(values, name)));
+                      setShouldUpdateBounds(true);
+                    }}>
+                    <Icon size={1} path={mdiRefresh} />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
+          </Paper>
+        </Box>
       </Grid>
     </>
   );
