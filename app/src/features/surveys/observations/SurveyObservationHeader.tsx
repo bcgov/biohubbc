@@ -15,6 +15,7 @@ export const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (
     <>
       <Paper
         square
+        elevation={0}
         sx={{
           pt: 3,
           pb: 3.5,

@@ -108,9 +108,8 @@ export const ObservationComponent = () => {
       display="flex"
       flexDirection="column"
       flex="1 1 auto"
-      sx={{
-        overflow: 'hidden'
-      }}>
+      height="100%">
+        
       {/* Observations Component */}
       <Toolbar
         sx={{
