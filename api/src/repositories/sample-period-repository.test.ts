@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import { InsertSamplePeriod, SamplePeriodRepository, UpdateSamplePeriod } from './sample-period-repository';
+import { InsertSamplePeriodRecord, SamplePeriodRepository, UpdateSamplePeriodRecord } from './sample-period-repository';
 
 chai.use(sinonChai);
 
@@ -48,7 +48,7 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const samplePeriod: UpdateSamplePeriod = {
+      const samplePeriod: UpdateSamplePeriodRecord = {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
         start_date: '2023-10-02',
@@ -65,7 +65,7 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const samplePeriod: UpdateSamplePeriod = {
+      const samplePeriod: UpdateSamplePeriodRecord = {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
         start_date: '2023-10-02',
@@ -88,7 +88,7 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const samplePeriod: InsertSamplePeriod = {
+      const samplePeriod: InsertSamplePeriodRecord = {
         survey_sample_method_id: 1,
         start_date: '2023-10-02',
         end_date: '2023-01-02'
@@ -104,7 +104,7 @@ describe('SamplePeriodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const samplePeriod: InsertSamplePeriod = {
+      const samplePeriod: InsertSamplePeriodRecord = {
         survey_sample_method_id: 1,
         start_date: '2023-10-02',
         end_date: '2023-01-02'

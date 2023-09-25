@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import {
-  InsertSampleMethod,
+  InsertSampleMethodRecord,
   SampleMethodRecord,
   SampleMethodRepository
 } from '../repositories/sample-method-repository';
@@ -126,7 +126,7 @@ describe('SampleMethodService', () => {
         .stub(SamplePeriodService.prototype, 'insertSamplePeriod')
         .resolves(mockSamplePeriodRecord);
 
-      const sampleMethod: InsertSampleMethod = {
+      const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',
@@ -176,7 +176,7 @@ describe('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'updateSampleMethod')
         .resolves(mockSampleMethodRecord);
 
-      const sampleMethod: UpdateSampleMethod = {
+      const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,

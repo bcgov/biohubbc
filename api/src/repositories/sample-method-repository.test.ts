@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import { InsertSampleMethod, SampleMethodRepository } from './sample-method-repository';
+import { InsertSampleMethodRecord, SampleMethodRepository } from './sample-method-repository';
 
 chai.use(sinonChai);
 
@@ -48,7 +48,7 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleMethod: InsertSampleMethod = {
+      const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
@@ -69,7 +69,7 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleMethod: InsertSampleMethod = {
+      const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
@@ -96,7 +96,7 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleMethod: InsertSampleMethod = {
+      const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',
@@ -116,7 +116,7 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleMethod: InsertSampleMethod = {
+      const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',

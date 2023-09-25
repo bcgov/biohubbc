@@ -2,17 +2,17 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
-import { InsertSamplePeriod } from './sample-period-repository';
+import { InsertSamplePeriodRecord } from './sample-period-repository';
 
-export type InsertSampleMethod = Pick<
+export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
   'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
-> & { periods: InsertSamplePeriod[] };
+> & { periods: InsertSamplePeriodRecord[] };
 
-export type UpdateSampleMethod = Pick<
+export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
   'survey_sample_method_id' | 'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
-> & { periods: InsertSamplePeriod[] };
+> & { periods: InsertSamplePeriodRecord[] };
 
 // This describes a row in the database for Survey Sample Method
 export const SampleMethodRecord = z.object({
@@ -57,11 +57,11 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * updates a survey Sample method.
    *
-   * @param {UpdateSampleMethod} sampleMethod
+   * @param {UpdateSampleMethodRecord} sampleMethod
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async updateSampleMethod(sampleMethod: UpdateSampleMethod): Promise<SampleMethodRecord> {
+  async updateSampleMethod(sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
     const sql = SQL`
       UPDATE survey_sample_method
       SET
@@ -88,11 +88,11 @@ export class SampleMethodRepository extends BaseRepository {
   /**
    * Inserts a new survey Sample method.
    *
-   * @param {InsertSampleMethod} sampleMethod
+   * @param {InsertSampleMethodRecord} sampleMethod
    * @return {*}  {Promise<SampleMethodRecord>}
    * @memberof SampleMethodRepository
    */
-  async insertSampleMethod(sampleMethod: InsertSampleMethod): Promise<SampleMethodRecord> {
+  async insertSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SampleMethodRecord> {
     const sqlStatement = SQL`
     INSERT INTO survey_sample_method (
       survey_sample_site_id,

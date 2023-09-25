@@ -3,8 +3,9 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
+import { jsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
-import { InsertSampleMethod } from './sample-method-repository';
+import { InsertSampleMethodRecord } from './sample-method-repository';
 
 export interface PostSampleLocation {
   survey_sample_site_id: number | null;
@@ -20,7 +21,7 @@ export interface PostSampleLocations {
   name: string;
   description: string;
   survey_sample_sites: Feature[];
-  methods: InsertSampleMethod[];
+  methods: InsertSampleMethodRecord[];
 }
 
 // This describes a row in the database for Survey Sample Location
@@ -29,7 +30,7 @@ export const SampleLocationRecord = z.object({
   survey_id: z.number(),
   name: z.string(),
   description: z.string(),
-  geojson: z.any(),
+  geojson: jsonSchema,
   geography: z.any(),
   create_date: z.string(),
   create_user: z.number(),
