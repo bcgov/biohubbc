@@ -61,10 +61,10 @@ const SamplingSitePage = () => {
   const samplingSiteYupSchema = yup.object({
     name: yup.string().default(''),
     description: yup.string().default(''),
-    survey_sample_sites: yup.array(yup.object({})),
+    survey_sample_sites: yup.array(yup.object()).min(1, 'At least one sampling site is required'),
     methods: yup
       .array(yup.object().concat(SamplingSiteMethodYupSchema))
-      .min(1, 'At least 1 Sampling Method is required')
+      .min(1, 'At least one sampling method is required')
   });
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {

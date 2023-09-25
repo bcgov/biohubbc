@@ -2,6 +2,7 @@ import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
 import { Feature, Polygon } from 'geojson';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { LatLngBounds } from 'leaflet';
 import _ from 'lodash';
 import moment from 'moment';
@@ -334,4 +335,27 @@ export const datesSameNullable = (date1: string | undefined, date2: string | und
  */
 export const pluralize = (quantity: number, word: string, singularSuffix = '', pluralSuffix = 's') => {
   return `${word}${quantity === 1 ? singularSuffix : pluralSuffix}`;
+};
+
+/**
+ * Search through the Codes Response object for a given key (type of code)
+ * for a particular codes (based on id) name.
+ *
+ * @param codes The Codes to search for
+ * @param key Key word to access a code set
+ * @param id ID of the code to find
+ * @returns Name associated with the code
+ */
+export const getCodesName = (
+  codes: IGetAllCodeSetsResponse | undefined,
+  key: keyof IGetAllCodeSetsResponse,
+  id: number
+): string | undefined => {
+  let name: string | undefined = undefined;
+  if (codes) {
+    const values: any = codes[key];
+    const code = values.find((item: any) => item.id === id);
+    name = code?.name;
+  }
+  return name;
 };
