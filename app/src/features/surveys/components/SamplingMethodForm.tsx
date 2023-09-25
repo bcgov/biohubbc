@@ -1,5 +1,3 @@
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
 import { mdiCalendarRangeOutline, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -15,22 +13,24 @@ import {
   MenuItem,
   MenuProps
 } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
 import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
 import CreateSamplingMethod from './CreateSamplingMethod';
 import EditSamplingMethod from './EditSamplingMethod';
 import { IEditSurveySampleMethodData } from './MethodForm';
-import { TransitionGroup } from 'react-transition-group';
-import Collapse from '@mui/material/Collapse';
 
 const SamplingMethodForm = () => {
   const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
@@ -124,10 +124,11 @@ const SamplingMethodForm = () => {
             locations and can be modified later if required.
           </Typography>
           {errors.methods && !Array.isArray(errors.methods) && (
-            <Alert sx={{
-              my: 1
-            }}
-              severity="error" >
+            <Alert
+              sx={{
+                my: 1
+              }}
+              severity="error">
               <AlertTitle>Missing sampling method</AlertTitle>
               {errors.methods}
             </Alert>
@@ -162,7 +163,9 @@ const SamplingMethodForm = () => {
                     subheader={item.description}
                     action={
                       <IconButton
-                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleMenuClick(event, index)}
+                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                          handleMenuClick(event, index)
+                        }
                         aria-label="settings">
                         <MoreVertIcon />
                       </IconButton>
@@ -172,12 +175,8 @@ const SamplingMethodForm = () => {
                     sx={{
                       pt: 0,
                       pb: '0 !important'
-                    }}
-                  >
-                    <Typography 
-                      variant="body1" 
-                      gutterBottom
-                    >
+                    }}>
+                    <Typography variant="body1" gutterBottom>
                       Time Periods
                     </Typography>
                     <List>

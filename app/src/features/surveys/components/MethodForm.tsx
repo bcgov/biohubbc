@@ -62,9 +62,14 @@ export const SamplingSiteMethodYupSchema = yup.object({
   periods: yup
     .array(
       yup.object({
-        start_date: yup.string().isValidDateString().required('Start Date is required'),
+        start_date: yup
+          .string()
+          .typeError('Start Date is required')
+          .isValidDateString()
+          .required('Start Date is required'),
         end_date: yup
           .string()
+          .typeError('End Date is required')
           .isValidDateString()
           .required('End Date is required')
           .isEndDateSameOrAfterStartDate('start_date')
@@ -122,11 +127,12 @@ const MethodForm = () => {
       </Box>
 
       <Box component="fieldset">
-        <Typography component="legend" id="time_periods"
+        <Typography
+          component="legend"
+          id="time_periods"
           sx={{
             mb: 1
-          }}
-        >
+          }}>
           Time Periods
         </Typography>
         <Box>
@@ -137,16 +143,15 @@ const MethodForm = () => {
                 <List disablePadding>
                   {values.periods?.map((_, index) => {
                     return (
-                      <ListItem 
+                      <ListItem
                         alignItems="flex-start"
-                        disableGutters 
+                        disableGutters
                         key={index}
-                          sx={{
-                            '& .MuiListItemSecondaryAction-root': {
-                              top: '36px'
-                            }
-                          }}
-                        >
+                        sx={{
+                          '& .MuiListItemSecondaryAction-root': {
+                            top: '36px'
+                          }
+                        }}>
                         <Box width="100%">
                           <StartEndDateFields
                             formikProps={formikProps}
@@ -159,8 +164,7 @@ const MethodForm = () => {
                         <ListItemSecondaryAction
                           sx={{
                             top: '36px'
-                          }}
-                        >
+                          }}>
                           <IconButton
                             data-testid="delete-icon"
                             aria-label="remove time period"
@@ -191,7 +195,6 @@ const MethodForm = () => {
                   onClick={() => arrayHelpers.push(SurveySampleMethodPeriodArrayItemInitialValues)}>
                   Add Time Period
                 </Button>
-
               </>
             )}
           />
