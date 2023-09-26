@@ -1,6 +1,7 @@
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import {
+  AnimalSex,
   Critter,
   getAnimalFieldName,
   glt,
@@ -16,7 +17,7 @@ const animal: IAnimal = {
     taxon_name: 'taxon',
     animal_id: 'animal',
     wlh_id: 'a',
-    sex: 'Male',
+    sex: AnimalSex.MALE,
     critter_id: v4()
   },
   captures: [

@@ -89,7 +89,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
     <CbSelectWrapper
       name={name}
       label={label}
-      controlProps={{ ...controlProps, disabled: !data?.length }}
+      controlProps={{ ...controlProps, disabled: controlProps?.disabled || !data?.length }}
       onChange={innerChangeHandler}
       value={isValueInRange ? val : ''}>
       {data?.map((a) => {

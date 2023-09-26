@@ -5,15 +5,8 @@ import {
   ADMINISTRATIVE_ACTIVITY_TYPE
 } from '../constants/administrative-activity';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { jsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
-
-// Defines a Zod Schema for a valid JSON value
-const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
-type Literal = z.infer<typeof literalSchema>;
-type Json = Literal | { [key: string]: Json } | Json[];
-export const JsonSchema: z.ZodType<Json> = z.lazy(() =>
-  z.union([literalSchema, z.array(JsonSchema), z.record(JsonSchema)])
-);
 
 export const IAdministrativeActivityStanding = z.object({
   has_pending_acccess_request: z.boolean(),
@@ -29,7 +22,7 @@ export const IAdministrativeActivity = z.object({
   status: z.number(),
   status_name: z.string(),
   description: z.string().nullable(),
-  data: JsonSchema,
+  data: jsonSchema,
   notes: z.string().nullable(),
   create_date: z.string()
 });

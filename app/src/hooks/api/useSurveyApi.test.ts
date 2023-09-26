@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
+import { AnimalSex, Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
@@ -28,7 +28,7 @@ describe('useSurveyApi', () => {
           taxon_id: v4(),
           taxon_name: '1',
           wlh_id: 'a',
-          sex: 'Male',
+          sex: AnimalSex.UNKNOWN,
           critter_id: v4()
         },
         captures: [],

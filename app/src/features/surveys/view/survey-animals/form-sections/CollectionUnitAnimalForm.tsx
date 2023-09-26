@@ -29,12 +29,12 @@ const CollectionUnitAnimalForm = () => {
   }, [values.general.taxon_id]);
 
   const name: keyof IAnimal = 'collectionUnits';
-  const newCollectionUnit: IAnimalCollectionUnit = {
+  const newCollectionUnit = (): IAnimalCollectionUnit => ({
     _id: v4(),
     collection_unit_id: '',
     collection_category_id: '',
     critter_collection_unit_id: undefined
-  };
+  });
 
   //Animals may have multiple collection units, but only one instance of each category.
   //We use this and pass to the select component to ensure categories already used in the form can't be selected again.
@@ -59,7 +59,7 @@ const CollectionUnitAnimalForm = () => {
               Object.keys(disabledCategories).length === categoriesData.length ||
               !lastAnimalValueValid('collectionUnits', values)
             }
-            handleAddSection={() => push(newCollectionUnit)}
+            handleAddSection={() => push(newCollectionUnit())}
             handleRemoveSection={remove}>
             {values.collectionUnits.map((unit, index) => (
               <Fragment key={unit._id}>

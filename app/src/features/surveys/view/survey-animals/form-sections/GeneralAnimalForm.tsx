@@ -16,7 +16,7 @@ import FormSectionWrapper from './FormSectionWrapper';
  */
 
 const GeneralAnimalForm = () => {
-  const { setFieldValue, handleBlur } = useFormikContext<IAnimal>();
+  const { setFieldValue, handleBlur, values } = useFormikContext<IAnimal>();
   const name: keyof IAnimal = 'general';
 
   const handleTaxonName = (_value: string, label: string) => {
@@ -33,7 +33,11 @@ const GeneralAnimalForm = () => {
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
             <CbSelectField
               name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
-              controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'), size: 'small' }}
+              controlProps={{
+                required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'),
+                size: 'small',
+                disabled: !!values.collectionUnits.length
+              }}
               label={'Taxon'}
               id={'taxon'}
               route={'lookups/taxons'}

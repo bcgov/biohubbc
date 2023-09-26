@@ -127,6 +127,39 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Upload survey keyx files.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<IUploadAttachmentResponse>}
+   */
+  const uploadSurveyKeyx = async (
+    projectId: number,
+    surveyId: number,
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<IUploadAttachmentResponse> => {
+    const req_message = new FormData();
+
+    req_message.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`,
+      req_message,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
    * Upload survey reports.
    *
    * @param {number} projectId
@@ -484,8 +517,23 @@ const useSurveyApi = (axios: AxiosInstance) => {
     createSection: Critter | undefined
   ) => {
     const payload = {
+<<<<<<< HEAD
       update: critterToPayloadTransform(updateSection),
       create: createSection ? critterToPayloadTransform(createSection, true) : undefined
+=======
+      critters: [
+        {
+          critter_id: critter.critter_id,
+          animal_id: critter.animal_id,
+          sex: critter.sex,
+          taxon_id: critter.taxon_id,
+          wlh_id: critter.wlh_id
+        }
+      ],
+      qualitative_measurements: critter.measurements.qualitative,
+      quantitative_measurements: critter.measurements.quantitative,
+      ...critter
+>>>>>>> dev
     };
     const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
     return data;
@@ -541,6 +589,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
+    uploadSurveyKeyx,
     uploadSurveyReports,
     updateSurveyReportMetadata,
     getSurveyReportDetails,

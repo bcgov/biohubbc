@@ -1,6 +1,6 @@
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { v4 } from 'uuid';
-import { Critter, IAnimal } from './animal';
+import { AnimalSex, Critter, IAnimal } from './animal';
 
 /**
  * Takes the 'detailed' format response from the Critterbase DB and transforms the response into an object that is usable
@@ -19,7 +19,7 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       wlh_id: existingCritter.wlh_id ?? '',
       taxon_id: existingCritter.taxon_id,
       animal_id: existingCritter.animal_id ?? '',
-      sex: existingCritter.sex,
+      sex: existingCritter.sex as AnimalSex,
       taxon_name: existingCritter.taxon,
       critter_id: existingCritter.critter_id
     },

@@ -63,8 +63,8 @@ POST.apiDoc = {
             'partnerships',
             'proprietor',
             'purpose_and_methodology',
+            'locations',
             'site_selection',
-            'location',
             'agreements',
             'participants'
           ],
@@ -220,6 +220,30 @@ POST.apiDoc = {
                 }
               }
             },
+            locations: {
+              description: 'Survey location data',
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['name', 'description', 'geojson'],
+                properties: {
+                  name: {
+                    type: 'string',
+                    maxLength: 100
+                  },
+                  description: {
+                    type: 'string',
+                    maxLength: 250
+                  },
+                  geojson: {
+                    type: 'array',
+                    items: {
+                      ...(GeoJSONFeature as object)
+                    }
+                  }
+                }
+              }
+            },
             site_selection: {
               type: 'object',
               required: ['strategies', 'stratums'],
@@ -243,20 +267,6 @@ POST.apiDoc = {
                         type: 'string'
                       }
                     }
-                  }
-                }
-              }
-            },
-            location: {
-              type: 'object',
-              properties: {
-                survey_area_name: {
-                  type: 'string'
-                },
-                geometry: {
-                  type: 'array',
-                  items: {
-                    ...(GeoJSONFeature as object)
                   }
                 }
               }
@@ -345,7 +355,6 @@ export function createSurvey(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyService(connection);
-
       const surveyId = await surveyService.createSurveyAndUploadMetadataToBioHub(projectId, sanitizedPostSurveyData);
 
       await connection.commit();
