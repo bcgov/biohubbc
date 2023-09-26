@@ -116,7 +116,7 @@ const SurveyAnimals: React.FC = () => {
           (critter: IDetailedCritterWithInternalId) => currentCritterbaseCritterId === critter.critter_id
         );
         if (!existingCritter) {
-          throw Error('This should not be reachable.');
+          throw Error('The data required for pre-populating the edit form was not present.');
         }
         return transformCritterbaseAPIResponseToForm(existingCritter);
       }
@@ -179,7 +179,6 @@ const SurveyAnimals: React.FC = () => {
       }
     } catch (err) {
       setPopup('Submission failed.');
-      console.log(`Critter submission error ${JSON.stringify(err)}`);
     }
   };
 

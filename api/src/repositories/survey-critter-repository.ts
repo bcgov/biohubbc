@@ -78,6 +78,7 @@ export class SurveyCritterRepository extends BaseRepository {
    */
   async upsertDeployment(critterId: number, deplyomentId: string): Promise<number> {
     defaultLog.debug({ label: 'addDeployment', deplyomentId });
+    //This update operation intentionally changes nothing. Only really being done to trigger update audit columns.
     const queryBuilder = getKnex()
       .table('deployment')
       .insert({ critter_id: critterId, bctw_deployment_id: deplyomentId })

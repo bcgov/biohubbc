@@ -24,8 +24,8 @@ const animal: IAnimal = {
     {
       _id: v4(),
       capture_id: v4(),
-      capture_location_id: v4(),
-      release_location_id: v4(),
+      capture_location_id: undefined,
+      release_location_id: undefined,
       capture_latitude: 3,
       capture_longitude: 3,
       capture_utm_northing: 19429156.095,
