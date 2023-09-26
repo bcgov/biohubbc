@@ -12,7 +12,7 @@ export interface IObservationRecord {
   samplingMethod: string | undefined;
   samplingPeriod: string | undefined;
   count: number | undefined;
-  date: string | undefined;
+  date: Date | undefined;
   time: string | undefined;
   latitude: number | undefined;
   longitude: number | undefined;
@@ -32,11 +32,11 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           samplingSite: 'Site 1',
           samplingMethod: 'Method 1',
           samplingPeriod: undefined,
-          count: undefined,
-          date: undefined,
-          time: undefined,
-          latitude: undefined,
-          longitude: undefined
+          count: 1,
+          date: new Date('2020-01-01'),
+          time: '12:00:00',
+          latitude: 45,
+          longitude: 125
         },
         {
           observation_id: 2,
@@ -44,11 +44,11 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           samplingSite: 'Site 1',
           samplingMethod: 'Method 1',
           samplingPeriod: undefined,
-          count: undefined,
-          date: undefined,
-          time: undefined,
-          latitude: undefined,
-          longitude: undefined
+          count: 2,
+          date: new Date('2021-01-01'),
+          time: '13:00:00',
+          latitude: 46,
+          longitude: 126
         },
         {
           observation_id: 3,
@@ -56,11 +56,11 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           samplingSite: 'Site 1',
           samplingMethod: 'Method 1',
           samplingPeriod: undefined,
-          count: undefined,
-          date: undefined,
-          time: undefined,
-          latitude: undefined,
-          longitude: undefined
+          count: 3,
+          date: new Date('2022-01-01'),
+          time: '14:00:00',
+          latitude: 47,
+          longitude: 127
         }
       ])
     }, 1000 * (Math.random() + 1));

@@ -40,12 +40,11 @@ export class ObservationRepository extends BaseRepository {
   /**
    * TODO
    *
-   * @param {number} surveyId
    * @param {((Observation | ObservationRecord)[])} observations
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async insertUpdateSurveyObservations(surveyId: number, observations: (InsertObservation | UpdateObservation)[]): Promise<ObservationRecord[]> {
+  async insertUpdateSurveyObservations(observations: (InsertObservation | UpdateObservation)[]): Promise<ObservationRecord[]> {
     const insertQuery = getKnex()
       .insert(observations)
       .into('survey_observation')

@@ -6,7 +6,6 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
-import { TaxonomyService } from '../../../../../../services/taxonomy-service';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/get');
 
@@ -224,9 +223,7 @@ PUT.apiDoc = {
           schema: {
             type: 'object',
             properties: {
-              submissionId: {
-                type: 'number'
-              }
+              // TODO do we need to include anything in this response?
             }
           }
         }
@@ -287,12 +284,11 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
+      
+      /*
       const taxonomyService = new TaxonomyService();
-
-      const promises: Promise<(InsertObservation | UpdateObservation)>[] = req.body.map(async (record: any) => {
-        const taxonCodes = await taxonomyService.searchSpecies(record.speciesName.toLowerCase());
-
-        return {
+      const promises: Promise<(InsertObservation | UpdateObservation)>[] = req.body.map((record: any) => {
+        return taxonomyService.searchSpecies(record.speciesName.toLowerCase()).then((taxonCodes) => ({        
           survey_id: surveyId,
           survey_observation_id: record.survey_observation_id,
           wldtaxonomic_units_id: taxonCodes[0].id,
@@ -300,13 +296,26 @@ export function insertUpdateSurveyObservations(): RequestHandler {
           longitude: record.longitude,
           count: record.count,
           observation_datetime: new Date(`${record.date} ${record.time}`)
-        };
+        }))
+      });
+      const records = await Promise.all(promises);
+      */
+
+      const records: (InsertObservation | UpdateObservation)[] = req.body.map((record: any) => {
+        return {        
+          survey_id: surveyId,
+          survey_observation_id: record.survey_observation_id,
+          wldtaxonomic_units_id: 1234,
+          latitude: record.latitude,
+          longitude: record.longitude,
+          count: record.count,
+          observation_datetime: new Date(`${record.date} ${record.time}`)
+        }
       });
 
-      const records = await Promise.all(promises);
-      
-      const surveyObservations = observationService.insertUpdateSurveyObservations(surveyId, records);
-      return res.status(200).json({ surveyObservations });
+      await observationService.insertUpdateSurveyObservations(records);
+
+      return res.status(200).json({});
     } catch (error) {
       defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });
       await connection.rollback();

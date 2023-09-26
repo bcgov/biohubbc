@@ -13,13 +13,12 @@ export class ObservationService extends DBService {
   /**
    * TODO
    *
-   * @param {number} surveyId
    * @param {((Observation | ObservationRecord)[])} observations
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationService
    */
-  async insertUpdateSurveyObservations(surveyId: number, observations: (InsertObservation | UpdateObservation)[]): Promise<ObservationRecord[]> {
-    return this.observationRepository.insertUpdateSurveyObservations(surveyId, observations);
+  async insertUpdateSurveyObservations(observations: (InsertObservation | UpdateObservation)[]): Promise<ObservationRecord[]> {
+    return this.observationRepository.insertUpdateSurveyObservations(observations);
   }
 
   /**
