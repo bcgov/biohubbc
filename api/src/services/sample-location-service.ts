@@ -64,6 +64,7 @@ export class SampleLocationService extends DBService {
   async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleLocationRecord[]> {
     const methodService = new SampleMethodService(this.connection);
 
+    // Create a sample location for each feature found
     const promises = sampleLocations.survey_sample_sites.map((item, index) => {
       const sampleLocation = {
         survey_id: sampleLocations.survey_id,
@@ -76,6 +77,8 @@ export class SampleLocationService extends DBService {
     });
     const results = await Promise.all<SampleLocationRecord>(promises);
 
+    // Loop through all newly reaction sample locations
+    // For reach sample location, create methods and associated with sample location id
     const methodPromises = results.map((sampleSite: SampleLocationRecord) =>
       sampleLocations.methods.map((item) => {
         const sampleMethod = {

@@ -53,9 +53,11 @@ export class SampleMethodService extends DBService {
    * @memberof SampleMethodService
    */
   async insertSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SampleMethodRecord> {
+    // Create new sample method
     const record = await this.sampleMethodRepository.insertSampleMethod(sampleMethod);
 
     const samplePeriodService = new SamplePeriodService(this.connection);
+    // Loop through and create periods, associating the newly created sample method id to each
     const promises = sampleMethod.periods.map((item) => {
       const samplePeriod = {
         survey_sample_method_id: record.survey_sample_method_id,
