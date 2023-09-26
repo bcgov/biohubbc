@@ -178,7 +178,7 @@ PUT.apiDoc = {
   requestBody: {
     description: 'Survey observation record data',
     content: {
-      'multipart/form-data': {
+      'application/json': {
         schema: {
           type: 'object',
           properties: {
@@ -193,7 +193,7 @@ PUT.apiDoc = {
                     type: 'string'
                   },
                   count: {
-                    type: 'string'
+                    type: 'number'
                   },
                   latitude: {
                     type: 'number'
