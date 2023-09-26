@@ -4,7 +4,8 @@ import sinonChai from 'sinon-chai';
 import {
   InsertSampleMethodRecord,
   SampleMethodRecord,
-  SampleMethodRepository
+  SampleMethodRepository,
+  UpdateSampleMethodRecord
 } from '../repositories/sample-method-repository';
 import { SamplePeriodRecord } from '../repositories/sample-period-repository';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -131,8 +132,8 @@ describe('SampleMethodService', () => {
         method_lookup_id: 3,
         description: 'description',
         periods: [
-          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1, survey_sample_period_id: 4 },
-          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1, survey_sample_period_id: 5 }
+          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1 },
+          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1 }
         ]
       };
       const sampleMethodService = new SampleMethodService(mockDBConnection);

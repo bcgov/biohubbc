@@ -2,7 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
-import { InsertSamplePeriodRecord } from './sample-period-repository';
+import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
 
 export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
@@ -12,7 +12,7 @@ export type InsertSampleMethodRecord = Pick<
 export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
   'survey_sample_method_id' | 'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
-> & { periods: InsertSamplePeriodRecord[] };
+> & { periods: UpdateSamplePeriodRecord[] };
 
 // This describes a row in the database for Survey Sample Method
 export const SampleMethodRecord = z.object({

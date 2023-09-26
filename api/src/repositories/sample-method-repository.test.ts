@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import { InsertSampleMethodRecord, SampleMethodRepository } from './sample-method-repository';
+import { InsertSampleMethodRecord, SampleMethodRepository, UpdateSampleMethodRecord } from './sample-method-repository';
 
 chai.use(sinonChai);
 
@@ -48,7 +48,7 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleMethod: InsertSampleMethodRecord = {
+      const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
@@ -69,7 +69,7 @@ describe('SampleMethodRepository', () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const sampleMethod: InsertSampleMethodRecord = {
+      const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
@@ -101,8 +101,8 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         description: 'description',
         periods: [
-          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1, survey_sample_period_id: 4 },
-          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1, survey_sample_period_id: 5 }
+          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1 },
+          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1 }
         ]
       };
       const repo = new SampleMethodRepository(dbConnectionObj);
@@ -121,8 +121,8 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         description: 'description',
         periods: [
-          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1, survey_sample_period_id: 4 },
-          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1, survey_sample_period_id: 5 }
+          { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1 },
+          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1 }
         ]
       };
       const repo = new SampleMethodRepository(dbConnectionObj);
