@@ -1,5 +1,3 @@
-/* eslint-disable */
-// @ts-nocheck
 import { layerContentHandlers } from 'components/map/wfs-utils';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
