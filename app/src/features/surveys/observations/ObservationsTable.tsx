@@ -1,7 +1,7 @@
 import { mdiDotsVertical, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
-import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowModelUpdate } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
 import { fetchObservationDemoRows, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
@@ -140,10 +140,6 @@ const ObservationsTable = (props: IObservationsTableProps) => {
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
     event.defaultMuiPrevented = true;
-    return;
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      //
-    }
   };
 
   const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {

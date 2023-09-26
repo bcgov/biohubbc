@@ -47,7 +47,7 @@ export async function up(knex: Knex): Promise<void> {
   ;
   COMMENT ON COLUMN survey_observation.observation_date IS 'The date associated with the observation.'
   ;
-  COMMENT ON COLUMN survey_observation.observation_times IS 'The time associated with the observation.'
+  COMMENT ON COLUMN survey_observation.observation_time IS 'The time associated with the observation.'
   ;
   COMMENT ON COLUMN survey_observation.create_date IS 'The datetime the record was created.'
   ;

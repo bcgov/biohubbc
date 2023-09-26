@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
-import { ApiExecuteSQLError } from '../errors/api-error';
 import SQL from 'sql-template-strings';
 import moment from 'moment';
 
@@ -56,12 +55,14 @@ export class ObservationRepository extends BaseRepository {
         longitude,
         observation_date,
         observation_time
-      ) VALUES 
+      )
+      OVERRIDING SYSTEM VALUE
+      VALUES 
     `;
     
     query.append(observations.map((observation) => {
       return `(${[
-        observation['survey_observation_id'] || 'NULL',
+        observation['survey_observation_id'] || 'DEFAULT',
         surveyId,
         observation.wldtaxonomic_units_id,
         observation.count,
@@ -85,16 +86,21 @@ export class ObservationRepository extends BaseRepository {
       RETURNING *;
     `)
 
+    /*
     console.log(query.text)
     console.log(query.values)
+    */
 
     const response = await this.connection.sql(query, ObservationRecord);
 
+    /*
+    // Not sure if this check is needed, as there may be certain cases where updates are idempotent
     if (!response.rows.length) {
       throw new ApiExecuteSQLError('Failed to insert/update survey observations', [
         'ObservationRepository->insertUpdateSurveyObservations'
       ]);
     }
+    */
 
     return response.rows;
 
