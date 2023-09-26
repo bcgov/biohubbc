@@ -98,7 +98,8 @@ GET.apiDoc = {
                   'latitude',
                   'longitude',
                   'count',
-                  'observation_datetime',
+                  'observation_date',
+                  'observation_time',
                   'create_user',
                   'create_date',
                   'update_user',
@@ -121,7 +122,10 @@ GET.apiDoc = {
                   count: {
                     type: 'integer'
                   },
-                  observation_datetime: {
+                  observation_date: {
+                    type: 'string'
+                  },
+                  observation_time: {
                     type: 'string'
                   },
                   create_date: {
@@ -203,7 +207,7 @@ PUT.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['speciesName', 'count', 'latitude', 'longitude', 'date', 'time'],
+                required: ['speciesName', 'count', 'latitude', 'longitude', 'observation_date', 'observation_time'],
                 properties: {
                   speciesName: {
                     type: 'string'
@@ -217,10 +221,10 @@ PUT.apiDoc = {
                   longitude: {
                     type: 'number'
                   },
-                  date: {
+                  observation_date: {
                     type: 'string'
                   },
-                  time: {
+                  observation_time: {
                     type: 'string'
                   }
                 }
@@ -304,7 +308,8 @@ export function insertUpdateSurveyObservations(): RequestHandler {
           latitude: record.latitude,
           longitude: record.longitude,
           count: record.count,
-          observation_datetime: new Date(`${record.date} ${record.time}`)
+          observation_date: record.observation_date,
+          observation_time: record.observation_time
         }))
       });
       const records = await Promise.all(promises);
@@ -318,7 +323,8 @@ export function insertUpdateSurveyObservations(): RequestHandler {
           latitude: record.latitude,
           longitude: record.longitude,
           count: record.count,
-          observation_datetime: new Date(`${record.date} ${record.time}`)
+          observation_date: record.observation_date,
+          observation_time: record.observation_time
         };
       });
 

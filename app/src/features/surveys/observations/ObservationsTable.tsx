@@ -71,7 +71,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       disableColumnMenu: true
     },
     {
-      field: 'date',
+      field: 'observation_date',
       headerName: 'Date',
       editable: true,
       type: 'date',
@@ -79,7 +79,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       disableColumnMenu: true
     },
     {
-      field: 'time',
+      field: 'observation_date',
       headerName: 'Time',
       editable: true,
       type: 'time',

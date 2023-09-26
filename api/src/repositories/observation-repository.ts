@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
+import { ApiExecuteSQLError } from '../errors/api-error';
+import SQL from 'sql-template-strings';
 
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
@@ -9,7 +11,8 @@ export const ObservationRecord = z.object({
   latitude: z.number(),
   longitude: z.number(),
   count: z.number(),
-  observation_datetime: z.string(),
+  observation_time: z.string(),
+  observation_date: z.string(),
   create_date: z.string(),
   revision_count: z.number()
 });
@@ -18,12 +21,12 @@ export type ObservationRecord = z.infer<typeof ObservationRecord>;
 
 export type InsertObservation = Pick<
   ObservationRecord,
-  'survey_id' | 'wldtaxonomic_units_id' | 'latitude' | 'longitude' | 'count' | 'observation_datetime'
+  'survey_id' | 'wldtaxonomic_units_id' | 'latitude' | 'longitude' | 'count' | 'observation_date' | 'observation_time'
 >;
 
 export type UpdateObservation = Pick<
   ObservationRecord,
-  'survey_observation_id' | 'wldtaxonomic_units_id' | 'latitude' | 'longitude' | 'count' | 'observation_datetime'
+  'survey_observation_id' | 'wldtaxonomic_units_id' | 'latitude' | 'longitude' | 'count' | 'observation_date' | 'observation_time'
 >;
 
 export class ObservationRepository extends BaseRepository {
@@ -39,40 +42,52 @@ export class ObservationRepository extends BaseRepository {
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
-    const knex = getKnex();
-
-    const query = knex.queryBuilder()
-      .insert(
-        observations.map((observation) => {
-          return {
-            survey_id: surveyId,
-            ...observation
-            /*
-              survey_observation_id: observation['survey_observation_id'],
-              wldtaxonomic_units_id: observation.wldtaxonomic_units_id,
-              count: observation.count,
-              observation_datetime: observation.observation_datetime,
-              latlong: knex.raw(`POINT(${observation.latitude}, ${observation.longitude})`)
-            */
-          };
-        })
-      )
-      .into('survey_observation')
-      .onConflict(`
-        (survey_observation_id)
-        DO UPDATE SET
-          wldtaxonomic_units_id = EXCLUDED.wldtaxonomic_units_id,
-          count = EXCLUDED.count,
-          observation_datetime = EXCLUDED.observation_datetime,
-          latitude = EXCLUDED.latitude,
-          longitude = EXCLUDED.longitude,
-        RETURNING *;
-      `)
     
-      console.log('query:', String(JSON.stringify(query)));
+    const query = SQL`
+      INSERT INTO
+        survey_observation
+      (
+        survey_observation_id,
+        survey_id,
+        wldtaxonomic_units_id,
+        count,
+        latitude,
+        longitude,
+        observation_date,
+        observation_time
+      ) VALUES 
+    `;
+    
+    query.append(observations.map((observation) => {
+      return `(${[
+        observation['survey_observation_id'] || 'NULL',
+        surveyId,
+        observation.wldtaxonomic_units_id,
+        observation.count,
+        observation.latitude,
+        observation.longitude,
+        observation.observation_date,
+        observation.observation_time
+      ].join(', ')})`;
+    }).join(', '));
 
-    /*
-    const response = await this.connection.query(query, ObservationRecord);
+    query.append(`
+      ON CONFLICT
+        (survey_observation_id)
+      DO UPDATE SET
+        wldtaxonomic_units_id = EXCLUDED.wldtaxonomic_units_id,
+        count = EXCLUDED.count,
+        observation_date = EXCLUDED.observation_date,
+        observation_time = EXCLUDED.observation_time,
+        latitude = EXCLUDED.latitude,
+        longitude = EXCLUDED.longitude,
+      RETURNING *;
+    `)
+
+    console.log(query.text)
+    console.log(query.values)
+
+    const response = await this.connection.sql(query, ObservationRecord);
 
     if (!response.rows.length) {
       throw new ApiExecuteSQLError('Failed to insert/update survey observations', [
@@ -81,8 +96,7 @@ export class ObservationRepository extends BaseRepository {
     }
 
     return response.rows;
-    */
-    return [];
+
   }
 
   /**

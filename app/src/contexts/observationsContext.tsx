@@ -12,8 +12,8 @@ export interface IObservationRecord {
   samplingMethod: string | undefined;
   samplingPeriod: string | undefined;
   count: number | undefined;
-  date: Date | undefined;
-  time: string | undefined;
+  observation_date: Date | undefined;
+  observation_time: string | undefined;
   latitude: number | undefined;
   longitude: number | undefined;
 }
@@ -33,8 +33,8 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           samplingMethod: 'Method 1',
           samplingPeriod: undefined,
           count: 1,
-          date: new Date('2020-01-01'),
-          time: '12:00:00',
+          observation_date: new Date('2020-01-01'),
+          observation_time: '12:00:00',
           latitude: 45,
           longitude: 125
         },
@@ -45,8 +45,8 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           samplingMethod: 'Method 1',
           samplingPeriod: undefined,
           count: 2,
-          date: new Date('2021-01-01'),
-          time: '13:00:00',
+          observation_date: new Date('2021-01-01'),
+          observation_time: '13:00:00',
           latitude: 46,
           longitude: 126
         },
@@ -57,8 +57,8 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           samplingMethod: 'Method 1',
           samplingPeriod: undefined,
           count: 3,
-          date: new Date('2022-01-01'),
-          time: '14:00:00',
+          observation_date: new Date('2022-01-01'),
+          observation_time: '14:00:00',
           latitude: 47,
           longitude: 127
         }
