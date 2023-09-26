@@ -517,23 +517,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     createSection: Critter | undefined
   ) => {
     const payload = {
-<<<<<<< HEAD
       update: critterToPayloadTransform(updateSection),
       create: createSection ? critterToPayloadTransform(createSection, true) : undefined
-=======
-      critters: [
-        {
-          critter_id: critter.critter_id,
-          animal_id: critter.animal_id,
-          sex: critter.sex,
-          taxon_id: critter.taxon_id,
-          wlh_id: critter.wlh_id
-        }
-      ],
-      qualitative_measurements: critter.measurements.qualitative,
-      quantitative_measurements: critter.measurements.quantitative,
-      ...critter
->>>>>>> dev
     };
     const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
     return data;

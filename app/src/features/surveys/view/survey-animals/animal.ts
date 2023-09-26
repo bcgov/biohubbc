@@ -1,5 +1,5 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
-import { omit, omitBy, isEqual as deepEquals } from 'lodash-es';
+import { isEqual as deepEquals, omit, omitBy } from 'lodash-es';
 import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
