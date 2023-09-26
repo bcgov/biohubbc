@@ -23,7 +23,7 @@ const HorizontalSplitFormComponent: React.FC<IHorizontalSplitFormComponentProps>
         <Typography variant="h3" component="h2">
           {title}
         </Typography>
-        <Box pt={2} pb={3} maxWidth="55ch">
+        <Box pt={'10px'} pb={3} maxWidth="55ch">
           <Typography variant="body1" color="textSecondary">
             {summary}
           </Typography>
