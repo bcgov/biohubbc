@@ -131,7 +131,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                 mapId={mapId}
                 staticLayers={[
                   {
-                    layerName: 'Spatial',
+                    layerName: 'Sampling Sites',
                     features: samplingSiteGeoJsonFeatures.map((feature: Feature) => ({ geoJSON: feature }))
                   }
                 ]}
