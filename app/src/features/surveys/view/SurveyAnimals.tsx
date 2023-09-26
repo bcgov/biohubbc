@@ -172,8 +172,12 @@ const SurveyAnimals: React.FC = () => {
       await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
       setPopup('Successfully added deployment.');
       surveyContext.artifactDataLoader.refresh(projectId, surveyId);
-    } catch (error: any) {
-      setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'));
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'));
+      } else {
+        setPopup('Failed to add deployment.');
+      }
     }
   };
 
@@ -199,7 +203,7 @@ const SurveyAnimals: React.FC = () => {
         ) {
           try {
             await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
-          } catch (e) {
+          } catch (error) {
             setPopup(`Failed to update deployment ${formDeployment.deployment_id}`);
           }
         }
