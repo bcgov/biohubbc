@@ -1,5 +1,4 @@
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { v4 } from 'uuid';
 import { IAnimal, IAnimalCapture, IAnimalMarking } from './animal';
 import { arrDiff, createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 

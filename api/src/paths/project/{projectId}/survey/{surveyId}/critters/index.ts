@@ -47,25 +47,6 @@ export const GET: Operation = [
   getCrittersFromSurvey()
 ];
 
-export const PATCH: Operation = [
-  authorizeRequestHandler((req) => {
-    return {
-      or: [
-        {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          projectId: Number(req.params.projectId),
-          discriminator: 'ProjectPermission'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
-        }
-      ]
-    };
-  }),
-  updateSurveyCritter()
-];
-
 GET.apiDoc = {
   description: 'Get all critters under this survey.',
   tags: ['critterbase'],
@@ -182,73 +163,6 @@ POST.apiDoc = {
   }
 };
 
-PATCH.apiDoc = {
-  description:
-    'Creates a new critter in critterbase, and if successful, adds the a link to the critter_id under this survey.',
-  tags: ['critterbase'],
-  security: [
-    {
-      Bearer: []
-    }
-  ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'surveyId',
-      schema: {
-        type: 'number'
-      },
-      required: true
-    }
-  ],
-  requestBody: {
-    description: 'Critterbase bulk creation request object',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            create: {
-              type: 'object'
-            },
-            update: {
-              type: 'object'
-            }
-          }
-        }
-      }
-    }
-  },
-  responses: {
-    200: {
-      description: 'Responds with counts of objects created in critterbase.',
-      content: {
-        'application/json': {
-          schema: {
-            title: 'Bulk creation response object',
-            type: 'object'
-          }
-        }
-      }
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/401'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
-
 export function getCrittersFromSurvey(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
@@ -314,41 +228,6 @@ export function addCritterToSurvey(): RequestHandler {
       return res.status(201).json(result);
     } catch (error) {
       defaultLog.error({ label: 'createCritter', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
-export function updateSurveyCritter(): RequestHandler {
-  return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-    const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyCritterService(connection);
-    const cb = new CritterbaseService(user);
-    try {
-      await connection.open();
-      if (!req.body.update.critter_id) {
-        throw Error('No critter id found.');
-      }
-      await surveyService.updateCritter(surveyId, req.body.update.critter_id);
-      let result;
-      if (req.body.update) {
-        result = await cb.updateCritter(req.body.update);
-      }
-      if (req.body.create) {
-        result = await cb.createCritter(req.body.create);
-      }
-      await connection.commit();
-      return res.status(200).json(result);
-    } catch (error) {
-      defaultLog.error({ label: 'updateCritter', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -42,12 +42,12 @@ export class SurveyCritterRepository extends BaseRepository {
     await this.connection.knex(queryBuilder);
   }
 
-  async updateCritter(surveyId: number, critterId: string): Promise<void> {
-    defaultLog.debug({ label: 'updateCritter', surveyId });
+  async updateCritter(critterId: number, critterbaseCritterId: string): Promise<void> {
+    defaultLog.debug({ label: 'updateCritter', critterId });
     const queryBuilder = getKnex()
       .table('critter')
-      .update({ survey_id: surveyId, critterbase_critter_id: critterId })
-      .where({ survey_id: surveyId, critterbase_critter_id: critterId });
+      .update({ critterbase_critter_id: critterbaseCritterId })
+      .where({ critterId: critterId });
     await this.connection.knex(queryBuilder);
   }
 

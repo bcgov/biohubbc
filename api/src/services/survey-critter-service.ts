@@ -37,8 +37,8 @@ export class SurveyCritterService extends DBService {
    * @param {string} critterBaseCritterId
    * @returns {*}
    */
-  async updateCritter(surveyId: number, critterBaseCritterId: string): Promise<void> {
-    this.critterRepository.updateCritter(surveyId, critterBaseCritterId);
+  async updateCritter(critterId: number, critterBaseCritterId: string): Promise<void> {
+    this.critterRepository.updateCritter(critterId, critterBaseCritterId);
   }
 
   /**

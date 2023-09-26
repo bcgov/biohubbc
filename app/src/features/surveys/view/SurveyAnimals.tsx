@@ -167,7 +167,10 @@ const SurveyAnimals: React.FC = () => {
         currentFormValues
       );
       toggleDialog();
-      await bhApi.survey.updateSurveyCritter(projectId, surveyId, updateCritter, createCritter);
+      if (!selectedCritterId) {
+        throw Error('The internal critter id for this row was not set correctly.');
+      }
+      await bhApi.survey.updateSurveyCritter(projectId, surveyId, selectedCritterId, updateCritter, createCritter);
       refreshCritters();
       setPopup('Animal data updated.');
     };

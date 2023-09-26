@@ -513,6 +513,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const updateSurveyCritter = async (
     projectId: number,
     surveyId: number,
+    critterId: number,
     updateSection: Critter,
     createSection: Critter | undefined
   ) => {
@@ -520,7 +521,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
       update: critterToPayloadTransform(updateSection),
       create: createSection ? critterToPayloadTransform(createSection, true) : undefined
     };
-    const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
+    const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`, payload);
     return data;
   };
 
