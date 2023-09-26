@@ -1,7 +1,9 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import FormData from 'form-data';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
+import { HTTP500 } from '../errors/http-error';
 import { KeycloakService } from './keycloak-service';
 
 export const IDeployDevice = z.object({
@@ -45,6 +47,28 @@ export const IDeploymentRecord = z.object({
 
 export type IDeploymentRecord = z.infer<typeof IDeploymentRecord>;
 
+export const IUploadKeyxResponse = z.object({
+  errors: z.array(
+    z.object({
+      row: z.string(),
+      error: z.string(),
+      rownum: z.number()
+    })
+  ),
+  results: z.array(
+    z.object({
+      idcollar: z.number(),
+      comtype: z.string(),
+      idcom: z.string(),
+      collarkey: z.string(),
+      collartype: z.number(),
+      dtlast_fetch: z.string().nullable()
+    })
+  )
+});
+
+export type IUploadKeyxResponse = z.infer<typeof IUploadKeyxResponse>;
+
 export const IBctwUser = z.object({
   keycloak_guid: z.string(),
   username: z.string()
@@ -72,6 +96,7 @@ export const GET_COLLAR_VENDORS_ENDPOINT = '/get-collar-vendors';
 export const HEALTH_ENDPOINT = '/health';
 export const GET_CODE_ENDPOINT = '/get-code';
 export const GET_DEVICE_DETAILS = '/get-collar-history-by-device/';
+export const UPLOAD_KEYX_ENDPOINT = '/import-xml';
 
 export class BctwService {
   user: IBctwUser;
@@ -85,7 +110,8 @@ export class BctwService {
       headers: {
         user: this.getUserHeader()
       },
-      baseURL: BCTW_API_HOST
+      baseURL: BCTW_API_HOST,
+      timeout: 10000
     });
 
     this.axiosInstance.interceptors.response.use(
@@ -93,10 +119,23 @@ export class BctwService {
         return response;
       },
       (error: AxiosError) => {
+        if (
+          error?.code === 'ECONNREFUSED' ||
+          error?.code === 'ECONNRESET' ||
+          error?.code === 'ETIMEOUT' ||
+          error?.code === 'ECONNABORTED'
+        ) {
+          return Promise.reject(
+            new HTTP500('Connection to the BCTW API server was refused. Please try again later.', [error?.message])
+          );
+        }
+
         return Promise.reject(
-          new ApiError(ApiErrorType.UNKNOWN, `API request failed with status code ${error?.response?.status}`, [
-            error?.response?.data
-          ])
+          new ApiError(
+            ApiErrorType.UNKNOWN,
+            `API request failed with status code ${error?.response?.status}`,
+            error?.request?.data
+          )
         );
       }
     );
@@ -253,6 +292,42 @@ export class BctwService {
    */
   async getHealth(): Promise<string> {
     return this._makeGetRequest(HEALTH_ENDPOINT);
+  }
+
+  /**
+   * Upload a single or multiple zipped keyX files to the BCTW API.
+   *
+   * @param {Express.Multer.File} keyX
+   * @return {*}  {Promise<string>}
+   * @memberof BctwService
+   */
+  async uploadKeyX(keyX: Express.Multer.File) {
+    const formData = new FormData();
+    formData.append('xml', keyX.buffer, keyX.originalname);
+    const config = {
+      headers: {
+        ...formData.getHeaders()
+      }
+    };
+    const response = await this.axiosInstance.post(UPLOAD_KEYX_ENDPOINT, formData, config);
+    const data: IUploadKeyxResponse = response.data;
+    if (data.errors.length) {
+      const actualErrors: string[] = [];
+      for (const error of data.errors) {
+        // Ignore errors that indicate that a keyX already exists
+        if (!error.error.endsWith('already exists')) {
+          actualErrors.push(error.error);
+        }
+      }
+      if (actualErrors.length) {
+        throw new ApiError(ApiErrorType.UNKNOWN, 'API request failed with errors', actualErrors);
+      }
+    }
+    return {
+      totalKeyxFiles: data.results.length + data.errors.length,
+      newRecords: data.results.length,
+      existingRecords: data.errors.length
+    };
   }
 
   /**

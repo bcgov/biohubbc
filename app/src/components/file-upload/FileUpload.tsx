@@ -104,6 +104,13 @@ export interface IFileUploadProps {
    */
   dropZoneProps?: Partial<IDropZoneConfigProps>;
   /**
+   * If `true`, show advanced error details on a failed upload, for each upload item.
+   *
+   * @type {boolean}
+   * @memberof IFileUploadProps
+   */
+  enableErrorDetails?: boolean;
+  /**
    * A component that renders a file Upload item.
    *
    * @memberof IFileUploadProps
@@ -195,6 +202,7 @@ export const FileUpload = (props: IFileUploadProps) => {
         onCancel={() => removeFile(file.name)}
         fileHandler={props.fileHandler}
         status={props.status}
+        enableErrorDetails={props.enableErrorDetails}
         ActionButtonComponent={FileUploadItemActionButton}
         ProgressBarComponent={FileUploadItemProgressBar}
         {...props.FileUploadItemComponentProps}

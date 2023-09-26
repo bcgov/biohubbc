@@ -11,7 +11,7 @@ import { ISubtextProps } from 'components/file-upload/FileUploadItem';
  */
 const FileUploadItemSubtext = (props: ISubtextProps) => {
   return (
-    <Typography variant="caption" component="div">
+    <Typography variant="caption" component="span">
       {props.error || props.status}
     </Typography>
   );

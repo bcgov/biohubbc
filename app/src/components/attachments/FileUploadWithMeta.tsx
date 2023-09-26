@@ -13,7 +13,7 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 
 export interface IFileUploadWithMetaProps {
-  attachmentType: AttachmentType.REPORT | AttachmentType.OTHER;
+  attachmentType: AttachmentType.REPORT | AttachmentType.KEYX | AttachmentType.OTHER;
   uploadHandler: IUploadHandler;
   fileHandler?: IFileHandler;
   onSuccess?: IOnUploadSuccess;
@@ -39,7 +39,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
           <ReportMetaForm />
         </Box>
       )}
-      {(props.attachmentType === AttachmentType.REPORT && (
+      {props.attachmentType === AttachmentType.REPORT && (
         <Box component="fieldset">
           <Typography component="legend" variant="body1" id="report_upload">
             Attach File
@@ -64,7 +64,21 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
             </Box>
           )}
         </Box>
-      )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
+      )}
+      {props.attachmentType === AttachmentType.KEYX && (
+        <FileUpload
+          uploadHandler={props.uploadHandler}
+          fileHandler={fileHandler}
+          onSuccess={props.onSuccess}
+          dropZoneProps={{
+            acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.KEYX
+          }}
+          enableErrorDetails={true}
+        />
+      )}
+      {props.attachmentType === AttachmentType.OTHER && (
+        <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />
+      )}
     </form>
   );
 };

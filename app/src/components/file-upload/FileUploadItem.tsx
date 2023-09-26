@@ -6,10 +6,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import axios, { CancelTokenSource } from 'axios';
+import FileUploadItemErrorDetails from 'components/file-upload/FileUploadItemErrorDetails';
 import FileUploadItemSubtext from 'components/file-upload/FileUploadItemSubtext';
 import { APIError } from 'hooks/api/useAxios';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
+import { v4 } from 'uuid';
 import FileUploadItemActionButton from './FileUploadItemActionButton';
 import FileUploadItemProgressBar from './FileUploadItemProgressBar';
 
@@ -90,6 +92,13 @@ export interface IFileUploadItemProps {
    */
   status?: UploadFileStatus;
   /**
+   * If `true`, show advanced error details on a failed upload, for each upload item.
+   *
+   * @type {boolean}
+   * @memberof IFileUploadItemProps
+   */
+  enableErrorDetails?: boolean;
+  /**
    * A component that renders a subtext string for each file upload item.
    * If not provided, a default will be used.
    *
@@ -117,6 +126,12 @@ export interface ISubtextProps {
   status: UploadFileStatus;
   progress: number;
   error?: string;
+  errorDetails?: { _id: string; message: string }[];
+}
+
+export interface IErrorDetailsProps {
+  error?: string;
+  errorDetails?: { _id: string; message: string }[];
 }
 
 export interface IActionButtonProps {
@@ -136,7 +151,9 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
     props;
 
   const [file] = useState<File>(props.file);
+
   const [error, setError] = useState<string | undefined>(props.error);
+  const [errorDetails, setErrorDetails] = useState<{ _id: string; message: string }[] | undefined>();
 
   const [status, setStatus] = useState<UploadFileStatus>(props.status || UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
@@ -210,6 +227,11 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
     uploadHandler(file, cancelToken, handleFileUploadProgress)
       .then(handleFileUploadSuccess, (error: APIError) => {
         setError(error?.message);
+        setErrorDetails(
+          error?.errors?.map((error) => {
+            return { _id: v4(), message: error?.toString() };
+          })
+        );
       })
       .catch();
 
@@ -297,7 +319,15 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
       </ListItemIcon>
       <ListItemText
         primary={file.name}
-        secondary={<Subtext file={file} status={status} progress={progress} error={error} />}
+        secondary={
+          <Subtext
+            file={file}
+            status={status}
+            progress={progress}
+            error={error}
+            errorDetails={[{ _id: '123123', message: 'awdawdawdawdaw' }]}
+          />
+        }
         sx={{
           '& .MuiListItemText-primary': {
             fontWeight: 700
@@ -314,6 +344,7 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
         }}>
         <MemoizedProgressBar status={status} progress={progress} />
       </Box>
+      {props.enableErrorDetails && <FileUploadItemErrorDetails error={error} errorDetails={errorDetails} />}
     </ListItem>
   );
 };
