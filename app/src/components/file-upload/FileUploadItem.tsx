@@ -228,8 +228,8 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
       .then(handleFileUploadSuccess, (error: APIError) => {
         setError(error?.message);
         setErrorDetails(
-          error?.errors?.map((error) => {
-            return { _id: v4(), message: error?.toString() };
+          error.errors?.map((error) => {
+            return { _id: v4(), message: String(error) };
           })
         );
       })
