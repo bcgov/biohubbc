@@ -155,7 +155,7 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
   const [error, setError] = useState<string | undefined>(props.error);
   const [errorDetails, setErrorDetails] = useState<{ _id: string; message: string }[] | undefined>();
 
-  const [status, setStatus] = useState<UploadFileStatus>(props.status || UploadFileStatus.PENDING);
+  const [status, setStatus] = useState<UploadFileStatus>(props.status ?? UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
   const [cancelToken] = useState<CancelTokenSource>(axios.CancelToken.source());
 

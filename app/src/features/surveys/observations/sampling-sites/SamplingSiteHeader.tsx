@@ -41,7 +41,10 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
           <Link variant="body2" underline="hover" href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
-          <Link variant="body2" underline="hover" href={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}>
+          <Link
+            variant="body2"
+            underline="hover"
+            href={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}>
             Manage Survey Observations
           </Link>
           <Typography component="span" color="text.secondary" variant="body2">

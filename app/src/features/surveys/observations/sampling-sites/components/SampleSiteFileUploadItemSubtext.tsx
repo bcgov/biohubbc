@@ -11,7 +11,7 @@ import { getFormattedFileSize } from 'utils/Utils';
  * @return {*}
  */
 const SampleSiteFileUploadItemSubtext = (props: ISubtextProps) => {
-  let subtext = props.error || props.status;
+  let subtext = props.error ?? props.status;
 
   if (props.status === UploadFileStatus.COMPLETE) {
     subtext = getFormattedFileSize(props.file.size);
