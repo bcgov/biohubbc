@@ -1,6 +1,9 @@
 import { IDBConnection } from '../database/db';
 import { InsertObservation, ObservationRecord, ObservationRepository, UpdateObservation } from '../repositories/observation-repository';
+import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+
+const defaultLog = getLogger('services/observation-service');
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
@@ -18,6 +21,7 @@ export class ObservationService extends DBService {
    * @memberof ObservationService
    */
   async insertUpdateSurveyObservations(observations: (InsertObservation | UpdateObservation)[]): Promise<ObservationRecord[]> {
+    defaultLog.debug({ label: 'insertUpdateObservationRecords' })
     return this.observationRepository.insertUpdateSurveyObservations(observations);
   }
 

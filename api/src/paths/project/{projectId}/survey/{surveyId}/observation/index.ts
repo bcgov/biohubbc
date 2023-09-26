@@ -301,7 +301,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       const records = await Promise.all(promises);
       */
 
-      const records: (InsertObservation | UpdateObservation)[] = req.body.map((record: any) => {
+      const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
         return {        
           survey_id: surveyId,
           survey_observation_id: record.survey_observation_id,
