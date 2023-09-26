@@ -1,6 +1,5 @@
 import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-// import * as React from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -10,13 +9,10 @@ import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
-// import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-// import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
-// import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { DataGrid } from '@mui/x-data-grid';
@@ -109,18 +105,12 @@ const columns = [
     resizable: false,
     cellClassName: 'test',
     getActions: () => [
-      <IconButton>
+      <IconButton key={mdiDotsVertical}>
         <Icon path={mdiDotsVertical} size={1} />
       </IconButton>
     ]
   }
 ];
-
-// const rows = [
-//   { id: 1, speciesName: 'Moose (Alces Americanus', samplingSite: 'Site 1', samplingMethod: 'Method 1' },
-//   { id: 2, speciesName: 'Moose (Alces Americanus', samplingSite: 'Site 1', samplingMethod: 'Method 1' },
-//   { id: 3, speciesName: 'Moose (Alces Americanus', samplingSite: 'Site 1', samplingMethod: 'Method 1' }
-// ];
 
 export default function RenderHeaderGrid() {
   return (
@@ -171,27 +161,6 @@ export const PrototypePage = () => {
           Manage Survey Observations
         </Typography>
       </Paper>
-
-      {/* <AppBar
-        position="relative"
-        elevation={1}
-        sx={{
-          flex: '0 0 auto'
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            sx={{
-              mr: 2
-            }}
-          >
-            <Icon path={mdiArrowLeft} size={1}></Icon>
-          </IconButton>
-          <Typography component="h1" variant="h4">Manage Observations Prototype</Typography>
-        </Toolbar>
-      </AppBar> */}
 
       <Box display="flex" flex="1 1 auto">
         {/* Sampling Site List */}
@@ -388,31 +357,8 @@ export const PrototypePage = () => {
           </Toolbar>
 
           <Box display="flex" flexDirection="column" flex="1 1 auto">
-            {/* Map View */}
-
-            {/* <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              flex="1 1 auto"
-              sx={{
-                backgroundColor: grey[100]
-              }}
-            >
-              <Typography variant='body2'>Map View</Typography>
-            </Box> */}
-
             {/* Table View */}
             <Box display="flex" flex="1 1 auto" flexDirection="column">
-              {/* <Toolbar
-                variant="dense"
-                sx={{
-                  flex: '0 0 auto',
-                  borderBottom: '1px solid #ccc'
-                }}
-              >
-                <Typography variant="body2"><strong>Records</strong></Typography>
-              </Toolbar> */}
               <Box flex="1 1 auto" px={2} height="100%">
                 <DataGrid
                   columns={columns}

@@ -27,7 +27,6 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
   return new Promise((resolve, reject) => {
     if (!isZipFile(file)) {
       reject(new Error('Not a .zip file.'));
-      return;
     }
 
     // Create a file reader to extract the binary data
@@ -40,7 +39,6 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
       // Exit out if no zip
       if (!zip) {
         reject(new Error('Failed to parse shape file.'));
-        return;
       }
 
       // Parse the geojson features from the shape file
@@ -57,11 +55,9 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
           }
 
           resolve(features);
-          return;
         })
         .catch((error) => {
           reject(new Error(`Failed to parse shape file: ${(error as Error).message}`));
-          return;
         });
     };
 
