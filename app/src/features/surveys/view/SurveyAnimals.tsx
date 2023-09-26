@@ -17,7 +17,12 @@ import { datesSameNullable, pluralize } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
-import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
+import {
+  AnimalTelemetryDeviceSchema,
+  Device,
+  IAnimalTelemetryDevice,
+  IDeploymentTimespan
+} from './survey-animals/device';
 import IndividualAnimalForm from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
 import TelemetryDeviceForm, {
@@ -181,33 +186,40 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
+  const updateDevice = async (formValues: IAnimalTelemetryDevice) => {
+    const existingDevice = deploymentData?.find((deployment) => deployment.device_id === formValues.device_id);
+    const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
+    if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
+      try {
+        await telemetryApi.devices.upsertCollar(formDevice);
+      } catch (error) {
+        setPopup(`Failed to update device ${formDevice.device_id}`);
+      }
+    }
+  };
+
+  const updateDeployments = async (formDeployments: IDeploymentTimespan[], survey_critter_id: number) => {
+    for (const formDeployment of formDeployments ?? []) {
+      const existingDeployment = deploymentData?.find(
+        (animalDeployment) => animalDeployment.deployment_id === formDeployment.deployment_id
+      );
+      if (
+        !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
+        !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
+      ) {
+        try {
+          await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
+        } catch (error) {
+          setPopup(`Failed to update deployment ${formDeployment.deployment_id}`);
+        }
+      }
+    }
+  };
+
   const handleEditTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
     for (const { attachmentFile, attachmentType, ...formValues } of data) {
-      const existingDevice = deploymentData?.find((deployment) => deployment.device_id === formValues.device_id);
-      const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
-      if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
-        try {
-          await telemetryApi.devices.upsertCollar(formDevice);
-        } catch (error) {
-          setPopup(`Failed to update device ${formDevice.device_id}`);
-        }
-      }
-      // Handle deployments updates
-      for (const formDeployment of formValues.deployments ?? []) {
-        const existingDeployment = deploymentData?.find(
-          (animalDeployment) => animalDeployment.deployment_id === formDeployment.deployment_id
-        );
-        if (
-          !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
-          !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
-        ) {
-          try {
-            await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
-          } catch (error) {
-            setPopup(`Failed to update deployment ${formDeployment.deployment_id}`);
-          }
-        }
-      }
+      await updateDevice(formValues);
+      await updateDeployments(formValues.deployments ?? [], survey_critter_id);
     }
     setPopup('Updated deployment and device data successfully.');
   };
