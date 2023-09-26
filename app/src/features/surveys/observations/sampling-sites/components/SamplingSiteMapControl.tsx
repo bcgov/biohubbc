@@ -79,7 +79,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   };
 
   // Array of sampling site features
-  const samplingSiteGeoJsonFeatures = get(values, name);
+  const samplingSiteGeoJsonFeatures: Feature[] = get(values, name);
 
   useEffect(() => {
     setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
@@ -129,9 +129,12 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
             <Box position="relative" height={500}>
               <MapContainer
                 mapId={mapId}
-                drawControls={{
-                  initialFeatures: samplingSiteGeoJsonFeatures
-                }}
+                staticLayers={[
+                  {
+                    layerName: 'Spatial',
+                    features: samplingSiteGeoJsonFeatures.map((feature: Feature) => ({ geoJSON: feature }))
+                  }
+                ]}
                 onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
                 bounds={updatedBounds}
               />
