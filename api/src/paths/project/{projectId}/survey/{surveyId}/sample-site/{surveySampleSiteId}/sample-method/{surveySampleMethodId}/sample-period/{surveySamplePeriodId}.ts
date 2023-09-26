@@ -109,7 +109,7 @@ PUT.apiDoc = {
     }
   },
   responses: {
-    200: {
+    204: {
       description: 'Survey Sample Period updated OK.'
     },
     400: {
@@ -119,7 +119,7 @@ PUT.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -159,7 +159,7 @@ export function updateSurveySamplePeriod(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveySamplePeriod', message: 'error', error });
       throw error;
@@ -244,7 +244,7 @@ DELETE.apiDoc = {
     }
   ],
   responses: {
-    200: {
+    204: {
       description: 'Delete survey sample site OK'
     },
     400: {
@@ -254,7 +254,7 @@ DELETE.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -284,7 +284,7 @@ export function deleteSurveySamplePeriodRecord(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySamplePeriodRecord', message: 'error', error });
       throw error;

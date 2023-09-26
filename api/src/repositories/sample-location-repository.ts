@@ -30,7 +30,7 @@ export type UpdateSampleLocationRecord = Pick<
 >;
 
 /**
- * Sample Repository
+ * Sample Location Repository
  *
  * @export
  * @class SampleLocationRepository

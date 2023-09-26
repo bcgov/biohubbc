@@ -125,7 +125,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -249,7 +249,7 @@ POST.apiDoc = {
     }
   },
   responses: {
-    200: {
+    201: {
       description: 'Sample Method added OK.'
     },
     400: {
@@ -259,7 +259,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -295,7 +295,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(201).send();
     } catch (error) {
       defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
       throw error;

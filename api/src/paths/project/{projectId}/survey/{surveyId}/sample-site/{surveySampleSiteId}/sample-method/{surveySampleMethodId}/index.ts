@@ -91,7 +91,7 @@ PUT.apiDoc = {
     }
   },
   responses: {
-    200: {
+    204: {
       description: 'Updated sample method OK.'
     },
     400: {
@@ -101,7 +101,7 @@ PUT.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -140,7 +140,7 @@ export function updateSurveySampleMethod(): RequestHandler {
       await sampleMethodService.updateSampleMethod(sampleMethod);
 
       await connection.commit();
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveySampleMethod', message: 'error', error });
       throw error;
@@ -207,7 +207,7 @@ DELETE.apiDoc = {
     }
   ],
   responses: {
-    200: {
+    204: {
       description: 'Delete survey sample site OK'
     },
     400: {
@@ -217,7 +217,7 @@ DELETE.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -247,7 +247,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySampleMethodRecord', message: 'error', error });
       throw error;
