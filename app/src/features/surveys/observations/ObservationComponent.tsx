@@ -19,7 +19,7 @@ export const ObservationComponent = () => {
     observationsContext.saveRecords().finally(() => {
       setIsSaving(false);
     });
-  }
+  };
 
   // TODO: only show save button when there are unsaved changes
   const showSaveButton = true;
@@ -48,13 +48,12 @@ export const ObservationComponent = () => {
           <strong>Observations</strong>
         </Typography>
         {showSaveButton && (
-          <>  
+          <>
             <LoadingButton
               loading={isSaving}
               variant="contained"
               color="primary"
-              startIcon={<Icon path={mdiFloppy}
-              size={1} />}
+              startIcon={<Icon path={mdiFloppy} size={1} />}
               onClick={() => handleSaveChanges()}>
               Save Changes
             </LoadingButton>

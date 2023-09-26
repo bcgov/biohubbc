@@ -1,10 +1,10 @@
-import { mdiDotsVertical, mdiTrashCan } from "@mdi/js";
-import Icon from "@mdi/react";
+import { mdiDotsVertical, mdiTrashCan } from '@mdi/js';
+import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowModelUpdate } from '@mui/x-data-grid';
-import { IObservationTableRow, ObservationsContext, fetchObservationDemoRows } from "contexts/observationsContext";
-import useDataLoader from "hooks/useDataLoader";
-import { useContext, useEffect, useState } from "react";
+import { fetchObservationDemoRows, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import useDataLoader from 'hooks/useDataLoader';
+import { useContext, useEffect, useState } from 'react';
 // import { useEffect, useState } from "react";
 // import { pluralize as p } from "utils/Utils";
 
@@ -21,7 +21,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   const observationsDataLoader = useDataLoader(fetchObservationDemoRows);
   const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
 
-  observationsDataLoader.load()
+  observationsDataLoader.load();
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
@@ -68,7 +68,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       editable: true,
       type: 'number',
       minWidth: 100,
-      disableColumnMenu: true,
+      disableColumnMenu: true
     },
     {
       field: 'date',
@@ -76,7 +76,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       editable: true,
       type: 'date',
       minWidth: 150,
-      disableColumnMenu: true,
+      disableColumnMenu: true
     },
     {
       field: 'time',
@@ -110,17 +110,13 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       disableColumnMenu: true,
       resizable: false,
       getActions: (params) => [
-        (
-          <IconButton onClick={() => handleDeleteRow(params.id)}>
-            <Icon path={mdiTrashCan} size={1} />
-          </IconButton>
-        ),
-        (
-          <IconButton>
-            <Icon path={mdiDotsVertical} size={1} />
-          </IconButton>
-        )
-      ],
+        <IconButton onClick={() => handleDeleteRow(params.id)}>
+          <Icon path={mdiTrashCan} size={1} />
+        </IconButton>,
+        <IconButton>
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton>
+      ]
     }
   ];
 
@@ -136,11 +132,11 @@ const ObservationsTable = (props: IObservationsTableProps) => {
 
       setInitialRows(rows);
     }
-  }, [observationsDataLoader.data])
+  }, [observationsDataLoader.data]);
 
   const handleDeleteRow = (id: string | number) => {
-    apiRef.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate])
-  }
+    apiRef.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
+  };
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
     event.defaultMuiPrevented = true;
@@ -156,7 +152,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
     }
 
     apiRef.current.startRowEditMode({ id: params.row.id, fieldToFocus: params.field });
-  }
+  };
 
   /*
   const modifiedKeys = new Set<string>([
@@ -164,7 +160,6 @@ const ObservationsTable = (props: IObservationsTableProps) => {
     ...apiRef.current.get
   ]);
   */
-
 
   return (
     <DataGrid
@@ -180,7 +175,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       disableRowSelectionOnClick
       // onRowModesModelChange={_setRowModesModel}
       localeText={{
-        noRowsLabel: "No Records",
+        noRowsLabel: 'No Records'
         /*
         footerRowSelected: (numSelected: number) => {
           return [
@@ -225,7 +220,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
         }
       }}
     />
-  )
-}
+  );
+};
 
 export default ObservationsTable;

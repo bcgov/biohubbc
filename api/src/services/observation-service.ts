@@ -1,5 +1,10 @@
 import { IDBConnection } from '../database/db';
-import { InsertObservation, ObservationRecord, ObservationRepository, UpdateObservation } from '../repositories/observation-repository';
+import {
+  InsertObservation,
+  ObservationRecord,
+  ObservationRepository,
+  UpdateObservation
+} from '../repositories/observation-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
@@ -21,8 +26,11 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationService
    */
-  async insertUpdateSurveyObservations(surveyId: number, observations: (InsertObservation | UpdateObservation)[]): Promise<ObservationRecord[]> {
-    defaultLog.debug({ label: 'insertUpdateObservationRecords' })
+  async insertUpdateSurveyObservations(
+    surveyId: number,
+    observations: (InsertObservation | UpdateObservation)[]
+  ): Promise<ObservationRecord[]> {
+    defaultLog.debug({ label: 'insertUpdateObservationRecords' });
     return this.observationRepository.insertUpdateSurveyObservations(surveyId, observations);
   }
 
@@ -36,5 +44,4 @@ export class ObservationService extends DBService {
   async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     return this.observationRepository.getSurveyObservations(surveyId);
   }
-
 }

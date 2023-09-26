@@ -1,11 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { getLogger } from '../../../../../../utils/logger';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { ObservationService } from '../../../../../../services/observation-service';
 import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { ObservationService } from '../../../../../../services/observation-service';
+import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/get');
 
@@ -259,7 +259,7 @@ export function getSurveyObservations(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      
+
       const surveyObservations = observationService.getSurveyObservations(surveyId);
       return res.status(200).json({ surveyObservations });
     } catch (error) {
@@ -284,7 +284,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      
+
       /*
       const taxonomyService = new TaxonomyService();
       const promises: Promise<(InsertObservation | UpdateObservation)>[] = req.body.map((record: any) => {
@@ -302,7 +302,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       */
 
       const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
-        return {        
+        return {
           survey_id: surveyId,
           survey_observation_id: record.survey_observation_id,
           wldtaxonomic_units_id: 1234,
@@ -310,7 +310,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
           longitude: record.longitude,
           count: record.count,
           observation_datetime: new Date(`${record.date} ${record.time}`)
-        }
+        };
       });
 
       await observationService.insertUpdateSurveyObservations(surveyId, records);

@@ -62,10 +62,10 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           latitude: 47,
           longitude: 127
         }
-      ])
+      ]);
     }, 1000 * (Math.random() + 1));
-  })
-}
+  });
+};
 
 /**
  * Context object that stores information about survey observations
@@ -79,8 +79,8 @@ export type IObservationsContext = {
   saveRecords: () => Promise<void>;
   revertRecords: () => Promise<void>;
   refreshRecords: () => Promise<void>;
-  _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>
-}
+  _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
+};
 
 export const ObservationsContext = createContext<IObservationsContext>({
   _muiDataGridApiRef: { current: null as unknown as GridApiCommunity },
@@ -100,7 +100,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const _getRows = (): IObservationTableRow[] => {
     return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[]
   }
-  */ 
+  */
 
   const createNewRecord = () => {
     const id = uuidv4();
@@ -140,23 +140,23 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   */
 
   const saveRecords = async () => {
-    const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows)
+    const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id }));
 
     const { projectId, surveyId } = surveyContext;
-    const rows = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[]
+    const rows = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
 
-    return biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows)
-  }
+    return biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
+  };
 
   const revertRecords = async () => {
-    const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows)
+    const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
-  }
+  };
 
   const refreshRecords = async () => {
     //
-  }
+  };
 
   const observationsContext: IObservationsContext = {
     createNewRecord,
@@ -167,9 +167,5 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     _muiDataGridApiRef
   };
 
-  return (
-    <ObservationsContext.Provider value={observationsContext}>
-      {props.children}
-    </ObservationsContext.Provider>
-    );
+  return <ObservationsContext.Provider value={observationsContext}>{props.children}</ObservationsContext.Provider>;
 };

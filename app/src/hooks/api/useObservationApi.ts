@@ -179,22 +179,25 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {IObservationTableRow[]} surveyObservations
-   * @return {*} 
+   * @return {*}
    */
-  const insertUpdateObservationRecords = async (projectId: number, surveyId: number, surveyObservations: IObservationTableRow[]) => {
-    const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/observation`,
-      { surveyObservations }
-    );
+  const insertUpdateObservationRecords = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservations: IObservationTableRow[]
+  ) => {
+    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/observation`, {
+      surveyObservations
+    });
 
     return data;
-  }
+  };
 
   const getObservationRecords = async (projectId: number, surveyId: number) => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation`);
 
     return data;
-  }
+  };
 
   return {
     uploadObservationSubmission,
