@@ -1,7 +1,6 @@
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 import { z } from 'zod';
-import { ApiExecuteSQLError } from '../errors/api-error';
 
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
@@ -27,7 +26,6 @@ export type InsertObservation = Pick<ObservationRecord,
 >;
 
 export type UpdateObservation = Pick<ObservationRecord,
-  | 'survey_id'
   | 'survey_observation_id'
   | 'wldtaxonomic_units_id'
   | 'latitude'
@@ -40,19 +38,47 @@ export class ObservationRepository extends BaseRepository {
   /**
    * TODO
    *
+   * @param {number} surveyId
    * @param {((Observation | ObservationRecord)[])} observations
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
-  async insertUpdateSurveyObservations(observations: (InsertObservation | UpdateObservation)[]): Promise<ObservationRecord[]> {
-    const insertQuery = getKnex()
-      .insert(observations)
-      .into('survey_observation')
-      .onConflict('survey_observation_pk')
-      .merge()
-      .returning('*')
+  async insertUpdateSurveyObservations(surveyId: number, observations: (InsertObservation | UpdateObservation)[]): Promise<ObservationRecord[]> {
+    const knex = getKnex();
+    
+    const query = knex.raw(`
+      ? ON CONFLICT
+        (survey_observation_id)
+      DO UPDATE SET
+        wldtaxonomic_units_id = EXCLUDED.wldtaxonomic_units_id,
+        count = EXCLUDED.count,
+        observation_datetime = EXCLUDED.observation_datetime,
+        latitude = EXCLUDED.latitude,
+        longitude = EXCLUDED.longitude,
+      RETURNING *;
+      `, [
+        knex
+          .into('survey_observation')
+          .insert(observations.map((observation) => {
+            return {
+              survey_id: surveyId,
+              ...observation
+              /*
+              survey_observation_id: observation['survey_observation_id'],
+              wldtaxonomic_units_id: observation.wldtaxonomic_units_id,
+              count: observation.count,
+              observation_datetime: observation.observation_datetime,
+              latlong: knex.raw(`POINT(${observation.latitude}, ${observation.longitude})`)
+              */
+            }
+          }))
+        ]
+    ).toSQL().toNative();
 
-    const response = await this.connection.knex(insertQuery, ObservationRecord);
+    console.log('query:', String(JSON.stringify(query)))
+
+    /*
+    const response = await this.connection.query(query, ObservationRecord);
 
     if (!response.rows.length) {
       throw new ApiExecuteSQLError('Failed to insert/update survey observations', [
@@ -61,6 +87,8 @@ export class ObservationRepository extends BaseRepository {
     }
 
     return response.rows;
+    */
+   return [];
   }
 
   /**

@@ -313,7 +313,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
         }
       });
 
-      await observationService.insertUpdateSurveyObservations(records);
+      await observationService.insertUpdateSurveyObservations(surveyId, records);
 
       return res.status(200).json({});
     } catch (error) {
