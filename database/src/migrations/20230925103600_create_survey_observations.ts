@@ -22,7 +22,8 @@ export async function up(knex: Knex): Promise<void> {
     latitude                                float             NOT NULL,
     longitude                               float             NOT NULL,
     count                                   integer           NOT NULL,
-    observation_datetime                    timestamptz(6)    NOT NULL,
+    observation_date                        date              NOT NULL,
+    observation_time                        time              NOT NULL,
     create_date                             timestamptz(6)    DEFAULT now() NOT NULL,
     create_user                             integer           NOT NULL,
     update_date                             timestamptz(6),
@@ -44,7 +45,9 @@ export async function up(knex: Knex): Promise<void> {
   ;
   COMMENT ON COLUMN survey_observation.count IS 'The count of the observation.'
   ;
-  COMMENT ON COLUMN survey_observation.observation_datetime IS 'The timestamp associated with the observation.'
+  COMMENT ON COLUMN survey_observation.observation_date IS 'The date associated with the observation.'
+  ;
+  COMMENT ON COLUMN survey_observation.observation_times IS 'The time associated with the observation.'
   ;
   COMMENT ON COLUMN survey_observation.create_date IS 'The datetime the record was created.'
   ;

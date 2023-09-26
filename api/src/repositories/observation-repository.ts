@@ -3,6 +3,7 @@ import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import SQL from 'sql-template-strings';
+import moment from 'moment';
 
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
@@ -66,8 +67,8 @@ export class ObservationRepository extends BaseRepository {
         observation.count,
         observation.latitude,
         observation.longitude,
-        observation.observation_date,
-        observation.observation_time
+        `'${moment(observation.observation_date).format('YYYY-MM-DD')}'`,
+        `'${observation.observation_time}'`
       ].join(', ')})`;
     }).join(', '));
 
@@ -80,7 +81,7 @@ export class ObservationRepository extends BaseRepository {
         observation_date = EXCLUDED.observation_date,
         observation_time = EXCLUDED.observation_time,
         latitude = EXCLUDED.latitude,
-        longitude = EXCLUDED.longitude,
+        longitude = EXCLUDED.longitude
       RETURNING *;
     `)
 
