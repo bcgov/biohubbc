@@ -37,7 +37,7 @@ export const IAllCodeSets = z.object({
   vantage_codes: CodeSet(),
   survey_jobs: CodeSet(),
   site_selection_strategies: CodeSet(),
-  sample_methods_lookup: CodeSet()
+  sample_methods: CodeSet()
 });
 
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
