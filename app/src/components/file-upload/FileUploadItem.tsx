@@ -164,17 +164,17 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
   // indicates that the active requests are in a state where they can be safely cancelled
   const [isSafeToCancel, setIsSafeToCancel] = useState<boolean>(false);
 
-  const Subtext = SubtextComponent || FileUploadItemSubtext;
+  const Subtext = SubtextComponent ?? FileUploadItemSubtext;
 
   const MemoizedActionButton = React.memo(
-    ActionButtonComponent || FileUploadItemActionButton,
+    ActionButtonComponent ?? FileUploadItemActionButton,
     (prevProps, nextProps) => {
       // Only re-render if the status changes
       return prevProps.status === nextProps.status;
     }
   );
 
-  const MemoizedProgressBar = React.memo(ProgressBarComponent || FileUploadItemProgressBar, (prevProps, nextProps) => {
+  const MemoizedProgressBar = React.memo(ProgressBarComponent ?? FileUploadItemProgressBar, (prevProps, nextProps) => {
     // Only re-render if the status or progress changes
     return prevProps.status === nextProps.status && prevProps.progress === nextProps.progress;
   });

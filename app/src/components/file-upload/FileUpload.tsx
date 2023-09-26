@@ -130,7 +130,7 @@ export const FileUpload = (props: IFileUploadProps) => {
 
   const [fileUploadItems, setFileUploadItems] = useState<any[]>([]);
 
-  const MemoizedFileUploadItem = React.memo(props.FileUploadItemComponent || FileUploadItem, (prevProps, nextProps) => {
+  const MemoizedFileUploadItem = React.memo(props.FileUploadItemComponent ?? FileUploadItem, (prevProps, nextProps) => {
     return prevProps.file.name === nextProps.file.name;
   });
 

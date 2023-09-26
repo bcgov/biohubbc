@@ -11,7 +11,7 @@ export type InsertSampleMethodRecord = Pick<
 
 export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
-  'survey_sample_method_id' | 'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
+  'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description'
 > & { periods: UpdateSamplePeriodRecord[] };
 
 // This describes a row in the database for Survey Sample Method
