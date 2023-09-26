@@ -126,7 +126,6 @@ export interface ISubtextProps {
   status: UploadFileStatus;
   progress: number;
   error?: string;
-  errorDetails?: { _id: string; message: string }[];
 }
 
 export interface IErrorDetailsProps {
@@ -319,15 +318,7 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
       </ListItemIcon>
       <ListItemText
         primary={file.name}
-        secondary={
-          <Subtext
-            file={file}
-            status={status}
-            progress={progress}
-            error={error}
-            errorDetails={[{ _id: '123123', message: 'awdawdawdawdaw' }]}
-          />
-        }
+        secondary={<Subtext file={file} status={status} progress={progress} error={error} />}
         sx={{
           '& .MuiListItemText-primary': {
             fontWeight: 700
