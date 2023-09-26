@@ -134,7 +134,7 @@ const SamplingMethodForm = () => {
           )}
           <TransitionGroup>
             {values.methods.map((item, index) => (
-              <Collapse>
+              <Collapse key={`${item.description}-${item.method_lookup_id}-${item.periods.length}`}>
                 <Card
                   variant="outlined"
                   sx={{

@@ -141,12 +141,12 @@ const MethodForm = () => {
             render={(arrayHelpers: FieldArrayRenderProps) => (
               <>
                 <List disablePadding>
-                  {values.periods?.map((_, index) => {
+                  {values.periods?.map((item, index) => {
                     return (
                       <ListItem
                         alignItems="flex-start"
                         disableGutters
-                        key={index}
+                        key={item.start_date + item.end_date + index}
                         sx={{
                           '& .MuiListItemSecondaryAction-root': {
                             top: '36px'
