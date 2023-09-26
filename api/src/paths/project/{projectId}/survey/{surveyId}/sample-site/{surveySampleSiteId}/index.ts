@@ -92,7 +92,7 @@ PUT.apiDoc = {
     }
   },
   responses: {
-    200: {
+    204: {
       description: 'Sample site updated OK.'
     },
     400: {
@@ -102,7 +102,7 @@ PUT.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -210,7 +210,7 @@ DELETE.apiDoc = {
     }
   ],
   responses: {
-    200: {
+    204: {
       description: 'Delete survey sample site OK'
     },
     400: {
@@ -220,7 +220,7 @@ DELETE.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'

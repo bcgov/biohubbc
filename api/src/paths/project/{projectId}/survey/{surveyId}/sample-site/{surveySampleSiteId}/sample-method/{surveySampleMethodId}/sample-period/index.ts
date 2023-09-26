@@ -134,7 +134,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -267,7 +267,7 @@ POST.apiDoc = {
     }
   },
   responses: {
-    200: {
+    201: {
       description: 'Sample period added OK.'
     },
     400: {
@@ -277,7 +277,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
