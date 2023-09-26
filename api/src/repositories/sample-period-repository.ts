@@ -25,7 +25,7 @@ export const SamplePeriodRecord = z.object({
 export type SamplePeriodRecord = z.infer<typeof SamplePeriodRecord>;
 
 /**
- * Sample Repository
+ * Sample Period Repository
  *
  * @export
  * @class SamplePeriodRepository

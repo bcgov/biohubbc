@@ -29,7 +29,7 @@ export const SampleMethodRecord = z.object({
 export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
 
 /**
- * Sample Repository
+ * Sample Method Repository
  *
  * @export
  * @class SampleMethodRepository

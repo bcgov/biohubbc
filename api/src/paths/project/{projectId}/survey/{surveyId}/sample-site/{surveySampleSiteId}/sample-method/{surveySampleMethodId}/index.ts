@@ -140,7 +140,7 @@ export function updateSurveySampleMethod(): RequestHandler {
       await sampleMethodService.updateSampleMethod(sampleMethod);
 
       await connection.commit();
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveySampleMethod', message: 'error', error });
       throw error;
@@ -247,7 +247,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySampleMethodRecord', message: 'error', error });
       throw error;

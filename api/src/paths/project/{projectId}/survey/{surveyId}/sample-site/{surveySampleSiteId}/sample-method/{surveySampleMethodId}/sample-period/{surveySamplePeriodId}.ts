@@ -159,7 +159,7 @@ export function updateSurveySamplePeriod(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveySamplePeriod', message: 'error', error });
       throw error;
@@ -284,7 +284,7 @@ export function deleteSurveySamplePeriodRecord(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySamplePeriodRecord', message: 'error', error });
       throw error;

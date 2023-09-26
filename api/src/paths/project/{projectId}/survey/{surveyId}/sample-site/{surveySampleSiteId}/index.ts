@@ -143,7 +143,7 @@ export function updateSurveySampleSite(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveySampleSite', message: 'error', error });
       throw error;
@@ -250,7 +250,7 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySampleSiteRecord', message: 'error', error });
       throw error;

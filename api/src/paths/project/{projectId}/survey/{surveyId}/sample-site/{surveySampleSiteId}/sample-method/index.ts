@@ -295,7 +295,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(201).send();
     } catch (error) {
       defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
       throw error;
