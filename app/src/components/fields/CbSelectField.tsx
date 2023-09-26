@@ -40,15 +40,13 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
 
   const api = useCritterbaseApi();
   const isMounted = useIsMounted();
-  const { data, load, refresh, hasLoaded } = useDataLoader(api.lookup.getSelectOptions);
-  const { values, handleChange, setFieldValue, setFieldTouched } = useFormikContext<ICbSelectOption>();
+  const { data, refresh } = useDataLoader(api.lookup.getSelectOptions);
+  const { values, handleChange } = useFormikContext<ICbSelectOption>();
 
   const val = get(values, name) ?? '';
 
-  load({ route, param, query });
-
   useEffect(() => {
-    if (hasLoaded) {
+    if (isMounted()) {
       // Only refresh when the query or param changes
       refresh({ route, param, query });
     }
@@ -56,10 +54,6 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   }, [query, param]);
 
   const isValueInRange = useMemo(() => {
-    if (!isMounted()) {
-      return false;
-    }
-
     if (val === '') {
       return true;
     }
@@ -67,14 +61,10 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
       return false;
     }
     const inRange = data.some((d) => (typeof d === 'string' ? d === val : d.id === val));
-    // For convenience reset form fields here
-    if (!inRange) {
-      setFieldValue(name, '');
-      setFieldTouched(name);
-    }
+
     return inRange;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, val, setFieldValue, setFieldTouched, name]);
+  }, [data, val, name]);
 
   const innerChangeHandler = (e: SelectChangeEvent<any>) => {
     handleChange(e);

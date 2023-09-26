@@ -36,21 +36,19 @@ export class SurveyCritterRepository extends BaseRepository {
    * @returns {*}
    * @member SurveyRepository
    */
-  async addCritterToSurvey(surveyId: number, critterId: string): Promise<number> {
+  async addCritterToSurvey(surveyId: number, critterId: string): Promise<void> {
     defaultLog.debug({ label: 'addCritterToSurvey', surveyId });
     const queryBuilder = getKnex().table('critter').insert({ survey_id: surveyId, critterbase_critter_id: critterId });
-    const response = await this.connection.knex(queryBuilder);
-    return response.rowCount;
+    await this.connection.knex(queryBuilder);
   }
 
-  async updateCritter(surveyId: number, critterId: string): Promise<number> {
+  async updateCritter(surveyId: number, critterId: string): Promise<void> {
     defaultLog.debug({ label: 'updateCritter', surveyId });
     const queryBuilder = getKnex()
       .table('critter')
       .update({ survey_id: surveyId, critterbase_critter_id: critterId })
       .where({ survey_id: surveyId, critterbase_critter_id: critterId });
-    const response = await this.connection.knex(queryBuilder);
-    return response.rowCount;
+    await this.connection.knex(queryBuilder);
   }
 
   /**
@@ -61,11 +59,10 @@ export class SurveyCritterRepository extends BaseRepository {
    * @returns {*}
    * @member SurveyRepository
    */
-  async removeCritterFromSurvey(critterId: number): Promise<number> {
+  async removeCritterFromSurvey(critterId: number): Promise<void> {
     defaultLog.debug({ label: 'removeCritterFromSurvey', critterId });
     const queryBuilder = getKnex().table('critter').delete().where({ critter_id: critterId });
-    const response = await this.connection.knex(queryBuilder);
-    return response.rowCount;
+    await this.connection.knex(queryBuilder);
   }
 
   /**
@@ -76,7 +73,7 @@ export class SurveyCritterRepository extends BaseRepository {
    * @returns {*}
    * @memberof SurveyCritterRepository
    */
-  async upsertDeployment(critterId: number, deplyomentId: string): Promise<number> {
+  async upsertDeployment(critterId: number, deplyomentId: string): Promise<void> {
     defaultLog.debug({ label: 'addDeployment', deplyomentId });
     //This update operation intentionally changes nothing. Only really being done to trigger update audit columns.
     const queryBuilder = getKnex()
@@ -85,8 +82,6 @@ export class SurveyCritterRepository extends BaseRepository {
       .onConflict(['critter_id', 'bctw_deployment_id'])
       .merge(['critter_id', 'bctw_deployment_id']);
 
-    const response = await this.connection.knex(queryBuilder);
-
-    return response.rowCount;
+    await this.connection.knex(queryBuilder);
   }
 }

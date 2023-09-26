@@ -59,7 +59,7 @@ export const SurveyAnimalsTable = ({
       field: 'wlh_id',
       headerName: 'WLH ID',
       flex: 1,
-      renderCell: (params) => <Typography>{params.value ? params.value : 'None'}</Typography>
+      renderCell: (params) => <Typography>{params.value || 'None'}</Typography>
     },
     {
       field: 'taxon',

@@ -8,14 +8,14 @@ describe('animal form helpers', () => {
     it('should return an object matching the IAnimal interface', () => {
       const detailedResponse: IDetailedCritterWithInternalId = {
         survey_critter_id: 1,
-        critter_id: v4(),
-        taxon_id: v4(),
+        critter_id: 'c8601a4a-3946-4d1a-8c3f-a07088112284',
+        taxon_id: '93ced109-d806-4851-90d7-064951cfc4f5',
         wlh_id: 'abc',
         animal_id: 'def',
         sex: 'Male',
-        responsible_region_nr_id: v4(),
-        create_user: v4(),
-        update_user: v4(),
+        responsible_region_nr_id: '4a08bf72-86e3-435e-9423-1ade03fa1316',
+        create_user: '4e038522-53ca-43a4-af57-07af0218693c',
+        update_user: '4e038522-53ca-43a4-af57-07af0218693c',
         create_timestamp: '2022-02-02',
         update_timestamp: '2022-02-02',
         critter_comment: '',
@@ -36,11 +36,11 @@ describe('animal form helpers', () => {
 
       const result = transformCritterbaseAPIResponseToForm(detailedResponse);
 
-      expect(result.general.wlh_id).toBe(detailedResponse.wlh_id);
-      expect(result.general.critter_id).toBe(detailedResponse.critter_id);
-      expect(result.general.sex).toBe(detailedResponse.sex);
-      expect(result.general.animal_id).toBe(detailedResponse.animal_id);
-      expect(result.general.taxon_id).toBe(detailedResponse.taxon_id);
+      expect(result.general.wlh_id).toBe('abc');
+      expect(result.general.critter_id).toBe('c8601a4a-3946-4d1a-8c3f-a07088112284');
+      expect(result.general.sex).toBe('Male');
+      expect(result.general.animal_id).toBe('def');
+      expect(result.general.taxon_id).toBe('93ced109-d806-4851-90d7-064951cfc4f5');
     });
   });
 
@@ -48,7 +48,7 @@ describe('animal form helpers', () => {
     it('should return an object containing two instances of Critter', () => {
       const capture: IAnimalCapture = {
         _id: '',
-        capture_id: v4(),
+        capture_id: '8b9281ea-fbe8-411c-9b50-70ffd08737cb',
         capture_location_id: undefined,
         release_location_id: undefined,
         capture_longitude: 0,
@@ -72,10 +72,10 @@ describe('animal form helpers', () => {
       const marking: IAnimalMarking = {
         _id: '',
         marking_id: undefined,
-        marking_type_id: v4(),
-        taxon_marking_body_location_id: v4(),
-        primary_colour_id: v4(),
-        secondary_colour_id: v4(),
+        marking_type_id: '845f27ac-f0b2-4128-9615-18980e5c8caa',
+        taxon_marking_body_location_id: '46e6b939-3485-4c45-9f26-607489e50def',
+        primary_colour_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
+        secondary_colour_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         marking_comment: ''
       };
 

@@ -466,25 +466,33 @@ export class Critter {
   }
 
   _formatCritterFamilyRelationships(animal_family: IAnimalRelationship[]): ICritterRelationships {
-    let newFamily = undefined;
+    let newFamily: ICritterFamily | undefined = undefined;
     const families: ICritterFamily[] = [];
     for (const fam of animal_family) {
+      //If animal form had the newFamilyIdPlaceholder used at some point, make a real uuid for the new family and add it for creation.
       if (fam.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };
           families.push(newFamily);
         }
-        fam.family_id = newFamily.family_id;
       }
     }
 
     const parents = animal_family
       .filter((parent) => parent.relationship === 'parent')
-      .map((parent_fam) => ({ family_id: parent_fam.family_id, parent_critter_id: this.critter_id }));
+      .map((parent_fam) => ({
+        family_id:
+          parent_fam.family_id === newFamilyIdPlaceholder && newFamily ? newFamily.family_id : parent_fam.family_id,
+        parent_critter_id: this.critter_id
+      }));
 
     const children = animal_family
       .filter((children) => children.relationship === 'child')
-      .map((children_fam) => ({ family_id: children_fam.family_id, child_critter_id: this.critter_id }));
+      .map((children_fam) => ({
+        family_id:
+          children_fam.family_id === newFamilyIdPlaceholder && newFamily ? newFamily.family_id : children_fam.family_id,
+        child_critter_id: this.critter_id
+      }));
     //Currently not supporting siblings in the UI
     return { parents, children, families };
   }

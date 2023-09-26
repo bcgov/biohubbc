@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Form, useFormikContext } from 'formik';
 import { useEffect } from 'react';
-import { IAnimal } from './animal';
+import { Critter, IAnimal } from './animal';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
@@ -57,7 +57,7 @@ const IndividualAnimalForm = ({ getAnimalCount, critter_id, mode }: IndividualAn
       <MeasurementAnimalForm />
       <FamilyAnimalForm />
 
-      <FormikDevDebugger custom_payload={undefined /*new Critter(values)*/} />
+      <FormikDevDebugger custom_payload={new Critter(values)} />
     </Form>
   );
 };
