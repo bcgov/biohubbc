@@ -1,7 +1,9 @@
 import { useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
-import { createContext, PropsWithChildren } from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { createContext, PropsWithChildren, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { SurveyContext } from './surveyContext';
 
 export interface IObservationRecord {
   observation_id: number | undefined;
@@ -12,8 +14,8 @@ export interface IObservationRecord {
   count: number | undefined;
   date: string | undefined;
   time: string | undefined;
-  lat: number | undefined;
-  long: number | undefined;
+  latitude: number | undefined;
+  longitude: number | undefined;
 }
 
 export interface IObservationTableRow extends Partial<IObservationRecord> {
@@ -33,8 +35,8 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           count: undefined,
           date: undefined,
           time: undefined,
-          lat: undefined,
-          long: undefined
+          latitude: undefined,
+          longitude: undefined
         },
         {
           observation_id: 2,
@@ -45,8 +47,8 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           count: undefined,
           date: undefined,
           time: undefined,
-          lat: undefined,
-          long: undefined
+          latitude: undefined,
+          longitude: undefined
         },
         {
           observation_id: 3,
@@ -57,8 +59,8 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           count: undefined,
           date: undefined,
           time: undefined,
-          lat: undefined,
-          long: undefined
+          latitude: undefined,
+          longitude: undefined
         }
       ])
     }, 1000 * (Math.random() + 1));
@@ -91,6 +93,8 @@ export const ObservationsContext = createContext<IObservationsContext>({
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const _muiDataGridApiRef = useGridApiRef();
+  const biohubApi = useBiohubApi();
+  const surveyContext = useContext(SurveyContext);
 
   /*
   const _getRows = (): IObservationTableRow[] => {
@@ -139,14 +143,10 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows)
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id }));
 
-    /*
-    const rows = getActiveRecords()
-      .map((row) => ({ ...row, _isModified: false }))
+    const { projectId, surveyId } = surveyContext;
+    const rows = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[]
 
-    console.log(rows);
-    localStorage.setItem('__OBSERVATIONS_TEST', JSON.stringify(rows))
-    return Promise.resolve()
-    */
+    return biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows)
   }
 
   const revertRecords = async () => {

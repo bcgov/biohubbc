@@ -87,7 +87,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       disableColumnMenu: true
     },
     {
-      field: 'lat',
+      field: 'latitude',
       headerName: 'Lat',
       type: 'number',
       editable: true,
@@ -95,7 +95,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       disableColumnMenu: true
     },
     {
-      field: 'long',
+      field: 'longitude',
       headerName: 'Long',
       type: 'number',
       editable: true,

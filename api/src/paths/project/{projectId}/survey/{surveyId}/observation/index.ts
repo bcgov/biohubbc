@@ -5,6 +5,8 @@ import { getLogger } from '../../../../../../utils/logger';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { ObservationService } from '../../../../../../services/observation-service';
+import { InsertObservation, UpdateObservation } from '../../../../../../repositories/observation-repository';
+import { TaxonomyService } from '../../../../../../services/taxonomy-service';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/get');
 
@@ -29,6 +31,25 @@ export const GET: Operation = [
     };
   }),
   getSurveyObservations()
+];
+
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectPermission'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  insertUpdateSurveyObservations()
 ];
 
 GET.apiDoc = {
@@ -135,7 +156,99 @@ GET.apiDoc = {
   }
 };
 
-// TODO add PUT method here
+PUT.apiDoc = {
+  description: 'Fetches observation records for the given survey.',
+  tags: ['attachments'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'projectId',
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
+      required: true
+    }
+  ],
+  requestBody: {
+    description: 'Survey observation record data',
+    content: {
+      'multipart/form-data': {
+        schema: {
+          type: 'object',
+          properties: {
+            surveyObservations: {
+              description: 'Survey observation reords.',
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['speciesName', 'count', 'latitude', 'longitude', 'date', 'time'],
+                properties: {
+                  speciesName: {
+                    type: 'string'
+                  },
+                  count: {
+                    type: 'string'
+                  },
+                  latitude: {
+                    type: 'number'
+                  },
+                  longitude: {
+                    type: 'number'
+                  },
+                  date: {
+                    type: 'string'
+                  },
+                  time: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'Upload OK',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              submissionId: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/401'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
 
 export function getSurveyObservations(): RequestHandler {
   return async (req, res) => {
@@ -154,6 +267,48 @@ export function getSurveyObservations(): RequestHandler {
       return res.status(200).json({ surveyObservations });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+export function insertUpdateSurveyObservations(): RequestHandler {
+  return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
+
+    defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const observationService = new ObservationService(connection);
+      const taxonomyService = new TaxonomyService();
+
+      const promises: Promise<(InsertObservation | UpdateObservation)>[] = req.body.map(async (record: any) => {
+        const taxonCodes = await taxonomyService.searchSpecies(record.speciesName.toLowerCase());
+
+        return {
+          survey_id: surveyId,
+          survey_observation_id: record.survey_observation_id,
+          wldtaxonomic_units_id: taxonCodes[0].id,
+          latitude: record.latitude,
+          longitude: record.longitude,
+          count: record.count,
+          observation_datetime: new Date(`${record.date} ${record.time}`)
+        };
+      });
+
+      const records = await Promise.all(promises);
+      
+      const surveyObservations = observationService.insertUpdateSurveyObservations(surveyId, records);
+      return res.status(200).json({ surveyObservations });
+    } catch (error) {
+      defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

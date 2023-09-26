@@ -1,16 +1,27 @@
 import { mdiCogOutline, mdiFloppy, mdiImport, mdiPlus, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
+import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { ObservationsContext } from 'contexts/observationsContext';
 import ObservationsTable from 'features/surveys/observations/ObservationsTable';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 export const ObservationComponent = () => {
   const observationsContext = useContext(ObservationsContext);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
+  const handleSaveChanges = () => {
+    setIsSaving(true);
+
+    observationsContext.saveRecords().finally(() => {
+      setIsSaving(false);
+    });
+  }
+
+  // TODO: only show save button when there are unsaved changes
   const showSaveButton = true;
 
   return (
@@ -38,14 +49,15 @@ export const ObservationComponent = () => {
         </Typography>
         {showSaveButton && (
           <>  
-            <Button
+            <LoadingButton
+              loading={isSaving}
               variant="contained"
               color="primary"
               startIcon={<Icon path={mdiFloppy}
               size={1} />}
-              onClick={() => observationsContext.saveRecords()}>
+              onClick={() => handleSaveChanges()}>
               Save Changes
-            </Button>
+            </LoadingButton>
             <Button
               variant="contained"
               color="primary"

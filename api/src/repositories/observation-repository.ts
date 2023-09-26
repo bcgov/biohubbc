@@ -5,8 +5,10 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
+  survey_id: z.number(),
   wldtaxonomic_units_id: z.number(),
-  latlong: z.any(),
+  latitude: z.number(),
+  longitude: z.number(),
   count: z.number(),    
   observation_datetime: z.string(),
   create_date: z.string(),
@@ -16,16 +18,20 @@ export const ObservationRecord = z.object({
 export type ObservationRecord = z.infer<typeof ObservationRecord>;
 
 export type InsertObservation = Pick<ObservationRecord,
+  | 'survey_id'
   | 'wldtaxonomic_units_id'
-  | 'latlong'
+  | 'latitude'
+  | 'longitude'
   | 'count'
   | 'observation_datetime'
 >;
 
 export type UpdateObservation = Pick<ObservationRecord,
+  | 'survey_id'
   | 'survey_observation_id'
   | 'wldtaxonomic_units_id'
-  | 'latlong'
+  | 'latitude'
+  | 'longitude'
   | 'count'
   | 'observation_datetime'
 >;
@@ -41,7 +47,7 @@ export class ObservationRepository extends BaseRepository {
    */
   async insertUpdateSurveyObservations(surveyId: number, observations: (InsertObservation | UpdateObservation)[]): Promise<ObservationRecord[]> {
     const insertQuery = getKnex()
-      .insert(observations.map((observation) => ({ ...observation, survey_id: surveyId })))
+      .insert(observations)
       .into('survey_observation')
       .onConflict('survey_observation_pk')
       .merge()
