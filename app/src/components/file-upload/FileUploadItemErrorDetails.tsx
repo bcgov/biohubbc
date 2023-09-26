@@ -1,6 +1,5 @@
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import List from '@mui/material/List';
@@ -27,7 +26,7 @@ const FileUploadItemErrorDetails = (props: IErrorDetailsProps) => {
   }
 
   return (
-    <Box sx={{ mt: 1, ml: 5, width: '100%' }}>
+    <>
       <Button
         variant="text"
         size="small"
@@ -47,7 +46,7 @@ const FileUploadItemErrorDetails = (props: IErrorDetailsProps) => {
           </List>
         </Typography>
       </Collapse>
-    </Box>
+    </>
   );
 };
 

@@ -344,7 +344,11 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
         }}>
         <MemoizedProgressBar status={status} progress={progress} />
       </Box>
-      {props.enableErrorDetails && <FileUploadItemErrorDetails error={error} errorDetails={errorDetails} />}
+      {props.enableErrorDetails && (
+        <Box sx={{ mt: 1, ml: 5, width: '100%' }}>
+          <FileUploadItemErrorDetails error={error} errorDetails={errorDetails} />
+        </Box>
+      )}
     </ListItem>
   );
 };
