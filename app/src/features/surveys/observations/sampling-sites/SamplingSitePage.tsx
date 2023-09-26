@@ -114,7 +114,7 @@ const SamplingSitePage = () => {
       validateOnBlur={true}
       validateOnChange={false}
       onSubmit={handleSubmit}>
-      <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
+      <Box display="flex" flexDirection="column" height="100%">
         <Box
           position="sticky"
           top="0"
@@ -141,14 +141,14 @@ const SamplingSitePage = () => {
                 }}>
                 <HorizontalSplitFormComponent
                   title="Site Location"
-                  summary="Select and import the location of sampling sites used for this survey."
+                  summary="Import or draw sampling site locations used for this survey."
                   component={<SurveySamplingSiteImportForm />}></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
                   title="Sampling Methods"
-                  summary="Add sampling methods and associated time periods used for your sampling site locations. "
+                  summary="Specify sampling methods that were used to collect data."
                   component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
