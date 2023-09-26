@@ -80,8 +80,8 @@ GET.apiDoc = {
                   'partnerships',
                   'proprietor',
                   'purpose_and_methodology',
-                  'site_selection',
-                  'location'
+                  'locations',
+                  'site_selection'
                 ],
                 properties: {
                   survey_details: {
@@ -314,6 +314,53 @@ GET.apiDoc = {
                       }
                     }
                   },
+                  locations: {
+                    description: 'Survey location data',
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: [
+                        'survey_location_id',
+                        'name',
+                        'description',
+                        'geometry',
+                        'geography',
+                        'geojson',
+                        'revision_count'
+                      ],
+                      properties: {
+                        survey_location_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        name: {
+                          type: 'string',
+                          maxLength: 100
+                        },
+                        description: {
+                          type: 'string',
+                          maxLength: 250
+                        },
+                        geometry: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        geography: {
+                          type: 'string'
+                        },
+                        geojson: {
+                          type: 'array',
+                          items: {
+                            ...(GeoJSONFeature as object)
+                          }
+                        },
+                        revision_count: {
+                          type: 'integer',
+                          minimum: 0
+                        }
+                      }
+                    }
+                  },
                   site_selection: {
                     type: 'object',
                     required: ['strategies', 'stratums'],
@@ -338,22 +385,6 @@ GET.apiDoc = {
                               nullable: true
                             }
                           }
-                        }
-                      }
-                    }
-                  },
-                  location: {
-                    description: 'Survey location Details',
-                    type: 'object',
-                    required: ['survey_area_name', 'geometry'],
-                    properties: {
-                      survey_area_name: {
-                        type: 'string'
-                      },
-                      geometry: {
-                        type: 'array',
-                        items: {
-                          ...(GeoJSONFeature as object)
                         }
                       }
                     }

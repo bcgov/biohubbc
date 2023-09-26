@@ -40,8 +40,8 @@ describe('PostSurveyObject', () => {
       expect(data.purpose_and_methodology).to.equal(null);
     });
 
-    it('sets location', () => {
-      expect(data.location).to.equal(null);
+    it('sets locations', () => {
+      expect(data.locations).to.eql([]);
     });
 
     it('sets agreements', () => {
@@ -62,7 +62,6 @@ describe('PostSurveyObject', () => {
       permit: {},
       proprietor: {},
       purpose_and_methodology: {},
-      location: {},
       agreements: {}
     };
 
@@ -88,10 +87,6 @@ describe('PostSurveyObject', () => {
 
     it('sets purpose_and_methodology', () => {
       expect(data.purpose_and_methodology).to.instanceOf(PostPurposeAndMethodologyData);
-    });
-
-    it('sets location', () => {
-      expect(data.location).to.instanceOf(PostLocationData);
     });
 
     it('sets agreements', () => {
@@ -393,12 +388,16 @@ describe('PostLocationData', () => {
       data = new PostLocationData(null);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(null);
+    it('sets name', () => {
+      expect(data.name).to.equal(null);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql([]);
+    it('sets description', () => {
+      expect(data.description).to.equal(null);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql([]);
     });
   });
 
@@ -406,20 +405,25 @@ describe('PostLocationData', () => {
     let data: PostLocationData;
 
     const obj = {
-      survey_area_name: 'area_name',
-      geometry: [{}]
+      name: 'area name',
+      description: 'area description',
+      geojson: [{}]
     };
 
     before(() => {
       data = new PostLocationData(obj);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(obj.survey_area_name);
+    it('sets name', () => {
+      expect(data.name).to.equal(obj.name);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql(obj.geometry);
+    it('sets description', () => {
+      expect(data.description).to.equal(obj.description);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql(obj.geojson);
     });
   });
 });

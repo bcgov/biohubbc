@@ -3,6 +3,7 @@ import { SurveyMetadataPublish } from '../repositories/history-publish-repositor
 import { IPermitModel } from '../repositories/permit-repository';
 import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
 import { SurveyBlockRecord } from '../repositories/survey-block-repository';
+import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 
 export type SurveyObject = {
@@ -12,7 +13,7 @@ export type SurveyObject = {
   funding_sources: GetSurveyFundingSourceData[];
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
-  location: GetSurveyLocationData;
+  locations: SurveyLocationRecord[];
   participants: SurveyUser[];
   partnerships: ISurveyPartnerships;
   site_selection: SiteSelectionData;
@@ -33,22 +34,22 @@ export class GetSurveyData {
   end_date: string;
   biologist_first_name: string;
   biologist_last_name: string;
-  survey_area_name: string;
-  geometry: Feature[];
   survey_types: number[];
   revision_count: number;
+  geometry: Feature[];
 
   constructor(obj?: any) {
     this.id = obj?.survey_id || null;
     this.project_id = obj?.project_id || null;
     this.uuid = obj?.uuid || null;
     this.survey_name = obj?.name || '';
+    this.start_date = obj?.start_date || null;
+    this.end_date = obj?.end_date || null;
     this.start_date = String(obj?.start_date) || '';
     this.end_date = String(obj?.end_date) || '';
     this.geometry = (obj?.geojson?.length && obj.geojson) || [];
     this.biologist_first_name = obj?.lead_first_name || '';
     this.biologist_last_name = obj?.lead_last_name || '';
-    this.survey_area_name = obj?.location_name || '';
     this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count || 0;
   }
@@ -169,12 +170,18 @@ export type SurveySupplementaryData = {
 };
 
 export class GetSurveyLocationData {
-  survey_area_name: string;
-  geometry: Feature[];
+  survey_spatial_component_id: number;
+  name: string;
+  description: string;
+  geojson: Feature[];
+  revision_count: number;
 
   constructor(obj?: any) {
-    this.survey_area_name = obj?.location_name || '';
-    this.geometry = (obj?.geojson?.length && obj.geojson) || [];
+    this.survey_spatial_component_id = obj?.survey_spatial_component_id || null;
+    this.name = obj?.name || null;
+    this.description = obj?.description || null;
+    this.geojson = (obj?.geojson?.length && obj.geojson) || [];
+    this.revision_count = obj?.revision_count || 0;
   }
 }
 

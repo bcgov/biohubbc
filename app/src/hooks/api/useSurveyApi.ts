@@ -127,6 +127,39 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Upload survey keyx files.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<IUploadAttachmentResponse>}
+   */
+  const uploadSurveyKeyx = async (
+    projectId: number,
+    surveyId: number,
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<IUploadAttachmentResponse> => {
+    const req_message = new FormData();
+
+    req_message.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`,
+      req_message,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
    * Upload survey reports.
    *
    * @param {number} projectId
@@ -455,7 +488,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
   ): Promise<CritterBulkCreationResponse> => {
     const payload = {
       critters: [
-        { critter_id: critter.critter_id, animal_id: critter.animal_id, sex: 'Unknown', taxon_id: critter.taxon_id }
+        {
+          critter_id: critter.critter_id,
+          animal_id: critter.animal_id,
+          sex: critter.sex,
+          taxon_id: critter.taxon_id,
+          wlh_id: critter.wlh_id
+        }
       ],
       qualitative_measurements: critter.measurements.qualitative,
       quantitative_measurements: critter.measurements.quantitative,
@@ -515,6 +554,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
+    uploadSurveyKeyx,
     uploadSurveyReports,
     updateSurveyReportMetadata,
     getSurveyReportDetails,

@@ -1,8 +1,8 @@
 import { Feature } from 'geojson';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
-import { PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
+import { PostLocationData, PostProprietorData, PostSurveyObject } from '../models/survey-create';
+import { PutPartnershipsData, PutSurveyLocationData, PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
@@ -11,7 +11,6 @@ import {
   GetReportAttachmentsData,
   GetSurveyData,
   GetSurveyFundingSourceData,
-  GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
   ISurveyPartnerships,
@@ -21,6 +20,7 @@ import {
 import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { PostSurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
+import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -38,6 +38,7 @@ import { PlatformService } from './platform-service';
 import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
+import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -98,9 +99,9 @@ export class SurveyService extends DBService {
       partnerships: await this.getSurveyPartnershipsData(surveyId),
       purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
       proprietor: await this.getSurveyProprietorDataForView(surveyId),
-      location: await this.getSurveyLocationData(surveyId),
-      site_selection: await this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
+      locations: await this.getSurveyLocationsData(surveyId),
       participants: await this.surveyParticipationService.getSurveyParticipants(surveyId),
+      site_selection: await this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
       blocks: await this.getSurveyBlocksForSurveyId(surveyId)
     };
   }
@@ -226,11 +227,12 @@ export class SurveyService extends DBService {
    * Get Survey location for a given survey ID
    *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyLocationData>}
+   * @returns {*} {Promise<GetSurveyLocationData[]>}
    * @memberof SurveyService
    */
-  async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
-    return this.surveyRepository.getSurveyLocationData(surveyId);
+  async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
+    const service = new SurveyLocationService(this.connection);
+    return service.getSurveyLocationsData(surveyId);
   }
 
   /**
@@ -452,9 +454,8 @@ export class SurveyService extends DBService {
       )
     );
 
-    // Handle regions associated to a survey
-    if (postSurveyData.location) {
-      promises.push(this.insertRegion(surveyId, postSurveyData.location.geometry));
+    if (postSurveyData.locations) {
+      promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertSurveyLocations(surveyId, item))));
     }
 
     // Handle site selection strategies
@@ -486,6 +487,19 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Inserts location data.
+   *
+   * @param {number} surveyId
+   * @param {PostLocationData} data
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async insertSurveyLocations(surveyId: number, data: PostLocationData): Promise<void> {
+    const service = new SurveyLocationService(this.connection);
+    return service.insertSurveyLocation(surveyId, data);
+  }
+
+  /**
    * Insert, updates and deletes Survey Blocks for a given survey id
    *
    * @param {number} surveyId
@@ -498,6 +512,14 @@ export class SurveyService extends DBService {
     return service.upsertSurveyBlocks(surveyId, blocks);
   }
 
+  /**
+   * Insert region data.
+   *
+   * @param {number} projectId
+   * @param {Feature[]} features
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
   async insertRegion(projectId: number, features: Feature[]): Promise<void> {
     const regionService = new RegionService(this.connection);
     return regionService.addRegionsToSurveyFromFeatures(projectId, features);
@@ -661,8 +683,7 @@ export class SurveyService extends DBService {
    */
   async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
-
-    if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology || putSurveyData?.location) {
+    if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyDetailsData(surveyId, putSurveyData));
     }
 
@@ -689,13 +710,12 @@ export class SurveyService extends DBService {
     if (putSurveyData?.funding_sources) {
       promises.push(this.upsertSurveyFundingSourceData(surveyId, putSurveyData));
     }
-
     if (putSurveyData?.proprietor) {
       promises.push(this.updateSurveyProprietorData(surveyId, putSurveyData));
     }
 
-    if (putSurveyData?.location) {
-      promises.push(this.insertRegion(surveyId, putSurveyData?.location.geometry));
+    if (putSurveyData?.locations) {
+      promises.push(Promise.all(putSurveyData.locations.map((item) => this.updateSurveyLocation(item))));
     }
 
     if (putSurveyData?.participants.length) {
@@ -728,6 +748,11 @@ export class SurveyService extends DBService {
     }
 
     await Promise.all(promises);
+  }
+
+  async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
+    const surveyLocationService = new SurveyLocationService(this.connection);
+    return surveyLocationService.updateSurveyLocation(data);
   }
 
   /**

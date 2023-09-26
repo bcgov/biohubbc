@@ -41,7 +41,7 @@ const defaultLog = getLogger('repositories/site-selection-strategy-repository');
  */
 export class SiteSelectionStrategyRepository extends BaseRepository {
   /**
-   * Retreives the site selection strategies and stratums for the given survey
+   * Retrieves the site selection strategies and stratums for the given survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SiteSelectionData>}
@@ -53,7 +53,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
     const strategiesQuery = getKnex()
       .select('ss.name')
       .from('survey_site_strategy as sss')
-      .where('sss.survey_id', 1)
+      .where('sss.survey_id', surveyId)
       .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id');
 
     const strategiesResponse = await this.connection.knex<{ name: string }>(strategiesQuery);
