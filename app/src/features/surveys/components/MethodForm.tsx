@@ -146,7 +146,7 @@ const MethodForm = () => {
                       <ListItem
                         alignItems="flex-start"
                         disableGutters
-                        key={`${item.start_date}-${item.end_date}-${index}`}
+                        key={`${item.start_date}-${item.end_date}`}
                         sx={{
                           '& .MuiListItemSecondaryAction-root': {
                             top: '36px'
