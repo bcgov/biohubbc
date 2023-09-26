@@ -37,8 +37,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
           pb: 3,
           px: 3
         }}>
-        <Breadcrumbs
-          aria-label="breadcrumb">
+        <Breadcrumbs aria-label="breadcrumb">
           <Link variant="body2" underline="hover" href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
@@ -49,11 +48,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             Add Sampling Sites
           </Typography>
         </Breadcrumbs>
-        <Box 
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-        >
+        <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography
             variant="h3"
             component="h1"
