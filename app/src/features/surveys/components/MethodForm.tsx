@@ -75,6 +75,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
           .isEndDateSameOrAfterStartDate('start_date')
       })
     )
+    .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_date')
     .min(1, 'At least one time period is required')
 });
 
