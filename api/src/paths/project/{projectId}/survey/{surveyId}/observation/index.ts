@@ -7,7 +7,7 @@ import { authorizeRequestHandler } from '../../../../../../request-handlers/secu
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/get');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -88,10 +88,23 @@ GET.apiDoc = {
             title: 'Survey get response object, for view purposes',
             type: 'object',
             nullable: true,
-            required: ['surveyObservationData', 'surveyObservationSupplementaryData'],
+            required: ['surveyObservations'],
             properties: {
               surveyObservations: {
                 type: 'object',
+                required: [
+                  'survey_observation_id',
+                  'wldtaxonomic_units_id',
+                  'latitude',
+                  'longitude',
+                  'count',
+                  'observation_datetime',
+                  'create_user',
+                  'create_date',
+                  'update_user',
+                  'update_date',
+                  'revision_count'
+                ],
                 properties: {
                   survey_observation_id: {
                     type: 'integer'
@@ -99,8 +112,11 @@ GET.apiDoc = {
                   wldtaxonomic_units_id: {
                     type: 'integer'
                   },
-                  latlong: {
-                    type: 'integer'
+                  latitude: {
+                    type: 'number'
+                  },
+                  longitude: {
+                    type: 'number'
                   },
                   count: {
                     type: 'integer'
@@ -219,14 +235,7 @@ PUT.apiDoc = {
     200: {
       description: 'Upload OK',
       content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              // TODO do we need to include anything in this response?
-            }
-          }
-        }
+        'application/json': {}
       }
     },
     400: {
@@ -315,7 +324,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
 
       await observationService.insertUpdateSurveyObservations(surveyId, records);
 
-      return res.status(200).json({});
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });
       await connection.rollback();
