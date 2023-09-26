@@ -197,8 +197,8 @@ const SurveyHeader = () => {
                   variant="contained"
                   onClick={() => history.push('observations')}
                   sx={{
-                    minWidth: '7rem',
-                    marginRight: '0.5em'
+                    minWidth: 7,
+                    marginRight: 1
                   }}>
                   Manage Observations
                 </Button>

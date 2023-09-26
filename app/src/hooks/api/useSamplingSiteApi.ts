@@ -17,10 +17,8 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     samplingSite: ICreateSamplingSiteRequest
-  ): Promise<any> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site`, samplingSite);
-
-    return data;
+  ): Promise<void> => {
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site`, samplingSite);
   };
 
   return {
