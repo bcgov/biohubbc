@@ -6,6 +6,7 @@ import { InsertObservation, UpdateObservation } from '../../../../../../reposito
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
+import { SchemaObject } from 'ajv';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
 
@@ -51,6 +52,81 @@ export const PUT: Operation = [
   insertUpdateSurveyObservations()
 ];
 
+const surveyObservationsResponseSchema: SchemaObject = {
+  title: 'Survey get response object, for view purposes',
+  type: 'object',
+  nullable: true,
+  required: ['surveyObservations'],
+  properties: {
+    surveyObservations: {
+      type: 'array',
+      items: {
+        type: 'object',
+        
+        required: [
+          'survey_observation_id',
+          'wldtaxonomic_units_id',
+          'latitude',
+          'longitude',
+          'count',
+          'observation_date',
+          'observation_time',
+          'create_user',
+          'create_date',
+          // 'update_user',
+          // 'update_date',
+          'revision_count'
+        ],
+        properties: {
+          survey_observation_id: {
+            type: 'integer'
+          },
+          wldtaxonomic_units_id: {
+            type: 'integer'
+          },
+          latitude: {
+            type: 'number'
+          },
+          longitude: {
+            type: 'number'
+          },
+          count: {
+            type: 'integer'
+          },
+          observation_date: {
+            type: 'string'
+          },
+          observation_time: {
+            type: 'string'
+          },
+          create_date: {
+            oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+            description: 'ISO 8601 date string for the project start date'
+          },
+          create_user: {
+            type: 'integer',
+            minimum: 1
+          },
+          update_date: {
+            oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+            description: 'ISO 8601 date string for the project start date',
+            nullable: true
+          },
+          update_user: {
+            type: 'integer',
+            minimum: 1,
+            nullable: true
+          },
+          revision_count: {
+            type: 'integer',
+            minimum: 0
+          }
+        }
+      }
+    }
+  }
+}
+
 GET.apiDoc = {
   description: 'Fetches observation records for the given survey.',
   tags: ['observation'],
@@ -84,76 +160,7 @@ GET.apiDoc = {
       description: 'Survey Observations get response.',
       content: {
         'application/json': {
-          schema: {
-            title: 'Survey get response object, for view purposes',
-            type: 'object',
-            nullable: true,
-            required: ['surveyObservations'],
-            properties: {
-              surveyObservations: {
-                type: 'object',
-                required: [
-                  'survey_observation_id',
-                  'wldtaxonomic_units_id',
-                  'latitude',
-                  'longitude',
-                  'count',
-                  'observation_date',
-                  'observation_time',
-                  'create_user',
-                  'create_date',
-                  'update_user',
-                  'update_date',
-                  'revision_count'
-                ],
-                properties: {
-                  survey_observation_id: {
-                    type: 'integer'
-                  },
-                  wldtaxonomic_units_id: {
-                    type: 'integer'
-                  },
-                  latitude: {
-                    type: 'number'
-                  },
-                  longitude: {
-                    type: 'number'
-                  },
-                  count: {
-                    type: 'integer'
-                  },
-                  observation_date: {
-                    type: 'string'
-                  },
-                  observation_time: {
-                    type: 'string'
-                  },
-                  create_date: {
-                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                    description: 'ISO 8601 date string for the project start date'
-                  },
-                  create_user: {
-                    type: 'integer',
-                    minimum: 1
-                  },
-                  update_date: {
-                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                    description: 'ISO 8601 date string for the project start date',
-                    nullable: true
-                  },
-                  update_user: {
-                    type: 'integer',
-                    minimum: 1,
-                    nullable: true
-                  },
-                  revision_count: {
-                    type: 'integer',
-                    minimum: 0
-                  }
-                }
-              }
-            }
-          }
+          schema: { ...surveyObservationsResponseSchema }
         }
       }
     },
@@ -239,7 +246,9 @@ PUT.apiDoc = {
     200: {
       description: 'Upload OK',
       content: {
-        'application/json': {}
+        'application/json': {
+          schema: { ...surveyObservationsResponseSchema }
+        }
       }
     },
     400: {
@@ -328,9 +337,9 @@ export function insertUpdateSurveyObservations(): RequestHandler {
         };
       });
 
-      await observationService.insertUpdateSurveyObservations(surveyId, records);
+      const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
 
-      return res.status(200).send();
+      return res.status(200).json({ surveyObservations });
     } catch (error) {
       defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });
       await connection.rollback();
