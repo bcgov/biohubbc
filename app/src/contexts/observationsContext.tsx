@@ -1,4 +1,4 @@
-import { useGridApiRef } from '@mui/x-data-grid';
+import { GridRowModelUpdate, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { createContext, PropsWithChildren, useContext } from 'react';
@@ -118,7 +118,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         time: undefined,
         lat: undefined,
         long: undefined
-      }
+      } as GridRowModelUpdate
     ]);
 
     _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'speciesName' });

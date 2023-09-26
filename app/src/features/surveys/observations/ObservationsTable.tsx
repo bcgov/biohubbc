@@ -1,7 +1,7 @@
 import { mdiDotsVertical, mdiTrashCan } from "@mdi/js";
 import Icon from "@mdi/react";
 import IconButton from '@mui/material/IconButton';
-import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener, GridRowEditStopReasons, GridRowModelUpdate } from '@mui/x-data-grid';
 import { IObservationTableRow, ObservationsContext, fetchObservationDemoRows } from "contexts/observationsContext";
 import useDataLoader from "hooks/useDataLoader";
 import { useContext, useEffect, useState } from "react";
@@ -139,7 +139,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   }, [observationsDataLoader.data])
 
   const handleDeleteRow = (id: string | number) => {
-    apiRef.current.updateRows([{ id, _action: 'delete' }])
+    apiRef.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate])
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
