@@ -386,5 +386,5 @@ export const CreateSamplingSiteI18N = {
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Creating Sampling Site(s)',
   createErrorText:
-    'An error has occurred while attempting to create your sampling sites(s), please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to create your sampling site(s). Please try again. If the error persists, please contact your system administrator.'
 };

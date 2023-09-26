@@ -178,7 +178,9 @@ const MethodForm = () => {
                 </List>
                 {errors.periods && !Array.isArray(errors.periods) && (
                   <Box pt={2}>
-                    <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.periods}</Typography>
+                    <Typography variant="body2" color={'#f44336'}>
+                      {errors.periods}
+                    </Typography>
                   </Box>
                 )}
 

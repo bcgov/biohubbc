@@ -1,5 +1,4 @@
 import EditDialog from 'components/dialog/EditDialog';
-import { useState } from 'react';
 import MethodForm, {
   ISurveySampleMethodData,
   SamplingSiteMethodYupSchema,
@@ -13,10 +12,7 @@ interface ISamplingMethodProps {
 }
 
 const CreateSamplingMethod: React.FC<ISamplingMethodProps> = (props) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleSubmit = (values: ISurveySampleMethodData) => {
-    setIsSubmitting(false);
     props.onSubmit(values);
   };
 
@@ -25,7 +21,7 @@ const CreateSamplingMethod: React.FC<ISamplingMethodProps> = (props) => {
       <EditDialog
         dialogTitle={'Add Sampling Method'}
         open={props.open}
-        dialogLoading={isSubmitting}
+        dialogLoading={false}
         component={{
           element: <MethodForm />,
           initialValues: SurveySampleMethodDataInitialValues,
