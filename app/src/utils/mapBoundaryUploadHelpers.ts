@@ -63,7 +63,6 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
 
     reader.onerror = () => {
       reject(new Error('Failed to parse shape file.'));
-      return;
     };
 
     // Start reading file

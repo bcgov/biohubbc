@@ -95,7 +95,7 @@ const columns = [
     resizable: false,
     cellClassName: 'test',
     getActions: () => [
-      <IconButton>
+      <IconButton key={mdiDotsVertical}>
         <Icon path={mdiDotsVertical} size={1} />
       </IconButton>
     ]

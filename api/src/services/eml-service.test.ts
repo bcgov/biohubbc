@@ -992,7 +992,7 @@ describe.skip('EmlService', () => {
       vantage_codes: [],
       site_selection_strategies: [],
       survey_jobs: [],
-      sample_methods_lookup: []
+      sample_methods: []
     };
 
     it('should retrieve codes if _codes is undefined', async () => {
