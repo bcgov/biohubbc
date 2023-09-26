@@ -108,7 +108,7 @@ const MethodForm = () => {
             inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method Type' }}
             onChange={handleChange}
             sx={{ width: '100%', backgroundColor: '#fff' }}>
-            {codesContext.codesDataLoader.data.sample_methods_lookup.map((item) => (
+            {codesContext.codesDataLoader.data.sample_methods.map((item) => (
               <MenuItem key={item.id} value={item.id}>
                 {item.name}
               </MenuItem>

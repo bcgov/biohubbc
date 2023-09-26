@@ -60,7 +60,7 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Strategy 1' },
     { id: 2, name: 'Strategy 2' }
   ],
-  sample_methods_lookup: [
+  sample_methods: [
     { id: 1, name: 'Camera Trap' },
     { id: 2, name: 'Dip Net' }
   ]

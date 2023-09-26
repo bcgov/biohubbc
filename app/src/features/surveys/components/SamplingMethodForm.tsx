@@ -156,7 +156,7 @@ const SamplingMethodForm = () => {
                   <CardHeader
                     title={`${getCodesName(
                       codesContext.codesDataLoader.data,
-                      'sample_methods_lookup',
+                      'sample_methods',
                       item.method_lookup_id || 0
                     )}`}
                     subheader={item.description}

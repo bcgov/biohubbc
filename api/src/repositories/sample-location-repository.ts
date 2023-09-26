@@ -114,7 +114,7 @@ export class SampleLocationRepository extends BaseRepository {
       geography
     ) VALUES (
       ${sample.survey_id},
-      (select concat('Sample Site ', (select count(survey_sample_site_id) from survey_sample_site sss where survey_id = ${sample.survey_id}))),
+      (SELECT concat('Sample Site ', (SELECT count(survey_sample_site_id) + 1 FROM survey_sample_site sss WHERE survey_id = ${sample.survey_id}))),
       ${sample.description},
       ${sample.geojson},
       `;

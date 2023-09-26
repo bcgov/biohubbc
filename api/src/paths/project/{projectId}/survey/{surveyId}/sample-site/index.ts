@@ -71,10 +71,10 @@ GET.apiDoc = {
                   type: 'object',
                   properties: {
                     survey_sample_site_id: {
-                      type: 'number'
+                      type: 'integer'
                     },
                     survey_id: {
-                      type: 'number'
+                      type: 'integer'
                     },
                     name: {
                       type: 'string'
@@ -92,14 +92,14 @@ GET.apiDoc = {
                       type: 'string'
                     },
                     create_user: {
-                      type: 'number'
+                      type: 'integer'
                     },
                     update_date: {
                       type: 'string',
                       nullable: true
                     },
                     update_user: {
-                      type: 'number',
+                      type: 'integer',
                       nullable: true
                     },
                     revision_count: {
@@ -227,13 +227,35 @@ POST.apiDoc = {
             methods: {
               type: 'array',
               items: {
-                type: 'object'
+                type: 'object',
+                properties: {
+                  method_lookup_id: {
+                    type: 'integer'
+                  },
+                  description: {
+                    type: 'string'
+                  },
+                  periods: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        start_date: {
+                          type: 'string'
+                        },
+                        end_date: {
+                          type: 'string'
+                        }
+                      }
+                    }
+                  }
+                }
               }
             },
             survey_sample_sites: {
               type: 'array',
               items: {
-                type: 'object'
+                ...(GeoJSONFeature as object)
               }
             }
           }
@@ -284,7 +306,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(201).send();
     } catch (error) {
       defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
       throw error;
