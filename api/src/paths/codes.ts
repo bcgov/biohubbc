@@ -333,7 +333,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              sample_methods_lookup: {
+              sample_methods: {
                 type: 'array',
                 items: {
                   type: 'object',
