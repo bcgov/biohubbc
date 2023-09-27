@@ -160,6 +160,18 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
+  const uploadAttachment = async (file?: File, attachmentType?: AttachmentType) => {
+    try {
+      if (file && attachmentType === AttachmentType.KEYX) {
+        await bhApi.survey.uploadSurveyKeyx(projectId, surveyId, file);
+      } else if (file && attachmentType === AttachmentType.OTHER) {
+        await bhApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
+      }
+    } catch (error) {
+      throw new Error(`Failed to upload attachment ${file?.name}`);
+    }
+  };
+
   const handleAddTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
     const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
     const { attachmentFile, attachmentType, ...critterTelemetryDevice } = {
@@ -168,11 +180,7 @@ const SurveyAnimals: React.FC = () => {
     };
     try {
       // Upload attachment if there is one
-      if (attachmentFile && attachmentType === AttachmentType.KEYX) {
-        await bhApi.survey.uploadSurveyKeyx(projectId, surveyId, attachmentFile);
-      } else if (attachmentFile && attachmentType === AttachmentType.OTHER) {
-        await bhApi.survey.uploadSurveyAttachments(projectId, surveyId, attachmentFile);
-      }
+      await uploadAttachment(attachmentFile, attachmentType);
       // create new deployment record
       await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
       setPopup('Successfully added deployment.');
@@ -193,7 +201,7 @@ const SurveyAnimals: React.FC = () => {
       try {
         await telemetryApi.devices.upsertCollar(formDevice);
       } catch (error) {
-        setPopup(`Failed to update device ${formDevice.device_id}`);
+        throw new Error(`Failed to update collar ${formDevice.collar_id}`);
       }
     }
   };
@@ -210,18 +218,26 @@ const SurveyAnimals: React.FC = () => {
         try {
           await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
         } catch (error) {
-          setPopup(`Failed to update deployment ${formDeployment.deployment_id}`);
+          throw new Error(`Failed to update deployment ${formDeployment.deployment_id}`);
         }
       }
     }
   };
 
   const handleEditTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+    const errors: string[] = [];
     for (const { attachmentFile, attachmentType, ...formValues } of data) {
-      await updateDevice(formValues);
-      await updateDeployments(formValues.deployments ?? [], survey_critter_id);
+      try {
+        await uploadAttachment(attachmentFile, attachmentType);
+        await updateDevice(formValues);
+        await updateDeployments(formValues.deployments ?? [], survey_critter_id);
+      } catch (error) {
+        errors.push(`Device ${formValues.device_id} - ` + (error instanceof Error ? error.message : 'Unknown error'));
+      }
     }
-    setPopup('Updated deployment and device data successfully.');
+    errors.length
+      ? setPopup('Failed to save some data: ' + errors.join(', '))
+      : setPopup('Updated deployment and device data successfully.');
   };
 
   const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {

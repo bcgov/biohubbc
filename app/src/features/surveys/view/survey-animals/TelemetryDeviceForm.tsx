@@ -149,13 +149,12 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
           <CustomTextField label="Device Model" name={`${index}.device_model`} />
         </Grid>
       </Grid>
-      {mode === TELEMETRY_DEVICE_FORM_MODE.ADD &&
-        ((values[index].device_make === 'Vectronic' && !bctwDeviceData?.keyXStatus) ||
-          values[index].device_make === 'Lotek') && (
-          <Box sx={{ mt: 3 }}>
-            <AttchmentFormSection index={index} deviceMake={values[index].device_make} />
-          </Box>
-        )}
+      {((values[index].device_make === 'Vectronic' && !bctwDeviceData?.keyXStatus) ||
+        values[index].device_make === 'Lotek') && (
+        <Box sx={{ mt: 3 }}>
+          <AttchmentFormSection index={index} deviceMake={values[index].device_make} />
+        </Box>
+      )}
       <Box sx={{ mt: 3 }}>
         <Paper sx={{ padding: 3 }}>
           <Typography sx={{ ml: 1, mb: 3 }}>Deployments</Typography>
