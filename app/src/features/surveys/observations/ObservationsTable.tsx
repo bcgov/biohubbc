@@ -5,6 +5,9 @@ import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mu
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import TaxonomyDataGridCell from 'components/data-grid/TaxonomyCell';
+import TaxonomyDataGridEditCell from 'components/data-grid/TaxonomyDataGridEditCell';
+import { fetchObservationDemoRows, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 // import { useEffect, useState } from "react";
@@ -34,7 +37,13 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       editable: true,
       flex: 1,
       minWidth: 250,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return <TaxonomyDataGridCell dataGridProps={params} />;
+      },
+      renderEditCell: (params) => {
+        return <TaxonomyDataGridEditCell dataGridProps={params} />;
+      }
     },
     {
       field: 'samplingSite',

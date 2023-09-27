@@ -1,3 +1,4 @@
+import { SchemaObject } from 'ajv';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
@@ -6,7 +7,6 @@ import { InsertObservation, UpdateObservation } from '../../../../../../reposito
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
-import { SchemaObject } from 'ajv';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
 
@@ -62,7 +62,6 @@ const surveyObservationsResponseSchema: SchemaObject = {
       type: 'array',
       items: {
         type: 'object',
-        
         required: [
           'survey_observation_id',
           'wldtaxonomic_units_id',
@@ -125,7 +124,7 @@ const surveyObservationsResponseSchema: SchemaObject = {
       }
     }
   }
-}
+};
 
 GET.apiDoc = {
   description: 'Fetches observation records for the given survey.',

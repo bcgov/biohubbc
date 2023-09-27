@@ -69,7 +69,7 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
   const throttledSetBounds = useMemo(
     () =>
       throttle((newBounds) => {
-        if (!isMounted) {
+        if (!isMounted()) {
           return;
         }
 
