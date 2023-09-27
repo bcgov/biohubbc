@@ -22,6 +22,9 @@ const ObservationsTable = (props: IObservationsTableProps) => {
   // const classes = useStyles();
   const biohubApi = useBiohubApi();
   const { projectId, surveyId } = useContext(SurveyContext);
+  
+  // TODO: in the near future, we may want to move observationsDataLoader into the ObservationContext,
+  // in order to avoid having to map the API response values
   const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
   const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
 

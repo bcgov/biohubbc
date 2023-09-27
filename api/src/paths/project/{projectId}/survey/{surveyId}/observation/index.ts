@@ -347,8 +347,10 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       });
 
       await observationService.insertUpdateSurveyObservations(surveyId, records);
-
       const surveyObservations = await observationService.getSurveyObservations(surveyId);
+
+      await connection.commit();
+
       return res.status(200).json({ surveyObservations });
     } catch (error) {
       defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });

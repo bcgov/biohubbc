@@ -95,12 +95,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
-  /*
-  const _getRows = (): IObservationTableRow[] => {
-    return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[]
-  }
-  */
-
   const createNewRecord = () => {
     const id = uuidv4();
 
@@ -123,7 +117,10 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'speciesName' });
   };
 
-  /*
+  const _getRows = (): IObservationTableRow[] => {
+    return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[]
+  }
+
   const getActiveRecords = (): IObservationTableRow[] => {
     return _getRows().map((row) => {
       const editRow = _muiDataGridApiRef.current.state.editRows[row.id]
@@ -136,17 +133,23 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         .reduce((newRow, entry) => ({ ...row, ...newRow, _isModified: true, [entry[0]]: entry[1].value }), {});
     }) as IObservationTableRow[];
   }
-  */
+
 
   const saveRecords = async () => {
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id }));
 
     const { projectId, surveyId } = surveyContext;
-    const rows = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
+    
+    const rows = getActiveRecords() // _getRows()
 
     const updatedRows = await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
-    _muiDataGridApiRef.current.setRows(updatedRows);
+    _muiDataGridApiRef.current.setRows(updatedRows.map((row: IObservationTableRow) => ({
+      ...row,
+      id: String(row.survey_observation_id)
+      // TODO map wldtaxonomic_units code to speciesName
+      // _isModified: false
+    })));
   };
 
   const revertRecords = async () => {
