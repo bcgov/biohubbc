@@ -1,7 +1,6 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Theme } from '@mui/material';
-import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { makeStyles } from '@mui/styles';
 import { IActionButtonProps, UploadFileStatus } from 'components/file-upload/FileUploadItem';
@@ -60,7 +59,7 @@ const SampleSiteFileUploadItemActionButton = (props: IActionButtonProps) => {
   }
 
   // status is FINISHING_UPLOAD, show no action button
-  return <Box width="4rem" />;
+  return <></>;
 };
 
 export default SampleSiteFileUploadItemActionButton;

@@ -63,7 +63,7 @@ const FileUploadItemActionButton = (props: IActionButtonProps) => {
   }
 
   // status is FINISHING_UPLOAD, show no action button
-  return <Box width="4rem" />;
+  return <></>;
 };
 
 export default FileUploadItemActionButton;
