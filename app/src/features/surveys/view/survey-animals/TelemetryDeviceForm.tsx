@@ -12,7 +12,7 @@ import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-// import { grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 
 export enum TELEMETRY_DEVICE_FORM_MODE {
   ADD = 'add',
@@ -28,7 +28,7 @@ const DeploymentFormSection = ({
 }): JSX.Element => {
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         {deployments.map((deploy, i) => {
           return (
             <Fragment key={`deployment-item-${deploy.deployment_id}`}>
@@ -98,24 +98,44 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
   return (
     <>
       <Box component="fieldset">
-        <Typography component="legend">Device Metadata</Typography>
-        <Grid container spacing={2}>
+        <Typography component="legend" variant="body2">Device Metadata</Typography>
+        <Grid container spacing={3}>
           <Grid item xs={6}>
             <CustomTextField label="Device ID" name={`${index}.device_id`} other={{ disabled: mode === 'edit' }} />
           </Grid>
-          <Grid item xs={4}>
-            <CustomTextField label="Device Frequency" name={`${index}.frequency`} />
-          </Grid>
-          <Grid item xs={2}>
-            <TelemetrySelectField
-              label="Unit"
-              name={`${index}.frequency_unit`}
-              id="frequency_unit"
-              fetchData={async () => {
-                const codeVals = await api.devices.getCodeValues('frequency_unit');
-                return codeVals.map((a) => a.description);
-              }}
-            />
+          <Grid item xs={6}>
+            <Grid container>
+              <Grid item xs={8}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0
+                  }
+                }}
+              >
+                <CustomTextField label="Frequency (Optional)" name={`${index}.frequency`} />
+              </Grid>
+              <Grid item xs={4}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    ml: '-1px',
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0
+                  }
+                }}
+              >
+                <TelemetrySelectField
+                  label="Units"
+                  name={`${index}.frequency_unit`}
+                  id="frequency_unit"
+                  fetchData={async () => {
+                    const codeVals = await api.devices.getCodeValues('frequency_unit');
+                    return codeVals.map((a) => a.description);
+                  }}
+                  
+                />
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item xs={6}>
             <TelemetrySelectField
@@ -126,13 +146,13 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
             />
           </Grid>
           <Grid item xs={6}>
-            <CustomTextField label="Device Model" name={`${index}.device_model`} />
+            <CustomTextField label="Device Model (Optional)" name={`${index}.device_model`} />
           </Grid>
         </Grid>
       </Box>
       <Box component="fieldset" sx={{ mt: 3 }}>
         
-        <Typography component="legend">Deployment Dates</Typography>
+        <Typography component="legend" variant="body2">Deployment Dates</Typography>
         
         {<DeploymentFormSection index={index} deployments={values[index].deployments ?? []} />}
 
@@ -161,34 +181,41 @@ const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
     <Form>
       <> 
         {values.map((device, idx) => (
-          <Card 
+          <Card key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
             variant="outlined"
             sx={{
               '& + div': {
                 mt: 2
+              },
+              '&:only-child': {
+                border: 'none',
+                '& .MuiCardHeader-root': {
+                  display: 'none'
+                },
+                '& .MuiCardContent-root': {
+                  padding: 0
+                }
               }
             }}
           >
             <CardHeader 
               title={'Device ID:' + ' ' + device.device_id}
               sx={{
-                fontSize: '18px'
+                background: grey[100],
+                borderBottom: '1px solid' + grey[300],
+                '& .MuiCardHeader-title': {
+                  fontSize: '1.125rem'
+                }
               }}  
             >
             </CardHeader>
-            <CardContent
-              sx={{
-                pt: 0
-              }}
-            >
-              <Box key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}>
-                <DeviceFormSection
-                  mode={mode}
-                  values={values}
-                  key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
-                  index={idx}
-                />
-              </Box>
+            <CardContent>
+              <DeviceFormSection
+                mode={mode}
+                values={values}
+                key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
+                index={idx}
+              />
             </CardContent>
           </Card>
         ))} 

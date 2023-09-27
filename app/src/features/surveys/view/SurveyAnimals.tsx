@@ -227,6 +227,7 @@ const SurveyAnimals: React.FC = () => {
         dialogTitle={
           telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'Add Telemetry Device' : 'Edit Telemetry Devices'
         }
+        dialogSaveButtonLabel="Save"
         open={openDeviceDialog}
         component={{
           element: <TelemetryDeviceForm mode={telemetryFormMode} />,
