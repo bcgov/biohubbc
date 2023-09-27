@@ -18,22 +18,20 @@ export const TelemetryFileUpload: React.FC<{ attachmentType: AttachmentType; ind
   };
 
   return (
-    <>
-      <FileUpload
-        fileHandler={fileHandler}
-        onReplace={replaceHandler}
-        dropZoneProps={{
-          maxNumFiles: 1,
-          multiple: false,
-          acceptedFileExtensions:
-            props.attachmentType === AttachmentType.KEYX
-              ? ProjectSurveyAttachmentValidExtensions.KEYX
-              : ProjectSurveyAttachmentValidExtensions.CONFIG
-        }}
-        replace={true}
-        status={UploadFileStatus.STAGED}
-      />
-    </>
+    <FileUpload
+      fileHandler={fileHandler}
+      onReplace={replaceHandler}
+      dropZoneProps={{
+        maxNumFiles: 1,
+        multiple: false,
+        acceptedFileExtensions:
+          props.attachmentType === AttachmentType.KEYX
+            ? ProjectSurveyAttachmentValidExtensions.KEYX
+            : ProjectSurveyAttachmentValidExtensions.CONFIG
+      }}
+      replace={true}
+      status={UploadFileStatus.STAGED}
+    />
   );
 };
 
