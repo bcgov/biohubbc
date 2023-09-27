@@ -7,6 +7,7 @@ import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import EditSurveyPage from './edit/EditSurveyPage';
+import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
 
@@ -39,6 +40,15 @@ const SurveyRouter: React.FC = () => {
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Sampling Sites')}>
         <ProjectsLayout>
           <SamplingSitePage />
+        </ProjectsLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/sampling/:survey_sample_site_id/edit"
+        title={getTitle('Edit Sampling Site')}>
+        <ProjectsLayout>
+          <SamplingSiteEditPage />
         </ProjectsLayout>
       </RouteWithTitle>
 

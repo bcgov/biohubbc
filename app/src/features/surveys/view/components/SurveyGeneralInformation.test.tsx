@@ -29,6 +29,7 @@ describe('SurveyGeneralInformation', () => {
       any
     >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -39,7 +40,8 @@ describe('SurveyGeneralInformation', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>
@@ -69,6 +71,7 @@ describe('SurveyGeneralInformation', () => {
       any
     >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -79,7 +82,8 @@ describe('SurveyGeneralInformation', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>
@@ -98,6 +102,7 @@ describe('SurveyGeneralInformation', () => {
       any
     >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { container } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -108,7 +113,8 @@ describe('SurveyGeneralInformation', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>

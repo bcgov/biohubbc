@@ -347,3 +347,46 @@ export type IEditSurveyRequest = IGeneralInformationForm &
   IProprietaryDataForm &
   IUpdateAgreementsForm & { partnerships: IGetSurveyForViewResponsePartnerships } & ISurveySiteSelectionForm &
   IParticipantsJobForm;
+
+export interface IGetSampleSiteResponse {
+  sampleSites: IGetSampleLocationRecord[];
+}
+export interface IGetSampleLocationRecord {
+  survey_sample_site_id: number;
+  survey_id: number;
+  name: string;
+  description: string;
+  geojson: Feature[];
+  geography: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+  sampleMethods: IGetSampleMethodRecord[] | undefined;
+}
+
+export interface IGetSampleMethodRecord {
+  survey_sample_method_id: number;
+  survey_sample_site_id: number;
+  method_lookup_id: number;
+  description: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+  samplePeriods: IGetSamplePeriodRecord[] | undefined;
+}
+
+export interface IGetSamplePeriodRecord {
+  survey_sample_period_id: number;
+  survey_sample_method_id: number;
+  start_date: string;
+  end_date: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
