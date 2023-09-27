@@ -363,7 +363,7 @@ export interface IGetSampleLocationRecord {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
-  sampleMethods: IGetSampleMethodRecord[] | undefined;
+  sample_methods: IGetSampleMethodRecord[] | undefined;
 }
 
 export interface IGetSampleMethodRecord {
@@ -376,7 +376,7 @@ export interface IGetSampleMethodRecord {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
-  samplePeriods: IGetSamplePeriodRecord[] | undefined;
+  sample_periods: IGetSamplePeriodRecord[] | undefined;
 }
 
 export interface IGetSamplePeriodRecord {

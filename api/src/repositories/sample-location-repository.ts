@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
+import { SampleMethodRecord } from './sample-method-repository';
 
 // This describes a row in the database for Survey Sample Location
 export const SampleLocationRecord = z.object({
@@ -16,7 +17,8 @@ export const SampleLocationRecord = z.object({
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number()
+  revision_count: z.number(),
+  sample_methods: z.array(SampleMethodRecord).default([])
 });
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
 
@@ -46,9 +48,17 @@ export class SampleLocationRepository extends BaseRepository {
    */
   async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationRecord[]> {
     const sql = SQL`
-      SELECT *
-      FROM survey_sample_site
-      WHERE survey_id = ${surveyId};
+    SELECT sss.survey_sample_site_id, sss.survey_id, sss.name, sss.description, sss.geojson, sss.geography, sss.create_date, sss.create_user, sss.update_date, sss.update_user, sss.revision_count, json_agg(gssm.*) as sample_methods
+    FROM survey_sample_site sss, (
+      SELECT ssm.survey_sample_method_id, ssm.survey_sample_site_id, ssm.method_lookup_id, ssm.description, ssm.create_date, ssm.create_user, ssm.update_date, ssm.update_user, ssm.revision_count, json_agg(ssp.*) as sample_periods
+      FROM survey_sample_method ssm, survey_sample_period ssp
+      WHERE ssm.survey_sample_method_id = ssp.survey_sample_method_id 
+      GROUP BY ssm.survey_sample_method_id, ssm.survey_sample_site_id, ssm.method_lookup_id, ssm.description, ssm.create_date, ssm.create_user, ssm.update_date, ssm.update_user, ssm.revision_count
+    ) gssm
+    WHERE sss.survey_sample_site_id = gssm.survey_sample_site_id
+    AND sss.survey_id = ${surveyId}
+    GROUP BY sss.survey_sample_site_id, sss.survey_id, sss.name, sss.description, sss.geojson, sss.geography, sss.create_date, sss.create_user, sss.update_date, sss.update_user, sss.revision_count
+    ORDER BY sss.survey_sample_site_id;
     `;
 
     const response = await this.connection.sql(sql, SampleLocationRecord);
