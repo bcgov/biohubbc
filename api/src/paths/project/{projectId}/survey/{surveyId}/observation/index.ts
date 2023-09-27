@@ -214,7 +214,7 @@ PUT.apiDoc = {
               items: {
                 type: 'object',
                 required: [
-                  // 'speciesName', // TODO: this won't remain optional. We'll likely be dircetly passing the wldtaxonomic units code.
+                  'wldtaxonomic_units_id',
                   'count',
                   'latitude',
                   'longitude',
@@ -222,11 +222,9 @@ PUT.apiDoc = {
                   'observation_time'
                 ],
                 properties: {
-                  /*
-                  speciesName: {
-                    type: 'string'
+                  wldtaxonomic_units_id: {
+                    type: 'integer'
                   },
-                  */
                   count: {
                     type: 'number'
                   },
@@ -314,24 +312,6 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-
-      /*
-      // This code retrieves the taxonomic code for each table row
-      const taxonomyService = new TaxonomyService();
-      const promises: Promise<(InsertObservation | UpdateObservation)>[] = req.body.map((record: any) => {
-        return taxonomyService.searchSpecies(record.speciesName.toLowerCase()).then((taxonCodes) => ({        
-          survey_id: surveyId,
-          survey_observation_id: record.survey_observation_id,
-          wldtaxonomic_units_id: taxonCodes[0].id,
-          latitude: record.latitude,
-          longitude: record.longitude,
-          count: record.count,
-          observation_date: record.observation_date,
-          observation_time: record.observation_time
-        }))
-      });
-      const records = await Promise.all(promises);
-      */
 
       const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
         return {

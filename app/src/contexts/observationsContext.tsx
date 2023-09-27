@@ -7,7 +7,7 @@ import { SurveyContext } from './surveyContext';
 
 export interface IObservationRecord {
   survey_observation_id: number | undefined;
-  speciesName: string | undefined;
+  wldtaxonomic_units_id: number | undefined;
   samplingSite: string | undefined;
   samplingMethod: string | undefined;
   samplingPeriod: string | undefined;
@@ -29,7 +29,7 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
       resolve([
         {
           survey_observation_id: 1,
-          speciesName: 'Moose (Alces Americanus)',
+          wldtaxonomic_units_id: 1111,
           samplingSite: 'Site 1',
           samplingMethod: 'Method 1',
           samplingPeriod: undefined,
@@ -41,7 +41,7 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
         },
         {
           survey_observation_id: 2,
-          speciesName: 'Moose (Alces Americanus)',
+          wldtaxonomic_units_id: 1111,
           samplingSite: 'Site 1',
           samplingMethod: 'Method 1',
           samplingPeriod: undefined,
@@ -53,7 +53,7 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
         },
         {
           survey_observation_id: 3,
-          speciesName: 'Moose (Alces Americanus)',
+          wldtaxonomic_units_id: 1111,
           samplingSite: 'Site 1',
           samplingMethod: 'Method 1',
           samplingPeriod: undefined,
@@ -102,7 +102,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       {
         id,
         survey_observation_id: null,
-        speciesName: undefined,
+        wldtaxonomic_units: undefined,
         samplingSite: undefined,
         samplingMethod: undefined,
         samplingPeriod: undefined,
@@ -114,7 +114,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       } as GridRowModelUpdate
     ]);
 
-    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'speciesName' });
+    _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
   };
 
   const _getRows = (): IObservationTableRow[] => {
@@ -147,8 +147,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     _muiDataGridApiRef.current.setRows(updatedRows.map((row: IObservationTableRow) => ({
       ...row,
       id: String(row.survey_observation_id)
-      // TODO map wldtaxonomic_units code to speciesName
-      // _isModified: false
     })));
   };
 

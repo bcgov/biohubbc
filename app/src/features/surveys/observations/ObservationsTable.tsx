@@ -7,19 +7,10 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
-// import { useEffect, useState } from "react";
-// import { pluralize as p } from "utils/Utils";
 
 export type IObservationsTableProps = Record<never, any>;
 
-/*
-const useStyles = makeStyles((theme: Theme) => ({
-  modifiedRow: {} // { background: 'rgba(65, 168, 3, 0.16)' }
-}));
-*/
-
 const ObservationsTable = (props: IObservationsTableProps) => {
-  // const classes = useStyles();
   const biohubApi = useBiohubApi();
   const { projectId, surveyId } = useContext(SurveyContext);
   
@@ -32,12 +23,13 @@ const ObservationsTable = (props: IObservationsTableProps) => {
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
-      field: 'speciesName',
+      field: 'wldtaxonomic_units_id',
       headerName: 'Species',
       editable: true,
       flex: 1,
       minWidth: 250,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: () => 'Moose (Alces Americanus)'
     },
     {
       field: 'samplingSite',
@@ -135,8 +127,6 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       const rows: IObservationTableRow[] = observationsDataLoader.data.map((row: IObservationTableRow) => ({
         ...row,
         id: String(row.survey_observation_id)
-        // TODO map wldtaxonomic_units code to speciesName
-        // _isModified: false
       }));
 
       setInitialRows(rows);
