@@ -1,10 +1,8 @@
-import { mdiImport } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Divider, Typography } from '@mui/material';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import EditDialog from 'components/dialog/EditDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -12,7 +10,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
-import { datesSameNullable, pluralize } from 'utils/Utils';
+import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
@@ -29,7 +27,6 @@ const SurveyAnimals: React.FC = () => {
 
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
-  const [animalCount, setAnimalCount] = useState(0);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
     TELEMETRY_DEVICE_FORM_MODE.ADD
@@ -198,27 +195,14 @@ const SurveyAnimals: React.FC = () => {
   return (
     <Box>
       <EditDialog
-        dialogTitle={
-          <Box>
-            <HelpButtonTooltip content={SurveyAnimalsI18N.animalIndividualsHelp}>
-              <Typography variant="h3">Individuals</Typography>
-            </HelpButtonTooltip>
-            <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-              {`${
-                animalCount
-                  ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
-                  : `No individual animals were captured or reported in this survey`
-              }`}
-            </Typography>
-          </Box>
-        }
+        dialogTitle="Add Animal"
         open={openAddCritterDialog}
         onSave={(values) => {
           handleCritterSave(values);
         }}
         onCancel={toggleDialog}
         component={{
-          element: <IndividualAnimalForm getAnimalCount={setAnimalCount} />,
+          element: <IndividualAnimalForm />,
           initialValues: AnimalFormValues,
           validationSchema: AnimalSchema
         }}
@@ -242,11 +226,11 @@ const SurveyAnimals: React.FC = () => {
         }}
       />
       <H2ButtonToolbar
-        label="Individual Animals"
-        buttonLabel="Import"
-        buttonTitle="Import Animals"
+        label="Marked or Known Animals"
+        buttonLabel="Add Animal"
+        buttonTitle="Add Animal"
         buttonProps={{ variant: 'contained', color: 'primary' }}
-        buttonStartIcon={<Icon path={mdiImport} size={1} />}
+        buttonStartIcon={<Icon path={mdiPlus} size={1} />}
         buttonOnClick={toggleDialog}
       />
       <Divider></Divider>

@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/tables/CustomDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -57,7 +56,10 @@ export const SurveyAnimalsTable = ({
       field: 'wlh_id',
       headerName: 'WLH ID',
       flex: 1,
-      renderCell: (params) => <Typography>{params.value ? params.value : 'None'}</Typography>
+      renderCell: (params) => 
+        <>
+          {params.value ? params.value : 'None'}
+        </>
     },
     {
       field: 'taxon',
@@ -69,7 +71,9 @@ export const SurveyAnimalsTable = ({
       headerName: 'Created On',
       flex: 1,
       renderCell: (params) => (
-        <Typography>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}</Typography>
+        <>
+          {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
+        </>
       )
     },
     {

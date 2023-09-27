@@ -299,7 +299,7 @@ export const SubmitSurveyBiohubI18N = {
 
 export const SurveyAnimalsI18N = {
   animalIndividualsHelp:
-    'Individual animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',
+    'Animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',
   animalDialogTitle: 'Invidividual Animals',
   animalDialogAddNew: 'Add New Individual',
   animalSectionComment: (section: string) => `Add comment about this ${section}`,
