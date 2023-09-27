@@ -213,11 +213,20 @@ PUT.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['speciesName', 'count', 'latitude', 'longitude', 'observation_date', 'observation_time'],
+                required: [
+                  // 'speciesName', // TODO: this won't remain optional. We'll likely be dircetly passing the wldtaxonomic units code.
+                  'count',
+                  'latitude',
+                  'longitude',
+                  'observation_date',
+                  'observation_time'
+                ],
                 properties: {
+                  /*
                   speciesName: {
                     type: 'string'
                   },
+                  */
                   count: {
                     type: 'number'
                   },
