@@ -24,6 +24,12 @@ const appTheme = createTheme({
       dark: '#001949',
       contrastText: '#ffffff'
     },
+    success: {
+      main: '#2E8540'
+    },
+    error: {
+      main: '#D8292F'
+    },
     text: {
       primary: '#313132',
       secondary: '#757575'
@@ -97,11 +103,21 @@ const appTheme = createTheme({
     },
     MuiBreadcrumbs: {
       styleOverrides: {
+        root: {
+          marginTop: '-8px',
+          marginBottom: '4px',
+          marginLeft: '-4px'
+        },
         li: {
           maxWidth: '40ch',
+          padding: '4px',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis'
+        },
+        separator: {
+          marginLeft: '4px',
+          marginRight: '4px'
         }
       }
     },

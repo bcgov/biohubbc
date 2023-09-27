@@ -95,9 +95,7 @@ describe('SurveyHeader', () => {
     fireEvent.click(getByTestId('yes-button'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual(
-        `/admin/projects/${surveyForView.surveyData.survey_details.id}/surveys`
-      );
+      expect(history.location.pathname).toEqual(`/admin/projects/${surveyForView.surveyData.survey_details.id}`);
     });
   });
 
