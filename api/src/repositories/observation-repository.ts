@@ -4,6 +4,9 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
+/**
+ * Interface reflecting survey observations retrieved from the database
+ */
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
@@ -22,11 +25,17 @@ export const ObservationRecord = z.object({
 
 export type ObservationRecord = z.infer<typeof ObservationRecord>;
 
+/**
+ * Interface reflecting survey observations that are being inserted into the database
+ */
 export type InsertObservation = Pick<
   ObservationRecord,
   'survey_id' | 'wldtaxonomic_units_id' | 'latitude' | 'longitude' | 'count' | 'observation_date' | 'observation_time'
 >;
 
+/**
+ * Interface reflecting survey observations that are being updated in the database
+ */
 export type UpdateObservation = Pick<
   ObservationRecord,
   | 'survey_observation_id'
@@ -40,7 +49,8 @@ export type UpdateObservation = Pick<
 
 export class ObservationRepository extends BaseRepository {
   /**
-   * TODO
+   * Performs an upsert for all observation records belonging to the given survey, then
+   * returns the updated rows
    *
    * @param {number} surveyId
    * @param {((Observation | ObservationRecord)[])} observations
@@ -105,7 +115,7 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * @TODO
+   * Retrieves all observation records for the given survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<ObservationRecord[]>}

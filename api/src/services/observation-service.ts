@@ -16,7 +16,8 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * TODO
+   * Performs an upsert for all observation records belonging to the given survey, then
+   * returns the updated rows
    *
    * @param {number} surveyId
    * @param {((Observation | ObservationRecord)[])} observations
@@ -31,7 +32,7 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * TODO
+   * Retrieves all observation records for the given survey
    *
    * @param {number} surveyId
    * @return {*}  {Promise<ObservationRecord[]>}

@@ -316,6 +316,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
+      // Sanitize all incoming records
       const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
         return {
           survey_id: surveyId,
@@ -329,8 +330,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
         };
       });
 
-      await observationService.insertUpdateSurveyObservations(surveyId, records);
-      const surveyObservations = await observationService.getSurveyObservations(surveyId);
+      const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
 
       await connection.commit();
 

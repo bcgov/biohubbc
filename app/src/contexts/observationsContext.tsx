@@ -31,11 +31,30 @@ export interface IObservationTableRow extends Partial<IObservationRecord> {
  * @interface IObservationsContext
  */
 export type IObservationsContext = {
+  /**
+   * Appends a new blank record to the observation rows
+   */
   createNewRecord: () => void;
+  /**
+   * Commits all observation rows to the database, including those that are currently being
+   * edited in the Observation Table
+   */
   saveRecords: () => Promise<void>;
+  /**
+   * Reverts all changes made to observation records within the Observation Table
+   */
   revertRecords: () => Promise<void>;
+  /**
+   * Refreshes the Observation Table with already existing records
+   */
   refreshRecords: () => Promise<void>;
+  /**
+   * Data Loader used for retrieving existing records
+   */
   observationsDataLoader: DataLoader<[], IGetSurveyObservationsResponse, unknown>
+  /**
+   * API ref used to interface with an MUI DataGrid representing the observation records
+   */
   _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
 };
 
@@ -103,19 +122,10 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
     const { projectId, surveyId } = surveyContext;
     
-    const rows = getActiveRecords() // _getRows()
+    const rows = getActiveRecords()
 
-    //const updatedRows = 
     await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
-    
-    /*
-    _muiDataGridApiRef.current.setRows(updatedRows.map((row: IObservationTableRow) => ({
-      ...row,
-      id: String(row.survey_observation_id)
-    })));
-    */
-
-    observationsDataLoader.refresh();
+    refreshRecords();
   };
 
   const revertRecords = async () => {
@@ -123,8 +133,8 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
   };
 
-  const refreshRecords = async () => {
-    //
+  const refreshRecords = async (): Promise<void> => {
+    return observationsDataLoader.refresh();
   };
 
   const observationsContext: IObservationsContext = {
