@@ -174,7 +174,7 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * TODO
+   * Insert/updates all survey observation records for the given survey
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -194,6 +194,13 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data.surveyObservations;
   };
 
+  /**
+   * Retrieves all survey observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IObservationTableRow[]>}
+   */
   const getObservationRecords = async (projectId: number, surveyId: number): Promise<IObservationTableRow[]> => {
     const { data } = await axios.get<{ surveyObservations: IObservationTableRow[] }>(
       `/api/project/${projectId}/survey/${surveyId}/observation`

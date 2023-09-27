@@ -22,52 +22,6 @@ export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: string;
 }
 
-// TODO remove when finished testing
-export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve([
-        {
-          survey_observation_id: 1,
-          wldtaxonomic_units_id: 1111,
-          samplingSite: 'Site 1',
-          samplingMethod: 'Method 1',
-          samplingPeriod: undefined,
-          count: 1,
-          observation_date: new Date('2020-01-01'),
-          observation_time: '12:00:00',
-          latitude: 45,
-          longitude: 125
-        },
-        {
-          survey_observation_id: 2,
-          wldtaxonomic_units_id: 1111,
-          samplingSite: 'Site 1',
-          samplingMethod: 'Method 1',
-          samplingPeriod: undefined,
-          count: 2,
-          observation_date: new Date('2021-01-01'),
-          observation_time: '13:00:00',
-          latitude: 46,
-          longitude: 126
-        },
-        {
-          survey_observation_id: 3,
-          wldtaxonomic_units_id: 1111,
-          samplingSite: 'Site 1',
-          samplingMethod: 'Method 1',
-          samplingPeriod: undefined,
-          count: 3,
-          observation_date: new Date('2022-01-01'),
-          observation_time: '14:00:00',
-          latitude: 47,
-          longitude: 127
-        }
-      ]);
-    }, 1000 * (Math.random() + 1));
-  });
-};
-
 /**
  * Context object that stores information about survey observations
  *
