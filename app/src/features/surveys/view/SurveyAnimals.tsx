@@ -108,7 +108,7 @@ const SurveyAnimals: React.FC = () => {
     ]
   };
 
-  const obtainAnimalFormInitialvalues = (mode: ANIMAL_FORM_MODE): IAnimal => {
+  const obtainAnimalFormInitialvalues = (mode: ANIMAL_FORM_MODE): IAnimal | null => {
     switch (mode) {
       case ANIMAL_FORM_MODE.ADD:
         return AnimalFormValues;
@@ -117,7 +117,7 @@ const SurveyAnimals: React.FC = () => {
           (critter: IDetailedCritterWithInternalId) => currentCritterbaseCritterId === critter.critter_id
         );
         if (!existingCritter) {
-          throw Error('The data required for pre-populating the edit form was not present.');
+          return null;
         }
         return transformCritterbaseAPIResponseToForm(existingCritter);
       }
@@ -153,9 +153,21 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
-  const renderAnimalFormSafe = () => {
-    try {
-      const initialValues = obtainAnimalFormInitialvalues(animalFormMode);
+  const renderAnimalFormSafe = (): JSX.Element => {
+    const initialValues = obtainAnimalFormInitialvalues(animalFormMode);
+    if (!initialValues) {
+      return (
+        <YesNoDialog
+          dialogTitle={'Error'}
+          dialogText={'Could not obtain existing critter values.'}
+          open={openAddCritterDialog}
+          onClose={toggleDialog}
+          onNo={toggleDialog}
+          onYes={toggleDialog}
+          noButtonLabel="OK"
+          yesButtonProps={{ sx: { display: 'none' } }}></YesNoDialog>
+      );
+    } else {
       return (
         <EditDialog
           dialogTitle={
@@ -190,18 +202,6 @@ const SurveyAnimals: React.FC = () => {
           }}
         />
       );
-    } catch {
-      return (
-        <YesNoDialog
-          dialogTitle={'Error'}
-          dialogText={'Could not obtain existing critter values.'}
-          open={openAddCritterDialog}
-          onClose={toggleDialog}
-          onNo={toggleDialog}
-          onYes={toggleDialog}
-          noButtonLabel="OK"
-          yesButtonProps={{ sx: { display: 'none' } }}></YesNoDialog>
-      );
     }
   };
 
@@ -215,6 +215,9 @@ const SurveyAnimals: React.FC = () => {
     };
     const patchCritterPayload = async () => {
       const initialFormValues = obtainAnimalFormInitialvalues(ANIMAL_FORM_MODE.EDIT);
+      if (!initialFormValues) {
+        throw Error('Could not obtain initial form values.')
+      }
       const { create: createCritter, update: updateCritter } = createCritterUpdatePayload(
         initialFormValues,
         currentFormValues
