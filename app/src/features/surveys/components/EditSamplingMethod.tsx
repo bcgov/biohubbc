@@ -23,6 +23,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
           .required('End date is required')
       })
     )
+    .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_state')
     .min(1, 'At least one time period is required')
 });
 
