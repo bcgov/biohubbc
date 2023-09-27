@@ -150,7 +150,8 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
         </Grid>
       </Grid>
       {mode === TELEMETRY_DEVICE_FORM_MODE.ADD &&
-        (values[index].device_make === 'Vectronic' || values[index].device_make === 'Lotek') && (
+        ((values[index].device_make === 'Vectronic' && !bctwDeviceData?.keyXStatus) ||
+          values[index].device_make === 'Lotek') && (
           <Box sx={{ mt: 3 }}>
             <AttchmentFormSection index={index} deviceMake={values[index].device_make} />
           </Box>
