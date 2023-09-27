@@ -15,8 +15,12 @@ export const SamplingSiteMethodYupSchema = yup.object({
   periods: yup
     .array(
       yup.object({
-        start_date: yup.string().isValidDateString().required(),
-        end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').required()
+        start_date: yup.string().isValidDateString().required('Start date is required'),
+        end_date: yup
+          .string()
+          .isValidDateString()
+          .isEndDateSameOrAfterStartDate('start_date')
+          .required('End date is required')
       })
     )
     .min(1, 'At least one time period is required')
