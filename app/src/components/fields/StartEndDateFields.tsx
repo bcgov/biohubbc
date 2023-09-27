@@ -60,7 +60,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <Grid container item spacing={3}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={6}>
           <DatePicker
             slots={{
               openPickerIcon: CalendarStartIcon
@@ -99,7 +99,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
             }}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={6}>
           <DatePicker
             slots={{
               openPickerIcon: CalendarEndIcon

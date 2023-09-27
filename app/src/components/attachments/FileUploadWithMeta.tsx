@@ -73,7 +73,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
           dropZoneProps={{
             acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.KEYX
           }}
-          errorDetails={true}
+          enableErrorDetails={true}
         />
       )}
       {props.attachmentType === AttachmentType.OTHER && (
