@@ -3,7 +3,6 @@ import { useFormikContext } from 'formik';
 import { ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import useIsMounted from 'hooks/useIsMounted';
 import get from 'lodash-es/get';
 import React, { useEffect, useMemo } from 'react';
 import { CbSelectWrapper } from './CbSelectFieldWrapper';
@@ -39,17 +38,14 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const { name, label, route, param, query, handleChangeSideEffect, controlProps, disabledValues } = props;
 
   const api = useCritterbaseApi();
-  const isMounted = useIsMounted();
   const { data, refresh } = useDataLoader(api.lookup.getSelectOptions);
   const { values, handleChange } = useFormikContext<ICbSelectOption>();
 
   const val = get(values, name) ?? '';
 
   useEffect(() => {
-    if (isMounted()) {
-      // Only refresh when the query or param changes
-      refresh({ route, param, query });
-    }
+    // Only refresh when the query or param changes
+    refresh({ route, param, query });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, param]);
 
