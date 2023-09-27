@@ -129,5 +129,5 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
     return new HTTP500('Unexpected Error', [error.name, error.message]);
   }
 
-  return new HTTP500('Unexpected Error', [error]);
+  return new HTTP500('Unexpected Error');
 };
