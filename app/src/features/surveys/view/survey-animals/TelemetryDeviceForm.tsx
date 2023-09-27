@@ -22,19 +22,19 @@ export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
   attachmentType?: AttachmentType;
 }
 
-const AttchmentFormSection = ({ index, deviceMake }: { index: number; deviceMake: string }): JSX.Element => {
+const AttchmentFormSection = (props: { index: number; deviceMake: string }) => {
   return (
     <Paper sx={{ padding: 3 }}>
-      {deviceMake === 'Vectronic' && (
+      {props.deviceMake === 'Vectronic' && (
         <>
           <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Vectronic KeyX File`}</Typography>
-          <TelemetryFileUpload attachmentType={AttachmentType.KEYX} index={index} />
+          <TelemetryFileUpload attachmentType={AttachmentType.KEYX} index={props.index} />
         </>
       )}
-      {deviceMake === 'Lotek' && (
+      {props.deviceMake === 'Lotek' && (
         <>
           <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Lotek Config File`}</Typography>
-          <TelemetryFileUpload attachmentType={AttachmentType.OTHER} index={index} />
+          <TelemetryFileUpload attachmentType={AttachmentType.OTHER} index={props.index} />
         </>
       )}
     </Paper>
