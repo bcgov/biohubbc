@@ -3,23 +3,12 @@ import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
-import { SurveyContext } from 'contexts/surveyContext';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 
 export type IObservationsTableProps = Record<never, any>;
 
-const ObservationsTable = (props: IObservationsTableProps) => {
-  const biohubApi = useBiohubApi();
-  const { projectId, surveyId } = useContext(SurveyContext);
-  
-  // TODO: in the near future, we may want to move observationsDataLoader into the ObservationContext,
-  // in order to avoid having to map the API response values
-  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
-  const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
-
-  observationsDataLoader.load();
+const ObservationsTable = (props: IObservationsTableProps) => {  
+  const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);  
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
@@ -120,11 +109,13 @@ const ObservationsTable = (props: IObservationsTableProps) => {
     }
   ];
 
-  const apiRef = useContext(ObservationsContext)._muiDataGridApiRef;
+  const observationsContext = useContext(ObservationsContext);
+  const { observationsDataLoader } = observationsContext;
+  const apiRef = observationsContext._muiDataGridApiRef;
 
   useEffect(() => {
-    if (observationsDataLoader.data) {
-      const rows: IObservationTableRow[] = observationsDataLoader.data.map((row: IObservationTableRow) => ({
+    if (observationsDataLoader.data?.surveyObservations) {
+      const rows: IObservationTableRow[] = observationsDataLoader.data.surveyObservations.map((row: IObservationTableRow) => ({
         ...row,
         id: String(row.survey_observation_id)
       }));
@@ -149,36 +140,23 @@ const ObservationsTable = (props: IObservationsTableProps) => {
     apiRef.current.startRowEditMode({ id: params.row.id, fieldToFocus: params.field });
   };
 
-  /*
-  const modifiedKeys = new Set<string>([
-    ...Object.keys(apiRef.current.state.editRows),
-    ...apiRef.current.get
-  ]);
-  */
+  const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
+    const updatedRow = { ...newRow, wldtaxonomic_units_id: Number(newRow.wldtaxonomic_units_id) };
+    return updatedRow;
+  };
 
   return (
     <DataGrid
       apiRef={apiRef}
       editMode="row"
       onCellClick={handleCellClick}
-      // onRowEditStart={handleRowEditStart}
       onRowEditStop={handleRowEditStop}
-      // processRowUpdate={handleProcessRowUpdate}
+      processRowUpdate={handleProcessRowUpdate}
       columns={observationColumns}
       rows={initialRows}
-      // rowModesModel={_rowModesModel}
       disableRowSelectionOnClick
-      // onRowModesModelChange={_setRowModesModel}
       localeText={{
         noRowsLabel: 'No Records'
-        /*
-        footerRowSelected: (numSelected: number) => {
-          return [
-            numSelected > 0 && `${numSelected} ${p(numSelected, 'row')} selected`,
-            numModified > 0 && `${numModified} unsaved ${p(numModified, 'row')}`
-          ].filter(Boolean).join(', ')
-        }
-        */
       }}
       sx={{
         background: '#fff',

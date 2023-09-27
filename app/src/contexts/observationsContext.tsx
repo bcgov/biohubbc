@@ -4,6 +4,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { createContext, PropsWithChildren, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
+import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
+import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 
 export interface IObservationRecord {
   survey_observation_id: number | undefined;
@@ -33,11 +35,13 @@ export type IObservationsContext = {
   saveRecords: () => Promise<void>;
   revertRecords: () => Promise<void>;
   refreshRecords: () => Promise<void>;
+  observationsDataLoader: DataLoader<[], IGetSurveyObservationsResponse, unknown>
   _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
 };
 
 export const ObservationsContext = createContext<IObservationsContext>({
   _muiDataGridApiRef: { current: null as unknown as GridApiCommunity },
+  observationsDataLoader: {} as DataLoader<never, IGetSurveyObservationsResponse, unknown>,
   createNewRecord: () => {},
   revertRecords: () => Promise.resolve(),
   saveRecords: () => Promise.resolve(),
@@ -48,6 +52,10 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const _muiDataGridApiRef = useGridApiRef();
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
+  const { projectId, surveyId } = useContext(SurveyContext);
+  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
+
+  observationsDataLoader.load();
 
   const createNewRecord = () => {
     const id = uuidv4();
@@ -97,11 +105,17 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     
     const rows = getActiveRecords() // _getRows()
 
-    const updatedRows = await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
+    //const updatedRows = 
+    await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
+    
+    /*
     _muiDataGridApiRef.current.setRows(updatedRows.map((row: IObservationTableRow) => ({
       ...row,
       id: String(row.survey_observation_id)
     })));
+    */
+
+    observationsDataLoader.refresh();
   };
 
   const revertRecords = async () => {
@@ -118,6 +132,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     revertRecords,
     saveRecords,
     refreshRecords,
+    observationsDataLoader,
     _muiDataGridApiRef
   };
 

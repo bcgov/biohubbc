@@ -223,7 +223,10 @@ PUT.apiDoc = {
                 ],
                 properties: {
                   wldtaxonomic_units_id: {
-                    type: 'integer'
+                    oneOf: [
+                      { type: 'integer' },
+                      { type: 'string' }
+                    ]
                   },
                   count: {
                     type: 'number'
@@ -317,7 +320,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
         return {
           survey_id: surveyId,
           survey_observation_id: record.survey_observation_id,
-          wldtaxonomic_units_id: 1234,
+          wldtaxonomic_units_id: Number(record.wldtaxonomic_units_id),
           latitude: record.latitude,
           longitude: record.longitude,
           count: record.count,

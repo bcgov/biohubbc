@@ -3,6 +3,7 @@ import { IObservationTableRow } from 'contexts/observationsContext';
 import { GeoJsonProperties } from 'geojson';
 import {
   IGetObservationSubmissionResponse,
+  IGetSurveyObservationsResponse,
   ISpatialData,
   IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
@@ -186,7 +187,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     surveyObservations: IObservationTableRow[]
   ): Promise<IObservationTableRow[]> => {
-    const { data } = await axios.put<{ surveyObservations: IObservationTableRow[] }>(
+    const { data } = await axios.put<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observation`,
       { surveyObservations }
     );
@@ -201,12 +202,12 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}  {Promise<IObservationTableRow[]>}
    */
-  const getObservationRecords = async (projectId: number, surveyId: number): Promise<IObservationTableRow[]> => {
-    const { data } = await axios.get<{ surveyObservations: IObservationTableRow[] }>(
+  const getObservationRecords = async (projectId: number, surveyId: number): Promise<IGetSurveyObservationsResponse> => {
+    const { data } = await axios.get<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observation`
     );
 
-    return data.surveyObservations;
+    return data;
   };
 
   return {
