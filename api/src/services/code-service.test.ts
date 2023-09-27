@@ -44,7 +44,8 @@ describe('CodeService', () => {
         'intended_outcomes',
         'vantage_codes',
         'site_selection_strategies',
-        'survey_jobs'
+        'survey_jobs',
+        'sample_methods'
       );
     });
   });

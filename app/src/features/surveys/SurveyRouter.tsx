@@ -3,10 +3,11 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router';
+import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import EditSurveyPage from './edit/EditSurveyPage';
+import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
 
 /**
@@ -23,19 +24,25 @@ const SurveyRouter: React.FC = () => {
         to="/admin/projects/:id/surveys/:survey_id/details"
       />
 
-      <Route exact path="/admin/projects/:id/surveys/:survey_id/details">
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/details" title={getTitle('Surveys')}>
         <ProjectsLayout>
           <SurveyPage />
         </ProjectsLayout>
-      </Route>
+      </RouteWithTitle>
 
-      <Route exact path="/admin/projects/:id/surveys/:survey_id/observations">
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/observations" title={getTitle('Observations')}>
         <ProjectsLayout>
           <SurveyObservationPage />
         </ProjectsLayout>
-      </Route>
+      </RouteWithTitle>
 
-      <RouteWithTitle title={getTitle('Edit Survey')} exact path="/admin/projects/:id/surveys/:survey_id/edit">
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Sampling Sites')}>
+        <ProjectsLayout>
+          <SamplingSitePage />
+        </ProjectsLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
         <ProjectsLayout>
           <ProjectRoleRouteGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}

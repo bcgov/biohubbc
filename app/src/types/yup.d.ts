@@ -156,5 +156,20 @@ declare module 'yup' {
       key: string,
       valueToFind: any
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    /**
+     * Validates that no date ranges in an array overlap
+     *
+     * @param {string} message Error message to display
+     * @param {string} startKey Key of the start date in the date range
+     * @param {string} endKey Key of the end date in the date range
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof ArraySchema
+     */
+    hasUniqueDateRanges(
+      message: string,
+      startKey: string,
+      endKey: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
   }
 }

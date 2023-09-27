@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import { grey } from '@mui/material/colors';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import { ObservationComponent } from './ObservationComponent';
-import { SamplingSiteList } from './sampling-sites/SamplingSiteList';
-import { SurveyObservationHeader } from './SurveyObservationHeader';
+import ObservationComponent from './ObservationComponent';
+import SamplingSiteList from './sampling-sites/SamplingSiteList';
+import SurveyObservationHeader from './SurveyObservationHeader';
 
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);
@@ -14,15 +15,44 @@ export const SurveyObservationPage = () => {
   }
 
   return (
-    <Box display="flex" flexDirection="column" sx={{ height: '100%' }}>
-      <SurveyObservationHeader surveyName={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name} />
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100%"
+      sx={{
+        background: '#fff'
+      }}>
+      <Box
+        zIndex={999}
+        sx={{
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[500]
+        }}>
+        <SurveyObservationHeader
+          project_id={surveyContext.projectId}
+          survey_id={surveyContext.surveyId}
+          survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+        />
+      </Box>
 
       <Box display="flex" flex="1 1 auto">
         {/* Sampling Site List */}
-        <SamplingSiteList />
+        <Box
+          flex="0 0 auto"
+          width={400}
+          sx={{
+            borderRightStyle: 'solid',
+            borderRightWidth: '1px',
+            borderRightColor: grey[500]
+          }}>
+          <SamplingSiteList />
+        </Box>
 
         {/* Observations Component */}
-        <ObservationComponent />
+        <Box flex="1 1 auto" overflow="hidden">
+          <ObservationComponent />
+        </Box>
       </Box>
     </Box>
   );

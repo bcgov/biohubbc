@@ -208,7 +208,7 @@ describe.skip('CreateSurveyPage', () => {
       });
       fireEvent.click(getByTestId('yes-button'));
       await waitFor(() => {
-        expect(history.location.pathname).toEqual('/admin/projects/1/surveys');
+        expect(history.location.pathname).toEqual('/admin/projects/1');
       });
     });
 

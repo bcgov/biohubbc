@@ -9,7 +9,7 @@ import { ObservationsContext } from 'contexts/observationsContext';
 import ObservationsTable from 'features/surveys/observations/ObservationsTable';
 import { useContext, useState } from 'react';
 
-export const ObservationComponent = () => {
+const ObservationComponent = () => {
   const observationsContext = useContext(ObservationsContext);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
@@ -97,3 +97,5 @@ export const ObservationComponent = () => {
     </Box>
   );
 };
+
+export default ObservationComponent;

@@ -39,10 +39,10 @@ const ProjectsRouter: React.FC = () => {
 
       <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
-      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Surveys')}>
+      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Projects')}>
         <ProjectAuthStateContextProvider>
           <ProjectContextProvider>
-            <RouteWithTitle exact path="/admin/projects/:id/details" title={getTitle('Surveys')}>
+            <RouteWithTitle exact path="/admin/projects/:id/details" title={getTitle('Projects')}>
               <ProjectsLayout>
                 <ProjectRoleRouteGuard
                   validProjectPermissions={[
@@ -72,20 +72,6 @@ const ProjectsRouter: React.FC = () => {
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <ProjectParticipantsPage />
-                </ProjectRoleRouteGuard>
-              </ProjectsLayout>
-            </RouteWithTitle>
-
-            <RouteWithTitle exact path="/admin/projects/:id/surveys" title={getTitle('Surveys')}>
-              <ProjectsLayout>
-                <ProjectRoleRouteGuard
-                  validProjectPermissions={[
-                    PROJECT_PERMISSION.COORDINATOR,
-                    PROJECT_PERMISSION.COLLABORATOR,
-                    PROJECT_PERMISSION.OBSERVER
-                  ]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <ProjectPage />
                 </ProjectRoleRouteGuard>
               </ProjectsLayout>
             </RouteWithTitle>

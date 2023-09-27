@@ -4,14 +4,18 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
 export interface SurveyObservationHeaderProps {
-  surveyName: string;
+  project_id: number;
+  survey_id: number;
+  survey_name: string;
 }
 
-export const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) => {
+const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) => {
+  const { project_id, survey_id, survey_name } = props;
   return (
     <>
       <Paper
         square
+        elevation={0}
         sx={{
           pt: 3,
           pb: 3.5,
@@ -20,13 +24,12 @@ export const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (
         <Breadcrumbs
           aria-label="breadcrumb"
           sx={{
-            mb: 1,
-            fontSize: '14px'
+            mb: 1
           }}>
-          <Link underline="hover" href="#">
-            {props.surveyName}
+          <Link variant="body2" underline="hover" href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+            {survey_name}
           </Link>
-          <Typography color="text.secondary" variant="body2">
+          <Typography component="span" variant="body2" color="text.secondary">
             Manage Survey Observations
           </Typography>
         </Breadcrumbs>
@@ -39,27 +42,8 @@ export const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (
           Manage Survey Observations
         </Typography>
       </Paper>
-
-      {/* <AppBar
-        position="relative"
-        elevation={1}
-        sx={{
-          flex: '0 0 auto'
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            sx={{
-              mr: 2
-            }}
-          >
-            <Icon path={mdiArrowLeft} size={1}></Icon>
-          </IconButton>
-          <Typography component="h1" variant="h4">Manage Observations Prototype</Typography>
-        </Toolbar>
-      </AppBar> */}
     </>
   );
 };
+
+export default SurveyObservationHeader;
