@@ -1,8 +1,8 @@
+import moment from 'moment';
+import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
-import SQL from 'sql-template-strings';
-import moment from 'moment';
 
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
@@ -26,7 +26,13 @@ export type InsertObservation = Pick<
 
 export type UpdateObservation = Pick<
   ObservationRecord,
-  'survey_observation_id' | 'wldtaxonomic_units_id' | 'latitude' | 'longitude' | 'count' | 'observation_date' | 'observation_time'
+  | 'survey_observation_id'
+  | 'wldtaxonomic_units_id'
+  | 'latitude'
+  | 'longitude'
+  | 'count'
+  | 'observation_date'
+  | 'observation_time'
 >;
 
 export class ObservationRepository extends BaseRepository {
@@ -42,7 +48,6 @@ export class ObservationRepository extends BaseRepository {
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
-    
     const query = SQL`
       INSERT INTO
         survey_observation
@@ -59,19 +64,23 @@ export class ObservationRepository extends BaseRepository {
       OVERRIDING SYSTEM VALUE
       VALUES 
     `;
-    
-    query.append(observations.map((observation) => {
-      return `(${[
-        observation['survey_observation_id'] || 'DEFAULT',
-        surveyId,
-        observation.wldtaxonomic_units_id,
-        observation.count,
-        observation.latitude,
-        observation.longitude,
-        `'${moment(observation.observation_date).format('YYYY-MM-DD')}'`,
-        `'${observation.observation_time}'`
-      ].join(', ')})`;
-    }).join(', '));
+
+    query.append(
+      observations
+        .map((observation) => {
+          return `(${[
+            observation['survey_observation_id'] || 'DEFAULT',
+            surveyId,
+            observation.wldtaxonomic_units_id,
+            observation.count,
+            observation.latitude,
+            observation.longitude,
+            `'${moment(observation.observation_date).format('YYYY-MM-DD')}'`,
+            `'${observation.observation_time}'`
+          ].join(', ')})`;
+        })
+        .join(', ')
+    );
 
     query.append(`
       ON CONFLICT
@@ -84,7 +93,7 @@ export class ObservationRepository extends BaseRepository {
         latitude = EXCLUDED.latitude,
         longitude = EXCLUDED.longitude
       RETURNING *;
-    `)
+    `);
 
     /*
     console.log(query.text)
@@ -103,7 +112,6 @@ export class ObservationRepository extends BaseRepository {
     */
 
     return response.rows;
-
   }
 
   /**
