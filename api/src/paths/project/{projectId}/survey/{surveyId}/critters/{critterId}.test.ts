@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../database/db';
+import { CritterbaseService } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { removeCritterFromSurvey, updateSurveyCritter } from './{critterId}';
-import { CritterbaseService } from '../../../../../../services/critterbase-service';
 
 describe('removeCritterFromSurvey', () => {
   afterEach(() => {
@@ -100,4 +100,3 @@ describe('updateSurveyCritter', () => {
     }
   });
 });
-

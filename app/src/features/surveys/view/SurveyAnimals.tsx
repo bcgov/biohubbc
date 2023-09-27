@@ -3,6 +3,7 @@ import Icon from '@mdi/react';
 import { Box, Divider, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import EditDialog from 'components/dialog/EditDialog';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -152,6 +153,58 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
+  const renderAnimalFormSafe = () => {
+    try {
+      const initialValues = obtainAnimalFormInitialvalues(animalFormMode);
+      return (
+        <EditDialog
+          dialogTitle={
+            <Box>
+              <HelpButtonTooltip content={SurveyAnimalsI18N.animalIndividualsHelp}>
+                <Typography variant="h3">Individuals</Typography>
+              </HelpButtonTooltip>
+              <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
+                {`${
+                  animalCount
+                    ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
+                    : `No individual animals were captured or reported in this survey`
+                }`}
+              </Typography>
+            </Box>
+          }
+          open={openAddCritterDialog}
+          onSave={(values) => {
+            handleCritterSave(values);
+          }}
+          onCancel={toggleDialog}
+          component={{
+            element: (
+              <IndividualAnimalForm
+                critter_id={currentCritterbaseCritterId}
+                mode={animalFormMode}
+                getAnimalCount={setAnimalCount}
+              />
+            ),
+            initialValues: initialValues,
+            validationSchema: AnimalSchema
+          }}
+        />
+      );
+    } catch {
+      return (
+        <YesNoDialog
+          dialogTitle={'Error'}
+          dialogText={'Could not obtain existing critter values.'}
+          open={openAddCritterDialog}
+          onClose={toggleDialog}
+          onNo={toggleDialog}
+          onYes={toggleDialog}
+          noButtonLabel="OK"
+          yesButtonProps={{ sx: { display: 'none' } }}></YesNoDialog>
+      );
+    }
+  };
+
   const handleCritterSave = async (currentFormValues: IAnimal) => {
     const postCritterPayload = async () => {
       const critter = new Critter(currentFormValues);
@@ -231,38 +284,7 @@ const SurveyAnimals: React.FC = () => {
 
   return (
     <Box>
-      <EditDialog
-        dialogTitle={
-          <Box>
-            <HelpButtonTooltip content={SurveyAnimalsI18N.animalIndividualsHelp}>
-              <Typography variant="h3">Individuals</Typography>
-            </HelpButtonTooltip>
-            <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-              {`${
-                animalCount
-                  ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
-                  : `No individual animals were captured or reported in this survey`
-              }`}
-            </Typography>
-          </Box>
-        }
-        open={openAddCritterDialog}
-        onSave={(values) => {
-          handleCritterSave(values);
-        }}
-        onCancel={toggleDialog}
-        component={{
-          element: (
-            <IndividualAnimalForm
-              critter_id={currentCritterbaseCritterId}
-              mode={animalFormMode}
-              getAnimalCount={setAnimalCount}
-            />
-          ),
-          initialValues: obtainAnimalFormInitialvalues(animalFormMode),
-          validationSchema: AnimalSchema
-        }}
-      />
+      {renderAnimalFormSafe()}
       <EditDialog
         dialogTitle={
           telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'Add Telemetry Device' : 'Edit Telemetry Devices'
@@ -295,8 +317,12 @@ const SurveyAnimals: React.FC = () => {
             animalData={critterData}
             deviceData={deploymentData}
             onMenuOpen={setSelectedCritterId}
-            onRemoveCritter={(critter_id) => {
-              bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
+            onRemoveCritter={async (critter_id) => {
+              try {
+                await bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
+              } catch (e) {
+                setPopup('Failed to remove critter from survey.');
+              }
               refreshCritters();
             }}
             onAddDevice={(critter_id) => {
