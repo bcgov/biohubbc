@@ -14,6 +14,9 @@ export const ObservationRecord = z.object({
   observation_time: z.string(),
   observation_date: z.string(),
   create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
   revision_count: z.number()
 });
 
@@ -83,24 +86,11 @@ export class ObservationRepository extends BaseRepository {
         observation_time = EXCLUDED.observation_time,
         latitude = EXCLUDED.latitude,
         longitude = EXCLUDED.longitude
-      RETURNING *;
-    `)
+    `);
 
-    /*
-    console.log(query.text)
-    console.log(query.values)
-    */
+    query.append(`RETURNING *;`);
 
     const response = await this.connection.sql(query, ObservationRecord);
-
-    /*
-    // Not sure if this check is needed, as there may be certain cases where updates are idempotent
-    if (!response.rows.length) {
-      throw new ApiExecuteSQLError('Failed to insert/update survey observations', [
-        'ObservationRepository->insertUpdateSurveyObservations'
-      ]);
-    }
-    */
 
     return response.rows;
 

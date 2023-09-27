@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
 
 export interface IObservationRecord {
-  observation_id: number | undefined;
+  survey_observation_id: number | undefined;
   speciesName: string | undefined;
   samplingSite: string | undefined;
   samplingMethod: string | undefined;
@@ -22,12 +22,13 @@ export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: string;
 }
 
+// TODO remove when finished testing
 export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve([
         {
-          observation_id: 1,
+          survey_observation_id: 1,
           speciesName: 'Moose (Alces Americanus)',
           samplingSite: 'Site 1',
           samplingMethod: 'Method 1',
@@ -39,7 +40,7 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           longitude: 125
         },
         {
-          observation_id: 2,
+          survey_observation_id: 2,
           speciesName: 'Moose (Alces Americanus)',
           samplingSite: 'Site 1',
           samplingMethod: 'Method 1',
@@ -51,7 +52,7 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
           longitude: 126
         },
         {
-          observation_id: 3,
+          survey_observation_id: 3,
           speciesName: 'Moose (Alces Americanus)',
           samplingSite: 'Site 1',
           samplingMethod: 'Method 1',
@@ -75,7 +76,6 @@ export const fetchObservationDemoRows = async (): Promise<IObservationRecord[]> 
  */
 export type IObservationsContext = {
   createNewRecord: () => void;
-  // getActiveRecords: () => IObservationTableRow[];
   saveRecords: () => Promise<void>;
   revertRecords: () => Promise<void>;
   refreshRecords: () => Promise<void>;
@@ -85,7 +85,6 @@ export type IObservationsContext = {
 export const ObservationsContext = createContext<IObservationsContext>({
   _muiDataGridApiRef: { current: null as unknown as GridApiCommunity },
   createNewRecord: () => {},
-  // getActiveRecords: () => [],
   revertRecords: () => Promise.resolve(),
   saveRecords: () => Promise.resolve(),
   refreshRecords: () => Promise.resolve()
@@ -108,7 +107,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     _muiDataGridApiRef.current.updateRows([
       {
         id,
-        observation_id: null,
+        survey_observation_id: null,
         speciesName: undefined,
         samplingSite: undefined,
         samplingMethod: undefined,
@@ -146,7 +145,8 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     const { projectId, surveyId } = surveyContext;
     const rows = Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
 
-    return biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
+    const updatedRows = await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
+    _muiDataGridApiRef.current.setRows(updatedRows);
   };
 
   const revertRecords = async () => {
@@ -160,7 +160,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   const observationsContext: IObservationsContext = {
     createNewRecord,
-    // getActiveRecords,
     revertRecords,
     saveRecords,
     refreshRecords,

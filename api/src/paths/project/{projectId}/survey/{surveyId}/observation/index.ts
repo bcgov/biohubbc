@@ -73,8 +73,8 @@ const surveyObservationsResponseSchema: SchemaObject = {
           'observation_time',
           'create_user',
           'create_date',
-          // 'update_user',
-          // 'update_date',
+          'update_user',
+          'update_date',
           'revision_count'
         ],
         properties: {
@@ -282,7 +282,7 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const surveyObservations = observationService.getSurveyObservations(surveyId);
+      const surveyObservations = await observationService.getSurveyObservations(surveyId);
       return res.status(200).json({ surveyObservations });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
@@ -308,6 +308,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       const observationService = new ObservationService(connection);
 
       /*
+      // This code retrieves the taxonomic code for each table row
       const taxonomyService = new TaxonomyService();
       const promises: Promise<(InsertObservation | UpdateObservation)>[] = req.body.map((record: any) => {
         return taxonomyService.searchSpecies(record.speciesName.toLowerCase()).then((taxonCodes) => ({        
@@ -337,8 +338,9 @@ export function insertUpdateSurveyObservations(): RequestHandler {
         };
       });
 
-      const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
+      await observationService.insertUpdateSurveyObservations(surveyId, records);
 
+      const surveyObservations = await observationService.getSurveyObservations(surveyId);
       return res.status(200).json({ surveyObservations });
     } catch (error) {
       defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });

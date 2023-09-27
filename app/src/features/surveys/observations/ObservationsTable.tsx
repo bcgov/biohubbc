@@ -2,7 +2,9 @@ import { mdiDotsVertical, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
-import { fetchObservationDemoRows, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 // import { useEffect, useState } from "react";
@@ -18,7 +20,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const ObservationsTable = (props: IObservationsTableProps) => {
   // const classes = useStyles();
-  const observationsDataLoader = useDataLoader(fetchObservationDemoRows);
+  const biohubApi = useBiohubApi();
+  const { projectId, surveyId } = useContext(SurveyContext);
+  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
   const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
 
   observationsDataLoader.load();
@@ -76,6 +80,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       editable: true,
       type: 'date',
       minWidth: 150,
+      valueGetter: (params) => params.row.observation_date ? new Date(params.row.observation_date) : null,
       disableColumnMenu: true
     },
     {
@@ -124,10 +129,11 @@ const ObservationsTable = (props: IObservationsTableProps) => {
 
   useEffect(() => {
     if (observationsDataLoader.data) {
-      const rows: IObservationTableRow[] = observationsDataLoader.data.map((row) => ({
+      const rows: IObservationTableRow[] = observationsDataLoader.data.map((row: IObservationTableRow) => ({
         ...row,
-        id: String(row.observation_id),
-        _isModified: false
+        id: String(row.survey_observation_id),
+        // TODO map wldtaxonomic_units code to speciesName
+        // _isModified: false
       }));
 
       setInitialRows(rows);
