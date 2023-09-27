@@ -5,8 +5,6 @@ import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mu
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import TaxonomyDataGridCell from 'components/data-grid/TaxonomyCell';
-import TaxonomyDataGridEditCell from 'components/data-grid/TaxonomyDataGridEditCell';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 // import { useEffect, useState } from "react";
@@ -36,13 +34,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       editable: true,
       flex: 1,
       minWidth: 250,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return <TaxonomyDataGridCell dataGridProps={params} />;
-      },
-      renderEditCell: (params) => {
-        return <TaxonomyDataGridEditCell dataGridProps={params} />;
-      }
+      disableColumnMenu: true
     },
     {
       field: 'samplingSite',
@@ -88,7 +80,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       editable: true,
       type: 'date',
       minWidth: 150,
-      valueGetter: (params) => params.row.observation_date ? new Date(params.row.observation_date) : null,
+      valueGetter: (params) => (params.row.observation_date ? new Date(params.row.observation_date) : null),
       disableColumnMenu: true
     },
     {
@@ -139,7 +131,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
     if (observationsDataLoader.data) {
       const rows: IObservationTableRow[] = observationsDataLoader.data.map((row: IObservationTableRow) => ({
         ...row,
-        id: String(row.survey_observation_id),
+        id: String(row.survey_observation_id)
         // TODO map wldtaxonomic_units code to speciesName
         // _isModified: false
       }));
