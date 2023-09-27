@@ -88,5 +88,5 @@ export interface ISpatialData {
 }
 
 export interface IGetSurveyObservationsResponse {
-  surveyObservations: IObservationTableRow[]
+  surveyObservations: IObservationTableRow[];
 }

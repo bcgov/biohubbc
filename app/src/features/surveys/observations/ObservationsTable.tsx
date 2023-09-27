@@ -7,8 +7,8 @@ import { useContext, useEffect, useState } from 'react';
 
 export type IObservationsTableProps = Record<never, any>;
 
-const ObservationsTable = (props: IObservationsTableProps) => {  
-  const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);  
+const ObservationsTable = (props: IObservationsTableProps) => {
+  const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
@@ -115,10 +115,12 @@ const ObservationsTable = (props: IObservationsTableProps) => {
 
   useEffect(() => {
     if (observationsDataLoader.data?.surveyObservations) {
-      const rows: IObservationTableRow[] = observationsDataLoader.data.surveyObservations.map((row: IObservationTableRow) => ({
-        ...row,
-        id: String(row.survey_observation_id)
-      }));
+      const rows: IObservationTableRow[] = observationsDataLoader.data.surveyObservations.map(
+        (row: IObservationTableRow) => ({
+          ...row,
+          id: String(row.survey_observation_id)
+        })
+      );
 
       setInitialRows(rows);
     }

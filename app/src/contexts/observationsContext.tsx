@@ -1,11 +1,11 @@
 import { GridRowModelUpdate, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
+import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { createContext, PropsWithChildren, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
-import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
-import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 
 export interface IObservationRecord {
   survey_observation_id: number | undefined;
@@ -51,7 +51,7 @@ export type IObservationsContext = {
   /**
    * Data Loader used for retrieving existing records
    */
-  observationsDataLoader: DataLoader<[], IGetSurveyObservationsResponse, unknown>
+  observationsDataLoader: DataLoader<[], IGetSurveyObservationsResponse, unknown>;
   /**
    * API ref used to interface with an MUI DataGrid representing the observation records
    */
@@ -99,30 +99,30 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   };
 
   const _getRows = (): IObservationTableRow[] => {
-    return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[]
-  }
+    return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
+  };
 
   const getActiveRecords = (): IObservationTableRow[] => {
     return _getRows().map((row) => {
-      const editRow = _muiDataGridApiRef.current.state.editRows[row.id]
+      const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
       if (!editRow) {
         return row;
       }
 
-      return Object
-        .entries(editRow)
-        .reduce((newRow, entry) => ({ ...row, ...newRow, _isModified: true, [entry[0]]: entry[1].value }), {});
+      return Object.entries(editRow).reduce(
+        (newRow, entry) => ({ ...row, ...newRow, _isModified: true, [entry[0]]: entry[1].value }),
+        {}
+      );
     }) as IObservationTableRow[];
-  }
-
+  };
 
   const saveRecords = async () => {
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id }));
 
     const { projectId, surveyId } = surveyContext;
-    
-    const rows = getActiveRecords()
+
+    const rows = getActiveRecords();
 
     await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
     refreshRecords();

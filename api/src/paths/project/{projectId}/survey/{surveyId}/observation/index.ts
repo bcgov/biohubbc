@@ -223,10 +223,7 @@ PUT.apiDoc = {
                 ],
                 properties: {
                   wldtaxonomic_units_id: {
-                    oneOf: [
-                      { type: 'integer' },
-                      { type: 'string' }
-                    ]
+                    oneOf: [{ type: 'integer' }, { type: 'string' }]
                   },
                   count: {
                     type: 'number'

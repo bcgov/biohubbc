@@ -202,7 +202,10 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}  {Promise<IObservationTableRow[]>}
    */
-  const getObservationRecords = async (projectId: number, surveyId: number): Promise<IGetSurveyObservationsResponse> => {
+  const getObservationRecords = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetSurveyObservationsResponse> => {
     const { data } = await axios.get<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observation`
     );
