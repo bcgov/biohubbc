@@ -173,6 +173,8 @@ const SamplingSitePage = () => {
               survey_id={surveyContext.surveyId}
               survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
               is_submitting={isSubmitting}
+              title="New Sampling Site"
+              breadcrumb="Add Sampling Sites"
             />
           </Box>
           <Box display="flex" flex="1 1 auto">

@@ -20,13 +20,15 @@ export interface ISamplingSiteHeaderProps {
   survey_id: number;
   survey_name: string;
   is_submitting: boolean;
+  title: string;
+  breadcrumb: string;
 }
 export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
 
-  const { project_id, survey_id, survey_name, is_submitting } = props;
+  const { project_id, survey_id, survey_name, is_submitting, title, breadcrumb } = props;
   return (
     <>
       <Paper
@@ -48,7 +50,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             Manage Survey Observations
           </Link>
           <Typography component="span" color="text.secondary" variant="body2">
-            Add Sampling Sites
+            {breadcrumb}
           </Typography>
         </Breadcrumbs>
         <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -58,7 +60,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             sx={{
               ml: '-2px'
             }}>
-            New Sampling Site
+            {title}
           </Typography>
           <Box>
             <LoadingButton

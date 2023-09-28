@@ -33,11 +33,11 @@ export const SamplingSiteList = () => {
   codesContext.codesDataLoader.load();
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [selectedSampleSite, setSelectedSampleSite] = useState<number | undefined>();
+  const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
     setAnchorEl(event.currentTarget);
-    setSelectedSampleSite(sample_site_id);
+    setSelectedSampleSiteId(sample_site_id);
   };
 
   if (
@@ -64,7 +64,7 @@ export const SamplingSiteList = () => {
         }}>
         <MenuItem
           onClick={() => {
-            history.push(`sampling/${selectedSampleSite}`);
+            history.push(`sampling/${selectedSampleSiteId}/edit`);
           }}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
