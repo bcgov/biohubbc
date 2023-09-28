@@ -97,12 +97,12 @@ const CreateSurveyPage = () => {
   const history = useHistory();
 
   const codesContext = useContext(CodesContext);
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {codesContext.codesDataLoader.load()}, [codesContext.codesDataLoader]);
   const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
   useEffect(
-    () => projectContext.projectDataLoader.load(projectContext.projectId),
+    () => {projectContext.projectDataLoader.load(projectContext.projectId)},
     [projectContext.projectDataLoader, projectContext.projectId]
   );
   const projectData = projectContext.projectDataLoader.data?.projectData;

@@ -28,7 +28,7 @@ const SurveyPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
 
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {codesContext.codesDataLoader.load()}, [codesContext.codesDataLoader]);
 
   if (!codesContext.codesDataLoader.data || !surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
