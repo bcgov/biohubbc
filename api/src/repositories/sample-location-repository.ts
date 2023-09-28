@@ -80,6 +80,7 @@ export class SampleLocationRepository extends BaseRepository {
           .leftJoin('json_sample_period as jsp', 'jsp.survey_sample_method_id', 'ssm.survey_sample_method_id')
           .groupBy('ssm.survey_sample_site_id');
       })
+      // join aggregated methods to sampling sites
       .select('*')
       .from({ sss: 'survey_sample_site' })
       .leftJoin('json_sample_methods as jsm', 'jsm.survey_sample_site_id', 'sss.survey_sample_site_id')
