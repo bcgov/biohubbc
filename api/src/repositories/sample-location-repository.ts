@@ -83,7 +83,8 @@ export class SampleLocationRepository extends BaseRepository {
       .select('*')
       .from({ sss: 'survey_sample_site' })
       .leftJoin('json_sample_methods as jsm', 'jsm.survey_sample_site_id', 'sss.survey_sample_site_id')
-      .where('sss.survey_id', surveyId);
+      .where('sss.survey_id', surveyId)
+      .orderBy('sss.survey_sample_site_id', 'asc');
 
     const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
     return response.rows;
