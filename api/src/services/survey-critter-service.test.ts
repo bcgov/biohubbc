@@ -87,6 +87,6 @@ describe('SurveyService', () => {
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.be.undefined;
-    })
-  })
+    });
+  });
 });

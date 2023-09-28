@@ -216,7 +216,7 @@ const SurveyAnimals: React.FC = () => {
     const patchCritterPayload = async () => {
       const initialFormValues = obtainAnimalFormInitialvalues(ANIMAL_FORM_MODE.EDIT);
       if (!initialFormValues) {
-        throw Error('Could not obtain initial form values.')
+        throw Error('Could not obtain initial form values.');
       }
       const { create: createCritter, update: updateCritter } = createCritterUpdatePayload(
         initialFormValues,
