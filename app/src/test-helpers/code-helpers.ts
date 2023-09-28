@@ -59,5 +59,9 @@ export const codes: IGetAllCodeSetsResponse = {
   site_selection_strategies: [
     { id: 1, name: 'Strategy 1' },
     { id: 2, name: 'Strategy 2' }
+  ],
+  sample_methods: [
+    { id: 1, name: 'Camera Trap' },
+    { id: 2, name: 'Dip Net' }
   ]
 };

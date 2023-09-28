@@ -380,3 +380,11 @@ export const FundingSourceI18N = {
   fetchFundingSourceErrorText:
     'An error has occurred while attempting to fetch the Funding Source, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const CreateSamplingSiteI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Sampling Site(s)',
+  createErrorText:
+    'An error has occurred while attempting to create your sampling site(s). Please try again. If the error persists, please contact your system administrator.'
+};

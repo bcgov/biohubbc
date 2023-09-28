@@ -2,7 +2,6 @@ import { layerContentHandlers } from 'components/map/wfs-utils';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
-import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
