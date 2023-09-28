@@ -33,10 +33,11 @@ export const SamplingSiteList = () => {
   codesContext.codesDataLoader.load();
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [selectedSampleSite, setSelectedSampleSite] = useState<number | undefined>();
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
     setAnchorEl(event.currentTarget);
-    // setEditData({ ...values.methods[index], index });
+    setSelectedSampleSite(sample_site_id);
   };
 
   if (
@@ -61,7 +62,10 @@ export const SamplingSiteList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={() => console.log('EDIT THIS SAMPLING SITE')}>
+        <MenuItem
+          onClick={() => {
+            history.push(`sampling/${selectedSampleSite}`);
+          }}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
@@ -130,7 +134,9 @@ export const SamplingSiteList = () => {
                     </Typography>
                   </AccordionSummary>
                   <IconButton
-                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleMenuClick(event, index)}
+                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                      handleMenuClick(event, sampleSite.survey_sample_site_id)
+                    }
                     aria-label="settings">
                     <MoreVertIcon />
                   </IconButton>
