@@ -30,10 +30,9 @@ export class ObservationService extends DBService {
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
     const retainedObservationIds = observations
-      .filter(
-        (observation): observation is UpdateObservation =>
-          'survey_observation_id' in observation && Boolean(observation.survey_observation_id)
-      )
+      .filter((observation): observation is UpdateObservation => {
+        return 'survey_observation_id' in observation && Boolean(observation.survey_observation_id);
+      })
       .map((observation) => observation.survey_observation_id);
 
     await this.observationRepository.deleteObservationsNotInArray(surveyId, retainedObservationIds);
