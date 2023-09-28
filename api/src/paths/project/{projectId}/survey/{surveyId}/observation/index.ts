@@ -316,7 +316,6 @@ export function insertUpdateSurveyObservations(): RequestHandler {
       // Sanitize all incoming records
       const records: (InsertObservation | UpdateObservation)[] = req.body.surveyObservations.map((record: any) => {
         return {
-          // survey_id: surveyId, // TODO check if this can be removed.
           survey_observation_id: record.survey_observation_id,
           wldtaxonomic_units_id: Number(record.wldtaxonomic_units_id),
           latitude: record.latitude,

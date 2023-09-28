@@ -3,13 +3,9 @@ import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 
-export type IObservationsTableProps = Record<never, any>;
-
-const ObservationsTable = (props: IObservationsTableProps) => {
-  const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
-
+const ObservationsTable = () => {
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
       field: 'wldtaxonomic_units_id',
@@ -122,11 +118,12 @@ const ObservationsTable = (props: IObservationsTableProps) => {
         })
       );
 
-      setInitialRows(rows);
+      observationsContext.setInitialRows(rows);
     }
   }, [observationsDataLoader.data]);
 
   const handleDeleteRow = (id: string | number) => {
+    observationsContext.markRecordWithUnsavedChanges(id);
     apiRef.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
   };
 
@@ -160,7 +157,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       onRowEditStart={handleRowEditStart}
       processRowUpdate={handleProcessRowUpdate}
       columns={observationColumns}
-      rows={initialRows}
+      rows={observationsContext.initialRows}
       disableRowSelectionOnClick
       localeText={{
         noRowsLabel: 'No Records'

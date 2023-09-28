@@ -51,7 +51,7 @@ export type IObservationsContext = {
   /**
    * Marks the given record as unsaved
    */
-  markRecordWithUnsavedChanges: (id: string) => void;
+  markRecordWithUnsavedChanges: (id: string | number) => void;
   /**
    * Indicates all observation table rows that have unsaved changes, include IDs of rows
    * that have been deleted.
@@ -69,12 +69,18 @@ export type IObservationsContext = {
    * API ref used to interface with an MUI DataGrid representing the observation records
    */
   _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
+
+  initialRows: IObservationTableRow[];
+
+  setInitialRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>
 };
 
 export const ObservationsContext = createContext<IObservationsContext>({
   _muiDataGridApiRef: { current: null as unknown as GridApiCommunity },
   observationsDataLoader: {} as DataLoader<never, IGetSurveyObservationsResponse, unknown>,
   unsavedRecordIds: [],
+  initialRows: [],
+  setInitialRows: () => {},
   markRecordWithUnsavedChanges: () => {},
   hasUnsavedChanges: () => false,
   createNewRecord: () => {},
@@ -90,12 +96,13 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const { projectId, surveyId } = useContext(SurveyContext);
   const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
   const [unsavedRecordIds, _setUnsavedRecordIds] = useState<string[]>([]);
+  const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
 
   observationsDataLoader.load();
 
-  const markRecordWithUnsavedChanges = (id: string) => {
+  const markRecordWithUnsavedChanges = (id: string | number) => {
     const unsavedRecordSet = new Set<string>([...unsavedRecordIds]);
-    unsavedRecordSet.add(id);
+    unsavedRecordSet.add(String(id));
 
     _setUnsavedRecordIds(Array.from(unsavedRecordSet));
   }
@@ -154,7 +161,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     refreshRecords();
   };
 
-  // TODO test this method to make sure deleting a row and then calling it will in fact recover that row.
+  // TODO deleting a row and then calling method currently fails to recover said row...
   const revertRecords = async () => {
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
@@ -178,7 +185,9 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     markRecordWithUnsavedChanges,
     unsavedRecordIds,
     observationsDataLoader,
-    _muiDataGridApiRef
+    _muiDataGridApiRef,
+    initialRows,
+    setInitialRows
   };
 
   return (
