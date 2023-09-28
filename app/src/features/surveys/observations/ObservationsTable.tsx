@@ -2,6 +2,10 @@ import { mdiDotsVertical, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
+import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
+import TaxonomyDataGridCell from 'components/data-grid/taxonomy/TaxonomyDataGridCell';
+import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import { useContext, useEffect } from 'react';
 
@@ -14,37 +18,108 @@ const ObservationsTable = () => {
       flex: 1,
       minWidth: 250,
       disableColumnMenu: true,
-      renderCell: () => 'Moose (Alces Americanus)'
+      renderCell: (params) => {
+        return <TaxonomyDataGridCell dataGridProps={params} />;
+      },
+      renderEditCell: (params) => {
+        return <TaxonomyDataGridEditCell dataGridProps={params} />;
+      }
     },
     {
       field: 'samplingSite',
       headerName: 'Sampling Site',
       editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Site 1', 'Site 2', 'Site 3', 'Site 4'],
       flex: 1,
       minWidth: 200,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return (
+          <AutocompleteDataGridViewCell
+            dataGridProps={params}
+            options={[
+              { label: 'site 1', value: 1 },
+              { label: 'site 2', value: 2 },
+              { label: 'site 3', value: 3 }
+            ]}
+          />
+        );
+      },
+      renderEditCell: (params) => {
+        return (
+          <AutocompleteDataGridEditCell
+            dataGridProps={params}
+            options={[
+              { label: 'site 1', value: 1 },
+              { label: 'site 2', value: 2 },
+              { label: 'site 3', value: 3 }
+            ]}
+          />
+        );
+      }
     },
     {
       field: 'samplingMethod',
       headerName: 'Sampling Method',
       editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Method 1', 'Method 2', 'Method 3', 'Method 4'],
       flex: 1,
       minWidth: 200,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return (
+          <AutocompleteDataGridViewCell
+            dataGridProps={params}
+            options={[
+              { label: 'method 1', value: 1 },
+              { label: 'method 2', value: 2 },
+              { label: 'method 3', value: 3 }
+            ]}
+          />
+        );
+      },
+      renderEditCell: (params) => {
+        return (
+          <AutocompleteDataGridEditCell
+            dataGridProps={params}
+            options={[
+              { label: 'method 1', value: 1 },
+              { label: 'method 2', value: 2 },
+              { label: 'method 3', value: 3 }
+            ]}
+          />
+        );
+      }
     },
     {
       field: 'samplingPeriod',
       headerName: 'Sampling Period',
       editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Period 1', 'Period 2', 'Period 3', 'Period 4', 'Undefined'],
       flex: 1,
       minWidth: 200,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return (
+          <AutocompleteDataGridViewCell
+            dataGridProps={params}
+            options={[
+              { label: 'period 1', value: 1 },
+              { label: 'period 2', value: 2 },
+              { label: 'period 3', value: 3 }
+            ]}
+          />
+        );
+      },
+      renderEditCell: (params) => {
+        return (
+          <AutocompleteDataGridEditCell
+            dataGridProps={params}
+            options={[
+              { label: 'period 1', value: 1 },
+              { label: 'period 2', value: 2 },
+              { label: 'period 3', value: 3 }
+            ]}
+          />
+        );
+      }
     },
     {
       field: 'count',
