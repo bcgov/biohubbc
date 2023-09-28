@@ -1,4 +1,4 @@
-import { mdiImport, mdiOpenInNew } from '@mdi/js';
+import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -17,7 +17,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
 import { IUploadObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import LoadingObservationsCard from './components/LoadingObservationsCard';
 import ObservationFileCard from './components/ObservationFileCard';
 import ObservationMessagesCard from './components/ObservationMessagesCard';
@@ -185,18 +184,7 @@ const SurveyObservations: React.FC = () => {
             }) ||
             occurrenceSubmissionPublishStatus !== PublishStatus.SUBMITTED
           ) {
-            return (
-              <Box display="flex" gap={2}>
-                <Button
-                  component={Link}
-                  to={`/admin/projects/${projectId}/surveys/${surveyId}/observations`}
-                  variant="outlined"
-                  startIcon={<Icon path={mdiOpenInNew} size={1} />}>
-                  Manage Observations
-                </Button>
-                <Button {...rest} />
-              </Box>
-            );
+            return <Button {...rest} />;
           }
         }}
       />
