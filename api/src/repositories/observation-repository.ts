@@ -49,6 +49,32 @@ export type UpdateObservation = Pick<
 
 export class ObservationRepository extends BaseRepository {
   /**
+   * Deletes all survey observation records associated with the given survey, except
+   * for records whose ID belongs to the given array, then returns the count of
+   * affected rows.
+   * 
+   * @param surveyId 
+   * @param retainedObservationIds 
+   */
+  async deleteObservationsNotInArray(surveyId: number, retainedObservationIds: number[]): Promise<number> {
+    const query = SQL`
+      DELETE FROM
+        survey_observation
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        survey_observation_id
+      NOT IN
+    `;
+
+    query.append(`(${retainedObservationIds.join(',')})`);
+
+    const response = await this.connection.sql(query);
+
+    return response.rowCount;
+  }
+
+  /**
    * Performs an upsert for all observation records belonging to the given survey, then
    * returns the updated rows
    *

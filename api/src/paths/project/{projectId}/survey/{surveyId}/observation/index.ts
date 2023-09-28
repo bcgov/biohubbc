@@ -327,7 +327,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
         };
       });
 
-      const surveyObservations = await observationService.insertUpdateSurveyObservations(surveyId, records);
+      const surveyObservations = await observationService.insertUpdateDeleteSurveyObservations(surveyId, records);
 
       await connection.commit();
 
