@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../database/db';
+import { HTTPError } from '../../../../../../errors/http-error';
 import { CritterbaseService } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
@@ -112,7 +113,7 @@ describe('updateSurveyCritter', () => {
   });
 
   it('catches and re-throws errors', async () => {
-    const mockError = new Error('No external critter id found.');
+    const errMsg = 'No external critter ID was found.';
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
     const mockSurveyUpdateCritter = sinon.stub(SurveyCritterService.prototype, 'updateCritter').resolves();
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -125,7 +126,8 @@ describe('updateSurveyCritter', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as Error).message).to.equal(mockError.message);
+      expect((actualError as HTTPError).message).to.equal(errMsg);
+      expect((actualError as HTTPError).status).to.equal(400);
       expect(mockSurveyUpdateCritter.calledOnce).to.be.false;
       expect(mockGetDBConnection.calledOnce).to.be.true;
       expect(mockDBConnection.release).to.have.been.called;

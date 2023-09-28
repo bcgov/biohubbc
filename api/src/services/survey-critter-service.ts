@@ -27,7 +27,7 @@ export class SurveyCritterService extends DBService {
    * @returns {*}
    */
   async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<void> {
-    this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
+    return this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
   }
 
   /**
@@ -38,7 +38,7 @@ export class SurveyCritterService extends DBService {
    * @returns {*}
    */
   async updateCritter(critterId: number, critterBaseCritterId: string): Promise<void> {
-    this.critterRepository.updateCritter(critterId, critterBaseCritterId);
+    return this.critterRepository.updateCritter(critterId, critterBaseCritterId);
   }
 
   /**
@@ -47,7 +47,7 @@ export class SurveyCritterService extends DBService {
    * @returns {*}
    */
   async removeCritterFromSurvey(critterId: number): Promise<void> {
-    this.critterRepository.removeCritterFromSurvey(critterId);
+    return this.critterRepository.removeCritterFromSurvey(critterId);
   }
 
   /**
@@ -58,6 +58,6 @@ export class SurveyCritterService extends DBService {
    * @returns {*}
    */
   async upsertDeployment(critterId: number, deplyomentId: string): Promise<void> {
-    this.critterRepository.upsertDeployment(critterId, deplyomentId);
+    return this.critterRepository.upsertDeployment(critterId, deplyomentId);
   }
 }

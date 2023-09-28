@@ -237,7 +237,8 @@ const SurveyAnimals: React.FC = () => {
         await patchCritterPayload();
       }
     } catch (err) {
-      setPopup('Submission failed.');
+      setPopup(`Submission failed. ${(err as Error).message}`);
+      toggleDialog();
     }
   };
 

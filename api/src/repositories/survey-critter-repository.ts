@@ -67,7 +67,7 @@ export class SurveyCritterRepository extends BaseRepository {
 
   /**
    * Will insert a new critter - deployment uuid association, or update if it already exists.
-   *
+   * This update operation intentionally changes nothing. Only really being done to trigger update audit columns.
    * @param {number} critterId
    * @param {string} deplyomentId
    * @returns {*}
@@ -75,7 +75,6 @@ export class SurveyCritterRepository extends BaseRepository {
    */
   async upsertDeployment(critterId: number, deplyomentId: string): Promise<void> {
     defaultLog.debug({ label: 'addDeployment', deplyomentId });
-    //This update operation intentionally changes nothing. Only really being done to trigger update audit columns.
     const queryBuilder = getKnex()
       .table('deployment')
       .insert({ critter_id: critterId, bctw_deployment_id: deplyomentId })

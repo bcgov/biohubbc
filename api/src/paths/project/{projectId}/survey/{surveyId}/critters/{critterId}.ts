@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTPError, HTTPErrorType } from '../../../../../../errors/http-error';
 import { bulkUpdateResponse, critterBulkRequestObject } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
@@ -183,7 +184,7 @@ export function updateSurveyCritter(): RequestHandler {
       await connection.open();
       const critterbaseCritterId = req.body.update.critter_id;
       if (!critterbaseCritterId) {
-        throw Error('No external critter id found.');
+        throw new HTTPError(HTTPErrorType.BAD_REQUEST, 400, 'No external critter ID was found.');
       }
       await surveyService.updateCritter(critterId, critterbaseCritterId);
       let createResult, updateResult;
