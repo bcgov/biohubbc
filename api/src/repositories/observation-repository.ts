@@ -52,24 +52,32 @@ export class ObservationRepository extends BaseRepository {
    * Deletes all survey observation records associated with the given survey, except
    * for records whose ID belongs to the given array, then returns the count of
    * affected rows.
-   * 
-   * @param surveyId 
-   * @param retainedObservationIds 
+   *
+   * @param {number} surveyId
+   * @param {number[]} retainedObservationIds Observation records to retain (not be deleted)
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
    */
   async deleteObservationsNotInArray(surveyId: number, retainedObservationIds: number[]): Promise<number> {
-    const query = SQL`
+    const sqlStatement = SQL`
       DELETE FROM
         survey_observation
       WHERE
         survey_id = ${surveyId}
-      AND
-        survey_observation_id
-      NOT IN
     `;
 
-    query.append(`(${retainedObservationIds.join(',')})`);
+    if (retainedObservationIds.length) {
+      sqlStatement.append(`
+        AND
+          survey_observation_id
+        NOT IN
+          (${retainedObservationIds.join(',')})
+      `);
+    }
 
-    const response = await this.connection.sql(query);
+    sqlStatement.append(';');
+
+    const response = await this.connection.sql(sqlStatement);
 
     return response.rowCount;
   }
@@ -79,7 +87,7 @@ export class ObservationRepository extends BaseRepository {
    * returns the updated rows
    *
    * @param {number} surveyId
-   * @param {((Observation | ObservationRecord)[])} observations
+   * @param {((InsertObservation | UpdateObservation)[])} observations
    * @return {*}  {Promise<ObservationRecord[]>}
    * @memberof ObservationRepository
    */
@@ -87,7 +95,7 @@ export class ObservationRepository extends BaseRepository {
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
-    const query = SQL`
+    const sqlStatement = SQL`
       INSERT INTO
         survey_observation
       (
@@ -104,7 +112,7 @@ export class ObservationRepository extends BaseRepository {
       VALUES 
     `;
 
-    query.append(
+    sqlStatement.append(
       observations
         .map((observation) => {
           return `(${[
@@ -121,7 +129,7 @@ export class ObservationRepository extends BaseRepository {
         .join(', ')
     );
 
-    query.append(`
+    sqlStatement.append(`
       ON CONFLICT
         (survey_observation_id)
       DO UPDATE SET
@@ -133,9 +141,9 @@ export class ObservationRepository extends BaseRepository {
         longitude = EXCLUDED.longitude
     `);
 
-    query.append(`RETURNING *;`);
+    sqlStatement.append(`RETURNING *;`);
 
-    const response = await this.connection.sql(query, ObservationRecord);
+    const response = await this.connection.sql(sqlStatement, ObservationRecord);
 
     return response.rows;
   }
@@ -148,9 +156,9 @@ export class ObservationRepository extends BaseRepository {
    * @memberof ObservationRepository
    */
   async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
-    const selectQuery = getKnex().select('*').from('survey_observation').where('survey_id', surveyId);
+    const sqlStatement = getKnex().select('*').from('survey_observation').where('survey_id', surveyId);
 
-    const response = await this.connection.knex(selectQuery, ObservationRecord);
+    const response = await this.connection.knex(sqlStatement, ObservationRecord);
     return response.rows;
   }
 }

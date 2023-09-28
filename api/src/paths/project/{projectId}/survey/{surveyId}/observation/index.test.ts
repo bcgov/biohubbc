@@ -2,11 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { insertUpdateSurveyObservations } from '.';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { ObservationService } from '../../../../../../services/observation-service';
-import { insertUpdateSurveyObservations } from '.';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -18,7 +18,7 @@ describe.skip('insertUpdateSurveyObservations', () => {
 
   describe('openAPI schema', () => {
     // TODO
-  })
+  });
 
   it('inserts and updates survey observations', async () => {
     const dbConnectionObj = getMockDBConnection();
@@ -26,7 +26,7 @@ describe.skip('insertUpdateSurveyObservations', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const insertUpdateSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'insertUpdateSurveyObservations')
+      .stub(ObservationService.prototype, 'insertUpdateDeleteSurveyObservations')
       .resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -48,12 +48,9 @@ describe.skip('insertUpdateSurveyObservations', () => {
       expect.fail();
     }
 
-    expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(
-      2,
-      {
-        // TODO
-      }
-    );
+    expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, {
+      // TODO
+    });
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({ id: 2 });
   });
@@ -63,7 +60,7 @@ describe.skip('insertUpdateSurveyObservations', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ObservationService.prototype, 'insertUpdateSurveyObservations').rejects(new Error('a test error'));
+    sinon.stub(ObservationService.prototype, 'insertUpdateDeleteSurveyObservations').rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
