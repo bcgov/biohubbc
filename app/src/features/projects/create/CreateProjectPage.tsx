@@ -84,7 +84,9 @@ const CreateProjectPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
 
   const codes = codesContext.codesDataLoader.data;
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const draftId = Number(queryParams.draftId);
 

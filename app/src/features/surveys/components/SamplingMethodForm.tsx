@@ -40,7 +40,9 @@ const SamplingMethodForm = () => {
   const [editData, setEditData] = useState<IEditSurveySampleMethodData | undefined>(undefined);
 
   const codesContext = useContext(CodesContext);
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
