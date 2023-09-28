@@ -4,8 +4,9 @@ import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
-import TaxonomyDataGridCell from 'components/data-grid/taxonomy/TaxonomyDataGridCell';
+import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
 import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
+import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import { useContext, useEffect } from 'react';
 
@@ -19,7 +20,7 @@ const ObservationsTable = () => {
       minWidth: 250,
       disableColumnMenu: true,
       renderCell: (params) => {
-        return <TaxonomyDataGridCell dataGridProps={params} />;
+        return <TaxonomyDataGridViewCell dataGridProps={params} />;
       },
       renderEditCell: (params) => {
         return <TaxonomyDataGridEditCell dataGridProps={params} />;
@@ -78,7 +79,7 @@ const ObservationsTable = () => {
       },
       renderEditCell: (params) => {
         return (
-          <AutocompleteDataGridEditCell
+          <ConditionalAutocompleteDataGridEditCell
             dataGridProps={params}
             options={[
               { label: 'method 1', value: 1 },
@@ -126,6 +127,7 @@ const ObservationsTable = () => {
       headerName: 'Count',
       editable: true,
       type: 'number',
+
       minWidth: 100,
       disableColumnMenu: true
     },
@@ -258,15 +260,15 @@ const ObservationsTable = () => {
         '& .MuiDataGrid-columnHeaders': {
           position: 'relative'
         },
-        '& .MuiDataGrid-columnHeaders:after': {
-          content: "''",
-          position: 'absolute',
-          right: 0,
-          width: '96px',
-          height: '80px',
-          borderLeft: '1px solid #ccc',
-          background: '#fff'
-        },
+        // '& .MuiDataGrid-columnHeaders:after': {
+        //   content: "''",
+        //   position: 'absolute',
+        //   right: 0,
+        //   width: '96px',
+        //   height: '80px',
+        //   borderLeft: '1px solid #ccc',
+        //   background: '#fff'
+        // },
         '& .MuiDataGrid-actionsCell': {
           gap: 0
         }

@@ -33,7 +33,7 @@ const AutocompleteDataGridViewCell = <DataGridType extends GridValidRowModel, Va
   props: IAutocompleteDataGridViewCellProps<DataGridType, ValueType>
 ) => {
   const { dataGridProps, options } = props;
-  return <>{options.find((item) => item.value === dataGridProps.value) || ''}</>;
+  return <>{options.find((item) => item.value === dataGridProps.value)?.label || ''}</>;
 };
 
 export default AutocompleteDataGridViewCell;

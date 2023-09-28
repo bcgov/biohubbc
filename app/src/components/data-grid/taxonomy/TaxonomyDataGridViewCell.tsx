@@ -2,7 +2,7 @@ import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 
-export interface ITaxonomyDataGridCellProps<DataGridType extends GridValidRowModel> {
+export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
 }
 
@@ -10,11 +10,11 @@ export interface ITaxonomyDataGridCellProps<DataGridType extends GridValidRowMod
  * Data grid taxonomy component for view.
  *
  * @template DataGridType
- * @param {ITaxonomyDataGridCellProps<DataGridType>} props
+ * @param {ITaxonomyDataGridViewCellProps<DataGridType>} props
  * @return {*}
  */
-const TaxonomyDataGridCell = <DataGridType extends GridValidRowModel>(
-  props: ITaxonomyDataGridCellProps<DataGridType>
+const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
+  props: ITaxonomyDataGridViewCellProps<DataGridType>
 ) => {
   const { dataGridProps } = props;
 
@@ -35,4 +35,4 @@ const TaxonomyDataGridCell = <DataGridType extends GridValidRowModel>(
   return <>{taxonomyDataLoader.data?.searchResponse[0].label}</>;
 };
 
-export default TaxonomyDataGridCell;
+export default TaxonomyDataGridViewCell;
