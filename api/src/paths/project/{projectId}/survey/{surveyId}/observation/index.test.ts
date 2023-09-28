@@ -4,12 +4,12 @@ import OpenAPIRequestValidator, { OpenAPIRequestValidatorArgs } from 'openapi-re
 import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as observationRecords from './index';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
+import { ObservationRecord } from '../../../../../../repositories/observation-repository';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
-import { ObservationRecord } from '../../../../../../repositories/observation-repository';
+import * as observationRecords from './index';
 
 chai.use(sinonChai);
 
@@ -32,7 +32,7 @@ describe.only('insertUpdateSurveyObservations', () => {
               surveyId: 5
             },
             body: { surveyObservations: [] }
-          }
+          };
 
           const response = requestValidator.validateRequest(request);
 
@@ -52,14 +52,14 @@ describe.only('insertUpdateSurveyObservations', () => {
                   survey_observation_id: 1,
                   wldtaxonomic_units_id: 1234,
                   count: 99,
-                  latitude: 48.103322,                
+                  latitude: 48.103322,
                   longitude: -122.798892,
                   observation_date: '1970-01-01',
-                  observation_time: '00:00:00',
+                  observation_time: '00:00:00'
                 }
               ]
             }
-          }
+          };
 
           const response = requestValidator.validateRequest(request);
 
@@ -80,10 +80,10 @@ describe.only('insertUpdateSurveyObservations', () => {
                 {
                   wldtaxonomic_units_id: 1234,
                   count: 99,
-                  latitude: 48.103322,                
+                  latitude: 48.103322,
                   longitude: -122.798892,
                   observation_date: '1970-01-01',
-                  observation_time: '00:00:00',
+                  observation_time: '00:00:00'
                 }
               ]
             }
@@ -101,7 +101,7 @@ describe.only('insertUpdateSurveyObservations', () => {
           const request = {
             headers: { 'content-type': 'application/json' },
             params: {
-              projectId: 4,
+              projectId: 4
               // surveyId: 5
             },
             body: {
@@ -109,10 +109,10 @@ describe.only('insertUpdateSurveyObservations', () => {
                 {
                   wldtaxonomic_units_id: 1234,
                   count: 99,
-                  latitude: 48.103322,                
+                  latitude: 48.103322,
                   longitude: -122.798892,
                   observation_date: '1970-01-01',
-                  observation_time: '00:00:00',
+                  observation_time: '00:00:00'
                 }
               ]
             }
@@ -125,7 +125,7 @@ describe.only('insertUpdateSurveyObservations', () => {
           expect(response.errors[0].path).to.equal('surveyId');
           expect(response.errors[0].message).to.equal(`must have required property 'surveyId'`);
         });
-      
+
         it('is missing latitude', async () => {
           const request = {
             headers: {
@@ -140,10 +140,10 @@ describe.only('insertUpdateSurveyObservations', () => {
                 {
                   wldtaxonomic_units_id: 1234,
                   count: 99,
-                  // latitude: 48.103322,                
+                  // latitude: 48.103322,
                   longitude: -122.798892,
                   observation_date: '1970-01-01',
-                  observation_time: '00:00:00',
+                  observation_time: '00:00:00'
                 }
               ]
             }
@@ -171,10 +171,10 @@ describe.only('insertUpdateSurveyObservations', () => {
                 {
                   wldtaxonomic_units_id: 1234,
                   count: 99,
-                  latitude: 48.103322,                
+                  latitude: 48.103322,
                   // longitude: -122.798892,
                   observation_date: '1970-01-01',
-                  observation_time: '00:00:00',
+                  observation_time: '00:00:00'
                 }
               ]
             }
@@ -202,10 +202,10 @@ describe.only('insertUpdateSurveyObservations', () => {
                 {
                   // wldtaxonomic_units_id: 1234,
                   count: 99,
-                  latitude: 48.103322,                
+                  latitude: 48.103322,
                   longitude: -122.798892,
                   observation_date: '1970-01-01',
-                  observation_time: '00:00:00',
+                  observation_time: '00:00:00'
                 }
               ]
             }
@@ -233,10 +233,10 @@ describe.only('insertUpdateSurveyObservations', () => {
                 {
                   wldtaxonomic_units_id: 1234,
                   // count: 99,
-                  latitude: 48.103322,                
+                  latitude: 48.103322,
                   longitude: -122.798892,
                   observation_date: '1970-01-01',
-                  observation_time: '00:00:00',
+                  observation_time: '00:00:00'
                 }
               ]
             }
@@ -260,7 +260,7 @@ describe.only('insertUpdateSurveyObservations', () => {
         it('returns an empty array', () => {
           const apiResponse = {
             surveyObservations: []
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -274,7 +274,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -285,7 +285,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -301,7 +301,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 // survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -312,7 +312,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -329,7 +329,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 count: 99,
-                // latitude: 48.103322,                
+                // latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -340,7 +340,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -357,7 +357,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 // longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -368,7 +368,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -385,7 +385,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 survey_observation_id: 1,
                 // wldtaxonomic_units_id: 1234,
                 count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -396,7 +396,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -413,7 +413,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 // count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -424,7 +424,7 @@ describe.only('insertUpdateSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -444,10 +444,7 @@ describe.only('insertUpdateSurveyObservations', () => {
 
     const insertUpdateSurveyObservationsStub = sinon
       .stub(ObservationService.prototype, 'insertUpdateDeleteSurveyObservations')
-      .resolves([
-        { survey_observation_id: 1 },
-        { survey_observation_id: 2 }
-      ] as unknown as ObservationRecord[]);
+      .resolves(([{ survey_observation_id: 1 }, { survey_observation_id: 2 }] as unknown) as ObservationRecord[]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -462,18 +459,18 @@ describe.only('insertUpdateSurveyObservations', () => {
           survey_observation_id: 1,
           wldtaxonomic_units_id: 1234,
           count: 99,
-          latitude: 48.103322,                
+          latitude: 48.103322,
           longitude: -122.798892,
           observation_date: '1970-01-01',
-          observation_time: '00:00:00',
+          observation_time: '00:00:00'
         },
         {
           wldtaxonomic_units_id: 1234,
           count: 99,
-          latitude: 48.103322,                
+          latitude: 48.103322,
           longitude: -122.798892,
           observation_date: '1970-01-01',
-          observation_time: '00:00:00',
+          observation_time: '00:00:00'
         }
       ]
     };
@@ -490,28 +487,25 @@ describe.only('insertUpdateSurveyObservations', () => {
       {
         survey_observation_id: 1,
         wldtaxonomic_units_id: 1234,
-        latitude: 48.103322,                
+        latitude: 48.103322,
         longitude: -122.798892,
         count: 99,
         observation_date: '1970-01-01',
-        observation_time: '00:00:00',
+        observation_time: '00:00:00'
       },
       {
         survey_observation_id: undefined,
         wldtaxonomic_units_id: 1234,
-        latitude: 48.103322,                
+        latitude: 48.103322,
         longitude: -122.798892,
         count: 99,
         observation_date: '1970-01-01',
-        observation_time: '00:00:00',
+        observation_time: '00:00:00'
       }
     ]);
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
-      surveyObservations: [
-        { survey_observation_id: 1 },
-        { survey_observation_id: 2 }
-      ]
+      surveyObservations: [{ survey_observation_id: 1 }, { survey_observation_id: 2 }]
     });
   });
 
@@ -535,10 +529,10 @@ describe.only('insertUpdateSurveyObservations', () => {
           survey_observation_id: 1,
           wldtaxonomic_units_id: 1234,
           count: 99,
-          latitude: 48.103322,                
+          latitude: 48.103322,
           longitude: -122.798892,
           observation_date: '1970-01-01',
-          observation_time: '00:00:00',
+          observation_time: '00:00:00'
         }
       ]
     };
@@ -579,10 +573,10 @@ describe.only('getSurveyObservations', () => {
                 {
                   wldtaxonomic_units_id: 1234,
                   count: 99,
-                  latitude: 48.103322,                
+                  latitude: 48.103322,
                   longitude: -122.798892,
                   observation_date: '1970-01-01',
-                  observation_time: '00:00:00',
+                  observation_time: '00:00:00'
                 }
               ]
             }
@@ -600,7 +594,7 @@ describe.only('getSurveyObservations', () => {
           const request = {
             headers: { 'content-type': 'application/json' },
             params: {
-              projectId: 4,
+              projectId: 4
               // surveyId: 5
             },
             body: {
@@ -608,10 +602,10 @@ describe.only('getSurveyObservations', () => {
                 {
                   wldtaxonomic_units_id: 1234,
                   count: 99,
-                  latitude: 48.103322,                
+                  latitude: 48.103322,
                   longitude: -122.798892,
                   observation_date: '1970-01-01',
-                  observation_time: '00:00:00',
+                  observation_time: '00:00:00'
                 }
               ]
             }
@@ -635,7 +629,7 @@ describe.only('getSurveyObservations', () => {
         it('returns an empty array', () => {
           const apiResponse = {
             surveyObservations: []
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -649,7 +643,7 @@ describe.only('getSurveyObservations', () => {
                 survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -660,7 +654,7 @@ describe.only('getSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -676,7 +670,7 @@ describe.only('getSurveyObservations', () => {
                 // survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -687,7 +681,7 @@ describe.only('getSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -704,7 +698,7 @@ describe.only('getSurveyObservations', () => {
                 survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 count: 99,
-                // latitude: 48.103322,                
+                // latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -715,7 +709,7 @@ describe.only('getSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -732,7 +726,7 @@ describe.only('getSurveyObservations', () => {
                 survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 // longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -743,7 +737,7 @@ describe.only('getSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -760,7 +754,7 @@ describe.only('getSurveyObservations', () => {
                 survey_observation_id: 1,
                 // wldtaxonomic_units_id: 1234,
                 count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -771,7 +765,7 @@ describe.only('getSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -788,7 +782,7 @@ describe.only('getSurveyObservations', () => {
                 survey_observation_id: 1,
                 wldtaxonomic_units_id: 1234,
                 // count: 99,
-                latitude: 48.103322,                
+                latitude: 48.103322,
                 longitude: -122.798892,
                 observation_date: '1970-01-01',
                 observation_time: '00:00:00',
@@ -799,7 +793,7 @@ describe.only('getSurveyObservations', () => {
                 revision_count: 1
               }
             ]
-          }
+          };
 
           const response = responseValidator.validateResponse(200, apiResponse);
 
@@ -819,10 +813,7 @@ describe.only('getSurveyObservations', () => {
 
     const getSurveyObservationsStub = sinon
       .stub(ObservationService.prototype, 'getSurveyObservations')
-      .resolves([
-        { survey_observation_id: 1 },
-        { survey_observation_id: 2 }
-      ] as unknown as ObservationRecord[]);
+      .resolves(([{ survey_observation_id: 1 }, { survey_observation_id: 2 }] as unknown) as ObservationRecord[]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -842,10 +833,7 @@ describe.only('getSurveyObservations', () => {
     expect(getSurveyObservationsStub).to.have.been.calledOnceWith(2);
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
-      surveyObservations: [
-        { survey_observation_id: 1 },
-        { survey_observation_id: 2 }
-      ]
+      surveyObservations: [{ survey_observation_id: 1 }, { survey_observation_id: 2 }]
     });
   });
 
