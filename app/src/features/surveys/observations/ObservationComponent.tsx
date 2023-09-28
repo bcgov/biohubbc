@@ -21,8 +21,7 @@ const ObservationComponent = () => {
     });
   };
 
-  // TODO: only show save button when there are unsaved changes
-  const showSaveButton = true;
+  const showSaveButton = observationsContext.hasUnsavedChanges();
 
   return (
     <Box

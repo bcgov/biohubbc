@@ -3,7 +3,7 @@ import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
-import { createContext, PropsWithChildren, useContext } from 'react';
+import { createContext, PropsWithChildren, useContext, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
 
@@ -49,6 +49,19 @@ export type IObservationsContext = {
    */
   refreshRecords: () => Promise<void>;
   /**
+   * Marks the given record as unsaved
+   */
+  markRecordWithUnsavedChanges: (id: string) => void;
+  /**
+   * Indicates all observation table rows that have unsaved changes, include IDs of rows
+   * that have been deleted.
+   */
+  unsavedRecordIds: string[];
+  /**
+   * Inidicates whether the observation table has any unsaved changes
+   */
+  hasUnsavedChanges: () => boolean;
+  /**
    * Data Loader used for retrieving existing records
    */
   observationsDataLoader: DataLoader<[], IGetSurveyObservationsResponse, unknown>;
@@ -61,10 +74,13 @@ export type IObservationsContext = {
 export const ObservationsContext = createContext<IObservationsContext>({
   _muiDataGridApiRef: { current: null as unknown as GridApiCommunity },
   observationsDataLoader: {} as DataLoader<never, IGetSurveyObservationsResponse, unknown>,
+  unsavedRecordIds: [],
+  markRecordWithUnsavedChanges: () => {},
+  hasUnsavedChanges: () => false,
   createNewRecord: () => {},
   revertRecords: () => Promise.resolve(),
   saveRecords: () => Promise.resolve(),
-  refreshRecords: () => Promise.resolve()
+  refreshRecords: () => Promise.resolve(),
 });
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -73,11 +89,20 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const surveyContext = useContext(SurveyContext);
   const { projectId, surveyId } = useContext(SurveyContext);
   const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
+  const [unsavedRecordIds, _setUnsavedRecordIds] = useState<string[]>([]);
 
   observationsDataLoader.load();
 
+  const markRecordWithUnsavedChanges = (id: string) => {
+    const unsavedRecordSet = new Set<string>([...unsavedRecordIds]);
+    unsavedRecordSet.add(id);
+
+    _setUnsavedRecordIds(Array.from(unsavedRecordSet));
+  }
+
   const createNewRecord = () => {
     const id = uuidv4();
+    markRecordWithUnsavedChanges(id);
 
     _muiDataGridApiRef.current.updateRows([
       {
@@ -102,7 +127,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
   };
 
-  const getActiveRecords = (): IObservationTableRow[] => {
+  const _getActiveRecords = (): IObservationTableRow[] => {
     return _getRows().map((row) => {
       const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
       if (!editRow) {
@@ -122,29 +147,43 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
     const { projectId, surveyId } = surveyContext;
 
-    const rows = getActiveRecords();
+    const rows = _getActiveRecords();
 
     await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
+    _setUnsavedRecordIds([]);
     refreshRecords();
   };
 
+  // TODO test this method to make sure deleting a row and then calling it will in fact recover that row.
   const revertRecords = async () => {
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
+    _setUnsavedRecordIds([]);
   };
 
   const refreshRecords = async (): Promise<void> => {
     return observationsDataLoader.refresh();
   };
 
+  const hasUnsavedChanges = useCallback(() => {
+    return unsavedRecordIds.length > 0
+  }, [unsavedRecordIds])
+
   const observationsContext: IObservationsContext = {
     createNewRecord,
     revertRecords,
     saveRecords,
     refreshRecords,
+    hasUnsavedChanges,
+    markRecordWithUnsavedChanges,
+    unsavedRecordIds,
     observationsDataLoader,
     _muiDataGridApiRef
   };
 
-  return <ObservationsContext.Provider value={observationsContext}>{props.children}</ObservationsContext.Provider>;
+  return (
+    <ObservationsContext.Provider value={observationsContext}>
+      {props.children}
+    </ObservationsContext.Provider>
+  );
 };

@@ -13,7 +13,7 @@ import * as observationRecords from './index';
 
 chai.use(sinonChai);
 
-describe.only('insertUpdateSurveyObservations', () => {
+describe('insertUpdateSurveyObservations', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -475,13 +475,8 @@ describe.only('insertUpdateSurveyObservations', () => {
       ]
     };
 
-    try {
-      const requestHandler = observationRecords.insertUpdateSurveyObservations();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-    } catch (actualError) {
-      expect.fail();
-    }
+    const requestHandler = observationRecords.insertUpdateSurveyObservations();
+    await requestHandler(mockReq, mockRes, mockNext);
 
     expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, [
       {
@@ -550,7 +545,7 @@ describe.only('insertUpdateSurveyObservations', () => {
   });
 });
 
-describe.only('getSurveyObservations', () => {
+describe('getSurveyObservations', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -822,13 +817,8 @@ describe.only('getSurveyObservations', () => {
       surveyId: '2'
     };
 
-    try {
-      const requestHandler = observationRecords.getSurveyObservations();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-    } catch (actualError) {
-      expect.fail();
-    }
+    const requestHandler = observationRecords.getSurveyObservations();
+    await requestHandler(mockReq, mockRes, mockNext);
 
     expect(getSurveyObservationsStub).to.have.been.calledOnceWith(2);
     expect(mockRes.statusValue).to.equal(200);

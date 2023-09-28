@@ -99,10 +99,10 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       disableColumnMenu: true,
       resizable: false,
       getActions: (params) => [
-        <IconButton onClick={() => handleDeleteRow(params.id)}>
+        <IconButton onClick={() => handleDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
           <Icon path={mdiTrashCan} size={1} />
         </IconButton>,
-        <IconButton>
+        <IconButton key={`actions[${params.id}].moreOptions`}>
           <Icon path={mdiDotsVertical} size={1} />
         </IconButton>
       ]
@@ -130,7 +130,11 @@ const ObservationsTable = (props: IObservationsTableProps) => {
     apiRef.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
   };
 
-  const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
+  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, event) => {
+    observationsContext.markRecordWithUnsavedChanges(params.row.id);
+  };
+
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
     event.defaultMuiPrevented = true;
   };
 
@@ -153,6 +157,7 @@ const ObservationsTable = (props: IObservationsTableProps) => {
       editMode="row"
       onCellClick={handleCellClick}
       onRowEditStop={handleRowEditStop}
+      onRowEditStart={handleRowEditStart}
       processRowUpdate={handleProcessRowUpdate}
       columns={observationColumns}
       rows={initialRows}
