@@ -82,7 +82,6 @@ type IQuantitativeMeasurementResponse = {
 
 type IMortalityResponse = {
   mortality_id: string;
-  critter_id: string;
   location_id: string | null;
   mortality_timestamp: string;
   location: ILocationResponse;
