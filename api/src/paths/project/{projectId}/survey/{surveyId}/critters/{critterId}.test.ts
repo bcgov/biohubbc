@@ -1,10 +1,23 @@
+import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../database/db';
 import { CritterbaseService } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
-import { removeCritterFromSurvey, updateSurveyCritter } from './{critterId}';
+import { DELETE, PATCH, removeCritterFromSurvey, updateSurveyCritter } from './{critterId}';
+
+describe('critterId openapi schema', () => {
+  const ajv = new Ajv();
+
+  it('PATCH is valid openapi v3 schema', () => {
+    expect(ajv.validateSchema((PATCH.apiDoc as unknown) as object)).to.be.true;
+  });
+
+  it('DELETE is valid openapi v3 schema', () => {
+    expect(ajv.validateSchema((DELETE.apiDoc as unknown) as object)).to.be.true;
+  });
+});
 
 describe('removeCritterFromSurvey', () => {
   afterEach(() => {
@@ -79,7 +92,7 @@ describe('updateSurveyCritter', () => {
   it('catches and re-throws errors', async () => {
     const mockError = new Error('a test error');
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    const mockAddCritterToSurvey = sinon.stub(SurveyCritterService.prototype, 'updateCritter').rejects(mockError);
+    const mockSurveyUpdateCritter = sinon.stub(SurveyCritterService.prototype, 'updateCritter').rejects(mockError);
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.body = {
       create: {},
@@ -92,7 +105,28 @@ describe('updateSurveyCritter', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError).to.equal(mockError);
-      expect(mockAddCritterToSurvey.calledOnce).to.be.true;
+      expect(mockSurveyUpdateCritter.calledOnce).to.be.true;
+      expect(mockGetDBConnection.calledOnce).to.be.true;
+      expect(mockDBConnection.release).to.have.been.called;
+    }
+  });
+
+  it('catches and re-throws errors', async () => {
+    const mockError = new Error('No external critter id found.');
+    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+    const mockSurveyUpdateCritter = sinon.stub(SurveyCritterService.prototype, 'updateCritter').resolves();
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+    mockReq.body = {
+      update: {}
+    };
+    const requestHandler = updateSurveyCritter();
+
+    try {
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as Error).message).to.equal(mockError.message);
+      expect(mockSurveyUpdateCritter.calledOnce).to.be.false;
       expect(mockGetDBConnection.calledOnce).to.be.true;
       expect(mockDBConnection.release).to.have.been.called;
     }
