@@ -39,12 +39,12 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'addCritterToSurvey').resolves(1);
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'addCritterToSurvey').resolves();
 
       const response = await service.addCritterToSurvey(1, 'critter_id');
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(1);
+      expect(response).to.be.undefined;
     });
   });
 
@@ -53,12 +53,12 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'removeCritterFromSurvey').resolves(1);
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'removeCritterFromSurvey').resolves();
 
       const response = await service.removeCritterFromSurvey(1);
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(1);
+      expect(response).to.be.undefined;
     });
   });
 
@@ -67,12 +67,26 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'upsertDeployment').resolves(1);
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'upsertDeployment').resolves();
 
       const response = await service.upsertDeployment(1, 'deployment_id');
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(1);
+      expect(response).to.be.undefined;
     });
   });
+
+  describe('updateCritter', () => {
+    it('updates critter, returns nothing', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyCritterService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'updateCritter').resolves();
+
+      const response = await service.updateCritter(1, 'asdf');
+
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.be.undefined;
+    })
+  })
 });

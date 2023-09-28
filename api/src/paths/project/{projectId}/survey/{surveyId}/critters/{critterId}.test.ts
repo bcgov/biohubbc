@@ -12,7 +12,6 @@ describe('removeCritterFromSurvey', () => {
   });
 
   const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
-  const mockSurveyCritter = 123;
 
   it('removes critter from survey', async () => {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
@@ -24,7 +23,6 @@ describe('removeCritterFromSurvey', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
-    expect(mockRes.jsonValue).to.equal(mockSurveyCritter);
   });
 
   it('catches and re-throws errors', async () => {
