@@ -33,6 +33,7 @@ const SurveyAnimals: React.FC = () => {
   const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
 
+  const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
@@ -286,6 +287,19 @@ const SurveyAnimals: React.FC = () => {
     refreshDeployments();
   };
 
+  const handleRemoveCritter = async () => {
+    try {
+      if (!selectedCritterId) {
+        throw Error('Critter ID not set correctly.');
+      }
+      await bhApi.survey.removeCritterFromSurvey(projectId, surveyId, selectedCritterId);
+    } catch (e) {
+      setPopup('Failed to remove critter from survey.');
+    }
+    setOpenRemoveCritterDialog(false);
+    refreshCritters();
+  };
+
   return (
     <Box>
       {renderAnimalFormSafe()}
@@ -306,6 +320,18 @@ const SurveyAnimals: React.FC = () => {
           }
         }}
       />
+      <YesNoDialog
+        dialogTitle={'Remove critter from survey?'}
+        dialogText={`Are you sure you would like to remove this critter from the survey? 
+          The critter will remain present in Critterbase, but will no longer appear in the survey list.`}
+        open={openRemoveCritterDialog}
+        yesButtonProps={{ color: 'error' }}
+        yesButtonLabel="Delete"
+        noButtonLabel="Cancel"
+        onClose={() => setOpenRemoveCritterDialog(false)}
+        onNo={() => setOpenRemoveCritterDialog(false)}
+        onYes={handleRemoveCritter}
+      />
       <H2ButtonToolbar
         label="Individual Animals"
         buttonLabel="Import"
@@ -321,23 +347,18 @@ const SurveyAnimals: React.FC = () => {
             animalData={critterData}
             deviceData={deploymentData}
             onMenuOpen={setSelectedCritterId}
-            onRemoveCritter={async (critter_id) => {
-              try {
-                await bhApi.survey.removeCritterFromSurvey(projectId, surveyId, critter_id);
-              } catch (e) {
-                setPopup('Failed to remove critter from survey.');
-              }
-              refreshCritters();
+            onRemoveCritter={() => {
+              setOpenRemoveCritterDialog(true);
             }}
-            onAddDevice={(critter_id) => {
+            onAddDevice={() => {
               setTelemetryFormMode(TELEMETRY_DEVICE_FORM_MODE.ADD);
               setOpenDeviceDialog(true);
             }}
-            onEditDevice={(device_id) => {
+            onEditDevice={() => {
               setTelemetryFormMode(TELEMETRY_DEVICE_FORM_MODE.EDIT);
               setOpenDeviceDialog(true);
             }}
-            onEditCritter={(critter_id) => {
+            onEditCritter={() => {
               setAnimalFormMode(ANIMAL_FORM_MODE.EDIT);
               setOpenAddCritterDialog(true);
             }}

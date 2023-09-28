@@ -47,7 +47,7 @@ export class SurveyCritterRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .table('critter')
       .update({ critterbase_critter_id: critterbaseCritterId })
-      .where({ critterId: critterId });
+      .where({ critter_id: critterId });
     await this.connection.knex(queryBuilder);
   }
 

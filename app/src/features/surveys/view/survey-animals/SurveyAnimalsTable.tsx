@@ -40,13 +40,15 @@ export const SurveyAnimalsTable = ({
   onEditCritter
 }: ISurveyAnimalsTableProps): JSX.Element => {
   const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
-    ? animalData.map((animal) => {
-        const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
-        return {
-          ...animal,
-          deployments: deployments
-        };
-      })
+    ? animalData
+        .sort((a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()) //This sort needed to avoid arbitrary reordering of the table when it refreshes after adding or editing
+        .map((animal) => {
+          const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
+          return {
+            ...animal,
+            deployments: deployments
+          };
+        })
     : animalData;
 
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
