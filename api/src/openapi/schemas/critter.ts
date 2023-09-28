@@ -22,6 +22,28 @@ const critterSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
+const locationSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  properties: {
+    location_id: {
+      type: 'string',
+      format: 'uuid'
+    },
+    latitude: {
+      type: 'number'
+    },
+    longitude: {
+      type: 'number'
+    },
+    coordinate_uncertainty: {
+      type: 'number'
+    },
+    coordinate_uncertainty_unit: {
+      type: 'string'
+    }
+  }
+};
+
 const captureSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   properties: {
@@ -41,12 +63,8 @@ const captureSchema: OpenAPIV3.SchemaObject = {
       type: 'string',
       format: 'uuid'
     },
-    capture_location: {
-      type: 'object'
-    },
-    release_location: {
-      type: 'object'
-    },
+    capture_location: locationSchema,
+    release_location: locationSchema,
     force_create_release: {
       type: 'boolean'
     },
@@ -116,28 +134,6 @@ const markingSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-const locationSchema: OpenAPIV3.SchemaObject = {
-  type: 'object',
-  properties: {
-    location_id: {
-      type: 'string',
-      format: 'uuid'
-    },
-    latitude: {
-      type: 'number'
-    },
-    longitude: {
-      type: 'number'
-    },
-    coordinate_uncertainty: {
-      type: 'number'
-    },
-    coordinate_uncertainty_unit: {
-      type: 'string'
-    }
-  }
-};
-
 const mortalitySchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   properties: {
@@ -152,7 +148,7 @@ const mortalitySchema: OpenAPIV3.SchemaObject = {
     ultimate_cause_of_death_confidence: { type: 'string' },
     ultimate_predated_by_taxon_id: { type: 'string', format: 'uuid' },
     projection_mode: { type: 'string', enum: ['wgs', 'utm'] },
-    location: { type: 'object' }
+    location: locationSchema
   }
 };
 
