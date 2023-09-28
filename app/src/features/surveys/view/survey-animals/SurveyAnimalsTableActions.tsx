@@ -101,7 +101,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             <ListItemIcon>
               <Icon path={mdiTrashCanOutline} size={1} />
             </ListItemIcon>
-            <Typography variant="inherit">Remove Critter From Survey</Typography>
+            <Typography variant="inherit">Remove Animal</Typography>
           </MenuItem>
         )}
       </Menu>

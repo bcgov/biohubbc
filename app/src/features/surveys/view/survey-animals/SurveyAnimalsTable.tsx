@@ -1,9 +1,7 @@
 import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/tables/CustomDataGrid';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { getFormattedDate } from 'utils/Utils';
 import { IAnimalDeployment } from './device';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 
@@ -48,6 +46,11 @@ export const SurveyAnimalsTable = ({
 
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
     {
+      field: 'taxon',
+      headerName: 'Species',
+      flex: 1
+    },
+    {
       field: 'animal_id',
       headerName: 'Alias',
       flex: 1
@@ -60,21 +63,6 @@ export const SurveyAnimalsTable = ({
         <>
           {params.value ? params.value : 'None'}
         </>
-    },
-    {
-      field: 'taxon',
-      headerName: 'Taxon',
-      flex: 1
-    },
-    {
-      field: 'create_timestamp',
-      headerName: 'Created On',
-      flex: 1,
-      renderCell: (params) => (
-        <>
-          {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
-        </>
-      )
     },
     {
       field: 'current_devices',

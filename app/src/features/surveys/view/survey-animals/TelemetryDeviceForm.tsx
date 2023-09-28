@@ -36,11 +36,11 @@ const DeploymentFormSection = ({
                 <SingleDateField
                   name={`${index}.deployments.${i}.attachment_start`}
                   required={true}
-                  label={'Attachment Start'}
+                  label={'Start Date'}
                 />
               </Grid>
               <Grid item xs={6}>
-                <SingleDateField name={`${index}.deployments.${i}.attachment_end`} label={'Attachment End'} />
+                <SingleDateField name={`${index}.deployments.${i}.attachment_end`} label={'End Date'} />
               </Grid>
             </Fragment>
           );

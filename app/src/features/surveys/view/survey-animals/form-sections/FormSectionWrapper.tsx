@@ -1,8 +1,12 @@
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Grid, Button, Divider, IconButton, Paper, PaperProps, Typography } from '@mui/material';
+import { Box, Grid, Button, Divider, IconButton, PaperProps, Typography } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
 import { useFormikContext } from 'formik';
 import { IAnimal } from '../animal';
+import { grey } from '@mui/material/colors';
 
 interface FormSectionWrapperProps {
   title: string; // Title ie: General / Capture Information etc
@@ -43,50 +47,78 @@ const FormSectionWrapper = ({
   const showBtn = btnLabel && handleAddSection && (maxSections === undefined || childs.length < maxSections);
 
   return (
-    <Box component="fieldset">
-      <Typography component="legend">
-        {title}
-      </Typography>
-      <Typography variant="body1" color="textSecondary"
-        sx={{
-          mt: -1,
-          mb: 3
-        }}
-      >
-        {titleHelp}
-      </Typography>
-      {childs.map((child, idx) => (
-        <Paper key={child.key} variant="outlined" sx={{ p: 2, mb: 2 }} {...innerPaperProps}>
-          <Box display="flex" alignItems="center">
-            {addedSectionTitle ? (
-              <Typography fontWeight="bold">
-                {childs.length > 1 ? `${addedSectionTitle} (${idx + 1})` : `${addedSectionTitle}`}
-              </Typography>
-            ) : null}
-            {handleRemoveSection && childs.length >= 1 ? (
-              <IconButton sx={{ ml: 'auto', height: 40, width: 40 }} onClick={() => handleRemoveSection(idx)}>
-                <Icon path={mdiTrashCanOutline} size={1} />
-              </IconButton>
-            ) : null}
-          </Box>
-          <Grid container spacing={2}>
-            {child}
-          </Grid>
-        </Paper>
-      ))}
-      {showBtn ? (
-        <Button
-          onClick={handleAddSection}
-          startIcon={<Icon path={mdiPlus} size={1} />}
-          variant="outlined"
-          size="small"
-          disabled={disableAddBtn || !values.general.taxon_id}
-          color="primary">
-          {btnLabel}
-        </Button>
-      ) : null}
-      <Divider sx={{ mt: 3, mb: 2}} />
-    </Box>
+    <>
+    <Divider sx={{ mt: 4, mb: 3}} />
+      <Box component="fieldset">
+        <Typography component="legend">
+          {title}
+        </Typography>
+        <Typography variant="body1" color="textSecondary"
+          sx={{
+            mt: -1,
+            mb: 3
+          }}
+        >
+          {titleHelp}
+        </Typography>
+        {childs.map((child, idx) => (
+          <Card key={child.key} variant="outlined" {...innerPaperProps}
+            sx={{
+              '& + div': {
+                mt: 1
+              },
+              '& + button': {
+                mt: 2
+              }
+            }}
+          >
+            <CardHeader
+              title={
+                <>
+                  {addedSectionTitle ? (
+                    <>{childs.length > 1 ? `${addedSectionTitle} (${idx + 1})` : `${addedSectionTitle}`}</>
+                  ) : null}
+                </>
+              }
+              action={
+                <>
+                  {handleRemoveSection && childs.length >= 1 ? (
+                    <IconButton sx={{ ml: 'auto', height: 40, width: 40 }} onClick={() => handleRemoveSection(idx)}>
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </IconButton>
+                  ) : null}
+                </>
+              }
+              sx={{
+                py: 1.5,
+                background: grey[100],
+                fontSize: '0.875rem'
+              }}
+            >
+            </CardHeader>
+            <CardContent
+              sx={{
+                pb: '16px !important'
+              }}
+            >
+              <Grid container spacing={2}>
+                {child}
+              </Grid>
+            </CardContent>
+          </Card>
+        ))}
+        {showBtn ? (
+          <Button
+            onClick={handleAddSection}
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            variant="outlined"
+            disabled={disableAddBtn || !values.general.taxon_id}
+            color="primary">
+            {btnLabel}
+          </Button>
+        ) : null}
+      </Box>
+    </>
   );
 };
 
