@@ -30,7 +30,6 @@ const IndividualAnimalForm = (): any => {
       <MarkingAnimalForm />
       <MeasurementAnimalForm />
       <FamilyAnimalForm />
-
       <FormikDevDebugger custom_payload={new Critter(values)} />
     </Form>
   );

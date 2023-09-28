@@ -304,7 +304,7 @@ export const SurveyAnimalsI18N = {
   animalDialogAddNew: 'Add New Individual',
   animalSectionComment: (section: string) => `Add comment about this ${section}`,
   animalGeneralTitle: 'General',
-  animalGeneralHelp: 'General help placeholder',
+  animalGeneralHelp: 'General information about this animal.',
   animalCaptureTitle: 'Capture Information',
   animalCaptureTitle2: 'Capture Event',
   animalCaptureHelp:

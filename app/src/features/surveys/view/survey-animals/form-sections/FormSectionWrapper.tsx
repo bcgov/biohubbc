@@ -1,8 +1,7 @@
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Divider, Grid, IconButton, Paper, PaperProps, Typography } from '@mui/material';
+import { Box, Grid, Button, Divider, IconButton, Paper, PaperProps, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
-import React from 'react';
 import { IAnimal } from '../animal';
 
 interface FormSectionWrapperProps {
@@ -44,13 +43,17 @@ const FormSectionWrapper = ({
   const showBtn = btnLabel && handleAddSection && (maxSections === undefined || childs.length < maxSections);
 
   return (
-    <Box component="fieldset" mt={2}>
+    <Box component="fieldset">
       <Typography component="legend">
         {title}
-        <br />
-        <Typography component="span" variant="subtitle2" color="textSecondary">
-          {titleHelp}
-        </Typography>
+      </Typography>
+      <Typography variant="body1" color="textSecondary"
+        sx={{
+          mt: -1,
+          mb: 3
+        }}
+      >
+        {titleHelp}
       </Typography>
       {childs.map((child, idx) => (
         <Paper key={child.key} variant="outlined" sx={{ p: 2, mb: 2 }} {...innerPaperProps}>
@@ -82,7 +85,7 @@ const FormSectionWrapper = ({
           {btnLabel}
         </Button>
       ) : null}
-      <Divider sx={{ mt: 2 }} />
+      <Divider sx={{ mt: 3, mb: 2}} />
     </Box>
   );
 };

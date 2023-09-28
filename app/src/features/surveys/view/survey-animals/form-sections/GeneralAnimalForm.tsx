@@ -1,11 +1,9 @@
 import Grid from '@mui/material/Grid';
-import { Box } from '@mui/system';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
-import React from 'react';
 import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isRequiredInSchema } from '../animal';
 import FormSectionWrapper from './FormSectionWrapper';
 
@@ -28,52 +26,53 @@ const GeneralAnimalForm = () => {
       title={SurveyAnimalsI18N.animalGeneralTitle}
       titleHelp={SurveyAnimalsI18N.animalGeneralHelp}
       innerPaperProps={{ elevation: 0, variant: 'elevation', sx: { p: 0, mb: 0 } }}>
-      <Grid item xs={6} key={'animal-general-section'}>
-        <Box mb={2}>
-          <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
-            <CbSelectField
-              name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
-              controlProps={{
-                required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'),
-                size: 'small',
-                disabled: !!values.collectionUnits.length
-              }}
-              label={'Taxon'}
-              id={'taxon'}
-              route={'lookups/taxons'}
-              handleChangeSideEffect={handleTaxonName}
-            />
-          </HelpButtonTooltip>
-        </Box>
-        <Box mb={2}>
+      <Grid item key={'animal-general-section'}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
+              <CbSelectField
+                name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
+                controlProps={{
+                  required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'),
+                  disabled: !!values.collectionUnits.length
+                }}
+                label={'Species'}
+                id={'taxon'}
+                route={'lookups/taxons'}
+                handleChangeSideEffect={handleTaxonName}
+              />
+            </HelpButtonTooltip>
+          </Grid>
+          <Grid item xs={12} md={6}>
+              <CbSelectField
+                name={getAnimalFieldName<IAnimalGeneral>(name, 'sex')}
+                controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'sex') }}
+                label="Sex"
+                id={'sex'}
+                route={'lookups/sex'}
+              />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
+              <CustomTextField
+                other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
+                label="Alias"
+                name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
+                handleBlur={handleBlur}
+              />
+            </HelpButtonTooltip>
+          </Grid>
+          <Grid item xs={12} md={6}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
             <CustomTextField
-              other={{ size: 'small', required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
-              label="Alias"
-              name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
+              other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'wlh_id') }}
+              label="Wildlife Health ID (Optional)"
+              name={getAnimalFieldName<IAnimalGeneral>(name, 'wlh_id')}
               handleBlur={handleBlur}
             />
           </HelpButtonTooltip>
-        </Box>
-        <Box mb={2}>
-          <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
-            <CbSelectField
-              name={getAnimalFieldName<IAnimalGeneral>(name, 'sex')}
-              controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'sex'), size: 'small' }}
-              label={'Sex'}
-              id={'sex'}
-              route={'lookups/sex'}
-            />
-          </HelpButtonTooltip>
-        </Box>
-        <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
-          <CustomTextField
-            other={{ size: 'small', required: isRequiredInSchema(AnimalGeneralSchema, 'wlh_id') }}
-            label="Wildlife Health ID"
-            name={getAnimalFieldName<IAnimalGeneral>(name, 'wlh_id')}
-            handleBlur={handleBlur}
-          />
-        </HelpButtonTooltip>
+          </Grid>
+        </Grid>
       </Grid>
     </FormSectionWrapper>
   );
