@@ -9,7 +9,7 @@ import { InsertObservation, ObservationRepository, UpdateObservation } from './o
 
 chai.use(sinonChai);
 
-describe.only('ObservationRepository', () => {
+describe('ObservationRepository', () => {
   afterEach(() => {
     sinon.restore();
   });
