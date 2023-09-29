@@ -3,9 +3,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import { ObservationComponent } from './ObservationComponent';
-import { SamplingSiteList } from './sampling-sites/SamplingSiteList';
-import { SurveyObservationHeader } from './SurveyObservationHeader';
+import ObservationComponent from './ObservationComponent';
+import SamplingSiteList from './sampling-sites/SamplingSiteList';
+import SurveyObservationHeader from './SurveyObservationHeader';
 
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);

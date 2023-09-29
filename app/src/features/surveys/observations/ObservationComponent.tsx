@@ -1,110 +1,36 @@
-import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus } from '@mdi/js';
+import { mdiCogOutline, mdiFloppy, mdiImport, mdiPlus, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
+import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { ObservationDataGrid } from './ObservationDataGrid';
+import { ObservationsContext } from 'contexts/observationsContext';
+import ObservationsTable from 'features/surveys/observations/ObservationsTable';
+import { useContext, useState } from 'react';
 
-const columns = [
-  {
-    field: 'speciesName',
-    headerName: 'Species',
-    editable: true,
-    flex: 1,
-    minWidth: 250,
-    disableColumnMenu: true
-  },
-  {
-    field: 'samplingSite',
-    headerName: 'Sampling Site',
-    editable: true,
-    type: 'singleSelect',
-    valueOptions: ['Site 1', 'Site 2', 'Site 3', 'Site 4'],
-    flex: 1,
-    minWidth: 200,
-    disableColumnMenu: true
-  },
-  {
-    field: 'samplingMethod',
-    headerName: 'Sampling Method',
-    editable: true,
-    type: 'singleSelect',
-    valueOptions: ['Method 1', 'Method 2', 'Method 3', 'Method 4'],
-    flex: 1,
-    minWidth: 200,
-    disableColumnMenu: true
-  },
-  {
-    field: 'samplingPeriod',
-    headerName: 'Sampling Period',
-    editable: true,
-    type: 'singleSelect',
-    valueOptions: ['Period 1', 'Period 2', 'Period 3', 'Period 4', 'Undefined'],
-    flex: 1,
-    minWidth: 200,
-    disableColumnMenu: true
-  },
-  {
-    field: 'count',
-    headerName: 'Count',
-    editable: true,
-    type: 'number',
-    minWidth: 100,
-    disableColumnMenu: true
-  },
-  {
-    field: 'date',
-    headerName: 'Date',
-    editable: true,
-    type: 'date',
-    minWidth: 150,
-    disableColumnMenu: true
-  },
-  {
-    field: 'time',
-    headerName: 'Time',
-    editable: true,
-    type: 'time',
-    width: 150,
-    disableColumnMenu: true
-  },
-  {
-    field: 'lat',
-    headerName: 'Lat',
-    type: 'number',
-    editable: true,
-    width: 150,
-    disableColumnMenu: true
-  },
-  {
-    field: 'long',
-    headerName: 'Long',
-    type: 'number',
-    editable: true,
-    width: 150,
-    disableColumnMenu: true
-  },
-  {
-    field: 'actions',
-    headerName: '',
-    type: 'actions',
-    width: 80,
-    disableColumnMenu: true,
-    resizable: false,
-    cellClassName: 'test',
-    getActions: () => [
-      <IconButton key={mdiDotsVertical}>
-        <Icon path={mdiDotsVertical} size={1} />
-      </IconButton>
-    ]
-  }
-];
+const ObservationComponent = () => {
+  const observationsContext = useContext(ObservationsContext);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
-export const ObservationComponent = () => {
+  const handleSaveChanges = () => {
+    setIsSaving(true);
+
+    observationsContext.saveRecords().finally(() => {
+      setIsSaving(false);
+    });
+  };
+
+  const showSaveButton = observationsContext.hasUnsavedChanges();
+
   return (
-    <Box display="flex" flexDirection="column" flex="1 1 auto" height="100%">
+    <Box
+      display="flex"
+      flexDirection="column"
+      flex="1 1 auto"
+      sx={{
+        overflow: 'hidden'
+      }}>
       {/* Observations Component */}
       <Toolbar
         sx={{
@@ -120,10 +46,33 @@ export const ObservationComponent = () => {
           }}>
           <strong>Observations</strong>
         </Typography>
+        {showSaveButton && (
+          <>
+            <LoadingButton
+              loading={isSaving}
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiFloppy} size={1} />}
+              onClick={() => handleSaveChanges()}>
+              Save Changes
+            </LoadingButton>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiTrashCan} size={1} />}
+              onClick={() => observationsContext.revertRecords()}>
+              Cancel
+            </Button>
+          </>
+        )}
         <Button variant="contained" color="primary" startIcon={<Icon path={mdiImport} size={1} />}>
           Import
         </Button>
-        <Button variant="contained" color="primary" startIcon={<Icon path={mdiPlus} size={1} />}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Icon path={mdiPlus} size={1} />}
+          onClick={() => observationsContext.createNewRecord()}>
           Add Record
         </Button>
         <Button
@@ -142,8 +91,10 @@ export const ObservationComponent = () => {
 
         {/* Table View */}
 
-        <ObservationDataGrid columns={columns} />
+        <ObservationsTable />
       </Box>
     </Box>
   );
 };
+
+export default ObservationComponent;

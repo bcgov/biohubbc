@@ -14,7 +14,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { useHistory } from 'react-router';
 
-export const SamplingSiteList = () => {
+const SamplingSiteList = () => {
   const history = useHistory();
 
   return (
@@ -170,3 +170,5 @@ export const SamplingSiteList = () => {
     </Box>
   );
 };
+
+export default SamplingSiteList;
