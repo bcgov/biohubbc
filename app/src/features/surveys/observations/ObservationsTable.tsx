@@ -76,7 +76,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       minWidth: 200,
       disableColumnMenu: true,
       preProcessEditCellProps: (params) => {
-        return { ...params.props, error: 'this is an error' };
+        return { ...params.props };
       },
       renderCell: (params) => {
         return (
@@ -109,8 +109,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       minWidth: 200,
       disableColumnMenu: true,
       preProcessEditCellProps: (params) => {
-        console.log('preProcessEditCellProps');
-        return { ...params.props, error: 'this is an error' };
+        return { ...params.props };
       },
       renderCell: (params) => {
         return (
@@ -246,6 +245,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
       observationsContext.setInitialRows(rows);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsDataLoader.data]);
 
   const handleDeleteRow = (id: string | number) => {
@@ -288,9 +288,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       localeText={{
         noRowsLabel: 'No Records'
       }}
-      //   slots={{
-      //     baseSelect: AutocompleteDataGridEditCellCustom
-      //   }}
       sx={{
         background: '#fff',
         border: 'none',
@@ -312,15 +309,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         '& .MuiDataGrid-columnHeaders': {
           position: 'relative'
         },
-        // '& .MuiDataGrid-columnHeaders:after': {
-        //   content: "''",
-        //   position: 'absolute',
-        //   right: 0,
-        //   width: '96px',
-        //   height: '80px',
-        //   borderLeft: '1px solid #ccc',
-        //   background: '#fff'
-        // },
         '& .MuiDataGrid-actionsCell': {
           gap: 0
         }

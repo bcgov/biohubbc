@@ -26,10 +26,10 @@ const ObservationComponent = () => {
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     setIsSaving(true);
 
-    observationsContext.saveRecords().finally(() => {
+    return observationsContext.saveRecords().finally(() => {
       setIsSaving(false);
     });
   };
