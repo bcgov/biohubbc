@@ -37,7 +37,7 @@ const AttchmentFormSection = (props: { index: number; deviceMake: string }) => {
             sx={{
               mt: -1,
               mb: 3
-            }}>{`Vectronic KeyX File`}</Typography>
+            }}>{`Vectronic KeyX File (Optional)`}</Typography>
           <TelemetryFileUpload attachmentType={AttachmentType.KEYX} index={props.index} />
         </>
       )}
@@ -49,7 +49,7 @@ const AttchmentFormSection = (props: { index: number; deviceMake: string }) => {
             sx={{
               mt: -1,
               mb: 3
-            }}>{`Lotek Config File`}</Typography>
+            }}>{`Lotek Config File (Optional)`}</Typography>
           <TelemetryFileUpload attachmentType={AttachmentType.OTHER} index={props.index} />
         </>
       )}
