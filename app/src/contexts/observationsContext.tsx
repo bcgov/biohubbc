@@ -3,7 +3,7 @@ import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
-import { createContext, PropsWithChildren, useContext, useState, useCallback } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
 
@@ -72,7 +72,7 @@ export type IObservationsContext = {
 
   initialRows: IObservationTableRow[];
 
-  setInitialRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>
+  setInitialRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
 };
 
 export const ObservationsContext = createContext<IObservationsContext>({
@@ -86,7 +86,7 @@ export const ObservationsContext = createContext<IObservationsContext>({
   createNewRecord: () => {},
   revertRecords: () => Promise.resolve(),
   saveRecords: () => Promise.resolve(),
-  refreshRecords: () => Promise.resolve(),
+  refreshRecords: () => Promise.resolve()
 });
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -101,11 +101,11 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   observationsDataLoader.load();
 
   const markRecordWithUnsavedChanges = (id: string | number) => {
-    const unsavedRecordSet = new Set<string>([...unsavedRecordIds]);
+    const unsavedRecordSet = new Set<string>(unsavedRecordIds);
     unsavedRecordSet.add(String(id));
 
     _setUnsavedRecordIds(Array.from(unsavedRecordSet));
-  }
+  };
 
   const createNewRecord = () => {
     const id = uuidv4();
@@ -173,8 +173,8 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   };
 
   const hasUnsavedChanges = useCallback(() => {
-    return unsavedRecordIds.length > 0
-  }, [unsavedRecordIds])
+    return unsavedRecordIds.length > 0;
+  }, [unsavedRecordIds]);
 
   const observationsContext: IObservationsContext = {
     createNewRecord,
@@ -190,9 +190,5 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     setInitialRows
   };
 
-  return (
-    <ObservationsContext.Provider value={observationsContext}>
-      {props.children}
-    </ObservationsContext.Provider>
-  );
+  return <ObservationsContext.Provider value={observationsContext}>{props.children}</ObservationsContext.Provider>;
 };
