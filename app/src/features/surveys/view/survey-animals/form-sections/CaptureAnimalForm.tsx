@@ -45,7 +45,10 @@ const CaptureAnimalForm = () => {
     release_utm_easting: '' as unknown as number,
     release_comment: '',
     release_timestamp: '' as unknown as Date,
-    release_coordinate_uncertainty: 10
+    release_coordinate_uncertainty: 10,
+    capture_id: undefined,
+    capture_location_id: undefined,
+    release_location_id: undefined
   };
 
   const canAddNewCapture = () => {
@@ -121,6 +124,8 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
               <Field
                 as={Checkbox}
                 onChange={handleChange}
+                checked={values.captures[index].show_release}
+                disabled={!!values.captures[index].release_location_id}
                 name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
               />
             }
@@ -137,7 +142,6 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
-            required={true}
             label={'Release Date'}
             other={{ size: 'small' }}
           />

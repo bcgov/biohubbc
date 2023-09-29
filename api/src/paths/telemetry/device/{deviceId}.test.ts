@@ -21,6 +21,7 @@ describe('getDeviceDetails', () => {
   it('gets device details', async () => {
     const mockGetDeviceDetails = sinon.stub(BctwService.prototype, 'getDeviceDetails').resolves([]);
     const mockGetDeployments = sinon.stub(BctwService.prototype, 'getDeviceDeployments').resolves([]);
+    const mockGetKeyXDetails = sinon.stub(BctwService.prototype, 'getKeyXDetails').resolves([]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     const requestHandler = getDeviceDetails();
@@ -30,5 +31,23 @@ describe('getDeviceDetails', () => {
     expect(mockRes.statusValue).to.equal(200);
     expect(mockGetDeviceDetails).to.have.been.calledOnce;
     expect(mockGetDeployments).to.have.been.calledOnce;
+    expect(mockGetKeyXDetails).to.have.been.calledOnce;
+  });
+
+  it('catches and re-throws errors', async () => {
+    const mockError = new Error('test error');
+    const mockGetDeviceDetails = sinon.stub(BctwService.prototype, 'getDeviceDetails').rejects(mockError);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+    const requestHandler = getDeviceDetails();
+
+    try {
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (error) {
+      expect(error).to.equal(mockError);
+      expect(mockGetDeviceDetails).to.have.been.calledOnce;
+      expect(mockNext).not.to.have.been.called;
+    }
   });
 });

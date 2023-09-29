@@ -19,7 +19,6 @@ import LoginPage from 'pages/authentication/LoginPage';
 import LogOutPage from 'pages/authentication/LogOutPage';
 import { LandingPage } from 'pages/landing/LandingPage';
 import { Playground } from 'pages/Playground';
-import { PrototypePage } from 'pages/prototype/PrototypePage';
 import React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
@@ -114,10 +113,6 @@ const AppRouter: React.FC = () => {
         <BaseLayout>
           <ResourcesPage />
         </BaseLayout>
-      </RouteWithTitle>
-
-      <RouteWithTitle title="prototype" path="/prototype">
-        <PrototypePage />
       </RouteWithTitle>
 
       <Route path="/login">

@@ -26,7 +26,7 @@ import { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { getCodesName } from 'utils/Utils';
 
-export const SamplingSiteList = () => {
+const SamplingSiteList = () => {
   const history = useHistory();
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
@@ -189,3 +189,5 @@ export const SamplingSiteList = () => {
     </>
   );
 };
+
+export default SamplingSiteList;

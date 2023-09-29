@@ -69,6 +69,13 @@ const FamilyAnimalForm = () => {
     relationship: undefined
   };
 
+  const disabledFamilyIds = values.family.reduce((acc: Record<string, boolean>, curr) => {
+    if (curr.family_id) {
+      acc[curr.family_id] = true;
+    }
+    return acc;
+  }, {});
+
   return (
     <FieldArray validateOnChange={true} name={name}>
       {({ remove, push }: FieldArrayRenderProps) => (
@@ -80,7 +87,6 @@ const FamilyAnimalForm = () => {
             btnLabel={SurveyAnimalsI18N.animalFamilyAddBtn}
             disableAddBtn={!lastAnimalValueValid('family', values)}
             handleAddSection={() => push(newRelationship)}
-            maxSections={1}
             handleRemoveSection={remove}>
             {values.family.map((fam, index) => (
               <Fragment key={fam._id}>
@@ -97,7 +103,7 @@ const FamilyAnimalForm = () => {
                       ...(allFamilies ?? []),
                       { family_id: newFamilyIdPlaceholder, family_label: newFamilyIdPlaceholder }
                     ]?.map((a) => (
-                      <MenuItem key={a.family_id} value={a.family_id}>
+                      <MenuItem disabled={!!disabledFamilyIds[a.family_id]} key={a.family_id} value={a.family_id}>
                         {a.family_label ? a.family_label : a.family_id}
                       </MenuItem>
                     ))}
