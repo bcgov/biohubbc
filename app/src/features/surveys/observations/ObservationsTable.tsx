@@ -48,9 +48,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const { sample_sites, sample_methods, sample_periods } = props;
   const observationsContext = useContext(ObservationsContext);
   const { observationsDataLoader } = observationsContext;
-  console.log(sample_sites);
-  console.log(sample_methods);
-  console.log(sample_periods);
+
   const apiRef = observationsContext._muiDataGridApiRef;
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
