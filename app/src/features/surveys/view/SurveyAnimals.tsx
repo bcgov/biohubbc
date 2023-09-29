@@ -341,6 +341,7 @@ const SurveyAnimals: React.FC = () => {
 
     setOpenDeviceDialog(false);
     refreshDeployments();
+    surveyContext.artifactDataLoader.refresh(projectId, surveyId);
   };
 
   const handleRemoveCritter = async () => {
