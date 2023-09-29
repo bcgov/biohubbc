@@ -155,7 +155,7 @@ export const AnimalMortalitySchema = yup.object({}).shape({
   mortality_coordinate_uncertainty: numSchema,
   mortality_comment: yup.string(),
   proximate_cause_of_death_id: yup.string().uuid().required(req),
-  proximate_cause_of_death_confidence: yup.string(),
+  proximate_cause_of_death_confidence: yup.string().nullable(),
   proximate_predated_by_taxon_id: yup.string().uuid(),
   ultimate_cause_of_death_id: yup.string().uuid(),
   ultimate_cause_of_death_confidence: yup.string(),
