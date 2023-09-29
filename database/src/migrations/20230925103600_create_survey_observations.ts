@@ -19,8 +19,8 @@ export async function up(knex: Knex): Promise<void> {
     survey_observation_id                   integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     survey_id                               integer           NOT NULL,
     wldtaxonomic_units_id                   integer,
-    latitude                                float             NOT NULL,
-    longitude                               float             NOT NULL,
+    latitude                                numeric(10, 7)    NOT NULL,
+    longitude                               numeric(10, 7)    NOT NULL,
     count                                   integer           NOT NULL,
     observation_date                        date              NOT NULL,
     observation_time                        time              NOT NULL,
@@ -39,9 +39,9 @@ export async function up(knex: Knex): Promise<void> {
   ;
   COMMENT ON COLUMN survey_observation.wldtaxonomic_units_id IS 'The species associated with the observation.'
   ;
-  COMMENT ON COLUMN survey_observation.latitude IS 'The latitude of the observation.'
+  COMMENT ON COLUMN survey_observation.latitude IS 'The latitude of the observation, having ten points of total precision and 7 points of precision after the decimal.'
   ;
-  COMMENT ON COLUMN survey_observation.longitude IS 'The longitude of the observation.'
+  COMMENT ON COLUMN survey_observation.longitude IS 'The longitude of the observation, having ten points of total precision and 7 points of precision after the decimal.'
   ;
   COMMENT ON COLUMN survey_observation.count IS 'The count of the observation.'
   ;
