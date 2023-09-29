@@ -1,4 +1,4 @@
-import { Box, FormHelperText, Paper, Typography } from '@mui/material';
+import { Box, FormHelperText, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -28,20 +28,32 @@ export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
 
 const AttchmentFormSection = (props: { index: number; deviceMake: string }) => {
   return (
-    <Paper variant="outlined" sx={{ padding: 3 }}>
+    <>
       {props.deviceMake === 'Vectronic' && (
         <>
-          <Typography sx={{ ml: 1, mb: 3 }}>{`Vectronic KeyX File`}</Typography>
+          <Typography
+            variant="body1"
+            color="textSecondary"
+            sx={{
+              mt: -1,
+              mb: 3
+            }}>{`Vectronic KeyX File`}</Typography>
           <TelemetryFileUpload attachmentType={AttachmentType.KEYX} index={props.index} />
         </>
       )}
       {props.deviceMake === 'Lotek' && (
         <>
-          <Typography sx={{ ml: 1, mb: 3 }}>{`Lotek Config File`}</Typography>
+          <Typography
+            variant="body1"
+            color="textSecondary"
+            sx={{
+              mt: -1,
+              mb: 3
+            }}>{`Lotek Config File`}</Typography>
           <TelemetryFileUpload attachmentType={AttachmentType.OTHER} index={props.index} />
         </>
       )}
-    </Paper>
+    </>
   );
 };
 
