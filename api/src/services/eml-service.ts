@@ -666,14 +666,13 @@ export class EmlService extends DBService {
   /**
    * Creates an object representing the dataset creator from the given projectData.
    *
-   * @TODO
    *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
   _getProjectDatasetCreator(projectData: IGetProject): Record<string, any> {
-    const participant = projectData.participants[0]
+    const participant = projectData.participants[0];
 
     return {
       individualName: { givenName: participant.given_name, surName: participant.family_name },
@@ -684,7 +683,6 @@ export class EmlService extends DBService {
   /**
    * Creates an object representing the primary contact for the given project.
    *
-   * @TODO
    *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>}
@@ -720,7 +718,6 @@ export class EmlService extends DBService {
   /**
    * Creates an object representing all contacts for the given project.
    *
-   * @TODO
    *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>[]}

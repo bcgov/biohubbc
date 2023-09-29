@@ -32,67 +32,6 @@ describe('PostProjectObject', () => {
       expect(projectPostObject.iucn).to.equal(null);
     });
   });
-
-  describe('All values provided', () => {
-    let projectPostObject: PostProjectObject;
-
-    const obj = {
-      coordinator: {
-        first_name: 'first',
-        last_name: 'last',
-        email_address: 'email@example.com',
-        coordinator_agency: 'agency',
-        share_contact_details: 'true'
-      },
-      project: {
-        project_name: 'name_test_data',
-        project_programs: [1],
-        start_date: 'start_date_test_data',
-        end_date: 'end_date_test_data',
-        comments: 'comments_test_data'
-      },
-      objectives: {
-        objectives: 'these are the project objectives'
-      },
-      location: {
-        location_description: 'a location description',
-        geometry: [
-          {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [-128, 55],
-                [-128, 55.5],
-                [-128, 56],
-                [-126, 58],
-                [-128, 55]
-              ]
-            ],
-            properties: {
-              name: 'Biohub Islands'
-            }
-          }
-        ]
-      },
-      iucn: {
-        classificationDetails: [
-          {
-            classification: 1,
-            subClassification1: 2,
-            subClassification2: 3
-          }
-        ]
-      },
-      partnerships: {
-        indigenous_partnerships: [1, 2],
-        stakeholder_partnerships: ['partner1, partner2']
-      }
-    };
-
-    before(() => {
-      projectPostObject = new PostProjectObject(obj);
-    });
-  });
 });
 
 describe('PostProjectData', () => {

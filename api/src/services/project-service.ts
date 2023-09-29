@@ -20,6 +20,7 @@ import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/updat
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -29,7 +30,6 @@ import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
-import { SystemUser } from '../repositories/user-repository';
 
 const defaultLog = getLogger('services/project-service');
 
