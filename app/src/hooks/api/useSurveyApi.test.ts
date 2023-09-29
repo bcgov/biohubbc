@@ -2,6 +2,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { AnimalSex, Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
 
@@ -23,7 +24,14 @@ describe('useSurveyApi', () => {
   describe('createCritterAndAddToSurvey', () => {
     it('creates a critter successfully', async () => {
       const animal: IAnimal = {
-        general: { animal_id: '1', taxon_id: v4(), taxon_name: '1', wlh_id: 'a', sex: AnimalSex.UNKNOWN },
+        general: {
+          animal_id: '1',
+          taxon_id: v4(),
+          taxon_name: '1',
+          wlh_id: 'a',
+          sex: AnimalSex.UNKNOWN,
+          critter_id: v4()
+        },
         captures: [],
         markings: [],
         measurements: [],
@@ -140,6 +148,38 @@ describe('useSurveyApi', () => {
       });
 
       expect(result).toBe(1);
+    });
+  });
+
+  describe('getSurveyCritters', () => {
+    it('should get critters', async () => {
+      const response = [
+        {
+          critter_id: 'critter'
+        } as IDetailedCritterWithInternalId
+      ];
+
+      mock.onGet(`/api/project/${projectId}/survey/${surveyId}/critters`).reply(200, response);
+
+      const result = await useSurveyApi(axios).getSurveyCritters(projectId, surveyId);
+
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(1);
+      expect(result).toEqual(response);
+    });
+  });
+
+  describe('uploadSurveyKeyx', () => {
+    it('should upload a keyx file', async () => {
+      const file = new File([''], 'file.keyx', { type: 'application/keyx' });
+      const response = {
+        attachmentId: 'attachment',
+        revision_count: 1
+      };
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`).reply(201, response);
+
+      const result = await useSurveyApi(axios).uploadSurveyKeyx(projectId, surveyId, file);
+      expect(result).toEqual(response);
     });
   });
 });

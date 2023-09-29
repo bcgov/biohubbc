@@ -77,9 +77,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             <Typography variant="inherit">Edit Telemetry Devices</Typography>
           </MenuItem>
         ) : null}
-        {
-          //To be implemented in 217 - Edit Critters
-          /*<MenuItem
+        <MenuItem
           onClick={() => {
             handleClose();
             props.onEditCritter(props.critter_id);
@@ -89,8 +87,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
           <Typography variant="inherit">Edit Critter Details</Typography>
-        </MenuItem>*/
-        }
+        </MenuItem>
         {!props.devices?.length && (
           <MenuItem
             onClick={() => {

@@ -91,13 +91,13 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
       const response = await getData(...args);
 
-      if (!isMounted) {
+      if (!isMounted()) {
         return;
       }
 
       setData(response);
     } catch (error) {
-      if (!isMounted) {
+      if (!isMounted()) {
         return;
       }
 
@@ -105,9 +105,11 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
       onError?.(error);
     } finally {
-      setIsLoading(false);
-      setIsReady(true);
-      !hasLoaded && setHasLoaded(true);
+      if (isMounted()) {
+        setIsLoading(false);
+        setIsReady(true);
+        !hasLoaded && setHasLoaded(true);
+      }
     }
   };
 

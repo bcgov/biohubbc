@@ -14,6 +14,7 @@ import {
   GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT,
   GET_DEPLOYMENTS_ENDPOINT,
   GET_DEVICE_DETAILS,
+  GET_KEYX_STATUS_ENDPOINT,
   HEALTH_ENDPOINT,
   IDeployDevice,
   IDeploymentUpdate,
@@ -235,6 +236,16 @@ describe('BctwService', () => {
         await bctwService
           .uploadKeyX(mockMulterFile)
           .catch((e) => expect(e.message).to.equal('API request failed with errors'));
+      });
+    });
+
+    describe('getKeyXDetails', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        await bctwService.getKeyXDetails([123]);
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(GET_KEYX_STATUS_ENDPOINT, { device_ids: ['123'] });
       });
     });
 

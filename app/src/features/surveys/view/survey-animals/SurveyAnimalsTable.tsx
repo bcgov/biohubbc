@@ -1,7 +1,10 @@
+import { Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/tables/CustomDataGrid';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
+import { getFormattedDate } from 'utils/Utils';
 import { IAnimalDeployment } from './device';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 
@@ -20,6 +23,7 @@ interface ISurveyAnimalsTableProps {
   onRemoveCritter: (critter_id: number) => void;
   onAddDevice: (critter_id: number) => void;
   onEditDevice: (device_id: number) => void;
+  onEditCritter: (critter_id: number) => void;
 }
 
 const noOpPlaceHolder = (critter_id: number) => {
@@ -32,16 +36,19 @@ export const SurveyAnimalsTable = ({
   onMenuOpen,
   onRemoveCritter,
   onAddDevice,
-  onEditDevice
+  onEditDevice,
+  onEditCritter
 }: ISurveyAnimalsTableProps): JSX.Element => {
   const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
-    ? animalData.map((animal) => {
-        const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
-        return {
-          ...animal,
-          deployments: deployments
-        };
-      })
+    ? animalData
+        .sort((a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()) //This sort needed to avoid arbitrary reordering of the table when it refreshes after adding or editing
+        .map((animal) => {
+          const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
+          return {
+            ...animal,
+            deployments: deployments
+          };
+        })
     : animalData;
 
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
@@ -59,10 +66,20 @@ export const SurveyAnimalsTable = ({
       field: 'wlh_id',
       headerName: 'WLH ID',
       flex: 1,
-      renderCell: (params) => 
-        <>
-          {params.value ? params.value : 'None'}
-        </>
+      renderCell: (params) => <>{params.value ? params.value : 'None'}</>
+    },
+    {
+      field: 'taxon',
+      headerName: 'Taxon',
+      flex: 1
+    },
+    {
+      field: 'create_timestamp',
+      headerName: 'Created On',
+      flex: 1,
+      renderCell: (params) => (
+        <Typography>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}</Typography>
+      )
     },
     {
       field: 'current_devices',
@@ -104,7 +121,7 @@ export const SurveyAnimalsTable = ({
           onMenuOpen={onMenuOpen}
           onAddDevice={onAddDevice}
           onRemoveDevice={noOpPlaceHolder}
-          onEditCritter={noOpPlaceHolder}
+          onEditCritter={onEditCritter}
           onEditDevice={onEditDevice}
           onRemoveCritter={onRemoveCritter}
         />

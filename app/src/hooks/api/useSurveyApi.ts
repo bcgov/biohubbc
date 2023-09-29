@@ -473,6 +473,25 @@ const useSurveyApi = (axios: AxiosInstance) => {
     };
   };
 
+  const critterToPayloadTransform = (critter: Critter, ignoreTopLevel = false) => {
+    return {
+      critters: ignoreTopLevel
+        ? []
+        : [
+            {
+              critter_id: critter.critter_id,
+              animal_id: critter.animal_id,
+              sex: critter.sex,
+              taxon_id: critter.taxon_id,
+              wlh_id: critter.wlh_id
+            }
+          ],
+      qualitative_measurements: critter.measurements.qualitative,
+      quantitative_measurements: critter.measurements.quantitative,
+      ...critter
+    };
+  };
+
   /**
    * Create a critter and add it to the list of critters associated with this survey. This will create a new critter in Critterbase.
    *
@@ -486,21 +505,23 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     critter: Critter
   ): Promise<CritterBulkCreationResponse> => {
-    const payload = {
-      critters: [
-        {
-          critter_id: critter.critter_id,
-          animal_id: critter.animal_id,
-          sex: critter.sex,
-          taxon_id: critter.taxon_id,
-          wlh_id: critter.wlh_id
-        }
-      ],
-      qualitative_measurements: critter.measurements.qualitative,
-      quantitative_measurements: critter.measurements.quantitative,
-      ...critter
-    };
+    const payload = critterToPayloadTransform(critter);
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
+    return data;
+  };
+
+  const updateSurveyCritter = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    updateSection: Critter,
+    createSection: Critter | undefined
+  ) => {
+    const payload = {
+      update: critterToPayloadTransform(updateSection),
+      create: createSection ? critterToPayloadTransform(createSection, true) : undefined
+    };
+    const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`, payload);
     return data;
   };
 
@@ -572,7 +593,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     removeCritterFromSurvey,
     addDeployment,
     getDeploymentsInSurvey,
-    updateDeployment
+    updateDeployment,
+    updateSurveyCritter
   };
 };
 

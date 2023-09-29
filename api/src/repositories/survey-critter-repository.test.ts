@@ -35,7 +35,7 @@ describe('SurveyRepository', () => {
 
       const response = await repository.addCritterToSurvey(1, 'critter_id');
 
-      expect(response).to.eql(1);
+      expect(response).to.be.undefined;
     });
   });
 
@@ -48,7 +48,7 @@ describe('SurveyRepository', () => {
 
       const response = await repository.removeCritterFromSurvey(1);
 
-      expect(response).to.eql(1);
+      expect(response).to.be.undefined;
     });
   });
 
@@ -61,7 +61,17 @@ describe('SurveyRepository', () => {
 
       const response = await repository.upsertDeployment(1, 'deployment_id');
 
-      expect(response).to.eql(1);
+      expect(response).to.be.undefined;
+    });
+  });
+
+  describe('updateCritter', () => {
+    it('should update existing row', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+      const repository = new SurveyCritterRepository(dbConnection);
+      const response = await repository.updateCritter(1, 'asdf');
+      expect(response).to.be.undefined;
     });
   });
 });
