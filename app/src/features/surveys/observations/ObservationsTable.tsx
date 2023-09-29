@@ -19,77 +19,87 @@ const ObservationsTable = () => {
 
   const samplingSites = [
     {
-      sampling_site_id: 1,
+      survey_sample_site_id: 1,
       sampling_site_name: 'site 1'
     },
     {
-      sampling_site_id: 2,
+      survey_sample_site_id: 2,
       sampling_site_name: 'site 2'
     }
   ];
 
   const samplingMethods = [
     {
-      sampling_site_id: 2,
-      sampling_method_id: 3,
+      survey_sample_site_id: 1,
+      survey_sample_method_id: 1,
+      sampling_method_name: 'method 1'
+    },
+    {
+      survey_sample_site_id: 1,
+      survey_sample_method_id: 2,
+      sampling_method_name: 'method 2'
+    },
+    {
+      survey_sample_site_id: 2,
+      survey_sample_method_id: 3,
       sampling_method_name: 'method 3'
     },
     {
-      sampling_site_id: 2,
-      sampling_method_id: 4,
+      survey_sample_site_id: 2,
+      survey_sample_method_id: 4,
       sampling_method_name: 'method 4'
     }
   ];
 
   const samplingPeriods = [
     {
-      sampling_method_id: 1,
-      sampling_period_id: 1,
+      survey_sample_method_id: 1,
+      survey_sample_period_id: 1,
       sampling_period_name: 'period 1'
     },
     {
-      sampling_method_id: 1,
-      sampling_period_id: 2,
+      survey_sample_method_id: 1,
+      survey_sample_period_id: 2,
       sampling_period_name: 'period 2'
     },
     {
-      sampling_method_id: 1,
-      sampling_period_id: 3,
+      survey_sample_method_id: 1,
+      survey_sample_period_id: 3,
       sampling_period_name: 'period 3'
     },
     {
-      sampling_method_id: 2,
-      sampling_period_id: 4,
+      survey_sample_method_id: 2,
+      survey_sample_period_id: 4,
       sampling_period_name: 'period 4'
     },
     {
-      sampling_method_id: 2,
-      sampling_period_id: 5,
+      survey_sample_method_id: 2,
+      survey_sample_period_id: 5,
       sampling_period_name: 'period 5'
     },
     {
-      sampling_method_id: 3,
-      sampling_period_id: 6,
+      survey_sample_method_id: 3,
+      survey_sample_period_id: 6,
       sampling_period_name: 'period 6'
     },
     {
-      sampling_method_id: 3,
-      sampling_period_id: 7,
+      survey_sample_method_id: 3,
+      survey_sample_period_id: 7,
       sampling_period_name: 'period 7'
     },
     {
-      sampling_method_id: 3,
-      sampling_period_id: 8,
+      survey_sample_method_id: 3,
+      survey_sample_period_id: 8,
       sampling_period_name: 'period 8'
     },
     {
-      sampling_method_id: 4,
-      sampling_period_id: 9,
+      survey_sample_method_id: 4,
+      survey_sample_period_id: 9,
       sampling_period_name: 'period 9'
     },
     {
-      sampling_method_id: 4,
-      sampling_period_id: 10,
+      survey_sample_method_id: 4,
+      survey_sample_period_id: 10,
       sampling_period_name: 'period 10'
     }
   ];
@@ -110,20 +120,23 @@ const ObservationsTable = () => {
       }
     },
     {
-      field: 'sampling_site_id',
+      field: 'survey_sample_site_id',
       headerName: 'Sampling Site',
       editable: true,
       flex: 1,
       minWidth: 200,
       disableColumnMenu: true,
       preProcessEditCellProps: (params) => {
-        return { ...params.props };
+        return { ...params.props, error: 'this is an error' };
       },
       renderCell: (params) => {
         return (
           <AutocompleteDataGridViewCell
             dataGridProps={params}
-            options={samplingSites.map((item) => ({ label: item.sampling_site_name, value: item.sampling_site_id }))}
+            options={samplingSites.map((item) => ({
+              label: item.sampling_site_name,
+              value: item.survey_sample_site_id
+            }))}
           />
         );
       },
@@ -131,20 +144,24 @@ const ObservationsTable = () => {
         return (
           <AutocompleteDataGridEditCell
             dataGridProps={params}
-            options={samplingSites.map((item) => ({ label: item.sampling_site_name, value: item.sampling_site_id }))}
+            options={samplingSites.map((item) => ({
+              label: item.sampling_site_name,
+              value: item.survey_sample_site_id
+            }))}
           />
         );
       }
     },
     {
-      field: 'sampling_method_id',
+      field: 'survey_sample_method_id',
       headerName: 'Sampling Method',
       editable: true,
       flex: 1,
       minWidth: 200,
       disableColumnMenu: true,
       preProcessEditCellProps: (params) => {
-        return { ...params.props };
+        console.log('preProcessEditCellProps');
+        return { ...params.props, error: 'this is an error' };
       },
       renderCell: (params) => {
         return (
@@ -152,8 +169,8 @@ const ObservationsTable = () => {
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
-                .filter((item) => item.sampling_site_id === row.sampling_site_id)
-                .map((item) => ({ label: item.sampling_method_name, value: item.sampling_method_id }));
+                .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
+                .map((item) => ({ label: item.sampling_method_name, value: item.survey_sample_method_id }));
             }}
             allOptions={samplingMethods}
           />
@@ -165,8 +182,8 @@ const ObservationsTable = () => {
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
-                .filter((item) => item.sampling_site_id === row.sampling_site_id)
-                .map((item) => ({ label: item.sampling_method_name, value: item.sampling_method_id }));
+                .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
+                .map((item) => ({ label: item.sampling_method_name, value: item.survey_sample_method_id }));
             }}
             allOptions={samplingMethods}
           />
@@ -174,7 +191,7 @@ const ObservationsTable = () => {
       }
     },
     {
-      field: 'sampling_period_id',
+      field: 'survey_sample_period_id',
       headerName: 'Sampling Period',
       editable: true,
       flex: 1,
@@ -189,8 +206,8 @@ const ObservationsTable = () => {
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
-                .filter((item) => item.sampling_method_id === row.sampling_method_id)
-                .map((item) => ({ label: item.sampling_period_name, value: item.sampling_period_id }));
+                .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
+                .map((item) => ({ label: item.sampling_period_name, value: item.survey_sample_period_id }));
             }}
             allOptions={samplingPeriods}
           />
@@ -202,8 +219,8 @@ const ObservationsTable = () => {
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
-                .filter((item) => item.sampling_method_id === row.sampling_method_id)
-                .map((item) => ({ label: item.sampling_period_name, value: item.sampling_period_id }));
+                .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
+                .map((item) => ({ label: item.sampling_period_name, value: item.survey_sample_period_id }));
             }}
             allOptions={samplingPeriods}
           />
@@ -280,7 +297,7 @@ const ObservationsTable = () => {
 
       observationsContext.setInitialRows(rows);
     }
-  }, [observationsContext, observationsDataLoader.data]);
+  }, [observationsDataLoader.data]);
 
   const handleDeleteRow = (id: string | number) => {
     observationsContext.markRecordWithUnsavedChanges(id);

@@ -47,6 +47,7 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
 
   // The current data grid value
   const dataGridValue = dataGridProps.value;
+  //   console.log(apiRef.current.getColumn(dataGridProps.field));
 
   function getCurrentValue() {
     if (!dataGridValue) {
@@ -78,6 +79,9 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
       handleHomeEndKeys
       value={getCurrentValue()}
       options={options}
+      onError={(error) => {
+        console.log('onError', error);
+      }}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={(option, value) => {
         if (!option?.value || !value?.value) {

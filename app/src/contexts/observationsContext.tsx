@@ -10,9 +10,9 @@ import { SurveyContext } from './surveyContext';
 export interface IObservationRecord {
   survey_observation_id: number | undefined;
   wldtaxonomic_units_id: number | undefined;
-  sampling_site_id: number | undefined;
-  sampling_method_id: number | undefined;
-  sampling_period_id: number | undefined;
+  survey_sample_site_id: number | undefined;
+  survey_sample_method_id: number | undefined;
+  survey_sample_period_id: number | undefined;
   count: number | undefined;
   observation_date: Date | undefined;
   observation_time: string | undefined;
@@ -91,23 +91,29 @@ export const ObservationsContext = createContext<IObservationsContext>({
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const _muiDataGridApiRef = useGridApiRef();
-  const biohubApi = useBiohubApi();
-  const surveyContext = useContext(SurveyContext);
-  const { projectId, surveyId } = useContext(SurveyContext);
-  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
-  const [unsavedRecordIds, _setUnsavedRecordIds] = useState<string[]>([]);
-  const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
 
+  const biohubApi = useBiohubApi();
+
+  const surveyContext = useContext(SurveyContext);
+  const { projectId, surveyId } = surveyContext;
+
+  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
   observationsDataLoader.load();
 
-  const markRecordWithUnsavedChanges = (id: string | number) => {
-    const unsavedRecordSet = new Set<string>(unsavedRecordIds);
-    unsavedRecordSet.add(String(id));
+  const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
+  const [unsavedRecordIds, _setUnsavedRecordIds] = useState<string[]>([]);
 
-    _setUnsavedRecordIds(Array.from(unsavedRecordSet));
-  };
+  const markRecordWithUnsavedChanges = useCallback(
+    (id: string | number) => {
+      const unsavedRecordSet = new Set<string>(unsavedRecordIds);
+      unsavedRecordSet.add(String(id));
 
-  const createNewRecord = () => {
+      _setUnsavedRecordIds(Array.from(unsavedRecordSet));
+    },
+    [unsavedRecordIds]
+  );
+
+  const createNewRecord = useCallback(() => {
     const id = uuidv4();
     markRecordWithUnsavedChanges(id);
 
@@ -116,9 +122,9 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         id,
         survey_observation_id: null,
         wldtaxonomic_units: undefined,
-        sampling_site_id: undefined,
-        sampling_method_id: undefined,
-        sampling_period_id: undefined,
+        survey_sample_site_id: undefined,
+        survey_sample_method_id: undefined,
+        survey_sample_period_id: undefined,
         count: undefined,
         observation_date: undefined,
         observation_time: undefined,
@@ -128,13 +134,13 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     ]);
 
     _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
-  };
+  }, [_muiDataGridApiRef, markRecordWithUnsavedChanges]);
 
-  const _getRows = (): IObservationTableRow[] => {
+  const _getRows = useCallback((): IObservationTableRow[] => {
     return Array.from(_muiDataGridApiRef.current.getRowModels?.()?.values()) as IObservationTableRow[];
-  };
+  }, [_muiDataGridApiRef]);
 
-  const _getActiveRecords = (): IObservationTableRow[] => {
+  const _getActiveRecords = useCallback((): IObservationTableRow[] => {
     return _getRows().map((row) => {
       const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
       if (!editRow) {
@@ -146,9 +152,13 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         {}
       );
     }) as IObservationTableRow[];
-  };
+  }, [_getRows, _muiDataGridApiRef]);
 
-  const saveRecords = async () => {
+  const refreshRecords = useCallback(async (): Promise<void> => {
+    return observationsDataLoader.refresh();
+  }, [observationsDataLoader]);
+
+  const saveRecords = useCallback(async () => {
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id }));
 
@@ -159,18 +169,14 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
     _setUnsavedRecordIds([]);
     refreshRecords();
-  };
+  }, [_getActiveRecords, _muiDataGridApiRef, biohubApi.observation, refreshRecords, surveyContext]);
 
   // TODO deleting a row and then calling method currently fails to recover said row...
-  const revertRecords = async () => {
+  const revertRecords = useCallback(async () => {
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
     _setUnsavedRecordIds([]);
-  };
-
-  const refreshRecords = async (): Promise<void> => {
-    return observationsDataLoader.refresh();
-  };
+  }, [_muiDataGridApiRef]);
 
   const hasUnsavedChanges = useCallback(() => {
     return unsavedRecordIds.length > 0;
