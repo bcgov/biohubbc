@@ -13,7 +13,6 @@ describe('critter deployments', () => {
   });
 
   const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
-  const mockSurveyEntry = 123;
 
   describe('openapi schema', () => {
     const ajv = new Ajv();
@@ -27,7 +26,7 @@ describe('critter deployments', () => {
   describe('upsertDeployment', () => {
     it('updates an existing deployment', async () => {
       const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-      const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').resolves(1);
+      const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').resolves();
       const mockBctwService = sinon.stub(BctwService.prototype, 'updateDeployment');
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -39,7 +38,6 @@ describe('critter deployments', () => {
       expect(mockAddDeployment.calledOnce).to.be.true;
       expect(mockBctwService.calledOnce).to.be.true;
       expect(mockRes.status).to.have.been.calledWith(200);
-      expect(mockRes.json).to.have.been.calledWith(1);
     });
 
     it('catches and re-throws errors', async () => {
@@ -63,9 +61,7 @@ describe('critter deployments', () => {
     describe('deployDevice', () => {
       it('deploys a new telemetry device', async () => {
         const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-        const mockAddDeployment = sinon
-          .stub(SurveyCritterService.prototype, 'upsertDeployment')
-          .resolves(mockSurveyEntry);
+        const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').resolves();
         const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice');
 
         const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -77,7 +73,6 @@ describe('critter deployments', () => {
         expect(mockAddDeployment.calledOnce).to.be.true;
         expect(mockBctwService.calledOnce).to.be.true;
         expect(mockRes.status).to.have.been.calledWith(201);
-        expect(mockRes.json).to.have.been.calledWith(mockSurveyEntry);
       });
 
       it('catches and re-throws errors', async () => {

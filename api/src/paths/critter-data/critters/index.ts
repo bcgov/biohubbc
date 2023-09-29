@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
-import { critterCreateRequestObject } from '../../../openapi/schemas/critter';
+import { critterBulkRequestObject } from '../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../services/critterbase-service';
 import { getLogger } from '../../../utils/logger';
@@ -39,7 +39,7 @@ POST.apiDoc = {
     description: 'Critterbase bulk creation request object',
     content: {
       'application/json': {
-        schema: critterCreateRequestObject
+        schema: critterBulkRequestObject
       }
     }
   },

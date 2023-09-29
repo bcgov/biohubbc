@@ -20,11 +20,18 @@ import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
  *
  **/
 
-interface IndividualAnimalFormProps {
-  getAnimalCount: (num: number) => void;
+export enum ANIMAL_FORM_MODE {
+  ADD = 'add',
+  EDIT = 'edit'
 }
 
-const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => {
+interface IndividualAnimalFormProps {
+  getAnimalCount: (num: number) => void;
+  critter_id?: string;
+  mode: ANIMAL_FORM_MODE;
+}
+
+const IndividualAnimalForm = ({ getAnimalCount, critter_id, mode }: IndividualAnimalFormProps) => {
   const { values } = useFormikContext<IAnimal>();
 
   useEffect(() => {
@@ -36,7 +43,12 @@ const IndividualAnimalForm = ({ getAnimalCount }: IndividualAnimalFormProps) => 
 
   return (
     <Form>
-      <Typography variant="h4">Add New Individual</Typography>
+      <Typography variant="h4">{mode === ANIMAL_FORM_MODE.ADD ? 'Add New Individual' : 'Edit Individual'}</Typography>
+      {mode === ANIMAL_FORM_MODE.EDIT && (
+        <Typography variant="body2" color={'textSecondary'}>
+          Critter ID: {critter_id}
+        </Typography>
+      )}
       <GeneralAnimalForm />
       <CollectionUnitAnimalForm />
       <CaptureAnimalForm />
