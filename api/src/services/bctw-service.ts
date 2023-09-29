@@ -69,6 +69,21 @@ export const IUploadKeyxResponse = z.object({
 
 export type IUploadKeyxResponse = z.infer<typeof IUploadKeyxResponse>;
 
+export const IKeyXDetails = z.object({
+  device_id: z.number(),
+  keyx: z
+    .object({
+      idcom: z.string(),
+      comtype: z.string(),
+      idcollar: z.number(),
+      collarkey: z.string(),
+      collartype: z.number()
+    })
+    .nullable()
+});
+
+export type IKeyXDetails = z.infer<typeof IKeyXDetails>;
+
 export const IBctwUser = z.object({
   keycloak_guid: z.string(),
   username: z.string()
@@ -97,6 +112,7 @@ export const HEALTH_ENDPOINT = '/health';
 export const GET_CODE_ENDPOINT = '/get-code';
 export const GET_DEVICE_DETAILS = '/get-collar-history-by-device/';
 export const UPLOAD_KEYX_ENDPOINT = '/import-xml';
+export const GET_KEYX_STATUS_ENDPOINT = '/get-collars-keyx';
 
 export class BctwService {
   user: IBctwUser;
@@ -328,6 +344,10 @@ export class BctwService {
       newRecords: data.results.length,
       existingRecords: data.errors.length
     };
+  }
+
+  async getKeyXDetails(deviceIds: number[]): Promise<IKeyXDetails[]> {
+    return this._makeGetRequest(GET_KEYX_STATUS_ENDPOINT, { device_ids: deviceIds.map((id) => String(id)) });
   }
 
   /**
