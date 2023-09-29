@@ -34,7 +34,7 @@ const ObservationComponent = () => {
     });
   };
 
-  const showSaveButton = observationsContext.hasUnsavedChanges();
+  const showSaveButton = observationsContext.hasUnsavedChanges() || true; // TODO hardcode to true
 
   if (surveyContext.sampleSiteDataLoader.data && codesContext.codesDataLoader.data) {
     surveyContext.sampleSiteDataLoader.data.sampleSites.forEach((site) => {
