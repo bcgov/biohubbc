@@ -15,6 +15,8 @@ export const SystemUser = z.object({
   role_names: z.array(z.string()).default([]),
   email: z.string(),
   display_name: z.string(),
+  given_name: z.string(),
+  family_name: z.string(),
   agency: z.string().nullable()
 });
 
