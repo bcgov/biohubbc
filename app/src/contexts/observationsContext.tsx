@@ -10,9 +10,9 @@ import { SurveyContext } from './surveyContext';
 export interface IObservationRecord {
   survey_observation_id: number | undefined;
   wldtaxonomic_units_id: number | undefined;
-  samplingSite: string | undefined;
-  samplingMethod: string | undefined;
-  samplingPeriod: string | undefined;
+  sampling_site_id: number | undefined;
+  sampling_method_id: number | undefined;
+  sampling_period_id: number | undefined;
   count: number | undefined;
   observation_date: Date | undefined;
   observation_time: string | undefined;
@@ -116,9 +116,9 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         id,
         survey_observation_id: null,
         wldtaxonomic_units: undefined,
-        samplingSite: undefined,
-        samplingMethod: undefined,
-        samplingPeriod: undefined,
+        sampling_site_id: undefined,
+        sampling_method_id: undefined,
+        sampling_period_id: undefined,
         count: undefined,
         observation_date: undefined,
         observation_time: undefined,

@@ -1,9 +1,8 @@
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
-import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import { useMemo } from 'react';
 
-export interface IConditionalAutocompleteDataGridEditCellProps<
+export interface IConditionalAutocompleteDataGridViewCellProps<
   DataGridType extends GridValidRowModel,
   OptionsType extends Record<string, string | number>,
   ValueType extends string | number
@@ -12,39 +11,39 @@ export interface IConditionalAutocompleteDataGridEditCellProps<
    * Data grid props for the cell.
    *
    * @type {GridRenderCellParams<DataGridType>}
-   * @memberof IConditionalAutocompleteDataGridEditCellProps
+   * @memberof IConditionalAutocompleteDataGridViewCellProps
    */
   dataGridProps: GridRenderCellParams<DataGridType>;
   /**
    *
    *
    * @type {OptionsType[]}
-   * @memberof IConditionalAutocompleteDataGridEditCellProps
+   * @memberof IConditionalAutocompleteDataGridViewCellProps
    */
   allOptions: OptionsType[];
   /**
    *
    *
-   * @memberof IConditionalAutocompleteDataGridEditCellProps
+   * @memberof IConditionalAutocompleteDataGridViewCellProps
    */
   optionsGetter: (row: DataGridType, allOptions: OptionsType[]) => IAutocompleteDataGridOption<ValueType>[];
 }
 
 /**
- * Data grid single value synchronous autocomplete component for edit.
+ * Data grid single value synchronous autocomplete component for view.
  *
  * @template DataGridType
  * @template OptionsType
  * @template ValueType
- * @param {IConditionalAutocompleteDataGridEditCellProps<DataGridType, OptionsType, ValueType>} props
+ * @param {IConditionalAutocompleteDataGridViewCellProps<DataGridType, OptionsType, ValueType>} props
  * @return {*}
  */
-const ConditionalAutocompleteDataGridEditCell = <
+const ConditionalAutocompleteDataGridViewCell = <
   DataGridType extends GridValidRowModel,
   OptionsType extends Record<string, string | number>,
   ValueType extends string | number
 >(
-  props: IConditionalAutocompleteDataGridEditCellProps<DataGridType, OptionsType, ValueType>
+  props: IConditionalAutocompleteDataGridViewCellProps<DataGridType, OptionsType, ValueType>
 ) => {
   const { dataGridProps, allOptions, optionsGetter } = props;
 
@@ -56,7 +55,7 @@ const ConditionalAutocompleteDataGridEditCell = <
     [allOptions, dataGridProps.row, optionsGetter]
   );
 
-  return <AutocompleteDataGridEditCell dataGridProps={dataGridProps} options={options} />;
+  return <>{options.find((item) => item.value === dataGridProps.value)?.label || ''}</>;
 };
 
-export default ConditionalAutocompleteDataGridEditCell;
+export default ConditionalAutocompleteDataGridViewCell;

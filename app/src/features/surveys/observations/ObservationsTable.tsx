@@ -5,12 +5,95 @@ import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mu
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
+import ConditionalAutocompleteDataGridViewCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridViewCell';
 import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import { useContext, useEffect } from 'react';
 
 const ObservationsTable = () => {
+  const observationsContext = useContext(ObservationsContext);
+  const { observationsDataLoader } = observationsContext;
+
+  const apiRef = observationsContext._muiDataGridApiRef;
+
+  const samplingSites = [
+    {
+      sampling_site_id: 1,
+      sampling_site_name: 'site 1'
+    },
+    {
+      sampling_site_id: 2,
+      sampling_site_name: 'site 2'
+    }
+  ];
+
+  const samplingMethods = [
+    {
+      sampling_site_id: 2,
+      sampling_method_id: 3,
+      sampling_method_name: 'method 3'
+    },
+    {
+      sampling_site_id: 2,
+      sampling_method_id: 4,
+      sampling_method_name: 'method 4'
+    }
+  ];
+
+  const samplingPeriods = [
+    {
+      sampling_method_id: 1,
+      sampling_period_id: 1,
+      sampling_period_name: 'period 1'
+    },
+    {
+      sampling_method_id: 1,
+      sampling_period_id: 2,
+      sampling_period_name: 'period 2'
+    },
+    {
+      sampling_method_id: 1,
+      sampling_period_id: 3,
+      sampling_period_name: 'period 3'
+    },
+    {
+      sampling_method_id: 2,
+      sampling_period_id: 4,
+      sampling_period_name: 'period 4'
+    },
+    {
+      sampling_method_id: 2,
+      sampling_period_id: 5,
+      sampling_period_name: 'period 5'
+    },
+    {
+      sampling_method_id: 3,
+      sampling_period_id: 6,
+      sampling_period_name: 'period 6'
+    },
+    {
+      sampling_method_id: 3,
+      sampling_period_id: 7,
+      sampling_period_name: 'period 7'
+    },
+    {
+      sampling_method_id: 3,
+      sampling_period_id: 8,
+      sampling_period_name: 'period 8'
+    },
+    {
+      sampling_method_id: 4,
+      sampling_period_id: 9,
+      sampling_period_name: 'period 9'
+    },
+    {
+      sampling_method_id: 4,
+      sampling_period_id: 10,
+      sampling_period_name: 'period 10'
+    }
+  ];
+
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
       field: 'wldtaxonomic_units_id',
@@ -27,21 +110,20 @@ const ObservationsTable = () => {
       }
     },
     {
-      field: 'samplingSite',
+      field: 'sampling_site_id',
       headerName: 'Sampling Site',
       editable: true,
       flex: 1,
       minWidth: 200,
       disableColumnMenu: true,
+      preProcessEditCellProps: (params) => {
+        return { ...params.props };
+      },
       renderCell: (params) => {
         return (
           <AutocompleteDataGridViewCell
             dataGridProps={params}
-            options={[
-              { label: 'site 1', value: 1 },
-              { label: 'site 2', value: 2 },
-              { label: 'site 3', value: 3 }
-            ]}
+            options={samplingSites.map((item) => ({ label: item.sampling_site_name, value: item.sampling_site_id }))}
           />
         );
       },
@@ -49,31 +131,31 @@ const ObservationsTable = () => {
         return (
           <AutocompleteDataGridEditCell
             dataGridProps={params}
-            options={[
-              { label: 'site 1', value: 1 },
-              { label: 'site 2', value: 2 },
-              { label: 'site 3', value: 3 }
-            ]}
+            options={samplingSites.map((item) => ({ label: item.sampling_site_name, value: item.sampling_site_id }))}
           />
         );
       }
     },
     {
-      field: 'samplingMethod',
+      field: 'sampling_method_id',
       headerName: 'Sampling Method',
       editable: true,
       flex: 1,
       minWidth: 200,
       disableColumnMenu: true,
+      preProcessEditCellProps: (params) => {
+        return { ...params.props };
+      },
       renderCell: (params) => {
         return (
-          <AutocompleteDataGridViewCell
+          <ConditionalAutocompleteDataGridViewCell
             dataGridProps={params}
-            options={[
-              { label: 'method 1', value: 1 },
-              { label: 'method 2', value: 2 },
-              { label: 'method 3', value: 3 }
-            ]}
+            optionsGetter={(row, allOptions) => {
+              return allOptions
+                .filter((item) => item.sampling_site_id === row.sampling_site_id)
+                .map((item) => ({ label: item.sampling_method_name, value: item.sampling_method_id }));
+            }}
+            allOptions={samplingMethods}
           />
         );
       },
@@ -81,43 +163,49 @@ const ObservationsTable = () => {
         return (
           <ConditionalAutocompleteDataGridEditCell
             dataGridProps={params}
-            options={[
-              { label: 'method 1', value: 1 },
-              { label: 'method 2', value: 2 },
-              { label: 'method 3', value: 3 }
-            ]}
+            optionsGetter={(row, allOptions) => {
+              return allOptions
+                .filter((item) => item.sampling_site_id === row.sampling_site_id)
+                .map((item) => ({ label: item.sampling_method_name, value: item.sampling_method_id }));
+            }}
+            allOptions={samplingMethods}
           />
         );
       }
     },
     {
-      field: 'samplingPeriod',
+      field: 'sampling_period_id',
       headerName: 'Sampling Period',
       editable: true,
       flex: 1,
       minWidth: 200,
       disableColumnMenu: true,
+      preProcessEditCellProps: (params) => {
+        return { ...params.props };
+      },
       renderCell: (params) => {
         return (
-          <AutocompleteDataGridViewCell
+          <ConditionalAutocompleteDataGridViewCell
             dataGridProps={params}
-            options={[
-              { label: 'period 1', value: 1 },
-              { label: 'period 2', value: 2 },
-              { label: 'period 3', value: 3 }
-            ]}
+            optionsGetter={(row, allOptions) => {
+              return allOptions
+                .filter((item) => item.sampling_method_id === row.sampling_method_id)
+                .map((item) => ({ label: item.sampling_period_name, value: item.sampling_period_id }));
+            }}
+            allOptions={samplingPeriods}
           />
         );
       },
       renderEditCell: (params) => {
         return (
-          <AutocompleteDataGridEditCell
+          <ConditionalAutocompleteDataGridEditCell
             dataGridProps={params}
-            options={[
-              { label: 'period 1', value: 1 },
-              { label: 'period 2', value: 2 },
-              { label: 'period 3', value: 3 }
-            ]}
+            optionsGetter={(row, allOptions) => {
+              return allOptions
+                .filter((item) => item.sampling_method_id === row.sampling_method_id)
+                .map((item) => ({ label: item.sampling_period_name, value: item.sampling_period_id }));
+            }}
+            allOptions={samplingPeriods}
           />
         );
       }
@@ -127,7 +215,6 @@ const ObservationsTable = () => {
       headerName: 'Count',
       editable: true,
       type: 'number',
-
       minWidth: 100,
       disableColumnMenu: true
     },
@@ -182,10 +269,6 @@ const ObservationsTable = () => {
     }
   ];
 
-  const observationsContext = useContext(ObservationsContext);
-  const { observationsDataLoader } = observationsContext;
-  const apiRef = observationsContext._muiDataGridApiRef;
-
   useEffect(() => {
     if (observationsDataLoader.data?.surveyObservations) {
       const rows: IObservationTableRow[] = observationsDataLoader.data.surveyObservations.map(
@@ -197,7 +280,7 @@ const ObservationsTable = () => {
 
       observationsContext.setInitialRows(rows);
     }
-  }, [observationsDataLoader.data]);
+  }, [observationsContext, observationsDataLoader.data]);
 
   const handleDeleteRow = (id: string | number) => {
     observationsContext.markRecordWithUnsavedChanges(id);
@@ -239,6 +322,9 @@ const ObservationsTable = () => {
       localeText={{
         noRowsLabel: 'No Records'
       }}
+      //   slots={{
+      //     baseSelect: AutocompleteDataGridEditCellCustom
+      //   }}
       sx={{
         background: '#fff',
         border: 'none',
