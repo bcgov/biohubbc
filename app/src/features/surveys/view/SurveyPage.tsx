@@ -37,8 +37,13 @@ const SurveyPage: React.FC = () => {
   return (
     <>
       <SurveyHeader />
-      <Container maxWidth="xl">
-        <Box my={3}>
+      <Container maxWidth="xl" sx={{py: 3}}>
+
+          <Paper elevation={0}>
+            <SurveyStudyArea />
+          </Paper>
+
+        <Box sx={{display: 'none'}} my={3}>
           <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
             <SurveySubmissionAlertBar />
           </SystemRoleGuard>
