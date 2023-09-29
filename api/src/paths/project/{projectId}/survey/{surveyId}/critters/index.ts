@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { critterCreateRequestObject } from '../../../../../../openapi/schemas/critter';
+import { bulkCreateResponse, critterBulkRequestObject } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
@@ -129,7 +129,7 @@ POST.apiDoc = {
     description: 'Critterbase bulk creation request object',
     content: {
       'application/json': {
-        schema: critterCreateRequestObject
+        schema: critterBulkRequestObject
       }
     }
   },
@@ -138,10 +138,7 @@ POST.apiDoc = {
       description: 'Responds with counts of objects created in critterbase.',
       content: {
         'application/json': {
-          schema: {
-            title: 'Bulk creation response object',
-            type: 'object'
-          }
+          schema: bulkCreateResponse
         }
       }
     },

@@ -12,11 +12,20 @@ import {
 } from './animal';
 
 const animal: IAnimal = {
-  general: { taxon_id: 'a', taxon_name: 'taxon', animal_id: 'animal', wlh_id: 'a', sex: AnimalSex.MALE },
+  general: {
+    taxon_id: 'a',
+    taxon_name: 'taxon',
+    animal_id: 'animal',
+    wlh_id: 'a',
+    sex: AnimalSex.MALE,
+    critter_id: v4()
+  },
   captures: [
     {
       _id: v4(),
-
+      capture_id: v4(),
+      capture_location_id: undefined,
+      release_location_id: undefined,
       capture_latitude: 3,
       capture_longitude: 3,
       capture_utm_northing: 19429156.095,
@@ -43,7 +52,8 @@ const animal: IAnimal = {
       taxon_marking_body_location_id: '372020d9-b9ee-4eb3-abdd-b476711bd1aa',
       primary_colour_id: '4aa3cce7-94d0-42d0-a183-078db5fbdd34',
       secondary_colour_id: '0b0dbfaa-fcc9-443f-8ac9-a22106663cba',
-      marking_comment: 'asdf'
+      marking_comment: 'asdf',
+      marking_id: v4()
     }
   ],
   mortality: [],
@@ -51,7 +61,9 @@ const animal: IAnimal = {
   family: [],
   images: [],
   device: undefined,
-  collectionUnits: [{ collection_category_id: 'a', collection_unit_id: 'b', _id: v4() }]
+  collectionUnits: [
+    { collection_category_id: 'a', collection_unit_id: 'b', _id: v4(), critter_collection_unit_id: v4() }
+  ]
 };
 
 describe('Animal', () => {
