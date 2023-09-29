@@ -665,45 +665,30 @@ export class EmlService extends DBService {
 
   /**
    * Creates an object representing the dataset creator from the given projectData.
+   * 
+   * @TODO
    *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
   _getProjectDatasetCreator(projectData: IGetProject): Record<string, any> {
-    const primaryContact = projectData.coordinator;
 
-    if (JSON.parse(primaryContact.share_contact_details)) {
-      // return full details of the primary contact iff it is public.
-      return {
-        organizationName: primaryContact.coordinator_agency,
-        electronicMailAddress: primaryContact.email_address
-      };
-    }
-
-    return { organizationName: primaryContact.coordinator_agency };
+    return { organizationName: null };
   }
 
   /**
    * Creates an object representing the primary contact for the given project.
+   * 
+   * @TODO
    *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
   _getProjectContact(projectData: IGetProject): Record<string, any> {
-    const primaryContact = projectData.coordinator;
 
-    if (JSON.parse(primaryContact.share_contact_details)) {
-      // return full details of the primary contact iff it is public
-      return {
-        individualName: { givenName: primaryContact.first_name, surName: primaryContact.last_name },
-        organizationName: primaryContact.coordinator_agency,
-        electronicMailAddress: primaryContact.email_address
-      };
-    }
-
-    return { organizationName: primaryContact.coordinator_agency };
+    return { organizationName: null };
   }
 
   /**
@@ -725,27 +710,16 @@ export class EmlService extends DBService {
 
   /**
    * Creates an object representing all contacts for the given project.
+   * 
+   * @TODO
    *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>[]}
    * @memberof EmlService
    */
   _getProjectPersonnel(projectData: IGetProject): Record<string, any>[] {
-    const primaryContact = projectData.coordinator;
 
-    if (JSON.parse(primaryContact.share_contact_details)) {
-      // return full details of the primary contact iff it is public
-      return [
-        {
-          individualName: { givenName: primaryContact.first_name, surName: primaryContact.last_name },
-          organizationName: primaryContact.coordinator_agency,
-          electronicMailAddress: primaryContact.email_address,
-          role: 'pointOfContact'
-        }
-      ];
-    }
-
-    return [{ organizationName: primaryContact.coordinator_agency }];
+    return [{ organizationName: null }];
   }
 
   /**

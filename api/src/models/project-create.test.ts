@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  PostCoordinatorData,
   PostIUCNData,
   PostLocationData,
   PostObjectivesData,
@@ -15,10 +14,6 @@ describe('PostProjectObject', () => {
 
     before(() => {
       projectPostObject = new PostProjectObject(null);
-    });
-
-    it('sets coordinator', function () {
-      expect(projectPostObject.coordinator).to.equal(null);
     });
 
     it('sets project', function () {
@@ -96,10 +91,6 @@ describe('PostProjectObject', () => {
 
     before(() => {
       projectPostObject = new PostProjectObject(obj);
-    });
-
-    it('sets coordinator', function () {
-      expect(projectPostObject.coordinator.first_name).to.equal(obj.coordinator.first_name);
     });
   });
 });
@@ -196,72 +187,6 @@ describe('PostObjectivesData', () => {
 
     it('sets objectives', function () {
       expect(projectObjectivesData.objectives).to.equal(obj.objectives);
-    });
-  });
-});
-
-describe('PostCoordinatorData', () => {
-  describe('No values provided', () => {
-    let projectCoordinatorData: PostCoordinatorData;
-
-    before(() => {
-      projectCoordinatorData = new PostCoordinatorData(null);
-    });
-
-    it('sets first_name', function () {
-      expect(projectCoordinatorData.first_name).to.eql(null);
-    });
-
-    it('sets last_name', function () {
-      expect(projectCoordinatorData.last_name).to.eql(null);
-    });
-
-    it('sets email_address', function () {
-      expect(projectCoordinatorData.email_address).to.eql(null);
-    });
-
-    it('sets coordinator_agency', function () {
-      expect(projectCoordinatorData.coordinator_agency).to.eql(null);
-    });
-
-    it('sets share_contact_details', function () {
-      expect(projectCoordinatorData.share_contact_details).to.eql(false);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectCoordinatorData: PostCoordinatorData;
-
-    const obj = {
-      first_name: 'first',
-      last_name: 'last',
-      email_address: 'email@example.com',
-      coordinator_agency: 'agency',
-      share_contact_details: 'true'
-    };
-
-    before(() => {
-      projectCoordinatorData = new PostCoordinatorData(obj);
-    });
-
-    it('sets first_name', function () {
-      expect(projectCoordinatorData.first_name).to.eql(obj.first_name);
-    });
-
-    it('sets last_name', function () {
-      expect(projectCoordinatorData.last_name).to.eql(obj.last_name);
-    });
-
-    it('sets email_address', function () {
-      expect(projectCoordinatorData.email_address).to.eql(obj.email_address);
-    });
-
-    it('sets coordinator_agency', function () {
-      expect(projectCoordinatorData.coordinator_agency).to.eql(obj.coordinator_agency);
-    });
-
-    it('sets share_contact_details', function () {
-      expect(projectCoordinatorData.share_contact_details).to.eql(true);
     });
   });
 });

@@ -1,6 +1,5 @@
 import { PublishStatus } from 'constants/attachments';
 import { PROJECT_PERMISSION, PROJECT_ROLE } from 'constants/roles';
-import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
@@ -47,7 +46,6 @@ export interface IProjectSupplementaryReportAttachmentData {
  * An interface for an instance of filter fields for project advanced filter search
  */
 export interface IProjectAdvancedFilterRequest {
-  coordinator_agency: string;
   permit_number: string;
   project_programs: number[];
   start_date: string;
@@ -111,7 +109,6 @@ export interface IProjectsListData {
   name: string;
   start_date: string;
   end_date: string;
-  coordinator_agency: string;
   completion_status: string;
   regions: string[];
   project_programs: number[];
@@ -130,13 +127,12 @@ export interface IProjectUserRoles {
  * @export
  * @interface ICreateProjectRequest
  */
-export interface ICreateProjectRequest
-  extends IProjectCoordinatorForm,
-    IProjectDetailsForm,
-    IProjectObjectivesForm,
-    IProjectLocationForm,
-    IProjectIUCNForm,
-    IProjectUserRoles {}
+export type ICreateProjectRequest =
+  & IProjectDetailsForm
+  & IProjectObjectivesForm
+  & IProjectLocationForm
+  & IProjectIUCNForm
+  & IProjectUserRoles;
 
 /**
  * Create project response object.
@@ -149,7 +145,6 @@ export interface ICreateProjectResponse {
 }
 
 export enum UPDATE_GET_ENTITIES {
-  coordinator = 'coordinator',
   project = 'project',
   objectives = 'objectives',
   location = 'location',
@@ -167,7 +162,6 @@ export interface IGetProjectForUpdateResponse {
   project?: IGetProjectForUpdateResponseDetails;
   objectives?: IGetProjectForUpdateResponseObjectives;
   location?: IGetProjectForUpdateResponseLocation;
-  coordinator?: IGetProjectForUpdateResponseCoordinator;
   iucn?: IGetProjectForUpdateResponseIUCN;
   participants?: IGetProjectParticipant[];
 }
@@ -187,15 +181,6 @@ export interface IGetProjectForUpdateResponseObjectives {
 export interface IGetProjectForUpdateResponseLocation {
   location_description: string;
   geometry: Feature[];
-  revision_count: number;
-}
-
-export interface IGetProjectForUpdateResponseCoordinator {
-  first_name: string;
-  last_name: string;
-  email_address: string;
-  coordinator_agency: string;
-  share_contact_details: string;
   revision_count: number;
 }
 
@@ -239,7 +224,6 @@ export interface ProjectViewObject {
   project: IGetProjectForViewResponseDetails;
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
-  coordinator: IGetProjectForViewResponseCoordinator;
   participants: IGetProjectParticipant[];
   iucn: IGetProjectForViewResponseIUCN;
 }
@@ -259,14 +243,6 @@ export interface IGetProjectForViewResponseObjectives {
 export interface IGetProjectForViewResponseLocation {
   location_description: string;
   geometry: Feature[];
-}
-
-export interface IGetProjectForViewResponseCoordinator {
-  first_name: string;
-  last_name: string;
-  email_address: string;
-  coordinator_agency: string;
-  share_contact_details: string;
 }
 
 export interface IGetProjectParticipant {

@@ -7,13 +7,10 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React from 'react';
-import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
 import ProjectUserForm from '../components/ProjectUserForm';
 import {
-  getCoordinatorAgencyOptions,
   initialProjectFieldData,
   validationProjectYupSchema
 } from '../create/CreateProjectForm';
@@ -114,15 +111,6 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                   </Box>
                 </Box> */}
               </>
-            }></HorizontalSplitFormComponent>
-
-          <Divider className={classes.sectionDivider} />
-
-          <HorizontalSplitFormComponent
-            title="Project Coordinator"
-            summary="Provide the Project Coordinator's contact and agency information."
-            component={
-              <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
             }></HorizontalSplitFormComponent>
 
           <Divider className={classes.sectionDivider} />
