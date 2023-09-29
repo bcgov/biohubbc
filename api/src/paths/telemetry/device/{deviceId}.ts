@@ -67,8 +67,11 @@ export function getDeviceDetails(): RequestHandler {
     try {
       const results = await bctwService.getDeviceDetails(deviceId);
       const deployments = await bctwService.getDeviceDeployments(deviceId);
+      const keyXResult = await bctwService.getKeyXDetails([deviceId]);
+      const keyXStatus = keyXResult?.[0]?.keyx?.idcollar === deviceId;
       const retObj = {
         device: results?.[0],
+        keyXStatus: keyXStatus,
         deployments: deployments
       };
       return res.status(200).json(retObj);
