@@ -2,7 +2,9 @@ import { Knex } from 'knex';
 
 /**
  * Makes the Project Coordinator properties on a project nullable, since the app no longer supports
- * entering or editing project coorindators
+ * entering or editing project coorindators.
+ * 
+ * @TODO add code to migrate to make the project creator have a coordinator role
  *
  * @export
  * @param {Knex} knex
@@ -13,10 +15,10 @@ export async function up(knex: Knex): Promise<void> {
     SET search_path = 'biohub';
 
     ALTER TABLE project
-    ALTER COLUMN coordinator_first_name       DROP NOT NULL;
-    ALTER COLUMN coordinator_last_name        DROP NOT NULL;
-    ALTER COLUMN coordinator_email_address    DROP NOT NULL;
-    ALTER COLUMN coordinator_agency_name      DROP NOT NULL;
+    ALTER COLUMN coordinator_first_name       DROP NOT NULL,
+    ALTER COLUMN coordinator_last_name        DROP NOT NULL,
+    ALTER COLUMN coordinator_email_address    DROP NOT NULL,
+    ALTER COLUMN coordinator_agency_name      DROP NOT NULL,
     ALTER COLUMN coordinator_public           DROP NOT NULL;  
   `);
 }
