@@ -4,13 +4,7 @@ import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
-import {
-  IPutIUCN,
-  PutIUCNData,
-  PutLocationData,
-  PutObjectivesData,
-  PutProjectData
-} from '../models/project-update';
+import { IPutIUCN, PutIUCNData, PutLocationData, PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
   GetAttachmentsData,
   GetIUCNClassificationData,
@@ -77,13 +71,7 @@ export class ProjectService extends DBService {
   }
 
   async getProjectById(projectId: number): Promise<IGetProject> {
-    const [
-      projectData,
-      objectiveData,
-      projectParticipantsData,
-      locationData,
-      iucnData
-    ] = await Promise.all([
+    const [projectData, objectiveData, projectParticipantsData, locationData, iucnData] = await Promise.all([
       this.getProjectData(projectId),
       this.getObjectivesData(projectId),
       this.getProjectParticipantsData(projectId),
@@ -388,10 +376,7 @@ export class ProjectService extends DBService {
 
     // Update project table
     const revision_count =
-      putProjectData?.revision_count ??
-      putLocationData?.revision_count ??
-      putObjectivesData?.revision_count ??
-      null;
+      putProjectData?.revision_count ?? putLocationData?.revision_count ?? putObjectivesData?.revision_count ?? null;
 
     if (!revision_count && revision_count !== 0) {
       throw new HTTP400('Failed to parse request body');

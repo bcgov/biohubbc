@@ -49,9 +49,8 @@ export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectUserRoleFormInitialValues
 };
 
-export const validationProjectYupSchema = ProjectDetailsFormYupSchema
-  .concat(ProjectObjectivesFormYupSchema)
-  .concat(ProjectUserRoleYupSchema);
+export const validationProjectYupSchema =
+  ProjectDetailsFormYupSchema.concat(ProjectObjectivesFormYupSchema).concat(ProjectUserRoleYupSchema);
 // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (yup schema) temporarily, while its decided where exactly project/survey locations should be defined
 // .concat(ProjectLocationFormYupSchema)
 // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired

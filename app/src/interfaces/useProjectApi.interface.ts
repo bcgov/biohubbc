@@ -127,12 +127,11 @@ export interface IProjectUserRoles {
  * @export
  * @interface ICreateProjectRequest
  */
-export type ICreateProjectRequest =
-  & IProjectDetailsForm
-  & IProjectObjectivesForm
-  & IProjectLocationForm
-  & IProjectIUCNForm
-  & IProjectUserRoles;
+export type ICreateProjectRequest = IProjectDetailsForm &
+  IProjectObjectivesForm &
+  IProjectLocationForm &
+  IProjectIUCNForm &
+  IProjectUserRoles;
 
 /**
  * Create project response object.

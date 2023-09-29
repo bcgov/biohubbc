@@ -10,10 +10,7 @@ import { IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
 import ProjectUserForm from '../components/ProjectUserForm';
-import {
-  initialProjectFieldData,
-  validationProjectYupSchema
-} from '../create/CreateProjectForm';
+import { initialProjectFieldData, validationProjectYupSchema } from '../create/CreateProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {

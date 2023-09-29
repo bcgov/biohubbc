@@ -3,7 +3,7 @@ import { Knex } from 'knex';
 /**
  * Makes the Project Coordinator properties on a project nullable, since the app no longer supports
  * entering or editing project coorindators.
- * 
+ *
  * @export
  * @param {Knex} knex
  * @return {*}  {Promise<void>}

@@ -665,7 +665,7 @@ export class EmlService extends DBService {
 
   /**
    * Creates an object representing the dataset creator from the given projectData.
-   * 
+   *
    * @TODO
    *
    * @param {IGetProject} projectData
@@ -673,13 +673,12 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getProjectDatasetCreator(projectData: IGetProject): Record<string, any> {
-
     return { organizationName: null };
   }
 
   /**
    * Creates an object representing the primary contact for the given project.
-   * 
+   *
    * @TODO
    *
    * @param {IGetProject} projectData
@@ -687,7 +686,6 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getProjectContact(projectData: IGetProject): Record<string, any> {
-
     return { organizationName: null };
   }
 
@@ -710,7 +708,7 @@ export class EmlService extends DBService {
 
   /**
    * Creates an object representing all contacts for the given project.
-   * 
+   *
    * @TODO
    *
    * @param {IGetProject} projectData
@@ -718,7 +716,6 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getProjectPersonnel(projectData: IGetProject): Record<string, any>[] {
-
     return [{ organizationName: null }];
   }
 
