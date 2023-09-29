@@ -19,6 +19,7 @@ import LoginPage from 'pages/authentication/LoginPage';
 import LogOutPage from 'pages/authentication/LogOutPage';
 import { LandingPage } from 'pages/landing/LandingPage';
 import { Playground } from 'pages/Playground';
+import { PrototypePage } from 'pages/prototype/PrototypePage';
 import React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
@@ -97,7 +98,7 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <RouteWithTitle path="/admin/funding-sources" title={getTitle('Search')}>
+      <RouteWithTitle path="/admin/funding-sources" title={getTitle('Funding Sources')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -113,6 +114,10 @@ const AppRouter: React.FC = () => {
         <BaseLayout>
           <ResourcesPage />
         </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle title="prototype" path="/prototype">
+        <PrototypePage />
       </RouteWithTitle>
 
       <Route path="/login">
