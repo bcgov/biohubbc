@@ -142,7 +142,6 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
         <Grid item xs={6}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
-            required={true}
             label={'Release Date'}
             other={{ size: 'small' }}
           />

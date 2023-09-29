@@ -100,7 +100,7 @@ export const AnimalCaptureSchema = yup.object({}).shape({
     then: numSchema.required(req)
   }),
   release_coordinate_uncertainty: numSchema.when('show_release', { is: true, then: numSchema.required(req) }),
-  release_timestamp: dateSchema.when('show_release', { is: true, then: dateSchema.required(req) }),
+  release_timestamp: dateSchema /*.when('show_release', { is: true, then: dateSchema.required(req) }),*/,
   release_comment: yup.string().optional()
 });
 
