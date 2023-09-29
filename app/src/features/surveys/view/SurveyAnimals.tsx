@@ -5,6 +5,7 @@ import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import EditDialog from 'components/dialog/EditDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { AttachmentType } from 'constants/attachments';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -22,10 +23,18 @@ import {
   createCritterUpdatePayload,
   transformCritterbaseAPIResponseToForm
 } from './survey-animals/animal-form-helpers';
-import { AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice } from './survey-animals/device';
+import {
+  AnimalTelemetryDeviceSchema,
+  Device,
+  IAnimalTelemetryDevice,
+  IDeploymentTimespan
+} from './survey-animals/device';
 import IndividualAnimalForm, { ANIMAL_FORM_MODE } from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
-import TelemetryDeviceForm, { TELEMETRY_DEVICE_FORM_MODE } from './survey-animals/TelemetryDeviceForm';
+import TelemetryDeviceForm, {
+  IAnimalTelemetryDeviceFile,
+  TELEMETRY_DEVICE_FORM_MODE
+} from './survey-animals/TelemetryDeviceForm';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
@@ -243,44 +252,91 @@ const SurveyAnimals: React.FC = () => {
     }
   };
 
-  const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDevice[]) => {
+  const uploadAttachment = async (file?: File, attachmentType?: AttachmentType) => {
+    try {
+      if (file && attachmentType === AttachmentType.KEYX) {
+        await bhApi.survey.uploadSurveyKeyx(projectId, surveyId, file);
+      } else if (file && attachmentType === AttachmentType.OTHER) {
+        await bhApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
+      }
+    } catch (error) {
+      throw new Error(`Failed to upload attachment ${file?.name}`);
+    }
+  };
+
+  const handleAddTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
     const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
-    const critterTelemetryDevice = { ...data[0], critter_id: critter?.critter_id ?? '' };
-    if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
-      try {
-        await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
-        setPopup('Successfully added deployment.');
-      } catch (e) {
+    const { attachmentFile, attachmentType, ...critterTelemetryDevice } = {
+      ...data[0],
+      critter_id: critter?.critter_id ?? ''
+    };
+    try {
+      // Upload attachment if there is one
+      await uploadAttachment(attachmentFile, attachmentType);
+      // create new deployment record
+      await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
+      setPopup('Successfully added deployment.');
+      surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'));
+      } else {
         setPopup('Failed to add deployment.');
       }
-    } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
-      for (const formValues of data) {
-        const existingDevice = deploymentData?.find((a) => a.device_id === formValues.device_id);
-        const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
-        if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
-          //Verify whether the data entered in the form changed from the device metadata we already have.
-          try {
-            await telemetryApi.devices.upsertCollar(formDevice); //If it's different, upsert. Note that this alone does not touch a deployment.
-          } catch (e) {
-            setPopup(`Failed to update device ${formDevice.device_id}`);
-          }
-        }
-        for (const formDeployment of formValues.deployments ?? []) {
-          //Iterate over the deployments under this device.
-          const existingDeployment = deploymentData?.find((a) => a.deployment_id === formDeployment.deployment_id); //Find the deployment info we already have.
-          if (
-            !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
-            !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end) //Helper function necessary for this date comparison since moment(null) !== moment(null) normally.
-          ) {
-            try {
-              await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
-            } catch (e) {
-              setPopup(`Failed to update deployment ${formDeployment.deployment_id}`);
-            }
-          }
+    }
+  };
+
+  const updateDevice = async (formValues: IAnimalTelemetryDevice) => {
+    const existingDevice = deploymentData?.find((deployment) => deployment.device_id === formValues.device_id);
+    const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
+    if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
+      try {
+        await telemetryApi.devices.upsertCollar(formDevice);
+      } catch (error) {
+        throw new Error(`Failed to update collar ${formDevice.collar_id}`);
+      }
+    }
+  };
+
+  const updateDeployments = async (formDeployments: IDeploymentTimespan[], survey_critter_id: number) => {
+    for (const formDeployment of formDeployments ?? []) {
+      const existingDeployment = deploymentData?.find(
+        (animalDeployment) => animalDeployment.deployment_id === formDeployment.deployment_id
+      );
+      if (
+        !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
+        !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
+      ) {
+        try {
+          await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
+        } catch (error) {
+          throw new Error(`Failed to update deployment ${formDeployment.deployment_id}`);
         }
       }
-      setPopup('Updated deployment and device data successfully.');
+    }
+  };
+
+  const handleEditTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+    const errors: string[] = [];
+    for (const { attachmentFile, attachmentType, ...formValues } of data) {
+      try {
+        await uploadAttachment(attachmentFile, attachmentType);
+        await updateDevice(formValues);
+        await updateDeployments(formValues.deployments ?? [], survey_critter_id);
+      } catch (error) {
+        errors.push(`Device ${formValues.device_id} - ` + (error instanceof Error ? error.message : 'Unknown error'));
+      }
+    }
+    errors.length
+      ? setPopup('Failed to save some data: ' + errors.join(', '))
+      : setPopup('Updated deployment and device data successfully.');
+  };
+
+  const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+    if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
+      await handleAddTelemetry(survey_critter_id, data);
+    } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
+      await handleEditTelemetry(survey_critter_id, data);
     }
 
     setOpenDeviceDialog(false);

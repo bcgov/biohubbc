@@ -3,17 +3,43 @@ import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
+import { AttachmentType } from 'constants/attachments';
 import { Form, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
 import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
+import { TelemetryFileUpload } from './TelemetryFileUpload';
 
 export enum TELEMETRY_DEVICE_FORM_MODE {
   ADD = 'add',
   EDIT = 'edit'
 }
+
+export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
+  attachmentFile?: File;
+  attachmentType?: AttachmentType;
+}
+
+const AttchmentFormSection = (props: { index: number; deviceMake: string }) => {
+  return (
+    <Paper sx={{ padding: 3 }}>
+      {props.deviceMake === 'Vectronic' && (
+        <>
+          <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Vectronic KeyX File`}</Typography>
+          <TelemetryFileUpload attachmentType={AttachmentType.KEYX} index={props.index} />
+        </>
+      )}
+      {props.deviceMake === 'Lotek' && (
+        <>
+          <Typography sx={{ ml: 1, mb: 3 }}>{`Upload Lotek Config File`}</Typography>
+          <TelemetryFileUpload attachmentType={AttachmentType.OTHER} index={props.index} />
+        </>
+      )}
+    </Paper>
+  );
+};
 
 const DeploymentFormSection = ({
   index,
@@ -48,12 +74,12 @@ const DeploymentFormSection = ({
 
 interface IDeviceFormSectionProps {
   mode: TELEMETRY_DEVICE_FORM_MODE;
-  values: IAnimalTelemetryDevice[];
+  values: IAnimalTelemetryDeviceFile[];
   index: number;
 }
 
 const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JSX.Element => {
-  const { setStatus } = useFormikContext<{ formValues: IAnimalTelemetryDevice[] }>();
+  const { setStatus } = useFormikContext<{ formValues: IAnimalTelemetryDeviceFile[] }>();
   const [bctwErrors, setBctwErrors] = useState<Record<string, string | undefined>>({});
   const api = useTelemetryApi();
 
@@ -123,6 +149,12 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
           <CustomTextField label="Device Model" name={`${index}.device_model`} />
         </Grid>
       </Grid>
+      {((values[index].device_make === 'Vectronic' && !bctwDeviceData?.keyXStatus) ||
+        values[index].device_make === 'Lotek') && (
+        <Box sx={{ mt: 3 }}>
+          <AttchmentFormSection index={index} deviceMake={values[index].device_make} />
+        </Box>
+      )}
       <Box sx={{ mt: 3 }}>
         <Paper sx={{ padding: 3 }}>
           <Typography sx={{ ml: 1, mb: 3 }}>Deployments</Typography>
@@ -147,7 +179,7 @@ interface ITelemetryDeviceFormProps {
 }
 
 const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
-  const { values } = useFormikContext<IAnimalTelemetryDevice[]>();
+  const { values } = useFormikContext<IAnimalTelemetryDeviceFile[]>();
 
   return (
     <Form>
