@@ -673,7 +673,12 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getProjectDatasetCreator(projectData: IGetProject): Record<string, any> {
-    return { organizationName: null };
+    const participant = projectData.participants[0]
+
+    return {
+      individualName: { givenName: participant.given_name, surName: participant.family_name },
+      electronicMailAddress: participant.email
+    };
   }
 
   /**
@@ -686,7 +691,13 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getProjectContact(projectData: IGetProject): Record<string, any> {
-    return { organizationName: null };
+    const participant = projectData.participants[0];
+
+    return {
+      individualName: { givenName: participant.given_name, surName: participant.family_name },
+      electronicMailAddress: participant.email,
+      role: 'pointOfContact'
+    };
   }
 
   /**
@@ -697,12 +708,12 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getSurveyContact(surveyData: SurveyObject): Record<string, any> {
-    // return full details of the biologist
+    const participant = surveyData.participants[0];
+
     return {
-      individualName: {
-        givenName: surveyData.survey_details.biologist_first_name,
-        surName: surveyData.survey_details.biologist_last_name
-      }
+      individualName: { givenName: participant.given_name, surName: participant.family_name },
+      electronicMailAddress: participant.email,
+      role: 'pointOfContact'
     };
   }
 
@@ -716,7 +727,12 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getProjectPersonnel(projectData: IGetProject): Record<string, any>[] {
-    return [{ organizationName: null }];
+    const participants = projectData.participants;
+
+    return participants.map((participant) => ({
+      individualName: { givenName: participant.given_name, surName: participant.family_name },
+      electronicMailAddress: participant.email
+    }));
   }
 
   /**
@@ -727,15 +743,12 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getSurveyPersonnel(surveyData: SurveyObject): Record<string, any>[] {
-    return [
-      {
-        individualName: {
-          givenName: surveyData.survey_details.biologist_first_name,
-          surName: surveyData.survey_details.biologist_last_name
-        },
-        role: 'pointOfContact'
-      }
-    ];
+    const participants = surveyData.participants;
+
+    return participants.map((participant) => ({
+      individualName: { givenName: participant.given_name, surName: participant.family_name },
+      electronicMailAddress: participant.email
+    }));
   }
 
   /**

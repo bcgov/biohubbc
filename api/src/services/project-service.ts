@@ -29,6 +29,7 @@ import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
+import { SystemUser } from '../repositories/user-repository';
 
 const defaultLog = getLogger('services/project-service');
 
@@ -164,7 +165,7 @@ export class ProjectService extends DBService {
     return this.projectRepository.getObjectivesData(projectId);
   }
 
-  async getProjectParticipantsData(projectId: number): Promise<ProjectUser[]> {
+  async getProjectParticipantsData(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
     return this.projectParticipationService.getProjectParticipants(projectId);
   }
 

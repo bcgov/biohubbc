@@ -15,8 +15,8 @@ export const SystemUser = z.object({
   role_names: z.array(z.string()).default([]),
   email: z.string(),
   display_name: z.string(),
-  given_name: z.string(),
-  family_name: z.string(),
+  given_name: z.string().nullable(),
+  family_name: z.string().nullable(),
   agency: z.string().nullable()
 });
 
@@ -79,6 +79,8 @@ export class UserRepository extends BaseRepository {
       array_remove(array_agg(sr.name), NULL) AS role_names,
       su.email,
       su.display_name,
+      su.given_name,
+      su.family_name,
       su.agency
     FROM
       system_user su
@@ -106,6 +108,8 @@ export class UserRepository extends BaseRepository {
       su.user_identifier,
       su.email,
       su.display_name,
+      su.given_name,
+      su.family_name,
       su.agency;
   `;
 
@@ -139,6 +143,8 @@ export class UserRepository extends BaseRepository {
       array_remove(array_agg(sr.name), NULL) AS role_names,
       su.email,
       su.display_name,
+      su.given_name,
+      su.family_name,
       su.agency
     FROM
       system_user su
@@ -164,6 +170,8 @@ export class UserRepository extends BaseRepository {
       uis.name,
       su.email,
       su.display_name,
+      su.given_name,
+      su.family_name,
       su.agency;
   `;
 
@@ -193,6 +201,8 @@ export class UserRepository extends BaseRepository {
         array_remove(array_agg(sr.name), NULL) AS role_names,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency
       FROM
         system_user su
@@ -220,6 +230,8 @@ export class UserRepository extends BaseRepository {
         uis.name,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency;
     `;
 
@@ -312,6 +324,8 @@ export class UserRepository extends BaseRepository {
       array_remove(array_agg(sr.name), NULL) AS role_names,
       su.email,
       su.display_name,
+      su.given_name,
+      su.family_name,
       su.agency
     FROM
       system_user su
@@ -337,6 +351,8 @@ export class UserRepository extends BaseRepository {
       uis.name,
       su.email,
       su.display_name,
+      su.given_name,
+      su.family_name,
       su.agency;
   `;
     const response = await this.connection.sql(sqlStatement, SystemUser);
@@ -522,6 +538,8 @@ export class UserRepository extends BaseRepository {
         knex.raw('array_remove(array_agg(sr.name), NULL) AS role_names'),
         'su.email',
         'su.display_name',
+        'su.given_name',
+        'su.family_name',
         'su.agency'
       )
       .from('system_user AS su')
@@ -558,6 +576,8 @@ export class UserRepository extends BaseRepository {
     queryBuilder.groupBy('su.user_identifier');
     queryBuilder.groupBy('su.email');
     queryBuilder.groupBy('su.display_name');
+    queryBuilder.groupBy('su.given_name');
+    queryBuilder.groupBy('su.family_name');
     queryBuilder.groupBy('su.agency');
 
     queryBuilder.limit(50);

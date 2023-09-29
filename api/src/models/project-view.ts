@@ -2,6 +2,7 @@ import { Feature } from 'geojson';
 import { z } from 'zod';
 import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 import { ProjectUser } from '../repositories/project-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
 
 export interface IProjectAdvancedFilters {
   permit_number?: string;
@@ -14,10 +15,11 @@ export interface IProjectAdvancedFilters {
   agency_project_id?: number;
   species?: number[];
 }
+
 export interface IGetProject {
   project: ProjectData;
   objectives: GetObjectivesData;
-  participants: ProjectUser[];
+  participants: (ProjectUser & SystemUser)[];
   location: GetLocationData;
   iucn: GetIUCNClassificationData;
 }
