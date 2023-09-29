@@ -11,65 +11,24 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
 
   ----------------------------------------------------------------------------------------
-  -- Create new survey_observation table
+  -- Add Sampling Site Data to Survey Observation table
   ----------------------------------------------------------------------------------------
 
   SET search_path=biohub;
 
-  CREATE TABLE survey_observation(
-    survey_observation_id                   integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    survey_id                               integer           NOT NULL,
-    survey_sample_site_id                   integer           NOT NULL,
-    survey_sample_method_id                 integer           NOT NULL,
-    survey_sample_period_id                 integer           NOT NULL,
-    wldtaxonomic_units_id                   integer           NOT NULL,
-    latitude                                numeric(10, 7)    NOT NULL,
-    longitude                               numeric(10, 7)    NOT NULL,
-    count                                   integer           NOT NULL,
-    observation_date                        date              NOT NULL,
-    observation_time                        time              NOT NULL,
-    create_date                             timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                             integer           NOT NULL,
-    update_date                             timestamptz(6),
-    update_user                             integer,
-    revision_count                          integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT survey_observation_pk PRIMARY KEY (survey_observation_id)
-  );
+  ALTER TABLE survey_observation ADD survey_sample_site_id integer NOT NULL;
+  ALTER TABLE survey_observation ADD survey_sample_method_id integer NOT NULL;
+  ALTER TABLE survey_observation ADD survey_sample_period_id integer NOT NULL;
 
-
-  COMMENT ON COLUMN survey_observation.survey_observation_id     IS 'System generated surrogate primary key identifier.';
-  COMMENT ON COLUMN survey_observation.survey_id                 IS 'A foreign key pointing to the survey table.';
   COMMENT ON COLUMN survey_observation.survey_sample_site_id     IS 'A foreign key pointing to the survey sample site table.';
   COMMENT ON COLUMN survey_observation.survey_sample_method_id   IS 'A foreign key pointing to the survey sample method table.';
   COMMENT ON COLUMN survey_observation.survey_sample_period_id   IS 'A foreign key pointing to the survey sample period table.';
-  COMMENT ON COLUMN survey_observation.wldtaxonomic_units_id     IS 'The species associated with the observation.';
-  COMMENT ON COLUMN survey_observation.latitude                  IS 'The latitude of the observation, having ten points of total precision and 7 points of precision after the decimal.';
-  COMMENT ON COLUMN survey_observation.longitude                 IS 'The longitude of the observation, having ten points of total precision and 7 points of precision after the decimal.';
-  COMMENT ON COLUMN survey_observation.count                     IS 'The count of the observation.';
-  COMMENT ON COLUMN survey_observation.observation_date          IS 'The date associated with the observation.';
-  COMMENT ON COLUMN survey_observation.observation_time          IS 'The time associated with the observation.';
-  COMMENT ON COLUMN survey_observation.create_date               IS 'The datetime the record was created.';
-  COMMENT ON COLUMN survey_observation.create_user               IS 'The id of the user who created the record as identified in the system user table.';
-  COMMENT ON COLUMN survey_observation.update_date               IS 'The datetime the record was updated.';
-  COMMENT ON COLUMN survey_observation.update_user               IS 'The id of the user who updated the record as identified in the system user table.';
-  COMMENT ON COLUMN survey_observation.revision_count            IS 'Revision count used for concurrency control.';
-  COMMENT ON TABLE  survey_observation                           IS 'Broad classification for the survey_observation code of the survey.';
-
-
 
   ----------------------------------------------------------------------------------------
   -- Create new keys and indices
   ----------------------------------------------------------------------------------------
 
-  -- Create audit and journal triggers
-  create trigger audit_survey_observation before insert or update or delete on survey_observation for each row execute procedure tr_audit_trigger();
-  create trigger journal_survey_observation after insert or update or delete on survey_observation for each row execute procedure tr_journal_trigger();
-
-
   -- add foreign key constraints
-  ALTER TABLE survey_observation ADD CONSTRAINT survey_observation_fk1
-    FOREIGN KEY (survey_id)
-    REFERENCES survey(survey_id);
 
   ALTER TABLE survey_observation ADD CONSTRAINT survey_observation_fk2
     FOREIGN KEY (survey_sample_site_id)
@@ -84,8 +43,6 @@ export async function up(knex: Knex): Promise<void> {
     REFERENCES survey_sample_period(survey_sample_period_id);
 
   -- add indexes for foreign keys
-  CREATE INDEX survey_observation_idx1 ON survey_observation(survey_id);
-
   CREATE INDEX survey_observation_idx2 ON survey_observation(survey_sample_site_id);
 
   CREATE INDEX survey_observation_idx3 ON survey_observation(survey_sample_method_id);
@@ -200,8 +157,20 @@ export async function up(knex: Knex): Promise<void> {
       delete from survey_site_strategy where survey_id = p_survey_id;
       
       -- delete survey sample period/method/site
-      delete from survey_sample_period where survey_sample_method_id in (select survey_sample_method_id from survey_sample_method where survey_sample_site_id in (select survey_sample_site_id from survey_sample_site where survey_id = p_survey_id));
-      delete from survey_sample_period where survey_sample_site_id in (select survey_sample_site_id from survey_sample_site where survey_id = p_survey_id);
+      delete from survey_sample_period where survey_sample_method_id in (
+        select survey_sample_method_id 
+        from survey_sample_method 
+        where survey_sample_site_id in (
+          select survey_sample_site_id 
+          from survey_sample_site 
+          where survey_id = p_survey_id
+        )
+      );
+      delete from survey_sample_period where survey_sample_site_id in (
+        select survey_sample_site_id 
+        from survey_sample_site 
+        where survey_id = p_survey_id
+      );
       delete from survey_sample_site where survey_id = p_survey_id;
 
       -- delete survey observations
