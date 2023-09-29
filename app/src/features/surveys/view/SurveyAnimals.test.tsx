@@ -131,8 +131,9 @@ describe('SurveyAnimals', () => {
       fireEvent.click(getByTestId('animal actions'));
       fireEvent.click(getByTestId('animal-table-row-edit-timespan'));
       fireEvent.click(getByText('Save Changes'));
-      //fireEvent.click(getByText('Import Animals'));
-      //fireEvent.click(getByText('Save Changes'));
+      fireEvent.click(getByTestId('animal actions'));
+      fireEvent.click(getByTestId('animal-table-row-add-device'));
+      fireEvent.click(getByText('Save Changes'));
     });
   });
 });

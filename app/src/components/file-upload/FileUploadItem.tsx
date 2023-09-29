@@ -44,12 +44,12 @@ export type IOnUploadSuccess = (response: any) => void;
 
 export interface IFileUploadItemProps {
   /**
-   * A file upload callback fired for each file.
+   * An optional file upload callback fired for each file.
    *
    * @type {IUploadHandler}
    * @memberof IFileUploadItemProps
    */
-  uploadHandler: IUploadHandler;
+  uploadHandler?: IUploadHandler;
   /**
    * An optional callback fired if the file upload is successful.
    *
@@ -223,16 +223,18 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
       onSuccess?.(response);
     };
 
-    uploadHandler(file, cancelToken, handleFileUploadProgress)
-      .then(handleFileUploadSuccess, (error: APIError) => {
-        setError(error?.message);
-        setErrorDetails(
-          error.errors?.map((error) => {
-            return { _id: v4(), message: String(error) };
-          })
-        );
-      })
-      .catch();
+    if (uploadHandler) {
+      uploadHandler(file, cancelToken, handleFileUploadProgress)
+        .then(handleFileUploadSuccess, (error: APIError) => {
+          setError(error?.message);
+          setErrorDetails(
+            error?.errors?.map((e) => {
+              return { _id: v4(), message: e?.toString() };
+            })
+          );
+        })
+        .catch();
+    }
 
     setStatus(UploadFileStatus.UPLOADING);
   }, [

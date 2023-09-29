@@ -53,6 +53,7 @@ const useDeviceApi = (axios: AxiosInstance) => {
 
   interface IGetDeviceDetailsResponse {
     device: Record<string, unknown> | undefined;
+    keyXStatus: boolean;
     deployments: Omit<IAnimalDeployment, 'device_id'>[];
   }
 
@@ -71,7 +72,7 @@ const useDeviceApi = (axios: AxiosInstance) => {
         console.log(e.message);
       }
     }
-    return { device: undefined, deployments: [] };
+    return { device: undefined, keyXStatus: false, deployments: [] };
   };
 
   /**
