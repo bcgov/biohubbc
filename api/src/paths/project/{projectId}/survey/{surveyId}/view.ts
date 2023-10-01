@@ -90,8 +90,6 @@ GET.apiDoc = {
                     required: [
                       'survey_name',
                       'start_date',
-                      'biologist_first_name',
-                      'biologist_last_name',
                       'survey_types',
                       'revision_count'
                     ],
@@ -107,12 +105,6 @@ GET.apiDoc = {
                         oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                         nullable: true,
                         description: 'ISO 8601 date string for the funding end_date'
-                      },
-                      biologist_first_name: {
-                        type: 'string'
-                      },
-                      biologist_last_name: {
-                        type: 'string'
                       },
                       survey_types: {
                         type: 'array',

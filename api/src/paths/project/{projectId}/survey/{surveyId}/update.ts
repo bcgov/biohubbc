@@ -71,8 +71,6 @@ PUT.apiDoc = {
                 'survey_name',
                 'start_date',
                 'end_date',
-                'biologist_first_name',
-                'biologist_last_name',
                 'survey_types',
                 'revision_count'
               ],
@@ -88,12 +86,6 @@ PUT.apiDoc = {
                   type: 'string',
                   description: 'ISO 8601 date string',
                   nullable: true
-                },
-                biologist_first_name: {
-                  type: 'string'
-                },
-                biologist_last_name: {
-                  type: 'string'
                 },
                 survey_types: {
                   type: 'array',

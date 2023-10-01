@@ -79,8 +79,6 @@ const SurveyRecord = z.object({
   uuid: z.string().nullable(),
   start_date: z.string(),
   end_date: z.string().nullable(),
-  lead_first_name: z.string(),
-  lead_last_name: z.string(),
   field_method_id: z.number().nullable(),
   additional_details: z.string().nullable(),
   ecological_season_id: z.number().nullable(),
@@ -583,8 +581,6 @@ export class SurveyRepository extends BaseRepository {
         name,
         start_date,
         end_date,
-        lead_first_name,
-        lead_last_name,
         field_method_id,
         additional_details,
         ecological_season_id,
@@ -594,8 +590,6 @@ export class SurveyRepository extends BaseRepository {
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
-        ${surveyData.survey_details.biologist_first_name},
-        ${surveyData.survey_details.biologist_last_name},
         ${surveyData.purpose_and_methodology.field_method_id},
         ${surveyData.purpose_and_methodology.additional_details},
         ${surveyData.purpose_and_methodology.ecological_season_id},
@@ -891,9 +885,7 @@ export class SurveyRepository extends BaseRepository {
         ...fieldsToUpdate,
         name: surveyData.survey_details.name,
         start_date: surveyData.survey_details.start_date,
-        end_date: surveyData.survey_details.end_date,
-        lead_first_name: surveyData.survey_details.lead_first_name,
-        lead_last_name: surveyData.survey_details.lead_last_name
+        end_date: surveyData.survey_details.end_date
       };
     }
 

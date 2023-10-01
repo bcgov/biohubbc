@@ -715,12 +715,21 @@ export class EmlService extends DBService {
    */
   _getSurveyContact(surveyData: SurveyObject): Record<string, any> {
     // return full details of the biologist
+
+    // TODO replace once SIMSBIOHUB-275 is merged in.
+
+    /*
     return {
       individualName: {
         givenName: surveyData.survey_details.biologist_first_name,
         surName: surveyData.survey_details.biologist_last_name
       }
     };
+    */
+
+    return {
+      individualName: { givenName: '', surName: '' }
+    }
   }
 
   /**
@@ -756,6 +765,10 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getSurveyPersonnel(surveyData: SurveyObject): Record<string, any>[] {
+
+    // TODO replace when SIMSBIOHUB-275 is merged.
+
+    /*
     return [
       {
         individualName: {
@@ -763,6 +776,13 @@ export class EmlService extends DBService {
           surName: surveyData.survey_details.biologist_last_name
         },
         role: 'pointOfContact'
+      }
+    ];
+    */
+
+    return [
+      {
+        individualName: { givenName: '', surName: '' }
       }
     ];
   }
