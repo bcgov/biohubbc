@@ -16,7 +16,7 @@ interface HelpButtonTooltipProps {
  * @return {*}
  */
 
-const HelpButtonTooltip = ({ content, children }: HelpButtonTooltipProps): any => {
+const HelpButtonTooltip = ({ content, children }: HelpButtonTooltipProps) => {
   return (
     <Box
       sx={{

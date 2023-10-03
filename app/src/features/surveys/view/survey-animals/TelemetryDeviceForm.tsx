@@ -102,7 +102,10 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
   const { data: bctwDeviceData, refresh } = useDataLoader(() => api.devices.getDeviceDetails(values[index].device_id));
 
   useEffect(() => {
-    refresh();
+    if (values[index].device_id) {
+      refresh();
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values[index].device_id]);
 

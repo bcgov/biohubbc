@@ -101,7 +101,12 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             title: 'Deployment response object',
-            type: 'object'
+            type: 'object',
+            properties: {
+              message: {
+                type: 'string'
+              }
+            }
           }
         }
       }
@@ -200,7 +205,12 @@ PATCH.apiDoc = {
         'application/json': {
           schema: {
             title: 'Deployment response object',
-            type: 'object'
+            type: 'object',
+            properties: {
+              message: {
+                type: 'string'
+              }
+            }
           }
         }
       }
