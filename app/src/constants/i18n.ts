@@ -388,3 +388,8 @@ export const CreateSamplingSiteI18N = {
   createErrorText:
     'An error has occurred while attempting to create your sampling site(s). Please try again. If the error persists, please contact your system administrator.'
 };
+
+export const ObservationsTableI18N = {
+  removeAllDialogTitle: 'Title (todo)',
+  removeAllDialogText: 'Text (todo)'
+}

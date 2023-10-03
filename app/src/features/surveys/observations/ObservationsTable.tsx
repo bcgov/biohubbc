@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiTrashCan } from '@mdi/js';
+import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
@@ -96,10 +96,7 @@ const ObservationsTable = () => {
       resizable: false,
       getActions: (params) => [
         <IconButton onClick={() => handleDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
-          <Icon path={mdiTrashCan} size={1} />
-        </IconButton>,
-        <IconButton key={`actions[${params.id}].moreOptions`}>
-          <Icon path={mdiDotsVertical} size={1} />
+          <Icon path={mdiTrashCanOutline} size={1} />
         </IconButton>
       ]
     }
