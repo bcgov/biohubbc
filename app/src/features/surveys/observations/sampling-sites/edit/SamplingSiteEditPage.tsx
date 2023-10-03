@@ -5,14 +5,15 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { FormikProps } from 'formik';
+import { Formik, FormikProps } from 'formik';
+import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import SamplingSiteHeader from '../SamplingSiteHeader';
-import SampleSiteEditForm, { IEditSamplingSiteRequest } from './components/SampleSiteEditForm';
+import SampleSiteEditForm, { IEditSamplingSiteRequest, samplingSiteYupSchema } from './components/SampleSiteEditForm';
 
 const SamplingSiteEditPage = () => {
   const history = useHistory();
@@ -28,42 +29,42 @@ const SamplingSiteEditPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
-  // useEffect(() => {
-  //   const setFormikValues = (data: IEditSamplingSiteRequest) => {
-  //     formikRef.current?.setValues(data);
-  //   };
+  useEffect(() => {
+    const setFormikValues = (data: IEditSamplingSiteRequest) => {
+      formikRef.current?.setValues(data);
+    };
 
-  //   if (surveyContext.sampleSiteDataLoader.data) {
-  //     const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
-  //       (x) => x.survey_sample_site_id === surveySampleSiteId
-  //     );
+    if (surveyContext.sampleSiteDataLoader.data) {
+      const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
+        (x) => x.survey_sample_site_id === surveySampleSiteId
+      );
 
-  //     console.log('data', data);
-  //     if (data !== undefined) {
-  //       const formInitialValues: IEditSamplingSiteRequest = {
-  //         sampleSite: {
-  //           name: data.name,
-  //           description: data.description,
-  //           survey_id: data.survey_id,
-  //           survey_sample_sites: data.geojson,
-  //           methods:
-  //             (data.sample_methods &&
-  //               data.sample_methods.map((item) => {
-  //                 return {
-  //                   ...item,
-  //                   periods: item.sample_periods || []
-  //                 };
-  //               })) ||
-  //             []
-  //         }
-  //       };
+      console.log('data', data);
+      if (data !== undefined) {
+        const formInitialValues: IEditSamplingSiteRequest = {
+          sampleSite: {
+            name: data.name,
+            description: data.description,
+            survey_id: data.survey_id,
+            survey_sample_sites: [data.geojson as unknown as Feature],
+            methods:
+              (data.sample_methods &&
+                data.sample_methods.map((item) => {
+                  return {
+                    ...item,
+                    periods: item.sample_periods || []
+                  };
+                })) ||
+              []
+          }
+        };
 
-  //       setFormikValues(formInitialValues as unknown as IEditSamplingSiteRequest);
-  //     }
-  //   }
+        setFormikValues(formInitialValues as unknown as IEditSamplingSiteRequest);
+      }
+    }
 
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [surveyContext.sampleSiteDataLoader.data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.sampleSiteDataLoader]);
 
   console.log('surveyContext.sampleSiteDataLoader.data', surveyContext.sampleSiteDataLoader.data);
 
@@ -83,6 +84,7 @@ const SamplingSiteEditPage = () => {
   };
 
   const handleSubmit = async (values: IEditSamplingSiteRequest) => {
+    console.log('values', values);
     setIsSubmitting(true);
     try {
       await biohubApi.samplingSite.editSampleSite(
@@ -144,34 +146,52 @@ const SamplingSiteEditPage = () => {
   if (!surveyContext.surveyDataLoader.data || !surveyContext.sampleSiteDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+  console.log('formikRef', formikRef.current?.values);
 
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
 
-      <Box display="flex" flexDirection="column" height="100%">
-        <Box
-          position="sticky"
-          top="0"
-          zIndex={1001}
-          sx={{
-            borderBottomStyle: 'solid',
-            borderBottomWidth: '1px',
-            borderBottomColor: grey[300]
-          }}>
-          <SamplingSiteHeader
-            project_id={surveyContext.projectId}
-            survey_id={surveyContext.surveyId}
-            survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            is_submitting={isSubmitting}
-            title="Edit Sampling Site"
-            breadcrumb="Edit Sampling Sites"
-          />
+      <Formik
+        innerRef={formikRef}
+        initialValues={{
+          sampleSite: {
+            survey_id: surveyContext.surveyId,
+            name: '',
+            description: '',
+            survey_sample_sites: [],
+            methods: []
+          }
+        }}
+        validationSchema={samplingSiteYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        enableReinitialize
+        onSubmit={handleSubmit}>
+        <Box display="flex" flexDirection="column" height="100%">
+          <Box
+            position="sticky"
+            top="0"
+            zIndex={1001}
+            sx={{
+              borderBottomStyle: 'solid',
+              borderBottomWidth: '1px',
+              borderBottomColor: grey[300]
+            }}>
+            <SamplingSiteHeader
+              project_id={surveyContext.projectId}
+              survey_id={surveyContext.surveyId}
+              survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+              is_submitting={isSubmitting}
+              title="Edit Sampling Site"
+              breadcrumb="Edit Sampling Sites"
+            />
+          </Box>
+          <Box display="flex" flex="1 1 auto">
+            <SampleSiteEditForm formikRef={formikRef} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
+          </Box>
         </Box>
-        <Box display="flex" flex="1 1 auto">
-          <SampleSiteEditForm formikRef={formikRef} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
-        </Box>
-      </Box>
+      </Formik>
     </>
   );
 };

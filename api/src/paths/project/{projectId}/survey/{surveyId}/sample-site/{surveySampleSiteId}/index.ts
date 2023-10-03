@@ -81,8 +81,39 @@ PUT.apiDoc = {
                 description: {
                   type: 'string'
                 },
-                survey_sample_site: {
-                  ...(GeoJSONFeature as object)
+                survey_sample_sites: {
+                  type: 'array',
+                  items: {
+                    ...(GeoJSONFeature as object)
+                  }
+                },
+                methods: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      method_lookup_id: {
+                        type: 'integer'
+                      },
+                      description: {
+                        type: 'string'
+                      },
+                      period: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            start_date: {
+                              type: 'string'
+                            },
+                            end_date: {
+                              type: 'string'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -138,7 +169,6 @@ export function updateSurveySampleSite(): RequestHandler {
       await connection.open();
 
       const sampleLocationService = new SampleLocationService(connection);
-
       await sampleLocationService.updateSampleLocation(sampleSite);
 
       await connection.commit();

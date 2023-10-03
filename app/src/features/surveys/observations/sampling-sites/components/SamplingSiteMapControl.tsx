@@ -120,8 +120,8 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           <Typography component="legend" data-testid="funding-source-list-found">
             Site Location Preview &zwnj;
             <Typography component="span" color="textSecondary" fontWeight="400">
-              {formikProps.values.survey_sample_sites.length > 0
-                ? `(${formikProps.values.survey_sample_sites.length} locations detected)`
+              {samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length > 0
+                ? `(${samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length} locations detected)`
                 : ''}
             </Typography>
           </Typography>
