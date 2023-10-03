@@ -64,4 +64,17 @@ describe('SurveyRepository', () => {
       expect(response).to.eql(1);
     });
   });
+
+  describe('deleteDeployment', () => {
+    it('should delete existing row', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyCritterRepository(dbConnection);
+
+      const response = await repository.removeDeployment(1, 'deployment_id');
+
+      expect(response).to.be.undefined;
+    });
+  });
 });

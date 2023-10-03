@@ -27,10 +27,6 @@ export const IDeploymentUpdate = z.object({
   attachment_end: z.string()
 });
 
-export const IDeploymentDelete = z.object({
-  deployment_id: z.string()
-})
-
 export type IDeploymentUpdate = z.infer<typeof IDeploymentUpdate>;
 
 export const IDeploymentRecord = z.object({
