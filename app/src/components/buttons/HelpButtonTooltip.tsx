@@ -18,7 +18,7 @@ interface HelpButtonTooltipProps {
 
 const HelpButtonTooltip = ({ content, children }: HelpButtonTooltipProps): any => {
   return (
-    <Box 
+    <Box
       sx={{
         position: 'relative',
         '& input': {
@@ -34,8 +34,7 @@ const HelpButtonTooltip = ({ content, children }: HelpButtonTooltipProps): any =
         '& .MuiSelect-icon': {
           right: '52px'
         }
-       }}
-    >
+      }}>
       {children}
       <Tooltip
         arrow
@@ -54,16 +53,14 @@ const HelpButtonTooltip = ({ content, children }: HelpButtonTooltipProps): any =
               background: '#38598A'
             }
           }
-        }}
-        >
-        <IconButton 
+        }}>
+        <IconButton
           sx={{
             position: 'absolute',
             top: '8px',
             right: '8px',
             color: '#38598A'
-          }}
-        >
+          }}>
           <Icon path={mdiHelpCircleOutline} size={1} />
         </IconButton>
       </Tooltip>

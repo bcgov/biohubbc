@@ -1,12 +1,12 @@
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Grid, Button, Divider, IconButton, PaperProps, Typography } from '@mui/material';
+import { Box, Button, Divider, Grid, IconButton, PaperProps, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import { grey } from '@mui/material/colors';
 import { useFormikContext } from 'formik';
 import { IAnimal } from '../animal';
-import { grey } from '@mui/material/colors';
 
 interface FormSectionWrapperProps {
   title: string; // Title ie: General / Capture Information etc
@@ -48,21 +48,23 @@ const FormSectionWrapper = ({
 
   return (
     <>
-    <Divider sx={{ mt: 4, mb: 3}} />
+      <Divider sx={{ mt: 4, mb: 3 }} />
       <Box component="fieldset">
-        <Typography component="legend">
-          {title}
-        </Typography>
-        <Typography variant="body1" color="textSecondary"
+        <Typography component="legend">{title}</Typography>
+        <Typography
+          variant="body1"
+          color="textSecondary"
           sx={{
             mt: -1,
             mb: 3
-          }}
-        >
+          }}>
           {titleHelp}
         </Typography>
         {childs.map((child, idx) => (
-          <Card key={child.key} variant="outlined" {...innerPaperProps}
+          <Card
+            key={child.key}
+            variant="outlined"
+            {...innerPaperProps}
             sx={{
               '& + div': {
                 mt: 1
@@ -70,8 +72,7 @@ const FormSectionWrapper = ({
               '& + button': {
                 mt: 2
               }
-            }}
-          >
+            }}>
             <CardHeader
               title={
                 <>
@@ -93,14 +94,11 @@ const FormSectionWrapper = ({
                 py: 1.5,
                 background: grey[100],
                 fontSize: '0.875rem'
-              }}
-            >
-            </CardHeader>
+              }}></CardHeader>
             <CardContent
               sx={{
                 pb: '16px !important'
-              }}
-            >
+              }}>
               <Grid container spacing={2}>
                 {child}
               </Grid>
