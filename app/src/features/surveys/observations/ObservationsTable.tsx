@@ -14,6 +14,8 @@ const ObservationsTable = () => {
       flex: 1,
       minWidth: 250,
       disableColumnMenu: true,
+
+      // TODO: To be addressed by https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-288
       renderCell: () => 'Moose (Alces Americanus)'
     },
     {
