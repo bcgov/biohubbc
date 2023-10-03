@@ -18,7 +18,7 @@ const SampleSiteFileUploadItemSubtext = (props: ISubtextProps) => {
   }
 
   return (
-    <Typography variant="caption" component="div">
+    <Typography variant="caption" component="span">
       {subtext}
     </Typography>
   );

@@ -2,6 +2,8 @@ import { mdiDotsVertical, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
@@ -9,6 +11,7 @@ import ConditionalAutocompleteDataGridViewCell from 'components/data-grid/condit
 import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import moment from 'moment';
 import { useContext, useEffect } from 'react';
 
 export interface ISampleSiteSelectProps {
@@ -194,9 +197,39 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'observation_time',
       headerName: 'Time',
       editable: true,
-      type: 'time',
+      type: 'string',
       width: 150,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      preProcessEditCellProps: (params) => {
+        return { ...params.props };
+      },
+      renderCell: (params) => {
+        if (!params.value) {
+          return null;
+        }
+
+        if (moment.isMoment(params.value)) {
+          return <>{params.value.format('HH:mm:ss')}</>;
+        }
+
+        return <>{moment(params.value).format('HH:mm:ss')}</>;
+      },
+      renderEditCell: (params) => {
+        console.log(params.value);
+        return (
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <TimePicker
+              value={params.value}
+              onChange={(value) => {
+                apiRef.current.setEditCellValue({ id: params.id, field: params.field, value: value });
+              }}
+              onAccept={(value) => {
+                apiRef.current.setEditCellValue({ id: params.id, field: params.field, value: value });
+              }}
+            />
+          </LocalizationProvider>
+        );
+      }
     },
     {
       field: 'latitude',
