@@ -109,6 +109,23 @@ const SurveyAnimals: React.FC = () => {
     ]
   };
 
+  const AnimalDeploymentSchemaAsyncValidation = AnimalTelemetryDeviceSchema.shape({
+    device_make: yup
+      .string()
+      .required()
+      .test(
+        'checkDeviceMakeIsNotChanged',
+        'This device make differs from the existing make for this Device ID',
+        async (value, context) => {
+          const deviceDetails = await telemetryApi.devices.getDeviceDetails(Number(context.parent.device_id));
+          if (deviceDetails && deviceDetails.device?.device_make !== value) {
+            return false;
+          }
+          return true;
+        }
+      )
+  });
+
   const obtainDeviceFormInitialValues = (mode: TELEMETRY_DEVICE_FORM_MODE) => {
     switch (mode) {
       case TELEMETRY_DEVICE_FORM_MODE.ADD:
@@ -251,6 +268,18 @@ const SurveyAnimals: React.FC = () => {
     refreshDeployments();
   };
 
+  const handleRemoveDeployment = async (deployment_id: string) => {
+    if (!selectedCritterId) {
+      throw Error('Survey critter ID was set incorrectly.');
+    }
+    await bhApi.survey.removeDeployment(projectId, surveyId, selectedCritterId, deployment_id);
+    const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId);
+    if (!deployments || deployments.length === 1) {
+      setOpenDeviceDialog(false);
+    }
+    refreshDeployments();
+  };
+
   return (
     <Box>
       <EditDialog
@@ -285,9 +314,9 @@ const SurveyAnimals: React.FC = () => {
         }
         open={openDeviceDialog}
         component={{
-          element: <TelemetryDeviceForm mode={telemetryFormMode} />,
+          element: <TelemetryDeviceForm removeAction={handleRemoveDeployment} mode={telemetryFormMode} />,
           initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
-          validationSchema: yup.array(AnimalTelemetryDeviceSchema)
+          validationSchema: yup.array(AnimalDeploymentSchemaAsyncValidation)
         }}
         onCancel={() => setOpenDeviceDialog(false)}
         onSave={(values) => {

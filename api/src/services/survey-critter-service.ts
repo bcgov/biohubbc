@@ -49,4 +49,8 @@ export class SurveyCritterService extends DBService {
   async upsertDeployment(critterId: number, deplyomentId: string): Promise<number> {
     return this.critterRepository.upsertDeployment(critterId, deplyomentId);
   }
+
+  async removeDeployment(critterId: number, deploymentId: string): Promise<void> {
+    return this.critterRepository.removeDeployment(critterId, deploymentId);
+  }
 }

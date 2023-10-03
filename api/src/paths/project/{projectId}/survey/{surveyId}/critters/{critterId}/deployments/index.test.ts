@@ -1,11 +1,11 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import * as db from '../../../../../../../database/db';
-import { BctwService } from '../../../../../../../services/bctw-service';
-import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
-import { deployDevice, PATCH, POST, updateDeployment } from './deployments';
+import * as db from '../../../../../../../../database/db';
+import { BctwService } from '../../../../../../../../services/bctw-service';
+import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
+import { deployDevice, PATCH, POST, updateDeployment } from './index';
 
 describe('critter deployments', () => {
   afterEach(() => {

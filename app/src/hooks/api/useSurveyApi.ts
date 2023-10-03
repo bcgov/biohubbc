@@ -547,6 +547,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const removeDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    deploymentId: string
+  ): Promise<string> => {
+    const { data } = await axios.delete(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments/${deploymentId}`
+    );
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -572,7 +584,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     removeCritterFromSurvey,
     addDeployment,
     getDeploymentsInSurvey,
-    updateDeployment
+    updateDeployment,
+    removeDeployment
   };
 };
 

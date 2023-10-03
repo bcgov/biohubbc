@@ -78,4 +78,21 @@ export class SurveyCritterRepository extends BaseRepository {
 
     return response.rowCount;
   }
+
+  /**
+   * Deletes a deployment row.
+   *
+   * @param {number} critterId
+   * @param {string} deploymentId
+   * @returns {*}
+   * @memberof SurveyCritterRepository
+   */
+  async removeDeployment(critterId: number, deploymentId: string): Promise<void> {
+    defaultLog.debug({ label: 'removeDeployment', deploymentId });
+    const queryBuilder = getKnex()
+      .table('deployment')
+      .where({ critter_id: critterId, bctw_deployment_id: deploymentId })
+      .delete();
+    await this.connection.knex(queryBuilder);
+  }
 }
