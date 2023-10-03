@@ -49,7 +49,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  insertUpdateSurveyObservations()
+  insertUpdateDeleteSurveyObservations()
 ];
 
 const surveyObservationsResponseSchema: SchemaObject = {
@@ -127,7 +127,7 @@ const surveyObservationsResponseSchema: SchemaObject = {
 };
 
 GET.apiDoc = {
-  description: 'Fetches observation records for the given survey.',
+  description: 'Get all observations for the survey.',
   tags: ['observation'],
   security: [
     {
@@ -170,7 +170,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -182,8 +182,8 @@ GET.apiDoc = {
 };
 
 PUT.apiDoc = {
-  description: 'Fetches observation records for the given survey.',
-  tags: ['attachments'],
+  description: 'Insert/update/delete observations for the survey.',
+  tags: ['observation'],
   security: [
     {
       Bearer: []
@@ -250,7 +250,7 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Upload OK',
+      description: 'Update OK',
       content: {
         'application/json': {
           schema: { ...surveyObservationsResponseSchema }
@@ -264,7 +264,7 @@ PUT.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -275,6 +275,12 @@ PUT.apiDoc = {
   }
 };
 
+/**
+ * Fetch all observations for a survey.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function getSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
@@ -300,11 +306,19 @@ export function getSurveyObservations(): RequestHandler {
   };
 }
 
-export function insertUpdateSurveyObservations(): RequestHandler {
+/**
+ * Inserts new observation records.
+ * Updates existing observation records.
+ * Deletes missing observation records.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
+export function insertUpdateDeleteSurveyObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
-    defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
+    defaultLog.debug({ label: 'insertUpdateDeleteSurveyObservations', surveyId });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -335,7 +349,7 @@ export function insertUpdateSurveyObservations(): RequestHandler {
 
       return res.status(200).json({ surveyObservations });
     } catch (error) {
-      defaultLog.error({ label: 'insertUpdateSurveyObservations', message: 'error', error });
+      defaultLog.error({ label: 'insertUpdateDeleteSurveyObservations', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
