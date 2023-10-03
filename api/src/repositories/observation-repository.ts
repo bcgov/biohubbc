@@ -11,6 +11,9 @@ export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
   wldtaxonomic_units_id: z.number(),
+  survey_sample_site_id: z.number(),
+  survey_sample_method_id: z.number(),
+  survey_sample_period_id: z.number(),
   latitude: z.number(),
   longitude: z.number(),
   count: z.number(),
@@ -30,7 +33,16 @@ export type ObservationRecord = z.infer<typeof ObservationRecord>;
  */
 export type InsertObservation = Pick<
   ObservationRecord,
-  'survey_id' | 'wldtaxonomic_units_id' | 'latitude' | 'longitude' | 'count' | 'observation_date' | 'observation_time'
+  | 'survey_id'
+  | 'wldtaxonomic_units_id'
+  | 'latitude'
+  | 'longitude'
+  | 'count'
+  | 'observation_date'
+  | 'observation_time'
+  | 'survey_sample_site_id'
+  | 'survey_sample_method_id'
+  | 'survey_sample_period_id'
 >;
 
 /**
@@ -45,6 +57,9 @@ export type UpdateObservation = Pick<
   | 'count'
   | 'observation_date'
   | 'observation_time'
+  | 'survey_sample_site_id'
+  | 'survey_sample_method_id'
+  | 'survey_sample_period_id'
 >;
 
 export class ObservationRepository extends BaseRepository {
@@ -102,6 +117,9 @@ export class ObservationRepository extends BaseRepository {
         survey_observation_id,
         survey_id,
         wldtaxonomic_units_id,
+        survey_sample_site_id,
+        survey_sample_method_id,
+        survey_sample_period_id,
         count,
         latitude,
         longitude,
@@ -115,15 +133,22 @@ export class ObservationRepository extends BaseRepository {
     sqlStatement.append(
       observations
         .map((observation) => {
+          console.log('__________________________');
+          console.log('__________________________');
+          console.log('__________________________');
+          console.log(moment(observation.observation_time).format('hh:mm:ss'));
           return `(${[
             observation['survey_observation_id'] || 'DEFAULT',
             surveyId,
             observation.wldtaxonomic_units_id,
+            observation.survey_sample_site_id,
+            observation.survey_sample_method_id,
+            observation.survey_sample_period_id,
             observation.count,
             observation.latitude,
             observation.longitude,
             `'${moment(observation.observation_date).format('YYYY-MM-DD')}'`,
-            `'${observation.observation_time}'`
+            `'${moment(observation.observation_time).format('hh:mm:ss')}'`
           ].join(', ')})`;
         })
         .join(', ')
@@ -134,6 +159,9 @@ export class ObservationRepository extends BaseRepository {
         (survey_observation_id)
       DO UPDATE SET
         wldtaxonomic_units_id = EXCLUDED.wldtaxonomic_units_id,
+        survey_sample_site_id = EXCLUDED.survey_sample_site_id,
+        survey_sample_method_id = EXCLUDED.survey_sample_method_id,
+        survey_sample_period_id = EXCLUDED.survey_sample_period_id,
         count = EXCLUDED.count,
         observation_date = EXCLUDED.observation_date,
         observation_time = EXCLUDED.observation_time,
@@ -142,7 +170,7 @@ export class ObservationRepository extends BaseRepository {
     `);
 
     sqlStatement.append(`RETURNING *;`);
-
+    console.log(sqlStatement.sql.toString());
     const response = await this.connection.sql(sqlStatement, ObservationRecord);
 
     return response.rows;
