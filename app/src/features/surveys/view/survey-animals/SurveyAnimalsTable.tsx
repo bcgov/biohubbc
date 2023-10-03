@@ -69,11 +69,6 @@ export const SurveyAnimalsTable = ({
       renderCell: (params) => <>{params.value ? params.value : 'None'}</>
     },
     {
-      field: 'taxon',
-      headerName: 'Taxon',
-      flex: 1
-    },
-    {
       field: 'create_timestamp',
       headerName: 'Created On',
       flex: 1,
