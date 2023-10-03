@@ -53,6 +53,11 @@ export const SurveyAnimalsTable = ({
 
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
     {
+      field: 'taxon',
+      headerName: 'Species',
+      flex: 1
+    },
+    {
       field: 'animal_id',
       headerName: 'Alias',
       flex: 1
@@ -61,12 +66,7 @@ export const SurveyAnimalsTable = ({
       field: 'wlh_id',
       headerName: 'WLH ID',
       flex: 1,
-      renderCell: (params) => <Typography>{params.value || 'None'}</Typography>
-    },
-    {
-      field: 'taxon',
-      headerName: 'Taxon',
-      flex: 1
+      renderCell: (params) => <>{params.value ? params.value : 'None'}</>
     },
     {
       field: 'create_timestamp',
