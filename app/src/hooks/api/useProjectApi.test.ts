@@ -110,10 +110,6 @@ describe('useProjectApi', () => {
         start_date: '2020/04/04',
         end_date: '2020/05/05',
         comments: 'comment',
-        coordinator_first_name: 'first',
-        coordinator_last_name: 'last',
-        coordinator_email_address: 'email@example.com',
-        coordinator_agency_name: 'agency',
         focal_species_name_list: 'focal'
       }
     ];

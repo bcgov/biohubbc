@@ -74,6 +74,8 @@ describe('approveAccessRequest', () => {
       role_ids: existingRoleIds,
       role_names: [],
       email: '',
+      family_name: 'lname', 
+      given_name: 'fname',
       display_name: '',
       agency: null
     };

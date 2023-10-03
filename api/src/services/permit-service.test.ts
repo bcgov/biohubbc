@@ -48,6 +48,8 @@ describe('PermitService', () => {
         role_ids: [],
         role_names: [SYSTEM_ROLE.SYSTEM_ADMIN],
         email: 'email@email.com',
+        family_name: 'lname', 
+        given_name: 'fname',
         display_name: 'test user',
         agency: null
       };
@@ -90,6 +92,8 @@ describe('PermitService', () => {
         role_ids: [],
         role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
         email: 'email@email.com',
+        family_name: 'lname', 
+        given_name: 'fname',
         display_name: 'test user',
         agency: null
       };
@@ -132,6 +136,8 @@ describe('PermitService', () => {
         role_ids: [],
         role_names: [],
         email: 'email@email.com',
+        family_name: 'lname', 
+        given_name: 'fname',
         display_name: 'test user',
         agency: null
       };

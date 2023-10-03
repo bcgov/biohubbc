@@ -1393,137 +1393,15 @@ describe.skip('EmlService', () => {
   });
 
   describe('_getProjectDatasetCreator', () => {
-    it('should return the coordinator agency if share_contract_details is false', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const emlService = new EmlService(mockDBConnection);
-
-      const mockProjectData = {
-        coordinator: {
-          first_name: 'first',
-          last_name: 'last',
-          email_address: 'email@example.com',
-          coordinator_agency: 'test-agency',
-          share_contact_details: 'false'
-        }
-      } as IGetProject;
-
-      const response = emlService._getProjectDatasetCreator(mockProjectData);
-
-      expect(response).to.eql({ organizationName: 'test-agency' });
-    });
-
-    it('should return the organization if share_contract_details is true', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const emlService = new EmlService(mockDBConnection);
-
-      const mockProjectData = {
-        coordinator: {
-          first_name: 'first',
-          last_name: 'last',
-          email_address: 'email@example.com',
-          coordinator_agency: 'test-agency',
-          share_contact_details: 'true'
-        }
-      } as IGetProject;
-
-      const response = emlService._getProjectDatasetCreator(mockProjectData);
-
-      expect(response).to.eql({
-        organizationName: 'test-agency',
-        electronicMailAddress: 'email@example.com'
-      });
-    });
+    //
   });
 
   describe('_getProjectContact', () => {
-    it('should return the coordinator agency if share_contract_details is false', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const emlService = new EmlService(mockDBConnection);
-
-      const mockProjectData = {
-        coordinator: {
-          first_name: 'first',
-          last_name: 'last',
-          email_address: 'email@example.com',
-          coordinator_agency: 'test-agency',
-          share_contact_details: 'false'
-        }
-      } as IGetProject;
-
-      const response = emlService._getProjectContact(mockProjectData);
-
-      expect(response).to.eql({ organizationName: 'test-agency' });
-    });
-
-    it('should return the individual name and organization if share_contract_details is true', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const emlService = new EmlService(mockDBConnection);
-
-      const mockProjectData = {
-        coordinator: {
-          first_name: 'first',
-          last_name: 'last',
-          email_address: 'email@example.com',
-          coordinator_agency: 'test-agency',
-          share_contact_details: 'true'
-        }
-      } as IGetProject;
-
-      const response = emlService._getProjectContact(mockProjectData);
-
-      expect(response).to.eql({
-        individualName: { givenName: 'first', surName: 'last' },
-        organizationName: 'test-agency',
-        electronicMailAddress: 'email@example.com'
-      });
-    });
+    //
   });
 
   describe('_getProjectPersonnel', () => {
-    it('should return the coordinator agency if share_contract_details is false', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const emlService = new EmlService(mockDBConnection);
-
-      const mockProjectData = {
-        coordinator: {
-          first_name: 'first',
-          last_name: 'last',
-          email_address: 'email@example.com',
-          coordinator_agency: 'test-agency',
-          share_contact_details: 'false'
-        }
-      } as IGetProject;
-
-      const response = emlService._getProjectPersonnel(mockProjectData);
-
-      expect(response).to.eql([{ organizationName: 'test-agency' }]);
-    });
-
-    it('should return the role, individual name and organization if share_contract_details is true', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const emlService = new EmlService(mockDBConnection);
-
-      const mockProjectData = {
-        coordinator: {
-          first_name: 'first',
-          last_name: 'last',
-          email_address: 'email@example.com',
-          coordinator_agency: 'test-agency',
-          share_contact_details: 'true'
-        }
-      } as IGetProject;
-
-      const response = emlService._getProjectPersonnel(mockProjectData);
-
-      expect(response).to.eql([
-        {
-          individualName: { givenName: 'first', surName: 'last' },
-          organizationName: 'test-agency',
-          electronicMailAddress: 'email@example.com',
-          role: 'pointOfContact'
-        }
-      ]);
-    });
+    //
   });
 
   describe('_getSurveyPersonnel', () => {

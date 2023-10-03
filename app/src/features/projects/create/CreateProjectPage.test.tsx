@@ -54,7 +54,7 @@ const mockUseApi = {
 const mockCodesContext: ICodesContext = {
   codesDataLoader: {
     data: codes,
-    load: () => {}
+    load: () => { }
   } as DataLoader<any, any, any>
 };
 
@@ -87,7 +87,7 @@ describe('CreateProjectPage', () => {
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
 
-    jest.spyOn(console, 'debug').mockImplementation(() => {});
+    jest.spyOn(console, 'debug').mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -178,13 +178,6 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
@@ -210,13 +203,6 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
@@ -250,13 +236,6 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
@@ -297,13 +276,6 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
@@ -343,13 +315,6 @@ describe('CreateProjectPage', () => {
         id: 1,
         name: 'My draft',
         data: {
-          coordinator: {
-            first_name: 'Draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
@@ -440,13 +405,6 @@ describe('CreateProjectPage', () => {
         id: 1,
         name: 'My draft',
         data: {
-          coordinator: {
-            first_name: 'Draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
@@ -522,13 +480,6 @@ describe('CreateProjectPage', () => {
 
       await waitFor(() => {
         expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', {
-          coordinator: {
-            first_name: 'draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: {
             project_name: '',
             project_programs: [],
@@ -556,13 +507,6 @@ describe('CreateProjectPage', () => {
         id: 1,
         name: 'My draft',
         data: {
-          coordinator: {
-            first_name: 'Draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
@@ -601,13 +545,6 @@ describe('CreateProjectPage', () => {
 
       await waitFor(() => {
         expect(mockUseApi.draft.updateDraft).toHaveBeenCalledWith(1, 'my new draft project name', {
-          coordinator: {
-            first_name: 'my new draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: {
             project_name: '',
             project_programs: [],
