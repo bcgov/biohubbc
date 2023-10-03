@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -16,6 +17,9 @@ import SurveyObservations from './survey-observations/SurveyObservations';
 import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
+import { useHistory } from 'react-router';
+import { Toolbar } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -27,6 +31,7 @@ import SurveyHeader from './SurveyHeader';
 const SurveyPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
+  const history = useHistory();
 
   useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
 
@@ -40,6 +45,44 @@ const SurveyPage: React.FC = () => {
       <Container maxWidth="xl" sx={{py: 3}}>
 
           <Paper elevation={0}>
+            <Toolbar>
+              <Typography component="h3" variant="h4"
+                sx={{
+                  flex: '1 1 auto'
+                }}
+              >
+                Observations
+              </Typography>
+              <Button
+                title="Submit Survey Data and Documents"
+                color="primary"
+                variant="contained"
+                onClick={() => history.push('observations')}>
+                Manage Observations
+              </Button>
+            </Toolbar>
+            <Box sx={{height: '600px', background: '#ddd'}}>
+              
+            </Box>
+          </Paper>
+
+          <Box mt={3}>
+            <Paper elevation={0}>
+              <SurveyAnimals />
+            </Paper>
+          </Box>
+
+          <Box mt={3}>
+            <Paper elevation={0}>
+              <SurveyAttachments />
+            </Paper>
+          </Box>
+
+          <Paper elevation={0} sx={{mt: 3}}>
+            <SurveyDetails />
+          </Paper>
+
+          <Paper elevation={0} sx={{display: 'none'}}>
             <SurveyStudyArea />
           </Paper>
 
@@ -67,11 +110,6 @@ const SurveyPage: React.FC = () => {
               <Box mb={3}>
                 <Paper elevation={0}>
                   <SurveyAttachments />
-                </Paper>
-              </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveyAnimals />
                 </Paper>
               </Box>
               <Box mb={3}>

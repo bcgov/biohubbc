@@ -9,7 +9,6 @@ import {
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-// import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -140,14 +139,13 @@ const SurveyHeader = () => {
       <Paper square={true} elevation={0}
         sx={{
           pt: 3,
-          pb: 3.5,
-          px: 3
+          pb: 3.
         }}
       >
-        <Container maxWidth="xl">
+        <Container maxWidth="xl" >
           <Breadcrumbs
             sx={{
-              mb: 1
+              mb: 1.5
             }}
           >
             <Link 
@@ -162,24 +160,32 @@ const SurveyHeader = () => {
               {surveyWithDetails.surveyData.survey_details.survey_name}
             </Typography>
           </Breadcrumbs>
-          <Box display="flex" justifyContent="space-between">
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            gap="1.5rem"
+            sx={{
+              flexDirection: { xs: 'column', lg: 'row' }
+            }}
+          >
             <Box>
-              <Typography 
+              <Typography
                 variant="h2" 
-                component="h1">
+                component="h1"
+                sx={{
+                  display: 'block',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis'
+                }} 
+                >
                 {surveyWithDetails.surveyData.survey_details.survey_name}
               </Typography>
-              <Box mt={1} display="flex" alignItems="center">
-                {/* <Chip size="small" label="Planning" color="info"
-                  sx={{
-                    fontSize: '12px',
-                    fontWeight: 700
-                  }}
-                /> */}
+              <Box mt={1} display="flex" alignItems="center" flexWrap="wrap">
                 <Typography
                   className="info"
                   component="span"
-                  variant="subtitle2"
+                  variant="subtitle1"
                   color='textSecondary'
                   sx={{
                     display: 'flex',
@@ -192,12 +198,12 @@ const SurveyHeader = () => {
                     }
                   }}
                 >
-                  <Icon path={mdiCircle} size={0.75}/>
-                  &nbsp;&nbsp;Status: Planning
+                  <Icon path={mdiCircle} size={0.875}/>
+                  <Typography component="span" sx={{ml: 0.75}}>Status: Planning</Typography>
                 </Typography>
                 <Typography
                   component="span"
-                  variant="subtitle2"
+                  variant="subtitle1"
                   color='textSecondary'
                   sx={{
                     display: 'flex',
@@ -207,28 +213,19 @@ const SurveyHeader = () => {
                     }
                   }}
                 >
-                  <Icon path={mdiCalendarRangeOutline} size={0.75} />
-                  &nbsp;&nbsp;Start/End Date:&nbsp;&nbsp;
-                  {getFormattedDateRangeString(
-                    DATE_FORMAT.ShortMediumDateFormat,
-                    surveyWithDetails.surveyData.survey_details.start_date,
-                    surveyWithDetails.surveyData.survey_details.end_date
-                  )}
+                  <Icon path={mdiCalendarRangeOutline} size={0.875} />
+                  <Typography component="span" sx={{ml: 0.75}}>
+                    Start/End Date:&nbsp;&nbsp;
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.MediumDateFormat,
+                      surveyWithDetails.surveyData.survey_details.start_date,
+                      surveyWithDetails.surveyData.survey_details.end_date
+                    )}
+                  </Typography>
                 </Typography>
               </Box>
             </Box>
             <Box display="flex" alignItems="flex-start" flex="0 0 auto">
-              <Button
-                title="Submit Survey Data and Documents"
-                color="primary"
-                variant="contained"
-                onClick={() => history.push('observations')}
-                sx={{
-                  minWidth: 7,
-                  marginRight: 1
-                }}>
-                Manage Observations
-              </Button>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <Button
                   title="Submit Survey Data and Documents"
@@ -236,6 +233,7 @@ const SurveyHeader = () => {
                   variant="contained"
                   onClick={() => setPublishSurveyDialogOpen(true)}
                   sx={{
+                    display: 'none',
                     minWidth: '7rem'
                   }}>
                   Submit
@@ -253,8 +251,7 @@ const SurveyHeader = () => {
                   color="primary"
                   startIcon={<Icon path={mdiCogOutline} size={1} />}
                   endIcon={<Icon path={mdiChevronDown} size={1} />}
-                  onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}
-                  style={{ marginLeft: '0.5rem' }}>
+                  onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
                   Settings
                 </Button>
               </ProjectRoleGuard>
