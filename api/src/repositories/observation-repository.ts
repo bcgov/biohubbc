@@ -144,7 +144,7 @@ export class ObservationRepository extends BaseRepository {
             observation.latitude,
             observation.longitude,
             `'${moment(observation.observation_date).format('YYYY-MM-DD')}'`,
-            `'${moment(observation.observation_time).format('hh:mm:ss')}'`
+            `'${moment(observation.observation_time).format('HH:mm:ss')}'`
           ].join(', ')})`;
         })
         .join(', ')
