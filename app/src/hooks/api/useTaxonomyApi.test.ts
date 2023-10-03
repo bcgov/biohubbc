@@ -46,7 +46,7 @@ describe('useTaxonomyApi', () => {
 
     mock.onGet('/api/taxonomy/species/list').reply(200, res);
 
-    const result = await useTaxonomyApi(axios).getSpeciesFromIds({ searchResponse: [1, 2] });
+    const result = await useTaxonomyApi(axios).getSpeciesFromIds([1, 2]);
 
     expect(result).toEqual(res);
   });

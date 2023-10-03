@@ -29,6 +29,7 @@ export const TelemetryFileUpload: React.FC<{ attachmentType: AttachmentType; ind
             ? ProjectSurveyAttachmentValidExtensions.KEYX
             : ProjectSurveyAttachmentValidExtensions.CONFIG
       }}
+      hideDropZoneOnMaxFiles={true}
       replace={true}
       status={UploadFileStatus.STAGED}
     />

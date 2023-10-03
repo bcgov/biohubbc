@@ -99,8 +99,13 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Number of rows affected',
-            type: 'number'
+            title: 'Deployment response object',
+            type: 'object',
+            properties: {
+              message: {
+                type: 'string'
+              }
+            }
           }
         }
       }
@@ -198,8 +203,13 @@ PATCH.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Number of rows affected',
-            type: 'number'
+            title: 'Deployment response object',
+            type: 'object',
+            properties: {
+              message: {
+                type: 'string'
+              }
+            }
           }
         }
       }
@@ -236,10 +246,10 @@ export function deployDevice(): RequestHandler {
       await connection.open();
       const override_deployment_id = v4();
       req.body.deployment_id = override_deployment_id;
-      const surveyEntry = await surveyCritterService.upsertDeployment(critterId, req.body.deployment_id);
+      await surveyCritterService.upsertDeployment(critterId, req.body.deployment_id);
       await bctw.deployDevice(req.body);
       await connection.commit();
-      return res.status(201).json(surveyEntry);
+      return res.status(201).json({ message: 'Deployment created.' });
     } catch (error) {
       defaultLog.error({ label: 'addDeployment', message: 'error', error });
       await connection.rollback();
@@ -262,10 +272,10 @@ export function updateDeployment(): RequestHandler {
     const bctw = new BctwService(user);
     try {
       await connection.open();
-      const surveyEntry = await surveyCritterService.upsertDeployment(critterId, req.body.deployment_id);
+      await surveyCritterService.upsertDeployment(critterId, req.body.deployment_id);
       await bctw.updateDeployment(req.body);
       await connection.commit();
-      return res.status(200).json(surveyEntry);
+      return res.status(200).json({ message: 'Deployment updated.' });
     } catch (error) {
       defaultLog.error({ label: 'updateDeployment', message: 'error', error });
       console.log(JSON.stringify((error as Error).message));

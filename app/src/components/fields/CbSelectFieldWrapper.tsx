@@ -1,7 +1,7 @@
 import { FormControl, FormHelperText, InputLabel, Select, SelectProps } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { get } from 'lodash-es';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ICbSelectSharedProps } from './CbSelectField';
 
 interface CbSelectWrapperProps extends ICbSelectSharedProps {

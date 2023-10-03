@@ -26,8 +26,19 @@ export class SurveyCritterService extends DBService {
    * @param {string} critterId
    * @returns {*}
    */
-  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<number> {
+  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<void> {
     return this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
+  }
+
+  /**
+   * Update critter already in survey. Only touches audit columns.
+   *
+   * @param {number} surveyId
+   * @param {string} critterBaseCritterId
+   * @returns {*}
+   */
+  async updateCritter(critterId: number, critterBaseCritterId: string): Promise<void> {
+    return this.critterRepository.updateCritter(critterId, critterBaseCritterId);
   }
 
   /**
@@ -35,7 +46,7 @@ export class SurveyCritterService extends DBService {
    * @param {string} critterId
    * @returns {*}
    */
-  async removeCritterFromSurvey(critterId: number): Promise<number> {
+  async removeCritterFromSurvey(critterId: number): Promise<void> {
     return this.critterRepository.removeCritterFromSurvey(critterId);
   }
 
@@ -46,7 +57,7 @@ export class SurveyCritterService extends DBService {
    * @param {id} deplyomentId
    * @returns {*}
    */
-  async upsertDeployment(critterId: number, deplyomentId: string): Promise<number> {
+  async upsertDeployment(critterId: number, deplyomentId: string): Promise<void> {
     return this.critterRepository.upsertDeployment(critterId, deplyomentId);
   }
 

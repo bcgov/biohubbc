@@ -32,7 +32,8 @@ const CollectionUnitAnimalForm = () => {
   const newCollectionUnit = (): IAnimalCollectionUnit => ({
     _id: v4(),
     collection_unit_id: '',
-    collection_category_id: ''
+    collection_category_id: '',
+    critter_collection_unit_id: undefined
   });
 
   //Animals may have multiple collection units, but only one instance of each category.

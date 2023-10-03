@@ -1,7 +1,9 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
+import { IObservationTableRow } from 'contexts/observationsContext';
 import { GeoJsonProperties } from 'geojson';
 import {
   IGetObservationSubmissionResponse,
+  IGetSurveyObservationsResponse,
   ISpatialData,
   IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
@@ -172,6 +174,45 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Insert/updates all survey observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {IObservationTableRow[]} surveyObservations
+   * @return {*}
+   */
+  const insertUpdateObservationRecords = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservations: IObservationTableRow[]
+  ): Promise<IObservationTableRow[]> => {
+    const { data } = await axios.put<IGetSurveyObservationsResponse>(
+      `/api/project/${projectId}/survey/${surveyId}/observation`,
+      { surveyObservations }
+    );
+
+    return data.surveyObservations;
+  };
+
+  /**
+   * Retrieves all survey observation records for the given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IObservationTableRow[]>}
+   */
+  const getObservationRecords = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetSurveyObservationsResponse> => {
+    const { data } = await axios.get<IGetSurveyObservationsResponse>(
+      `/api/project/${projectId}/survey/${surveyId}/observation`
+    );
+
+    return data;
+  };
+
   return {
     uploadObservationSubmission,
     getObservationSubmission,
@@ -181,7 +222,9 @@ const useObservationApi = (axios: AxiosInstance) => {
     getOccurrencesForView,
     processOccurrences,
     processDWCFile,
-    getSpatialMetadata
+    getSpatialMetadata,
+    insertUpdateObservationRecords,
+    getObservationRecords
   };
 };
 

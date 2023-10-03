@@ -3,7 +3,6 @@ import { useFormikContext } from 'formik';
 import { ICbSelectRows } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import useIsMounted from 'hooks/useIsMounted';
 import get from 'lodash-es/get';
 import React, { useEffect, useMemo } from 'react';
 import { CbSelectWrapper } from './CbSelectFieldWrapper';
@@ -39,19 +38,14 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
   const { name, label, route, param, query, handleChangeSideEffect, controlProps, disabledValues } = props;
 
   const api = useCritterbaseApi();
-  const isMounted = useIsMounted();
-  const { data, load, refresh, hasLoaded } = useDataLoader(api.lookup.getSelectOptions);
-  const { values, handleChange, setFieldValue, setFieldTouched } = useFormikContext<ICbSelectOption>();
+  const { data, refresh } = useDataLoader(api.lookup.getSelectOptions);
+  const { values, handleChange } = useFormikContext<ICbSelectOption>();
 
   const val = get(values, name) ?? '';
 
-  load({ route, param, query });
-
   useEffect(() => {
-    if (hasLoaded) {
-      // Only refresh when the query or param changes
-      isMounted() && refresh({ route, param, query });
-    }
+    // Only refresh when the query or param changes
+    refresh({ route, param, query });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, param]);
 
@@ -63,13 +57,10 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
       return false;
     }
     const inRange = data.some((d) => (typeof d === 'string' ? d === val : d.id === val));
-    // For convenience reset form fields here
-    if (!inRange) {
-      setFieldValue(name, '');
-      setFieldTouched(name);
-    }
+
     return inRange;
-  }, [data, val, setFieldValue, setFieldTouched, name]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, val, name]);
 
   const innerChangeHandler = (e: SelectChangeEvent<any>) => {
     handleChange(e);

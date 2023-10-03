@@ -52,7 +52,8 @@ const MeasurementAnimalForm = () => {
 
   const newMeasurement: IAnimalMeasurement = {
     _id: v4(),
-
+    measurement_qualitative_id: undefined,
+    measurement_quantitative_id: undefined,
     taxon_measurement_id: '',
     value: '' as unknown as number,
     qualitative_option_id: '',

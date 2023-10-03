@@ -23,6 +23,7 @@ interface ISurveyAnimalsTableProps {
   onRemoveCritter: (critter_id: number) => void;
   onAddDevice: (critter_id: number) => void;
   onEditDevice: (device_id: number) => void;
+  onEditCritter: (critter_id: number) => void;
 }
 
 const noOpPlaceHolder = (critter_id: number) => {
@@ -35,19 +36,27 @@ export const SurveyAnimalsTable = ({
   onMenuOpen,
   onRemoveCritter,
   onAddDevice,
-  onEditDevice
+  onEditDevice,
+  onEditCritter
 }: ISurveyAnimalsTableProps): JSX.Element => {
   const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
-    ? animalData.map((animal) => {
-        const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
-        return {
-          ...animal,
-          deployments: deployments
-        };
-      })
+    ? animalData
+        .sort((a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()) //This sort needed to avoid arbitrary reordering of the table when it refreshes after adding or editing
+        .map((animal) => {
+          const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
+          return {
+            ...animal,
+            deployments: deployments
+          };
+        })
     : animalData;
 
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
+    {
+      field: 'taxon',
+      headerName: 'Species',
+      flex: 1
+    },
     {
       field: 'animal_id',
       headerName: 'Alias',
@@ -57,12 +66,7 @@ export const SurveyAnimalsTable = ({
       field: 'wlh_id',
       headerName: 'WLH ID',
       flex: 1,
-      renderCell: (params) => <Typography>{params.value ? params.value : 'None'}</Typography>
-    },
-    {
-      field: 'taxon',
-      headerName: 'Taxon',
-      flex: 1
+      renderCell: (params) => <>{params.value ? params.value : 'None'}</>
     },
     {
       field: 'create_timestamp',
@@ -112,7 +116,7 @@ export const SurveyAnimalsTable = ({
           onMenuOpen={onMenuOpen}
           onAddDevice={onAddDevice}
           onRemoveDevice={noOpPlaceHolder}
-          onEditCritter={noOpPlaceHolder}
+          onEditCritter={onEditCritter}
           onEditDevice={onEditDevice}
           onRemoveCritter={onRemoveCritter}
         />

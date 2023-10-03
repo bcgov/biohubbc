@@ -46,7 +46,8 @@ const MarkingAnimalForm = () => {
     taxon_marking_body_location_id: '',
     primary_colour_id: '',
     secondary_colour_id: '',
-    marking_comment: ''
+    marking_comment: '',
+    marking_id: undefined
   };
 
   return (

@@ -1,5 +1,5 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
-import { omit, omitBy } from 'lodash-es';
+import { isEqual as deepEquals, omit, omitBy } from 'lodash-es';
 import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
@@ -65,12 +65,15 @@ export const AnimalGeneralSchema = yup.object({}).shape({
   animal_id: yup.string().required(req),
   taxon_name: yup.string(),
   wlh_id: yup.string(),
-  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex))
+  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)),
+  critter_id: yup.string()
 });
 
 export const AnimalCaptureSchema = yup.object({}).shape({
   _id: yup.string().required(),
-
+  capture_id: yup.string(),
+  capture_location_id: yup.string(),
+  release_location_id: yup.string(),
   capture_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required(req) }),
   capture_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required(req) }),
   capture_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
@@ -97,13 +100,13 @@ export const AnimalCaptureSchema = yup.object({}).shape({
     then: numSchema.required(req)
   }),
   release_coordinate_uncertainty: numSchema.when('show_release', { is: true, then: numSchema.required(req) }),
-  release_timestamp: dateSchema.when('show_release', { is: true, then: dateSchema.required(req) }),
+  release_timestamp: dateSchema /*.when('show_release', { is: true, then: dateSchema.required(req) }),*/,
   release_comment: yup.string().optional()
 });
 
 export const AnimalMarkingSchema = yup.object({}).shape({
   _id: yup.string().required(),
-
+  marking_id: yup.string(),
   marking_type_id: yup.string().required(req),
   taxon_marking_body_location_id: yup.string().required(req),
   primary_colour_id: yup.string().optional(),
@@ -114,13 +117,15 @@ export const AnimalMarkingSchema = yup.object({}).shape({
 export const AnimalCollectionUnitSchema = yup.object({}).shape({
   _id: yup.string().required(),
   collection_unit_id: yup.string().required(),
-  collection_category_id: yup.string().required()
+  collection_category_id: yup.string().required(),
+  critter_collection_unit_id: yup.string()
 });
 
 export const AnimalMeasurementSchema = yup.object({}).shape(
   {
     _id: yup.string().required(),
-
+    measurement_qualitative_id: yup.string(),
+    measurement_quantitative_id: yup.string(),
     taxon_measurement_id: yup.string().required(req),
     qualitative_option_id: yup.string().when('value', {
       is: (value: '' | number) => value === 0 || !value,
@@ -140,7 +145,8 @@ export const AnimalMeasurementSchema = yup.object({}).shape(
 
 export const AnimalMortalitySchema = yup.object({}).shape({
   _id: yup.string().required(),
-
+  mortality_id: yup.string(),
+  location_id: yup.string(),
   mortality_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required(req) }),
   mortality_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required(req) }),
   mortality_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required(req) }),
@@ -148,12 +154,12 @@ export const AnimalMortalitySchema = yup.object({}).shape({
   mortality_timestamp: dateSchema.required(req),
   mortality_coordinate_uncertainty: numSchema,
   mortality_comment: yup.string(),
-  mortality_pcod_reason: yup.string().uuid().required(req),
-  mortality_pcod_confidence: yup.string(),
-  mortality_pcod_taxon_id: yup.string().uuid(),
-  mortality_ucod_reason: yup.string().uuid(),
-  mortality_ucod_confidence: yup.string(),
-  mortality_ucod_taxon_id: yup.string().uuid(),
+  proximate_cause_of_death_id: yup.string().uuid().required(req),
+  proximate_cause_of_death_confidence: yup.string().nullable(),
+  proximate_predated_by_taxon_id: yup.string().uuid(),
+  ultimate_cause_of_death_id: yup.string().uuid(),
+  ultimate_cause_of_death_confidence: yup.string(),
+  ultimate_predated_by_taxon_id: yup.string().uuid(),
   projection_mode: yup.mixed().oneOf(['wgs', 'utm'])
 });
 
@@ -217,6 +223,8 @@ type ICritterMortality = Omit<
   ICritterID &
     IAnimalMortality & {
       location_id: string;
+      mortality_id: string | undefined;
+      location?: ICritterLocation;
     },
   | '_id'
   | 'mortality_utm_easting'
@@ -230,8 +238,12 @@ type ICritterMortality = Omit<
 type ICritterCapture = Omit<
   ICritterID &
     Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
+      capture_id: string | undefined;
       capture_location_id: string;
       release_location_id: string | undefined;
+      capture_location?: ICritterLocation;
+      release_location?: ICritterLocation;
+      force_create_release?: boolean;
     },
   '_id'
 >;
@@ -252,11 +264,13 @@ export const newFamilyIdPlaceholder = 'New Family';
 type ICritterFamilyParent = {
   family_id: string;
   parent_critter_id: string;
+  _delete?: boolean;
 };
 
 type ICritterFamilyChild = {
   family_id: string;
   child_critter_id: string;
+  _delete?: boolean;
 };
 
 type ICritterFamily = {
@@ -303,35 +317,54 @@ export class Critter {
       const c_loc_id = v4();
       let r_loc_id: string | undefined = undefined;
 
-      formattedLocations.push({
-        location_id: c_loc_id,
+      const capture_location = {
         latitude: Number(capture.capture_latitude),
         longitude: Number(capture.capture_longitude),
         coordinate_uncertainty: Number(capture.capture_coordinate_uncertainty),
         coordinate_uncertainty_unit: 'm'
-      });
-
+      };
+      let release_location = undefined;
       if (capture.release_latitude && capture.release_longitude) {
         r_loc_id = v4();
 
-        formattedLocations.push({
-          location_id: r_loc_id,
+        release_location = {
           latitude: Number(capture.release_latitude),
           longitude: Number(capture.release_longitude),
           coordinate_uncertainty: Number(capture.release_coordinate_uncertainty),
           coordinate_uncertainty_unit: 'm'
-        });
+        };
+      }
+
+      let force_create_release = false;
+      if (release_location && !deepEquals(capture_location, release_location)) {
+        force_create_release = true;
       }
 
       formattedCaptures.push({
+        force_create_release: force_create_release,
+        capture_id: cleanedCapture.capture_id,
         critter_id: this.critter_id,
-        capture_location_id: c_loc_id,
-        release_location_id: r_loc_id,
+        capture_location_id: cleanedCapture.capture_location_id ?? c_loc_id,
+        release_location_id: cleanedCapture.release_location_id ?? r_loc_id,
         capture_timestamp: cleanedCapture.capture_timestamp,
         release_timestamp: cleanedCapture.release_timestamp,
         capture_comment: cleanedCapture.capture_comment,
-        release_comment: cleanedCapture.release_comment
+        release_comment: cleanedCapture.release_comment,
+        capture_location: cleanedCapture.capture_location_id
+          ? { ...capture_location, location_id: cleanedCapture.capture_location_id }
+          : undefined,
+        release_location:
+          release_location && cleanedCapture.release_location_id
+            ? { ...release_location, location_id: cleanedCapture.release_location_id }
+            : undefined
       });
+
+      if (!cleanedCapture.capture_location_id) {
+        formattedLocations.push({ ...capture_location, location_id: c_loc_id });
+      }
+      if (release_location && !cleanedCapture.release_location_id) {
+        formattedLocations.push({ ...release_location, location_id: r_loc_id });
+      }
     });
 
     return { captures: formattedCaptures, capture_locations: formattedLocations };
@@ -344,26 +377,33 @@ export class Critter {
       const cleanedMortality = omitBy(mortality, (value) => value === '') as IAnimalMortality;
       const loc_id = v4();
 
-      formattedLocations.push({
-        location_id: loc_id,
+      const mortality_location = {
         latitude: Number(mortality.mortality_latitude),
         longitude: Number(mortality.mortality_latitude),
         coordinate_uncertainty: Number(mortality.mortality_latitude),
         coordinate_uncertainty_unit: 'm'
-      });
+      };
 
       formattedMortalities.push({
         critter_id: this.critter_id,
-        location_id: loc_id,
+        location_id: cleanedMortality.location_id ?? loc_id,
+        mortality_id: cleanedMortality.mortality_id,
         mortality_timestamp: cleanedMortality.mortality_timestamp,
         mortality_comment: cleanedMortality.mortality_comment,
-        mortality_pcod_taxon_id: cleanedMortality.mortality_pcod_taxon_id,
-        mortality_pcod_reason: cleanedMortality.mortality_pcod_reason,
-        mortality_pcod_confidence: cleanedMortality.mortality_pcod_confidence,
-        mortality_ucod_reason: cleanedMortality.mortality_ucod_reason,
-        mortality_ucod_confidence: cleanedMortality.mortality_ucod_confidence,
-        mortality_ucod_taxon_id: cleanedMortality.mortality_ucod_taxon_id
+        proximate_predated_by_taxon_id: cleanedMortality.proximate_predated_by_taxon_id,
+        proximate_cause_of_death_id: cleanedMortality.proximate_cause_of_death_id,
+        proximate_cause_of_death_confidence: cleanedMortality.proximate_cause_of_death_confidence,
+        ultimate_cause_of_death_id: cleanedMortality.ultimate_cause_of_death_id,
+        ultimate_cause_of_death_confidence: cleanedMortality.ultimate_cause_of_death_confidence,
+        ultimate_predated_by_taxon_id: cleanedMortality.ultimate_predated_by_taxon_id,
+        location: cleanedMortality.location_id
+          ? { ...mortality_location, location_id: cleanedMortality.location_id }
+          : undefined
       });
+
+      if (!cleanedMortality.location_id) {
+        formattedLocations.push({ ...mortality_location, location_id: loc_id });
+      }
     });
     return { mortalities: formattedMortalities, mortalities_locations: formattedLocations };
   }
@@ -396,6 +436,8 @@ export class Critter {
 
     return filteredQualitativeMeasurements.map((qual_measurement) => ({
       critter_id: this.critter_id,
+      measurement_qualitative_id: qual_measurement.measurement_qualitative_id,
+      measurement_quantitative_id: undefined,
       taxon_measurement_id: qual_measurement.taxon_measurement_id,
       qualitative_option_id: qual_measurement.qualitative_option_id,
       measured_timestamp: qual_measurement.measured_timestamp || undefined,
@@ -406,7 +448,6 @@ export class Critter {
   _formatCritterQuantitativeMeasurements(animal_measurements: IAnimalMeasurement[]): ICritterQuantitativeMeasurement[] {
     const filteredQuantitativeMeasurements = animal_measurements.filter((measurement) => {
       if (measurement.qualitative_option_id && measurement.value) {
-        console.log('Quantitative measurement must only contain a value and no qualitative_option_id');
         return false;
       }
       return measurement.value;
@@ -414,6 +455,8 @@ export class Critter {
     return filteredQuantitativeMeasurements.map((quant_measurement) => {
       return {
         critter_id: this.critter_id,
+        measurement_qualitative_id: undefined,
+        measurement_quantitative_id: quant_measurement.measurement_quantitative_id,
         taxon_measurement_id: quant_measurement.taxon_measurement_id,
         value: Number(quant_measurement.value),
         measured_timestamp: quant_measurement.measured_timestamp || undefined,
@@ -423,31 +466,39 @@ export class Critter {
   }
 
   _formatCritterFamilyRelationships(animal_family: IAnimalRelationship[]): ICritterRelationships {
-    let newFamily = undefined;
+    let newFamily: ICritterFamily | undefined = undefined;
     const families: ICritterFamily[] = [];
     for (const fam of animal_family) {
+      //If animal form had the newFamilyIdPlaceholder used at some point, make a real uuid for the new family and add it for creation.
       if (fam.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };
           families.push(newFamily);
         }
-        fam.family_id = newFamily.family_id;
       }
     }
 
     const parents = animal_family
       .filter((parent) => parent.relationship === 'parent')
-      .map((parent_fam) => ({ family_id: parent_fam.family_id, parent_critter_id: this.critter_id }));
+      .map((parent_fam) => ({
+        family_id:
+          parent_fam.family_id === newFamilyIdPlaceholder && newFamily ? newFamily.family_id : parent_fam.family_id,
+        parent_critter_id: this.critter_id
+      }));
 
     const children = animal_family
       .filter((children) => children.relationship === 'child')
-      .map((children_fam) => ({ family_id: children_fam.family_id, child_critter_id: this.critter_id }));
+      .map((children_fam) => ({
+        family_id:
+          children_fam.family_id === newFamilyIdPlaceholder && newFamily ? newFamily.family_id : children_fam.family_id,
+        child_critter_id: this.critter_id
+      }));
     //Currently not supporting siblings in the UI
     return { parents, children, families };
   }
 
   constructor(animal: IAnimal) {
-    this.critter_id = v4();
+    this.critter_id = animal.general.critter_id ? animal.general.critter_id : v4();
     this.taxon_id = animal.general.taxon_id;
     this.taxon_name = animal.general.taxon_name;
     this.animal_id = animal.general.animal_id;
