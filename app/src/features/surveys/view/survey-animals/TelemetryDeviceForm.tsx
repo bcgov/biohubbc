@@ -14,8 +14,8 @@ import { AttachmentType } from 'constants/attachments';
 import { Form, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
+import { dateRangesOverlap } from 'utils/Utils';
 import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import { TelemetryFileUpload } from './TelemetryFileUpload';
 
@@ -150,17 +150,18 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
 
   useEffect(() => {
     const errors: { attachment_start?: string } = {};
-    console.log(`useEffect deployments: ${JSON.stringify(values[index].deployments, null, 2)}`);
-    console.log(`useEffect deviceData: ${JSON.stringify(bctwDeviceData?.deployments, null, 2)}`);
     for (const deployment of values[index].deployments ?? []) {
       const existingDeployment = bctwDeviceData?.deployments?.find(
         (a) =>
           deployment.deployment_id !== a.deployment_id &&
-          moment(deployment.attachment_start).isSameOrBefore(moment(a.attachment_end)) &&
-          (moment(deployment.attachment_end).isSameOrAfter(moment(a.attachment_start)) || a.attachment_end == null)
+          dateRangesOverlap(
+            a.attachment_start,
+            a.attachment_end,
+            deployment.attachment_start,
+            deployment.attachment_end
+          )
       ); //Check if there is already a deployment that is not the same id as this one and overlaps the time we are trying to upload.
       if (existingDeployment) {
-        console.log('Raised error!');
         errors.attachment_start = `Cannot make a deployment starting on this date, it will conflict with deployment ${
           existingDeployment.deployment_id
         } 

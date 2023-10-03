@@ -14,7 +14,7 @@ const numSchema = yup.number().typeError(mustBeNum);
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   deployment_id: yup.string(),
   attachment_start: yup.string().required(req),
-  attachment_end: yup.string()
+  attachment_end: yup.string().nullable()
 });
 
 export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
