@@ -14,7 +14,7 @@ import { useContext, useState } from 'react';
 const ObservationComponent = () => {
   const observationsContext = useContext(ObservationsContext);
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [removeAllDialogOpen, setRemoveAllDialogOpen] = useState<boolean>(false);
+  const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
 
   const handleSaveChanges = () => {
     setIsSaving(true);
@@ -35,13 +35,13 @@ const ObservationComponent = () => {
         yesButtonLabel={'Discard Changes'}
         noButtonProps={{ color: 'primary', variant: 'contained' }}
         noButtonLabel={'Cancel'}
-        open={removeAllDialogOpen}
+        open={showConfirmRemoveAllDialog}
         onYes={() => {
-          setRemoveAllDialogOpen(false);
+          setShowConfirmRemoveAllDialog(false);
           observationsContext.revertRecords();
         }}
-        onClose={() => setRemoveAllDialogOpen(false)}
-        onNo={() => setRemoveAllDialogOpen(false)}
+        onClose={() => setShowConfirmRemoveAllDialog(false)}
+        onNo={() => setShowConfirmRemoveAllDialog(false)}
       />
       <Box
         display="flex"
@@ -78,7 +78,7 @@ const ObservationComponent = () => {
                 variant="contained"
                 color="primary"
                 startIcon={<Icon path={mdiTrashCan} size={1} />}
-                onClick={() => setRemoveAllDialogOpen(true)}>
+                onClick={() => setShowConfirmRemoveAllDialog(true)}>
                 Discard Changes
               </Button>
             </>
