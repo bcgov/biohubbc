@@ -390,6 +390,8 @@ export const CreateSamplingSiteI18N = {
 };
 
 export const ObservationsTableI18N = {
-  removeAllDialogTitle: 'Title (todo)',
-  removeAllDialogText: 'Text (todo)'
+  removeAllDialogTitle: 'Discard changes?',
+  removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',
+  removeRecordDialogTitle: 'Discard record?',
+  removeRecordDialogText: 'Are you sure you want to discard this record? This action cannot be undone.'
 }

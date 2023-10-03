@@ -34,7 +34,7 @@ const ObservationComponent = () => {
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Discard Changes'}
         noButtonProps={{ color: 'primary', variant: 'contained' }}
-        noButtonLabel={'Close'}
+        noButtonLabel={'Cancel'}
         open={removeAllDialogOpen}
         onYes={() => {
           setRemoveAllDialogOpen(false);

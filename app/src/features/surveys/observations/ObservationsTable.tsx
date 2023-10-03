@@ -2,8 +2,10 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import YesNoDialog from 'components/dialog/YesNoDialog';
+import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 const ObservationsTable = () => {
   const observationColumns: GridColDef<IObservationTableRow>[] = [
@@ -97,7 +99,7 @@ const ObservationsTable = () => {
       disableColumnMenu: true,
       resizable: false,
       getActions: (params) => [
-        <IconButton onClick={() => handleDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
+        <IconButton onClick={() => handleConfirmDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
           <Icon path={mdiTrashCanOutline} size={1} />
         </IconButton>
       ]
@@ -107,6 +109,9 @@ const ObservationsTable = () => {
   const observationsContext = useContext(ObservationsContext);
   const { observationsDataLoader } = observationsContext;
   const apiRef = observationsContext._muiDataGridApiRef;
+
+  const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
+  const showConfirmDeleteDialog = Boolean(deletingObservation);
 
   useEffect(() => {
     if (observationsDataLoader.data?.surveyObservations) {
@@ -120,6 +125,14 @@ const ObservationsTable = () => {
       observationsContext.setInitialRows(rows);
     }
   }, [observationsDataLoader.data]);
+
+  const handleCancelDeleteRow = () => {
+    setDeletingObservation(null);
+  }
+
+  const handleConfirmDeleteRow = (id: string | number) => {
+    setDeletingObservation(id);
+  }
 
   const handleDeleteRow = (id: string | number) => {
     observationsContext.markRecordWithUnsavedChanges(id);
@@ -148,54 +161,73 @@ const ObservationsTable = () => {
   };
 
   return (
-    <DataGrid
-      apiRef={apiRef}
-      editMode="row"
-      onCellClick={handleCellClick}
-      onRowEditStop={handleRowEditStop}
-      onRowEditStart={handleRowEditStart}
-      processRowUpdate={handleProcessRowUpdate}
-      columns={observationColumns}
-      rows={observationsContext.initialRows}
-      disableRowSelectionOnClick
-      localeText={{
-        noRowsLabel: 'No Records'
-      }}
-      sx={{
-        background: '#fff',
-        border: 'none',
-        '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
-          background: '#fff'
-        },
-        '& .MuiDataGrid-columnHeaderTitle': {
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          color: '#999'
-        },
-        '& .test': {
-          position: 'sticky',
-          right: 0,
-          top: 0,
-          borderLeft: '1px solid #ccc',
-          background: '#fff'
-        },
-        '& .MuiDataGrid-columnHeaders': {
-          position: 'relative'
-        },
-        '& .MuiDataGrid-columnHeaders:after': {
-          content: "''",
-          position: 'absolute',
-          right: 0,
-          width: '96px',
-          height: '80px',
-          borderLeft: '1px solid #ccc',
-          background: '#fff'
-        },
-        '& .MuiDataGrid-actionsCell': {
-          gap: 0
-        }
-      }}
-    />
+    <>
+      <YesNoDialog
+        dialogTitle={ObservationsTableI18N.removeRecordDialogTitle}
+        dialogText={ObservationsTableI18N.removeRecordDialogTitle}
+        yesButtonProps={{ color: 'error' }}
+        yesButtonLabel={'Discard Record'}
+        noButtonProps={{ color: 'primary', variant: 'contained' }}
+        noButtonLabel={'Cancel'}
+        open={showConfirmDeleteDialog}
+        onYes={() => {
+          if (deletingObservation) {
+            handleDeleteRow(deletingObservation);
+          }
+          setDeletingObservation(null);
+        }}
+        onClose={() => handleCancelDeleteRow()}
+        onNo={() => handleCancelDeleteRow()}
+      />
+      <DataGrid
+        apiRef={apiRef}
+        editMode="row"
+        onCellClick={handleCellClick}
+        onRowEditStop={handleRowEditStop}
+        onRowEditStart={handleRowEditStart}
+        processRowUpdate={handleProcessRowUpdate}
+        columns={observationColumns}
+        rows={observationsContext.initialRows}
+        disableRowSelectionOnClick
+        localeText={{
+          noRowsLabel: 'No Records'
+        }}
+        sx={{
+          background: '#fff',
+          border: 'none',
+          '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
+            background: '#fff'
+          },
+          '& .MuiDataGrid-columnHeaderTitle': {
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            color: '#999'
+          },
+          '& .test': {
+            position: 'sticky',
+            right: 0,
+            top: 0,
+            borderLeft: '1px solid #ccc',
+            background: '#fff'
+          },
+          '& .MuiDataGrid-columnHeaders': {
+            position: 'relative'
+          },
+          '& .MuiDataGrid-columnHeaders:after': {
+            content: "''",
+            position: 'absolute',
+            right: 0,
+            width: '96px',
+            height: '80px',
+            borderLeft: '1px solid #ccc',
+            background: '#fff'
+          },
+          '& .MuiDataGrid-actionsCell': {
+            gap: 0
+          }
+        }}
+      />
+    </>
   );
 };
 
