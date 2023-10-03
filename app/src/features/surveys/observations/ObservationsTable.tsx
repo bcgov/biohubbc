@@ -128,19 +128,15 @@ const ObservationsTable = () => {
 
   const handleCancelDeleteRow = () => {
     setDeletingObservation(null);
-  }
+  };
 
   const handleConfirmDeleteRow = (id: string | number) => {
     setDeletingObservation(id);
-  }
+  };
 
   const handleDeleteRow = (id: string | number) => {
     observationsContext.markRecordWithUnsavedChanges(id);
     apiRef.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
-  };
-
-  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, event) => {
-    observationsContext.markRecordWithUnsavedChanges(params.row.id);
   };
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
@@ -148,11 +144,14 @@ const ObservationsTable = () => {
   };
 
   const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
-    if (apiRef.current.state.editRows[params.row.id]) {
+    const { id } = params.row;
+
+    if (apiRef.current.state.editRows[id]) {
       return;
     }
 
-    apiRef.current.startRowEditMode({ id: params.row.id, fieldToFocus: params.field });
+    apiRef.current.startRowEditMode({ id, fieldToFocus: params.field });
+    observationsContext.markRecordWithUnsavedChanges(id);
   };
 
   const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
@@ -164,7 +163,7 @@ const ObservationsTable = () => {
     <>
       <YesNoDialog
         dialogTitle={ObservationsTableI18N.removeRecordDialogTitle}
-        dialogText={ObservationsTableI18N.removeRecordDialogTitle}
+        dialogText={ObservationsTableI18N.removeRecordDialogText}
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Discard Record'}
         noButtonProps={{ color: 'primary', variant: 'contained' }}
@@ -184,7 +183,6 @@ const ObservationsTable = () => {
         editMode="row"
         onCellClick={handleCellClick}
         onRowEditStop={handleRowEditStop}
-        onRowEditStart={handleRowEditStart}
         processRowUpdate={handleProcessRowUpdate}
         columns={observationColumns}
         rows={observationsContext.initialRows}

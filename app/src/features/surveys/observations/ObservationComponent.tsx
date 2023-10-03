@@ -30,7 +30,7 @@ const ObservationComponent = () => {
     <>
       <YesNoDialog
         dialogTitle={ObservationsTableI18N.removeAllDialogTitle}
-        dialogText={ObservationsTableI18N.removeAllDialogTitle}
+        dialogText={ObservationsTableI18N.removeAllDialogText}
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Discard Changes'}
         noButtonProps={{ color: 'primary', variant: 'contained' }}
