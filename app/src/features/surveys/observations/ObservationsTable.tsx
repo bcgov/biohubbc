@@ -81,7 +81,8 @@ const ObservationsTable = () => {
       type: 'number',
       editable: true,
       width: 150,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params) => String(params.row.latitude)
     },
     {
       field: 'longitude',
@@ -89,7 +90,8 @@ const ObservationsTable = () => {
       type: 'number',
       editable: true,
       width: 150,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params) => String(params.row.longitude)
     },
     {
       field: 'actions',
