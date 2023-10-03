@@ -84,7 +84,9 @@ const MethodForm = () => {
   const { values, errors, touched, handleChange } = formikProps;
 
   const codesContext = useContext(CodesContext);
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;

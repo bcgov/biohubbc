@@ -66,7 +66,9 @@ const ProjectsListPage: React.FC = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const codesContext = useContext(CodesContext);
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const projectsDataLoader = useDataLoader((filter?: IProjectAdvancedFilters) =>
     biohubApi.project.getProjectsList(filter)
