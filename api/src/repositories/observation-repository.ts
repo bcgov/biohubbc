@@ -164,11 +164,7 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .select(
-        '*',
-        knex.raw('latitude::double precision'),
-        knex.raw('longitude::double precision')
-      )
+      .select('*', knex.raw('latitude::double precision'), knex.raw('longitude::double precision'))
       .from('survey_observation')
       .where('survey_id', surveyId);
 
