@@ -120,7 +120,7 @@ const ObservationsTable = () => {
 
       observationsContext.setInitialRows(rows);
     }
-  }, [observationsDataLoader.data]);
+  }, [observationsContext, observationsDataLoader.data]);
 
   const handleDeleteRow = (id: string | number) => {
     observationsContext.markRecordWithUnsavedChanges(id);
