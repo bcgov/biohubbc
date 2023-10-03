@@ -133,10 +133,6 @@ export class ObservationRepository extends BaseRepository {
     sqlStatement.append(
       observations
         .map((observation) => {
-          console.log('__________________________');
-          console.log('__________________________');
-          console.log('__________________________');
-          console.log(moment(observation.observation_time).format('hh:mm:ss'));
           return `(${[
             observation['survey_observation_id'] || 'DEFAULT',
             surveyId,
@@ -170,7 +166,7 @@ export class ObservationRepository extends BaseRepository {
     `);
 
     sqlStatement.append(`RETURNING *;`);
-    console.log(sqlStatement.sql.toString());
+
     const response = await this.connection.sql(sqlStatement, ObservationRecord);
 
     return response.rows;

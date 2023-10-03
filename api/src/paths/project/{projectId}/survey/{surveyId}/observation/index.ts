@@ -318,12 +318,15 @@ export function insertUpdateSurveyObservations(): RequestHandler {
         return {
           survey_observation_id: record.survey_observation_id,
           wldtaxonomic_units_id: Number(record.wldtaxonomic_units_id),
+          survey_sample_site_id: record.survey_sample_site_id,
+          survey_sample_method_id: record.survey_sample_method_id,
+          survey_sample_period_id: record.survey_sample_period_id,
           latitude: record.latitude,
           longitude: record.longitude,
           count: record.count,
           observation_date: record.observation_date,
           observation_time: record.observation_time
-        };
+        } as InsertObservation | UpdateObservation;
       });
 
       const surveyObservations = await observationService.insertUpdateDeleteSurveyObservations(surveyId, records);
