@@ -1,4 +1,4 @@
-import { mdiImport } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Divider, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
@@ -341,6 +341,7 @@ const SurveyAnimals: React.FC = () => {
 
     setOpenDeviceDialog(false);
     refreshDeployments();
+    surveyContext.artifactDataLoader.refresh(projectId, surveyId);
   };
 
   const handleRemoveCritter = async () => {
@@ -363,6 +364,7 @@ const SurveyAnimals: React.FC = () => {
         dialogTitle={
           telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'Add Telemetry Device' : 'Edit Telemetry Devices'
         }
+        dialogSaveButtonLabel="Save"
         open={openDeviceDialog}
         component={{
           element: <TelemetryDeviceForm mode={telemetryFormMode} />,
@@ -389,11 +391,11 @@ const SurveyAnimals: React.FC = () => {
         onYes={handleRemoveCritter}
       />
       <H2ButtonToolbar
-        label="Individual Animals"
-        buttonLabel="Import"
-        buttonTitle="Import Animals"
+        label="Marked or Known Animals"
+        buttonLabel="Add Animal"
+        buttonTitle="Add Animal"
         buttonProps={{ variant: 'contained', color: 'primary' }}
-        buttonStartIcon={<Icon path={mdiImport} size={1} />}
+        buttonStartIcon={<Icon path={mdiPlus} size={1} />}
         buttonOnClick={toggleDialog}
       />
       <Divider></Divider>

@@ -37,8 +37,7 @@ const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
         value={get(values, props.name) ?? ''}
         onChange={handleChange}
         onBlur={handleBlur}
-        displayEmpty
-        inputProps={{ 'aria-label': 'Permit Type' }}>
+        displayEmpty>
         {bctwLookupLoader.data?.map((bctwValue: string | number) => {
           return (
             <MenuItem key={String(bctwValue)} value={bctwValue}>
