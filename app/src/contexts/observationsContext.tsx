@@ -68,7 +68,7 @@ export type IObservationsContext = {
   /**
    * API ref used to interface with an MUI DataGrid representing the observation records
    */
-  _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
+  _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity> | null;
 
   initialRows: IObservationTableRow[];
 
@@ -76,7 +76,7 @@ export type IObservationsContext = {
 };
 
 export const ObservationsContext = createContext<IObservationsContext>({
-  _muiDataGridApiRef: { current: null as unknown as GridApiCommunity },
+  _muiDataGridApiRef: null,
   observationsDataLoader: {} as DataLoader<never, IGetSurveyObservationsResponse, unknown>,
   unsavedRecordIds: [],
   initialRows: [],

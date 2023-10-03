@@ -1,5 +1,6 @@
 import { mdiDotsVertical, mdiTrashCan } from '@mdi/js';
 import Icon from '@mdi/react';
+import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
@@ -62,6 +63,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       flex: 1,
       minWidth: 250,
       disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
       renderCell: (params) => {
         return <TaxonomyDataGridViewCell dataGridProps={params} />;
       },
@@ -76,6 +79,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       flex: 1,
       minWidth: 200,
       disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
       preProcessEditCellProps: (params) => {
         return { ...params.props };
       },
@@ -109,6 +114,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       flex: 1,
       minWidth: 200,
       disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
       preProcessEditCellProps: (params) => {
         return { ...params.props };
       },
@@ -146,6 +153,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       flex: 1,
       minWidth: 200,
       disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
       preProcessEditCellProps: (params) => {
         return { ...params.props };
       },
@@ -182,7 +191,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       editable: true,
       type: 'number',
       minWidth: 100,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: 'observation_date',
@@ -191,7 +202,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'date',
       minWidth: 150,
       valueGetter: (params) => (params.row.observation_date ? new Date(params.row.observation_date) : null),
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: 'observation_time',
@@ -200,6 +213,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'string',
       width: 150,
       disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
       preProcessEditCellProps: (params) => {
         return { ...params.props };
       },
@@ -209,23 +224,23 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }
 
         if (moment.isMoment(params.value)) {
-          return <>{params.value.format('HH:mm:ss')}</>;
+          return <>{params.value.format('HH:mm')}</>;
         }
 
-        return <>{moment(params.value).format('HH:mm:ss')}</>;
+        return <>{moment(params.value).format('HH:mm')}</>;
       },
       renderEditCell: (params) => {
-        console.log(params.value);
         return (
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <TimePicker
               value={params.value}
               onChange={(value) => {
-                apiRef.current.setEditCellValue({ id: params.id, field: params.field, value: value });
+                apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
               }}
               onAccept={(value) => {
-                apiRef.current.setEditCellValue({ id: params.id, field: params.field, value: value });
+                apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
               }}
+              ampm={false}
             />
           </LocalizationProvider>
         );
@@ -237,7 +252,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'number',
       editable: true,
       width: 150,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: 'longitude',
@@ -245,7 +262,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'number',
       editable: true,
       width: 150,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: 'actions',
@@ -281,7 +300,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const handleDeleteRow = (id: string | number) => {
     observationsContext.markRecordWithUnsavedChanges(id);
-    apiRef.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
+    apiRef?.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
   };
 
   const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, event) => {
@@ -293,17 +312,21 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   };
 
   const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
-    if (apiRef.current.state.editRows[params.row.id]) {
+    if (apiRef?.current.state.editRows[params.row.id]) {
       return;
     }
 
-    apiRef.current.startRowEditMode({ id: params.row.id, fieldToFocus: params.field });
+    apiRef?.current.startRowEditMode({ id: params.row.id, fieldToFocus: params.field });
   };
 
   const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
     const updatedRow = { ...newRow, wldtaxonomic_units_id: Number(newRow.wldtaxonomic_units_id) };
     return updatedRow;
   };
+
+  if (!apiRef) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <DataGrid
