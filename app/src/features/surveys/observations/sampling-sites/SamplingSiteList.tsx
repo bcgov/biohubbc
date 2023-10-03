@@ -127,6 +127,7 @@ const SamplingSiteList = () => {
               <Accordion
                 square
                 disableGutters
+                key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
                 sx={{
                   boxShadow: 'none'
                 }}>
@@ -151,7 +152,7 @@ const SamplingSiteList = () => {
                   <List component="div" disablePadding>
                     {sampleSite.sample_methods?.map((sampleMethod) => {
                       return (
-                        <ListItem>
+                        <ListItem key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}>
                           <ListItemText>
                             <Typography
                               sx={{
@@ -168,7 +169,8 @@ const SamplingSiteList = () => {
                             <List disablePadding>
                               {sampleMethod.sample_periods?.map((samplePeriod) => {
                                 return (
-                                  <ListItem>
+                                  <ListItem
+                                    key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
                                     <ListItemText>
                                       <Typography variant="body2">
                                         {samplePeriod.start_date} to {samplePeriod.end_date}
