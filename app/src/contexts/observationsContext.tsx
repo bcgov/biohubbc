@@ -58,7 +58,7 @@ export type IObservationsContext = {
    */
   unsavedRecordIds: string[];
   /**
-   * Inidicates whether the observation table has any unsaved changes
+   * Indicates whether the observation table has any unsaved changes
    */
   hasUnsavedChanges: () => boolean;
   /**

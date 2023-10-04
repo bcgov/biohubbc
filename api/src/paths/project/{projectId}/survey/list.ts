@@ -8,7 +8,7 @@ import { authorizeRequestHandler } from '../../../../request-handlers/security/a
 import { SurveyService } from '../../../../services/survey-service';
 import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/surveys');
+const defaultLog = getLogger('paths/project/{projectId}/survey/list');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
