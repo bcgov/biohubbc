@@ -53,7 +53,8 @@ DELETE.apiDoc = {
       name: 'critterId',
       schema: {
         type: 'number'
-      }
+      },
+      required: true
     },
     {
       in: 'path',
@@ -61,12 +62,26 @@ DELETE.apiDoc = {
       schema: {
         type: 'string',
         format: 'uuid'
-      }
+      },
+      required: true
     }
   ],
   responses: {
     200: {
-      description: 'Remove deployment successfully.'
+      description: 'Removed deployment successfully.',
+      content: {
+        'application/json': {
+          schema: {
+            title: 'Deployment response object',
+            type: 'object',
+            properties: {
+              message: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'
@@ -75,7 +90,7 @@ DELETE.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -99,10 +114,10 @@ export function deleteDeployment(): RequestHandler {
     const bctw = new BctwService(user);
     try {
       await connection.open();
-      const surveyEntry = await surveyCritterService.removeDeployment(critterId, deploymentId);
+      await surveyCritterService.removeDeployment(critterId, deploymentId);
       await bctw.deleteDeployment(deploymentId);
       await connection.commit();
-      return res.status(200).json(surveyEntry);
+      return res.status(200).json({ message: 'Deployment deleted.' });
     } catch (error) {
       defaultLog.error({ label: 'deleteDeployment', message: 'error', error });
       await connection.rollback();

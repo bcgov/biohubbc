@@ -78,7 +78,7 @@ const DeploymentFormSection = ({
       <YesNoDialog
         dialogTitle={'Remove deployment?'}
         dialogText={`Are you sure you want to remove this deployment? 
-          If you would like to end a deployment / unattach a device, you should instead set the attachment end date. 
+          If you would like to end a deployment / unattach a device, you should set the attachment end date instead. 
           Please confirm that you wish to permanently erase this deployment.`}
         open={openDeleteDialog}
         yesButtonLabel="Delete"

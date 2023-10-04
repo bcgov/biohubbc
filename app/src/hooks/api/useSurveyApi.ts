@@ -510,6 +510,16 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Update a survey critter. Allows you to create, update, and delete associated rows like captures, mortalities etc in one request.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {Critter} updateSection
+   * @param {Critter | undefined} createSection
+   * @returns {*}
+   */
   const updateSurveyCritter = async (
     projectId: number,
     surveyId: number,
@@ -525,11 +535,28 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Remove a critter from the survey. Will not delete critter in critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @returns {*}
+   */
   const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: number): Promise<number> => {
     const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
     return data;
   };
 
+  /**
+   * Add a new deployment with associated device hardware metadata. Must include critterbase critter id.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {IAnimalTelemetryDevice & {critter_id: string}} body
+   * @returns {*}
+   */
   const addDeployment = async (
     projectId: number,
     surveyId: number,
@@ -550,6 +577,15 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Update a deployment with a new timespan.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {IDeploymentTimespan} body
+   * @returns {*}
+   */
   const updateDeployment = async (
     projectId: number,
     surveyId: number,
@@ -563,11 +599,27 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get all deployments associated with the given survey ID.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {*}
+   */
   const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
     return data;
   };
 
+  /**
+   * Removes a deployment. Will trigger removal in both SIMS and BCTW.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {string} deploymentId
+   * @returns {*}
+   */
   const removeDeployment = async (
     projectId: number,
     surveyId: number,

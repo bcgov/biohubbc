@@ -23,7 +23,7 @@ describe('critter deployments', () => {
   });
 
   describe('deleteDeployment', () => {
-    it('updates an existing deployment', async () => {
+    it('deletes an existing deployment', async () => {
       const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
       const mockRemoveDeployment = sinon.stub(SurveyCritterService.prototype, 'removeDeployment').resolves();
       const mockBctwService = sinon.stub(BctwService.prototype, 'deleteDeployment');

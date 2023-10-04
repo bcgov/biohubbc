@@ -122,17 +122,15 @@ const SurveyAnimals: React.FC = () => {
     device_make: yup
       .string()
       .required()
-      .test(
-        'checkDeviceMakeIsNotChanged',
-        'This device make differs from the existing make for this Device ID',
-        async (value, context) => {
-          const deviceDetails = await telemetryApi.devices.getDeviceDetails(Number(context.parent.device_id));
-          if (deviceDetails && deviceDetails.device?.device_make !== value) {
-            return false;
-          }
-          return true;
+      .test('checkDeviceMakeIsNotChanged', '', async (value, context) => {
+        const deviceDetails = await telemetryApi.devices.getDeviceDetails(Number(context.parent.device_id));
+        if (deviceDetails.device?.device_make && deviceDetails.device?.device_make !== value) {
+          return context.createError({
+            message: `The current make for this device is ${deviceDetails.device?.device_make}, this value should not be changed.`
+          });
         }
-      )
+        return true;
+      })
   });
   const obtainAnimalFormInitialvalues = (mode: ANIMAL_FORM_MODE): IAnimal | null => {
     switch (mode) {
@@ -374,12 +372,18 @@ const SurveyAnimals: React.FC = () => {
   };
 
   const handleRemoveDeployment = async (deployment_id: string) => {
-    if (!selectedCritterId) {
-      throw Error('Survey critter ID was set incorrectly.');
+    try {
+      if (!selectedCritterId) {
+        throw Error('Survey critter ID was set incorrectly.');
+      }
+      await bhApi.survey.removeDeployment(projectId, surveyId, selectedCritterId, deployment_id);
+    } catch (e) {
+      setPopup('Failed to delete deployment.');
+      return;
     }
-    await bhApi.survey.removeDeployment(projectId, surveyId, selectedCritterId, deployment_id);
-    const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId);
-    if (!deployments || deployments.length === 1) {
+
+    const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId) ?? [];
+    if (deployments.length <= 1) {
       setOpenDeviceDialog(false);
     }
     refreshDeployments();
