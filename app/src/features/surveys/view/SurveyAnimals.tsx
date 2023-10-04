@@ -35,6 +35,7 @@ import TelemetryDeviceForm, {
   IAnimalTelemetryDeviceFile,
   TELEMETRY_DEVICE_FORM_MODE
 } from './survey-animals/TelemetryDeviceForm';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
@@ -45,6 +46,7 @@ const SurveyAnimals: React.FC = () => {
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
+  const [openViewTelemetryDialog, setOpenViewTelemetryDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
@@ -388,6 +390,13 @@ const SurveyAnimals: React.FC = () => {
         onNo={() => setOpenRemoveCritterDialog(false)}
         onYes={handleRemoveCritter}
       />
+      <ComponentDialog
+        dialogProps={{ fullScreen: true, maxWidth: false }}
+        dialogTitle={'View Telemetry'}
+        open={openViewTelemetryDialog}
+        onClose={() => setOpenViewTelemetryDialog(false)}>
+        <Typography>amogus</Typography>
+      </ComponentDialog>
       <H2ButtonToolbar
         label="Individual Animals"
         buttonLabel="Import"
@@ -417,6 +426,9 @@ const SurveyAnimals: React.FC = () => {
             onEditCritter={() => {
               setAnimalFormMode(ANIMAL_FORM_MODE.EDIT);
               setOpenAddCritterDialog(true);
+            }}
+            onMapOpen={() => {
+              setOpenViewTelemetryDialog(true);
             }}
           />
         ) : (
