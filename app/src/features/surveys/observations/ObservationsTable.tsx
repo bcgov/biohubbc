@@ -201,7 +201,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       editable: true,
       type: 'date',
       minWidth: 150,
-      valueGetter: (params) => (params.row.observation_date ? new Date(params.row.observation_date) : null),
+      valueGetter: (params) => (params.row.observation_date ? moment(params.row.observation_date).toDate() : null),
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left'
@@ -216,7 +216,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerAlign: 'left',
       align: 'left',
       preProcessEditCellProps: (params) => {
-        return { ...params.props };
+        return { ...params.props, value: moment(params.props.value) };
       },
       renderCell: (params) => {
         if (!params.value) {
@@ -227,13 +227,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           return <>{params.value.format('HH:mm')}</>;
         }
 
-        return <>{moment(params.value).format('HH:mm')}</>;
+        return <>{moment(params.value, 'HH:mm:ss').format('HH:mm')}</>;
       },
       renderEditCell: (params) => {
         return (
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <TimePicker
-              value={params.value}
+              value={moment(params.value, 'HH:mm:ss')}
               onChange={(value) => {
                 apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
               }}
