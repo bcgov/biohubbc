@@ -1,7 +1,7 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
-import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
@@ -56,7 +56,16 @@ const ObservationsTable = () => {
       editable: true,
       type: 'number',
       minWidth: 100,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderEditCell: (params) => (
+        <GridEditInputCell
+          {...params}
+          inputProps={{
+            min: 0,
+            max: 99999
+          }}
+        />
+      )
     },
     {
       field: 'observation_date',
