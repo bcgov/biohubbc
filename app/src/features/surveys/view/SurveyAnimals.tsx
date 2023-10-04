@@ -46,6 +46,7 @@ const SurveyAnimals: React.FC = () => {
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
   const [animalCount, setAnimalCount] = useState(0);
+  console.log(animalCount);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
     TELEMETRY_DEVICE_FORM_MODE.ADD
@@ -182,16 +183,20 @@ const SurveyAnimals: React.FC = () => {
         <EditDialog
           dialogTitle={
             <Box>
-              <HelpButtonTooltip content={SurveyAnimalsI18N.animalIndividualsHelp}>
-                <Typography variant="h3">Individuals</Typography>
+              <HelpButtonTooltip
+                content={SurveyAnimalsI18N.animalIndividualsHelp}
+                iconSx={{ position: 'relative', top: '-4px', right: '0px' }}>
+                <Typography variant="h3" component="span">{`${animalFormMode} Animal`}</Typography>
               </HelpButtonTooltip>
-              <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-                {`${
-                  animalCount
-                    ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
-                    : `No individual animals were captured or reported in this survey`
-                }`}
-              </Typography>
+              {animalFormMode === ANIMAL_FORM_MODE.EDIT && (
+                <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
+                  {`${
+                    animalCount
+                      ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
+                      : `No individual animals were captured or reported in this survey`
+                  }`}
+                </Typography>
+              )}
             </Box>
           }
           open={openAddCritterDialog}
@@ -210,6 +215,7 @@ const SurveyAnimals: React.FC = () => {
             initialValues: initialValues,
             validationSchema: AnimalSchema
           }}
+          dialogSaveButtonLabel="Save"
         />
       );
     }

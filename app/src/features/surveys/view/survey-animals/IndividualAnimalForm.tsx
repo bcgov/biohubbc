@@ -20,8 +20,8 @@ import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
  **/
 
 export enum ANIMAL_FORM_MODE {
-  ADD = 'add',
-  EDIT = 'edit'
+  ADD = 'Add',
+  EDIT = 'Edit'
 }
 
 interface IndividualAnimalFormProps {
@@ -35,7 +35,6 @@ const IndividualAnimalForm = ({ getAnimalCount, critter_id, mode }: IndividualAn
 
   return (
     <Form>
-      <Typography variant="h4">{mode === ANIMAL_FORM_MODE.ADD ? 'Add New Individual' : 'Edit Individual'}</Typography>
       {mode === ANIMAL_FORM_MODE.EDIT && (
         <Typography variant="body2" color={'textSecondary'}>
           Critter ID: {critter_id}
