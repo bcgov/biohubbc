@@ -12,21 +12,29 @@ import SurveyFundingSources from './components/SurveyFundingSources';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 import Partnerships from './Partnerships';
 import Grid from '@mui/material/Grid';
+import {
+  mdiInformationOutline,
+  mdiLightbulbOnOutline,
+  mdiAccountMultipleOutline,
+  mdiHandshakeOutline,
+  mdiCurrencyUsd,
+  mdiClipboardCheckOutline
+} from '@mdi/js';
+import Icon from '@mdi/react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyMetadataContainer: {
     '& section + section': {
-      marginTop: theme.spacing(4)
+      marginTop: theme.spacing(3)
     },
     '& h4': {
-      fontSize: '14px',
+      fontSize: '0.9375rem',
       fontWeight: 700,
-      letterSpacing: '0.02rem',
-      textTransform: 'uppercase',
-      '& + hr': {
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2)
-      }
+      textTransform: 'uppercase'
+    },
+    '& section + hr': {
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(3)
     }
   }
 }));
@@ -42,16 +50,24 @@ const SurveyDetails = () => {
   return (
     <Box className={classes.surveyMetadataContainer}
       sx={{
+        '& dl': {
+          m: 0,
+          '& .MuiGrid-item': {
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '24px',
+          }
+        },
         '& dt': {
           flex: '0 0 auto', 
-          width: '200px',
+          width: '33.3333%',
           typography: 'body1',
-          color: 'text.secondary'
         },
         '& dd': {
           m: 0,
           flex: '1 1 auto',
-          typography: 'body1'
+          typography: 'body1',
+          color: 'text.secondary'
         },
       }}
     >
@@ -60,51 +76,82 @@ const SurveyDetails = () => {
           Survey Details
         </Typography>
       </Toolbar>
-      <Divider></Divider>
+      <Divider sx={{m: 0}}></Divider>
       <Box p={3}>
         <Grid container spacing={3}>
-          <Grid item md={6}>
+          <Grid item md={12}>
             <Box component="section">
-              <Typography component="h4">General Information</Typography>
-              <Divider></Divider>
+              <Box display="flex" flexDirection="row" alignItems="center">
+                <Icon path={mdiInformationOutline} size={1}/>
+                <Typography component="h4" sx={{ml: 1.5}}>General Information</Typography>
+              </Box>
+              <Divider sx={{my: 2}}></Divider>
               <SurveyGeneralInformation />
             </Box>
             <Box component="section">
-              <Typography component="h4">Purpose and Methodology</Typography>
-              <Divider></Divider>
+              <Divider sx={{my: 2}}></Divider>
+              <Box display="flex" flexDirection="row" alignItems="center">
+                <Icon path={mdiLightbulbOnOutline} size={1}/>
+                <Typography component="h4" sx={{ml: 1.5}}>Purpose and Methodology</Typography>
+              </Box>
+              <Divider sx={{my: 2}}></Divider>
               <SurveyPurposeAndMethodologyData />
             </Box>
             <Box component="section">
+              <Divider sx={{my: 2}}></Divider>
+              <Box display="flex" flexDirection="row" alignItems="center">
+                <Icon path={mdiAccountMultipleOutline} size={1}/>
+                <Typography component="h4" sx={{ml: 1.5}}>Survey Particpants</Typography>
+              </Box>
+              <Divider sx={{my: 2}}></Divider>
+              <Box component="dl" display="flex" flexDirection="row" gap="24px">
+                <Grid container spacing={1}>
+                  <Grid item xs={12}>
+                    <Box component="dt" flex="0 0 auto" width="50%">Pilot(s)</Box>
+                    <Box component="dd" flex="1 1 auto">John Smith</Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box component="dt" flex="0 0 auto" width="50%">Biologist(s)</Box>
+                    <Box flex="1 1 auto">
+                      <Box component="dd">Artur Margarit</Box>
+                      <Box component="dd">Jane Doe</Box>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Box>
+            <Box component="section" sx={{display: 'none'}}>
+              <Divider sx={{my: 2}}></Divider>
               <Typography component="h4">Proprietary Information</Typography>
-              <Divider></Divider>
+              <Divider sx={{my: 2}}></Divider>
               <SurveyProprietaryData />
             </Box>
-          </Grid>
-          <Grid item md={6}>
             <Box component="section">
-              <Typography component="h4">Survey Participants</Typography>
-              <Divider></Divider>
-              <Box component="dl">
-                <dt>Pilot(s)</dt>
-                <dd>John Smith</dd>
+              <Divider sx={{my: 2}}></Divider>
+              <Box display="flex" flexDirection="row" alignItems="center">
+                <Icon path={mdiHandshakeOutline} size={1}/>
+                <Typography component="h4" sx={{ml: 1.5}}>Partnerships</Typography>
               </Box>
-              <Box component="dl">
-                <dt>Biologists(s)</dt>
-                <Box>
-                  <dd>Artur Margarit</dd>
-                  <dd>Jane Doe</dd>
-                </Box>
-              </Box>
+              <Divider sx={{my: 2}}></Divider>
+              <Partnerships />
             </Box>
+          </Grid>
+          <Grid item md={12}>
             <Box component="section">
-              <Typography component="h4">Funding Sources</Typography>
-              <Divider></Divider>
+              <Box display="flex" flexDirection="row" alignItems="center">
+                <Icon path={mdiCurrencyUsd} size={1}/>
+                <Typography component="h4" sx={{ml: 1.5}}>Funding Sources</Typography>
+              </Box>
+              <Divider sx={{my: 2}}></Divider>
               <SurveyFundingSources />
             </Box>
             <Box component="section">
-              <Typography component="h4">Partnerships</Typography>
-              <Divider></Divider>
-              <Partnerships />
+              <Box display="flex" flexDirection="row" alignItems="center">
+                <Icon path={mdiClipboardCheckOutline} size={1}/>
+                <Typography component="h4" sx={{ml: 1.5}}>Permits</Typography>
+              </Box>
+              <Divider sx={{my: 2}}></Divider>
+              <SurveyFundingSources />
             </Box>
           </Grid>
         </Grid>

@@ -35,17 +35,17 @@ const SurveyGeneralInformation = () => {
 
   return (
     <>
-      <Box component="dl" my={0}>
-        <Grid container spacing={2}>
-          <Grid item sm={12}>
+      <Box component="dl">
+        <Grid container spacing={1}>
+          <Grid item sm={12} sx={{display: 'flex'}}>
             <Typography component="dt">
-              Survey Type
+              Survey Type:
             </Typography>
             <Typography component="dd">{surveyTypes ? <>{surveyTypes}</> : 'No Types'}</Typography>
           </Grid>
           <Grid item sm={12}>
             <Typography component="dt">
-              Start/End Date
+              Start/End Date:
             </Typography>
             <Typography component="dd" data-testid="survey_timeline">
               {survey_details.end_date ? (
@@ -66,14 +66,9 @@ const SurveyGeneralInformation = () => {
           </Grid>
           <Grid item sm={12}>
             <Typography component="dt">
-              Focal Species
+              Species of Interest:
             </Typography>
-            <Box sx={{
-              '& dd': {
-                display: 'inline-block',
-                flex: '0 0 auto'
-              }
-            }}>
+            <Box flex="1 1 auto">
               {species.focal_species_names?.map((focalSpecies: string, index: number) => {
                 return (
                   <Typography component="dd" variant="body1" key={index}>
@@ -84,47 +79,38 @@ const SurveyGeneralInformation = () => {
             </Box>
           </Grid>
           <Grid item sm={12}>
-            <Box display="flex" flexDirection="column">
-              <Typography component="dt">
-                Ancillary Species
-              </Typography>
-              <Box sx={{
-                '& dd': {
-                  display: 'inline-block',
-                  flex: '0 0 auto'
-                }
-              }}>
-                {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
-                  return (
-                    <Typography component="dd" key={index} sx={{flex: '0 0 auto', display: 'inline-block'}}>
-                      {ancillarySpecies}
-                    </Typography>
-                  );
-                })}
-                {species.ancillary_species_names?.length <= 0 && (
-                  <Typography component="dd">
-                    No Ancillary Species
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item sm={12}>
-            <Box display="flex" flexDirection="column">
-              <Typography component="dt">
-                Permits
-              </Typography>
-              {permit.permits?.map((item, index: number) => {
+            <Typography component="dt">
+              Secondary Species:
+            </Typography>
+            <Box flex='1 1 auto'>
+              {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
                 return (
                   <Typography component="dd" key={index}>
-                    {item.permit_type} - {item.permit_number}
+                    {ancillarySpecies}
                   </Typography>
                 );
               })}
-              {!permit.permits.length && (
-                <Typography component="dd">No Permits</Typography>
+              {species.ancillary_species_names?.length <= 0 && (
+                <Typography component="dd">
+                  No Ancillary Species
+                </Typography>
               )}
             </Box>
+          </Grid>
+          <Grid item sm={12} sx={{display: 'none !important'}}>
+            <Typography component="dt">
+              Permits:
+            </Typography>
+            {permit.permits?.map((item, index: number) => {
+              return (
+                <Typography component="dd" key={index}>
+                  {item.permit_type} - {item.permit_number}
+                </Typography>
+              );
+            })}
+            {!permit.permits.length && (
+              <Typography component="dd">No Permits</Typography>
+            )}
           </Grid>
         </Grid>
       </Box>
