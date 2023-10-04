@@ -286,6 +286,11 @@ export class CritterbaseService {
     return response.data;
   }
 
+  async updateCritter(data: IBulkCreate) {
+    const response = await this.axiosInstance.patch(BULK_ENDPOINT, data);
+    return response.data;
+  }
+
   async filterCritters(data: IFilterCritters, format: 'default' | 'detailed' = 'default') {
     const response = await this.axiosInstance.post(`${FILTER_ENDPOINT}?format=${format}`, data);
     return response.data;

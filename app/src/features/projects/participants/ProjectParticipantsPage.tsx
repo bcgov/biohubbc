@@ -61,9 +61,13 @@ const ProjectParticipantsPage: React.FC = () => {
     };
   });
 
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
-  useEffect(() => projectParticipantsDataLoader.load(), [projectParticipantsDataLoader]);
+  useEffect(() => {
+    projectParticipantsDataLoader.load();
+  }, [projectParticipantsDataLoader]);
 
   const openErrorDialog = useCallback(
     (errorDialogProps?: Partial<IErrorDialogProps>) => {

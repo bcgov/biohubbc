@@ -4,6 +4,7 @@ import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 describe('SurveyAnimalsTableActions', () => {
   const onAddDevice = jest.fn();
   const onRemoveCritter = jest.fn();
+  const onEditCritter = jest.fn();
 
   it('all buttons should be clickable', async () => {
     const { getByTestId } = render(
@@ -12,7 +13,7 @@ describe('SurveyAnimalsTableActions', () => {
         devices={[]}
         onAddDevice={onAddDevice}
         onEditDevice={() => {}}
-        onEditCritter={() => {}}
+        onEditCritter={onEditCritter}
         onRemoveCritter={onRemoveCritter}
         onMenuOpen={() => {}}
         onRemoveDevice={() => {}}
@@ -31,5 +32,8 @@ describe('SurveyAnimalsTableActions', () => {
 
     fireEvent.click(getByTestId('animal-table-row-remove-critter'));
     expect(onRemoveCritter.mock.calls.length).toBe(1);
+
+    fireEvent.click(getByTestId('animal-table-row-edit-critter'));
+    expect(onEditCritter.mock.calls.length).toBe(1);
   });
 });

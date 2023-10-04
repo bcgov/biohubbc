@@ -9,7 +9,7 @@ export interface SurveyObservationHeaderProps {
   survey_name: string;
 }
 
-export const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) => {
+const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) => {
   const { project_id, survey_id, survey_name } = props;
   return (
     <>
@@ -45,3 +45,5 @@ export const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (
     </>
   );
 };
+
+export default SurveyObservationHeader;

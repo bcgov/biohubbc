@@ -77,14 +77,15 @@ const EditSurveyPage = () => {
   const dialogContext = useContext(DialogContext);
 
   const codesContext = useContext(CodesContext);
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
   const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
-  useEffect(
-    () => projectContext.projectDataLoader.load(projectContext.projectId),
-    [projectContext.projectDataLoader, projectContext.projectId]
-  );
+  useEffect(() => {
+    projectContext.projectDataLoader.load(projectContext.projectId);
+  }, [projectContext.projectDataLoader, projectContext.projectId]);
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const surveyContext = useContext(SurveyContext);

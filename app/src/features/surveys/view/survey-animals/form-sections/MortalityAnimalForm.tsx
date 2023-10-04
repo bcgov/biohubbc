@@ -44,13 +44,15 @@ const MortalityAnimalForm = () => {
     mortality_timestamp: '' as unknown as Date,
     mortality_coordinate_uncertainty: 10,
     mortality_comment: '',
-    mortality_pcod_reason: '',
-    mortality_pcod_confidence: '',
-    mortality_pcod_taxon_id: '',
-    mortality_ucod_reason: '',
-    mortality_ucod_confidence: '',
-    mortality_ucod_taxon_id: '',
-    projection_mode: 'wgs' as ProjectionMode
+    proximate_cause_of_death_id: '',
+    proximate_cause_of_death_confidence: '',
+    proximate_predated_by_taxon_id: '',
+    ultimate_cause_of_death_id: '',
+    ultimate_cause_of_death_confidence: '',
+    ultimate_predated_by_taxon_id: '',
+    projection_mode: 'wgs' as ProjectionMode,
+    mortality_id: undefined,
+    location_id: undefined
   };
 
   return (
@@ -101,12 +103,12 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
         </Grid>
         <Grid item xs={5}>
           <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_reason', index)}
+            name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_id', index)}
             handleChangeSideEffect={(_value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
             label={'PCOD Reason'}
             controlProps={{
               size: 'small',
-              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_reason')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_id')
             }}
             id={`${index}-pcod-reason`}
             route={'lookups/cods'}
@@ -114,11 +116,11 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
         </Grid>
         <Grid item xs={4}>
           <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_confidence', index)}
+            name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_confidence', index)}
             label={'PCOD Confidence'}
             controlProps={{
               size: 'small',
-              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_confidence')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_confidence')
             }}
             id={`${index}-pcod-confidence`}
             route={'lookups/cause-of-death-confidence'}
@@ -126,12 +128,12 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
         </Grid>
         <Grid item xs={3}>
           <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_pcod_taxon_id', index)}
+            name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_predated_by_taxon_id', index)}
             label={'PCOD Taxon'}
             controlProps={{
               size: 'small',
               disabled: pcodTaxonDisabled,
-              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_pcod_taxon_id')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_predated_by_taxon_id')
             }}
             id={`${index}-pcod-taxon`}
             route={'lookups/taxons'}
@@ -139,14 +141,14 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
         </Grid>
         <Grid item xs={5}>
           <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_reason', index)}
+            name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_id', index)}
             handleChangeSideEffect={(_value, label) => {
               setUcodTaxonDisabled(!label.includes('Predation'));
             }}
             label={'UCOD Reason'}
             controlProps={{
               size: 'small',
-              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_reason')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_id')
             }}
             id={`${index}-ucod-reason`}
             route={'lookups/cods'}
@@ -154,11 +156,11 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
         </Grid>
         <Grid item xs={4}>
           <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_confidence', index)}
+            name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_confidence', index)}
             label={'UCOD Confidence'}
             controlProps={{
               size: 'small',
-              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_confidence')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_confidence')
             }}
             id={`${index}-ucod-confidence`}
             route={'lookups/cause-of-death-confidence'}
@@ -166,12 +168,12 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
         </Grid>
         <Grid item xs={3}>
           <CbSelectField
-            name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_ucod_taxon_id', index)}
+            name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_predated_by_taxon_id', index)}
             label={'UCOD Taxon'}
             controlProps={{
               size: 'small',
               disabled: ucodTaxonDisabled,
-              required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_ucod_taxon_id')
+              required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_predated_by_taxon_id')
             }}
             id={`${index}-ucod-taxon`}
             route={'lookups/taxons'}

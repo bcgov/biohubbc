@@ -37,13 +37,15 @@ type IMarkingResponse = {
   capture_id: string;
   mortality_id: string | null;
   taxon_marking_body_location_id: string;
+  primary_colour_id: string | null;
+  secondary_colour_id: string | null;
   marking_type_id: string;
   marking_material_id: string;
   identifier: string;
   frequency: string | null;
   frequency_unit: string | null;
   order: string | null;
-  comment: string;
+  comment: string | null;
   attached_timestamp: string;
   removed_timestamp: string | null;
   body_location: string;
@@ -80,9 +82,9 @@ type IQuantitativeMeasurementResponse = {
 
 type IMortalityResponse = {
   mortality_id: string;
-  critter_id: string;
   location_id: string | null;
   mortality_timestamp: string;
+  location: ILocationResponse;
   proximate_cause_of_death_id: string | null;
   proximate_cause_of_death_confidence: string;
   proximate_predated_by_taxon_id: string | null;
@@ -90,6 +92,16 @@ type IMortalityResponse = {
   ultimate_cause_of_death_confidence: string;
   ultimate_predated_by_taxon_id: string | null;
   mortality_comment: string | null;
+};
+
+type IFamilyParentResponse = {
+  family_id: string;
+  parent_critter_id: string;
+};
+
+type IFamilyChildResponse = {
+  family_id: string;
+  child_critter_id: string;
 };
 
 export type ICritterDetailedResponse = {
@@ -115,6 +127,8 @@ export type ICritterDetailedResponse = {
     qualitative: IQualitativeMeasurementResponse[];
     quantitative: IQuantitativeMeasurementResponse[];
   };
+  family_parent: IFamilyParentResponse[];
+  family_child: IFamilyChildResponse[];
 };
 
 export interface ICritterSimpleResponse {
