@@ -1,10 +1,7 @@
-import { Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/tables/CustomDataGrid';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { getFormattedDate } from 'utils/Utils';
 import { IAnimalDeployment } from './device';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 
@@ -67,14 +64,6 @@ export const SurveyAnimalsTable = ({
       headerName: 'WLH ID',
       flex: 1,
       renderCell: (params) => <>{params.value ? params.value : 'None'}</>
-    },
-    {
-      field: 'create_timestamp',
-      headerName: 'Created On',
-      flex: 1,
-      renderCell: (params) => (
-        <Typography>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}</Typography>
-      )
     },
     {
       field: 'current_devices',
