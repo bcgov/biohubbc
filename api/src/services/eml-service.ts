@@ -17,6 +17,7 @@ import { DBService } from './db-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
 import { ITaxonomySource, TaxonomyService } from './taxonomy-service';
+import { PROJECT_ROLE } from '../constants/roles';
 
 const NOT_SUPPLIED = 'Not Supplied';
 const EMPTY_STRING = ``;
@@ -672,11 +673,18 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getProjectDatasetCreator(projectData: IGetProject): Record<string, any> {
-    const participant = projectData.participants[0];
+    const coordinator = projectData.participants.find((participant) => {
+      return participant.role_names.includes(PROJECT_ROLE.COORDINATOR);
+    });
+
+    if (!coordinator) {
+      // Return default organization name
+      return { organizationName: this._constants.EML_ORGANIZATION_NAME }
+    }
 
     return {
-      individualName: { givenName: participant.given_name, surName: participant.family_name },
-      electronicMailAddress: participant.email
+      individualName: { givenName: coordinator.given_name, surName: coordinator.family_name },
+      electronicMailAddress: coordinator.email
     };
   }
 
@@ -689,11 +697,18 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getProjectContact(projectData: IGetProject): Record<string, any> {
-    const participant = projectData.participants[0];
+    const coordinator = projectData.participants.find((participant) => {
+      return participant.role_names.includes(PROJECT_ROLE.COORDINATOR);
+    });
+
+    if (!coordinator) {
+      // Return default organization name
+      return { organizationName: this._constants.EML_ORGANIZATION_NAME }
+    }
 
     return {
-      individualName: { givenName: participant.given_name, surName: participant.family_name },
-      electronicMailAddress: participant.email,
+      individualName: { givenName: coordinator.given_name, surName: coordinator.family_name },
+      electronicMailAddress: coordinator.email,
       role: 'pointOfContact'
     };
   }
@@ -706,11 +721,18 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getSurveyContact(surveyData: SurveyObject): Record<string, any> {
-    const participant = surveyData.participants[0];
+    const coordinator = surveyData.participants.find((participant) => {
+      return participant.role_names.includes(PROJECT_ROLE.COORDINATOR);
+    });
+
+    if (!coordinator) {
+      // Return default organization name
+      return { organizationName: this._constants.EML_ORGANIZATION_NAME }
+    }
 
     return {
-      individualName: { givenName: participant.given_name, surName: participant.family_name },
-      electronicMailAddress: participant.email,
+      individualName: { givenName: coordinator.given_name, surName: coordinator.family_name },
+      electronicMailAddress: coordinator.email,
       role: 'pointOfContact'
     };
   }
