@@ -110,6 +110,10 @@ export class ObservationRepository extends BaseRepository {
     surveyId: number,
     observations: (InsertObservation | UpdateObservation)[]
   ): Promise<ObservationRecord[]> {
+    if (!observations.length) {
+      // no observations to create or update, leave early
+      return [];
+    }
     const sqlStatement = SQL`
       INSERT INTO
         survey_observation
