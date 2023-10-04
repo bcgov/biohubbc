@@ -1,9 +1,11 @@
-import { mdiDotsVertical, mdiTrashCan } from '@mdi/js';
+import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
-import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import YesNoDialog from 'components/dialog/YesNoDialog';
+import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 const ObservationsTable = () => {
   const observationColumns: GridColDef<IObservationTableRow>[] = [
@@ -14,6 +16,8 @@ const ObservationsTable = () => {
       flex: 1,
       minWidth: 250,
       disableColumnMenu: true,
+
+      // TODO: To be addressed by https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-288
       renderCell: () => 'Moose (Alces Americanus)'
     },
     {
@@ -52,7 +56,16 @@ const ObservationsTable = () => {
       editable: true,
       type: 'number',
       minWidth: 100,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderEditCell: (params) => (
+        <GridEditInputCell
+          {...params}
+          inputProps={{
+            min: 0,
+            max: 99999
+          }}
+        />
+      )
     },
     {
       field: 'observation_date',
@@ -77,7 +90,8 @@ const ObservationsTable = () => {
       type: 'number',
       editable: true,
       width: 150,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params) => String(params.row.latitude)
     },
     {
       field: 'longitude',
@@ -85,7 +99,8 @@ const ObservationsTable = () => {
       type: 'number',
       editable: true,
       width: 150,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params) => String(params.row.longitude)
     },
     {
       field: 'actions',
@@ -95,11 +110,8 @@ const ObservationsTable = () => {
       disableColumnMenu: true,
       resizable: false,
       getActions: (params) => [
-        <IconButton onClick={() => handleDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
-          <Icon path={mdiTrashCan} size={1} />
-        </IconButton>,
-        <IconButton key={`actions[${params.id}].moreOptions`}>
-          <Icon path={mdiDotsVertical} size={1} />
+        <IconButton onClick={() => handleConfirmDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
+          <Icon path={mdiTrashCanOutline} size={1} />
         </IconButton>
       ]
     }
@@ -108,6 +120,9 @@ const ObservationsTable = () => {
   const observationsContext = useContext(ObservationsContext);
   const { observationsDataLoader } = observationsContext;
   const apiRef = observationsContext._muiDataGridApiRef;
+
+  const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
+  const showConfirmDeleteDialog = Boolean(deletingObservation);
 
   useEffect(() => {
     if (observationsDataLoader.data?.surveyObservations) {
@@ -124,13 +139,17 @@ const ObservationsTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsDataLoader.data]);
 
+  const handleCancelDeleteRow = () => {
+    setDeletingObservation(null);
+  };
+
+  const handleConfirmDeleteRow = (id: string | number) => {
+    setDeletingObservation(id);
+  };
+
   const handleDeleteRow = (id: string | number) => {
     observationsContext.markRecordWithUnsavedChanges(id);
     apiRef.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
-  };
-
-  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, event) => {
-    observationsContext.markRecordWithUnsavedChanges(params.row.id);
   };
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
@@ -138,11 +157,14 @@ const ObservationsTable = () => {
   };
 
   const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
-    if (apiRef.current.state.editRows[params.row.id]) {
+    const { id } = params.row;
+
+    if (apiRef.current.state.editRows[id]) {
       return;
     }
 
-    apiRef.current.startRowEditMode({ id: params.row.id, fieldToFocus: params.field });
+    apiRef.current.startRowEditMode({ id, fieldToFocus: params.field });
+    observationsContext.markRecordWithUnsavedChanges(id);
   };
 
   const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
@@ -151,54 +173,72 @@ const ObservationsTable = () => {
   };
 
   return (
-    <DataGrid
-      apiRef={apiRef}
-      editMode="row"
-      onCellClick={handleCellClick}
-      onRowEditStop={handleRowEditStop}
-      onRowEditStart={handleRowEditStart}
-      processRowUpdate={handleProcessRowUpdate}
-      columns={observationColumns}
-      rows={observationsContext.initialRows}
-      disableRowSelectionOnClick
-      localeText={{
-        noRowsLabel: 'No Records'
-      }}
-      sx={{
-        background: '#fff',
-        border: 'none',
-        '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
-          background: '#fff'
-        },
-        '& .MuiDataGrid-columnHeaderTitle': {
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          color: '#999'
-        },
-        '& .test': {
-          position: 'sticky',
-          right: 0,
-          top: 0,
-          borderLeft: '1px solid #ccc',
-          background: '#fff'
-        },
-        '& .MuiDataGrid-columnHeaders': {
-          position: 'relative'
-        },
-        '& .MuiDataGrid-columnHeaders:after': {
-          content: "''",
-          position: 'absolute',
-          right: 0,
-          width: '96px',
-          height: '80px',
-          borderLeft: '1px solid #ccc',
-          background: '#fff'
-        },
-        '& .MuiDataGrid-actionsCell': {
-          gap: 0
-        }
-      }}
-    />
+    <>
+      <YesNoDialog
+        dialogTitle={ObservationsTableI18N.removeRecordDialogTitle}
+        dialogText={ObservationsTableI18N.removeRecordDialogText}
+        yesButtonProps={{ color: 'error' }}
+        yesButtonLabel={'Discard Record'}
+        noButtonProps={{ color: 'primary', variant: 'contained' }}
+        noButtonLabel={'Cancel'}
+        open={showConfirmDeleteDialog}
+        onYes={() => {
+          if (deletingObservation) {
+            handleDeleteRow(deletingObservation);
+          }
+          setDeletingObservation(null);
+        }}
+        onClose={() => handleCancelDeleteRow()}
+        onNo={() => handleCancelDeleteRow()}
+      />
+      <DataGrid
+        apiRef={apiRef}
+        editMode="row"
+        onCellClick={handleCellClick}
+        onRowEditStop={handleRowEditStop}
+        processRowUpdate={handleProcessRowUpdate}
+        columns={observationColumns}
+        rows={observationsContext.initialRows}
+        disableRowSelectionOnClick
+        localeText={{
+          noRowsLabel: 'No Records'
+        }}
+        sx={{
+          background: '#fff',
+          border: 'none',
+          '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
+            background: '#fff'
+          },
+          '& .MuiDataGrid-columnHeaderTitle': {
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            color: '#999'
+          },
+          '& .test': {
+            position: 'sticky',
+            right: 0,
+            top: 0,
+            borderLeft: '1px solid #ccc',
+            background: '#fff'
+          },
+          '& .MuiDataGrid-columnHeaders': {
+            position: 'relative'
+          },
+          '& .MuiDataGrid-columnHeaders:after': {
+            content: "''",
+            position: 'absolute',
+            right: 0,
+            width: '96px',
+            height: '80px',
+            borderLeft: '1px solid #ccc',
+            background: '#fff'
+          },
+          '& .MuiDataGrid-actionsCell': {
+            gap: 0
+          }
+        }}
+      />
+    </>
   );
 };
 
