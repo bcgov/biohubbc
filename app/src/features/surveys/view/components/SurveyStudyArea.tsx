@@ -250,7 +250,7 @@ const SurveyStudyArea = () => {
       <ErrorDialog {...errorDialogProps} />
 
       <H2ButtonToolbar
-        label="Study Area"
+        label="Observations"
         buttonLabel="Edit"
         buttonTitle="Edit Study Area"
         buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}

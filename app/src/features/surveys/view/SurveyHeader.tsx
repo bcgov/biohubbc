@@ -1,23 +1,22 @@
 import {
-  mdiArrowLeft,
   mdiCalendarRangeOutline,
   mdiChevronDown,
   mdiCogOutline,
   mdiPencilOutline,
-  mdiTrashCanOutline
+  mdiTrashCanOutline,
+  // mdiCircle,
+  mdiMapMarkerOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Container from '@mui/material/Container';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PublishSurveyDialog from 'components/publish/PublishSurveyDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
@@ -32,28 +31,9 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
-import { Link } from 'react-router-dom';
+import Link from '@mui/material/Link';
 import { getFormattedDateRangeString } from 'utils/Utils';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  pageTitleContainer: {
-    maxWidth: '150ch',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  pageTitle: {
-    display: '-webkit-box',
-    '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
-    paddingTop: theme.spacing(0.5),
-    paddingBottom: theme.spacing(0.5),
-    overflow: 'hidden'
-  },
-  pageTitleActions: {
-    paddingTop: theme.spacing(0.75),
-    paddingBottom: theme.spacing(0.75)
-  }
-}));
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 
 /**
  * Survey header for a single-survey view.
@@ -65,8 +45,8 @@ const SurveyHeader = () => {
   const projectContext = useContext(ProjectContext);
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
+  const projectWithDetails = projectContext.projectDataLoader.data;
 
-  const classes = useStyles();
   const history = useHistory();
 
   const biohubApi = useBiohubApi();
@@ -157,115 +137,158 @@ const SurveyHeader = () => {
 
   return (
     <>
-      <Paper square={true} elevation={0}>
-        <Container maxWidth="xl">
-          <Box py={4}>
-            <Box mt={-1} ml={-0.5} mb={0.5}>
-              <Button
-                component={Link}
-                to={`/admin/projects/${surveyContext.projectId}/details`}
-                color="primary"
-                startIcon={<Icon path={mdiArrowLeft} size={0.8} />}>
-                <strong>Back to Project</strong>
-              </Button>
-            </Box>
-            <Box display="flex" justifyContent="space-between">
-              <Box className={classes.pageTitleContainer}>
-                <Typography variant="h1" className={classes.pageTitle}>
-                  Survey: <span>{surveyWithDetails.surveyData.survey_details.survey_name}</span>
+      <Paper square={true} elevation={0}
+        sx={{
+          pt: 3,
+          pb: 3.
+        }}
+      >
+        <Container maxWidth="xl" >
+          <Breadcrumbs
+            sx={{
+              mb: 1.5
+            }}
+          >
+            <Link 
+              variant="body2" 
+              underline="hover"
+              href={`/admin/projects/${projectWithDetails?.projectData.project.project_id}`}
+              aria-current="page"
+            >
+              {projectWithDetails?.projectData.project.project_name}
+            </Link>
+            <Typography variant="body2" component="span">
+              {surveyWithDetails.surveyData.survey_details.survey_name}
+            </Typography>
+          </Breadcrumbs>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            gap="1.5rem"
+            sx={{
+              flexDirection: { xs: 'column', lg: 'row' }
+            }}
+          >
+            <Box>
+              <Typography
+                variant="h2" 
+                component="h1"
+                sx={{
+                  display: 'block',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis'
+                }} 
+                >
+                {surveyWithDetails.surveyData.survey_details.survey_name}
+              </Typography>
+              <Box mt={1} display="flex" alignItems="center" flexWrap="wrap">
+                <Typography
+                  className="info"
+                  component="span"
+                  variant="subtitle1"
+                  color='textSecondary'
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mr: 2
+                    // '&.info': {
+                    //   '& svg': {
+                    //     color: 'info.main'
+                    //   }
+                    // }
+                  }}
+                >
+                  <Icon path={mdiMapMarkerOutline} size={0.875}/>
+                  <Typography component="span" sx={{ml: 0.75}}>Region(s): Omenica, Peace, Skeena</Typography>
                 </Typography>
-                <Box mt={0.75} display="flex" alignItems="center">
-                  <Typography
-                    component="span"
-                    variant="subtitle1"
-                    color="textSecondary"
-                    style={{ display: 'flex', alignItems: 'center' }}>
-                    <Icon path={mdiCalendarRangeOutline} size={0.9} style={{ marginRight: '0.5rem' }} />
-                    Survey Timeline:&nbsp;&nbsp;
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  color='textSecondary'
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    '& svg': {
+                      color: 'text.secondary'
+                    }
+                  }}
+                >
+                  <Icon path={mdiCalendarRangeOutline} size={0.875} />
+                  <Typography component="span" sx={{ml: 0.75}}>
                     {getFormattedDateRangeString(
                       DATE_FORMAT.ShortMediumDateFormat,
                       surveyWithDetails.surveyData.survey_details.start_date,
                       surveyWithDetails.surveyData.survey_details.end_date
                     )}
                   </Typography>
-                </Box>
+                </Typography>
               </Box>
-              <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
+            </Box>
+            <Box display="flex" alignItems="flex-start" flex="0 0 auto">
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                 <Button
                   title="Submit Survey Data and Documents"
                   color="primary"
                   variant="contained"
-                  onClick={() => history.push('observations')}
+                  onClick={() => setPublishSurveyDialogOpen(true)}
                   sx={{
-                    minWidth: 7,
-                    marginRight: 1
+                    display: 'none',
+                    minWidth: '7rem'
                   }}>
-                  Manage Observations
+                  Submit
                 </Button>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <Button
-                    title="Submit Survey Data and Documents"
-                    color="primary"
-                    variant="contained"
-                    onClick={() => setPublishSurveyDialogOpen(true)}
-                    sx={{
-                      minWidth: '7rem'
-                    }}>
-                    Submit
-                  </Button>
-                </SystemRoleGuard>
-                <ProjectRoleGuard
-                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <Button
-                    id="survey_settings_button"
-                    aria-label="Survey Settings"
-                    aria-controls="surveySettingsMenu"
-                    aria-haspopup="true"
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<Icon path={mdiCogOutline} size={1} />}
-                    endIcon={<Icon path={mdiChevronDown} size={1} />}
-                    onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}
-                    style={{ marginLeft: '0.5rem' }}>
-                    Settings
-                  </Button>
-                </ProjectRoleGuard>
-                <Menu
-                  id="surveySettingsMenu"
-                  aria-labelledby="survey_settings_button"
-                  style={{ marginTop: '8px' }}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right'
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  keepMounted
-                  anchorEl={menuAnchorEl}
-                  open={Boolean(menuAnchorEl)}
-                  onClose={() => setMenuAnchorEl(null)}>
-                  <MenuItem onClick={() => history.push('edit')}>
+              </SystemRoleGuard>
+              <ProjectRoleGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <Button
+                  id="survey_settings_button"
+                  aria-label="Survey Settings"
+                  aria-controls="surveySettingsMenu"
+                  aria-haspopup="true"
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<Icon path={mdiCogOutline} size={1} />}
+                  endIcon={<Icon path={mdiChevronDown} size={1} />}
+                  onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
+                  Settings
+                </Button>
+              </ProjectRoleGuard>
+              <Menu
+                id="surveySettingsMenu"
+                aria-labelledby="survey_settings_button"
+                style={{ marginTop: '8px' }}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                keepMounted
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={() => setMenuAnchorEl(null)}>
+                <MenuItem onClick={() => history.push('edit')}>
+                  <ListItemIcon>
+                    <Icon path={mdiPencilOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Edit Survey Details</Typography>
+                </MenuItem>
+                {enableDeleteSurveyButton && (
+                  <MenuItem
+                    data-testid="delete-survey-button"
+                    onClick={showDeleteSurveyDialog}
+                    disabled={!enableDeleteSurveyButton}>
                     <ListItemIcon>
-                      <Icon path={mdiPencilOutline} size={1} />
+                      <Icon path={mdiTrashCanOutline} size={1} />
                     </ListItemIcon>
-                    <Typography variant="inherit">Edit Survey Details</Typography>
+                    <Typography variant="inherit">Delete Survey</Typography>
                   </MenuItem>
-                  {enableDeleteSurveyButton && (
-                    <MenuItem
-                      data-testid="delete-survey-button"
-                      onClick={showDeleteSurveyDialog}
-                      disabled={!enableDeleteSurveyButton}>
-                      <ListItemIcon>
-                        <Icon path={mdiTrashCanOutline} size={1} />
-                      </ListItemIcon>
-                      <Typography variant="inherit">Delete Survey</Typography>
-                    </MenuItem>
-                  )}
-                </Menu>
-              </Box>
+                )}
+              </Menu>
             </Box>
           </Box>
         </Container>

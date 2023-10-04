@@ -1,6 +1,6 @@
-import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
@@ -24,32 +24,34 @@ const SurveyFundingSources = () => {
   } = surveyForViewData;
 
   return (
-    <>
-      <List disablePadding>
-        {funding_sources.length > 0 ? (
-          <>
-            {funding_sources.map((surveyFundingSource) => (
-              <ListItem disableGutters divider key={surveyFundingSource.funding_source_id}>
-                <Box flex="1 1 auto">
-                  <Box>
-                    <Typography>
-                      {surveyFundingSource.funding_source_name}
-                      <Typography component="span">
-                        &nbsp;&ndash; {getFormattedAmount(surveyFundingSource.amount)}
-                      </Typography>
-                    </Typography>
-                  </Box>
-                </Box>
-              </ListItem>
-            ))}
-          </>
-        ) : (
-          <ListItem disableGutters>
-            <Typography>No Funding Sources</Typography>
-          </ListItem>
-        )}
-      </List>
-    </>
+    <List disablePadding
+      sx={{
+        '& li:first-child': {
+          paddingTop: 0
+        },
+        '& .MuiListItemText-root': {
+          margin: 0
+        }
+      }}
+    >
+      {funding_sources.length > 0 ? (
+        <>
+          {funding_sources.map((surveyFundingSource) => (
+            <ListItem disableGutters divider key={surveyFundingSource.funding_source_id}>
+              <ListItemText
+                primary={surveyFundingSource.funding_source_name}
+                secondary={getFormattedAmount(surveyFundingSource.amount)}
+              >
+              </ListItemText>
+            </ListItem>
+          ))}
+        </>
+      ) : (
+        <ListItem disableGutters>
+          <Typography>No Funding Sources</Typography>
+        </ListItem>
+      )}
+    </List>
   );
 };
 
