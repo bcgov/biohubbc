@@ -54,7 +54,7 @@ const mockUseApi = {
 const mockCodesContext: ICodesContext = {
   codesDataLoader: {
     data: codes,
-    load: () => { }
+    load: () => {}
   } as DataLoader<any, any, any>
 };
 
@@ -87,7 +87,7 @@ describe('CreateProjectPage', () => {
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
 
-    jest.spyOn(console, 'debug').mockImplementation(() => { });
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {

@@ -8,6 +8,7 @@ import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import _ from 'lodash';
 import SQL from 'sql-template-strings';
 import xml2js from 'xml2js';
+import { PROJECT_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { IGetProject } from '../models/project-view';
 import { SurveyObject } from '../models/survey-view';
@@ -17,7 +18,6 @@ import { DBService } from './db-service';
 import { ProjectService } from './project-service';
 import { SurveyService } from './survey-service';
 import { ITaxonomySource, TaxonomyService } from './taxonomy-service';
-import { PROJECT_ROLE } from '../constants/roles';
 
 const NOT_SUPPLIED = 'Not Supplied';
 const EMPTY_STRING = ``;
@@ -679,7 +679,7 @@ export class EmlService extends DBService {
 
     if (!coordinator) {
       // Return default organization name
-      return { organizationName: this._constants.EML_ORGANIZATION_NAME }
+      return { organizationName: this._constants.EML_ORGANIZATION_NAME };
     }
 
     return {
@@ -703,7 +703,7 @@ export class EmlService extends DBService {
 
     if (!coordinator) {
       // Return default organization name
-      return { organizationName: this._constants.EML_ORGANIZATION_NAME }
+      return { organizationName: this._constants.EML_ORGANIZATION_NAME };
     }
 
     return {
@@ -727,7 +727,7 @@ export class EmlService extends DBService {
 
     if (!coordinator) {
       // Return default organization name
-      return { organizationName: this._constants.EML_ORGANIZATION_NAME }
+      return { organizationName: this._constants.EML_ORGANIZATION_NAME };
     }
 
     return {

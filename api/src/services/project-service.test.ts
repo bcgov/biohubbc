@@ -2,12 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import {
-  GetIUCNClassificationData,
-  GetLocationData,
-  GetObjectivesData,
-  ProjectData
-} from '../models/project-view';
+import { GetIUCNClassificationData, GetLocationData, GetObjectivesData, ProjectData } from '../models/project-view';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';

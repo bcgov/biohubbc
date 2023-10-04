@@ -44,7 +44,7 @@ describe('user', () => {
         role_ids: [1],
         role_names: [],
         email: '',
-        family_name: '', 
+        family_name: '',
         given_name: '',
         display_name: '',
         agency: null
@@ -87,7 +87,7 @@ describe('user', () => {
         role_ids: [1],
         role_names: [],
         email: 'email@email.com',
-        family_name: '', 
+        family_name: '',
         given_name: '',
         display_name: 'test user',
         agency: null

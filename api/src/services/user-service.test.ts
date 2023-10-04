@@ -237,7 +237,7 @@ describe('UserService', () => {
         role_ids: [1],
         role_names: ['Collaborator'],
         email: 'email@email.com',
-        family_name: 'lname', 
+        family_name: 'lname',
         given_name: 'fname',
         display_name: 'test user',
         agency: null
@@ -279,7 +279,7 @@ describe('UserService', () => {
         role_ids: [1],
         role_names: ['Collaborator'],
         email: 'email@email.com',
-        family_name: 'lname', 
+        family_name: 'lname',
         given_name: 'fname',
         display_name: 'test user',
         agency: null
@@ -300,7 +300,7 @@ describe('UserService', () => {
         role_ids: [1],
         role_names: ['Collaborator'],
         email: 'email@email.com',
-        family_name: 'lname', 
+        family_name: 'lname',
         given_name: 'fname',
         display_name: 'test user',
         agency: null

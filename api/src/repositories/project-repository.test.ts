@@ -253,7 +253,7 @@ describe('ProjectRepository', () => {
           comments: 'comments'
         },
         objectives: { objectives: '' },
-        location: { location_description: '', geometry: [{ id: 1 }] },
+        location: { location_description: '', geometry: [{ id: 1 }] }
       } as unknown) as PostProjectObject;
 
       const response = await repository.insertProject(input);

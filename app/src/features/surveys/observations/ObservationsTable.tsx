@@ -120,6 +120,8 @@ const ObservationsTable = () => {
 
       observationsContext.setInitialRows(rows);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsDataLoader.data]);
 
   const handleDeleteRow = (id: string | number) => {
