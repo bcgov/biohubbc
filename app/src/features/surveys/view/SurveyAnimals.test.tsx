@@ -130,10 +130,10 @@ describe('SurveyAnimals', () => {
       expect(getByTestId('survey-animal-table')).toBeInTheDocument();
       fireEvent.click(getByTestId('animal actions'));
       fireEvent.click(getByTestId('animal-table-row-edit-timespan'));
-      fireEvent.click(getByText('Save Changes'));
+      fireEvent.click(getByText('Save'));
       fireEvent.click(getByTestId('animal actions'));
       fireEvent.click(getByTestId('animal-table-row-add-device'));
-      fireEvent.click(getByText('Save Changes'));
+      fireEvent.click(getByText('Save'));
     });
   });
 });

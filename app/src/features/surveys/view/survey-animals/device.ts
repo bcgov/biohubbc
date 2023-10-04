@@ -7,7 +7,7 @@ export type IDeploymentTimespan = InferType<typeof AnimalDeploymentTimespanSchem
 
 export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
 
-const req = 'Required.';
+const req = 'Required';
 const mustBeNum = 'Must be a number';
 const numSchema = yup.number().typeError(mustBeNum);
 
