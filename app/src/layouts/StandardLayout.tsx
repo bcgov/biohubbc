@@ -47,7 +47,7 @@ const BaseLayout = (props: PropsWithChildren<IBaseLayoutProps>) => {
 
         <Header />
 
-        <Box component="main" flex="1 1 auto">
+        <Box component="main" flex="1 1 auto" overflow="hidden">
           {props.children}
         </Box>
 

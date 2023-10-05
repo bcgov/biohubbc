@@ -1,12 +1,12 @@
 import { render } from 'test-helpers/test-utils';
-import ProjectsLayout from './ProjectsLayout';
+import StandardLayout from './StandardLayout';
 
 describe('ProjectsLayout', () => {
-  it('matches the snapshot', () => {
+  it('renders the child correctly', () => {
     const { getByText } = render(
-      <ProjectsLayout>
+      <StandardLayout>
         <p>This is the project layout test child component</p>
-      </ProjectsLayout>
+      </StandardLayout>
     );
 
     expect(getByText('This is the project layout test child component')).toBeVisible();

@@ -28,6 +28,7 @@ const ObservationComponent = () => {
       display="flex"
       flexDirection="column"
       flex="1 1 auto"
+      height="100%"
       sx={{
         overflow: 'hidden'
       }}>

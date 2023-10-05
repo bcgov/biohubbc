@@ -1,7 +1,6 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import SurveyPage from 'features/surveys/view/SurveyPage';
-import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
@@ -25,31 +24,25 @@ const SurveyRouter: React.FC = () => {
       />
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/details" title={getTitle('Surveys')}>
-        <ProjectsLayout>
-          <SurveyPage />
-        </ProjectsLayout>
+        <SurveyPage />
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/observations" title={getTitle('Observations')}>
-        <ProjectsLayout>
-          <SurveyObservationPage />
-        </ProjectsLayout>
+        <SurveyObservationPage />
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Sampling Sites')}>
-        <ProjectsLayout>
-          <SamplingSitePage />
-        </ProjectsLayout>
+        <SamplingSitePage />
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
-        <ProjectsLayout>
-          <ProjectRoleRouteGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <EditSurveyPage />
-          </ProjectRoleRouteGuard>
-        </ProjectsLayout>
+        </ProjectRoleRouteGuard>
+
       </RouteWithTitle>
     </Switch>
   );

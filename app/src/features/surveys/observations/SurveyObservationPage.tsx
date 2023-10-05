@@ -19,6 +19,8 @@ export const SurveyObservationPage = () => {
       display="flex"
       flexDirection="column"
       height="100%"
+      overflow="hidden"
+      position="relative"
       sx={{
         background: '#fff'
       }}>
@@ -27,7 +29,7 @@ export const SurveyObservationPage = () => {
         sx={{
           borderBottomStyle: 'solid',
           borderBottomWidth: '1px',
-          borderBottomColor: grey[500]
+          borderBottomColor: grey[300]
         }}>
         <SurveyObservationHeader
           project_id={surveyContext.projectId}
@@ -36,7 +38,7 @@ export const SurveyObservationPage = () => {
         />
       </Box>
 
-      <Box display="flex" flex="1 1 auto">
+      <Box display="flex" flex="1 1 auto" overflow="hidden">
         {/* Sampling Site List */}
         <Box
           flex="0 0 auto"
@@ -44,7 +46,7 @@ export const SurveyObservationPage = () => {
           sx={{
             borderRightStyle: 'solid',
             borderRightWidth: '1px',
-            borderRightColor: grey[500]
+            borderRightColor: grey[300]
           }}>
           <SamplingSiteList />
         </Box>
