@@ -15,7 +15,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
-import { datesSameNullable, pluralize } from 'utils/Utils';
+import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
@@ -45,8 +45,6 @@ const SurveyAnimals: React.FC = () => {
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
-  const [animalCount, setAnimalCount] = useState(0);
-  console.log(animalCount);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
     TELEMETRY_DEVICE_FORM_MODE.ADD
@@ -189,12 +187,8 @@ const SurveyAnimals: React.FC = () => {
                 <Typography variant="h3" component="span">{`${animalFormMode} Animal`}</Typography>
               </HelpButtonTooltip>
               {animalFormMode === ANIMAL_FORM_MODE.EDIT && (
-                <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-                  {`${
-                    animalCount
-                      ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
-                      : `No individual animals were captured or reported in this survey`
-                  }`}
+                <Typography variant="body2" color={'textSecondary'}>
+                  ID: {currentCritterbaseCritterId}
                 </Typography>
               )}
             </Box>
@@ -205,13 +199,7 @@ const SurveyAnimals: React.FC = () => {
           }}
           onCancel={toggleDialog}
           component={{
-            element: (
-              <IndividualAnimalForm
-                critter_id={currentCritterbaseCritterId}
-                mode={animalFormMode}
-                getAnimalCount={setAnimalCount}
-              />
-            ),
+            element: <IndividualAnimalForm />,
             initialValues: initialValues,
             validationSchema: AnimalSchema
           }}

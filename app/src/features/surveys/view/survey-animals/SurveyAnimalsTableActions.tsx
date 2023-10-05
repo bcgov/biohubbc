@@ -86,7 +86,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
-          <Typography variant="inherit">Edit Critter Details</Typography>
+          <Typography variant="inherit">Edit Animal</Typography>
         </MenuItem>
         {!props.devices?.length && (
           <MenuItem
