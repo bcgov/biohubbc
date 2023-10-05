@@ -9,7 +9,6 @@ import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
 import GeneralInformation from './components/GeneralInformation';
-import ProjectCoordinator from './components/ProjectCoordinator';
 import ProjectObjectives from './components/ProjectObjectives';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -82,14 +81,6 @@ const ProjectDetails = () => {
           </Typography>
           <Divider></Divider>
           <GeneralInformation />
-        </Box>
-
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Project Coordinator
-          </Typography>
-          <Divider></Divider>
-          <ProjectCoordinator />
         </Box>
 
         {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (view) temporarily, while its decided if IUCN information is desired */}

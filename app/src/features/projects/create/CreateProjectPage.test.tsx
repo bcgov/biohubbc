@@ -102,8 +102,6 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('General Information')).toBeVisible();
 
-      expect(getByText('Project Coordinator')).toBeVisible();
-
       // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined
       // expect(getByText('Location and Boundary')).toBeVisible();
     });
@@ -178,13 +176,6 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
@@ -210,13 +201,6 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
@@ -250,13 +234,6 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
@@ -297,13 +274,6 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
@@ -343,14 +313,10 @@ describe('CreateProjectPage', () => {
         id: 1,
         name: 'My draft',
         data: {
-          coordinator: {
-            first_name: 'Draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
+          project: {
+            ...ProjectDetailsFormInitialValues.project,
+            project_name: 'Test name'
           },
-          project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn
@@ -366,9 +332,7 @@ describe('CreateProjectPage', () => {
       );
 
       await waitFor(() => {
-        expect(getByDisplayValue('Draft first name', { exact: false })).toBeInTheDocument();
-        expect(getByDisplayValue('Draft last name', { exact: false })).toBeInTheDocument();
-        expect(getByDisplayValue('draftemail@example.com', { exact: false })).toBeInTheDocument();
+        expect(getByDisplayValue('Test name', { exact: false })).toBeInTheDocument();
       });
     });
 
@@ -440,13 +404,6 @@ describe('CreateProjectPage', () => {
         id: 1,
         name: 'My draft',
         data: {
-          coordinator: {
-            first_name: 'Draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
@@ -503,10 +460,9 @@ describe('CreateProjectPage', () => {
         expect(getByText('General Information')).toBeVisible();
       });
 
-      // update first, last and email fields
-      fireEvent.change(getByLabelText('First Name *'), { target: { value: 'draft first name' } });
-      fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'Draft last name' } });
-      fireEvent.change(getByLabelText('Business Email Address *'), { target: { value: 'draftemail@example.com' } });
+      // update project name and objectives
+      fireEvent.change(getByLabelText('Project Name *'), { target: { value: 'draft project name' } });
+      fireEvent.change(getByLabelText('Objectives *'), { target: { value: 'Draft objectives' } });
 
       const saveDraftButton = await getByTestId('save-draft-button');
 
@@ -522,20 +478,13 @@ describe('CreateProjectPage', () => {
 
       await waitFor(() => {
         expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', {
-          coordinator: {
-            first_name: 'draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: {
-            project_name: '',
+            project_name: 'draft project name',
             project_programs: [],
             start_date: '',
             end_date: ''
           },
-          objectives: { objectives: '' },
+          objectives: { objectives: 'Draft objectives' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
           participants: [
@@ -556,13 +505,6 @@ describe('CreateProjectPage', () => {
         id: 1,
         name: 'My draft',
         data: {
-          coordinator: {
-            first_name: 'Draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
@@ -584,8 +526,8 @@ describe('CreateProjectPage', () => {
         expect(getByText('General Information')).toBeVisible();
       });
 
-      // update project name field
-      fireEvent.change(getByLabelText('First Name *'), { target: { value: 'my new draft first name' } });
+      // update project objectives field
+      fireEvent.change(getByLabelText('Objectives *'), { target: { value: 'my new Draft objectives' } });
 
       const saveDraftButton = await getByTestId('save-draft-button');
 
@@ -601,20 +543,13 @@ describe('CreateProjectPage', () => {
 
       await waitFor(() => {
         expect(mockUseApi.draft.updateDraft).toHaveBeenCalledWith(1, 'my new draft project name', {
-          coordinator: {
-            first_name: 'my new draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: {
             project_name: '',
             project_programs: [],
             start_date: '',
             end_date: ''
           },
-          objectives: { objectives: '' },
+          objectives: { objectives: 'my new Draft objectives' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
           participants: [

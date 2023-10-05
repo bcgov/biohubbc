@@ -39,13 +39,7 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
       <Box p={3}>
         <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
           <>
-            <ProjectAdvancedFilters
-              coordinator_agency={
-                codesContext.codesDataLoader.data.agency?.map((item) => {
-                  return item.name;
-                }) || []
-              }
-            />
+            <ProjectAdvancedFilters />
             <Box mt={3} display="flex" alignItems="center" justifyContent="flex-end">
               <Button
                 className={classes.actionButton}
