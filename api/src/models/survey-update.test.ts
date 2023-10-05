@@ -102,14 +102,6 @@ describe('PutSurveyDetailsData', () => {
       expect(data.start_date).to.equal(null);
     });
 
-    it('sets lead_first_name', () => {
-      expect(data.lead_first_name).to.equal(null);
-    });
-
-    it('sets lead_last_name', () => {
-      expect(data.lead_last_name).to.equal(null);
-    });
-
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(null);
     });
@@ -122,8 +114,6 @@ describe('PutSurveyDetailsData', () => {
       survey_name: 'survey name',
       end_date: '2020/04/04',
       start_date: '2020/03/03',
-      biologist_first_name: 'first',
-      biologist_last_name: 'last',
       revision_count: 0
     };
 
@@ -141,14 +131,6 @@ describe('PutSurveyDetailsData', () => {
 
     it('sets start_date', () => {
       expect(data.start_date).to.equal(obj.start_date);
-    });
-
-    it('sets lead_first_name', () => {
-      expect(data.lead_first_name).to.equal(obj.biologist_first_name);
-    });
-
-    it('sets lead_last_name', () => {
-      expect(data.lead_last_name).to.equal(obj.biologist_last_name);
     });
 
     it('sets revision_count', () => {
