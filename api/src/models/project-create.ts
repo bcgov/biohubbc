@@ -12,7 +12,6 @@ const defaultLog = getLogger('models/project-create');
  * @class PostProjectObject
  */
 export class PostProjectObject {
-  coordinator: PostCoordinatorData;
   project: PostProjectData;
   objectives: PostObjectivesData;
   location: PostLocationData;
@@ -22,36 +21,11 @@ export class PostProjectObject {
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
 
-    this.coordinator = (obj?.coordinator && new PostCoordinatorData(obj.coordinator)) || null;
     this.project = (obj?.project && new PostProjectData(obj.project)) || null;
     this.objectives = (obj?.project && new PostObjectivesData(obj.objectives)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
     this.participants = obj?.participants || [];
-  }
-}
-
-/**
- * Processes POST /project contact data
- *
- * @export
- * @class PostCoordinatorData
- */
-export class PostCoordinatorData {
-  first_name: string;
-  last_name: string;
-  email_address: string;
-  coordinator_agency: string;
-  share_contact_details: boolean;
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostCoordinatorData', message: 'params', obj });
-
-    this.first_name = obj?.first_name || null;
-    this.last_name = obj?.last_name || null;
-    this.email_address = obj?.email_address || null;
-    this.coordinator_agency = obj?.coordinator_agency || null;
-    this.share_contact_details = (obj?.share_contact_details === 'true' && true) || false;
   }
 }
 

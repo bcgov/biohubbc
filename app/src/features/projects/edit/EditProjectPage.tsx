@@ -71,7 +71,6 @@ const EditProjectPage: React.FC = (props) => {
 
   const editProjectDataLoader = useDataLoader((projectId: number) =>
     biohubApi.project.getProjectForUpdate(projectId, [
-      UPDATE_GET_ENTITIES.coordinator,
       UPDATE_GET_ENTITIES.project,
       UPDATE_GET_ENTITIES.objectives,
       UPDATE_GET_ENTITIES.location,
