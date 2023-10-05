@@ -2,9 +2,7 @@ import { Knex } from 'knex';
 
 /**
  * Makes the lead biologist properties on a survey nullable, since the app no longer supports
- * entering or editing biologists.
- * 
- * // TODO update the procedure
+ * entering or editing biologists; Updates the survey delete procedure to delete from survey_location
  *
  * @export
  * @param {Knex} knex
@@ -107,6 +105,7 @@ export async function up(knex: Knex): Promise<void> {
         delete from survey_block where survey_id = p_survey_id;
         delete from survey_site_strategy where survey_id = p_survey_id;
         delete from survey_observation where survey_id = p_survey_id;
+        delete from survey_location where survey_id = p_survey_id;
 
         -- delete the survey
         delete from survey where survey_id = p_survey_id;
