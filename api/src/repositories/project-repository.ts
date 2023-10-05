@@ -2,10 +2,9 @@ import { isArray } from 'lodash';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
-import { PutCoordinatorData, PutLocationData, PutObjectivesData, PutProjectData } from '../models/project-update';
+import { PutLocationData, PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
   GetAttachmentsData,
-  GetCoordinatorData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
@@ -38,7 +37,6 @@ export class ProjectRepository extends BaseRepository {
         p.start_date,
         p.end_date,
         p.revision_count,
-        p.coordinator_agency_name as coordinator_agency,
         array_remove(array_agg(DISTINCT rl.region_name), null) as regions,
         array_agg(distinct p2.program_id) as project_programs
       FROM
@@ -72,10 +70,6 @@ export class ProjectRepository extends BaseRepository {
     }
 
     if (filterFields && Object.keys(filterFields).length !== 0 && filterFields.constructor === Object) {
-      if (filterFields.coordinator_agency) {
-        sqlStatement.append(SQL` AND p.coordinator_agency_name = ${filterFields.coordinator_agency}`);
-      }
-
       if (filterFields.start_date && !filterFields.end_date) {
         sqlStatement.append(SQL` AND p.start_date >= ${filterFields.start_date}`);
       }
@@ -105,7 +99,6 @@ export class ProjectRepository extends BaseRepository {
       if (filterFields.keyword) {
         const keyword_string = '%'.concat(filterFields.keyword).concat('%');
         sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
-        sqlStatement.append(SQL` OR p.coordinator_agency_name ilike ${keyword_string}`);
         sqlStatement.append(SQL` OR a.name ilike ${keyword_string}`);
         sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
       }
@@ -117,7 +110,6 @@ export class ProjectRepository extends BaseRepository {
         p.name,
         p.start_date,
         p.end_date,
-        p.coordinator_agency_name,
         p.uuid,
         p.revision_count
     `);
@@ -165,11 +157,6 @@ export class ProjectRepository extends BaseRepository {
         p.start_date,
         p.end_date,
         p.comments,
-        p.coordinator_first_name,
-        p.coordinator_last_name,
-        p.coordinator_email_address,
-        p.coordinator_agency_name,
-        p.coordinator_public,
         p.geojson as geometry,
         p.create_date,
         p.create_user,
@@ -224,34 +211,6 @@ export class ProjectRepository extends BaseRepository {
     }
 
     return new GetObjectivesData(result);
-  }
-
-  async getCoordinatorData(projectId: number): Promise<GetCoordinatorData> {
-    const sqlStatement = SQL`
-      SELECT
-        coordinator_first_name,
-        coordinator_last_name,
-        coordinator_email_address,
-        coordinator_agency_name,
-        coordinator_public,
-        revision_count
-      FROM
-        project
-      WHERE
-        project_id = ${projectId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-    const result = response?.rows?.[0];
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project contact data', [
-        'ProjectRepository->getCoordinatorData',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return new GetCoordinatorData(result);
   }
 
   async getLocationData(projectId: number): Promise<GetLocationData> {
@@ -366,11 +325,6 @@ export class ProjectRepository extends BaseRepository {
         start_date,
         end_date,
         comments,
-        coordinator_first_name,
-        coordinator_last_name,
-        coordinator_email_address,
-        coordinator_agency_name,
-        coordinator_public,
         geojson,
         geography
       ) VALUES (
@@ -380,11 +334,6 @@ export class ProjectRepository extends BaseRepository {
         ${postProjectData.project.start_date},
         ${postProjectData.project.end_date},
         ${postProjectData.project.comments},
-        ${postProjectData.coordinator.first_name},
-        ${postProjectData.coordinator.last_name},
-        ${postProjectData.coordinator.email_address},
-        ${postProjectData.coordinator.coordinator_agency},
-        ${postProjectData.coordinator.share_contact_details},
         ${JSON.stringify(postProjectData.location.geometry)}
     `;
 
@@ -526,10 +475,9 @@ export class ProjectRepository extends BaseRepository {
     project: PutProjectData | null,
     location: PutLocationData | null,
     objectives: PutObjectivesData | null,
-    coordinator: PutCoordinatorData | null,
     revision_count: number
   ): Promise<void> {
-    if (!project && !location && !objectives && !coordinator) {
+    if (!project && !location && !objectives) {
       // Nothing to update
       throw new ApiExecuteSQLError('Nothing to update for Project Data', [
         'ProjectRepository->updateProjectData',
@@ -576,14 +524,6 @@ export class ProjectRepository extends BaseRepository {
 
     if (objectives) {
       sqlSetStatements.push(SQL`objectives = ${objectives.objectives}`);
-    }
-
-    if (coordinator) {
-      sqlSetStatements.push(SQL`coordinator_first_name = ${coordinator.first_name}`);
-      sqlSetStatements.push(SQL`coordinator_last_name = ${coordinator.last_name}`);
-      sqlSetStatements.push(SQL`coordinator_email_address = ${coordinator.email_address}`);
-      sqlSetStatements.push(SQL`coordinator_agency_name = ${coordinator.coordinator_agency}`);
-      sqlSetStatements.push(SQL`coordinator_public = ${coordinator.share_contact_details}`);
     }
 
     sqlSetStatements.forEach((item, index) => {

@@ -84,12 +84,6 @@ POST.apiDoc = {
                   type: 'string',
                   description: 'ISO 8601 date string'
                 },
-                biologist_first_name: {
-                  type: 'string'
-                },
-                biologist_last_name: {
-                  type: 'string'
-                },
                 survey_types: {
                   type: 'array',
                   items: {
