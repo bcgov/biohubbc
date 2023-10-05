@@ -58,20 +58,17 @@ const useAdminApi = (axios: AxiosInstance) => {
 
   const approveAccessRequest = async (
     administrativeActivityId: number,
-    userGuid: string | null,
-    userIdentifier: string,
-    identitySource: string,
-    displayName: string,
-    email: string,
-    roleIds: number[] = []
+    userData: {
+      userGuid: string | null;
+      userIdentifier: string;
+      identitySource: string;
+      email: string;
+      displayName: string;
+      roleIds: number[];
+    }
   ): Promise<void> => {
     const { data } = await axios.put(`/api/administrative-activity/system-access/${administrativeActivityId}/approve`, {
-      userGuid,
-      userIdentifier,
-      identitySource,
-      displayName,
-      email,
-      roleIds: roleIds
+      ...userData
     });
 
     return data;
