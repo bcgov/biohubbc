@@ -122,9 +122,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         survey_sample_period_id: undefined,
         count: undefined,
         observation_date: undefined,
-        observation_time: undefined,
-        lat: undefined,
-        long: undefined
+        observation_time: undefined
       } as GridRowModelUpdate
     ]);
 
@@ -138,10 +136,10 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const _getActiveRecords = (): IObservationTableRow[] => {
     return _getRows().map((row) => {
       const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
+
       if (!editRow) {
         return row;
       }
-
       return Object.entries(editRow).reduce(
         (newRow, entry) => ({ ...row, ...newRow, _isModified: true, [entry[0]]: entry[1].value }),
         {}

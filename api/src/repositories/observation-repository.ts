@@ -1,4 +1,3 @@
-import moment from 'moment';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
@@ -147,8 +146,8 @@ export class ObservationRepository extends BaseRepository {
             observation.count,
             observation.latitude,
             observation.longitude,
-            `'${moment(observation.observation_date).format('YYYY-MM-DD')}'`,
-            `'${moment(observation.observation_time).format('HH:mm:ss')}'`
+            `'${observation.observation_date}'`,
+            `'${observation.observation_time}'`
           ].join(', ')})`;
         })
         .join(', ')
@@ -175,10 +174,14 @@ export class ObservationRepository extends BaseRepository {
         latitude::double precision,
         longitude::double precision
     ;`);
+    try {
+      const response = await this.connection.sql(sqlStatement, ObservationRecord);
 
-    const response = await this.connection.sql(sqlStatement, ObservationRecord);
-
-    return response.rows;
+      return response.rows;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
   }
 
   /**
