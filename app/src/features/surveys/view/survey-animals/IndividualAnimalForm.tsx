@@ -19,8 +19,8 @@ import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
  **/
 
 export enum ANIMAL_FORM_MODE {
-  ADD = 'Add',
-  EDIT = 'Edit'
+  ADD = 'add',
+  EDIT = 'edit'
 }
 
 const IndividualAnimalForm = () => {

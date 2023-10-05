@@ -184,7 +184,9 @@ const SurveyAnimals: React.FC = () => {
               <HelpButtonTooltip
                 content={SurveyAnimalsI18N.animalIndividualsHelp}
                 iconSx={{ position: 'relative', top: '-4px', right: '0px' }}>
-                <Typography variant="h3" component="span">{`${animalFormMode} Animal`}</Typography>
+                <Typography variant="h3" component="span">
+                  {animalFormMode === ANIMAL_FORM_MODE.EDIT ? 'Edit Animal' : 'Add Animal'}
+                </Typography>
               </HelpButtonTooltip>
               {animalFormMode === ANIMAL_FORM_MODE.EDIT && (
                 <Typography variant="body2" color={'textSecondary'}>
