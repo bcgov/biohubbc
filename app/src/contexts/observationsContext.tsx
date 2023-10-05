@@ -164,7 +164,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   // TODO deleting a row and then calling method currently fails to recover said row...
   const revertRecords = async () => {
-    // Mark all rows as saved 
+    // Mark all rows as saved
     _setUnsavedRecordIds([]);
 
     // Revert any current edits

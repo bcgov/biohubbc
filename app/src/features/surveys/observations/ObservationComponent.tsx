@@ -66,17 +66,10 @@ const ObservationComponent = () => {
           </Typography>
           {showSaveButton && (
             <>
-              <LoadingButton
-                loading={isSaving}
-                variant="contained"
-                color="primary"
-                onClick={() => handleSaveChanges()}>
+              <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
                 Save
               </LoadingButton>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setShowConfirmRemoveAllDialog(true)}>
+              <Button variant="contained" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
                 Discard Changes
               </Button>
             </>

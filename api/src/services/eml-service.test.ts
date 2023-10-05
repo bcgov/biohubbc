@@ -1406,9 +1406,7 @@ describe.skip('EmlService', () => {
 
   describe('_getSurveyPersonnel', () => {
     it('should return survey personnel', async () => {
-
       // TODO: Replace this test once SIMSBIOHUB-275 is merged.
-
       /*
       const mockDBConnection = getMockDBConnection();
       const emlService = new EmlService(mockDBConnection);
