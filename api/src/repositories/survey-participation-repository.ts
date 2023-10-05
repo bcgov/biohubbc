@@ -109,6 +109,8 @@ export class SurveyParticipationRepository extends BaseRepository {
         array_remove(array_agg(sr.name), NULL) AS role_names,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         sp.survey_participation_id,
         sp.survey_id,
@@ -142,11 +144,16 @@ export class SurveyParticipationRepository extends BaseRepository {
         uis.name,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         sp.survey_participation_id,
         sp.survey_job_id,
         sp.survey_id,
-        sj.name;
+        sj.name,
+        sp.create_date
+      ORDER BY
+        sp.create_date DESC;
       `;
 
     const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUser));
@@ -173,6 +180,8 @@ export class SurveyParticipationRepository extends BaseRepository {
         array_remove(array_agg(sr.name), NULL) AS role_names,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         sp.survey_participation_id,
         sp.survey_id,
@@ -206,11 +215,16 @@ export class SurveyParticipationRepository extends BaseRepository {
         uis.name,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         sp.survey_participation_id,
         sp.survey_job_id,
         sp.survey_id,
-        sj.name;
+        sj.name,
+        sp.create_date
+      ORDER BY
+        sp.create_date DESC;
     `;
 
     const response = await this.connection.sql(sqlStatement, SurveyUser.merge(SystemUser));
