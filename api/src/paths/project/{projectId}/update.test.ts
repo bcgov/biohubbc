@@ -45,7 +45,6 @@ describe('update', () => {
 
       const sampleResponse = {
         id: 1,
-        coordinator: undefined,
         project: undefined,
         objectives: undefined,
         location: undefined,
@@ -58,7 +57,7 @@ describe('update', () => {
       };
 
       mockReq.query = {
-        entity: ['coordinator']
+        entity: ['objectives']
       };
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -70,7 +69,7 @@ describe('update', () => {
       await requestHandler(mockReq, mockRes, mockNext);
 
       expect(mockRes.statusValue).to.equal(200);
-      expect(ProjectService.prototype.getProjectEntitiesById).called.calledWith(1, ['coordinator']);
+      expect(ProjectService.prototype.getProjectEntitiesById).called.calledWith(1, ['objectives']);
       expect(mockRes.sendValue).to.equal(sampleResponse);
     });
   });

@@ -135,7 +135,9 @@ const ObservationsTable = () => {
 
       observationsContext.setInitialRows(rows);
     }
-  }, [observationsContext, observationsDataLoader.data]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [observationsDataLoader.data]);
 
   const handleCancelDeleteRow = () => {
     setDeletingObservation(null);
@@ -177,7 +179,7 @@ const ObservationsTable = () => {
         dialogText={ObservationsTableI18N.removeRecordDialogText}
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Discard Record'}
-        noButtonProps={{ color: 'primary', variant: 'contained' }}
+        noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
         open={showConfirmDeleteDialog}
         onYes={() => {

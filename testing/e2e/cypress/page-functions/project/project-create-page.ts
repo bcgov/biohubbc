@@ -8,43 +8,6 @@ export function navigate_project() {
   cy.wait(5000);
 }
 
-// Add Coordinator takes variables or when omitted (NULL), it will use fake data)
-export function add_coordinator_info(
-  navloc,
-  fname,
-  lname,
-  email,
-  agency,
-  share
-) {
-  // Coordinator Info
-  cy.get("span.MuiStepLabel-iconContainer")
-    .eq(navloc || 0)
-    .click(); // Click on the Navigation bar
-  cy.contains("Project Contact").should("be.visible");
-  cy.get("#first_name").clear();
-  cy.get("#first_name").type(fname || faker.name.firstName());
-  cy.get("#last_name").clear();
-  cy.get("#last_name").type(lname || faker.name.lastName());
-  cy.get("#email_address").clear();
-  cy.get("#email_address").type(email || faker.internet.email());
-  cy.get("#coordinator_agency").click();
-
-  // Agency is the sequential number for the shown agency in the drop down.
-  cy.get(
-    "#coordinator_agency-option-" +
-      (agency || faker.random.number({ min: 0, max: 264 }))
-  ).click();
-
-  // Select the Radiobutton
-  // the Share parameter takes 'Yes', 'No' or NULL, which defaults to 'Yes'
-
-  cy.get('[name="share_contact_details"][type="radio"]').check({
-    force: share,
-  });
-  //cy.get('input[name="share_contact_details"]').uncheck()
-}
-
 export function add_permits(navloc, permit_nr, permit_type, sampling) {
   // Permits Info
   cy.get("span.MuiStepLabel-iconContainer")

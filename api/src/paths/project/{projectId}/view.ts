@@ -63,7 +63,7 @@ GET.apiDoc = {
             properties: {
               projectData: {
                 type: 'object',
-                required: ['project', 'coordinator', 'participants', 'objectives', 'location', 'iucn'],
+                required: ['project', 'participants', 'objectives', 'location', 'iucn'],
                 properties: {
                   project: {
                     description: 'Basic project metadata',
@@ -98,35 +98,6 @@ GET.apiDoc = {
                         type: 'string',
                         nullable: true,
                         description: 'Comments'
-                      }
-                    }
-                  },
-                  coordinator: {
-                    title: 'Project coordinator',
-                    type: 'object',
-                    required: [
-                      'first_name',
-                      'last_name',
-                      'email_address',
-                      'coordinator_agency',
-                      'share_contact_details'
-                    ],
-                    properties: {
-                      first_name: {
-                        type: 'string'
-                      },
-                      last_name: {
-                        type: 'string'
-                      },
-                      email_address: {
-                        type: 'string'
-                      },
-                      coordinator_agency: {
-                        type: 'string'
-                      },
-                      share_contact_details: {
-                        type: 'string',
-                        enum: ['true', 'false']
                       }
                     }
                   },
