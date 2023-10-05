@@ -113,6 +113,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
     _muiDataGridApiRef.current.updateRows([
       {
+        _isNew: true,
         id,
         survey_observation_id: null,
         wldtaxonomic_units: undefined,
@@ -155,17 +156,23 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     const { projectId, surveyId } = surveyContext;
 
     const rows = _getActiveRecords();
-
     await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
     _setUnsavedRecordIds([]);
-    refreshRecords();
+
+    return refreshRecords();
   };
 
   // TODO deleting a row and then calling method currently fails to recover said row...
   const revertRecords = async () => {
+    // Mark all rows as saved
+    _setUnsavedRecordIds([]);
+
+    // Revert any current edits
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
-    _setUnsavedRecordIds([]);
+
+    // Remove any rows that are newly created
+    _muiDataGridApiRef.current.setRows(initialRows);
   };
 
   const refreshRecords = async (): Promise<void> => {
