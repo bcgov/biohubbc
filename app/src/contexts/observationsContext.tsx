@@ -6,6 +6,10 @@ import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.int
 import { createContext, PropsWithChildren, useCallback, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
+import { DialogContext } from 'contexts/dialogContext';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { APIError } from 'hooks/api/useAxios';
+import { ObservationsTableI18N } from 'constants/i18n';
 
 export interface IObservationRecord {
   survey_observation_id: number | undefined;
@@ -69,9 +73,13 @@ export type IObservationsContext = {
    * API ref used to interface with an MUI DataGrid representing the observation records
    */
   _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
-
+  /**
+   * TODO
+   */
   initialRows: IObservationTableRow[];
-
+  /**
+   * TODO
+   */
   setInitialRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
 };
 
@@ -90,13 +98,33 @@ export const ObservationsContext = createContext<IObservationsContext>({
 });
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
+  const { projectId, surveyId } = useContext(SurveyContext);
+  
+  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
   const _muiDataGridApiRef = useGridApiRef();
   const biohubApi = useBiohubApi();
+  const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
-  const { projectId, surveyId } = useContext(SurveyContext);
-  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
+
   const [unsavedRecordIds, _setUnsavedRecordIds] = useState<string[]>([]);
   const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
+
+  const _hideErrorDialog = () => {
+    dialogContext.setErrorDialog({
+      open: false
+    })
+  }
+
+  const _showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      ...textDialogProps,
+      onOk: _hideErrorDialog,
+      onClose: _hideErrorDialog,
+      dialogTitle: ObservationsTableI18N.submitRecordsErrorDialogTitle,
+      dialogText: ObservationsTableI18N.submitRecordsErrorDialogText,
+      open: true 
+    });
+  };
 
   observationsDataLoader.load();
 
@@ -113,7 +141,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
     _muiDataGridApiRef.current.updateRows([
       {
-        _isNew: true,
         id,
         survey_observation_id: null,
         wldtaxonomic_units: undefined,
@@ -154,12 +181,18 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id }));
 
     const { projectId, surveyId } = surveyContext;
-
     const rows = _getActiveRecords();
-    await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
-    _setUnsavedRecordIds([]);
 
-    return refreshRecords();
+    try {
+      await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
+      _setUnsavedRecordIds([]);
+      return refreshRecords();
+    } catch (error) {
+      const apiError = error as APIError;
+      _showErrorDialog({ dialogErrorDetails: apiError.errors });
+      return;
+    }
+      
   };
 
   // TODO deleting a row and then calling method currently fails to recover said row...
@@ -196,6 +229,8 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     initialRows,
     setInitialRows
   };
+
+  console.log({ observationsContext })
 
   return <ObservationsContext.Provider value={observationsContext}>{props.children}</ObservationsContext.Provider>;
 };
