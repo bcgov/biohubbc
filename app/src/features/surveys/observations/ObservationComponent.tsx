@@ -37,7 +37,7 @@ const ObservationComponent = () => {
     });
   };
 
-  const showSaveButton = observationsContext.hasUnsavedChanges() || true; // TODO hardcode to true
+  const showSaveButton = observationsContext.hasUnsavedChanges() || true;
 
   if (surveyContext.sampleSiteDataLoader.data && codesContext.codesDataLoader.data) {
     // loop through and collect all sites
@@ -53,7 +53,7 @@ const ObservationComponent = () => {
           survey_sample_method_id: method.survey_sample_method_id,
           survey_sample_site_id: site.survey_sample_site_id,
           sample_method_name:
-            getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) || ''
+            getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
         });
 
         // loop through and collect all periods for all methods for all sites

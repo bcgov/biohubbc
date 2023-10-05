@@ -47,7 +47,6 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
 
   // The current data grid value
   const dataGridValue = dataGridProps.value;
-  //   console.log(apiRef.current.getColumn(dataGridProps.field));
 
   function getCurrentValue() {
     if (!dataGridValue) {
