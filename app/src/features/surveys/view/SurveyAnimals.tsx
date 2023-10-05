@@ -15,7 +15,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
-import { datesSameNullable, pluralize } from 'utils/Utils';
+import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
@@ -45,7 +45,6 @@ const SurveyAnimals: React.FC = () => {
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
-  const [animalCount, setAnimalCount] = useState(0);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
     TELEMETRY_DEVICE_FORM_MODE.ADD
@@ -182,16 +181,18 @@ const SurveyAnimals: React.FC = () => {
         <EditDialog
           dialogTitle={
             <Box>
-              <HelpButtonTooltip content={SurveyAnimalsI18N.animalIndividualsHelp}>
-                <Typography variant="h3">Individuals</Typography>
+              <HelpButtonTooltip
+                content={SurveyAnimalsI18N.animalIndividualsHelp}
+                iconSx={{ position: 'relative', top: '-4px', right: '0px' }}>
+                <Typography variant="h3" component="span">
+                  {animalFormMode === ANIMAL_FORM_MODE.EDIT ? 'Edit Animal' : 'Add Animal'}
+                </Typography>
               </HelpButtonTooltip>
-              <Typography component="span" variant="subtitle1" color="textSecondary" mt={2}>
-                {`${
-                  animalCount
-                    ? `${animalCount} ${pluralize(animalCount, 'Animal')} reported in this survey`
-                    : `No individual animals were captured or reported in this survey`
-                }`}
-              </Typography>
+              {animalFormMode === ANIMAL_FORM_MODE.EDIT && (
+                <Typography variant="body2" color={'textSecondary'}>
+                  ID: {currentCritterbaseCritterId}
+                </Typography>
+              )}
             </Box>
           }
           open={openAddCritterDialog}
@@ -200,16 +201,11 @@ const SurveyAnimals: React.FC = () => {
           }}
           onCancel={toggleDialog}
           component={{
-            element: (
-              <IndividualAnimalForm
-                critter_id={currentCritterbaseCritterId}
-                mode={animalFormMode}
-                getAnimalCount={setAnimalCount}
-              />
-            ),
+            element: <IndividualAnimalForm />,
             initialValues: initialValues,
             validationSchema: AnimalSchema
           }}
+          dialogSaveButtonLabel="Save"
         />
       );
     }
