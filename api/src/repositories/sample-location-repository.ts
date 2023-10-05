@@ -33,12 +33,21 @@ export type UpdateSampleLocationRecord = Pick<
   'survey_sample_site_id' | 'survey_id' | 'name' | 'description' | 'geojson'
 >;
 
-export type UpdateSampleSiteRecord = {
+export type UpdateSampleSitesRecord = {
   survey_id: number;
   survey_sample_site_id: number;
   name: string;
   description: string;
   survey_sample_sites: Feature[];
+  methods: UpdateSampleMethodRecord[];
+};
+
+export type UpdateSampleSiteRecord = {
+  survey_id: number;
+  survey_sample_site_id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
   methods: UpdateSampleMethodRecord[];
 };
 
@@ -118,7 +127,7 @@ export class SampleLocationRepository extends BaseRepository {
         survey_id=${sample.survey_id},
         name=${sample.name},
         description=${sample.description || null},
-        geojson=${sample.geojson}
+        geojson=${sample.geojson},
         geography=public.geography(
           public.ST_Force2D(
             public.ST_SetSRID(
@@ -132,7 +141,6 @@ export class SampleLocationRepository extends BaseRepository {
       RETURNING
         *;`);
 
-    console.log('sql', sql);
     const response = await this.connection.sql(sql);
 
     if (!response.rowCount) {

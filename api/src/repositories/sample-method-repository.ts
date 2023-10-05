@@ -63,6 +63,7 @@ export class SampleMethodRepository extends BaseRepository {
    * @memberof SampleMethodRepository
    */
   async updateSampleMethod(sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
+    console.log('updateSampleMethod', sampleMethod);
     const sql = SQL`
       UPDATE survey_sample_method
       SET
@@ -74,7 +75,7 @@ export class SampleMethodRepository extends BaseRepository {
       RETURNING
         *;`;
 
-    const response = await this.connection.sql(sql, SampleMethodRecord);
+    const response = await this.connection.sql(sql);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update sample method', [

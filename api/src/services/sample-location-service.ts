@@ -3,7 +3,8 @@ import { IDBConnection } from '../database/db';
 import {
   SampleLocationRecord,
   SampleLocationRepository,
-  UpdateSampleSiteRecord
+  UpdateSampleSiteRecord,
+  UpdateSampleSitesRecord
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
@@ -103,83 +104,81 @@ export class SampleLocationService extends DBService {
    * @return {*}  {Promise<SampleLocationRecord>}
    * @memberof SampleLocationService
    */
-  async updateSampleLocation(sampleLocations: UpdateSampleSiteRecord): Promise<SampleLocationRecord> {
-    const methodService = new SampleMethodService(this.connection);
+  async updateSampleSites(sampleLocations: UpdateSampleSitesRecord) {
+    console.log('sampleLocations', sampleLocations);
 
     // Create a sample location for each feature found
     const promises = sampleLocations.survey_sample_sites.map((item, index) => {
-      if (sampleLocations.survey_sample_site_id) {
-        const sampleLocation = {
+      if (index === 0) {
+        //first index is the main sample location
+        const sampleSite = {
           survey_sample_site_id: sampleLocations.survey_sample_site_id,
           survey_id: sampleLocations.survey_id,
-          name: `${sampleLocations.name}-${index + 1}`, // Business requirement to default the names to Sample Site # on creation
+          name: sampleLocations.name,
           description: sampleLocations.description,
-          geojson: item
+          geojson: item,
+          methods: sampleLocations.methods
         };
+        console.log('UPDATE sampleSite', sampleSite);
 
-        return this.sampleLocationRepository.updateSampleLocation(sampleLocation);
+        return this.updateSampleLocationMethodPeriod(sampleSite);
       } else {
-        const sampleLocation = {
+        // all other indexes are new sample locations
+        const sampleSite = {
+          survey_sample_site_id: null,
           survey_id: sampleLocations.survey_id,
-          name: `${sampleLocations.name}-${index + 1}`, // Business requirement to default the names to Sample Site # on creation
+          name: `${sampleLocations.name}-${index}`, // Business requirement to default the names to Sample Site # on creation
           description: sampleLocations.description,
-          geojson: item
+          survey_sample_sites: [(item as unknown) as Feature],
+          methods: sampleLocations.methods
         };
+        console.log('INSERT sampleSite', sampleSite);
 
-        return this.sampleLocationRepository.insertSampleLocation(sampleLocation);
+        return this.insertSampleLocations(sampleSite);
       }
     });
-    const results = await Promise.all<SampleLocationRecord>(promises);
 
-    //Get any existing methods for the sample location
-    const existingMethods = await methodService.getSampleMethodsForSurveySampleSiteId(
-      sampleLocations.survey_sample_site_id
-    );
+    return Promise.all(promises);
+  }
 
-    //Compare input and existing for methods to delete
-    const existingMethodsToDelete = existingMethods.filter((existingMethod) => {
-      return !sampleLocations.methods.find(
-        (incomingMethod) => incomingMethod.survey_sample_method_id === existingMethod.survey_sample_method_id
-      );
+  async updateSampleLocationMethodPeriod(sampleSite: UpdateSampleSiteRecord) {
+    console.log('sampleSite', sampleSite);
+    const methodService = new SampleMethodService(this.connection);
+
+    // Update the main sample location
+    await this.sampleLocationRepository.updateSampleLocation(sampleSite);
+
+    // Check for methods to delete
+    await methodService.checkSampleMethodsToDelete(sampleSite.survey_sample_site_id, sampleSite.methods);
+
+    // Loop through all methods
+    // For each method, check if it exists
+    // If it exists, update it
+    // If it does not exist, create it
+    const methodPromises = sampleSite.methods.map((item) => {
+      if (item.survey_sample_method_id) {
+        const sampleMethod = {
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          survey_sample_method_id: item.survey_sample_method_id,
+          method_lookup_id: item.method_lookup_id,
+          description: item.description,
+          periods: item.periods
+        };
+        console.log('UPDATE sampleMethod', sampleMethod);
+        return methodService.updateSampleMethod(sampleMethod);
+      } else {
+        const sampleMethod = {
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          method_lookup_id: item.method_lookup_id,
+          description: item.description,
+          periods: item.periods
+        };
+        console.log('INSERT sampleMethod', sampleMethod);
+
+        return methodService.insertSampleMethod(sampleMethod);
+      }
     });
 
-    // Delete any non existing methods
-    if (existingMethodsToDelete.length) {
-      const promises: Promise<any>[] = [];
-
-      existingMethodsToDelete.forEach((method: any) => {
-        promises.push(methodService.deleteSampleMethodRecord(method.survey_sample_method_id));
-      });
-
-      await Promise.all(promises);
-    }
-
-    // Loop through all newly reaction sample locations
-    // For reach sample location, create methods and associated with sample location id
-    const methodPromises = results.map((sampleSite: SampleLocationRecord) =>
-      sampleLocations.methods.map((item) => {
-        if (item.survey_sample_method_id) {
-          const sampleMethod = {
-            survey_sample_site_id: sampleSite.survey_sample_site_id,
-            survey_sample_method_id: item.survey_sample_method_id,
-            method_lookup_id: item.method_lookup_id,
-            description: item.description,
-            periods: item.periods
-          };
-          return methodService.updateSampleMethod(sampleMethod);
-        } else {
-          const sampleMethod = {
-            survey_sample_site_id: sampleSite.survey_sample_site_id,
-            method_lookup_id: item.method_lookup_id,
-            description: item.description,
-            periods: item.periods
-          };
-          return methodService.insertSampleMethod(sampleMethod);
-        }
-      })
-    );
     await Promise.all(methodPromises);
-
-    return this.sampleLocationRepository.updateSampleLocation(sampleLocations);
   }
 }
