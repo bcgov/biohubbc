@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { Form, useFormikContext } from 'formik';
 import { Critter, IAnimal } from './animal';
@@ -24,23 +23,11 @@ export enum ANIMAL_FORM_MODE {
   EDIT = 'edit'
 }
 
-interface IndividualAnimalFormProps {
-  getAnimalCount: (num: number) => void;
-  critter_id?: string;
-  mode: ANIMAL_FORM_MODE;
-}
-
-const IndividualAnimalForm = ({ getAnimalCount, critter_id, mode }: IndividualAnimalFormProps) => {
+const IndividualAnimalForm = () => {
   const { values } = useFormikContext<IAnimal>();
 
   return (
     <Form>
-      <Typography variant="h4">{mode === ANIMAL_FORM_MODE.ADD ? 'Add New Individual' : 'Edit Individual'}</Typography>
-      {mode === ANIMAL_FORM_MODE.EDIT && (
-        <Typography variant="body2" color={'textSecondary'}>
-          Critter ID: {critter_id}
-        </Typography>
-      )}
       <GeneralAnimalForm />
       <CollectionUnitAnimalForm />
       <CaptureAnimalForm />
