@@ -13,7 +13,6 @@ export interface ITableActionsMenuProps {
   devices?: IAnimalDeployment[];
   onMenuOpen: (critter_id: number) => void;
   onAddDevice: (critter_id: number) => void;
-  onRemoveDevice: (critter_id: number) => void;
   onEditDevice: (critter_id: number) => void;
   onEditCritter: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
@@ -86,7 +85,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
-          <Typography variant="inherit">Edit Critter Details</Typography>
+          <Typography variant="inherit">Edit Animal</Typography>
         </MenuItem>
         {!props.devices?.length && (
           <MenuItem

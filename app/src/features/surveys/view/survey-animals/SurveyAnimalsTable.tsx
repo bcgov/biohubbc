@@ -1,10 +1,7 @@
-import { Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/tables/CustomDataGrid';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { getFormattedDate } from 'utils/Utils';
 import { IAnimalDeployment } from './device';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 
@@ -25,10 +22,6 @@ interface ISurveyAnimalsTableProps {
   onEditDevice: (device_id: number) => void;
   onEditCritter: (critter_id: number) => void;
 }
-
-const noOpPlaceHolder = (critter_id: number) => {
-  // This function intentionally left blank - used as placeholder.
-};
 
 export const SurveyAnimalsTable = ({
   animalData,
@@ -69,14 +62,6 @@ export const SurveyAnimalsTable = ({
       renderCell: (params) => <>{params.value ? params.value : 'None'}</>
     },
     {
-      field: 'create_timestamp',
-      headerName: 'Created On',
-      flex: 1,
-      renderCell: (params) => (
-        <Typography>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}</Typography>
-      )
-    },
-    {
       field: 'current_devices',
       headerName: 'Current Devices',
       flex: 1,
@@ -115,7 +100,6 @@ export const SurveyAnimalsTable = ({
           devices={params.row?.deployments}
           onMenuOpen={onMenuOpen}
           onAddDevice={onAddDevice}
-          onRemoveDevice={noOpPlaceHolder}
           onEditCritter={onEditCritter}
           onEditDevice={onEditDevice}
           onRemoveCritter={onRemoveCritter}

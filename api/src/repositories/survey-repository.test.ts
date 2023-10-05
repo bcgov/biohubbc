@@ -463,8 +463,6 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
-          biologist_first_name: 'first',
-          biologist_last_name: 'last',
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
@@ -493,8 +491,6 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
-          biologist_first_name: 'first',
-          biologist_last_name: 'last',
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
@@ -523,8 +519,6 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
-          biologist_first_name: 'first',
-          biologist_last_name: 'last',
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
@@ -851,8 +845,6 @@ describe('SurveyRepository', () => {
           name: 'name',
           start_date: 'start',
           end_date: 'end',
-          lead_first_name: 'first',
-          lead_last_name: 'last',
           revision_count: 1
         },
         purpose_and_methodology: {
@@ -882,8 +874,6 @@ describe('SurveyRepository', () => {
           name: 'name',
           start_date: 'start',
           end_date: 'end',
-          lead_first_name: 'first',
-          lead_last_name: 'last',
           revision_count: 1
         },
         purpose_and_methodology: {
@@ -913,8 +903,6 @@ describe('SurveyRepository', () => {
           name: 'name',
           start_date: 'start',
           end_date: 'end',
-          lead_first_name: 'first',
-          lead_last_name: 'last',
           revision_count: 1
         },
         purpose_and_methodology: {
