@@ -44,6 +44,7 @@ const SamplingSiteList = () => {
         </Button>
       </Toolbar>
       <Box
+        position="relative"
         display="flex"
         flex="1 1 auto"
         sx={{
@@ -55,117 +56,126 @@ const SamplingSiteList = () => {
             borderTopColor: grey[300]
           }
         }}>
-        <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center">
-          <Typography variant="body2">No Sampling Sites</Typography>
+
+        <Box
+          sx={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%'
+          }}
+        > 
+          <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
+            <Typography variant="body2">No Sampling Sites</Typography>
+          </Box>
+
+          <Accordion
+            square
+            disableGutters
+            sx={{
+              display: 'none',
+              boxShadow: 'none',
+              '&:before': {
+                display: 'none'
+              }
+            }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
+              <AccordionSummary
+                aria-controls="panel1bh-content"
+                id="panel1bh-header"
+                sx={{
+                  p: 0
+                }}>
+                <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                  Sampling Site 1
+                </Typography>
+              </AccordionSummary>
+              <IconButton edge="end">
+                <Icon path={mdiDotsVertical} size={1}></Icon>
+              </IconButton>
+            </Box>
+            <AccordionDetails
+              sx={{
+                pt: 0
+              }}>
+              <List component="div" disablePadding>
+                <ListItem
+                  sx={{
+                    background: grey[200]
+                  }}>
+                  <ListItemText>
+                    <Typography variant="body2">Method 1</Typography>
+                  </ListItemText>
+                </ListItem>
+              </List>
+              <List disablePadding>
+                <ListItem>
+                  <ListItemText>
+                    <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
+                  </ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText>
+                    <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
+                  </ListItemText>
+                </ListItem>
+              </List>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion
+            square
+            disableGutters
+            sx={{
+              display: 'none',
+              boxShadow: 'none',
+              '&:before': {
+                display: 'none'
+              }
+            }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
+              <AccordionSummary
+                aria-controls="panel1bh-content"
+                id="panel1bh-header"
+                sx={{
+                  p: 0
+                }}>
+                <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                  Sampling Site 1
+                </Typography>
+              </AccordionSummary>
+              <IconButton edge="end">
+                <Icon path={mdiDotsVertical} size={1}></Icon>
+              </IconButton>
+            </Box>
+            <AccordionDetails
+              sx={{
+                pt: 0
+              }}>
+              <List disablePadding>
+                <ListItem
+                  sx={{
+                    background: grey[200]
+                  }}>
+                  <ListItemText>
+                    <Typography variant="body2">Method 1</Typography>
+                  </ListItemText>
+                </ListItem>
+              </List>
+              <List disablePadding>
+                <ListItem>
+                  <ListItemText>
+                    <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
+                  </ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText>
+                    <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
+                  </ListItemText>
+                </ListItem>
+              </List>
+            </AccordionDetails>
+          </Accordion>
         </Box>
-
-        <Accordion
-          square
-          disableGutters
-          sx={{
-            display: 'none',
-            boxShadow: 'none',
-            '&:before': {
-              display: 'none'
-            }
-          }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
-            <AccordionSummary
-              aria-controls="panel1bh-content"
-              id="panel1bh-header"
-              sx={{
-                p: 0
-              }}>
-              <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                Sampling Site 1
-              </Typography>
-            </AccordionSummary>
-            <IconButton edge="end">
-              <Icon path={mdiDotsVertical} size={1}></Icon>
-            </IconButton>
-          </Box>
-          <AccordionDetails
-            sx={{
-              pt: 0
-            }}>
-            <List component="div" disablePadding>
-              <ListItem
-                sx={{
-                  background: grey[200]
-                }}>
-                <ListItemText>
-                  <Typography variant="body2">Method 1</Typography>
-                </ListItemText>
-              </ListItem>
-            </List>
-            <List disablePadding>
-              <ListItem>
-                <ListItemText>
-                  <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
-                </ListItemText>
-              </ListItem>
-              <ListItem>
-                <ListItemText>
-                  <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
-                </ListItemText>
-              </ListItem>
-            </List>
-          </AccordionDetails>
-        </Accordion>
-
-        <Accordion
-          square
-          disableGutters
-          sx={{
-            display: 'none',
-            boxShadow: 'none',
-            '&:before': {
-              display: 'none'
-            }
-          }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
-            <AccordionSummary
-              aria-controls="panel1bh-content"
-              id="panel1bh-header"
-              sx={{
-                p: 0
-              }}>
-              <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                Sampling Site 1
-              </Typography>
-            </AccordionSummary>
-            <IconButton edge="end">
-              <Icon path={mdiDotsVertical} size={1}></Icon>
-            </IconButton>
-          </Box>
-          <AccordionDetails
-            sx={{
-              pt: 0
-            }}>
-            <List disablePadding>
-              <ListItem
-                sx={{
-                  background: grey[200]
-                }}>
-                <ListItemText>
-                  <Typography variant="body2">Method 1</Typography>
-                </ListItemText>
-              </ListItem>
-            </List>
-            <List disablePadding>
-              <ListItem>
-                <ListItemText>
-                  <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
-                </ListItemText>
-              </ListItem>
-              <ListItem>
-                <ListItemText>
-                  <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
-                </ListItemText>
-              </ListItem>
-            </List>
-          </AccordionDetails>
-        </Accordion>
       </Box>
     </Box>
   );
