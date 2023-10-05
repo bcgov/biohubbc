@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiFloppy, mdiPlus, mdiTrashCan } from '@mdi/js';
+import { mdiCogOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
@@ -33,7 +33,7 @@ const ObservationComponent = () => {
         dialogText={ObservationsTableI18N.removeAllDialogText}
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Discard Changes'}
-        noButtonProps={{ color: 'primary', variant: 'contained' }}
+        noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
         open={showConfirmRemoveAllDialog}
         onYes={() => {
@@ -70,14 +70,12 @@ const ObservationComponent = () => {
                 loading={isSaving}
                 variant="contained"
                 color="primary"
-                startIcon={<Icon path={mdiFloppy} size={1} />}
                 onClick={() => handleSaveChanges()}>
                 Save
               </LoadingButton>
               <Button
                 variant="contained"
                 color="primary"
-                startIcon={<Icon path={mdiTrashCan} size={1} />}
                 onClick={() => setShowConfirmRemoveAllDialog(true)}>
                 Discard Changes
               </Button>
