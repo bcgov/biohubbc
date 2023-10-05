@@ -174,14 +174,9 @@ export class ObservationRepository extends BaseRepository {
         latitude::double precision,
         longitude::double precision
     ;`);
-    try {
-      const response = await this.connection.sql(sqlStatement, ObservationRecord);
+    const response = await this.connection.sql(sqlStatement, ObservationRecord);
 
-      return response.rows;
-    } catch (error) {
-      console.log(error);
-      return [];
-    }
+    return response.rows;
   }
 
   /**
