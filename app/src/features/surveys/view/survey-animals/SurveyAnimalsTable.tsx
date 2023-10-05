@@ -23,10 +23,6 @@ interface ISurveyAnimalsTableProps {
   onEditCritter: (critter_id: number) => void;
 }
 
-const noOpPlaceHolder = (critter_id: number) => {
-  // This function intentionally left blank - used as placeholder.
-};
-
 export const SurveyAnimalsTable = ({
   animalData,
   deviceData,
@@ -104,7 +100,6 @@ export const SurveyAnimalsTable = ({
           devices={params.row?.deployments}
           onMenuOpen={onMenuOpen}
           onAddDevice={onAddDevice}
-          onRemoveDevice={noOpPlaceHolder}
           onEditCritter={onEditCritter}
           onEditDevice={onEditDevice}
           onRemoveCritter={onRemoveCritter}

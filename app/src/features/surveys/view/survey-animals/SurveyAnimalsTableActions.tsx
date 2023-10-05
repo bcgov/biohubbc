@@ -13,7 +13,6 @@ export interface ITableActionsMenuProps {
   devices?: IAnimalDeployment[];
   onMenuOpen: (critter_id: number) => void;
   onAddDevice: (critter_id: number) => void;
-  onRemoveDevice: (critter_id: number) => void;
   onEditDevice: (critter_id: number) => void;
   onEditCritter: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
