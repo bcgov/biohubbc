@@ -4,17 +4,9 @@ import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
-import {
-  IPutIUCN,
-  PutCoordinatorData,
-  PutIUCNData,
-  PutLocationData,
-  PutObjectivesData,
-  PutProjectData
-} from '../models/project-update';
+import { IPutIUCN, PutIUCNData, PutLocationData, PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
   GetAttachmentsData,
-  GetCoordinatorData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
@@ -28,6 +20,7 @@ import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/updat
 import { PublishStatus } from '../repositories/history-publish-repository';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -70,7 +63,6 @@ export class ProjectService extends DBService {
       name: row.project_name,
       start_date: row.start_date,
       end_date: row.end_date,
-      coordinator_agency: row.coordinator_agency,
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
@@ -80,17 +72,9 @@ export class ProjectService extends DBService {
   }
 
   async getProjectById(projectId: number): Promise<IGetProject> {
-    const [
-      projectData,
-      objectiveData,
-      coordinatorData,
-      projectParticipantsData,
-      locationData,
-      iucnData
-    ] = await Promise.all([
+    const [projectData, objectiveData, projectParticipantsData, locationData, iucnData] = await Promise.all([
       this.getProjectData(projectId),
       this.getObjectivesData(projectId),
-      this.getCoordinatorData(projectId),
       this.getProjectParticipantsData(projectId),
       this.getLocationData(projectId),
       this.getIUCNClassificationData(projectId)
@@ -99,7 +83,6 @@ export class ProjectService extends DBService {
     return {
       project: projectData,
       objectives: objectiveData,
-      coordinator: coordinatorData,
       participants: projectParticipantsData,
       location: locationData,
       iucn: iucnData
@@ -121,7 +104,6 @@ export class ProjectService extends DBService {
 
   async getProjectEntitiesById(projectId: number, entities: string[]): Promise<Partial<IGetProject>> {
     const results: Partial<IGetProject> = {
-      coordinator: undefined,
       project: undefined,
       objectives: undefined,
       location: undefined,
@@ -129,14 +111,6 @@ export class ProjectService extends DBService {
     };
 
     const promises: Promise<any>[] = [];
-
-    if (entities.includes(GET_ENTITIES.coordinator)) {
-      promises.push(
-        this.getCoordinatorData(projectId).then((value) => {
-          results.coordinator = value;
-        })
-      );
-    }
 
     if (entities.includes(GET_ENTITIES.location)) {
       promises.push(
@@ -191,11 +165,7 @@ export class ProjectService extends DBService {
     return this.projectRepository.getObjectivesData(projectId);
   }
 
-  async getCoordinatorData(projectId: number): Promise<GetCoordinatorData> {
-    return this.projectRepository.getCoordinatorData(projectId);
-  }
-
-  async getProjectParticipantsData(projectId: number): Promise<ProjectUser[]> {
+  async getProjectParticipantsData(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
     return this.projectParticipationService.getProjectParticipants(projectId);
   }
 
@@ -368,7 +338,7 @@ export class ProjectService extends DBService {
   async updateProject(projectId: number, entities: IUpdateProject): Promise<void> {
     const promises: Promise<any>[] = [];
 
-    if (entities?.project || entities?.location || entities?.objectives || entities?.coordinator) {
+    if (entities?.project || entities?.location || entities?.objectives) {
       promises.push(this.updateProjectData(projectId, entities));
     }
 
@@ -404,15 +374,10 @@ export class ProjectService extends DBService {
     const putProjectData = (entities?.project && new PutProjectData(entities.project)) || null;
     const putLocationData = (entities?.location && new PutLocationData(entities.location)) || null;
     const putObjectivesData = (entities?.objectives && new PutObjectivesData(entities.objectives)) || null;
-    const putCoordinatorData = (entities?.coordinator && new PutCoordinatorData(entities.coordinator)) || null;
 
     // Update project table
     const revision_count =
-      putProjectData?.revision_count ??
-      putLocationData?.revision_count ??
-      putObjectivesData?.revision_count ??
-      putCoordinatorData?.revision_count ??
-      null;
+      putProjectData?.revision_count ?? putLocationData?.revision_count ?? putObjectivesData?.revision_count ?? null;
 
     if (!revision_count && revision_count !== 0) {
       throw new HTTP400('Failed to parse request body');
@@ -423,7 +388,6 @@ export class ProjectService extends DBService {
       putProjectData,
       putLocationData,
       putObjectivesData,
-      putCoordinatorData,
       revision_count
     );
   }

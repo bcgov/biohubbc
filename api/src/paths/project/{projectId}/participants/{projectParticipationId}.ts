@@ -107,7 +107,7 @@ export function putProjectParticipantRole(): RequestHandler {
 
       const projectParticipationService = new ProjectParticipationService(connection);
 
-      // Get project coordinator state before updates are made
+      // Get project participant state before updates are made
       const projectParticipantsResponse1 = await projectParticipationService.getProjectParticipants(
         Number(req.params.projectId)
       );
@@ -129,10 +129,10 @@ export function putProjectParticipantRole(): RequestHandler {
         roleId
       );
 
-      // If the project coordinator state before the changes was already invalid, then don't bother checking the state
+      // If the project participant state before the changes was already invalid, then don't bother checking the state
       // after the changes. This situation should ideally never happen.
       if (projectHasLeadResponse1) {
-        // Get project coordinator state after updates were made
+        // Get project participant state after updates were made
         const projectParticipantsResponse2 = await projectParticipationService.getProjectParticipants(
           Number(req.params.projectId)
         );

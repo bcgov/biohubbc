@@ -440,11 +440,6 @@ const insertProjectData = () => `
       location_description,
       start_date,
       end_date,
-      coordinator_first_name,
-      coordinator_last_name,
-      coordinator_email_address,
-      coordinator_agency_name,
-      coordinator_public,
       geography,
       geojson
     )
@@ -454,11 +449,6 @@ const insertProjectData = () => `
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.date.between({ from: '2025-01-01T00:00:00-08:00', to: '2030-01-01T00:00:00-08:00' }).toISOString()}$$,
-    $$${faker.person.firstName()}$$,
-    $$${faker.person.lastName()}$$,
-    $$${faker.internet.email()}$$,
-    $$${faker.company.name()}$$,
-    'Y',
     'POLYGON ((-121.904297 50.930738, -121.904297 51.971346, -120.19043 51.971346, -120.19043 50.930738, -121.904297 50.930738))',
     '[
       {

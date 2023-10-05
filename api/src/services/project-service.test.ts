@@ -2,13 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import {
-  GetCoordinatorData,
-  GetIUCNClassificationData,
-  GetLocationData,
-  GetObjectivesData,
-  ProjectData
-} from '../models/project-view';
+import { GetIUCNClassificationData, GetLocationData, GetObjectivesData, ProjectData } from '../models/project-view';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
@@ -31,7 +25,6 @@ describe('ProjectService', () => {
           project_id: 123,
           uuid: '',
           project_name: 'Project 1',
-          coordinator_agency: '',
           project_programs: [],
           regions: [],
           start_date: '1900-01-01',
@@ -41,7 +34,6 @@ describe('ProjectService', () => {
           project_id: 456,
           uuid: '',
           project_name: 'Project 2',
-          coordinator_agency: '',
           project_programs: [],
           regions: [],
           start_date: '1900-01-01',
@@ -131,22 +123,6 @@ describe('getObjectivesData', () => {
     const repoStub = sinon.stub(ProjectRepository.prototype, 'getObjectivesData').resolves(data);
 
     const response = await service.getObjectivesData(1);
-
-    expect(repoStub).to.be.calledOnce;
-    expect(response).to.eql(data);
-  });
-});
-
-describe('getCoordinatorData', () => {
-  it('returns the first row on success', async () => {
-    const dbConnection = getMockDBConnection();
-    const service = new ProjectService(dbConnection);
-
-    const data = new GetCoordinatorData({ id: 1 });
-
-    const repoStub = sinon.stub(ProjectRepository.prototype, 'getCoordinatorData').resolves(data);
-
-    const response = await service.getCoordinatorData(1);
 
     expect(repoStub).to.be.calledOnce;
     expect(response).to.eql(data);

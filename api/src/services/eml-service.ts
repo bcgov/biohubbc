@@ -8,6 +8,7 @@ import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import _ from 'lodash';
 import SQL from 'sql-template-strings';
 import xml2js from 'xml2js';
+import { PROJECT_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { IGetProject } from '../models/project-view';
 import { SurveyObject } from '../models/survey-view';
@@ -666,44 +667,50 @@ export class EmlService extends DBService {
   /**
    * Creates an object representing the dataset creator from the given projectData.
    *
+   *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
   _getProjectDatasetCreator(projectData: IGetProject): Record<string, any> {
-    const primaryContact = projectData.coordinator;
+    const coordinator = projectData.participants.find((participant) => {
+      return participant.role_names.includes(PROJECT_ROLE.COORDINATOR);
+    });
 
-    if (JSON.parse(primaryContact.share_contact_details)) {
-      // return full details of the primary contact iff it is public.
-      return {
-        organizationName: primaryContact.coordinator_agency,
-        electronicMailAddress: primaryContact.email_address
-      };
+    if (!coordinator) {
+      // Return default organization name
+      return { organizationName: this._constants.EML_ORGANIZATION_NAME };
     }
 
-    return { organizationName: primaryContact.coordinator_agency };
+    return {
+      individualName: { givenName: coordinator.given_name, surName: coordinator.family_name },
+      electronicMailAddress: coordinator.email
+    };
   }
 
   /**
    * Creates an object representing the primary contact for the given project.
+   *
    *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
   _getProjectContact(projectData: IGetProject): Record<string, any> {
-    const primaryContact = projectData.coordinator;
+    const coordinator = projectData.participants.find((participant) => {
+      return participant.role_names.includes(PROJECT_ROLE.COORDINATOR);
+    });
 
-    if (JSON.parse(primaryContact.share_contact_details)) {
-      // return full details of the primary contact iff it is public
-      return {
-        individualName: { givenName: primaryContact.first_name, surName: primaryContact.last_name },
-        organizationName: primaryContact.coordinator_agency,
-        electronicMailAddress: primaryContact.email_address
-      };
+    if (!coordinator) {
+      // Return default organization name
+      return { organizationName: this._constants.EML_ORGANIZATION_NAME };
     }
 
-    return { organizationName: primaryContact.coordinator_agency };
+    return {
+      individualName: { givenName: coordinator.given_name, surName: coordinator.family_name },
+      electronicMailAddress: coordinator.email,
+      role: 'pointOfContact'
+    };
   }
 
   /**
@@ -714,38 +721,37 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getSurveyContact(surveyData: SurveyObject): Record<string, any> {
-    // return full details of the biologist
+    const coordinator = surveyData.participants.find((participant) => {
+      return participant.role_names.includes(PROJECT_ROLE.COORDINATOR);
+    });
+
+    if (!coordinator) {
+      // Return default organization name
+      return { organizationName: this._constants.EML_ORGANIZATION_NAME };
+    }
+
     return {
-      individualName: {
-        givenName: surveyData.survey_details.biologist_first_name,
-        surName: surveyData.survey_details.biologist_last_name
-      }
+      individualName: { givenName: coordinator.given_name, surName: coordinator.family_name },
+      electronicMailAddress: coordinator.email,
+      role: 'pointOfContact'
     };
   }
 
   /**
    * Creates an object representing all contacts for the given project.
    *
+   *
    * @param {IGetProject} projectData
    * @return {*}  {Record<string, any>[]}
    * @memberof EmlService
    */
   _getProjectPersonnel(projectData: IGetProject): Record<string, any>[] {
-    const primaryContact = projectData.coordinator;
+    const participants = projectData.participants;
 
-    if (JSON.parse(primaryContact.share_contact_details)) {
-      // return full details of the primary contact iff it is public
-      return [
-        {
-          individualName: { givenName: primaryContact.first_name, surName: primaryContact.last_name },
-          organizationName: primaryContact.coordinator_agency,
-          electronicMailAddress: primaryContact.email_address,
-          role: 'pointOfContact'
-        }
-      ];
-    }
-
-    return [{ organizationName: primaryContact.coordinator_agency }];
+    return participants.map((participant) => ({
+      individualName: { givenName: participant.given_name, surName: participant.family_name },
+      electronicMailAddress: participant.email
+    }));
   }
 
   /**
@@ -756,15 +762,12 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getSurveyPersonnel(surveyData: SurveyObject): Record<string, any>[] {
-    return [
-      {
-        individualName: {
-          givenName: surveyData.survey_details.biologist_first_name,
-          surName: surveyData.survey_details.biologist_last_name
-        },
-        role: 'pointOfContact'
-      }
-    ];
+    const participants = surveyData.participants;
+
+    return participants.map((participant) => ({
+      individualName: { givenName: participant.given_name, surName: participant.family_name },
+      electronicMailAddress: participant.email
+    }));
   }
 
   /**
