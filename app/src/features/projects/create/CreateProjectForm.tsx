@@ -11,10 +11,6 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
-import ProjectCoordinatorForm, {
-  ProjectCoordinatorInitialValues,
-  ProjectCoordinatorYupSchema
-} from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm, {
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
@@ -48,15 +44,13 @@ export interface ICreateProjectForm {
 export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectDetailsFormInitialValues,
   ...ProjectObjectivesFormInitialValues,
-  ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
   ...ProjectUserRoleFormInitialValues
 };
 
-export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
-  .concat(ProjectObjectivesFormYupSchema)
-  .concat(ProjectUserRoleYupSchema);
+export const validationProjectYupSchema =
+  ProjectDetailsFormYupSchema.concat(ProjectObjectivesFormYupSchema).concat(ProjectUserRoleYupSchema);
 // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (yup schema) temporarily, while its decided where exactly project/survey locations should be defined
 // .concat(ProjectLocationFormYupSchema)
 // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired
@@ -165,15 +159,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                 </Box>
               </Box> */}
             </>
-          }></HorizontalSplitFormComponent>
-
-        <Divider className={classes.sectionDivider} />
-
-        <HorizontalSplitFormComponent
-          title="Project Coordinator"
-          summary="Provide the Project Coordinator's contact and agency information."
-          component={
-            <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
           }></HorizontalSplitFormComponent>
 
         <Divider className={classes.sectionDivider} />

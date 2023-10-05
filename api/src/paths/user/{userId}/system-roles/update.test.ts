@@ -38,6 +38,8 @@ describe('updateSystemRolesHandler', () => {
       role_ids: [1, 2],
       role_names: ['System Admin', 'Coordinator'],
       email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
       display_name: 'test name',
       agency: null
     });
@@ -88,6 +90,8 @@ describe('updateSystemRolesHandler', () => {
       role_ids: [1, 2],
       role_names: ['System Admin', 'Coordinator'],
       email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
       display_name: 'test name',
       agency: null
     });
@@ -128,6 +132,8 @@ describe('updateSystemRolesHandler', () => {
       role_ids: [1, 2],
       role_names: ['System Admin', 'Coordinator'],
       email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
       display_name: 'test name',
       agency: null
     });
@@ -175,6 +181,8 @@ describe('updateSystemRolesHandler', () => {
       role_ids: [],
       role_names: [],
       email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
       display_name: 'test name',
       agency: null
     });

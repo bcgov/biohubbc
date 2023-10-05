@@ -36,10 +36,6 @@ GET.apiDoc = {
       'application/json': {
         schema: {
           properties: {
-            coordinator_agency: {
-              type: 'string',
-              nullable: true
-            },
             start_date: {
               type: 'string',
               nullable: true

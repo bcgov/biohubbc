@@ -5,6 +5,7 @@ import { SiteSelectionData } from '../repositories/site-selection-strategy-repos
 import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
@@ -14,7 +15,7 @@ export type SurveyObject = {
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
   locations: SurveyLocationRecord[];
-  participants: SurveyUser[];
+  participants: (SurveyUser & SystemUser)[];
   partnerships: ISurveyPartnerships;
   site_selection: SiteSelectionData;
   blocks: SurveyBlockRecord[];
@@ -32,8 +33,6 @@ export class GetSurveyData {
   survey_name: string;
   start_date: string;
   end_date: string;
-  biologist_first_name: string;
-  biologist_last_name: string;
   survey_types: number[];
   revision_count: number;
   geometry: Feature[];
@@ -48,8 +47,6 @@ export class GetSurveyData {
     this.start_date = String(obj?.start_date) || '';
     this.end_date = String(obj?.end_date) || '';
     this.geometry = (obj?.geojson?.length && obj.geojson) || [];
-    this.biologist_first_name = obj?.lead_first_name || '';
-    this.biologist_last_name = obj?.lead_last_name || '';
     this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count || 0;
   }

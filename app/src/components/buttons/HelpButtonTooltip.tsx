@@ -1,7 +1,7 @@
-import { mdiHelpCircle } from '@mdi/js';
+import { mdiHelpCircleOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { Box, IconButton, Tooltip, Zoom } from '@mui/material';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 interface HelpButtonTooltipProps {
   content: string;
@@ -18,26 +18,50 @@ interface HelpButtonTooltipProps {
 
 const HelpButtonTooltip = ({ content, children }: HelpButtonTooltipProps) => {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Box
+      sx={{
+        position: 'relative',
+        '& input': {
+          pr: 7,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        },
+        '& .MuiSelect-select': {
+          pr: '80px !important',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        },
+        '& .MuiSelect-icon': {
+          right: '52px'
+        }
+      }}>
       {children}
       <Tooltip
+        arrow
         title={content}
         placement={'right-start'}
         TransitionComponent={Zoom}
         PopperProps={{
           sx: {
             '& .MuiTooltip-tooltip': {
-              backgroundColor: 'white',
-              color: 'text.primary',
-              fontSize: 14,
-              elevation: 10,
-              padding: 2,
-              boxShadow: 3
+              py: 1.5,
+              px: 2,
+              fontSize: '0.875rem',
+              background: '#38598A'
+            },
+            '& .MuiTooltip-arrow::before': {
+              background: '#38598A'
             }
           }
         }}>
-        <IconButton>
-          <Icon path={mdiHelpCircle} size={0.8} />
+        <IconButton
+          sx={{
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            color: '#38598A'
+          }}>
+          <Icon path={mdiHelpCircleOutline} size={1} />
         </IconButton>
       </Tooltip>
     </Box>

@@ -1,8 +1,8 @@
-import { mdiDotsVertical, mdiTrashCan } from '@mdi/js';
+import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import { DataGrid, GridColDef, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
@@ -11,9 +11,11 @@ import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/condit
 import ConditionalAutocompleteDataGridViewCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridViewCell';
 import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
+import YesNoDialog from 'components/dialog/YesNoDialog';
+import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import moment from 'moment';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 export interface ISampleSiteSelectProps {
   survey_sample_site_id: number;
@@ -192,8 +194,15 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'number',
       minWidth: 100,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left'
+      renderEditCell: (params) => (
+        <GridEditInputCell
+          {...params}
+          inputProps={{
+            min: 0,
+            max: 99999
+          }}
+        />
+      )
     },
     {
       field: 'observation_date',
@@ -254,7 +263,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       width: 150,
       disableColumnMenu: true,
       headerAlign: 'left',
-      align: 'left'
+      align: 'left',
+      renderCell: (params) => String(params.row.latitude)
     },
     {
       field: 'longitude',
@@ -264,7 +274,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       width: 150,
       disableColumnMenu: true,
       headerAlign: 'left',
-      align: 'left'
+      align: 'left',
+      renderCell: (params) => String(params.row.longitude)
     },
     {
       field: 'actions',
@@ -274,15 +285,15 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       resizable: false,
       getActions: (params) => [
-        <IconButton onClick={() => handleDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
-          <Icon path={mdiTrashCan} size={1} />
-        </IconButton>,
-        <IconButton key={`actions[${params.id}].moreOptions`}>
-          <Icon path={mdiDotsVertical} size={1} />
+        <IconButton onClick={() => handleConfirmDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
+          <Icon path={mdiTrashCanOutline} size={1} />
         </IconButton>
       ]
     }
   ];
+
+  const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
+  const showConfirmDeleteDialog = Boolean(deletingObservation);
 
   useEffect(() => {
     if (observationsDataLoader.data?.surveyObservations) {
@@ -298,13 +309,17 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsDataLoader.data]);
 
+  const handleCancelDeleteRow = () => {
+    setDeletingObservation(null);
+  };
+
+  const handleConfirmDeleteRow = (id: string | number) => {
+    setDeletingObservation(id);
+  };
+
   const handleDeleteRow = (id: string | number) => {
     observationsContext.markRecordWithUnsavedChanges(id);
     apiRef?.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
-  };
-
-  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, event) => {
-    observationsContext.markRecordWithUnsavedChanges(params.row.id);
   };
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
@@ -312,11 +327,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   };
 
   const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
-    if (apiRef?.current.state.editRows[params.row.id]) {
+    const { id } = params.row;
+
+    if (apiRef?.current.state.editRows[id]) {
       return;
     }
 
-    apiRef?.current.startRowEditMode({ id: params.row.id, fieldToFocus: params.field });
+    apiRef?.current.startRowEditMode({ id, fieldToFocus: params.field });
+    observationsContext.markRecordWithUnsavedChanges(id);
   };
 
   const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
@@ -329,45 +347,64 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   }
 
   return (
-    <DataGrid
-      apiRef={apiRef}
-      editMode="row"
-      onCellClick={handleCellClick}
-      onRowEditStop={handleRowEditStop}
-      onRowEditStart={handleRowEditStart}
-      processRowUpdate={handleProcessRowUpdate}
-      columns={observationColumns}
-      rows={observationsContext.initialRows}
-      disableRowSelectionOnClick
-      localeText={{
-        noRowsLabel: 'No Records'
-      }}
-      sx={{
-        background: '#fff',
-        border: 'none',
-        '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
-          background: '#fff'
-        },
-        '& .MuiDataGrid-columnHeaderTitle': {
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          color: '#999'
-        },
-        '& .test': {
-          position: 'sticky',
-          right: 0,
-          top: 0,
-          borderLeft: '1px solid #ccc',
-          background: '#fff'
-        },
-        '& .MuiDataGrid-columnHeaders': {
-          position: 'relative'
-        },
-        '& .MuiDataGrid-actionsCell': {
-          gap: 0
-        }
-      }}
-    />
+    <>
+      <YesNoDialog
+        dialogTitle={ObservationsTableI18N.removeRecordDialogTitle}
+        dialogText={ObservationsTableI18N.removeRecordDialogText}
+        yesButtonProps={{ color: 'error' }}
+        yesButtonLabel={'Discard Record'}
+        noButtonProps={{ color: 'primary', variant: 'outlined' }}
+        noButtonLabel={'Cancel'}
+        open={showConfirmDeleteDialog}
+        onYes={() => {
+          if (deletingObservation) {
+            handleDeleteRow(deletingObservation);
+          }
+          setDeletingObservation(null);
+        }}
+        onClose={() => handleCancelDeleteRow()}
+        onNo={() => handleCancelDeleteRow()}
+      />
+      <DataGrid
+        apiRef={apiRef}
+        editMode="row"
+        onCellClick={handleCellClick}
+        onRowEditStop={handleRowEditStop}
+        // onRowEditStart={handleRowEditStart}
+        processRowUpdate={handleProcessRowUpdate}
+        columns={observationColumns}
+        rows={observationsContext.initialRows}
+        disableRowSelectionOnClick
+        localeText={{
+          noRowsLabel: 'No Records'
+        }}
+        sx={{
+          background: '#fff',
+          border: 'none',
+          '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
+            background: '#fff'
+          },
+          '& .MuiDataGrid-columnHeaderTitle': {
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            color: '#999'
+          },
+          '& .test': {
+            position: 'sticky',
+            right: 0,
+            top: 0,
+            borderLeft: '1px solid #ccc',
+            background: '#fff'
+          },
+          '& .MuiDataGrid-columnHeaders': {
+            position: 'relative'
+          },
+          '& .MuiDataGrid-actionsCell': {
+            gap: 0
+          }
+        }}
+      />
+    </>
   );
 };
 
