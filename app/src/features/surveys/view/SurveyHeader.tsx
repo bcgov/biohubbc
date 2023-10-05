@@ -8,6 +8,7 @@ import {
   mdiMapMarkerOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
@@ -33,7 +34,7 @@ import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import Link from '@mui/material/Link';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { Link as RouterLink } from 'react-router-dom'
 
 /**
  * Survey header for a single-survey view.
@@ -149,10 +150,11 @@ const SurveyHeader = () => {
               mb: 1.5
             }}
           >
-            <Link 
+            <Link
+              component={RouterLink}
               variant="body2" 
               underline="hover"
-              href={`/admin/projects/${projectWithDetails?.projectData.project.project_id}`}
+              to={`/admin/projects/${projectWithDetails?.projectData.project.project_id}`}
               aria-current="page"
             >
               {projectWithDetails?.projectData.project.project_name}
