@@ -176,9 +176,9 @@ export class AdministrativeActivityRepository extends BaseRepository {
   }
 
   /**
-   * SQL query to count pending records in the administrative_activity table.
+   * SQL query to count pending records in the administrative_activity table for a given user GUID
    *
-   * @param {string} userIdentifier
+   * @param {string} userGUID
    * @return {*}  {(Promise<IAdministrativeActivityStanding>)}
    * @memberof AdministrativeActivityRepository
    */
