@@ -225,7 +225,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerAlign: 'left',
       align: 'left',
       preProcessEditCellProps: (params) => {
-        return { ...params.props, value: moment(params.props.value) };
+        return { ...params.props };
       },
       renderCell: (params) => {
         if (!params.value) {
@@ -247,7 +247,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
               }}
               onAccept={(value) => {
-                apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
+                apiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value: value?.format('HH:mm:ss')
+                });
               }}
               ampm={false}
             />
