@@ -179,7 +179,7 @@ const ObservationsTable = () => {
         dialogText={ObservationsTableI18N.removeRecordDialogText}
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Discard Record'}
-        noButtonProps={{ color: 'primary', variant: 'contained' }}
+        noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
         open={showConfirmDeleteDialog}
         onYes={() => {

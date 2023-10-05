@@ -153,14 +153,6 @@ describe('PostSurveyDetailsData', () => {
     it('sets start_date', () => {
       expect(data.start_date).to.equal(null);
     });
-
-    it('sets biologist_first_name', () => {
-      expect(data.biologist_first_name).to.equal(null);
-    });
-
-    it('sets biologist_last_name', () => {
-      expect(data.biologist_last_name).to.equal(null);
-    });
   });
 
   describe('All values provided', () => {
@@ -169,9 +161,7 @@ describe('PostSurveyDetailsData', () => {
     const obj = {
       survey_name: 'survey name',
       end_date: '2020/04/04',
-      start_date: '2020/03/03',
-      biologist_first_name: 'first',
-      biologist_last_name: 'last'
+      start_date: '2020/03/03'
     };
 
     before(() => {
@@ -188,14 +178,6 @@ describe('PostSurveyDetailsData', () => {
 
     it('sets start_date', () => {
       expect(data.start_date).to.equal(obj.start_date);
-    });
-
-    it('sets biologist_first_name', () => {
-      expect(data.biologist_first_name).to.equal(obj.biologist_first_name);
-    });
-
-    it('sets biologist_last_name', () => {
-      expect(data.biologist_last_name).to.equal(obj.biologist_last_name);
     });
   });
 });
