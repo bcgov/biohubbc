@@ -12,7 +12,7 @@ export const SampleLocationRecord = z.object({
   survey_sample_site_id: z.number(),
   survey_id: z.number(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   geojson: z.any(),
   geography: z.any(),
   create_date: z.string(),
@@ -126,7 +126,7 @@ export class SampleLocationRepository extends BaseRepository {
       SET
         survey_id=${sample.survey_id},
         name=${sample.name},
-        description=${sample.description || null},
+        description=${sample.description},
         geojson=${sample.geojson},
         geography=public.geography(
           public.ST_Force2D(

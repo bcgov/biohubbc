@@ -76,22 +76,20 @@ export class SamplePeriodService extends DBService {
   async checkSamplePeriodToDelete(surveySampleMethodId: number, newPeriod: UpdateSamplePeriodRecord[]) {
     //Get any existing Period for the sample location
     const existingPeriod = await this.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
-    console.log('existingPeriod', existingPeriod);
 
     //Compare input and existing for Period to delete
     const existingPeriodToDelete = existingPeriod.filter((existingPeriod) => {
       return !newPeriod.find(
-        (incomingMethod) => incomingMethod.survey_sample_method_id === existingPeriod.survey_sample_method_id
+        (incomingMethod) => incomingMethod.survey_sample_period_id === existingPeriod.survey_sample_period_id
       );
     });
-    console.log('existingPeriodToDelete', existingPeriodToDelete);
 
     // Delete any non existing Period
     if (existingPeriodToDelete.length > 0) {
       const promises: Promise<any>[] = [];
 
       existingPeriodToDelete.forEach((method: any) => {
-        promises.push(this.deleteSamplePeriodRecord(method.survey_sample_method_id));
+        promises.push(this.deleteSamplePeriodRecord(method.survey_sample_period_id));
       });
 
       await Promise.all(promises);

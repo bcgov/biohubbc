@@ -101,48 +101,22 @@ export class SampleLocationService extends DBService {
    * updates a survey Sample Location.
    *
    * @param {PostSampleLocation} sampleLocation
-   * @return {*}  {Promise<SampleLocationRecord>}
    * @memberof SampleLocationService
    */
   async updateSampleSites(sampleLocations: UpdateSampleSitesRecord) {
-    console.log('sampleLocations', sampleLocations);
+    const sampleSite = {
+      survey_sample_site_id: sampleLocations.survey_sample_site_id,
+      survey_id: sampleLocations.survey_id,
+      name: sampleLocations.name,
+      description: sampleLocations.description,
+      geojson: sampleLocations.survey_sample_sites[0],
+      methods: sampleLocations.methods
+    };
 
-    // Create a sample location for each feature found
-    const promises = sampleLocations.survey_sample_sites.map((item, index) => {
-      if (index === 0) {
-        //first index is the main sample location
-        const sampleSite = {
-          survey_sample_site_id: sampleLocations.survey_sample_site_id,
-          survey_id: sampleLocations.survey_id,
-          name: sampleLocations.name,
-          description: sampleLocations.description,
-          geojson: item,
-          methods: sampleLocations.methods
-        };
-        console.log('UPDATE sampleSite', sampleSite);
-
-        return this.updateSampleLocationMethodPeriod(sampleSite);
-      } else {
-        // all other indexes are new sample locations
-        const sampleSite = {
-          survey_sample_site_id: null,
-          survey_id: sampleLocations.survey_id,
-          name: `${sampleLocations.name}-${index}`, // Business requirement to default the names to Sample Site # on creation
-          description: sampleLocations.description,
-          survey_sample_sites: [(item as unknown) as Feature],
-          methods: sampleLocations.methods
-        };
-        console.log('INSERT sampleSite', sampleSite);
-
-        return this.insertSampleLocations(sampleSite);
-      }
-    });
-
-    return Promise.all(promises);
+    await this.updateSampleLocationMethodPeriod(sampleSite);
   }
 
   async updateSampleLocationMethodPeriod(sampleSite: UpdateSampleSiteRecord) {
-    console.log('sampleSite', sampleSite);
     const methodService = new SampleMethodService(this.connection);
 
     // Update the main sample location
@@ -155,7 +129,7 @@ export class SampleLocationService extends DBService {
     // For each method, check if it exists
     // If it exists, update it
     // If it does not exist, create it
-    const methodPromises = sampleSite.methods.map((item) => {
+    for (const item of sampleSite.methods) {
       if (item.survey_sample_method_id) {
         const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
@@ -164,8 +138,7 @@ export class SampleLocationService extends DBService {
           description: item.description,
           periods: item.periods
         };
-        console.log('UPDATE sampleMethod', sampleMethod);
-        return methodService.updateSampleMethod(sampleMethod);
+        await methodService.updateSampleMethod(sampleMethod);
       } else {
         const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
@@ -173,12 +146,8 @@ export class SampleLocationService extends DBService {
           description: item.description,
           periods: item.periods
         };
-        console.log('INSERT sampleMethod', sampleMethod);
-
-        return methodService.insertSampleMethod(sampleMethod);
+        await methodService.insertSampleMethod(sampleMethod);
       }
-    });
-
-    await Promise.all(methodPromises);
+    }
   }
 }

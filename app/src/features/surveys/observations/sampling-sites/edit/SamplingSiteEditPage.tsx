@@ -13,6 +13,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import SamplingSiteHeader from '../SamplingSiteHeader';
+import { ICreateSamplingSiteRequest } from '../SamplingSitePage';
 import SampleSiteEditForm, { IEditSamplingSiteRequest, samplingSiteYupSchema } from './components/SampleSiteEditForm';
 
 const SamplingSiteEditPage = () => {
@@ -39,7 +40,6 @@ const SamplingSiteEditPage = () => {
         (x) => x.survey_sample_site_id === surveySampleSiteId
       );
 
-      console.log('data', data);
       if (data !== undefined) {
         const formInitialValues: IEditSamplingSiteRequest = {
           sampleSite: {
@@ -66,8 +66,6 @@ const SamplingSiteEditPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.sampleSiteDataLoader]);
 
-  console.log('surveyContext.sampleSiteDataLoader.data', surveyContext.sampleSiteDataLoader.data);
-
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
       dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
@@ -84,15 +82,60 @@ const SamplingSiteEditPage = () => {
   };
 
   const handleSubmit = async (values: IEditSamplingSiteRequest) => {
-    console.log('values', values);
     setIsSubmitting(true);
+
     try {
+      // filter out the sample site that is being edited
+      const editSampleLocation = values.sampleSite.survey_sample_sites.filter((x) => {
+        // check if the geojson is the same as the one being edited
+        return surveyContext.sampleSiteDataLoader.data?.sampleSites.find((y) => {
+          return y.geojson === x;
+        });
+      });
+
+      // filter out the sample sites that are net new
+      const newSampleSite = values.sampleSite.survey_sample_sites.filter((x) => {
+        // check if the sample site is the same as the one being edited
+        return x !== editSampleLocation[0];
+      });
+
+      // create edit request
+      const editSampleSite: IEditSamplingSiteRequest = {
+        sampleSite: {
+          name: values.sampleSite.name,
+          description: values.sampleSite.description,
+          survey_id: values.sampleSite.survey_id,
+          survey_sample_sites: editSampleLocation,
+          methods: values.sampleSite.methods
+        }
+      };
+
+      // send edit request
       await biohubApi.samplingSite.editSampleSite(
         surveyContext.projectId,
         surveyContext.surveyId,
         surveySampleSiteId,
-        values
+        editSampleSite
       );
+
+      // send create request for new sample sites
+      const newSamplePromises = newSampleSite.map((item) => {
+        const newSampleSite: ICreateSamplingSiteRequest = {
+          name: values.sampleSite.name,
+          description: values.sampleSite.description,
+          survey_id: values.sampleSite.survey_id,
+          survey_sample_sites: [item as unknown as Feature],
+          methods: values.sampleSite.methods
+        };
+
+        return biohubApi.samplingSite.createSamplingSites(
+          surveyContext.projectId,
+          surveyContext.surveyId,
+          newSampleSite
+        );
+      });
+
+      Promise.all(newSamplePromises);
 
       // Disable cancel prompt so we can navigate away from the page after saving
       setEnableCancelCheck(false);
@@ -146,7 +189,6 @@ const SamplingSiteEditPage = () => {
   if (!surveyContext.surveyDataLoader.data || !surveyContext.sampleSiteDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-  console.log('formikRef', formikRef.current?.values);
 
   return (
     <>

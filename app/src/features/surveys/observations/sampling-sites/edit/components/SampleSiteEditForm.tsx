@@ -50,7 +50,7 @@ export interface ISampleSiteEditForm {
 export const samplingSiteYupSchema = yup.object({
   sampleSite: yup.object({
     name: yup.string().default(''),
-    description: yup.string().default(''),
+    description: yup.string().default('').nullable(),
     survey_sample_sites: yup.array(yup.object()).min(1, 'At least one sampling site location is required'),
     methods: yup
       .array(yup.object().concat(SamplingSiteMethodYupSchema))

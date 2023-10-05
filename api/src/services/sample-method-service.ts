@@ -90,7 +90,6 @@ export class SampleMethodService extends DBService {
   async checkSampleMethodsToDelete(surveySampleSiteId: number, newMethods: UpdateSampleMethodRecord[]) {
     //Get any existing methods for the sample location
     const existingMethods = await this.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
-    console.log('existingMethods', existingMethods);
 
     //Compare input and existing for methods to delete
     const existingMethodsToDelete = existingMethods.filter((existingMethod) => {
@@ -98,7 +97,6 @@ export class SampleMethodService extends DBService {
         (incomingMethod) => incomingMethod.survey_sample_method_id === existingMethod.survey_sample_method_id
       );
     });
-    console.log('existingMethodsToDelete', existingMethodsToDelete);
 
     // Delete any non existing methods
     if (existingMethodsToDelete.length > 0) {
@@ -120,7 +118,6 @@ export class SampleMethodService extends DBService {
    * @memberof SampleMethodService
    */
   async updateSampleMethod(sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
-    console.log('sampleMethod', sampleMethod);
     const samplePeriodService = new SamplePeriodService(this.connection);
 
     // Check for any sample periods to delete
@@ -129,22 +126,18 @@ export class SampleMethodService extends DBService {
     // Loop through all new sample periods
     // For each sample period, check if it exists in the existing list
     // If it does, update it, otherwise create it
-    const promises = sampleMethod.periods.map((item) => {
+    for (const item of sampleMethod.periods) {
       if (item.survey_sample_period_id) {
-        console.log('UPDATE Period item', item);
-        return samplePeriodService.updateSamplePeriod(item);
+        await samplePeriodService.updateSamplePeriod(item);
       } else {
         const samplePeriod = {
           survey_sample_method_id: sampleMethod.survey_sample_method_id,
           start_date: item.start_date,
           end_date: item.end_date
         };
-        console.log('INSERTs Period item', item);
-
-        return samplePeriodService.insertSamplePeriod(samplePeriod);
+        await samplePeriodService.insertSamplePeriod(samplePeriod);
       }
-    });
-    await Promise.all(promises);
+    }
 
     return this.sampleMethodRepository.updateSampleMethod(sampleMethod);
   }
