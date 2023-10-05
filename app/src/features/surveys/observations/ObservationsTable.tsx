@@ -110,7 +110,12 @@ const ObservationsTable = () => {
       disableColumnMenu: true,
       resizable: false,
       getActions: (params) => [
-        <IconButton onClick={() => handleConfirmDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
+        <IconButton
+          onClick={(event) => {
+            event.preventDefault(); // Prevent row from going into edit mode 
+            handleConfirmDeleteRow(params.id);
+          }}
+          key={`actions[${params.id}].handleDeleteRow`}>
           <Icon path={mdiTrashCanOutline} size={1} />
         </IconButton>
       ]

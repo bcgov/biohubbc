@@ -393,5 +393,7 @@ export const ObservationsTableI18N = {
   removeAllDialogTitle: 'Discard changes?',
   removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',
   removeRecordDialogTitle: 'Discard record?',
-  removeRecordDialogText: 'Are you sure you want to discard this record? This action cannot be undone.'
+  removeRecordDialogText: 'Are you sure you want to discard this record? This action cannot be undone.',
+  submitRecordsErrorDialogTitle: 'Error Updating Observation Records',
+  submitRecordsErrorDialogText: 'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
 };
