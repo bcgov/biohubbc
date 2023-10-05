@@ -80,48 +80,49 @@ const SurveyPage: React.FC = () => {
             </Paper>
           </Box>
 
-          <Paper elevation={0} sx={{mt: 3}}>
+          <Box sx={{mt: 3}}>
             <SurveyDetails />
-          </Paper>
+          </Box>
 
-          <Paper elevation={0} sx={{display: 'none'}}>
+          <Paper sx={{display: 'none'}}>
             <SurveyStudyArea />
           </Paper>
 
-        <Box sx={{display: 'none'}} my={3}>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-            <SurveySubmissionAlertBar />
-          </SystemRoleGuard>
-          <Grid container spacing={3}>
-            <Grid item md={12} lg={4}>
-              <Paper elevation={0}>
-                <SurveyDetails />
-              </Paper>
+          <Box sx={{display: 'none'}} my={3}>
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <SurveySubmissionAlertBar />
+            </SystemRoleGuard>
+            <Grid container spacing={3}>
+              <Grid item md={12} lg={4}>
+                <Paper elevation={0}>
+                  <SurveyDetails />
+                </Paper>
+              </Grid>
+              <Grid item md={12} lg={8}>
+                <Box mb={3}>
+                  <Paper elevation={0}>
+                    <SurveyObservations />
+                  </Paper>
+                </Box>
+                <Box mb={3}>
+                  <Paper elevation={0}>
+                    <SurveySummaryResults />
+                  </Paper>
+                </Box>
+                <Box mb={3}>
+                  <Paper elevation={0}>
+                    <SurveyAttachments />
+                  </Paper>
+                </Box>
+                <Box mb={3}>
+                  <Paper elevation={0}>
+                    <SurveyStudyArea />
+                  </Paper>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item md={12} lg={8}>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveyObservations />
-                </Paper>
-              </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveySummaryResults />
-                </Paper>
-              </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveyAttachments />
-                </Paper>
-              </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveyStudyArea />
-                </Paper>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
+          </Box>
+
       </Container>
     </>
   );

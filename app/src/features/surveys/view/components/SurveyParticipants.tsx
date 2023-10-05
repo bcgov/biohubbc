@@ -1,17 +1,15 @@
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import { getFormattedAmount } from 'utils/Utils';
 
 /**
- * Funding source content for a survey.
+ * General information content for a survey.
  *
  * @return {*}
  */
-const SurveyFundingSources = () => {
+const SurveyParticipants = () => {
   const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
 
@@ -20,7 +18,7 @@ const SurveyFundingSources = () => {
   }
 
   const {
-    surveyData: { funding_sources }
+    surveyData: { participants }
   } = surveyForViewData;
 
   return (
@@ -34,13 +32,13 @@ const SurveyFundingSources = () => {
         }
       }}
     >
-      {funding_sources.length > 0 ? (
+      {participants.length > 0 ? (
         <>
-          {funding_sources.map((surveyFundingSource) => (
-            <ListItem component="dd" disableGutters key={surveyFundingSource.funding_source_id}>
+          {participants.map((surveyParticipants) => (
+            <ListItem disableGutters key={surveyParticipants.system_user_id}>
               <ListItemText
-                primary={surveyFundingSource.funding_source_name}
-                secondary={getFormattedAmount(surveyFundingSource.amount)}
+                primary={surveyParticipants.display_name}
+                secondary={surveyParticipants.survey_job_name}
               >
               </ListItemText>
             </ListItem>
@@ -48,11 +46,12 @@ const SurveyFundingSources = () => {
         </>
       ) : (
         <ListItem disableGutters>
-          <Typography>No Funding Sources</Typography>
+          <ListItemText primary="No particpants"></ListItemText>
         </ListItem>
       )}
+
     </List>
   );
 };
 
-export default SurveyFundingSources;
+export default SurveyParticipants;

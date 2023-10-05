@@ -22,7 +22,7 @@ const SurveyGeneralInformation = () => {
   }
 
   const {
-    surveyData: { survey_details, species, permit }
+    surveyData: { survey_details, species }
   } = surveyForViewData;
 
   const codes = codesContext.codesDataLoader.data;
@@ -36,16 +36,16 @@ const SurveyGeneralInformation = () => {
   return (
     <>
       <Box component="dl">
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
           <Grid item sm={12}>
             <Typography component="dt">
-              Survey Type:
+              Survey Type
             </Typography>
             <Typography component="dd">{surveyTypes ? <>{surveyTypes}</> : 'No Types'}</Typography>
           </Grid>
           <Grid item sm={12}>
             <Typography component="dt">
-              Start/End Date:
+              Start/End Date
             </Typography>
             <Typography component="dd" data-testid="survey_timeline">
               {survey_details.end_date ? (
@@ -66,7 +66,7 @@ const SurveyGeneralInformation = () => {
           </Grid>
           <Grid item sm={12}>
             <Typography component="dt">
-              Species of Interest:
+              Species of Interest
             </Typography>
             <Box flex="1 1 auto">
               {species.focal_species_names?.map((focalSpecies: string, index: number) => {
@@ -80,7 +80,7 @@ const SurveyGeneralInformation = () => {
           </Grid>
           <Grid item sm={12}>
             <Typography component="dt">
-              Secondary Species:
+              Secondary Species
             </Typography>
             <Box flex='1 1 auto'>
               {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
@@ -92,25 +92,10 @@ const SurveyGeneralInformation = () => {
               })}
               {species.ancillary_species_names?.length <= 0 && (
                 <Typography component="dd">
-                  No Ancillary Species
+                  No secondary species of interest
                 </Typography>
               )}
             </Box>
-          </Grid>
-          <Grid item sm={12} sx={{display: 'none !important'}}>
-            <Typography component="dt">
-              Permits:
-            </Typography>
-            {permit.permits?.map((item, index: number) => {
-              return (
-                <Typography component="dd" key={index}>
-                  {item.permit_type} - {item.permit_number}
-                </Typography>
-              );
-            })}
-            {!permit.permits.length && (
-              <Typography component="dd">No Permits</Typography>
-            )}
           </Grid>
         </Grid>
       </Box>

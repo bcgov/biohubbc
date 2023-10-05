@@ -25,10 +25,10 @@ const SurveyPurposeAndMethodologyData = () => {
 
   return (
     <Box component="dl">
-      <Grid container spacing={{ sm: 2, md: 2 }}>
+      <Grid container spacing={1}>
         <Grid item xs={12}>
           <Typography component="dt">
-            Purpose:
+            Intended Outcome
           </Typography>
           <Typography component="dd" variant="body1" data-testid="survey_intended_outcome">
             {Boolean(surveyData.purpose_and_methodology.intended_outcome_id) &&
@@ -40,7 +40,7 @@ const SurveyPurposeAndMethodologyData = () => {
         {surveyData.purpose_and_methodology.additional_details &&
           <Grid item xs={12}>
 
-            <Typography component="dt">Additional Details:</Typography>
+            <Typography component="dt">Additional Details</Typography>
             <Typography component="dd" variant="body1" data-testid="survey_additional_details">
               {surveyData.purpose_and_methodology.additional_details}
             </Typography>
@@ -49,7 +49,7 @@ const SurveyPurposeAndMethodologyData = () => {
         }
         <Grid item xs={12}>
           <Typography component="dt">
-            Field Method:
+            Field Method
           </Typography>
           <Typography component="dd" data-testid="survey_field_method">
             {Boolean(surveyData.purpose_and_methodology.field_method_id) &&
@@ -60,7 +60,7 @@ const SurveyPurposeAndMethodologyData = () => {
         </Grid>
         <Grid item xs={12}>
           <Typography component="dt">
-            Ecological Season:
+            Ecological Season
           </Typography>
           <Typography component="dd" data-testid="survey_ecological_season">
             {Boolean(surveyData.purpose_and_methodology.ecological_season_id) &&
@@ -71,7 +71,7 @@ const SurveyPurposeAndMethodologyData = () => {
         </Grid>
         <Grid item xs={12}>
           <Typography component="dt">
-            Vantage Code(s):
+            Vantage Code(s)
           </Typography>
           {surveyData.purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
             return (

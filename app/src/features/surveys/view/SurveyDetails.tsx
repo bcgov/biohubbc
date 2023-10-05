@@ -1,9 +1,13 @@
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-// import List from '@mui/material/List';
-// import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import SurveyParticipants from 'features/surveys/view/components/SurveyParticipants';
+import Permits from 'features/surveys/view/components/Permits';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
 import SurveyFundingSources from './components/SurveyFundingSources';
@@ -29,26 +33,39 @@ import Grid from '@mui/material/Grid';
 const SurveyDetails = () => {
 
   return (
+    <Paper>
     <Box
       sx={{
         '& h4': {
-          mb: 2,
-          fontSize: '1.125rem',
-          fontWeight: 700
+          mb: 4,
+          fontSize: '0.875rem',
+          fontWeight: 700,
+          textTransform: 'uppercase'
         },
         '& dl': {
           m: 0,
           '& .MuiGrid-item': {
             display: 'flex',
             flexDirection: 'row',
-            flexWrap: 'wrap'
+            // flexWrap: 'wrap'
+            paddingBottom: 1,
+            borderTop: '1px solid #ddd'
           }
         },
         '& dt': {
-          flex: '0 0 auto', 
-          width: '100%',
-          typography: 'body2',
-          color: 'text.secondary'
+          display: 'flex',
+          flex: '0 0 auto',
+          width: '25%',
+          typography: 'body1',
+          color: 'text.secondary',
+          // '&:after': {
+          //   content: '" "',
+          //   flex: '1 1 auto',
+          //   height: '14px',
+          //   borderBottom: '1px dotted #999',
+          //   ml: 1,
+          //   mr: 1
+          // }
         },
         '& dd': {
           ml: 0,
@@ -63,27 +80,30 @@ const SurveyDetails = () => {
           Survey Details
         </Typography>
       </Toolbar>
-      <Divider sx={{m: 0}}></Divider>
+
+      <Divider sx={{ m: 0 }}></Divider>
+      
       <Box p={3}>
         <Grid container spacing={3}>
-          <Grid item md={6}>
-            <Box component="section">
-              <Typography component="h4">General</Typography>
-              <SurveyGeneralInformation />
-            </Box>
+          <Grid item xs={12}>
 
-            <Divider sx={{my: 3}}/>
-            
-            <Box component="section">
-              <Typography component="h4">Location / Study Area</Typography>
+            <Paper elevation={0} component="section">
+              <Typography component="h4">General Information</Typography>
+              <SurveyGeneralInformation />
+            </Paper>
+
+            <Divider sx={{ my: 3 }}></Divider>
+
+            <Paper elevation={0} component="section">
+              <Typography component="h4">Study Area Location</Typography>
               <Box component="dl" display="flex" flexDirection="row" gap="24px">
-                <Grid container spacing={2}>
+                <Grid container spacing={1}>
                   <Grid item xs={12}>
-                    <Box component="dt">Name</Box>
+                    <Box component="dt">Area Name</Box>
                     <Box component="dd">My Study Area Name</Box>
                   </Grid>
                   <Grid item xs={12}>
-                    <Box component="dt" flex="0 0 auto">Natural Resource Ministry Region(s):</Box>
+                    <Box component="dt" flex="0 0 auto">Natural Resource Ministry Regions</Box>
                     <Box flex="1 1 auto"
                       sx={{
                         '& dd': {
@@ -102,7 +122,7 @@ const SurveyDetails = () => {
                     </Box>
                   </Grid>
                   <Grid item xs={12}>
-                    <Box component="dt">Ministry of Environment Regions(s):</Box>
+                    <Box component="dt">Ministry of Environment Regions</Box>
                     <Box flex="1 1 auto"
                       sx={{
                         '& dd': {
@@ -141,23 +161,23 @@ const SurveyDetails = () => {
                   </Grid>
                 </Grid>
               </Box>
-            </Box>
+            </Paper>
 
-            <Divider sx={{my: 3}}/>
+            <Divider sx={{ my: 3 }}></Divider>
 
-            <Box component="section">
+            <Paper elevation={0} component="section">
               <Typography component="h4">Purpose and Methodology</Typography>
               <SurveyPurposeAndMethodologyData />
-            </Box>
+            </Paper>
 
-            <Divider sx={{my: 3}}/>
-            
-            <Box component="section">
+            <Divider sx={{ my: 3 }}></Divider>
+
+            <Paper elevation={0} component="section">
               <Typography component="h4">Sampling Methods</Typography>
               <Box component="dl" display="flex" flexDirection="row" gap="24px">
                 <Grid container spacing={1}>
                   <Grid item xs={12}>
-                    <Box component="dt" flex="0 0 auto" width="50%">Site Selection Strategies</Box>
+                    <Box component="dt" flex="0 0 auto">Site Selection Strategies</Box>
                     <Box flex="1 1 auto"
                       sx={{
                         '& dd': {
@@ -175,87 +195,116 @@ const SurveyDetails = () => {
                       <Box component="dd">Strategy 3</Box>
                     </Box>
                   </Grid>
+                  <Grid item xs={12}>
+                    <Box component="dt" flex="0 0 auto">Stratums</Box>
+                    <List 
+                      sx={{
+                        flex: '1 1 auto',
+                        '& .MuiListItem-root': {
+                          pt: '2px',
+                          mb: 1
+                        },
+                        '& .MuiListItemText-root': {
+                          mt: 0,
+                          mb: 0
+                        }
+                      }} 
+                      disablePadding
+                    >
+                      <ListItem dense disableGutters component="dd">
+                        <ListItemText
+                          primary="Coniferous forest"
+                          secondary="Description of stratum"
+                        />
+                      </ListItem>
+                      <ListItem dense disableGutters component="dd">
+                        <ListItemText
+                          primary="Low elevation"
+                          secondary="Below 500m in elevation"
+                        />
+                      </ListItem>
+                    </List>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box component="dt" flex="0 0 auto">Blocks</Box>
+                    <List 
+                      sx={{
+                        flex: '1 1 auto',
+                        '& .MuiListItem-root': {
+                          pt: '2px',
+                          mb: 1
+                        },
+                        '& .MuiListItemText-root': {
+                          mt: 0,
+                          mb: 0
+                        }
+                      }} 
+                      disablePadding
+                    >
+                      <ListItem dense disableGutters component="dd">
+                        <ListItemText
+                          primary="Block Name"
+                          secondary="Description of block"
+                        />
+                      </ListItem>
+                      <ListItem dense disableGutters component="dd">
+                      <ListItemText
+                          primary="Block Name"
+                          secondary="Description of block"
+                        />
+                      </ListItem>
+                      <ListItem dense disableGutters component="dd">
+                        <ListItemText
+                          primary="Stratum Name"
+                          secondary="Description of stratum"
+                        />
+                      </ListItem>
+                    </List>
+                  </Grid>
                 </Grid>
               </Box>
-            </Box>
+            </Paper>
 
-            <Box component="section" sx={{display: 'none'}}>
-              <Divider sx={{my: 2}}></Divider>
+            <Box component="section" sx={{ display: 'none' }}>
+              <Divider sx={{ my: 2 }}></Divider>
               <Typography component="h4">Proprietary Information</Typography>
-              <Divider sx={{my: 2}}></Divider>
+              <Divider sx={{ my: 2 }}></Divider>
               <SurveyProprietaryData />
             </Box>
 
-          </Grid>
-          <Grid item md={6}>
-            <Box component="section">
-              <Typography component="h4">Survey Particpants</Typography>
-              <Box component="dl" display="flex" flexDirection="row">
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Box component="dt">Pilot(s)</Box>
-                    <Box flex="1 1 auto"
-                      sx={{
-                        '& dd': {
-                          position: 'relative',
-                          display: 'inline-block',
-                          mr: 0.75
-                        },
-                        '& dd:not(:last-child):after': {
-                          content: '", "'
-                        }
-                      }}
-                    >
-                      <Box component="dd">John Smith</Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box component="dt">Biologist(s)</Box>
-                    <Box flex="1 1 auto"
-                      sx={{
-                        '& dd': {
-                          position: 'relative',
-                          display: 'inline-block',
-                          mr: 0.75
-                        },
-                        '& dd:not(:last-child):after': {
-                          content: '", "'
-                        }
-                      }}
-                    >
-                      <Box component="dd">Artur Margarit</Box>
-                      <Box component="dd">Jane Doe</Box>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Box>
+            <Divider sx={{ my: 3 }}></Divider>
 
-            <Divider sx={{my: 3}}/>
+            <Paper elevation={0} component="section">
+              <Typography component="h4">Survey Participants</Typography>
+              <SurveyParticipants/>
+            </Paper>
 
-            <Box component="section">
-              <Typography component="h4">Partnerships</Typography>
-              <Partnerships />
-            </Box>
+            <Divider sx={{ my: 3 }}></Divider>
 
-            <Divider sx={{my: 3}}/>
-
-            <Box component="section">
+            <Paper elevation={0} component="section">
               <Typography component="h4">Funding Sources</Typography>
               <SurveyFundingSources />
-            </Box>
+            </Paper>
 
-            <Divider sx={{my: 3}}/>
-            
-            <Box component="section">
+            <Divider sx={{ my: 3 }}></Divider>
+
+            <Paper elevation={0} component="section">
               <Typography component="h4">Permits</Typography>
-              <SurveyFundingSources />
-            </Box>
+              <Permits />
+            </Paper>
+
+            <Divider sx={{ my: 3 }}></Divider>
+
+            <Paper elevation={0} component="section">
+              <Typography component="h4">Partnerships</Typography>
+              <Partnerships />
+            </Paper>
 
           </Grid>
         </Grid>
       </Box>
     </Box>
+    </Paper>
   );
 };
 
