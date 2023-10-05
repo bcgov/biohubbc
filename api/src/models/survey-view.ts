@@ -5,6 +5,7 @@ import { SiteSelectionData } from '../repositories/site-selection-strategy-repos
 import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
@@ -14,7 +15,7 @@ export type SurveyObject = {
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   proprietor: GetSurveyProprietorData | null;
   locations: SurveyLocationRecord[];
-  participants: SurveyUser[];
+  participants: (SurveyUser & SystemUser)[];
   partnerships: ISurveyPartnerships;
   site_selection: SiteSelectionData;
   blocks: SurveyBlockRecord[];

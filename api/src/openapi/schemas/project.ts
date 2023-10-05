@@ -6,31 +6,8 @@ import { PROJECT_ROLE } from '../../constants/roles';
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
-  required: ['coordinator', 'project', 'location', 'iucn', 'participants'],
+  required: ['project', 'location', 'iucn', 'participants'],
   properties: {
-    coordinator: {
-      title: 'Project coordinator',
-      type: 'object',
-      required: ['first_name', 'last_name', 'email_address', 'coordinator_agency', 'share_contact_details'],
-      properties: {
-        first_name: {
-          type: 'string'
-        },
-        last_name: {
-          type: 'string'
-        },
-        email_address: {
-          type: 'string'
-        },
-        coordinator_agency: {
-          type: 'string'
-        },
-        share_contact_details: {
-          type: 'string',
-          enum: ['true', 'false']
-        }
-      }
-    },
     project: {
       title: 'Project details',
       type: 'object',
@@ -113,17 +90,6 @@ export const projectCreatePostRequestObject = {
 };
 
 const projectUpdateProperties = {
-  coordinator: {
-    type: 'object',
-    properties: {
-      first_name: { type: 'string' },
-      last_name: { type: 'string' },
-      email_address: { type: 'string' },
-      coordinator_agency: { type: 'string' },
-      share_contact_details: { type: 'string' },
-      revision_count: { type: 'number' }
-    }
-  },
   project: { type: 'object', properties: {} },
   objectives: { type: 'object', properties: {} },
   location: { type: 'object', properties: {} },

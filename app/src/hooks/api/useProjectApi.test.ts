@@ -1,7 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
-import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
@@ -111,10 +110,6 @@ describe('useProjectApi', () => {
         start_date: '2020/04/04',
         end_date: '2020/05/05',
         comments: 'comment',
-        coordinator_first_name: 'first',
-        coordinator_last_name: 'last',
-        coordinator_email_address: 'email@example.com',
-        coordinator_agency_name: 'agency',
         focal_species_name_list: 'focal'
       }
     ];
@@ -177,7 +172,6 @@ describe('useProjectApi', () => {
 
   it('createProject works as expected', async () => {
     const projectData = {
-      coordinator: null as unknown as IProjectCoordinatorForm,
       permit: null as unknown as ISurveyPermitForm,
       project: null as unknown as IProjectDetailsForm,
       objectives: null as unknown as IProjectObjectivesForm,
