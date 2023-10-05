@@ -54,7 +54,7 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
       return null;
     }
 
-    const currentOption = options.find((option) => dataGridValue === option.value) || null;
+    const currentOption = options.find((option) => dataGridValue === option.value) ?? null;
 
     if (!currentOption) {
       // No matching options available for current value, set value to null
