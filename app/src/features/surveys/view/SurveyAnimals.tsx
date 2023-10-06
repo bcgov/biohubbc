@@ -45,6 +45,7 @@ const SurveyAnimals: React.FC = () => {
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
+  const [isSubmittingTelemetry, setIsSubmittingTelemetry] = useState(false);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
     TELEMETRY_DEVICE_FORM_MODE.ADD
@@ -347,12 +348,14 @@ const SurveyAnimals: React.FC = () => {
   };
 
   const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+    setIsSubmittingTelemetry(true);
     if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
       await handleAddTelemetry(survey_critter_id, data);
     } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
       await handleEditTelemetry(survey_critter_id, data);
     }
 
+    setIsSubmittingTelemetry(false);
     setOpenDeviceDialog(false);
     refreshDeployments();
     surveyContext.artifactDataLoader.refresh(projectId, surveyId);
@@ -398,10 +401,13 @@ const SurveyAnimals: React.FC = () => {
         }
         dialogSaveButtonLabel="Save"
         open={openDeviceDialog}
+        dialogLoading={isSubmittingTelemetry}
         component={{
           element: <TelemetryDeviceForm removeAction={handleRemoveDeployment} mode={telemetryFormMode} />,
           initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
-          validationSchema: yup.array(AnimalDeploymentSchemaAsyncValidation)
+          validationSchema: yup.array(AnimalDeploymentSchemaAsyncValidation),
+          validateOnBlur: false,
+          validateOnChange: true
         }}
         onCancel={() => setOpenDeviceDialog(false)}
         onSave={(values) => {
