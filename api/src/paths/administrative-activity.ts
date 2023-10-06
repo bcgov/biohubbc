@@ -87,9 +87,9 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['has_pending_acccess_request', 'has_one_or_more_project_roles'],
+            required: ['has_pending_access_request', 'has_one_or_more_project_roles'],
             properties: {
-              has_pending_acccess_request: {
+              has_pending_access_request: {
                 type: 'boolean'
               },
               has_one_or_more_project_roles: {
@@ -166,10 +166,9 @@ export function getAdministrativeActivityStanding(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      // TODO Update to use user guid instead of identifier
-      const userIdentifier = getUserGuid(req['keycloak_token']);
+      const userGUID = getUserGuid(req['keycloak_token']);
 
-      if (!userIdentifier) {
+      if (!userGUID) {
         throw new HTTP400('Failed to identify user');
       }
 
@@ -177,7 +176,7 @@ export function getAdministrativeActivityStanding(): RequestHandler {
 
       const administrativeActivityService = new AdministrativeActivityService(connection);
 
-      const response = await administrativeActivityService.getAdministrativeActivityStanding(userIdentifier);
+      const response = await administrativeActivityService.getAdministrativeActivityStanding(userGUID);
 
       await connection.commit();
 

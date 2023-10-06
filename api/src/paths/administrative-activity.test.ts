@@ -109,7 +109,7 @@ describe('getAdministrativeActivityStanding', () => {
     sinon.stub(db, 'getAPIUserDBConnection').returns(dbConnectionObj);
 
     const mockResponse: IAdministrativeActivityStanding = {
-      has_pending_acccess_request: true,
+      has_pending_access_request: true,
       has_one_or_more_project_roles: true
     };
 
