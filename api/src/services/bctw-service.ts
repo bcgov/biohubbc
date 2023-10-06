@@ -113,6 +113,8 @@ export const GET_CODE_ENDPOINT = '/get-code';
 export const GET_DEVICE_DETAILS = '/get-collar-history-by-device/';
 export const UPLOAD_KEYX_ENDPOINT = '/import-xml';
 export const GET_KEYX_STATUS_ENDPOINT = '/get-collars-keyx';
+export const GET_TELEMETRY_POINTS_ENDPOINT = '/get-critters';
+export const GET_TELEMETRY_TRACKS_ENDPOINT = '/get-critter-tracks';
 
 export class BctwService {
   user: IBctwUser;
@@ -149,8 +151,8 @@ export class BctwService {
         return Promise.reject(
           new ApiError(
             ApiErrorType.UNKNOWN,
-            `API request failed with status code ${error?.response?.status}`,
-            error?.request?.data
+            `API request failed with status code ${error?.response?.status} - ${error.request.url}`,
+            error?.response?.data
           )
         );
       }
@@ -205,6 +207,7 @@ export class BctwService {
       const params = new URLSearchParams(queryParams);
       url += `?${params.toString()}`;
     }
+    console.log('bctw makeGetRequest to ' + this.axiosInstance.defaults.baseURL +  url);
     const response = await this.axiosInstance.get(url);
     return response.data;
   }
@@ -359,5 +362,21 @@ export class BctwService {
    */
   async getCode(codeHeaderName: string): Promise<ICodeResponse[]> {
     return this._makeGetRequest(GET_CODE_ENDPOINT, { codeHeader: codeHeaderName });
+  }
+
+  async getCritterTelemetryPoints(critterId: string, startDate: Date, endDate: Date): Promise<any> {
+    return this._makeGetRequest(GET_TELEMETRY_POINTS_ENDPOINT, {
+      critter_id: critterId,
+      start: startDate.toISOString(),
+      end: endDate.toISOString()
+    });
+  }
+
+  async getCritterTelemetryTracks(critterId: string, startDate: Date, endDate: Date): Promise<any> {
+    return this._makeGetRequest(GET_TELEMETRY_TRACKS_ENDPOINT, {
+      critter_id: critterId,
+      start: startDate.toISOString(),
+      end: endDate.toISOString()
+    });
   }
 }

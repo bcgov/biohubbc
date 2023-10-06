@@ -36,6 +36,7 @@ import TelemetryDeviceForm, {
   TELEMETRY_DEVICE_FORM_MODE
 } from './survey-animals/TelemetryDeviceForm';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import MapContainer from 'components/map/MapContainer';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
