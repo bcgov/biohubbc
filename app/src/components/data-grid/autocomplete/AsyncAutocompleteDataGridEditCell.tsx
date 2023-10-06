@@ -66,6 +66,8 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
     if (!dataGridValue) {
       // No current value
       return;
@@ -77,8 +79,6 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
     }
 
     const fetchCurrentOption = async () => {
-      let mounted = true;
-
       // Fetch a single option for the current value
       const response = await getCurrentOption(dataGridValue);
 
@@ -91,14 +91,14 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       }
 
       setCurrentOption(response);
-
-      return () => {
-        mounted = false;
-      };
     };
 
     fetchCurrentOption();
-  }, [dataGridValue, currentOption?.value]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [dataGridValue, currentOption?.value, getCurrentOption]);
 
   useEffect(() => {
     let mounted = true;
