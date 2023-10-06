@@ -98,7 +98,7 @@ describe('AdministrativeActivityService', () => {
       const dbConnection = getMockDBConnection();
 
       const mockRepoResponse = {
-        has_pending_acccess_request: false,
+        has_pending_access_request: false,
         has_one_or_more_project_roles: false
       };
       const repoStub = sinon
