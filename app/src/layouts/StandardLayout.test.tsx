@@ -1,7 +1,7 @@
-import { render } from 'test-helpers/test-utils';
 import { createMemoryHistory } from 'history';
-import StandardLayout from './StandardLayout';
 import { Router } from 'react-router';
+import { render } from 'test-helpers/test-utils';
+import StandardLayout from './StandardLayout';
 
 const history = createMemoryHistory();
 
