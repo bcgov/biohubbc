@@ -20,6 +20,7 @@ import SurveyHeader from './SurveyHeader';
 import { useHistory } from 'react-router';
 import { Toolbar } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import ObservationsMap from '../observations/ObservationsMap';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -63,9 +64,7 @@ const SurveyPage: React.FC = () => {
                 Manage Observations
               </Button>
             </Toolbar>
-            <Box sx={{height: '600px', background: '#ddd'}}>
-              
-            </Box>
+            <ObservationsMap />
           </Paper>
 
           <Box mt={3}>
