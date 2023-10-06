@@ -30,17 +30,16 @@ const BaseLayout = (props: PropsWithChildren<IBaseLayoutProps>) => {
         height: '100vh',
         display: 'flex',
         flexDirection: 'column'
-      }}
-    >
+      }}>
       <CssBaseline />
       <DialogContextProvider>
         {!isSupportedBrowser() && (
-          <Alert severity="error"
+          <Alert
+            severity="error"
             sx={{
               color: 'primary.main',
               backgroundColor: '#fcba19'
-            }}
-          >
+            }}>
             This is an unsupported browser. Some functionality may not work as expected.
           </Alert>
         )}

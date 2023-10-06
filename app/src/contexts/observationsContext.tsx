@@ -1,15 +1,15 @@
 import { GridRowModelUpdate, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { ObservationsTableI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
-import { DialogContext } from 'contexts/dialogContext';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { APIError } from 'hooks/api/useAxios';
-import { ObservationsTableI18N } from 'constants/i18n';
 
 export interface IObservationRecord {
   survey_observation_id: number | undefined;
@@ -99,7 +99,7 @@ export const ObservationsContext = createContext<IObservationsContext>({
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const { projectId, surveyId } = useContext(SurveyContext);
-  
+
   const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
   const _muiDataGridApiRef = useGridApiRef();
   const biohubApi = useBiohubApi();
@@ -112,8 +112,8 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const _hideErrorDialog = () => {
     dialogContext.setErrorDialog({
       open: false
-    })
-  }
+    });
+  };
 
   const _showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -122,7 +122,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       onClose: _hideErrorDialog,
       dialogTitle: ObservationsTableI18N.submitRecordsErrorDialogTitle,
       dialogText: ObservationsTableI18N.submitRecordsErrorDialogText,
-      open: true 
+      open: true
     });
   };
 
@@ -192,7 +192,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       _showErrorDialog({ dialogErrorDetails: apiError.errors });
       return;
     }
-      
   };
 
   // TODO deleting a row and then calling method currently fails to recover said row...
@@ -230,7 +229,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     setInitialRows
   };
 
-  console.log({ observationsContext })
+  console.log({ observationsContext });
 
   return <ObservationsContext.Provider value={observationsContext}>{props.children}</ObservationsContext.Provider>;
 };

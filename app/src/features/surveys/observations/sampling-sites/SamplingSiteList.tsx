@@ -56,14 +56,12 @@ const SamplingSiteList = () => {
             borderTopColor: grey[300]
           }
         }}>
-
         <Box
           sx={{
             position: 'absolute',
             width: '100%',
             height: '100%'
-          }}
-        > 
+          }}>
           <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
             <Typography variant="body2">No Sampling Sites</Typography>
           </Box>

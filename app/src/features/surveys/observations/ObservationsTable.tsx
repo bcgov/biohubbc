@@ -112,7 +112,7 @@ const ObservationsTable = () => {
       getActions: (params) => [
         <IconButton
           onClick={(event) => {
-            event.preventDefault(); // Prevent row from going into edit mode 
+            event.preventDefault(); // Prevent row from going into edit mode
             handleConfirmDeleteRow(params.id);
           }}
           key={`actions[${params.id}].handleDeleteRow`}>
@@ -183,7 +183,7 @@ const ObservationsTable = () => {
         dialogTitle={ObservationsTableI18N.removeRecordDialogTitle}
         dialogText={ObservationsTableI18N.removeRecordDialogText}
         yesButtonProps={{ color: 'error' }}
-        yesButtonLabel={'Discard Record'}
+        yesButtonLabel={'Delete Record'}
         noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
         open={showConfirmDeleteDialog}

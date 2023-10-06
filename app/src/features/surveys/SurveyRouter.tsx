@@ -36,13 +36,11 @@ const SurveyRouter: React.FC = () => {
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
-
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <EditSurveyPage />
+          <EditSurveyPage />
         </ProjectRoleRouteGuard>
-
       </RouteWithTitle>
     </Switch>
   );

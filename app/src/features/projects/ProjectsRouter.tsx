@@ -25,7 +25,6 @@ import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
 const ProjectsRouter: React.FC = () => {
   return (
     <Switch>
-      
       <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
         <ProjectsListPage />
       </RouteWithTitle>
@@ -39,38 +38,32 @@ const ProjectsRouter: React.FC = () => {
       <RouteWithTitle path="/admin/projects/:id" title={getTitle('Projects')}>
         <ProjectAuthStateContextProvider>
           <ProjectContextProvider>
-            
             <RouteWithTitle exact path="/admin/projects/:id/details" title={getTitle('Projects')}>
-                <ProjectRoleRouteGuard
-                  validProjectPermissions={[
-                    PROJECT_PERMISSION.COORDINATOR,
-                    PROJECT_PERMISSION.COLLABORATOR,
-                    PROJECT_PERMISSION.OBSERVER
-                  ]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <ProjectPage />
-                </ProjectRoleRouteGuard>
-
+              <ProjectRoleRouteGuard
+                validProjectPermissions={[
+                  PROJECT_PERMISSION.COORDINATOR,
+                  PROJECT_PERMISSION.COLLABORATOR,
+                  PROJECT_PERMISSION.OBSERVER
+                ]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <ProjectPage />
+              </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
             <RouteWithTitle exact path="/admin/projects/:id/edit" title={getTitle('Edit Project')}>
-
-                <ProjectRoleRouteGuard
-                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <EditProjectPage />
-                </ProjectRoleRouteGuard>
-
+              <ProjectRoleRouteGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <EditProjectPage />
+              </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
             <RouteWithTitle exact path="/admin/projects/:id/users" title={getTitle('Project Team')}>
-
-                <ProjectRoleRouteGuard
-                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <ProjectParticipantsPage />
-                </ProjectRoleRouteGuard>
-
+              <ProjectRoleRouteGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <ProjectParticipantsPage />
+              </ProjectRoleRouteGuard>
             </RouteWithTitle>
 
             <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
@@ -90,13 +83,11 @@ const ProjectsRouter: React.FC = () => {
             </RouteWithTitle>
 
             <RouteWithTitle exact path="/admin/projects/:id/survey/create" title={getTitle('Create Survey')}>
-
-                <ProjectRoleRouteGuard
-                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <CreateSurveyPage />
-                </ProjectRoleRouteGuard>
-
+              <ProjectRoleRouteGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <CreateSurveyPage />
+              </ProjectRoleRouteGuard>
             </RouteWithTitle>
           </ProjectContextProvider>
         </ProjectAuthStateContextProvider>
