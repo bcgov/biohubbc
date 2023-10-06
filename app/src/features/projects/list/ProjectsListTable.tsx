@@ -1,15 +1,16 @@
-import { makeStyles, Theme } from '@material-ui/core';
-import Chip from '@material-ui/core/Chip';
-import { grey } from '@material-ui/core/colors';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
+import { Theme } from '@mui/material';
+import Chip from '@mui/material/Chip';
+import { grey } from '@mui/material/colors';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef, GridOverlay } from '@mui/x-data-grid';
-import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import { useCallback } from 'react';
@@ -24,35 +25,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     textAlign: 'left',
     fontWeight: 700
   },
-  chip: {
-    minWidth: '7rem',
-    fontSize: '11px',
-    textTransform: 'uppercase'
-  },
-  chipDraft: {
-    borderColor: '#afd3ee',
-    backgroundColor: 'rgb(232, 244, 253)'
-  },
   noDataText: {
-    fontFamily: 'inherit !important'
+    fontFamily: 'inherit !important',
+    fontSize: '0.875rem',
+    fontWeight: 700
   },
   dataGrid: {
-    fontSize: '0.9rem',
-    border: '0 !important',
+    border: 'none !important',
     fontFamily: 'inherit !important',
-    '& .MuiDataGrid-columnHeaders': {
+    '& .MuiDataGrid-columnHeaderTitle': {
+      textTransform: 'uppercase',
       fontSize: '0.875rem',
       fontWeight: 700,
       color: grey[600]
-    },
-    '& .MuiDataGrid-columnHeaderTitle': {
-      textTransform: 'uppercase',
-      fontWeight: '700 !important',
-      letterSpacing: '0.02rem'
-    },
-    '& .MuiLink-root': {
-      fontFamily: 'inherit',
-      fontSize: 'inherit'
     },
     '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cellCheckbox:focus-within, & .MuiDataGrid-columnHeader:focus-within':
       {
@@ -67,6 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IProjectsListTableProps {
   projects: IGetProjectsListResponse[];
   drafts: IGetDraftsListResponse[];
+  codes: IGetAllCodeSetsResponse;
 }
 
 interface IProjectsListTableEntry {
@@ -81,7 +67,9 @@ interface IProjectsListTableEntry {
 
 const NoRowsOverlay = (props: { className: string }) => (
   <GridOverlay>
-    <Typography className={props.className}>No Results</Typography>
+    <Typography className={props.className} color="textSecondary">
+      No projects found
+    </Typography>
   </GridOverlay>
 );
 
@@ -92,13 +80,14 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
     {
       field: 'name',
       headerName: 'Name',
-      flex: 3,
+      flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => (
         <Link
-          className={classes.linkButton}
+          style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
           data-testid={params.row.name}
           underline="always"
+          title={params.row.name}
           component={RouterLink}
           to={
             params.row.isDraft ? `/admin/projects/create?draftId=${params.row.id}` : `/admin/projects/${params.row.id}`
@@ -108,17 +97,36 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
       )
     },
     {
-      field: 'type',
-      headerName: 'Type',
-      flex: 3
+      field: 'program',
+      headerName: 'Programs',
+      flex: 1
+    },
+    {
+      field: 'regions',
+      headerName: 'Regions',
+      flex: 1
+    },
+    {
+      field: 'startDate',
+      headerName: 'Start Date',
+      minWidth: 150,
+      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
+      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined)
+    },
+    {
+      field: 'endDate',
+      headerName: 'End Date',
+      minWidth: 150,
+      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
+      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined)
     },
     {
       field: 'status',
       headerName: 'Status',
-      flex: 1,
+      minWidth: 150,
       renderCell: (params) => {
         if (params.row.isDraft) {
-          return <Chip variant="outlined" className={clsx(classes.chip, classes.chipDraft)} label={'Draft'} />;
+          return <Chip label={'Draft'} />;
         }
 
         if (!params.row.status) {
@@ -132,32 +140,26 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           </SystemRoleGuard>
         );
       }
-    },
-    {
-      field: 'startDate',
-      headerName: 'Start Date',
-      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
-      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined),
-      flex: 1
-    },
-    {
-      field: 'endDate',
-      headerName: 'End Date',
-      valueGetter: ({ value }) => (value ? new Date(value) : undefined),
-      valueFormatter: ({ value }) => (value ? getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, value) : undefined),
-      flex: 1
     }
   ];
 
   const NoRowsOverlayStyled = useCallback(() => <NoRowsOverlay className={classes.noDataText} />, [classes.noDataText]);
 
+  const getProjectPrograms = (project: IGetProjectsListResponse) => {
+    return (
+      props.codes.program
+        .filter((code) => project.projectData.project_programs.includes(code.id))
+        .map((code) => code.name)
+        .join(', ') || ''
+    );
+  };
   return (
     <DataGrid
       className={classes.dataGrid}
       autoHeight
       rows={[
         ...props.drafts.map((draft: IGetDraftsListResponse) => ({
-          id: draft.id,
+          id: draft.webform_draft_id,
           name: draft.name,
           isDraft: true
         })),
@@ -165,10 +167,11 @@ const ProjectsListTable = (props: IProjectsListTableProps) => {
           id: project.projectData.id,
           name: project.projectData.name,
           status: project.projectSupplementaryData.publishStatus,
-          type: project.projectData.project_type,
+          program: getProjectPrograms(project),
           startDate: project.projectData.start_date,
           endDate: project.projectData.end_date,
-          isDraft: false
+          isDraft: false,
+          regions: project.projectData.regions?.join(', ')
         }))
       ]}
       getRowId={(row) => (row.isDraft ? `draft-${row.id}` : `project-${row.id}`)}

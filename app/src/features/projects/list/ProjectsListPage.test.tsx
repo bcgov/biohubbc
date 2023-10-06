@@ -5,6 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import ProjectsListPage from './ProjectsListPage';
 
@@ -36,7 +37,7 @@ describe('ProjectsListPage', () => {
     cleanup();
   });
 
-  test('renders with the create project button', async () => {
+  it('renders with the create project button', async () => {
     mockUseApi.project.getProjectsList.mockResolvedValue([]);
     mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
@@ -67,7 +68,7 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test('renders with the open advanced filters button', async () => {
+  it('renders with the open advanced filters button', async () => {
     mockUseApi.project.getProjectsList.mockResolvedValue([]);
     mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
@@ -94,7 +95,7 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test('renders with a list of drafts', async () => {
+  it('renders with a list of drafts', async () => {
     mockUseApi.draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
@@ -124,76 +125,7 @@ describe('ProjectsListPage', () => {
     expect(await findByText('Draft 1')).toBeInTheDocument();
   });
 
-  test('navigating to the create project page works', async () => {
-    mockUseApi.project.getProjectsList.mockResolvedValue([]);
-    mockUseApi.draft.getDraftsList.mockResolvedValue([]);
-
-    const authState = getMockAuthState({ base: SystemAdminAuthState });
-
-    const mockCodesContext: ICodesContext = {
-      codesDataLoader: {
-        data: [],
-        load: jest.fn(),
-        refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
-      surveyId: 1,
-      projectId: 1
-    } as unknown as ICodesContext;
-
-    const { findByText } = render(
-      <AuthStateContext.Provider value={authState}>
-        <CodesContext.Provider value={mockCodesContext}>
-          <Router history={history}>
-            <ProjectsListPage />
-          </Router>
-        </CodesContext.Provider>
-      </AuthStateContext.Provider>
-    );
-
-    fireEvent.click(await findByText('Create Project'));
-
-    await waitFor(() => {
-      expect(history.location.pathname).toEqual('/admin/projects/create');
-      expect(history.location.search).toEqual('');
-    });
-  });
-
-  test('navigating to the create project page works on draft projects', async () => {
-    mockUseApi.project.getProjectsList.mockResolvedValue([]);
-    mockUseApi.draft.getDraftsList.mockResolvedValue([
-      {
-        id: 1,
-        name: 'Draft 1'
-      }
-    ]);
-
-    const mockCodesContext: ICodesContext = {
-      codesDataLoader: {
-        data: [],
-        load: jest.fn(),
-        refresh: jest.fn()
-      } as unknown as DataLoader<any, any, any>,
-      surveyId: 1,
-      projectId: 1
-    } as unknown as ICodesContext;
-
-    const { findByText } = render(
-      <CodesContext.Provider value={mockCodesContext}>
-        <Router history={history}>
-          <ProjectsListPage />
-        </Router>
-      </CodesContext.Provider>
-    );
-
-    fireEvent.click(await findByText('Draft 1'));
-
-    await waitFor(() => {
-      expect(history.location.pathname).toEqual('/admin/projects/create');
-      expect(history.location.search).toEqual('?draftId=1');
-    });
-  });
-
-  test('navigating to the project works', async () => {
+  it('navigating to the project works', async () => {
     mockUseApi.project.getProjectsList.mockResolvedValue([
       {
         projectData: {
@@ -201,8 +133,8 @@ describe('ProjectsListPage', () => {
           name: 'Project 1',
           start_date: null,
           end_date: null,
-          coordinator_agency: 'contact agency',
-          project_type: 'project type',
+          project_programs: [1],
+          regions: ['region'],
           permits_list: '1, 2, 3',
           completion_status: 'Completed'
         },
@@ -214,7 +146,7 @@ describe('ProjectsListPage', () => {
 
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
-        data: [],
+        data: codes,
         load: jest.fn(),
         refresh: jest.fn()
       } as unknown as DataLoader<any, any, any>,

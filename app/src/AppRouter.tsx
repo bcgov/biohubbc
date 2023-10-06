@@ -6,6 +6,7 @@ import {
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
+import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import SearchPage from 'features/search/SearchPage';
@@ -17,6 +18,7 @@ import AccessRequestPage from 'pages/access/AccessRequestPage';
 import LoginPage from 'pages/authentication/LoginPage';
 import LogOutPage from 'pages/authentication/LogOutPage';
 import { LandingPage } from 'pages/landing/LandingPage';
+import { Playground } from 'pages/Playground';
 import React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
@@ -40,6 +42,14 @@ const AppRouter: React.FC = () => {
           <AccessDenied />
         </BaseLayout>
       </RouteWithTitle>
+
+      {process.env.NODE_ENV === 'development' && (
+        <RouteWithTitle path="/playground" title={'Playground'}>
+          <BaseLayout>
+            <Playground />
+          </BaseLayout>
+        </RouteWithTitle>
+      )}
 
       <RouteWithTitle path="/access-request" title={getTitle('Access Request')}>
         <BaseLayout>
@@ -82,6 +92,18 @@ const AppRouter: React.FC = () => {
           <AuthenticatedRouteGuard>
             <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <SearchPage />
+            </SystemRoleRouteGuard>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/admin/funding-sources" title={getTitle('Funding Sources')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <CodesContextProvider>
+                <FundingSourcesRouter />
+              </CodesContextProvider>
             </SystemRoleRouteGuard>
           </AuthenticatedRouteGuard>
         </BaseLayout>

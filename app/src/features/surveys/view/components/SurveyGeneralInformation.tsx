@@ -1,11 +1,11 @@
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
-import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -16,16 +16,25 @@ import { getFormattedDateRangeString } from 'utils/Utils';
  * @return {*}
  */
 const SurveyGeneralInformation = () => {
+  const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
 
-  if (!surveyForViewData) {
+  if (!surveyForViewData || !codesContext.codesDataLoader.data) {
     return <></>;
   }
 
   const {
-    surveyData: { survey_details, species, funding, permit }
+    surveyData: { survey_details, species, permit }
   } = surveyForViewData;
+
+  const codes = codesContext.codesDataLoader.data;
+
+  const surveyTypes =
+    codes.type
+      .filter((code) => survey_details.survey_types.includes(code.id))
+      .map((code) => code.name)
+      .join(', ') || '';
 
   return (
     <>
@@ -34,13 +43,11 @@ const SurveyGeneralInformation = () => {
         <Divider></Divider>
         <Box component="dl" my={0}>
           <Grid container spacing={1}>
-            <Grid item sm={6}>
+            <Grid item sm={12}>
               <Typography component="dt" color="textSecondary" variant="subtitle2">
-                Survey Lead
+                Types
               </Typography>
-              <Typography component="dd">
-                {survey_details.biologist_first_name} {survey_details.biologist_last_name}
-              </Typography>
+              <Typography component="dd">{surveyTypes ? <>{surveyTypes}</> : 'No Types'}</Typography>
             </Grid>
             <Grid item sm={6}>
               <Typography component="dt" color="textSecondary" variant="subtitle2">
@@ -117,25 +124,6 @@ const SurveyGeneralInformation = () => {
             );
           })}
         </List>
-      </Box>
-
-      <Box component="section">
-        <Typography component="h4">Funding Sources</Typography>
-        <Divider></Divider>
-        <FundingSource
-          funding_sources={funding.funding_sources.map((item) => {
-            return {
-              id: item.pfs_id,
-              agency_name: item.agency_name,
-              investment_action_category_name: item.investment_action_category_name,
-              funding_amount: item.funding_amount,
-              start_date: item.funding_start_date,
-              end_date: item.funding_end_date,
-              agency_project_id: item.funding_source_project_id,
-              first_nations_name: item.first_nations_name
-            } as IFundingSource;
-          })}
-        />
       </Box>
     </>
   );

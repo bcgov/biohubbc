@@ -80,7 +80,7 @@ describe('list', () => {
           projectData: {
             id: 1,
             name: 'myproject',
-            project_type: 'project_type',
+            project_programs: [1],
             start_date: '2022-02-02',
             end_date: null,
             completion_status: 'done'

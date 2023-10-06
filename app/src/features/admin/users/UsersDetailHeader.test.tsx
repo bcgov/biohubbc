@@ -1,5 +1,6 @@
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
@@ -17,13 +18,17 @@ const mockUseApi = {
   }
 };
 
-const mockUser = {
-  id: 1,
-  user_record_end_date: 'ending',
+const mockUser: ISystemUser = {
+  system_user_id: 1,
+  record_end_date: 'ending',
   user_guid: '123',
   user_identifier: 'testUser',
   role_names: ['system'],
-  identity_source: 'idir'
+  identity_source: 'idir',
+  role_ids: [],
+  email: '',
+  display_name: '',
+  agency: ''
 };
 
 describe('UsersDetailHeader', () => {
@@ -64,11 +69,11 @@ describe('UsersDetailHeader', () => {
       fireEvent.click(getByText('Remove User'));
 
       await waitFor(() => {
-        expect(getAllByText('Remove System User').length).toEqual(1);
+        expect(getAllByText('Remove system user?').length).toEqual(1);
       });
     });
 
-    it('does nothing if the user clicks `No` or away from the dialog', async () => {
+    it('does nothing if the user clicks `Cancel` or away from the dialog', async () => {
       history.push('/admin/users/1');
 
       const { getAllByText, getByText } = render(
@@ -82,10 +87,10 @@ describe('UsersDetailHeader', () => {
       fireEvent.click(getByText('Remove User'));
 
       await waitFor(() => {
-        expect(getAllByText('Remove System User').length).toEqual(1);
+        expect(getAllByText('Remove system user?').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('No'));
+      fireEvent.click(getByText('Cancel'));
 
       await waitFor(() => {
         expect(history.location.pathname).toEqual('/admin/users/1');
@@ -110,10 +115,10 @@ describe('UsersDetailHeader', () => {
       fireEvent.click(getByText('Remove User'));
 
       await waitFor(() => {
-        expect(getAllByText('Remove System User').length).toEqual(1);
+        expect(getAllByText('Remove system user?').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Yes'));
+      fireEvent.click(getByText('Remove'));
 
       await waitFor(() => {
         expect(history.location.pathname).toEqual('/admin/users');

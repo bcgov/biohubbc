@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   PostAgreementsData,
-  PostFundingData,
   PostLocationData,
+  PostPartnershipsData,
   PostPermitData,
   PostProprietorData,
   PostPurposeAndMethodologyData,
@@ -32,10 +32,6 @@ describe('PostSurveyObject', () => {
       expect(data.permit).to.equal(null);
     });
 
-    it('sets funding', () => {
-      expect(data.funding).to.equal(null);
-    });
-
     it('sets proprietor', () => {
       expect(data.proprietor).to.equal(null);
     });
@@ -44,12 +40,16 @@ describe('PostSurveyObject', () => {
       expect(data.purpose_and_methodology).to.equal(null);
     });
 
-    it('sets location', () => {
-      expect(data.location).to.equal(null);
+    it('sets locations', () => {
+      expect(data.locations).to.eql([]);
     });
 
     it('sets agreements', () => {
       expect(data.agreements).to.equal(null);
+    });
+
+    it('sets partnerships', function () {
+      expect(data.partnerships).to.equal(null);
     });
   });
 
@@ -60,10 +60,8 @@ describe('PostSurveyObject', () => {
       survey_details: {},
       species: {},
       permit: {},
-      funding: {},
       proprietor: {},
       purpose_and_methodology: {},
-      location: {},
       agreements: {}
     };
 
@@ -83,10 +81,6 @@ describe('PostSurveyObject', () => {
       expect(data.permit).to.instanceOf(PostPermitData);
     });
 
-    it('sets funding', () => {
-      expect(data.funding).to.instanceOf(PostFundingData);
-    });
-
     it('sets proprietor', () => {
       expect(data.proprietor).to.instanceOf(PostProprietorData);
     });
@@ -95,12 +89,47 @@ describe('PostSurveyObject', () => {
       expect(data.purpose_and_methodology).to.instanceOf(PostPurposeAndMethodologyData);
     });
 
-    it('sets location', () => {
-      expect(data.location).to.instanceOf(PostLocationData);
-    });
-
     it('sets agreements', () => {
       expect(data.agreements).to.instanceOf(PostAgreementsData);
+    });
+  });
+});
+
+describe('PostPartnershipsData', () => {
+  describe('No values provided', () => {
+    let projectPartnershipsData: PostPartnershipsData;
+
+    before(() => {
+      projectPartnershipsData = new PostPartnershipsData(null);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(projectPartnershipsData.indigenous_partnerships).to.eql([]);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(projectPartnershipsData.stakeholder_partnerships).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectPartnershipsData: PostPartnershipsData;
+
+    const obj = {
+      indigenous_partnerships: [1, 2],
+      stakeholder_partnerships: ['partner1, partner2']
+    };
+
+    before(() => {
+      projectPartnershipsData = new PostPartnershipsData(obj);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(projectPartnershipsData.indigenous_partnerships).to.eql(obj.indigenous_partnerships);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(projectPartnershipsData.stakeholder_partnerships).to.eql(obj.stakeholder_partnerships);
     });
   });
 });
@@ -124,14 +153,6 @@ describe('PostSurveyDetailsData', () => {
     it('sets start_date', () => {
       expect(data.start_date).to.equal(null);
     });
-
-    it('sets biologist_first_name', () => {
-      expect(data.biologist_first_name).to.equal(null);
-    });
-
-    it('sets biologist_last_name', () => {
-      expect(data.biologist_last_name).to.equal(null);
-    });
   });
 
   describe('All values provided', () => {
@@ -140,9 +161,7 @@ describe('PostSurveyDetailsData', () => {
     const obj = {
       survey_name: 'survey name',
       end_date: '2020/04/04',
-      start_date: '2020/03/03',
-      biologist_first_name: 'first',
-      biologist_last_name: 'last'
+      start_date: '2020/03/03'
     };
 
     before(() => {
@@ -159,14 +178,6 @@ describe('PostSurveyDetailsData', () => {
 
     it('sets start_date', () => {
       expect(data.start_date).to.equal(obj.start_date);
-    });
-
-    it('sets biologist_first_name', () => {
-      expect(data.biologist_first_name).to.equal(obj.biologist_first_name);
-    });
-
-    it('sets biologist_last_name', () => {
-      expect(data.biologist_last_name).to.equal(obj.biologist_last_name);
     });
   });
 });
@@ -245,36 +256,6 @@ describe('PostPermitData', () => {
 
     it('sets permit_type', () => {
       expect(data.permits[0].permit_type).to.equal(obj.permits[0].permit_type);
-    });
-  });
-});
-
-describe('PostFundingData', () => {
-  describe('No values provided', () => {
-    let data: PostFundingData;
-
-    before(() => {
-      data = new PostFundingData(null);
-    });
-
-    it('sets permit_number', () => {
-      expect(data.funding_sources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: PostFundingData;
-
-    const obj = {
-      funding_sources: [1, 2]
-    };
-
-    before(() => {
-      data = new PostFundingData(obj);
-    });
-
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([1, 2]);
     });
   });
 });
@@ -389,12 +370,16 @@ describe('PostLocationData', () => {
       data = new PostLocationData(null);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(null);
+    it('sets name', () => {
+      expect(data.name).to.equal(null);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql([]);
+    it('sets description', () => {
+      expect(data.description).to.equal(null);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql([]);
     });
   });
 
@@ -402,20 +387,25 @@ describe('PostLocationData', () => {
     let data: PostLocationData;
 
     const obj = {
-      survey_area_name: 'area_name',
-      geometry: [{}]
+      name: 'area name',
+      description: 'area description',
+      geojson: [{}]
     };
 
     before(() => {
       data = new PostLocationData(obj);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(obj.survey_area_name);
+    it('sets name', () => {
+      expect(data.name).to.equal(obj.name);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql(obj.geometry);
+    it('sets description', () => {
+      expect(data.description).to.equal(obj.description);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql(obj.geojson);
     });
   });
 });

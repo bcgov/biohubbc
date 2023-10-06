@@ -141,5 +141,35 @@ declare module 'yup' {
      * @memberof ArraySchema
      */
     isUniqueAuthor(message: string): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    /**
+     * Determine if an object in an array of objects contains at least one `valueToFind` at the `key` path.
+     *
+     * @param {string} message Error message to display
+     * @param {string} key Key of the object to look at
+     * @param {string} valueToFnd Value to find in the array
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof ArraySchema
+     */
+    hasAtLeastOneValue(
+      message: string,
+      key: string,
+      valueToFind: any
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    /**
+     * Validates that no date ranges in an array overlap
+     *
+     * @param {string} message Error message to display
+     * @param {string} startKey Key of the start date in the date range
+     * @param {string} endKey Key of the end date in the date range
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof ArraySchema
+     */
+    hasUniqueDateRanges(
+      message: string,
+      startKey: string,
+      endKey: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
   }
 }

@@ -1,4 +1,4 @@
-import { projectFundingSourcePostRequestObject } from '../openapi/schemas/project-funding-source';
+import { SchemaObject } from 'ajv';
 
 export const attachmentApiDocObject = (basicDescription: string, successDescription: string) => {
   return {
@@ -48,58 +48,21 @@ export const attachmentApiDocObject = (basicDescription: string, successDescript
   };
 };
 
-export const addFundingSourceApiDocObject = (basicDescription: string, successDescription: string) => {
-  return {
-    description: basicDescription,
-    tags: ['funding-sources'],
-    security: [
-      {
-        Bearer: []
-      }
-    ],
-    parameters: [
-      {
-        in: 'path',
-        name: 'projectId',
-        schema: {
-          type: 'number'
-        },
-        required: true
-      }
-    ],
-    requestBody: {
-      description: 'Add funding source request object.',
-      content: {
-        'application/json': {
-          schema: {
-            ...(projectFundingSourcePostRequestObject as object)
-          }
-        }
-      }
-    },
-    responses: {
-      200: {
-        description: successDescription,
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              required: ['id'],
-              properties: {
-                id: {
-                  type: 'number'
-                }
-              }
-            }
-          }
-        }
+export const critterbaseCommonLookupResponse: SchemaObject = {
+  title: 'asSelect',
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      key: {
+        type: 'string'
       },
-      401: {
-        $ref: '#/components/responses/401'
+      id: {
+        type: 'string'
       },
-      default: {
-        $ref: '#/components/responses/default'
+      value: {
+        type: 'string'
       }
     }
-  };
+  }
 };

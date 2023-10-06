@@ -1,85 +1,72 @@
+import Ajv from 'ajv';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
-import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
-import { ProjectService } from '../../../services/project-service';
-import { getMockDBConnection } from '../../../__mocks__/db';
-import * as del from './delete';
+import { DraftService } from '../../../services/draft-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
+import * as endpoint from './delete';
 
 chai.use(sinonChai);
 
-describe('getRules', () => {
-  afterEach(() => {
-    sinon.restore();
+describe('paths/draft/{draftId}/delete', () => {
+  describe('openapi schema', () => {
+    const ajv = new Ajv();
+
+    it('is valid openapi v3 schema', () => {
+      expect(ajv.validateSchema((endpoint.DELETE.apiDoc as unknown) as object)).to.be.true;
+    });
   });
 
-  it('should throw an error when a failure occurs', async () => {
-    const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
+  describe('deleteDraft', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should throw an error when a failure occurs', async () => {
+      const dbConnectionObj = getMockDBConnection();
+      sinon.stub(db, 'getDBConnection').returns({
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        }
+      });
+
+      const expectedError = new Error('cannot process request');
+      sinon.stub(DraftService.prototype, 'deleteDraft').rejects(expectedError);
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      try {
+        const requestHandler = endpoint.deleteDraft();
+
+        await requestHandler(mockReq, mockRes, mockNext);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).message).to.equal(expectedError.message);
       }
     });
 
-    const expectedError = new Error('cannot process request');
-    sinon.stub(ProjectService.prototype, 'deleteDraft').rejects(expectedError);
+    it('deletes a draft', async () => {
+      const dbConnectionObj = getMockDBConnection();
+      sinon.stub(db, 'getDBConnection').returns({
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        }
+      });
 
-    const sampleReq = {
-      keycloak_token: {},
-      body: {},
-      params: {}
-    } as any;
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    try {
-      const result = del.deleteDraft();
+      sinon.stub(DraftService.prototype, 'deleteDraft').resolves({ webform_draft_id: 1 });
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).message).to.equal(expectedError.message);
-    }
-  });
+      const requestHandler = endpoint.deleteDraft();
+      mockReq.params = { draftId: '1' };
 
-  it('should succeed with valid data', async () => {
-    const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect(mockRes.statusValue).to.equal(200);
     });
-
-    const sampleReq = {
-      keycloak_token: {},
-      body: {},
-      params: {}
-    } as any;
-
-    const deleteDraftStub = sinon
-      .stub(ProjectService.prototype, 'deleteDraft')
-      .resolves(({ rowCount: 1 } as unknown) as QueryResult);
-
-    const expectedResponse = 1;
-
-    let actualResult: any = null;
-    const sampleRes = {
-      status: () => {
-        return {
-          json: (response: any) => {
-            actualResult = response;
-          }
-        };
-      }
-    };
-
-    const result = del.deleteDraft();
-
-    await result(sampleReq, (sampleRes as unknown) as any, (null as unknown) as any);
-    expect(actualResult).to.eql(expectedResponse);
-    expect(deleteDraftStub).to.be.calledOnce;
   });
 });

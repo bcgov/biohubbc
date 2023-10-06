@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  PutPartnershipsData,
   PutSurveyDetailsData,
-  PutSurveyFundingData,
   PutSurveyLocationData,
   PutSurveyObject,
   PutSurveyPermitData,
@@ -31,10 +31,6 @@ describe('PutSurveyObject', () => {
       expect(data.permit).to.equal(null);
     });
 
-    it('sets funding', () => {
-      expect(data.funding).to.equal(null);
-    });
-
     it('sets proprietor', () => {
       expect(data.proprietor).to.equal(null);
     });
@@ -44,7 +40,7 @@ describe('PutSurveyObject', () => {
     });
 
     it('sets location', () => {
-      expect(data.location).to.equal(null);
+      expect(data.locations).to.eql([]);
     });
   });
 
@@ -55,10 +51,8 @@ describe('PutSurveyObject', () => {
       survey_details: {},
       species: {},
       permit: {},
-      funding: {},
       proprietor: {},
       purpose_and_methodology: {},
-      location: {},
       agreements: {}
     };
 
@@ -78,20 +72,12 @@ describe('PutSurveyObject', () => {
       expect(data.permit).to.instanceOf(PutSurveyPermitData);
     });
 
-    it('sets funding', () => {
-      expect(data.funding).to.instanceOf(PutSurveyFundingData);
-    });
-
     it('sets proprietor', () => {
       expect(data.proprietor).to.instanceOf(PutSurveyProprietorData);
     });
 
     it('sets purpose_and_methodology', () => {
       expect(data.purpose_and_methodology).to.instanceOf(PutSurveyPurposeAndMethodologyData);
-    });
-
-    it('sets location', () => {
-      expect(data.location).to.instanceOf(PutSurveyLocationData);
     });
   });
 });
@@ -116,14 +102,6 @@ describe('PutSurveyDetailsData', () => {
       expect(data.start_date).to.equal(null);
     });
 
-    it('sets lead_first_name', () => {
-      expect(data.lead_first_name).to.equal(null);
-    });
-
-    it('sets lead_last_name', () => {
-      expect(data.lead_last_name).to.equal(null);
-    });
-
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(null);
     });
@@ -136,8 +114,6 @@ describe('PutSurveyDetailsData', () => {
       survey_name: 'survey name',
       end_date: '2020/04/04',
       start_date: '2020/03/03',
-      biologist_first_name: 'first',
-      biologist_last_name: 'last',
       revision_count: 0
     };
 
@@ -155,14 +131,6 @@ describe('PutSurveyDetailsData', () => {
 
     it('sets start_date', () => {
       expect(data.start_date).to.equal(obj.start_date);
-    });
-
-    it('sets lead_first_name', () => {
-      expect(data.lead_first_name).to.equal(obj.biologist_first_name);
-    });
-
-    it('sets lead_last_name', () => {
-      expect(data.lead_last_name).to.equal(obj.biologist_last_name);
     });
 
     it('sets revision_count', () => {
@@ -250,36 +218,6 @@ describe('PutPermitData', () => {
 
     it('sets permit_type', () => {
       expect(data.permits[0].permit_type).to.equal(obj.permits[0].permit_type);
-    });
-  });
-});
-
-describe('PutFundingData', () => {
-  describe('No values provided', () => {
-    let data: PutSurveyFundingData;
-
-    before(() => {
-      data = new PutSurveyFundingData(null);
-    });
-
-    it('sets permit_number', () => {
-      expect(data.funding_sources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: PutSurveyFundingData;
-
-    const obj = {
-      funding_sources: [1, 2]
-    };
-
-    before(() => {
-      data = new PutSurveyFundingData(obj);
-    });
-
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([1, 2]);
     });
   });
 });
@@ -478,12 +416,16 @@ describe('PutLocationData', () => {
       data = new PutSurveyLocationData(null);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(null);
+    it('sets name', () => {
+      expect(data.name).to.equal(null);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql([]);
+    it('sets description', () => {
+      expect(data.description).to.equal(null);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql([]);
     });
 
     it('sets revision_count', () => {
@@ -495,8 +437,9 @@ describe('PutLocationData', () => {
     let data: PutSurveyLocationData;
 
     const obj = {
-      survey_area_name: 'area_name',
-      geometry: [{}],
+      name: 'area name',
+      description: 'area description',
+      geojson: [{}],
       revision_count: 0
     };
 
@@ -504,16 +447,59 @@ describe('PutLocationData', () => {
       data = new PutSurveyLocationData(obj);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(obj.survey_area_name);
+    it('sets name', () => {
+      expect(data.name).to.equal(obj.name);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql(obj.geometry);
+    it('sets description', () => {
+      expect(data.description).to.equal(obj.description);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql(obj.geojson);
     });
 
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(obj.revision_count);
+    });
+  });
+});
+
+describe('PutPartnershipsData', () => {
+  describe('No values provided', () => {
+    let data: PutPartnershipsData;
+
+    before(() => {
+      data = new PutPartnershipsData(null);
+    });
+
+    it('sets indigenous_partnerships', () => {
+      expect(data.indigenous_partnerships).to.eql([]);
+    });
+
+    it('sets stakeholder_partnerships', () => {
+      expect(data.stakeholder_partnerships).to.eql([]);
+    });
+  });
+
+  describe('all values provided', () => {
+    const obj = {
+      indigenous_partnerships: [1, 2],
+      stakeholder_partnerships: ['partner 3', 'partner 4']
+    };
+
+    let data: PutPartnershipsData;
+
+    before(() => {
+      data = new PutPartnershipsData(obj);
+    });
+
+    it('sets indigenous_partnerships', () => {
+      expect(data.indigenous_partnerships).to.eql(obj.indigenous_partnerships);
+    });
+
+    it('sets stakeholder_partnerships', () => {
+      expect(data.stakeholder_partnerships).to.eql(obj.stakeholder_partnerships);
     });
   });
 });

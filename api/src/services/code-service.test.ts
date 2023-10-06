@@ -19,7 +19,7 @@ describe('CodeService', () => {
         rows: [{ id: 1, name: 'codeName' }]
       });
 
-      const mockDBConnection = getMockDBConnection({ query: mockQuery });
+      const mockDBConnection = getMockDBConnection({ sql: mockQuery });
 
       const codeService = new CodeService(mockDBConnection);
 
@@ -28,24 +28,24 @@ describe('CodeService', () => {
       expect(response).to.have.all.keys(
         'management_action_type',
         'first_nations',
-        'funding_source',
+        'agency',
         'investment_action_category',
-        'activity',
-        'project_type',
-        'coordinator_agency',
-        'region',
+        'type',
+        'program',
         'proprietor_type',
         'iucn_conservation_action_level_1_classification',
         'iucn_conservation_action_level_2_subclassification',
         'iucn_conservation_action_level_3_subclassification',
         'system_roles',
         'project_roles',
-        'regional_offices',
         'administrative_activity_status_type',
         'ecological_seasons',
         'field_methods',
         'intended_outcomes',
-        'vantage_codes'
+        'vantage_codes',
+        'site_selection_strategies',
+        'survey_jobs',
+        'sample_methods'
       );
     });
   });

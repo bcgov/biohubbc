@@ -1,4 +1,4 @@
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import useRedirect from 'hooks/useRedirect';
@@ -25,6 +25,16 @@ export interface IProjectRoleRouteGuardProps extends RouteProps {
    * @type {string[]}
    */
   validProjectRoles?: string[];
+
+  /**
+   * Indicates the sufficient project permissions needed to access this route, if any.
+   *
+   * Note: The user only needs 1 of the valid roles, when multiple are specified.
+   *
+   * @type {string[]}
+   */
+  validProjectPermissions?: string[];
+
   /**
    * Indicates the sufficient system roles that will grant access to this route, if any.
    *
@@ -64,11 +74,11 @@ export const SystemRoleRouteGuard = (props: ISystemRoleRouteGuardProps) => {
  * @return {*}
  */
 export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
-  const { validSystemRoles, validProjectRoles, children, ...rest } = props;
+  const { validSystemRoles, validProjectRoles, validProjectPermissions, children, ...rest } = props;
 
   return (
     <WaitForProjectParticipantInfo>
-      <CheckIfUserHasProjectRole {...{ validSystemRoles, validProjectRoles }}>
+      <CheckIfUserHasProjectRole {...{ validSystemRoles, validProjectRoles, validProjectPermissions }}>
         <Route {...rest}>{children}</Route>
       </CheckIfUserHasProjectRole>
     </WaitForProjectParticipantInfo>
@@ -264,10 +274,14 @@ const CheckIfUserHasSystemRole = (props: ISystemRoleRouteGuardProps) => {
  * @return {*}
  */
 const CheckIfUserHasProjectRole = (props: IProjectRoleRouteGuardProps) => {
-  const { validProjectRoles, validSystemRoles, children } = props;
-  const { hasProjectRole, hasSystemRole } = useContext(ProjectAuthStateContext);
+  const { validProjectRoles, validSystemRoles, validProjectPermissions, children } = props;
+  const { hasProjectRole, hasSystemRole, hasProjectPermission } = useContext(ProjectAuthStateContext);
 
-  if (hasProjectRole(validProjectRoles) || hasSystemRole(validSystemRoles)) {
+  if (
+    hasProjectRole(validProjectRoles) ||
+    hasSystemRole(validSystemRoles) ||
+    hasProjectPermission(validProjectPermissions)
+  ) {
     return <>{children}</>;
   }
 

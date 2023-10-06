@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef } from 'react';
  * const isMounted = useIsMounted()
  *
  * callThatReturnsAPromise().then((value) => {
- *   if (isMounted()) {
+ *   if (!isMounted()) {
  *     return;
  *   }
  *   updateState(value)

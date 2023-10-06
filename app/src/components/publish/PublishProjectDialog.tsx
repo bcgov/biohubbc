@@ -1,5 +1,5 @@
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import SubmitBiohubDialog from 'components/dialog/SubmitBiohubDialog';
 import { SubmitProjectBiohubI18N } from 'constants/i18n';
 import { ProjectContext } from 'contexts/projectContext';

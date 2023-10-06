@@ -1,27 +1,11 @@
-import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
 import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
 import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
 import Dropzone, { FileRejection } from 'react-dropzone';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  dropZoneTitle: {
-    marginBottom: theme.spacing(1),
-    fontSize: '1.125rem',
-    fontWeight: 700
-  },
-  dropZoneIcon: {
-    color: theme.palette.text.primary + '55'
-  },
-  dropZoneRequirements: {
-    textAlign: 'center'
-  }
-}));
 
 const BYTES_PER_MEGABYTE = 1048576;
 
@@ -73,7 +57,6 @@ export interface IDropZoneConfigProps {
 }
 
 export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {
-  const classes = useStyles();
   const config = useContext(ConfigContext);
 
   const maxNumFiles = props.maxNumFiles || config?.MAX_UPLOAD_NUM_FILES;
@@ -92,40 +75,54 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
         {({ getRootProps, getInputProps }) => (
           <Box {...getRootProps()}>
             <input {...getInputProps()} data-testid="drop-zone-input" />
-            <Box p={2} display="flex" flexDirection="column" alignItems="center">
-              <Icon className={classes.dropZoneIcon} path={mdiTrayArrowUp} size={1.5} />
-              <Box mt={0.5} className={classes.dropZoneTitle} data-testid="dropzone-instruction-text">
+            <Box p={3} display="flex" flexDirection="column" alignItems="center">
+              <Box mb={1}>
+                <Icon path={mdiTrayArrowUp} size={1.25} />
+              </Box>
+              <Box
+                data-testid="dropzone-instruction-text"
+                mb={0.5}
+                sx={{
+                  fontSize: '1.125rem',
+                  fontWeight: 700
+                }}>
                 Drag your {(multiple && 'files') || 'file'} here, or <Link underline="always">Browse Files</Link>
               </Box>
               <Box textAlign="center">
                 {acceptedFileExtensions && (
-                  <Box>
-                    <Typography component="span" variant="subtitle2" color="textSecondary">
-                      {`Accepted files: ${acceptedFileExtensions}`}
-                    </Typography>
-                  </Box>
+                  <Typography
+                    component="span"
+                    variant="subtitle2"
+                    color="textSecondary"
+                    sx={{
+                      mx: 1
+                    }}>
+                    {`Supported files: ${acceptedFileExtensions}`}
+                  </Typography>
                 )}
                 {!!maxFileSize && maxFileSize !== Infinity && (
-                  <Box>
-                    <Typography
-                      component="span"
-                      variant="subtitle2"
-                      color="textSecondary"
-                      data-testid="dropzone-max-size-text">
-                      {`Maximum file size: ${Math.round(maxFileSize / BYTES_PER_MEGABYTE)} MB`}
-                    </Typography>
-                  </Box>
+                  <Typography
+                    component="span"
+                    variant="subtitle2"
+                    color="textSecondary"
+                    data-testid="dropzone-max-size-text"
+                    sx={{
+                      mx: 1
+                    }}>
+                    {`Maximum size: ${Math.round(maxFileSize / BYTES_PER_MEGABYTE)} MB`}
+                  </Typography>
                 )}
                 {!!maxNumFiles && (
-                  <Box>
-                    <Typography
-                      component="span"
-                      variant="subtitle2"
-                      color="textSecondary"
-                      data-testid="dropzone-max-files-text">
-                      {`Maximum files: ${maxNumFiles}`}
-                    </Typography>
-                  </Box>
+                  <Typography
+                    component="span"
+                    variant="subtitle2"
+                    color="textSecondary"
+                    data-testid="dropzone-max-files-text"
+                    sx={{
+                      mx: 1
+                    }}>
+                    {`Maximum files: ${maxNumFiles}`}
+                  </Typography>
                 )}
               </Box>
             </Box>

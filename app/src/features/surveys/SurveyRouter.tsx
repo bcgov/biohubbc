@@ -1,10 +1,14 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import ProjectsLayout from 'layouts/ProjectsLayout';
 import React from 'react';
-import { Route, Switch } from 'react-router';
+import { Redirect, Switch } from 'react-router';
+import RouteWithTitle from 'utils/RouteWithTitle';
+import { getTitle } from 'utils/Utils';
 import EditSurveyPage from './edit/EditSurveyPage';
+import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
+import { SurveyObservationPage } from './observations/SurveyObservationPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -14,21 +18,39 @@ import EditSurveyPage from './edit/EditSurveyPage';
 const SurveyRouter: React.FC = () => {
   return (
     <Switch>
-      <Route exact path="/admin/projects/:id/surveys/:survey_id/details">
+      <Redirect
+        exact
+        from="/admin/projects/:id/surveys/:survey_id"
+        to="/admin/projects/:id/surveys/:survey_id/details"
+      />
+
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/details" title={getTitle('Surveys')}>
         <ProjectsLayout>
           <SurveyPage />
         </ProjectsLayout>
-      </Route>
+      </RouteWithTitle>
 
-      <Route exact path="/admin/projects/:id/surveys/:survey_id/edit">
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/observations" title={getTitle('Observations')}>
+        <ProjectsLayout>
+          <SurveyObservationPage />
+        </ProjectsLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Sampling Sites')}>
+        <ProjectsLayout>
+          <SamplingSitePage />
+        </ProjectsLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>
         <ProjectsLayout>
           <ProjectRoleRouteGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <EditSurveyPage />
           </ProjectRoleRouteGuard>
         </ProjectsLayout>
-      </Route>
+      </RouteWithTitle>
     </Switch>
   );
 };

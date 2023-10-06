@@ -5,18 +5,11 @@ import {
   ADMINISTRATIVE_ACTIVITY_TYPE
 } from '../constants/administrative-activity';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { jsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
 
-// Defines a Zod Schema for a valid JSON value
-const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
-type Literal = z.infer<typeof literalSchema>;
-type Json = Literal | { [key: string]: Json } | Json[];
-export const JsonSchema: z.ZodType<Json> = z.lazy(() =>
-  z.union([literalSchema, z.array(JsonSchema), z.record(JsonSchema)])
-);
-
 export const IAdministrativeActivityStanding = z.object({
-  has_pending_acccess_request: z.boolean(),
+  has_pending_access_request: z.boolean(),
   has_one_or_more_project_roles: z.boolean()
 });
 
@@ -29,16 +22,16 @@ export const IAdministrativeActivity = z.object({
   status: z.number(),
   status_name: z.string(),
   description: z.string().nullable(),
-  data: JsonSchema,
+  data: jsonSchema,
   notes: z.string().nullable(),
-  create_date: z.union([z.date(), z.string()])
+  create_date: z.string()
 });
 
 export type IAdministrativeActivity = z.infer<typeof IAdministrativeActivity>;
 
 export const ICreateAdministrativeActivity = z.object({
   id: z.number(),
-  date: z.date()
+  date: z.string()
 });
 
 export type ICreateAdministrativeActivity = z.infer<typeof ICreateAdministrativeActivity>;
@@ -183,13 +176,13 @@ export class AdministrativeActivityRepository extends BaseRepository {
   }
 
   /**
-   * SQL query to count pending records in the administrative_activity table.
+   * SQL query to count pending records in the administrative_activity table for a given user GUID
    *
-   * @param {string} userIdentifier
+   * @param {string} userGUID
    * @return {*}  {(Promise<IAdministrativeActivityStanding>)}
    * @memberof AdministrativeActivityRepository
    */
-  async getAdministrativeActivityStanding(userIdentifier: string): Promise<IAdministrativeActivityStanding> {
+  async getAdministrativeActivityStanding(userGUID: string): Promise<IAdministrativeActivityStanding> {
     const sqlStatement = SQL`
       WITH
         administrative_activity_with_status
@@ -198,7 +191,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
           CASE
             WHEN COUNT(*) > 0 THEN TRUE
             ELSE FALSE
-          END AS has_pending_acccess_request
+          END AS has_pending_access_request
         FROM
           administrative_activity aa
         LEFT OUTER JOIN
@@ -206,7 +199,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         ON
           aa.administrative_activity_status_type_id = aast.administrative_activity_status_type_id
         WHERE
-          (aa.data -> 'username')::text =  '"' || ${userIdentifier} || '"'
+            (aa.data -> 'userGuid')::text =  '"' || ${userGUID} || '"'
         AND
           aast.name = 'Pending'
       ),
@@ -224,7 +217,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         ON
           pp.system_user_id = su.system_user_id 
         WHERE
-          su.user_identifier = ${userIdentifier}
+          su.user_guid = ${userGUID}
       ) SELECT
         *
       FROM

@@ -35,6 +35,8 @@ const apiDeploy = async (settings) => {
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
         BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,
         BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
+        BCTW_API_HOST: phases[phase].bctwApiHost,
+        CB_API_HOST: phases[phase].critterbaseApiHost,
         NODE_ENV: phases[phase].env || 'dev',
         ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
         ELASTICSEARCH_TAXONOMY_INDEX: phases[phase].elasticsearchTaxonomyIndex,

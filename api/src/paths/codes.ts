@@ -19,6 +19,26 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            required: [
+              'management_action_type',
+              'first_nations',
+              'agency',
+              'investment_action_category',
+              'type',
+              'iucn_conservation_action_level_1_classification',
+              'iucn_conservation_action_level_2_subclassification',
+              'iucn_conservation_action_level_3_subclassification',
+              'program',
+              'proprietor_type',
+              'system_roles',
+              'project_roles',
+              'administrative_activity_status_type',
+              'field_methods',
+              'ecological_seasons',
+              'intended_outcomes',
+              'vantage_codes',
+              'site_selection_strategies'
+            ],
             properties: {
               management_action_type: {
                 type: 'array',
@@ -48,7 +68,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              funding_source: {
+              agency: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -70,7 +90,7 @@ GET.apiDoc = {
                     id: {
                       type: 'number'
                     },
-                    fs_id: {
+                    agency_id: {
                       type: 'number'
                     },
                     name: {
@@ -79,8 +99,9 @@ GET.apiDoc = {
                   }
                 }
               },
-              project_activity: {
+              type: {
                 type: 'array',
+                description: 'Types of surveys',
                 items: {
                   type: 'object',
                   properties: {
@@ -93,35 +114,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              project_type: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              coordinator_agency: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              region: {
+              project_program: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -242,7 +235,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              regional_offices: {
+              survey_jobs: {
                 type: 'array',
                 items: {
                   type: 'object',
@@ -313,6 +306,34 @@ GET.apiDoc = {
                 }
               },
               vantage_codes: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              site_selection_strategies: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              sample_methods: {
                 type: 'array',
                 items: {
                   type: 'object',

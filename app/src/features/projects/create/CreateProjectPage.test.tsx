@@ -1,16 +1,18 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
-import { ProjectFundingFormInitialValues } from 'features/projects/components/ProjectFundingForm';
 import { ProjectIUCNFormInitialValues } from 'features/projects/components/ProjectIUCNForm';
 import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
-import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
-import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IDraftResponse } from 'interfaces/useDraftApi.interface';
+import { ICreateProjectResponse } from 'interfaces/useProjectApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import {
@@ -21,6 +23,7 @@ import {
   render,
   waitFor
 } from 'test-helpers/test-utils';
+import { AddProjectParticipantsFormInitialValues } from '../participants/AddProjectParticipantsForm';
 
 const history = createMemoryHistory();
 
@@ -29,13 +32,22 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   draft: {
-    createDraft: jest.fn<Promise<object>, []>(),
-    updateDraft: jest.fn<Promise<object>, []>(),
+    createDraft: jest.fn<Promise<IDraftResponse>, []>(),
+    updateDraft: jest.fn<Promise<IDraftResponse>, []>(),
     deleteDraft: jest.fn(),
     getDraft: jest.fn()
   },
-  external: {
-    post: jest.fn<Promise<{ features?: Feature[] }>, []>()
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
+  },
+  codes: {
+    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+  },
+  project: {
+    createProject: jest.fn<Promise<ICreateProjectResponse>, []>()
+  },
+  user: {
+    searchSystemUser: jest.fn<Promise<ISystemUser[]>, []>()
   }
 };
 
@@ -64,6 +76,16 @@ describe('CreateProjectPage', () => {
     mockUseApi.draft.createDraft.mockClear();
     mockUseApi.draft.updateDraft.mockClear();
     mockUseApi.draft.getDraft.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+    mockUseApi.codes.getAllCodeSets.mockClear();
+    mockUseApi.project.createProject.mockClear();
+    mockUseApi.user.searchSystemUser.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
+
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -73,34 +95,21 @@ describe('CreateProjectPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockUseApi.external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
-
     const { getByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Create Project')).toBeVisible();
+      expect(getByText('Create New Project')).toBeVisible();
 
       expect(getByText('General Information')).toBeVisible();
 
-      expect(getByText('Project Coordinator')).toBeVisible();
-
-      expect(getByText('Funding and Partnerships')).toBeVisible();
-
-      expect(getByText('Location and Boundary')).toBeVisible();
+      // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined
+      // expect(getByText('Location and Boundary')).toBeVisible();
     });
   });
 
   it('shows the page title', async () => {
     const { findByText } = renderContainer();
-    const PageTitle = await findByText('Create Project');
+    const PageTitle = await findByText('Create New Project');
 
     expect(PageTitle).toBeVisible();
   });
@@ -114,8 +123,10 @@ describe('CreateProjectPage', () => {
       const BackToProjectsButton = await findAllByText('Cancel');
 
       fireEvent.click(BackToProjectsButton[0]);
-      const AreYouSureTitle = await findByText('Cancel Project Creation');
-      const AreYouSureText = await findByText('Are you sure you want to cancel?', { exact: false });
+      const AreYouSureTitle = await findByText('Discard changes and exit?');
+      const AreYouSureText = await findByText('Any changes you have made will not be saved. Do you want to proceed?', {
+        exact: false
+      });
       const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
 
       expect(AreYouSureTitle).toBeVisible();
@@ -165,19 +176,10 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-            funding: ProjectFundingFormInitialValues.funding,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+            iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
@@ -199,19 +201,10 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-            funding: ProjectFundingFormInitialValues.funding,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+            iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
@@ -228,7 +221,11 @@ describe('CreateProjectPage', () => {
         fireEvent.click(deleteButton[0]);
 
         await waitFor(() => {
-          expect(getByText('Are you sure you want to delete this draft?', { exact: false })).toBeInTheDocument();
+          expect(
+            getByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.', {
+              exact: false
+            })
+          ).toBeInTheDocument();
         });
       });
 
@@ -237,19 +234,10 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-            funding: ProjectFundingFormInitialValues.funding,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+            iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
@@ -266,14 +254,18 @@ describe('CreateProjectPage', () => {
         fireEvent.click(deleteButton[0]);
 
         await waitFor(() => {
-          expect(getByText('Are you sure you want to delete this draft?')).toBeInTheDocument();
+          expect(
+            getByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.')
+          ).toBeInTheDocument();
         });
 
         const NoButton = await getByTestId('no-button');
         fireEvent.click(NoButton);
 
         await waitFor(() => {
-          expect(queryByText('Are you sure you want to delete this draft?')).not.toBeInTheDocument();
+          expect(
+            queryByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.')
+          ).not.toBeInTheDocument();
         });
       });
 
@@ -282,19 +274,10 @@ describe('CreateProjectPage', () => {
           id: 1,
           name: 'My draft',
           data: {
-            coordinator: {
-              first_name: 'Draft first name',
-              last_name: 'Draft last name',
-              email_address: 'draftemail@example.com',
-              coordinator_agency: '',
-              share_contact_details: 'false'
-            },
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
             location: ProjectLocationFormInitialValues.location,
-            iucn: ProjectIUCNFormInitialValues.iucn,
-            funding: ProjectFundingFormInitialValues.funding,
-            partnerships: ProjectPartnershipsFormInitialValues.partnerships
+            iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
 
@@ -311,7 +294,9 @@ describe('CreateProjectPage', () => {
         fireEvent.click(deleteButton[0]);
 
         await waitFor(() => {
-          expect(getByText('Are you sure you want to delete this draft?')).toBeInTheDocument();
+          expect(
+            getByText('Are you sure you want to permanently delete this draft project? This action cannot be undone.')
+          ).toBeInTheDocument();
         });
 
         const YesButton = await getByTestId('yes-button');
@@ -328,19 +313,13 @@ describe('CreateProjectPage', () => {
         id: 1,
         name: 'My draft',
         data: {
-          coordinator: {
-            first_name: 'Draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
+          project: {
+            ...ProjectDetailsFormInitialValues.project,
+            project_name: 'Test name'
           },
-          project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
-          iucn: ProjectIUCNFormInitialValues.iucn,
-          funding: ProjectFundingFormInitialValues.funding,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          iucn: ProjectIUCNFormInitialValues.iucn
         }
       });
 
@@ -353,9 +332,7 @@ describe('CreateProjectPage', () => {
       );
 
       await waitFor(() => {
-        expect(getByDisplayValue('Draft first name', { exact: false })).toBeInTheDocument();
-        expect(getByDisplayValue('Draft last name', { exact: false })).toBeInTheDocument();
-        expect(getByDisplayValue('draftemail@example.com', { exact: false })).toBeInTheDocument();
+        expect(getByDisplayValue('Test name', { exact: false })).toBeInTheDocument();
       });
     });
 
@@ -395,8 +372,9 @@ describe('CreateProjectPage', () => {
       history.push('/admin/projects/create');
 
       mockUseApi.draft.createDraft.mockResolvedValue({
-        id: 1,
-        date: '2021-01-20'
+        webform_draft_id: 1,
+        create_date: '2021-01-20',
+        update_date: ''
       });
 
       const { getByTestId } = renderContainer();
@@ -415,7 +393,6 @@ describe('CreateProjectPage', () => {
 
       await waitFor(() => {
         expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
-
         expect(history.location.pathname).toEqual('/admin/projects');
       });
     });
@@ -427,25 +404,18 @@ describe('CreateProjectPage', () => {
         id: 1,
         name: 'My draft',
         data: {
-          coordinator: {
-            first_name: 'Draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          funding: ProjectFundingFormInitialValues.funding,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          participants: AddProjectParticipantsFormInitialValues.participants
         }
       });
 
       mockUseApi.draft.updateDraft.mockResolvedValue({
-        id: 1,
-        date: '2021-01-20'
+        webform_draft_id: 1,
+        create_date: '2021-01-20',
+        update_date: '2023-06-29'
       });
 
       const { getByText, getByTestId } = renderContainer();
@@ -478,8 +448,9 @@ describe('CreateProjectPage', () => {
       history.push('/admin/projects/create');
 
       mockUseApi.draft.createDraft.mockResolvedValue({
-        id: 1,
-        date: '2021-01-20'
+        webform_draft_id: 1,
+        create_date: '2021-01-20',
+        update_date: '2021-01-20'
       });
 
       const { getByText, getByTestId, getByLabelText } = renderContainer();
@@ -489,8 +460,9 @@ describe('CreateProjectPage', () => {
         expect(getByText('General Information')).toBeVisible();
       });
 
-      // update first name field
-      fireEvent.change(getByLabelText('First Name *'), { target: { value: 'draft first name' } });
+      // update project name and objectives
+      fireEvent.change(getByLabelText('Project Name *'), { target: { value: 'draft project name' } });
+      fireEvent.change(getByLabelText('Objectives *'), { target: { value: 'Draft objectives' } });
 
       const saveDraftButton = await getByTestId('save-draft-button');
 
@@ -506,25 +478,20 @@ describe('CreateProjectPage', () => {
 
       await waitFor(() => {
         expect(mockUseApi.draft.createDraft).toHaveBeenCalledWith('draft name', {
-          coordinator: {
-            first_name: 'draft first name',
-            last_name: '',
-            email_address: '',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: {
-            project_name: '',
-            project_type: '' as unknown as number,
-            project_activities: [],
+            project_name: 'draft project name',
+            project_programs: [],
             start_date: '',
             end_date: ''
           },
-          objectives: { objectives: '' },
+          objectives: { objectives: 'Draft objectives' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
-          funding: { fundingSources: [] },
-          partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
+          participants: [
+            {
+              project_role_names: ['Coordinator']
+            }
+          ]
         });
 
         expect(history.location.pathname).toEqual('/admin/projects');
@@ -538,25 +505,18 @@ describe('CreateProjectPage', () => {
         id: 1,
         name: 'My draft',
         data: {
-          coordinator: {
-            first_name: 'Draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
           location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
-          funding: ProjectFundingFormInitialValues.funding,
-          partnerships: ProjectPartnershipsFormInitialValues.partnerships
+          participants: AddProjectParticipantsFormInitialValues.participants
         }
       });
 
       mockUseApi.draft.updateDraft.mockResolvedValue({
-        id: 1,
-        date: '2021-01-20'
+        webform_draft_id: 1,
+        create_date: '2021-01-20',
+        update_date: '2021-01-20'
       });
 
       const { getByTestId, getByText, getByLabelText } = renderContainer();
@@ -566,8 +526,8 @@ describe('CreateProjectPage', () => {
         expect(getByText('General Information')).toBeVisible();
       });
 
-      // update project name field
-      fireEvent.change(getByLabelText('First Name *'), { target: { value: 'my new draft first name' } });
+      // update project objectives field
+      fireEvent.change(getByLabelText('Objectives *'), { target: { value: 'my new Draft objectives' } });
 
       const saveDraftButton = await getByTestId('save-draft-button');
 
@@ -583,25 +543,24 @@ describe('CreateProjectPage', () => {
 
       await waitFor(() => {
         expect(mockUseApi.draft.updateDraft).toHaveBeenCalledWith(1, 'my new draft project name', {
-          coordinator: {
-            first_name: 'my new draft first name',
-            last_name: 'Draft last name',
-            email_address: 'draftemail@example.com',
-            coordinator_agency: '',
-            share_contact_details: 'false'
-          },
           project: {
             project_name: '',
-            project_type: '' as unknown as number,
-            project_activities: [],
+            project_programs: [],
             start_date: '',
             end_date: ''
           },
-          objectives: { objectives: '' },
+          objectives: { objectives: 'my new Draft objectives' },
           location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
-          funding: { fundingSources: [] },
-          partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
+          participants: [
+            {
+              displayName: '',
+              email: '',
+              identitySource: '',
+              roleId: '',
+              userIdentifier: ''
+            }
+          ]
         });
 
         expect(history.location.pathname).toEqual('/admin/projects');

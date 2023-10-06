@@ -1,14 +1,3 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
 import {
   mdiArrowLeft,
   mdiCalendarRangeOutline,
@@ -18,12 +7,23 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PublishSurveyDialog from 'components/publish/PublishSurveyDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -100,7 +100,7 @@ const SurveyHeader = () => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary', variant: 'outlined' },
       noButtonLabel: 'Cancel',
@@ -129,7 +129,7 @@ const SurveyHeader = () => {
       }
       projectContext.surveysListDataLoader.refresh(projectContext.projectId);
 
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys`);
+      history.push(`/admin/projects/${surveyContext.projectId}`);
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogText: apiError.message, open: true });
@@ -191,18 +191,31 @@ const SurveyHeader = () => {
                 </Box>
               </Box>
               <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
+                <Button
+                  title="Submit Survey Data and Documents"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => history.push('observations')}
+                  sx={{
+                    minWidth: 7,
+                    marginRight: 1
+                  }}>
+                  Manage Observations
+                </Button>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button
                     title="Submit Survey Data and Documents"
                     color="primary"
                     variant="contained"
                     onClick={() => setPublishSurveyDialogOpen(true)}
-                    style={{ minWidth: '8rem' }}>
-                    <strong>Submit</strong>
+                    sx={{
+                      minWidth: '7rem'
+                    }}>
+                    Submit
                   </Button>
                 </SystemRoleGuard>
                 <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button
                     id="survey_settings_button"
@@ -232,7 +245,6 @@ const SurveyHeader = () => {
                   }}
                   keepMounted
                   anchorEl={menuAnchorEl}
-                  getContentAnchorEl={null}
                   open={Boolean(menuAnchorEl)}
                   onClose={() => setMenuAnchorEl(null)}>
                   <MenuItem onClick={() => history.push('edit')}>

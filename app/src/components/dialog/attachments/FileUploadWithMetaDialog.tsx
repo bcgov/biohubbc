@@ -1,12 +1,12 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import useTheme from '@material-ui/core/styles/useTheme';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { LoadingButton } from '@mui/lab';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import useTheme from '@mui/material/styles/useTheme';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
-import LoadingButton from 'components/buttons/LoadingButton';
 import { IFileHandler, IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { AttachmentType } from 'constants/attachments';
 import { Formik, FormikProps } from 'formik';
@@ -34,10 +34,10 @@ export interface IFileUploadWithMetaDialogProps {
   /**
    * The type of attachment.
    *
-   * @type {('Report' | 'Other')}
+   * @type {('Report' | 'KeyX' | 'Other')}
    * @memberof IFileUploadWithMetaDialogProps
    */
-  attachmentType: AttachmentType.REPORT | AttachmentType.OTHER;
+  attachmentType: AttachmentType.REPORT | AttachmentType.KEYX | AttachmentType.OTHER;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *

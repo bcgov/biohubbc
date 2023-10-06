@@ -2,6 +2,7 @@ import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
 import { Feature, Polygon } from 'geojson';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { LatLngBounds } from 'leaflet';
 import _ from 'lodash';
 import moment from 'moment';
@@ -62,15 +63,15 @@ export const getTitle = (pageName?: string) => {
  * Formats a date range into a formatted string.
  *
  * @param {DATE_FORMAT} dateFormat
- * @param {string} startDate ISO 8601 date string
- * @param {string} [endDate] ISO 8601 date string
+ * @param {(string | null)} [startDate] ISO 8601 date string
+ * @param {(string | null)} [endDate] ISO 8601 date string
  * @param {string} [dateSeparator='-'] specify date range separator
  * @return {string} formatted date string, or an empty string if unable to parse the startDate and/or endDate
  */
 export const getFormattedDateRangeString = (
   dateFormat: DATE_FORMAT,
-  startDate?: string,
-  endDate?: string,
+  startDate?: string | null,
+  endDate?: string | null,
   dateSeparator = '-'
 ): string => {
   const startDateFormatted = getFormattedDate(dateFormat, startDate ?? '');
@@ -127,20 +128,27 @@ export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string 
 /**
  * Get a formatted amount string.
  *
- * @param {number} amount
+ * @param {number} [amount]
+ * @param {{ minimumFractionDigits: number; maximumFractionDigits: number }} [options]
  * @return {string} formatted amount string (rounded to the nearest integer), or an empty string if unable to parse the amount
  */
-export const getFormattedAmount = (amount?: number): string => {
+export const getFormattedAmount = (
+  amount?: number,
+  options?: {
+    minimumFractionDigits?: number;
+    maximumFractionDigits?: number;
+  }
+): string => {
   if (!amount && amount !== 0) {
     //amount was invalid
     return '';
   }
 
-  const formatter = new Intl.NumberFormat('en-US', {
+  const formatter = new Intl.NumberFormat('en-CA', {
     style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    currency: 'CAD',
+    minimumFractionDigits: options?.minimumFractionDigits ?? 0,
+    maximumFractionDigits: options?.maximumFractionDigits ?? 0
   });
 
   return formatter.format(amount);
@@ -264,6 +272,9 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
     case SYSTEM_IDENTITY_SOURCE.IDIR:
       return 'IDIR';
 
+    case SYSTEM_IDENTITY_SOURCE.DATABASE:
+      return 'System';
+
     default:
       return null;
   }
@@ -278,4 +289,73 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
  */
 export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], property: string) => {
   return _.sortBy(data, property);
+};
+
+/**
+ * Coerce a potentially invalid number towards zero.
+ * @param n a potentially NaN number
+ * @returns n if a number, 0 otherwise
+ */
+export const coerceZero = (n: any): number => (isNaN(n ?? NaN) ? 0 : Number(n));
+
+/**
+ * Format a field name in a way that's appropriate for a UI label
+ * ie. format_field_name -> Format Field Name
+ * @param str format_field_name
+ * @returns Format Field Name
+ */
+export const formatLabel = (str: string): string => {
+  return str
+    .split('_')
+    .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
+    .join(' ');
+};
+
+export const datesSameNullable = (date1: string | undefined, date2: string | undefined): boolean => {
+  if (date1 == null && date2 == null) {
+    return true;
+  } else {
+    return moment(date1).isSame(moment(date2));
+  }
+};
+
+/**
+ * Pluralizes a word.
+ *
+ * @example p(2, 'apple'); // => 'apples'
+ * @example p(null, 'orange'); // => 'oranges'
+ * @example p(1, 'banana'); // => 'banana'
+ * @example p(10, 'berr', 'y', 'ies'); // => 'berries'
+ *
+ * @param quantity The quantity used to infer plural or singular
+ * @param word The word to pluralize
+ * @param {[string]} singularSuffix The suffix used for a singular item
+ * @param {[string]} pluralSuffix The suffix used for plural items
+ * @returns
+ */
+export const pluralize = (quantity: number, word: string, singularSuffix = '', pluralSuffix = 's') => {
+  return `${word}${quantity === 1 ? singularSuffix : pluralSuffix}`;
+};
+
+/**
+ * Search through the Codes Response object for a given key (type of code)
+ * for a particular codes (based on id) name.
+ *
+ * @param codes The Codes to search for
+ * @param key Key word to access a code set
+ * @param id ID of the code to find
+ * @returns Name associated with the code
+ */
+export const getCodesName = (
+  codes: IGetAllCodeSetsResponse | undefined,
+  key: keyof IGetAllCodeSetsResponse,
+  id: number
+): string | undefined => {
+  let name: string | undefined = undefined;
+  if (codes) {
+    const values: any = codes[key];
+    const code = values.find((item: any) => item.id === id);
+    name = code?.name;
+  }
+  return name;
 };

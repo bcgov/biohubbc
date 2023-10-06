@@ -1,9 +1,9 @@
-import Button, { ButtonProps } from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button, { ButtonProps } from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import React, { ReactNode } from 'react';
 
 export interface IYesNoDialogProps {
@@ -85,6 +85,14 @@ export interface IYesNoDialogProps {
    * @memberof IYesNoDialogProps
    */
   noButtonProps?: Partial<ButtonProps>;
+
+  /**
+   * Optional Boolean to state if button should be loading
+   *
+   * @type {boolean}
+   * @memberof IYesNoDialogProps
+   */
+  isLoading?: boolean;
 }
 
 /**
@@ -118,6 +126,9 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
           onClick={props.onYes}
           color="primary"
           variant="contained"
+          sx={{
+            fontWeight: 700
+          }}
           {...props.yesButtonProps}>
           {props.yesButtonLabel ? props.yesButtonLabel : 'Yes'}
         </Button>

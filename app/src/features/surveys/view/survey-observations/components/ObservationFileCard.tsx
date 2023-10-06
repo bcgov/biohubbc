@@ -1,11 +1,3 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import {
   mdiDotsVertical,
   mdiFileAlertOutline,
@@ -16,12 +8,21 @@ import {
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { PublishStatus } from 'constants/attachments';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useState } from 'react';
@@ -191,7 +192,8 @@ const ObservationFileCard = (props: IObservationFileCardProps) => {
                 )}
                 {status === PublishStatus.SUBMITTED && (
                   <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                    <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+                    <ProjectRoleGuard
+                      validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}>
                       <MenuItem
                         onClick={() => {
                           setOpenRemoveOrResubmitDialog(true);

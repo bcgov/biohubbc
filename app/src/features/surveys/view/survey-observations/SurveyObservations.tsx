@@ -1,8 +1,8 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -12,12 +12,12 @@ import { PublishStatus } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
 import { IUploadObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import LoadingObservationsCard from './components/LoadingObservationsCard';
-import NoObservationsCard from './components/NoObservationsCard';
 import ObservationFileCard from './components/ObservationFileCard';
 import ObservationMessagesCard from './components/ObservationMessagesCard';
 import ValidatingObservationsCard from './components/ValidatingObservationsCard';
@@ -118,7 +118,7 @@ const SurveyObservations: React.FC = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Observations?',
       dialogText: 'Are you sure you want to delete observation data from this survey? This action cannot be undone.',
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary' },
       noButtonLabel: 'Cancel',
@@ -179,6 +179,7 @@ const SurveyObservations: React.FC = () => {
           if (
             HasProjectOrSystemRole({
               validProjectRoles: [],
+              validProjectPermissions: [],
               validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
             }) ||
             occurrenceSubmissionPublishStatus !== PublishStatus.SUBMITTED
@@ -196,7 +197,7 @@ const SurveyObservations: React.FC = () => {
 
         {/* Submission data has finished loading, but is null, no submission to display */}
         {!surveyContext.observationDataLoader.data && surveyContext.observationDataLoader.isReady && (
-          <NoObservationsCard />
+          <NoSurveySectionData text={'No Observations'} paperVariant={'outlined'} />
         )}
 
         {/* Submission data exists, validation is running */}

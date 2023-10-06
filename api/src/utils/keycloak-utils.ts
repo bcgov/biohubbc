@@ -1,4 +1,4 @@
-import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 
 /**
  * Parses out the user's GUID from a keycloak token, which is extracted from the
@@ -6,10 +6,10 @@ import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
  *
  * @example getUserGuid({ preferred_username: 'aaabbaaa@idir' }) // => 'aaabbaaa'
  *
- * @param {Record<string, any>} keycloakToken
+ * @param {object} keycloakToken
  * @return {*} {(string | null)}
  */
-export const getUserGuid = (keycloakToken: Record<string, any>): string | null => {
+export const getUserGuid = (keycloakToken: object): string | null => {
   const userIdentifier = keycloakToken?.['preferred_username']?.split('@')?.[0];
 
   if (!userIdentifier) {
@@ -27,10 +27,10 @@ export const getUserGuid = (keycloakToken: Record<string, any>): string | null =
  * @example getUserIdentitySource({ ...token, identity_provider: 'bceidbasic' }) => SYSTEM_IDENTITY_SOURCE.BCEID_BASIC
  * @example getUserIdentitySource({ preferred_username: 'aaaa@idir' }) => SYSTEM_IDENTITY_SOURCE.IDIR
  *
- * @param {Record<string, any>} keycloakToken
+ * @param {object} keycloakToken
  * @return {*} {SYSTEM_IDENTITY_SOURCE}
  */
-export const getUserIdentitySource = (keycloakToken: Record<string, any>): SYSTEM_IDENTITY_SOURCE => {
+export const getUserIdentitySource = (keycloakToken: object): SYSTEM_IDENTITY_SOURCE => {
   const userIdentitySource: string =
     keycloakToken?.['identity_provider'] || keycloakToken?.['preferred_username']?.split('@')?.[1];
 
@@ -75,16 +75,38 @@ export const coerceUserIdentitySource = (userIdentitySource: string | null): SYS
  *
  * @example getUserIdentifier({ ....token, bceid_username: 'jsmith@idir' }) => 'jsmith'
  *
- * @param {Record<string, any>} keycloakToken
+ * @param {object} keycloakToken
  * @return {*} {(string | null)}
  */
-export const getUserIdentifier = (keycloakToken: Record<string, any>): string | null => {
-  const userIdentifier =
-    keycloakToken?.['idir_username'] || keycloakToken?.['bceid_username'] || keycloakToken?.['sims_system_username'];
+export const getUserIdentifier = (keycloakToken: object): string | null => {
+  const userIdentifier = keycloakToken?.['idir_username'] || keycloakToken?.['bceid_username'];
 
   if (!userIdentifier) {
     return null;
   }
 
   return userIdentifier;
+};
+
+/**
+ * Parses out the `clientId` and `azp` fields from the token and maps them to a known `SOURCE_SYSTEM`, or null if no
+ * match is found.
+ *
+ * @param {object} keycloakToken
+ * @return {*}  {(SOURCE_SYSTEM | null)}
+ */
+export const getKeycloakSource = (keycloakToken: object): SOURCE_SYSTEM | null => {
+  const clientId = keycloakToken?.['clientId']?.toUpperCase();
+
+  const azp = keycloakToken?.['azp']?.toUpperCase();
+
+  if (!clientId && !azp) {
+    return null;
+  }
+
+  if ([clientId, azp].includes(SOURCE_SYSTEM['SIMS-SVC-4464'])) {
+    return SOURCE_SYSTEM['SIMS-SVC-4464'];
+  }
+
+  return null;
 };

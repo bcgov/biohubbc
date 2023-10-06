@@ -1,13 +1,13 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
 import { mdiArrowLeft, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { useCallback, useContext } from 'react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
 import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
@@ -15,7 +15,7 @@ import { SystemUserI18N } from '../../../constants/i18n';
 import { DialogContext } from '../../../contexts/dialogContext';
 import { APIError } from '../../../hooks/api/useAxios';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
+import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectTitleContainer: {
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IUsersHeaderProps {
-  userDetails: IGetUserResponse;
+  userDetails: ISystemUser;
 }
 
 const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
@@ -48,15 +48,21 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
 
-  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
-  };
+  const defaultErrorDialogProps: Partial<IErrorDialogProps> = useMemo(
+    () => ({
+      onClose: () => dialogContext.setErrorDialog({ open: false }),
+      onOk: () => dialogContext.setErrorDialog({ open: false })
+    }),
+    [dialogContext]
+  );
 
-  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false })
-  };
+  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = useMemo(
+    () => ({
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      onNo: () => dialogContext.setYesNoDialog({ open: false })
+    }),
+    [dialogContext]
+  );
 
   const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
     dialogContext.setYesNoDialog({
@@ -77,12 +83,12 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     [defaultErrorDialogProps, dialogContext]
   );
 
-  const deActivateSystemUser = async (user: IGetUserResponse) => {
-    if (!user?.id) {
+  const deActivateSystemUser = async (user: ISystemUser) => {
+    if (!user?.system_user_id) {
       return;
     }
     try {
-      await biohubApi.user.deleteSystemUser(user.id);
+      await biohubApi.user.deleteSystemUser(user.system_user_id);
 
       dialogContext.setSnackbar({
         snackbarMessage: (
@@ -137,23 +143,20 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
               <Button
                 title="Remove User"
                 variant="outlined"
-                startIcon={<Icon path={mdiTrashCanOutline} size={0.8} />}
+                startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
                 data-testid={'remove-user-button'}
                 onClick={() =>
                   openYesNoDialog({
                     dialogTitle: SystemUserI18N.removeSystemUserTitle,
                     dialogContent: (
-                      <>
-                        <Typography variant="body1" color="textPrimary">
-                          Removing this user <strong>{userDetails.user_identifier}</strong> will revoke their access to
-                          all projects.
-                        </Typography>
-                        <Typography variant="body1" color="textPrimary">
-                          Are you sure you want to proceed?
-                        </Typography>
-                      </>
+                      <Typography variant="body1" color="textSecondary">
+                        Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to all
+                        projects. Are you sure you want to proceed?
+                      </Typography>
                     ),
-                    yesButtonProps: { color: 'secondary' },
+                    yesButtonProps: { color: 'error' },
+                    yesButtonLabel: 'Remove',
+                    noButtonLabel: 'Cancel',
                     onYes: () => {
                       deActivateSystemUser(userDetails);
                       dialogContext.setYesNoDialog({ open: false });

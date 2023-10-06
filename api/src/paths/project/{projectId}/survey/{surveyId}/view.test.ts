@@ -24,8 +24,7 @@ describe('survey/{surveyId}/view', () => {
               survey_name: 'name',
               start_date: '2020-04-04',
               end_date: '2020-05-05',
-              biologist_first_name: 'first',
-              biologist_last_name: 'last',
+              survey_types: [1, 2],
               revision_count: 1
             },
             species: {
@@ -38,17 +37,7 @@ describe('survey/{surveyId}/view', () => {
               permit_number: '123',
               permit_type: 'type'
             },
-            funding: {
-              funding_sources: [
-                {
-                  pfs_id: 1,
-                  agency_name: 'name',
-                  funding_amount: 100,
-                  funding_start_date: '2020-04-04',
-                  funding_end_date: '2020-05-05'
-                }
-              ]
-            },
+            funding_sources: [],
             purpose_and_methodology: {
               field_method_id: 1,
               additional_details: 'details',
@@ -67,9 +56,24 @@ describe('survey/{surveyId}/view', () => {
               proprietor_type_id: 2,
               proprietor_type_name: 'name'
             },
-            location: {
-              survey_area_name: 'location',
-              geometry: []
+            partnerships: {
+              indigenous_partnerships: [],
+              stakeholder_partnerships: []
+            },
+            locations: [
+              {
+                survey_location_id: 1,
+                name: 'location name',
+                description: 'location description',
+                geometry: '',
+                geography: '',
+                geojson: [],
+                revision_count: 0
+              }
+            ],
+            site_selection: {
+              strategies: ['strat1'],
+              stratums: [{ name: 'startum1', description: 'desc' }]
             }
           },
           surveySupplementaryData: {
@@ -99,8 +103,7 @@ describe('survey/{surveyId}/view', () => {
               survey_name: 'name',
               start_date: '2020-04-04',
               end_date: '2020-05-05',
-              biologist_first_name: 'first',
-              biologist_last_name: 'last',
+              survey_types: [1, 2],
               revision_count: 1
             },
             species: {
@@ -113,17 +116,7 @@ describe('survey/{surveyId}/view', () => {
               permit_number: null,
               permit_type: null
             },
-            funding: {
-              funding_sources: [
-                {
-                  pfs_id: null,
-                  agency_name: null,
-                  funding_amount: null,
-                  funding_start_date: null,
-                  funding_end_date: null
-                }
-              ]
-            },
+            funding_sources: [],
             purpose_and_methodology: {
               field_method_id: 1,
               additional_details: null,
@@ -134,9 +127,24 @@ describe('survey/{surveyId}/view', () => {
               revision_count: 0
             },
             proprietor: null,
-            location: {
-              survey_area_name: 'location',
-              geometry: []
+            partnerships: {
+              indigenous_partnerships: [],
+              stakeholder_partnerships: []
+            },
+            locations: [
+              {
+                survey_location_id: 1,
+                name: 'location name',
+                description: 'location description',
+                geometry: null,
+                geography: '',
+                geojson: [],
+                revision_count: 0
+              }
+            ],
+            site_selection: {
+              strategies: ['strat1'],
+              stratums: [{ name: 'startum1', description: null }]
             }
           },
           surveySupplementaryData: {
@@ -167,9 +175,9 @@ describe('survey/{surveyId}/view', () => {
         survey_metadata_publish: {
           survey_metadata_publish_id: 1,
           survey_id: 1,
-          event_timestamp: new Date('2020-04-04'),
+          event_timestamp: '2020-04-04',
           queue_id: 1,
-          create_date: new Date('2020-04-04'),
+          create_date: '2020-04-04',
           create_user: 1,
           update_date: null,
           update_user: null,
@@ -203,9 +211,9 @@ describe('survey/{surveyId}/view', () => {
           survey_metadata_publish: {
             survey_metadata_publish_id: 1,
             survey_id: 1,
-            event_timestamp: new Date('2020-04-04'),
+            event_timestamp: '2020-04-04',
             queue_id: 1,
-            create_date: new Date('2020-04-04'),
+            create_date: '2020-04-04',
             create_user: 1,
             update_date: null,
             update_user: null,

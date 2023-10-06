@@ -1,9 +1,9 @@
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import { geoJsonFeature } from 'test-helpers/spatial-helpers';
 import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import SurveyStudyArea from './SurveyStudyArea';
@@ -16,21 +16,21 @@ const mockUseApi = {
     getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, []>(),
     updateSurvey: jest.fn()
   },
-  external: {
-    post: jest.fn()
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
 describe('SurveyStudyArea', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.external.post.mockResolvedValue({
-      features: []
-    });
-
     mockUseApi.survey.getSurveyForView.mockClear();
     mockUseApi.survey.updateSurvey.mockClear();
-    mockUseApi.external.post.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -71,7 +71,7 @@ describe('SurveyStudyArea', () => {
           ...getSurveyForViewResponse,
           surveyData: {
             ...getSurveyForViewResponse.surveyData,
-            survey_details: { ...getSurveyForViewResponse.surveyData.survey_details, geometry: [] }
+            survey_details: { ...getSurveyForViewResponse.surveyData.survey_details, geojson: [] }
           }
         }
       } as DataLoader<any, any, any>;
@@ -95,7 +95,7 @@ describe('SurveyStudyArea', () => {
 
       await waitFor(() => {
         expect(container).toBeVisible();
-        expect(queryByTestId('survey_map_center_button')).not.toBeInTheDocument();
+        expect(queryByTestId('survey_map_center_button')).toBeInTheDocument();
       });
     });
 
@@ -138,6 +138,7 @@ describe('SurveyStudyArea', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
@@ -185,31 +186,35 @@ describe('SurveyStudyArea', () => {
 
     await waitFor(() => {
       expect(mockUseApi.survey.updateSurvey).toBeCalledWith(1, getSurveyForViewResponse.surveyData.survey_details.id, {
-        location: {
-          geometry: [
-            {
-              geometry: {
-                coordinates: [
-                  [
-                    [-128, 55],
-                    [-128, 55.5],
-                    [-128, 56],
-                    [-126, 58],
-                    [-128, 55]
-                  ]
-                ],
-                type: 'Polygon'
-              },
-              id: 'myGeo',
-              properties: {
-                name: 'Biohub Islands'
-              },
-              type: 'Feature'
-            }
-          ],
-          revision_count: 0,
-          survey_area_name: 'study area'
-        }
+        locations: [
+          {
+            survey_location_id: 1,
+            geojson: [
+              {
+                geometry: {
+                  coordinates: [
+                    [
+                      [-128, 55],
+                      [-128, 55.5],
+                      [-128, 56],
+                      [-126, 58],
+                      [-128, 55]
+                    ]
+                  ],
+                  type: 'Polygon'
+                },
+                id: 'myGeo',
+                properties: {
+                  name: 'Biohub Islands'
+                },
+                type: 'Feature'
+              }
+            ],
+            revision_count: 0,
+            name: 'study area',
+            description: 'study area description'
+          }
+        ]
       });
     });
   });
@@ -229,10 +234,7 @@ describe('SurveyStudyArea', () => {
           survey_name: 'survey name is this',
           start_date: '1999-09-09',
           end_date: '2021-01-25',
-          biologist_first_name: 'firstttt',
-          biologist_last_name: 'lastttt',
-          survey_area_name: 'study area is this',
-          geometry: [geoJsonFeature],
+          survey_types: [1],
           revision_count: 0
         }
       },
@@ -243,6 +245,7 @@ describe('SurveyStudyArea', () => {
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true

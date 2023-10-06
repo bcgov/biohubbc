@@ -67,8 +67,7 @@ describe('getSurveyForUpdate', () => {
 
     const getSurveyByIdStub = sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({
       id: 1,
-      proprietor: {},
-      funding: {}
+      proprietor: {}
     } as unknown) as SurveyObject);
 
     const expectedResponse = {
@@ -83,9 +82,6 @@ describe('getSurveyForUpdate', () => {
           category_rationale: '',
           proprietor_name: '',
           disa_required: 'false'
-        },
-        funding: {
-          funding_sources: []
         },
         agreements: {
           sedis_procedures_accepted: 'true',
@@ -132,8 +128,7 @@ describe('getSurveyForUpdate', () => {
 
     const getSurveyByIdStub = sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({
       id: 1,
-      proprietor: { proprietor_type_id: 1, first_nations_id: 1, disa_required: true },
-      funding: { funding_sources: [{ pfs_id: 1 }] }
+      proprietor: { proprietor_type_id: 1, first_nations_id: 1, disa_required: true }
     } as unknown) as SurveyObject);
 
     const expectedResponse = {
@@ -145,9 +140,6 @@ describe('getSurveyForUpdate', () => {
           proprietor_type_id: 1,
           first_nations_id: 1,
           disa_required: 'true'
-        },
-        funding: {
-          funding_sources: [1]
         },
         agreements: {
           sedis_procedures_accepted: 'true',

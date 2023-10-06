@@ -18,6 +18,7 @@ export type IAccessRequestDataObject = {
   username: string;
   email: string;
   identitySource: string;
+  displayName: string;
 } & (IIDIRAccessRequestDataObject | IBCeIDBasicAccessRequestDataObject | IBCeIDBusinessAccessRequestDataObject);
 
 export interface IGetAccessRequestsListResponse {
@@ -33,7 +34,7 @@ export interface IGetAccessRequestsListResponse {
 }
 
 export interface IGetAdministrativeActivityStanding {
-  has_pending_acccess_request: boolean;
+  has_pending_access_request: boolean;
   has_one_or_more_project_roles: boolean;
 }
 

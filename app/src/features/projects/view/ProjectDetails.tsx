@@ -1,19 +1,15 @@
-import Box from '@material-ui/core/Box';
-import { grey } from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import assert from 'assert';
-import FundingSource, { IFundingSource } from 'components/funding-source/FundingSource';
 import { ProjectContext } from 'contexts/projectContext';
-import GeneralInformation from 'features/projects/view/components/GeneralInformation';
-import IUCNClassification from 'features/projects/view/components/IUCNClassification';
-import Partnerships from 'features/projects/view/components/Partnerships';
-import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
-import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
 import { useContext } from 'react';
+import GeneralInformation from './components/GeneralInformation';
+import ProjectObjectives from './components/ProjectObjectives';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectMetadata: {
@@ -61,18 +57,6 @@ const ProjectDetails = () => {
 
   // Project data must be loaded by a parent before this component is rendered
   assert(projectContext.projectDataLoader.data);
-  const funding_sources = projectContext.projectDataLoader.data.projectData.funding.fundingSources.map((item) => {
-    return {
-      id: item.id,
-      agency_name: item.agency_name,
-      investment_action_category_name: item.investment_action_category_name,
-      funding_amount: item.funding_amount,
-      start_date: item.start_date,
-      end_date: item.end_date,
-      agency_project_id: item.agency_project_id,
-      first_nations_name: item.first_nations_name
-    } as IFundingSource;
-  });
 
   return (
     <Box>
@@ -99,37 +83,14 @@ const ProjectDetails = () => {
           <GeneralInformation />
         </Box>
 
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Project Coordinator
-          </Typography>
-          <Divider></Divider>
-          <ProjectCoordinator />
-        </Box>
-
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Funding Sources
-          </Typography>
-          <Divider></Divider>
-          <FundingSource funding_sources={funding_sources} />
-        </Box>
-
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Partnerships
-          </Typography>
-          <Divider></Divider>
-          <Partnerships />
-        </Box>
-
-        <Box component="section" mb={0}>
+        {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (view) temporarily, while its decided if IUCN information is desired */}
+        {/* <Box component="section" mb={0}>
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             IUCN Classification
           </Typography>
           <Divider></Divider>
           <IUCNClassification />
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );

@@ -14,46 +14,47 @@ describe('useDraftApi', () => {
   });
 
   it('createDraft works as expected', async () => {
-    mock.onPost('/api/draft').reply(200, {
-      id: 1,
-      date: '2020/04/04'
+    mock.onPost('/api/draft/create').reply(200, {
+      webform_draft_id: 1,
+      create_date: '2020/04/04'
     });
 
     const result = await useDraftApi(axios).createDraft('draftName', null);
 
-    expect(result.id).toEqual(1);
-    expect(result.date).toEqual('2020/04/04');
+    expect(result.webform_draft_id).toEqual(1);
+    expect(result.create_date).toEqual('2020/04/04');
   });
 
   it('updateDraft works as expected', async () => {
-    mock.onPut('/api/draft').reply(200, {
-      id: 1,
-      date: '2020/04/04'
+    mock.onPut('/api/draft/1/update').reply(200, {
+      webform_draft_id: 1,
+      create_date: '2020/04/04',
+      update_date: '2023/06/28'
     });
 
     const result = await useDraftApi(axios).updateDraft(1, 'draftName', null);
 
-    expect(result.id).toEqual(1);
-    expect(result.date).toEqual('2020/04/04');
+    expect(result.webform_draft_id).toEqual(1);
+    expect(result.update_date).toEqual('2023/06/28');
   });
 
   it('getDraftsList works as expected', async () => {
-    mock.onGet('/api/drafts').reply(200, [
+    mock.onGet('/api/draft/list').reply(200, [
       {
-        id: 1,
+        webform_draft_id: 1,
         name: 'draft 1'
       },
       {
-        id: 2,
+        webform_draft_id: 2,
         name: 'draft 2'
       }
     ]);
 
     const result = await useDraftApi(axios).getDraftsList();
 
-    expect(result[0].id).toEqual(1);
+    expect(result[0].webform_draft_id).toEqual(1);
     expect(result[0].name).toEqual('draft 1');
-    expect(result[1].id).toEqual(2);
+    expect(result[1].webform_draft_id).toEqual(2);
     expect(result[1].name).toEqual('draft 2');
   });
 

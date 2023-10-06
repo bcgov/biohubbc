@@ -76,7 +76,7 @@ describe('AdministrativeActivityService', () => {
     it('should create an administrative activity representing an access request', async () => {
       const dbConnection = getMockDBConnection();
 
-      const mockRepoResponse = { id: 1, date: new Date() };
+      const mockRepoResponse = { id: 1, date: '2023-08-03' };
       const repoStub = sinon
         .stub(AdministrativeActivityRepository.prototype, 'createPendingAccessRequest')
         .resolves(mockRepoResponse);
@@ -98,7 +98,7 @@ describe('AdministrativeActivityService', () => {
       const dbConnection = getMockDBConnection();
 
       const mockRepoResponse = {
-        has_pending_acccess_request: false,
+        has_pending_access_request: false,
         has_one_or_more_project_roles: false
       };
       const repoStub = sinon

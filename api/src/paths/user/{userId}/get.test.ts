@@ -51,13 +51,18 @@ describe('user', () => {
       };
 
       sinon.stub(UserService.prototype, 'getUserById').resolves({
-        id: 1,
+        system_user_id: 1,
+        user_identifier: 'testname',
+        user_guid: '123-456-789',
         identity_source: 'idir',
-        record_end_date: '',
-        role_ids: [],
-        role_names: [],
-        user_guid: 'aaaa',
-        user_identifier: 'user_identifier'
+        record_end_date: null,
+        role_ids: [1, 2],
+        role_names: ['System Admin', 'Coordinator'],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test name',
+        agency: null
       });
 
       const requestHandler = user.getUserById();
@@ -65,13 +70,18 @@ describe('user', () => {
       await requestHandler(mockReq, mockRes, mockNext);
 
       expect(mockRes.jsonValue).to.eql({
-        id: 1,
+        system_user_id: 1,
+        user_identifier: 'testname',
+        user_guid: '123-456-789',
         identity_source: 'idir',
-        record_end_date: '',
-        role_ids: [],
-        role_names: [],
-        user_guid: 'aaaa',
-        user_identifier: 'user_identifier'
+        record_end_date: null,
+        role_ids: [1, 2],
+        role_names: ['System Admin', 'Coordinator'],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test name',
+        agency: null
       });
     });
   });

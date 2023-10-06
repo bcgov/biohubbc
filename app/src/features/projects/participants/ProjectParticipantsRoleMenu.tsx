@@ -1,6 +1,6 @@
-import Typography from '@material-ui/core/Typography';
 import { mdiChevronDown } from '@mdi/js';
 import Icon from '@mdi/react';
+import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N } from 'constants/i18n';
@@ -8,11 +8,11 @@ import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { CodeSet } from 'interfaces/useCodesApi.interface';
-import { IGetProjectParticipantsResponseArrayItem } from 'interfaces/useProjectApi.interface';
+import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 
 export interface IChangeProjectRoleMenuProps {
-  participant: IGetProjectParticipantsResponseArrayItem;
+  participant: IGetProjectParticipant;
   projectRoleCodes: CodeSet;
   refresh: () => void;
 }
@@ -38,11 +38,7 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     });
   };
 
-  const handleChangeUserPermissionsClick = (
-    item: IGetProjectParticipantsResponseArrayItem,
-    newRole: string,
-    newRoleId: number
-  ) => {
+  const handleChangeUserPermissionsClick = (item: IGetProjectParticipant, newRole: string, newRoleId: number) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change Project Role?',
       dialogContent: (
@@ -67,17 +63,13 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     });
   };
 
-  const changeProjectParticipantRole = async (
-    item: IGetProjectParticipantsResponseArrayItem,
-    newRole: string,
-    newRoleId: number
-  ) => {
+  const changeProjectParticipantRole = async (item: IGetProjectParticipant, newRole: string, newRoleId: number) => {
     if (!item?.project_participation_id) {
       return;
     }
 
     try {
-      const status = await biohubApi.project.updateProjectParticipantRole(
+      const status = await biohubApi.projectParticipants.updateProjectParticipantRole(
         item.project_id,
         item.project_participation_id,
         newRoleId
@@ -104,13 +96,11 @@ const ProjectParticipantsRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (prop
     }
   };
 
-  const currentProjectRoleName = projectRoleCodes.find((item) => item.id === participant.project_role_id)?.name;
-
   return (
     <CustomMenuButton
-      buttonLabel={currentProjectRoleName}
+      buttonLabel={participant.project_role_names[0] || ''}
       buttonTitle={'Change Project Role'}
-      buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
+      buttonProps={{ variant: 'outlined', size: 'small' }}
       menuItems={projectRoleCodes.map((roleCode) => {
         return {
           menuLabel: roleCode.name,

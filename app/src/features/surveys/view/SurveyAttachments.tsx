@@ -1,15 +1,15 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
-import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
+import { mdiAttachment, mdiFilePdfBox, mdiFolderKeyOutline, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
@@ -24,12 +24,17 @@ const SurveyAttachments: React.FC = () => {
   const { projectId, surveyId } = surveyContext;
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
-  const [attachmentType, setAttachmentType] = useState<AttachmentType.REPORT | AttachmentType.OTHER>(
-    AttachmentType.OTHER
-  );
+  const [attachmentType, setAttachmentType] = useState<
+    AttachmentType.REPORT | AttachmentType.OTHER | AttachmentType.KEYX
+  >(AttachmentType.OTHER);
 
   const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
+    setOpenUploadAttachments(true);
+  };
+
+  const handleUploadKeyxClick = () => {
+    setAttachmentType(AttachmentType.KEYX);
     setOpenUploadAttachments(true);
   };
 
@@ -40,7 +45,9 @@ const SurveyAttachments: React.FC = () => {
 
   const getUploadHandler = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
+      return attachmentType === AttachmentType.KEYX
+        ? biohubApi.survey.uploadSurveyKeyx(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
+        : biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
     };
   };
 
@@ -54,11 +61,24 @@ const SurveyAttachments: React.FC = () => {
     };
   };
 
+  const getDialogTitle = () => {
+    switch (attachmentType) {
+      case AttachmentType.REPORT:
+        return 'Upload Report';
+      case AttachmentType.KEYX:
+        return 'Upload KeyX';
+      case AttachmentType.OTHER:
+        return 'Upload Attachments';
+      default:
+        return '';
+    }
+  };
+
   return (
     <>
       <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle={attachmentType === 'Report' ? 'Upload Report' : 'Upload Attachments'}
+        dialogTitle={getDialogTitle()}
         attachmentType={attachmentType}
         onFinish={getFinishHandler()}
         onClose={() => {
@@ -81,6 +101,11 @@ const SurveyAttachments: React.FC = () => {
               menuOnClick: handleUploadReportClick
             },
             {
+              menuLabel: 'Upload KeyX Files',
+              menuIcon: <Icon path={mdiFolderKeyOutline} size={1} />,
+              menuOnClick: handleUploadKeyxClick
+            },
+            {
               menuLabel: 'Upload Attachments',
               menuIcon: <Icon path={mdiAttachment} size={1} />,
               menuOnClick: handleUploadAttachmentClick
@@ -88,7 +113,7 @@ const SurveyAttachments: React.FC = () => {
           ]}
           renderButton={(buttonProps) => (
             <ProjectRoleGuard
-              validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Button {...buttonProps} />
             </ProjectRoleGuard>

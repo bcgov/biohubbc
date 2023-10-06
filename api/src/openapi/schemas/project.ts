@@ -1,104 +1,13 @@
-// A funding source object requiring first nations specific data (first_nations_id)
-export const projectFundingSourceFirstNations = {
-  title: 'Project funding source with First Nations data',
-  type: 'object',
-  required: ['first_nations_id'],
-  properties: {
-    first_nations_id: {
-      type: 'integer',
-      minimum: 1
-    },
-    agency_id: {
-      type: 'integer',
-      nullable: true
-    },
-    investment_action_category: {
-      type: 'integer',
-      nullable: true
-    },
-    agency_project_id: {
-      type: 'string',
-      nullable: true
-    },
-    funding_amount: {
-      type: 'number',
-      nullable: true
-    },
-    start_date: {
-      type: 'string',
-      description: 'ISO 8601 date string',
-      nullable: true
-    },
-    end_date: {
-      type: 'string',
-      description: 'ISO 8601 date string',
-      nullable: true
-    }
-  }
-};
+import { PROJECT_ROLE } from '../../constants/roles';
 
-// A funding source object requiring agency specific data (agency_id, funding_amount)
-export const projectFundingSourceAgency = {
-  title: 'Project funding source with Agency data',
-  type: 'object',
-  required: ['agency_id', 'investment_action_category', 'start_date', 'end_date', 'funding_amount'],
-  properties: {
-    agency_id: {
-      type: 'integer',
-      minimum: 1
-    },
-    investment_action_category: {
-      type: 'number',
-      nullable: false
-    },
-    agency_project_id: {
-      type: 'string',
-      nullable: true
-    },
-    funding_amount: {
-      type: 'number'
-    },
-    start_date: {
-      type: 'string',
-      description: 'ISO 8601 date string'
-    },
-    end_date: {
-      type: 'string',
-      description: 'ISO 8601 date string'
-    }
-  }
-};
 /**
  * Request Object for project create POST request
  */
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
-  required: ['coordinator', 'project', 'location', 'iucn', 'funding'],
+  required: ['project', 'location', 'iucn', 'participants'],
   properties: {
-    coordinator: {
-      title: 'Project coordinator',
-      type: 'object',
-      required: ['first_name', 'last_name', 'email_address', 'coordinator_agency', 'share_contact_details'],
-      properties: {
-        first_name: {
-          type: 'string'
-        },
-        last_name: {
-          type: 'string'
-        },
-        email_address: {
-          type: 'string'
-        },
-        coordinator_agency: {
-          type: 'string'
-        },
-        share_contact_details: {
-          type: 'string',
-          enum: ['true', 'false']
-        }
-      }
-    },
     project: {
       title: 'Project details',
       type: 'object',
@@ -106,11 +15,9 @@ export const projectCreatePostRequestObject = {
         project_name: {
           type: 'string'
         },
-        project_type: {
-          type: 'number'
-        },
-        project_activities: {
+        project_programs: {
           type: 'array',
+          minItems: 1,
           items: {
             type: 'number'
           }
@@ -159,32 +66,22 @@ export const projectCreatePostRequestObject = {
         }
       }
     },
-    funding: {
-      title: 'Project funding sources',
-      type: 'object',
-      properties: {
-        fundingSources: {
-          type: 'array',
-          items: {
-            anyOf: [{ ...projectFundingSourceAgency }, { ...projectFundingSourceFirstNations }]
-          }
-        }
-      }
-    },
-    partnerships: {
-      title: 'Project partnerships',
-      type: 'object',
-      properties: {
-        indigenous_partnerships: {
-          type: 'array',
-          items: {
+    participants: {
+      title: 'Project participants',
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['system_user_id', 'project_role_names'],
+        properties: {
+          system_user_id: {
             type: 'number'
-          }
-        },
-        stakeholder_partnerships: {
-          type: 'array',
-          items: {
-            type: 'string'
+          },
+          project_role_names: {
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: [PROJECT_ROLE.COORDINATOR, PROJECT_ROLE.COLLABORATOR, PROJECT_ROLE.OBSERVER]
+            }
           }
         }
       }
@@ -193,17 +90,6 @@ export const projectCreatePostRequestObject = {
 };
 
 const projectUpdateProperties = {
-  coordinator: {
-    type: 'object',
-    properties: {
-      first_name: { type: 'string' },
-      last_name: { type: 'string' },
-      email_address: { type: 'string' },
-      coordinator_agency: { type: 'string' },
-      share_contact_details: { type: 'string' },
-      revision_count: { type: 'number' }
-    }
-  },
   project: { type: 'object', properties: {} },
   objectives: { type: 'object', properties: {} },
   location: { type: 'object', properties: {} },
@@ -230,18 +116,7 @@ const projectUpdateProperties = {
       }
     }
   },
-  funding: {
-    type: 'object',
-    properties: {
-      fundingSources: {
-        type: 'array',
-        items: {
-          anyOf: [{ ...projectFundingSourceAgency }, { ...projectFundingSourceFirstNations }]
-        }
-      }
-    }
-  },
-  partnerships: { type: 'object', properties: {} }
+  participants: { type: 'array', items: { type: 'object', properties: {} } }
 };
 
 /**

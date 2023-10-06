@@ -1,6 +1,7 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
@@ -20,8 +21,10 @@ const mockUseApi = {
     updateProject: jest.fn()
   },
   external: {
-    get: jest.fn(),
-    post: jest.fn()
+    get: jest.fn()
+  },
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
@@ -33,7 +36,14 @@ describe.skip('LocationBoundary', () => {
     mockUseApi.project.getProjectForUpdate.mockClear();
     mockUseApi.project.updateProject.mockClear();
     mockUseApi.external.get.mockClear();
-    mockUseApi.external.post.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.external.get.mockResolvedValue({
+      features: []
+    });
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -42,14 +52,7 @@ describe.skip('LocationBoundary', () => {
     cleanup();
   });
 
-  mockUseApi.external.get.mockResolvedValue({
-    features: []
-  });
-  mockUseApi.external.post.mockResolvedValue({
-    features: []
-  });
-
-  it('matches the snapshot when there is no location description', async () => {
+  it.skip('matches the snapshot when there is no location description', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -83,7 +86,7 @@ describe.skip('LocationBoundary', () => {
     });
   });
 
-  it('matches the snapshot when there is no geometry', async () => {
+  it.skip('matches the snapshot when there is no geometry', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -117,7 +120,7 @@ describe.skip('LocationBoundary', () => {
     });
   });
 
-  it('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
+  it.skip('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -189,9 +192,10 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.projectData.project.id, [
-        UPDATE_GET_ENTITIES.location
-      ]);
+      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.project_id,
+        [UPDATE_GET_ENTITIES.location]
+      );
     });
 
     await waitFor(() => {
@@ -214,13 +218,16 @@ describe.skip('LocationBoundary', () => {
 
     await waitFor(() => {
       expect(mockUseApi.project.updateProject).toHaveBeenCalledTimes(1);
-      expect(mockUseApi.project.updateProject).toBeCalledWith(getProjectForViewResponse.projectData.project.id, {
-        location: {
-          location_description: 'description',
-          geometry: geoJsonFeature,
-          revision_count: 1
+      expect(mockUseApi.project.updateProject).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.project_id,
+        {
+          location: {
+            location_description: 'description',
+            geometry: geoJsonFeature,
+            revision_count: 1
+          }
         }
-      });
+      );
 
       expect(mockRefresh).toBeCalledTimes(1);
     });
@@ -357,9 +364,10 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.projectData.project.id, [
-        UPDATE_GET_ENTITIES.location
-      ]);
+      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.project_id,
+        [UPDATE_GET_ENTITIES.location]
+      );
     });
 
     await waitFor(() => {

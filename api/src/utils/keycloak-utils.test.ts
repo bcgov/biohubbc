@@ -142,4 +142,7 @@ describe('keycloakUtils', () => {
       expect(response).to.equal(SYSTEM_IDENTITY_SOURCE.SYSTEM);
     });
   });
+  describe('getKeycloakSource', () => {
+    //TODO
+  });
 });

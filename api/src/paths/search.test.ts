@@ -2,110 +2,83 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import { SYSTEM_ROLE } from '../constants/roles';
 import * as db from '../database/db';
-import { HTTPError } from '../errors/http-error';
-import search_queries from '../queries/search';
 import * as authorization from '../request-handlers/security/authorization';
-import { getMockDBConnection } from '../__mocks__/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
 import * as search from './search';
 
 chai.use(sinonChai);
 
 describe('search', () => {
-  const dbConnectionObj = getMockDBConnection();
-
-  const sampleReq = {
-    keycloak_token: {},
-    system_user: {
-      role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
-    }
-  } as any;
-
-  let actualResult: any = null;
-
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    }
-  };
-
   describe('getSearchResults', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    it('should throw a 400 error when fails to get sql statement', async () => {
-      sinon.stub(db, 'getDBConnection').returns({
-        ...dbConnectionObj,
-        systemUserId: () => {
-          return 20;
-        }
-      });
-      sinon.stub(authorization, 'userHasValidRole').returns(true);
-      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(null);
-
-      try {
-        const result = search.getSearchResults();
-
-        await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as HTTPError).status).to.equal(400);
-        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-      }
-    });
-
     it('should return null when no response returned from getSpatialSearchResultsSQL', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       const mockQuery = sinon.stub();
 
-      mockQuery.resolves({ rows: null });
+      mockQuery.resolves({ rows: [], rowCount: 0 });
 
       sinon.stub(db, 'getDBConnection').returns({
         ...dbConnectionObj,
         systemUserId: () => {
           return 20;
         },
-        query: mockQuery
+        sql: mockQuery
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
-      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq['keycloak_token'] = {};
+      mockReq['system_user'] = {
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+      };
 
       const result = search.getSearchResults();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(mockReq, mockRes, mockNext);
 
-      expect(actualResult).to.equal(null);
+      expect(mockRes.jsonValue).to.eql([]);
     });
 
     it('should return rows on success when result is empty', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       const mockQuery = sinon.stub();
 
-      mockQuery.resolves({ rows: [] });
+      mockQuery.resolves({ rows: [], rowCount: 0 });
 
       sinon.stub(db, 'getDBConnection').returns({
         ...dbConnectionObj,
         systemUserId: () => {
           return 20;
         },
-        query: mockQuery
+        sql: mockQuery
       });
-      sinon.stub(authorization, 'userHasValidRole').returns(true);
-      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
+      sinon.stub(authorization, 'userHasValidRole').returns(false);
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq['keycloak_token'] = {};
+      mockReq['system_user'] = {
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+      };
 
       const result = search.getSearchResults();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(mockReq, mockRes, mockNext);
 
-      expect(actualResult).to.eql([]);
+      expect(mockRes.jsonValue).to.eql([]);
     });
 
     it('should return rows on success', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       const searchList = [
         {
           id: 1,
@@ -123,16 +96,22 @@ describe('search', () => {
         systemUserId: () => {
           return 20;
         },
-        query: mockQuery
+        sql: mockQuery
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
-      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq['keycloak_token'] = {};
+      mockReq['system_user'] = {
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+      };
 
       const result = search.getSearchResults();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(mockReq, mockRes, mockNext);
 
-      expect(actualResult).to.eql([
+      expect(mockRes.jsonValue).to.eql([
         {
           id: searchList[0].id,
           name: searchList[0].name,

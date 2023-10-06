@@ -1,13 +1,13 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import { mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { AttachmentType, PublishStatus } from 'constants/attachments';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { useState } from 'react';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}> from `Remove or Resubmit` button.
@@ -45,7 +45,6 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
           <Menu
-            getContentAnchorEl={null}
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'right'
@@ -85,37 +84,54 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
                 View Details
               </MenuItem>
             )}
+
             {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <MenuItem
-                  onClick={() => {
-                    props.onDeleteFile();
-                    handleClose();
-                  }}
-                  data-testid="attachment-action-menu-delete">
-                  <ListItemIcon>
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </ListItemIcon>
-                  Delete
-                </MenuItem>
-              </SystemRoleGuard>
+              <MenuItem
+                onClick={() => {
+                  props.onDeleteFile();
+                  handleClose();
+                }}
+                data-testid="attachment-action-menu-delete">
+                <ListItemIcon>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </ListItemIcon>
+                Delete
+              </MenuItem>
             )}
+
             {props.attachmentStatus === PublishStatus.SUBMITTED && (
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <ProjectRoleGuard validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}>
+              <>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <MenuItem
                     onClick={() => {
-                      props.onRemoveOrResubmit();
+                      props.onDeleteFile();
                       handleClose();
                     }}
-                    data-testid="attachment-action-menu-resubmit">
+                    data-testid="attachment-action-menu-delete">
                     <ListItemIcon>
                       <Icon path={mdiTrashCanOutline} size={1} />
                     </ListItemIcon>
-                    Remove or Resubmit
+                    Delete
                   </MenuItem>
-                </ProjectRoleGuard>
-              </SystemRoleGuard>
+                </SystemRoleGuard>
+
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <ProjectRoleGuard
+                    validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}>
+                    <MenuItem
+                      onClick={() => {
+                        props.onRemoveOrResubmit();
+                        handleClose();
+                      }}
+                      data-testid="attachment-action-menu-resubmit">
+                      <ListItemIcon>
+                        <Icon path={mdiTrashCanOutline} size={1} />
+                      </ListItemIcon>
+                      Remove or Resubmit
+                    </MenuItem>
+                  </ProjectRoleGuard>
+                </SystemRoleGuard>
+              </>
             )}
           </Menu>
         </Box>

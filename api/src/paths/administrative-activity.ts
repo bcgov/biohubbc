@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/http-error';
 import { AdministrativeActivityService } from '../services/administrative-activity-service';
-import { getUserIdentifier } from '../utils/keycloak-utils';
+import { getUserGuid } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
@@ -87,9 +87,9 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['has_pending_acccess_request', 'has_one_or_more_project_roles'],
+            required: ['has_pending_access_request', 'has_one_or_more_project_roles'],
             properties: {
-              has_pending_acccess_request: {
+              has_pending_access_request: {
                 type: 'boolean'
               },
               has_one_or_more_project_roles: {
@@ -166,17 +166,17 @@ export function getAdministrativeActivityStanding(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const userIdentifier = getUserIdentifier(req['keycloak_token']);
+      const userGUID = getUserGuid(req['keycloak_token']);
 
-      if (!userIdentifier) {
-        throw new HTTP400('Missing required userIdentifier');
+      if (!userGUID) {
+        throw new HTTP400('Failed to identify user');
       }
 
       await connection.open();
 
       const administrativeActivityService = new AdministrativeActivityService(connection);
 
-      const response = await administrativeActivityService.getAdministrativeActivityStanding(userIdentifier);
+      const response = await administrativeActivityService.getAdministrativeActivityStanding(userGUID);
 
       await connection.commit();
 

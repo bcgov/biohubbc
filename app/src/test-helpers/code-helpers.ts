@@ -1,14 +1,12 @@
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export const codes: IGetAllCodeSetsResponse = {
-  coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }],
   management_action_type: [{ id: 1, name: 'Management action' }],
   first_nations: [{ id: 1, name: 'First nations code' }],
-  funding_source: [{ id: 1, name: 'Funding source code' }],
-  investment_action_category: [{ id: 1, fs_id: 1, name: 'Investment action category' }],
-  activity: [{ id: 1, name: 'Activity code' }],
-  project_type: [{ id: 1, name: 'Project type' }],
-  region: [{ id: 1, name: 'Region code' }],
+  agency: [{ id: 1, name: 'Funding source code' }],
+  investment_action_category: [{ id: 1, agency_id: 1, name: 'Investment action category' }],
+  type: [{ id: 1, name: 'Type code' }],
+  program: [{ id: 1, name: 'Program' }],
   proprietor_type: [
     { id: 1, name: 'Proprietor code 1', is_first_nation: false },
     { id: 2, name: 'First Nations Land', is_first_nation: true }
@@ -33,7 +31,6 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Project Role 1' },
     { id: 2, name: 'Project Role 2' }
   ],
-  regional_offices: [{ id: 1, name: 'Office 1' }],
   administrative_activity_status_type: [
     { id: 1, name: 'Pending' },
     { id: 2, name: 'Actioned' },
@@ -54,5 +51,17 @@ export const codes: IGetAllCodeSetsResponse = {
   intended_outcomes: [
     { id: 1, name: 'Intended Outcome 1', description: 'Description 1' },
     { id: 2, name: 'Intended Outcome 2', description: 'Description 2' }
+  ],
+  survey_jobs: [
+    { id: 1, name: 'Survey Job 1' },
+    { id: 2, name: 'Survey Job 2' }
+  ],
+  site_selection_strategies: [
+    { id: 1, name: 'Strategy 1' },
+    { id: 2, name: 'Strategy 2' }
+  ],
+  sample_methods: [
+    { id: 1, name: 'Camera Trap' },
+    { id: 2, name: 'Dip Net' }
   ]
 };

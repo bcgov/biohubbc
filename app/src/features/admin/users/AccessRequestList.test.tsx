@@ -61,6 +61,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },
@@ -74,8 +75,8 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('Apr 20, 2020')).toBeVisible();
-      expect(getByText('Review')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review');
+      expect(getByText('Review Request')).toBeVisible();
+      expect(getByRole('button')).toHaveTextContent('Review Request');
     });
   });
 
@@ -97,6 +98,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },
@@ -133,6 +135,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },
@@ -172,7 +175,7 @@ describe('AccessRequestList', () => {
 
     await waitFor(() => {
       expect(getByText('Apr 20, 2020')).toBeVisible();
-      expect(getByText('Review')).toBeVisible();
+      expect(getByText('Review Request')).toBeVisible();
     });
   });
 
@@ -196,6 +199,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },
@@ -219,13 +223,14 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
       expect(mockUseApi.admin.approveAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockUseApi.admin.approveAccessRequest).toHaveBeenCalledWith(
-        1,
-        'aaaa',
-        'testusername',
-        SYSTEM_IDENTITY_SOURCE.IDIR,
-        [2]
-      );
+      expect(mockUseApi.admin.approveAccessRequest).toHaveBeenCalledWith(1, {
+        displayName: 'test user',
+        email: 'email@email.com',
+        identitySource: 'IDIR',
+        roleIds: [2],
+        userGuid: 'aaaa',
+        userIdentifier: 'testusername'
+      });
     });
   });
 
@@ -249,6 +254,7 @@ describe('AccessRequestList', () => {
             email: 'email@email.com',
             role: 1,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+            displayName: 'test user',
             company: 'test company',
             reason: 'my reason'
           },

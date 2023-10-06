@@ -1,20 +1,19 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { mdiChevronDown, mdiDotsVertical, mdiInformationOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiAccountDetailsOutline, mdiChevronDown, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { AddSystemUserI18N, DeleteSystemUserI18N, UpdateSystemUserI18N } from 'constants/i18n';
@@ -22,7 +21,7 @@ import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -33,24 +32,8 @@ import AddSystemUsersForm, {
   IAddSystemUsersForm
 } from './AddSystemUsersForm';
 
-const useStyles = makeStyles(() => ({
-  table: {
-    tableLayout: 'fixed',
-    '& td': {
-      verticalAlign: 'middle'
-    }
-  },
-  toolbarCount: {
-    fontWeight: 400
-  },
-  linkButton: {
-    textAlign: 'left',
-    fontWeight: 700
-  }
-}));
-
 export interface IActiveUsersListProps {
-  activeUsers: IGetUserResponse[];
+  activeUsers: ISystemUser[];
   codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
@@ -62,7 +45,6 @@ export interface IActiveUsersListProps {
  * @return {*}
  */
 const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
   const { activeUsers, codes } = props;
   const history = useHistory();
@@ -77,7 +59,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
 
-  const handleRemoveUserClick = (row: IGetUserResponse) => {
+  const handleRemoveUserClick = (row: ISystemUser) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Remove User?',
       dialogContent: (
@@ -88,7 +70,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       ),
       yesButtonLabel: 'Remove',
       noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });
       },
@@ -103,12 +85,12 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     });
   };
 
-  const deActivateSystemUser = async (user: IGetUserResponse) => {
-    if (!user?.id) {
+  const deActivateSystemUser = async (user: ISystemUser) => {
+    if (!user?.system_user_id) {
       return;
     }
     try {
-      await biohubApi.user.deleteSystemUser(user.id);
+      await biohubApi.user.deleteSystemUser(user.system_user_id);
 
       showSnackBar({
         snackbarMessage: (
@@ -141,7 +123,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     }
   };
 
-  const handleChangeUserPermissionsClick = (row: IGetUserResponse, newRoleName: any, newRoleId: number) => {
+  const handleChangeUserPermissionsClick = (row: ISystemUser, newRoleName: any, newRoleId: number) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change User Role?',
       dialogContent: (
@@ -166,14 +148,14 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     });
   };
 
-  const changeSystemUserRole = async (user: IGetUserResponse, roleId: number, roleName: string) => {
-    if (!user?.id) {
+  const changeSystemUserRole = async (user: ISystemUser, roleId: number, roleName: string) => {
+    if (!user?.system_user_id) {
       return;
     }
     const roleIds = [roleId];
 
     try {
-      await biohubApi.user.updateSystemUserRoles(user.id, roleIds);
+      await biohubApi.user.updateSystemUserRoles(user.system_user_id, roleIds);
 
       showSnackBar({
         snackbarMessage: (
@@ -213,6 +195,8 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         await biohubApi.admin.addSystemUser(
           systemUser.userIdentifier,
           systemUser.identitySource,
+          systemUser.displayName,
+          systemUser.email,
           systemUser.systemRole
         );
       }
@@ -251,7 +235,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h4" component="h2">
             Active Users{' '}
-            <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
+            <Typography
+              component="span"
+              variant="inherit"
+              color="textSecondary"
+              sx={{
+                fontWeight: 400
+              }}>
               ({activeUsers?.length || 0})
             </Typography>
           </Typography>
@@ -260,22 +250,23 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             variant="contained"
             data-testid="invite-system-users-button"
             aria-label={'Add Users'}
-            startIcon={<Icon path={mdiPlus} size={0.8} />}
+            startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => setOpenAddUserDialog(true)}>
-            <strong>Add Users</strong>
+            Add Users
           </Button>
         </Toolbar>
         <Divider></Divider>
-        <Box px={1}>
+        <Box p={1}>
           <TableContainer>
-            <Table className={classes.table}>
+            <Table
+              sx={{
+                tableLayout: 'fixed'
+              }}>
               <TableHead>
                 <TableRow>
                   <TableCell>Username</TableCell>
                   <TableCell>Role</TableCell>
-                  <TableCell width={150} align="center">
-                    Actions
-                  </TableCell>
+                  <TableCell width={80} align="right"></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody data-testid="active-users-table">
@@ -288,13 +279,9 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                 )}
                 {activeUsers.length > 0 &&
                   activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                    <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
+                    <TableRow data-testid={`active-user-row-${index}`} key={row.system_user_id}>
                       <TableCell>
-                        <Link
-                          className={classes.linkButton}
-                          underline="always"
-                          to={`/admin/users/${row.id}`}
-                          component={RouterLink}>
+                        <Link underline="always" to={`/admin/users/${row.system_user_id}`} component={RouterLink}>
                           {row.user_identifier || 'No identifier'}
                         </Link>
                       </TableCell>
@@ -303,7 +290,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                           <CustomMenuButton
                             buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
                             buttonTitle={'Change User Permissions'}
-                            buttonProps={{ variant: 'outlined', size: 'small', color: 'default' }}
+                            buttonProps={{ variant: 'outlined', size: 'small' }}
                             menuItems={codes.system_roles
                               .sort((item1, item2) => {
                                 return item1.name.localeCompare(item2.name);
@@ -314,27 +301,27 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                                   menuOnClick: () => handleChangeUserPermissionsClick(row, item.name, item.id)
                                 };
                               })}
-                            buttonEndIcon={<Icon path={mdiChevronDown} size={0.8} />}
+                            buttonEndIcon={<Icon path={mdiChevronDown} size={1} />}
                           />
                         </Box>
                       </TableCell>
-                      <TableCell align="center">
+                      <TableCell align="right">
                         <Box my={-1}>
                           <CustomMenuIconButton
                             buttonTitle="Actions"
                             buttonIcon={<Icon path={mdiDotsVertical} size={1} />}
                             menuItems={[
                               {
-                                menuIcon: <Icon path={mdiInformationOutline} size={0.8} />,
+                                menuIcon: <Icon path={mdiAccountDetailsOutline} size={1} />,
                                 menuLabel: 'View Users Details',
                                 menuOnClick: () =>
                                   history.push({
-                                    pathname: `/admin/users/${row.id}`,
+                                    pathname: `/admin/users/${row.system_user_id}`,
                                     state: row
                                   })
                               },
                               {
-                                menuIcon: <Icon path={mdiTrashCanOutline} size={0.8} />,
+                                menuIcon: <Icon path={mdiTrashCanOutline} size={1} />,
                                 menuLabel: 'Remove User',
                                 menuOnClick: () => handleRemoveUserClick(row)
                               }
@@ -349,13 +336,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           </TableContainer>
           {activeUsers?.length > 0 && (
             <TablePagination
+              component={'div'}
               rowsPerPageOptions={[5, 10, 15, 20]}
-              component="div"
               count={activeUsers.length}
               rowsPerPage={rowsPerPage}
               page={page}
-              onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-              onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
+              onPageChange={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
+              onRowsPerPageChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 handleChangeRowsPerPage(event, setPage, setRowsPerPage)
               }
             />

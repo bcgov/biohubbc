@@ -1,11 +1,11 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditProjectI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -71,13 +71,11 @@ const EditProjectPage: React.FC = (props) => {
 
   const editProjectDataLoader = useDataLoader((projectId: number) =>
     biohubApi.project.getProjectForUpdate(projectId, [
-      UPDATE_GET_ENTITIES.coordinator,
       UPDATE_GET_ENTITIES.project,
       UPDATE_GET_ENTITIES.objectives,
       UPDATE_GET_ENTITIES.location,
       UPDATE_GET_ENTITIES.iucn,
-      UPDATE_GET_ENTITIES.funding,
-      UPDATE_GET_ENTITIES.partnerships
+      UPDATE_GET_ENTITIES.participants
     ])
   );
 

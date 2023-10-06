@@ -1,10 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import SQL, { SQLStatement } from 'sql-template-strings';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/http-error';
 import { searchResponseObject } from '../openapi/schemas/search';
-import { queries } from '../queries/queries';
 import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
@@ -72,22 +71,11 @@ export function getSearchResults(): RequestHandler {
         req['system_user']['role_names']
       );
 
-      const getSpatialSearchResultsSQLStatement = queries.search.getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
+      const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
 
-      if (!getSpatialSearchResultsSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      const response = await connection.query(
-        getSpatialSearchResultsSQLStatement.text,
-        getSpatialSearchResultsSQLStatement.values
-      );
+      const response = await connection.sql(getSpatialSearchResultsSQLStatement);
 
       await connection.commit();
-
-      if (!response || !response.rows) {
-        return res.status(200).json(null);
-      }
 
       const result: any[] = _extractResults(response.rows);
 
@@ -99,6 +87,32 @@ export function getSearchResults(): RequestHandler {
       connection.release();
     }
   };
+}
+
+/**
+ * SQL query to get project geometries
+ *
+ * @param {boolean} isUserAdmin
+ * @param {(number | null)} systemUserId
+ * @returns {SQLStatement} sql query object
+ */
+export function getSpatialSearchResultsSQL(isUserAdmin: boolean, systemUserId: number | null): SQLStatement {
+  const sqlStatement = SQL`
+      SELECT
+        p.project_id as id,
+        p.name,
+        public.ST_asGeoJSON(p.geography) as geometry
+      from
+        project as p
+    `;
+
+  if (!isUserAdmin) {
+    sqlStatement.append(SQL`WHERE p.create_user = ${systemUserId};`);
+  }
+
+  sqlStatement.append(SQL`;`);
+
+  return sqlStatement;
 }
 
 /**
