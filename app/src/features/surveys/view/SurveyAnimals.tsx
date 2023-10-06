@@ -160,7 +160,11 @@ const SurveyAnimals: React.FC = () => {
           const red = deployments.reduce((acc: IAnimalTelemetryDevice[], curr) => {
             const currObj = acc.find((a: any) => a.device_id === curr.device_id);
             const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
-            const deployment = { deployment_id, attachment_start, attachment_end };
+            const deployment = {
+              deployment_id,
+              attachment_start: attachment_start.split('T')[0],
+              attachment_end: attachment_end?.split('T')?.[0]
+            };
             if (!currObj) {
               acc.push({ ...rest, deployments: [deployment] });
             } else {
