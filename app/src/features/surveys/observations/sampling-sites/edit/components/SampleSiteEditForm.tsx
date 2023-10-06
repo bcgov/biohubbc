@@ -51,7 +51,10 @@ export const samplingSiteYupSchema = yup.object({
   sampleSite: yup.object({
     name: yup.string().default(''),
     description: yup.string().default('').nullable(),
-    survey_sample_sites: yup.array(yup.object()).min(1, 'At least one sampling site location is required'),
+    survey_sample_sites: yup
+      .array(yup.object())
+      .min(1, 'At least one sampling site location is required')
+      .max(1, 'Only one sampling site location is allowed'),
     methods: yup
       .array(yup.object().concat(SamplingSiteMethodYupSchema))
       .min(1, 'At least one sampling method is required')

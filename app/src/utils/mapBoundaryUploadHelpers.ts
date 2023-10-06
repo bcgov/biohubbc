@@ -3,7 +3,6 @@ import bbox from '@turf/bbox';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import get from 'lodash-es/get';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -79,12 +78,12 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
  * @param {FormikContextType<T>} formikProps The formik props
  */
 export const handleShapeFileUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { values, setFieldValue, setFieldError } = formikProps;
+  const { setFieldValue, setFieldError } = formikProps;
 
   try {
     const features = await parseShapeFile(file);
 
-    setFieldValue(name, [...features, ...get(values, name)]);
+    setFieldValue(name, [...features]);
   } catch (error) {
     setFieldError(name, 'You must upload a valid shapefile (.zip format). Please try again.');
   }
@@ -100,7 +99,7 @@ export const handleShapeFileUpload = async <T>(file: File, name: string, formikP
  * @return {*}
  */
 export const handleGPXUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { values, setFieldValue, setFieldError } = formikProps;
+  const { setFieldValue, setFieldError } = formikProps;
 
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
@@ -122,7 +121,7 @@ export const handleGPXUpload = async <T>(file: File, name: string, formikProps: 
       }
     });
 
-    setFieldValue(name, [...sanitizedGeoJSON, ...get(values, name)]);
+    setFieldValue(name, [...sanitizedGeoJSON]);
   } catch (error) {
     setFieldError(name, 'Error uploading your GPX file, please check the file and try again.');
   }
@@ -138,7 +137,7 @@ export const handleGPXUpload = async <T>(file: File, name: string, formikProps: 
  * @return {*}
  */
 export const handleKMLUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { values, setFieldValue, setFieldError } = formikProps;
+  const { setFieldValue, setFieldError } = formikProps;
 
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
@@ -159,7 +158,7 @@ export const handleKMLUpload = async <T>(file: File, name: string, formikProps: 
     }
   });
 
-  setFieldValue(name, [...sanitizedGeoJSON, ...get(values, name)]);
+  setFieldValue(name, [...sanitizedGeoJSON]);
 };
 
 /**

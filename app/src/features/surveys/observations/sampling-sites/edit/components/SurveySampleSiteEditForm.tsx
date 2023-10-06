@@ -2,8 +2,8 @@ import { CircularProgress } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
-import SamplingSiteMapControl from '../../components/SamplingSiteMapControl';
 import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
+import SamplingSiteEditMapControl from './SamplingSiteEditMapControl';
 
 const SurveySamplingSiteEditForm = () => {
   const formikProps = useFormikContext<IEditSamplingSiteRequest>();
@@ -24,7 +24,7 @@ const SurveySamplingSiteEditForm = () => {
           }}>
           Shapefiles must be compressed into a single zip file. They can include one or more sampling site locations.
         </Typography>
-        <SamplingSiteMapControl
+        <SamplingSiteEditMapControl
           name="sampleSite.survey_sample_sites"
           title={`Site Boundary Preview `}
           mapId="study_area_form_map"
