@@ -12,17 +12,9 @@ import SurveyProprietaryData from 'features/surveys/view/components/SurveyPropri
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
 import SurveyFundingSources from './components/SurveyFundingSources';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
-import Partnerships from './Partnerships';
+import Partnerships from './components/Partnerships';
+import SamplingMethods from './components/SamplingMethods';
 import Grid from '@mui/material/Grid';
-// import {
-//   mdiInformationOutline,
-//   mdiLightbulbOnOutline,
-//   mdiAccountMultipleOutline,
-//   mdiHandshakeOutline,
-//   mdiCurrencyUsd,
-//   mdiClipboardCheckOutline
-// } from '@mdi/js';
-// import Icon from '@mdi/react';
 
 /**
  * Survey details content for a survey.
@@ -37,39 +29,24 @@ const SurveyDetails = () => {
     <Box
       sx={{
         '& h4': {
-          mb: 4,
+          mb: 2,
           fontSize: '0.875rem',
           fontWeight: 700,
           textTransform: 'uppercase'
         },
         '& dl': {
-          m: 0,
-          '& .MuiGrid-item': {
-            display: 'flex',
-            flexDirection: 'row',
-            // flexWrap: 'wrap'
-            paddingBottom: 1,
-            borderTop: '1px solid #ddd'
-          }
+          m: 0
         },
         '& dt': {
-          display: 'flex',
+          display: 'inline-block',
           flex: '0 0 auto',
-          width: '25%',
-          typography: 'body1',
-          color: 'text.secondary',
-          // '&:after': {
-          //   content: '" "',
-          //   flex: '1 1 auto',
-          //   height: '14px',
-          //   borderBottom: '1px dotted #999',
-          //   ml: 1,
-          //   mr: 1
-          // }
+          width: {sm: '100%', md: '25%'},
+          typography: {sm: 'body2', md: 'body1'},
+          color: 'text.secondary'
         },
         '& dd': {
           ml: 0,
-          flex: '1 1 auto',
+          display: 'inline-block',
           typography: 'body1',
           color: 'text.primary'
         },
@@ -83,7 +60,13 @@ const SurveyDetails = () => {
 
       <Divider sx={{ m: 0 }}></Divider>
       
-      <Box p={3}>
+      <Box p={3}
+        sx={{
+          '& section + section': {
+            mt: 3
+          }
+        }}
+      >
         <Grid container spacing={3}>
           <Grid item xs={12}>
 
@@ -92,139 +75,25 @@ const SurveyDetails = () => {
               <SurveyGeneralInformation />
             </Paper>
 
-            <Divider sx={{ my: 3 }}></Divider>
-
-            <Paper elevation={0} component="section">
-              <Typography component="h4">Study Area Location</Typography>
-              <Box component="dl" display="flex" flexDirection="row" gap="24px">
-                <Grid container spacing={1}>
-                  <Grid item xs={12}>
-                    <Box component="dt">Area Name</Box>
-                    <Box component="dd">My Study Area Name</Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box component="dt" flex="0 0 auto">Natural Resource Ministry Regions</Box>
-                    <Box flex="1 1 auto"
-                      sx={{
-                        '& dd': {
-                          position: 'relative',
-                          display: 'inline-block',
-                          mr: 0.75
-                        },
-                        '& dd:not(:last-child):after': {
-                          content: '", "'
-                        }
-                      }}
-                    >
-                      <Box component="dd">Omenica Region</Box>
-                      <Box component="dd">Peace Region</Box>
-                      <Box component="dd">Skeena Region</Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box component="dt">Ministry of Environment Regions</Box>
-                    <Box flex="1 1 auto"
-                      sx={{
-                        '& dd': {
-                          position: 'relative',
-                          display: 'inline-block',
-                          mr: 0.75
-                        },
-                        '& dd:not(:last-child):after': {
-                          content: '", "'
-                        }
-                      }}
-                    >
-                      <Box component="dd">Omenica Region</Box>
-                      <Box component="dd">Peace Region</Box>
-                      <Box component="dd">Skeena Region</Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box component="dt">Parks and Eco-reserves</Box>
-                    <Box
-                      sx={{
-                        '& dd': {
-                          position: 'relative',
-                          display: 'inline-block',
-                          mr: 0.75
-                        },
-                        '& dd:not(:last-child):after': {
-                          content: '", "'
-                        }
-                      }}
-                    >
-                      <Box component="dd">Park One</Box>
-                      <Box component="dd">Park Two</Box>
-                      <Box component="dd">Park Three</Box>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Paper>
-
-            <Divider sx={{ my: 3 }}></Divider>
-
             <Paper elevation={0} component="section">
               <Typography component="h4">Purpose and Methodology</Typography>
               <SurveyPurposeAndMethodologyData />
             </Paper>
 
-            <Divider sx={{ my: 3 }}></Divider>
+            <Paper elevation={0} component="section">
+              <Typography component="h4">Partnerships</Typography>
+              <Partnerships />
+            </Paper>
 
             <Paper elevation={0} component="section">
               <Typography component="h4">Sampling Methods</Typography>
+              <SamplingMethods />
+            </Paper>
+
+            <Paper elevation={0} component="section">
+              
               <Box component="dl" display="flex" flexDirection="row" gap="24px">
                 <Grid container spacing={1}>
-                  <Grid item xs={12}>
-                    <Box component="dt" flex="0 0 auto">Site Selection Strategies</Box>
-                    <Box flex="1 1 auto"
-                      sx={{
-                        '& dd': {
-                          position: 'relative',
-                          display: 'inline-block',
-                          mr: 0.75
-                        },
-                        '& dd:not(:last-child):after': {
-                          content: '","'
-                        }
-                      }}
-                    >
-                      <Box component="dd">Strategy 1</Box>
-                      <Box component="dd">Strategy 2</Box>
-                      <Box component="dd">Strategy 3</Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box component="dt" flex="0 0 auto">Stratums</Box>
-                    <List 
-                      sx={{
-                        flex: '1 1 auto',
-                        '& .MuiListItem-root': {
-                          pt: '2px',
-                          mb: 1
-                        },
-                        '& .MuiListItemText-root': {
-                          mt: 0,
-                          mb: 0
-                        }
-                      }} 
-                      disablePadding
-                    >
-                      <ListItem dense disableGutters component="dd">
-                        <ListItemText
-                          primary="Coniferous forest"
-                          secondary="Description of stratum"
-                        />
-                      </ListItem>
-                      <ListItem dense disableGutters component="dd">
-                        <ListItemText
-                          primary="Low elevation"
-                          secondary="Below 500m in elevation"
-                        />
-                      </ListItem>
-                    </List>
-                  </Grid>
                   <Grid item xs={12}>
                     <Box component="dt" flex="0 0 auto">Blocks</Box>
                     <List 
@@ -296,8 +165,72 @@ const SurveyDetails = () => {
             <Divider sx={{ my: 3 }}></Divider>
 
             <Paper elevation={0} component="section">
-              <Typography component="h4">Partnerships</Typography>
-              <Partnerships />
+              <Typography component="h4">Study Area Location</Typography>
+              <Box component="dl" display="flex" flexDirection="row" gap="24px">
+                <Grid container spacing={1}>
+                  <Grid item xs={12}>
+                    <Box component="dt">Area Name</Box>
+                    <Box component="dd">My Study Area Name</Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box component="dt" flex="0 0 auto">Natural Resource Ministry Regions</Box>
+                    <Box flex="1 1 auto"
+                      sx={{
+                        '& dd': {
+                          position: 'relative',
+                          display: 'inline-block',
+                          mr: 0.75
+                        },
+                        '& dd:not(:last-child):after': {
+                          content: '", "'
+                        }
+                      }}
+                    >
+                      <Box component="dd">Omenica Region</Box>
+                      <Box component="dd">Peace Region</Box>
+                      <Box component="dd">Skeena Region</Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box component="dt">Ministry of Environment Regions</Box>
+                    <Box flex="1 1 auto"
+                      sx={{
+                        '& dd': {
+                          position: 'relative',
+                          display: 'inline-block',
+                          mr: 0.75
+                        },
+                        '& dd:not(:last-child):after': {
+                          content: '", "'
+                        }
+                      }}
+                    >
+                      <Box component="dd">Omenica Region</Box>
+                      <Box component="dd">Peace Region</Box>
+                      <Box component="dd">Skeena Region</Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box component="dt">Parks and Eco-reserves</Box>
+                    <Box
+                      sx={{
+                        '& dd': {
+                          position: 'relative',
+                          display: 'inline-block',
+                          mr: 0.75
+                        },
+                        '& dd:not(:last-child):after': {
+                          content: '", "'
+                        }
+                      }}
+                    >
+                      <Box component="dd">Park One</Box>
+                      <Box component="dd">Park Two</Box>
+                      <Box component="dd">Park Three</Box>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
             </Paper>
 
           </Grid>

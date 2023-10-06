@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
+import { grey } from '@mui/material/colors';
 
 /**
  * Purpose and Methodology data content for a survey.
@@ -24,80 +24,98 @@ const SurveyPurposeAndMethodologyData = () => {
   const surveyData = surveyContext.surveyDataLoader.data.surveyData;
 
   return (
-    <Box component="dl">
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <Typography component="dt">
-            Intended Outcome
-          </Typography>
-          <Typography component="dd" variant="body1" data-testid="survey_intended_outcome">
-            {Boolean(surveyData.purpose_and_methodology.intended_outcome_id) &&
-              codes?.intended_outcomes?.find(
-                (item: any) => item.id === surveyData.purpose_and_methodology.intended_outcome_id
-              )?.name}
-          </Typography>
-        </Grid>
-        {surveyData.purpose_and_methodology.additional_details &&
-          <Grid item xs={12}>
+    <Box 
+      component="dl"
+      sx={{
+        '& .row': {
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          py: 1,
+          borderTop: '1px solid' + grey[300]
+        },
+        '& dt': {
+          flex: '1 1 auto',
+          maxWidth: {sm: '100%', md: '25%'}
+        }
+      }}
+    >
 
+      <Box className="row">
+        <Typography component="dt">
+          Intended Outcome
+        </Typography>
+        <Typography component="dd" variant="body1" data-testid="survey_intended_outcome">
+          {Boolean(surveyData.purpose_and_methodology.intended_outcome_id) &&
+            codes?.intended_outcomes?.find(
+              (item: any) => item.id === surveyData.purpose_and_methodology.intended_outcome_id
+            )?.name}
+        </Typography>
+      </Box>
+      {surveyData.purpose_and_methodology.additional_details &&
+        <>
+
+          <Box className="row">
             <Typography component="dt">Additional Details</Typography>
             <Typography component="dd" variant="body1" data-testid="survey_additional_details">
               {surveyData.purpose_and_methodology.additional_details}
             </Typography>
+          </Box>
+        </>
+      }
 
-          </Grid>
-        }
-        <Grid item xs={12}>
-          <Typography component="dt">
-            Field Method
-          </Typography>
-          <Typography component="dd" data-testid="survey_field_method">
-            {Boolean(surveyData.purpose_and_methodology.field_method_id) &&
-              codes?.field_methods?.find(
-                (item: any) => item.id === surveyData.purpose_and_methodology.field_method_id
-              )?.name}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography component="dt">
-            Ecological Season
-          </Typography>
-          <Typography component="dd" data-testid="survey_ecological_season">
-            {Boolean(surveyData.purpose_and_methodology.ecological_season_id) &&
-              codes?.ecological_seasons?.find(
-                (item: any) => item.id === surveyData.purpose_and_methodology.ecological_season_id
-              )?.name}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography component="dt">
-            Vantage Code(s)
-          </Typography>
-          {surveyData.purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
-            return (
-              <Typography
-                component="dd"
-                key={`key-${vc_id}`}
-                sx={{
-                  position: 'relative',
-                  display: 'inline-block',
-                  mr: 1.25,
-                  '&::after': {
-                    content: `','`,
-                    position: 'absolute',
-                    top: 0
-                  },
-                  '&:last-child::after': {
-                    display: 'none'
-                  }
-                }}
-                data-testid="survey_vantage_code">
-                {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
-              </Typography>
-            );
-          })}
-        </Grid>
-      </Grid>
+      <Box className="row">
+        <Typography component="dt">
+          Field Method
+        </Typography>
+        <Typography component="dd" data-testid="survey_field_method">
+          {Boolean(surveyData.purpose_and_methodology.field_method_id) &&
+            codes?.field_methods?.find(
+              (item: any) => item.id === surveyData.purpose_and_methodology.field_method_id
+            )?.name}
+        </Typography>
+      </Box>
+
+      <Box className="row">
+        <Typography component="dt">
+          Ecological Season
+        </Typography>
+        <Typography component="dd" data-testid="survey_ecological_season">
+          {Boolean(surveyData.purpose_and_methodology.ecological_season_id) &&
+            codes?.ecological_seasons?.find(
+              (item: any) => item.id === surveyData.purpose_and_methodology.ecological_season_id
+            )?.name}
+        </Typography>
+      </Box>
+
+      <Box className="row">
+        <Typography component="dt">
+          Vantage Code(s)
+        </Typography>
+        {surveyData.purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
+          return (
+            <Typography
+              component="dd"
+              key={`key-${vc_id}`}
+              sx={{
+                position: 'relative',
+                display: 'inline-block',
+                mr: 1.25,
+                '&::after': {
+                  content: `','`,
+                  position: 'absolute',
+                  top: 0
+                },
+                '&:last-child::after': {
+                  display: 'none'
+                }
+              }}
+              data-testid="survey_vantage_code">
+              {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
+            </Typography>
+          );
+        })}
+      </Box>
     </Box>
   );
 };

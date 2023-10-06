@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import { grey } from '@mui/material/colors';
 
 /**
  * General information content for a survey.
@@ -34,72 +34,96 @@ const SurveyGeneralInformation = () => {
       .join(', ') || '';
 
   return (
-    <>
-      <Box component="dl">
-        <Grid container spacing={1}>
-          <Grid item sm={12}>
-            <Typography component="dt">
-              Survey Type
-            </Typography>
-            <Typography component="dd">{surveyTypes ? <>{surveyTypes}</> : 'No Types'}</Typography>
-          </Grid>
-          <Grid item sm={12}>
-            <Typography component="dt">
-              Start/End Date
-            </Typography>
-            <Typography component="dd" data-testid="survey_timeline">
-              {survey_details.end_date ? (
-                <>
-                  {getFormattedDateRangeString(
-                    DATE_FORMAT.MediumDateFormat,
-                    survey_details.start_date,
-                    survey_details.end_date
-                  )}
-                </>
-              ) : (
-                <>
-                  <span>Start Date:</span>{' '}
-                  {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, survey_details.start_date)}
-                </>
-              )}
-            </Typography>
-          </Grid>
-          <Grid item sm={12}>
-            <Typography component="dt">
-              Species of Interest
-            </Typography>
-            <Box flex="1 1 auto">
-              {species.focal_species_names?.map((focalSpecies: string, index: number) => {
-                return (
-                  <Typography component="dd" variant="body1" key={index}>
-                    {focalSpecies}
-                  </Typography>
-                );
-              })}
-            </Box>
-          </Grid>
-          <Grid item sm={12}>
-            <Typography component="dt">
-              Secondary Species
-            </Typography>
-            <Box flex='1 1 auto'>
-              {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
-                return (
-                  <Typography component="dd" key={index}>
-                    {ancillarySpecies}
-                  </Typography>
-                );
-              })}
-              {species.ancillary_species_names?.length <= 0 && (
-                <Typography component="dd">
-                  No secondary species of interest
-                </Typography>
-              )}
-            </Box>
-          </Grid>
-        </Grid>
+    <Box 
+      component="dl"
+      sx={{
+        '& .row': {
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          py: 1,
+          borderTop: '1px solid' + grey[300]
+        },
+        '& dt': {
+          flex: '1 1 auto',
+          maxWidth: {sm: '100%', md: '25%'}
+        }
+      }}
+    >
+      <Box className="row">
+        <Typography component="dt">
+          Survey Type
+        </Typography>
+        <Typography component="dd">{surveyTypes ? <>{surveyTypes}</> : 'No Types'}</Typography>
       </Box>
-    </>
+
+      <Box className="row">
+        <Typography component="dt">
+          Start/End Date
+        </Typography>
+        <Typography component="dd" data-testid="survey_timeline">
+          {survey_details.end_date ? (
+            <>
+              {getFormattedDateRangeString(
+                DATE_FORMAT.MediumDateFormat,
+                survey_details.start_date,
+                survey_details.end_date
+              )}
+            </>
+          ) : (
+            <>
+              <span>Start Date:</span>{' '}
+              {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, survey_details.start_date)}
+            </>
+          )}
+        </Typography>
+      </Box>
+
+      <Box className="row">
+        <Typography component="dt">
+          Species of Interest
+        </Typography>
+        <Box display="inline-block"
+          sx={{
+            width: {sm: '100%', md: '75%'}
+          }}
+        >
+          {species.focal_species_names?.map((focalSpecies: string, index: number) => {
+            return (
+              <Typography component="dd" variant="body1" key={index}
+                sx={{
+                  display: 'inline-block',
+                  width: 'auto'
+                }}
+              >
+                {focalSpecies}
+              </Typography>
+            );
+          })}
+        </Box>
+      </Box>
+
+      <Box className="row">
+        <Typography component="dt">
+          Secondary Species of Interest
+        </Typography>
+        <Box display="inline-block">
+          {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
+            return (
+              <Typography component="dd" key={index}>
+                {ancillarySpecies}
+              </Typography>
+            );
+          })}
+          {species.ancillary_species_names?.length <= 0 && (
+            <Typography component="dd">
+              No secondary species of interest
+            </Typography>
+          )}
+        </Box>
+      </Box>
+
+    </Box>
   );
 };
 

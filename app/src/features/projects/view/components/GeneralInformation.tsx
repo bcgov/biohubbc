@@ -33,7 +33,7 @@ const GeneralInformation = () => {
 
   return (
     <Box component="dl" my={0}>
-      <Grid container spacing={1}>
+      <Grid container spacing={0}>
         <Grid item sm={6}>
           <Typography component="dt" color="textSecondary" variant="subtitle2">
             Program
