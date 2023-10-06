@@ -98,7 +98,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
     };
 
     fetchCurrentOption();
-  }, [dataGridValue, getCurrentOption, currentOption?.value]);
+  }, [dataGridValue, currentOption?.value]);
 
   useEffect(() => {
     let mounted = true;
@@ -164,7 +164,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
           value: selectedOption?.value
         });
       }}
-      onInputChange={(event, newInputValue) => {
+      onInputChange={(_, newInputValue) => {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (

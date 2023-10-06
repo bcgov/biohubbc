@@ -169,11 +169,8 @@ export class ObservationRepository extends BaseRepository {
     `);
 
     sqlStatement.append(`
-      RETURNING
-        *,
-        latitude::double precision,
-        longitude::double precision
-    ;`);
+      RETURNING*;
+    `);
     const response = await this.connection.sql(sqlStatement, ObservationRecord);
 
     return response.rows;
@@ -188,11 +185,7 @@ export class ObservationRepository extends BaseRepository {
    */
   async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     const knex = getKnex();
-    const sqlStatement = knex
-      .queryBuilder()
-      .select('*', knex.raw('latitude::double precision'), knex.raw('longitude::double precision'))
-      .from('survey_observation')
-      .where('survey_id', surveyId);
+    const sqlStatement = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId);
 
     const response = await this.connection.knex(sqlStatement, ObservationRecord);
     return response.rows;
