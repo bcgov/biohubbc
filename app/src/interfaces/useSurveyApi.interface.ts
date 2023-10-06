@@ -111,6 +111,17 @@ export interface IGetSurveyLocation {
   revision_count: number;
 }
 
+export interface IGetSurveyBlock {
+  survey_block_id: number;
+  name: string;
+  description: string;
+  create_date: string;
+  create_user: number;
+  update_date: string | null;
+  update_user: number | null;
+  revision_count: number;
+}
+
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
@@ -122,6 +133,7 @@ export interface SurveyViewObject {
   participants: IGetSurveyParticipant[];
   partnerships: IGetSurveyForViewResponsePartnerships;
   locations: IGetSurveyLocation[];
+  blocks: IGetSurveyBlock[];
 }
 
 export interface SurveyUpdateObject extends ISurveyLocationForm {
