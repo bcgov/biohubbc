@@ -319,7 +319,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     systemRoles: getSystemRoles(),
     hasSystemRole,
     isSystemUser,
-    hasAccessRequest: !!administrativeActivityStandingDataLoader.data?.has_pending_acccess_request,
+    hasAccessRequest: !!administrativeActivityStandingDataLoader.data?.has_pending_access_request,
     hasOneOrMoreProjectRoles: !!administrativeActivityStandingDataLoader.data?.has_one_or_more_project_roles,
     getUserIdentifier,
     getUserGuid,
