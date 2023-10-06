@@ -1,9 +1,10 @@
 import { LoadingButton } from '@mui/lab';
-import { Breadcrumbs, Button, Link, Paper, Theme, Typography } from '@mui/material';
+import { Breadcrumbs, Button, Paper, Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
 import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import { ICreateSamplingSiteRequest } from './SamplingSitePage';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -40,14 +41,17 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
           px: 3
         }}>
         <Breadcrumbs aria-label="breadcrumb">
-          <Link variant="body2" underline="hover" href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
-            {survey_name}
+          <Link to={`/admin/projects/${project_id}/surveys/${survey_id}/details`} style={{ textDecoration: 'none' }}>
+            <Typography component="span" variant="body2">
+              {survey_name}
+            </Typography>
           </Link>
           <Link
-            variant="body2"
-            underline="hover"
-            href={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}>
-            Manage Survey Observations
+            to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
+            style={{ textDecoration: 'none' }}>
+            <Typography component="span" variant="body2">
+              Manage Survey Observations
+            </Typography>
           </Link>
           <Typography component="span" color="text.secondary" variant="body2">
             {breadcrumb}
