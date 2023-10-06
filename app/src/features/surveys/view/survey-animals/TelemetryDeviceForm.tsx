@@ -89,7 +89,8 @@ const DeploymentFormSection = ({
         onYes={async () => {
           await removeAction(String(deploymentToDelete));
           setOpenDeleteDialog(false);
-        }}></YesNoDialog>
+        }}
+      />
       <Grid container spacing={3}>
         {deployments.map((deploy, i) => {
           return (
@@ -246,7 +247,6 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
         <Typography component="legend" variant="body2">
           Deployment Dates
         </Typography>
-
         {
           <DeploymentFormSection
             index={index}
