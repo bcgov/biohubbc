@@ -35,7 +35,7 @@ export async function up(knex: Knex): Promise<void> {
   -------------------------------------------------------------------------
   CREATE TABLE funding_source(
     funding_source_id        integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)       NOT NULL,
+    name                     varchar(100)      NOT NULL,
     description              varchar(250)      NOT NULL,
     start_date               date,
     end_date                 date,
