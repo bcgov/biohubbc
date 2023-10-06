@@ -3,6 +3,7 @@ import bbox from '@turf/bbox';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
+import hash from 'object-hash';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -52,7 +53,9 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
           } else {
             features = geojson.features;
           }
-
+          features.map((feature) => {
+            feature.id = hash(feature);
+          });
           resolve(features);
         })
         .catch((error) => {
