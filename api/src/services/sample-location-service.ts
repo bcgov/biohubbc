@@ -97,27 +97,17 @@ export class SampleLocationService extends DBService {
     return results;
   }
 
-  /**
-   * updates a survey Sample Location.
-   *
-   * @param {PostSampleLocation} sampleLocation
-   * @memberof SampleLocationService
-   */
-  async updateSampleSites(sampleLocations: UpdateSampleSitesRecord) {
-    const sampleSite = {
-      survey_sample_site_id: sampleLocations.survey_sample_site_id,
-      survey_id: sampleLocations.survey_id,
-      name: sampleLocations.name,
-      description: sampleLocations.description,
-      geojson: sampleLocations.survey_sample_sites[0],
-      methods: sampleLocations.methods
-    };
-
-    await this.updateSampleLocationMethodPeriod(sampleSite);
-  }
-
-  async updateSampleLocationMethodPeriod(sampleSite: UpdateSampleSiteRecord) {
+  async updateSampleLocationMethodPeriod(sampleSites: UpdateSampleSitesRecord) {
     const methodService = new SampleMethodService(this.connection);
+
+    const sampleSite: UpdateSampleSiteRecord = {
+      survey_sample_site_id: sampleSites.survey_sample_site_id,
+      survey_id: sampleSites.survey_id,
+      name: sampleSites.name,
+      description: sampleSites.description,
+      geojson: sampleSites.survey_sample_sites[0],
+      methods: sampleSites.methods
+    };
 
     // Update the main sample location
     await this.sampleLocationRepository.updateSampleLocation(sampleSite);

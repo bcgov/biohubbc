@@ -169,7 +169,7 @@ export function updateSurveySampleSite(): RequestHandler {
       await connection.open();
 
       const sampleLocationService = new SampleLocationService(connection);
-      await sampleLocationService.updateSampleSites(sampleSite);
+      await sampleLocationService.updateSampleLocationMethodPeriod(sampleSite);
 
       await connection.commit();
 

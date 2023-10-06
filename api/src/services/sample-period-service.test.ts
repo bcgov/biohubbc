@@ -159,4 +159,39 @@ describe('SamplePeriodService', () => {
       expect(response).to.eql(mockSamplePeriodRecord);
     });
   });
+
+  describe('checkSamplePeriodToDelete', () => {
+    it('should run without issue', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockSamplePeriodRecords: SamplePeriodRecord[] = [
+        {
+          survey_sample_period_id: 1,
+          survey_sample_method_id: 2,
+          start_date: '2023-10-02',
+          end_date: '2023-01-02',
+          create_date: '2023-05-06',
+          create_user: 1,
+          update_date: null,
+          update_user: null,
+          revision_count: 0
+        }
+      ];
+      const getSamplePeriodsForSurveyMethodIdStub = sinon
+        .stub(SamplePeriodRepository.prototype, 'getSamplePeriodsForSurveyMethodId')
+        .resolves(mockSamplePeriodRecords);
+
+      const deleteSamplePeriodRecordStub = sinon
+        .stub(SamplePeriodRepository.prototype, 'deleteSamplePeriodRecord')
+        .resolves();
+
+      const surveySampleMethodId = 1;
+      const samplePeriodService = new SamplePeriodService(mockDBConnection);
+      const response = await samplePeriodService.checkSamplePeriodToDelete(surveySampleMethodId, []);
+
+      expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(surveySampleMethodId);
+      expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith(mockSamplePeriodRecords[0].survey_sample_period_id);
+      expect(response).to.eql(undefined);
+    });
+  });
 });

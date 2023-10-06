@@ -118,8 +118,6 @@ export class SampleLocationRepository extends BaseRepository {
    * @memberof SampleLocationRepository
    */
   async updateSampleLocation(sample: UpdateSampleLocationRecord): Promise<SampleLocationRecord> {
-    console.log('sample', sample);
-
     const sql = SQL`
       UPDATE
         survey_sample_site

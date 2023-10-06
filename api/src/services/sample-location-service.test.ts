@@ -64,6 +64,7 @@ describe('SampleLocationService', () => {
         description: '',
         geojson: [],
         geography: [],
+        sample_methods: [],
         create_date: '',
         create_user: 1,
         update_date: '',
@@ -92,6 +93,7 @@ describe('SampleLocationService', () => {
           description: '',
           geojson: [],
           geography: [],
+          sample_methods: [],
           create_date: '',
           create_user: 1,
           update_date: '',
@@ -121,6 +123,7 @@ describe('SampleLocationService', () => {
         description: '',
         geojson: [],
         geography: [],
+        sample_methods: [],
         create_date: '',
         create_user: 1,
         update_date: '',
@@ -134,34 +137,41 @@ describe('SampleLocationService', () => {
     });
   });
 
-  describe('updateSampleLocation', () => {
+  describe('updateSampleLocationMethodPeriod', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
 
-      sinon.stub(SampleLocationRepository.prototype, 'updateSampleLocation').resolves({
+      const updateSampleLocationStub = sinon.stub(SampleLocationRepository.prototype, 'updateSampleLocation').resolves({
         survey_sample_site_id: 1,
         survey_id: 1,
         name: 'Cool new site',
         description: 'Check out this description',
         geojson: [],
         geography: [],
+        sample_methods: [],
         create_date: '',
         create_user: 1,
         update_date: '',
         update_user: 1,
         revision_count: 0
       });
+      sinon.stub(SampleMethodService.prototype, 'checkSampleMethodsToDelete').resolves();
+      sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
 
-      const { name, description } = await service.updateSampleLocation({
+      service.updateSampleLocationMethodPeriod({
         survey_sample_site_id: 1,
         survey_id: 1,
         name: 'Cool new site',
-        description: 'Check out this description'
+        description: 'Check out this description',
+        survey_sample_sites: [],
+        methods: [
+          { survey_sample_method_id: 1, method_lookup_id: 1, description: 'Cool method', periods: [] } as any,
+          { method_lookup_id: 1, description: 'Cool method', periods: [] } as any
+        ]
       });
 
-      expect(name).to.be.eq('Cool new site');
-      expect(description).to.be.eq('Check out this description');
+      expect(updateSampleLocationStub).to.be.calledOnce;
     });
   });
 });

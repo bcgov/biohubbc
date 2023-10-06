@@ -37,6 +37,7 @@ describe('SampleMethodService', () => {
           survey_sample_site_id: 2,
           method_lookup_id: 3,
           description: 'description',
+          sample_periods: [],
           create_date: '2023-05-06',
           create_user: 1,
           update_date: null,
@@ -70,6 +71,7 @@ describe('SampleMethodService', () => {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',
+        sample_periods: [],
         create_date: '2023-05-06',
         create_user: 1,
         update_date: null,
@@ -79,6 +81,9 @@ describe('SampleMethodService', () => {
       const deleteSampleMethodRecordStub = sinon
         .stub(SampleMethodRepository.prototype, 'deleteSampleMethodRecord')
         .resolves(mockSampleMethodRecord);
+
+      sinon.stub(SamplePeriodService.prototype, 'getSamplePeriodsForSurveyMethodId').resolves([]);
+      sinon.stub(SamplePeriodService.prototype, 'deleteSamplePeriodRecord').resolves();
 
       const surveySampleMethodId = 1;
       const sampleMethodService = new SampleMethodService(mockDBConnection);
@@ -101,6 +106,7 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
+        sample_periods: [],
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
@@ -167,6 +173,7 @@ describe('SampleMethodService', () => {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',
+        sample_periods: [],
         create_date: '2023-05-06',
         create_user: 1,
         update_date: null,
@@ -176,6 +183,10 @@ describe('SampleMethodService', () => {
       const updateSampleMethodStub = sinon
         .stub(SampleMethodRepository.prototype, 'updateSampleMethod')
         .resolves(mockSampleMethodRecord);
+
+      sinon.stub(SamplePeriodService.prototype, 'checkSamplePeriodToDelete').resolves();
+      sinon.stub(SamplePeriodService.prototype, 'updateSamplePeriod').resolves();
+      sinon.stub(SamplePeriodService.prototype, 'insertSamplePeriod').resolves();
 
       const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
@@ -192,6 +203,46 @@ describe('SampleMethodService', () => {
 
       expect(updateSampleMethodStub).to.be.calledOnceWith(sampleMethod);
       expect(response).to.eql(mockSampleMethodRecord);
+    });
+  });
+
+  describe('checkSampleMethodsToDelete', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should run without issue', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockSampleMethodRecord: SampleMethodRecord = {
+        survey_sample_method_id: 1,
+        survey_sample_site_id: 2,
+        method_lookup_id: 3,
+        description: 'description',
+        sample_periods: [],
+        create_date: '2023-05-06',
+        create_user: 1,
+        update_date: null,
+        update_user: null,
+        revision_count: 0
+      };
+
+      const mockSampleMethodRecords: SampleMethodRecord[] = [mockSampleMethodRecord];
+      const getSampleMethodsForSurveySampleSiteIdStub = sinon
+        .stub(SampleMethodRepository.prototype, 'getSampleMethodsForSurveySampleSiteId')
+        .resolves(mockSampleMethodRecords);
+
+      const deleteSampleMethodRecordStub = sinon
+        .stub(SampleMethodService.prototype, 'deleteSampleMethodRecord')
+        .resolves();
+
+      const surveySampleSiteId = 1;
+
+      const sampleMethodService = new SampleMethodService(mockDBConnection);
+      await sampleMethodService.checkSampleMethodsToDelete(surveySampleSiteId, []);
+
+      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(surveySampleSiteId);
+
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(mockSampleMethodRecord.survey_sample_method_id);
     });
   });
 });
