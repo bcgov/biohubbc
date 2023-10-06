@@ -22,7 +22,7 @@ const SamplingMethods = () => {
   }
 
   const {
-    surveyData: { site_selection }
+    surveyData: { site_selection, blocks }
   } = surveyForViewData;
 
   return (
@@ -32,12 +32,12 @@ const SamplingMethods = () => {
         '& .row': {
           display: 'flex',
           flexDirection: 'row',
-          flexWrap: 'wrap',
+          flexWrap: {sm: 'wrap', md: 'nowrap'},
           py: 1,
           borderTop: '1px solid' + grey[300]
         },
         '& dt': {
-          flex: '1 1 auto',
+          flex: '0 0 auto',
           maxWidth: {sm: '100%', md: '25%'}
         }
       }}
@@ -96,6 +96,38 @@ const SamplingMethods = () => {
           })}
         </Box>
       </Box>
+
+      {blocks.length > 0 &&
+        <Box className="row">
+          <Typography component="dt">
+            Blocks
+          </Typography>
+          <Box
+            flex="1 1 auto"
+          >
+            {blocks?.map((item, index: number) => {
+              return (
+                <ListItem component="dd" key={index} 
+                  sx={{
+                    p: 0,
+                    '& + dd': {
+                      mt: 1
+                    }
+                  }}
+                >
+                  <ListItemText
+                    sx={{
+                      m: 0
+                    }} 
+                    primary={item.name}
+                    secondary={item.description}
+                  />
+                </ListItem>
+              );
+            })}
+          </Box>
+        </Box>
+      }
 
     </Box>
   );

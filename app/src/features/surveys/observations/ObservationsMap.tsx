@@ -1,23 +1,23 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 import Box from '@mui/material/Box';
-import MapContainer from 'components/map/MapContainer';
-import { LatLngBoundsExpression } from 'leaflet';
-import { IInferredLayers } from 'components/boundary/InferredLocationDetails';
+// import MapContainer from 'components/map/MapContainer';
+// import { LatLngBoundsExpression } from 'leaflet';
+// import { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 
 const ObservationsMap = () => {
-  const [bounds, _setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
+  // const [bounds, _setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   // const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
-  const [nonEditableGeometries, _setNonEditableGeometries] = useState<any[]>([]);
-  const [_inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
-    parks: [],
-    nrm: [],
-    env: [],
-    wmu: []
-  });
+  // const [nonEditableGeometries, _setNonEditableGeometries] = useState<any[]>([]);
+  // const [_inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
+  //   parks: [],
+  //   nrm: [],
+  //   env: [],
+  //   wmu: []
+  // });
 
   return (
     <Box position="relative" height={600} sx={{ px: 3, pb: 3 }}>
-      <MapContainer
+      {/* <MapContainer
         mapId="survey_observations_map"
         scrollWheelZoom={true}
         bounds={bounds}
@@ -25,7 +25,7 @@ const ObservationsMap = () => {
         setInferredLayersInfo={setInferredLayersInfo}
         // markerLayers={markerLayers}
         // staticLayers={staticLayers}
-      />
+      /> */}
     </Box>
   );
 };

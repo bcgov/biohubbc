@@ -92,8 +92,17 @@ const SurveyGeneralInformation = () => {
             return (
               <Typography component="dd" variant="body1" key={index}
                 sx={{
+                  position: 'relative',
                   display: 'inline-block',
-                  width: 'auto'
+                  mr: 1.25,
+                  '&::after': {
+                    content: `','`,
+                    position: 'absolute',
+                    top: 0
+                  },
+                  '&:last-child::after': {
+                    display: 'none'
+                  }
                 }}
               >
                 {focalSpecies}
@@ -110,7 +119,21 @@ const SurveyGeneralInformation = () => {
         <Box display="inline-block">
           {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
             return (
-              <Typography component="dd" key={index}>
+              <Typography component="dd" key={index}
+                sx={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  mr: 1.25,
+                  '&::after': {
+                    content: `','`,
+                    position: 'absolute',
+                    top: 0
+                  },
+                  '&:last-child::after': {
+                    display: 'none'
+                  }
+                }}
+              >
                 {ancillarySpecies}
               </Typography>
             );

@@ -1,10 +1,9 @@
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { getFormattedAmount } from 'utils/Utils';
+import { grey } from '@mui/material/colors';
 
 /**
  * Funding source content for a survey.
@@ -24,34 +23,47 @@ const SurveyFundingSources = () => {
   } = surveyForViewData;
 
   return (
-    <List disablePadding
+    <Box 
+      component="dl"
       sx={{
-        '& li:first-of-type': {
-          paddingTop: 0
+        '& .row': {
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: {sm: 'wrap', md: 'nowrap'},
+          py: 1,
+          borderTop: '1px solid' + grey[300]
         },
-        '& .MuiListItemText-root': {
-          margin: 0
+        '& dt': {
+          flex: '1 1 auto',
+          maxWidth: {sm: '100%', md: '25%'}
         }
       }}
     >
       {funding_sources.length > 0 ? (
         <>
           {funding_sources.map((surveyFundingSource) => (
-            <ListItem component="dd" disableGutters key={surveyFundingSource.funding_source_id}>
-              <ListItemText
-                primary={surveyFundingSource.funding_source_name}
-                secondary={getFormattedAmount(surveyFundingSource.amount)}
+            <Box className="row" key={surveyFundingSource.funding_source_id}>
+              <Typography component="dt">
+              {surveyFundingSource.funding_source_name}
+              </Typography>
+              <Typography component="dd"
+                sx={{
+                  display: 'inline-block',
+                  width: 'auto'
+                }}
               >
-              </ListItemText>
-            </ListItem>
+                {getFormattedAmount(surveyFundingSource.amount)}
+              </Typography>
+            </Box>
           ))}
         </>
       ) : (
-        <ListItem disableGutters>
+        <Box>
           <Typography>No Funding Sources</Typography>
-        </ListItem>
+        </Box>
       )}
-    </List>
+
+    </Box>
   );
 };
 

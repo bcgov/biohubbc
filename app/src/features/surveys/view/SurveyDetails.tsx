@@ -1,8 +1,5 @@
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -81,57 +78,13 @@ const SurveyDetails = () => {
             </Paper>
 
             <Paper elevation={0} component="section">
-              <Typography component="h4">Partnerships</Typography>
-              <Partnerships />
-            </Paper>
-
-            <Paper elevation={0} component="section">
               <Typography component="h4">Sampling Methods</Typography>
               <SamplingMethods />
             </Paper>
 
-            <Paper elevation={0} component="section">
-              
-              <Box component="dl" display="flex" flexDirection="row" gap="24px">
-                <Grid container spacing={1}>
-                  <Grid item xs={12}>
-                    <Box component="dt" flex="0 0 auto">Blocks</Box>
-                    <List 
-                      sx={{
-                        flex: '1 1 auto',
-                        '& .MuiListItem-root': {
-                          pt: '2px',
-                          mb: 1
-                        },
-                        '& .MuiListItemText-root': {
-                          mt: 0,
-                          mb: 0
-                        }
-                      }} 
-                      disablePadding
-                    >
-                      <ListItem dense disableGutters component="dd">
-                        <ListItemText
-                          primary="Block Name"
-                          secondary="Description of block"
-                        />
-                      </ListItem>
-                      <ListItem dense disableGutters component="dd">
-                      <ListItemText
-                          primary="Block Name"
-                          secondary="Description of block"
-                        />
-                      </ListItem>
-                      <ListItem dense disableGutters component="dd">
-                        <ListItemText
-                          primary="Stratum Name"
-                          secondary="Description of stratum"
-                        />
-                      </ListItem>
-                    </List>
-                  </Grid>
-                </Grid>
-              </Box>
+            <Paper elevation={0} component="section" sx={{display: 'none'}}>
+              <Typography component="h4">Survey Participants</Typography>
+              <SurveyParticipants/>
             </Paper>
 
             <Box component="section" sx={{ display: 'none' }}>
@@ -141,30 +94,22 @@ const SurveyDetails = () => {
               <SurveyProprietaryData />
             </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
-
-            <Paper elevation={0} component="section">
-              <Typography component="h4">Survey Participants</Typography>
-              <SurveyParticipants/>
-            </Paper>
-
-            <Divider sx={{ my: 3 }}></Divider>
-
             <Paper elevation={0} component="section">
               <Typography component="h4">Funding Sources</Typography>
               <SurveyFundingSources />
             </Paper>
 
-            <Divider sx={{ my: 3 }}></Divider>
+            <Paper elevation={0} component="section">
+              <Typography component="h4">Partnerships</Typography>
+              <Partnerships />
+            </Paper>
 
             <Paper elevation={0} component="section">
               <Typography component="h4">Permits</Typography>
               <Permits />
             </Paper>
 
-            <Divider sx={{ my: 3 }}></Divider>
-
-            <Paper elevation={0} component="section">
+            <Paper elevation={0} component="section" sx={{display: 'none'}}>
               <Typography component="h4">Study Area Location</Typography>
               <Box component="dl" display="flex" flexDirection="row" gap="24px">
                 <Grid container spacing={1}>

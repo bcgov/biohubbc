@@ -30,12 +30,12 @@ const SurveyPurposeAndMethodologyData = () => {
         '& .row': {
           display: 'flex',
           flexDirection: 'row',
-          flexWrap: 'wrap',
+          flexWrap: {sm: 'wrap', md: 'nowrap'},
           py: 1,
           borderTop: '1px solid' + grey[300]
         },
         '& dt': {
-          flex: '1 1 auto',
+          flex: '0 0 auto',
           maxWidth: {sm: '100%', md: '25%'}
         }
       }}
