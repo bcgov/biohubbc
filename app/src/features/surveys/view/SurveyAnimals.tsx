@@ -172,10 +172,10 @@ const SurveyAnimals: React.FC = () => {
               value,
               context.parent.attachment_end
             );
-            if (errStr) {
+            if (errStr.length) {
               return context.createError({ message: errStr });
             } else {
-              return false;
+              return true;
             }
           }),
         attachment_end: yup
@@ -192,10 +192,10 @@ const SurveyAnimals: React.FC = () => {
               context.parent.attachment_start,
               value
             );
-            if (errStr) {
+            if (errStr.length) {
               return context.createError({ message: errStr });
             } else {
-              return false;
+              return true;
             }
           })
       })
