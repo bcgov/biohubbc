@@ -1,4 +1,3 @@
-import { Divider, Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -37,14 +36,14 @@ const SurveyGeneralInformation = () => {
     <Box component="dl">
       <Box className="row">
         <Typography component="dt">
-          Survey Type
+          Type
         </Typography>
         <Typography component="dd">{surveyTypes ?? 'No Types'}</Typography>
       </Box>
 
       <Box className="row">
         <Typography component="dt">
-          Start/End Date
+          Timeline
         </Typography>
         <Typography component="dd" data-testid="survey_timeline">
           {survey_details.end_date ? (
