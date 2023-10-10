@@ -135,8 +135,6 @@ interface IDeviceFormSectionProps {
 }
 
 const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSectionProps): JSX.Element => {
-  const { setStatus } = useFormikContext<{ formValues: IAnimalTelemetryDeviceFile[] }>();
-  const [bctwErrors, setBctwErrors] = useState<Record<string, string | undefined>>({});
   const api = useTelemetryApi();
 
   const { data: bctwDeviceData, refresh } = useDataLoader(() => api.devices.getDeviceDetails(values[index].device_id));
@@ -148,33 +146,6 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values[index].device_id]);
-
-  useEffect(() => {
-    const errors: { attachment_start?: string } = {};
-    for (const deployment of values[index].deployments ?? []) {
-      const existingDeployment = bctwDeviceData?.deployments?.find(
-        (a) =>
-          deployment.deployment_id !== a.deployment_id &&
-          dateRangesOverlap(
-            a.attachment_start,
-            a.attachment_end,
-            deployment.attachment_start,
-            deployment.attachment_end
-          )
-      ); //Check if there is already a deployment that is not the same id as this one and overlaps the time we are trying to upload.
-      if (existingDeployment) {
-        errors.attachment_start = `Cannot make a deployment starting on this date, it will conflict with deployment ${
-          existingDeployment.deployment_id
-        } 
-        running from ${existingDeployment.attachment_start} until ${
-          existingDeployment.attachment_end ?? 'indefinite'
-        }.`;
-      }
-    }
-
-    setBctwErrors(errors);
-    setStatus({ forceDisable: Object.entries(errors).length > 0 });
-  }, [bctwDeviceData, index, setStatus, values]);
 
   return (
     <>
@@ -255,17 +226,6 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
             removeAction={removeAction}
           />
         }
-      </Box>
-      <Box sx={{ mt: 3 }}>
-        {Object.entries(bctwErrors).length > 0 && (
-          <Grid item xs={12}>
-            {Object.entries(bctwErrors).map((bctwError) => (
-              <FormHelperText key={`bctw-error-${bctwError[0]}`} error={true}>
-                {bctwError[1]}
-              </FormHelperText>
-            ))}
-          </Grid>
-        )}
       </Box>
     </>
   );

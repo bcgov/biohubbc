@@ -13,7 +13,7 @@ const numSchema = yup.number().typeError(mustBeNum);
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   deployment_id: yup.string(),
-  attachment_start: yup.string().isValidDateString().required(req),
+  attachment_start: yup.string().isValidDateString().required(req).typeError(req),
   attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start').nullable()
 });
 

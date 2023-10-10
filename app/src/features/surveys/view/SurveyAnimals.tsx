@@ -15,7 +15,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
-import { datesSameNullable } from 'utils/Utils';
+import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
@@ -24,6 +24,7 @@ import {
   transformCritterbaseAPIResponseToForm
 } from './survey-animals/animal-form-helpers';
 import {
+  AnimalDeploymentTimespanSchema,
   AnimalTelemetryDeviceSchema,
   Device,
   IAnimalTelemetryDevice,
@@ -117,10 +118,34 @@ const SurveyAnimals: React.FC = () => {
     ]
   };
 
+  const deploymentOverlapTest = async (
+    device_id: number,
+    deployment_id: string,
+    attachment_start: string | undefined,
+    attachment_end: string | null | undefined
+  ): Promise<string> => {
+    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
+    if (!attachment_start) {
+      return 'Attachment start is required.'; //It probably won't actually display this but just in case.
+    }
+    const existingDeployment = deviceDetails?.deployments?.find(
+      (a) =>
+        a.deployment_id !== deployment_id &&
+        dateRangesOverlap(a.attachment_start, a.attachment_end, attachment_start, attachment_end)
+    );
+    if (existingDeployment) {
+      return `This will conflict with an existing deployment for the device running from ${
+        existingDeployment.attachment_start
+      } until ${existingDeployment.attachment_end ?? 'indefinite.'}`;
+    } else {
+      return '';
+    }
+  };
+
   const AnimalDeploymentSchemaAsyncValidation = AnimalTelemetryDeviceSchema.shape({
     device_make: yup
       .string()
-      .required()
+      .required('Required')
       .test('checkDeviceMakeIsNotChanged', '', async (value, context) => {
         const deviceDetails = await telemetryApi.devices.getDeviceDetails(Number(context.parent.device_id));
         if (deviceDetails.device?.device_make && deviceDetails.device?.device_make !== value) {
@@ -129,8 +154,53 @@ const SurveyAnimals: React.FC = () => {
           });
         }
         return true;
+      }),
+    deployments: yup.array(
+      AnimalDeploymentTimespanSchema.shape({
+        attachment_start: yup
+          .string()
+          .required('Required.')
+          .isValidDateString()
+          .typeError('Required.')
+          .test('checkDeploymentRange', '', async (value, context) => {
+            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
+            const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
+            const errStr = await deploymentOverlapTest(
+              deviceId,
+              context.parent.deployment_id,
+              value,
+              context.parent.attachment_end
+            );
+            if (errStr) {
+              return context.createError({ message: errStr });
+            } else {
+              return false;
+            }
+          }),
+        attachment_end: yup
+          .string()
+          .isValidDateString()
+          .isEndDateSameOrAfterStartDate('attachment_start')
+          .nullable()
+          .test('checkDeploymentRangeEnd', '', async (value, context) => {
+            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
+            const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
+            const errStr = await deploymentOverlapTest(
+              deviceId,
+              context.parent.deployment_id,
+              context.parent.attachment_start,
+              value
+            );
+            if (errStr) {
+              return context.createError({ message: errStr });
+            } else {
+              return false;
+            }
+          })
       })
+    )
   });
+
   const obtainAnimalFormInitialvalues = (mode: ANIMAL_FORM_MODE): IAnimal | null => {
     switch (mode) {
       case ANIMAL_FORM_MODE.ADD:
