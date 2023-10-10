@@ -364,7 +364,8 @@ const SurveyAnimals: React.FC = () => {
   const handleRemoveCritter = async () => {
     try {
       if (!selectedCritterId) {
-        throw Error('Critter ID not set correctly.');
+        setPopup('Failed to remove critter from survey.');
+        return;
       }
       await bhApi.survey.removeCritterFromSurvey(projectId, surveyId, selectedCritterId);
     } catch (e) {
@@ -377,7 +378,8 @@ const SurveyAnimals: React.FC = () => {
   const handleRemoveDeployment = async (deployment_id: string) => {
     try {
       if (!selectedCritterId) {
-        throw Error('Survey critter ID was set incorrectly.');
+        setPopup('Failed to delete deployment.');
+        return;
       }
       await bhApi.survey.removeDeployment(projectId, surveyId, selectedCritterId, deployment_id);
     } catch (e) {
