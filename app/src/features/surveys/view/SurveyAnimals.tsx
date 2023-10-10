@@ -163,7 +163,7 @@ const SurveyAnimals: React.FC = () => {
             const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
             const deployment = {
               deployment_id,
-              attachment_start: attachment_start.split('T')[0],
+              attachment_start: attachment_start?.split('T')?.[0] ?? '',
               attachment_end: attachment_end?.split('T')?.[0]
             };
             if (!currObj) {
