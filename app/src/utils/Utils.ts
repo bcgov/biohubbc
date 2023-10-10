@@ -346,6 +346,7 @@ export const pluralize = (quantity: number, word: string, singularSuffix = '', p
   return `${word}${quantity === 1 ? singularSuffix : pluralSuffix}`;
 };
 
+type nullableString = string | null | undefined;
 /**
  * Check if two date ranges overlap. End dates are allowed to be null, which is taken to mean indefinite.
  * Note that the order of arguments does matter here.
@@ -362,9 +363,9 @@ export const pluralize = (quantity: number, word: string, singularSuffix = '', p
  */
 export const dateRangesOverlap = (
   startDateA: string,
-  endDateA: string | null | undefined,
+  endDateA: nullableString,
   startDateB: string,
-  endDateB: string | null | undefined
+  endDateB: nullableString
 ): boolean => {
   const startA = moment(startDateA);
   const startB = moment(startDateB);

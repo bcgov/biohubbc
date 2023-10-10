@@ -86,7 +86,7 @@ const DeploymentFormSection = ({
         onClose={() => setOpenDeleteDialog(false)}
         onNo={() => setOpenDeleteDialog(false)}
         onYes={async () => {
-          await removeAction(String(deploymentToDelete));
+          removeAction(String(deploymentToDelete));
           setOpenDeleteDialog(false);
         }}
       />
