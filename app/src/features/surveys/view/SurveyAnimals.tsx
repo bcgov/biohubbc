@@ -46,6 +46,7 @@ const SurveyAnimals: React.FC = () => {
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
+  const [isSubmittingTelemetry, setIsSubmittingTelemetry] = useState(false);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
     TELEMETRY_DEVICE_FORM_MODE.ADD
@@ -232,7 +233,7 @@ const SurveyAnimals: React.FC = () => {
             const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
             const deployment = {
               deployment_id,
-              attachment_start: attachment_start.split('T')[0],
+              attachment_start: attachment_start?.split('T')?.[0] ?? '',
               attachment_end: attachment_end?.split('T')?.[0]
             };
             if (!currObj) {
@@ -417,12 +418,14 @@ const SurveyAnimals: React.FC = () => {
   };
 
   const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+    setIsSubmittingTelemetry(true);
     if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
       await handleAddTelemetry(survey_critter_id, data);
     } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
       await handleEditTelemetry(survey_critter_id, data);
     }
 
+    setIsSubmittingTelemetry(false);
     setOpenDeviceDialog(false);
     refreshDeployments();
     surveyContext.artifactDataLoader.refresh(projectId, surveyId);
@@ -431,7 +434,8 @@ const SurveyAnimals: React.FC = () => {
   const handleRemoveCritter = async () => {
     try {
       if (!selectedCritterId) {
-        throw Error('Critter ID not set correctly.');
+        setPopup('Failed to remove critter from survey.');
+        return;
       }
       await bhApi.survey.removeCritterFromSurvey(projectId, surveyId, selectedCritterId);
     } catch (e) {
@@ -444,7 +448,8 @@ const SurveyAnimals: React.FC = () => {
   const handleRemoveDeployment = async (deployment_id: string) => {
     try {
       if (!selectedCritterId) {
-        throw Error('Survey critter ID was set incorrectly.');
+        setPopup('Failed to delete deployment.');
+        return;
       }
       await bhApi.survey.removeDeployment(projectId, surveyId, selectedCritterId, deployment_id);
     } catch (e) {
@@ -468,10 +473,13 @@ const SurveyAnimals: React.FC = () => {
         }
         dialogSaveButtonLabel="Save"
         open={openDeviceDialog}
+        dialogLoading={isSubmittingTelemetry}
         component={{
           element: <TelemetryDeviceForm removeAction={handleRemoveDeployment} mode={telemetryFormMode} />,
           initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
-          validationSchema: yup.array(AnimalDeploymentSchemaAsyncValidation)
+          validationSchema: yup.array(AnimalDeploymentSchemaAsyncValidation),
+          validateOnBlur: false,
+          validateOnChange: true
         }}
         onCancel={() => setOpenDeviceDialog(false)}
         onSave={(values) => {
