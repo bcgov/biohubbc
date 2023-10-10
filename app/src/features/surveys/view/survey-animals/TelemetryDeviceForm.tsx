@@ -236,7 +236,7 @@ interface ITelemetryDeviceFormProps {
 }
 
 const TelemetryDeviceForm = ({ mode, removeAction }: ITelemetryDeviceFormProps) => {
-  const { values, errors } = useFormikContext<IAnimalTelemetryDeviceFile[]>();
+  const { values } = useFormikContext<IAnimalTelemetryDeviceFile[]>();
 
   return (
     <Form>
