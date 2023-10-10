@@ -6,11 +6,7 @@ import Header from 'components/layout/Header';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { PropsWithChildren } from 'react';
 
-interface IBaseLayoutProps {
-  className?: string;
-}
-
-const BaseLayout = (props: PropsWithChildren<IBaseLayoutProps>) => {
+const StandardLayout = (props: PropsWithChildren) => {
   function isSupportedBrowser() {
     if (
       navigator.userAgent.indexOf('Chrome') !== -1 ||
@@ -56,4 +52,4 @@ const BaseLayout = (props: PropsWithChildren<IBaseLayoutProps>) => {
   );
 };
 
-export default BaseLayout;
+export default StandardLayout;
