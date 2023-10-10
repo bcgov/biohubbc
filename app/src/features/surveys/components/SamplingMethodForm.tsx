@@ -182,9 +182,7 @@ const SamplingMethodForm = () => {
                     </Typography>
                     <List>
                       {item.periods.map((period, index) => (
-                        <ListItem
-                          key={`period_${period.survey_sample_period_id}_${period.start_date}-${period.end_date}_${index}`}
-                          divider>
+                        <ListItem key={`sample_period_${period.start_date}-${period.end_date}`} divider>
                           <ListItemIcon>
                             <Icon path={mdiCalendarRangeOutline} size={1} />
                           </ListItemIcon>

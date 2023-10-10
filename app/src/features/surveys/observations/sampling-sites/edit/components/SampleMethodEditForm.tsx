@@ -187,7 +187,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                     </Typography>
                     <List>
                       {item.periods.map((period) => (
-                        <ListItem key={`period_${period.survey_sample_period_id}`} divider>
+                        <ListItem key={`sample_period_${period.survey_sample_period_id}`} divider>
                           <ListItemIcon>
                             <Icon path={mdiCalendarRangeOutline} size={1} />
                           </ListItemIcon>
