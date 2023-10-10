@@ -132,16 +132,20 @@ const SurveyHeader = () => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [publishSurveyDialogOpen, setPublishSurveyDialogOpen] = useState<boolean>(false);
 
+
   if (!surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <Paper square={true} elevation={0}
+      <Paper elevation={1} square={true} id="pageTitle"
         sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1002,
           pt: 3,
-          pb: 3.
+          pb: 3,
         }}
       >
         <Container maxWidth="xl" >
@@ -194,11 +198,6 @@ const SurveyHeader = () => {
                     display: 'flex',
                     alignItems: 'center',
                     mr: 2
-                    // '&.info': {
-                    //   '& svg': {
-                    //     color: 'info.main'
-                    //   }
-                    // }
                   }}
                 >
                   <Icon path={mdiMapMarkerOutline} size={0.875}/>

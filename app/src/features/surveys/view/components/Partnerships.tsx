@@ -4,7 +4,6 @@ import assert from 'assert';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import { grey } from '@mui/material/colors';
 
 /**
  * Partnerships content for a survey.
@@ -27,22 +26,7 @@ const Partnerships = () => {
   const hasStakeholderPartnerships = Boolean(surveyData.partnerships.stakeholder_partnerships?.length);
 
   return (
-    <Box 
-      component="dl"
-      sx={{
-        '& .row': {
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          py: 1,
-          borderTop: '1px solid' + grey[300]
-        },
-        '& dt': {
-          flex: '0 0 auto',
-          maxWidth: {sm: '100%', md: '25%'}
-        }
-      }}
-    >
+    <Box component="dl">
       <Box className="row">
         <Typography component="dt">
           Indigenous Partnerships

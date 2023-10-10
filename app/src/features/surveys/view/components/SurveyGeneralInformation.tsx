@@ -5,7 +5,6 @@ import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import { grey } from '@mui/material/colors';
 
 /**
  * General information content for a survey.
@@ -34,22 +33,7 @@ const SurveyGeneralInformation = () => {
       .join(', ') || '';
 
   return (
-    <Box 
-      component="dl"
-      sx={{
-        '& .row': {
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          py: 1,
-          borderTop: '1px solid' + grey[300]
-        },
-        '& dt': {
-          flex: '1 1 auto',
-          maxWidth: {sm: '100%', md: '25%'}
-        }
-      }}
-    >
+    <Box component="dl">
       <Box className="row">
         <Typography component="dt">
           Survey Type
@@ -83,14 +67,11 @@ const SurveyGeneralInformation = () => {
         <Typography component="dt">
           Species of Interest
         </Typography>
-        <Box display="inline-block"
-          sx={{
-            width: {sm: '100%', md: '75%'}
-          }}
+        <Box
         >
           {species.focal_species_names?.map((focalSpecies: string, index: number) => {
             return (
-              <Typography component="dd" variant="body1" key={index}
+              <Typography component="dd" key={index}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',
@@ -114,7 +95,7 @@ const SurveyGeneralInformation = () => {
 
       <Box className="row">
         <Typography component="dt">
-          Secondary Species of Interest
+          Secondary Species
         </Typography>
         <Box display="inline-block">
           {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {

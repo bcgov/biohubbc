@@ -4,7 +4,6 @@ import assert from 'assert';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import { grey } from '@mui/material/colors';
 
 /**
  * Purpose and Methodology data content for a survey.
@@ -24,22 +23,7 @@ const SurveyPurposeAndMethodologyData = () => {
   const surveyData = surveyContext.surveyDataLoader.data.surveyData;
 
   return (
-    <Box 
-      component="dl"
-      sx={{
-        '& .row': {
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: {sm: 'wrap', md: 'nowrap'},
-          py: 1,
-          borderTop: '1px solid' + grey[300]
-        },
-        '& dt': {
-          flex: '0 0 auto',
-          maxWidth: {sm: '100%', md: '25%'}
-        }
-      }}
-    >
+    <Box component="dl">
 
       <Box className="row">
         <Typography component="dt">

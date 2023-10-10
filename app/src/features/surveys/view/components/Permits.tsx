@@ -3,7 +3,6 @@ import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import Typography from '@mui/material/Typography';
-import { grey } from '@mui/material/colors';
 
 /**
  * General information content for a survey.
@@ -24,24 +23,7 @@ const Permits = () => {
   } = surveyForViewData;
 
   return (
-    <>
-    
-    <Box 
-      component="dl"
-      sx={{
-        '& .row': {
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: {sm: 'wrap', md: 'nowrap'},
-          py: 1,
-          borderTop: '1px solid' + grey[300]
-        },
-        '& dt': {
-          flex: '1 1 auto',
-          maxWidth: {sm: '100%', md: '25%'}
-        }
-      }}
-    >
+    <Box component="dl">
       {permit.permits?.map((item, index: number) => {
         return (
           <Box className="row" key={index}>
@@ -60,7 +42,6 @@ const Permits = () => {
         </Box>
       )}
     </Box>
-    </>
   );
 };
 

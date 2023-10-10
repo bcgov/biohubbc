@@ -3,8 +3,6 @@ import Icon from '@mdi/react';
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { grey } from '@mui/material/colors';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
@@ -46,15 +44,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundClip: 'padding-box',
     '&:hover': {
       backgroundColor: '#eeeeee'
-    }
-  },
-  metaSectionHeader: {
-    color: grey[600],
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    '& + hr': {
-      marginTop: theme.spacing(0.75),
-      marginBottom: theme.spacing(0.75)
     }
   }
 }));
@@ -249,24 +238,27 @@ const SurveyStudyArea = () => {
 
       <ErrorDialog {...errorDialogProps} />
 
-      <H2ButtonToolbar
-        label="Observations"
-        buttonLabel="Edit"
-        buttonTitle="Edit Study Area"
-        buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
-        buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'text' }}
-        renderButton={(buttonProps) => (
-          <ProjectRoleGuard
-            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button {...buttonProps} />
-          </ProjectRoleGuard>
-        )}
-      />
+      <Box sx={{display: 'none'}}>
+        <H2ButtonToolbar
+          label="Observations"
+          buttonLabel="Edit"
+          buttonTitle="Edit Study Area"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={1} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          buttonProps={{ variant: 'text' }}
+          renderButton={(buttonProps) => (
+            <ProjectRoleGuard
+              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+              validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <Button {...buttonProps} />
+            </ProjectRoleGuard>
+          )}
+        />
+      </Box>
 
-      <Box px={3} pb={3}>
-        <Box height={500} position="relative">
+      <Box>
+
+        <Box height={500} position="relative" sx={{display: 'none'}}>
           <MemoizedMapContainer
             mapId="survey_study_area_map"
             bounds={bounds}
@@ -288,16 +280,17 @@ const SurveyStudyArea = () => {
             </Box>
           )}
         </Box>
-        <Box mt={3}>
-          <Typography variant="body2" component="h3" className={classes.metaSectionHeader}>
-            Study Area Name
+
+      </Box>
+
+      <Box component="dl">
+        <Box className="row">
+          <Typography component="dt">
+            Name
           </Typography>
-          <Divider></Divider>
-          <Typography variant="body1">{surveyLocation?.name}</Typography>
-          <Box mt={3}>
-            <InferredLocationDetails layers={inferredLayersInfo} />
-          </Box>
+          <Typography component="dd">{surveyLocation?.name}</Typography>
         </Box>
+        <InferredLocationDetails layers={inferredLayersInfo} />
       </Box>
 
       <Box mt={3} style={{ display: 'none' }}>
