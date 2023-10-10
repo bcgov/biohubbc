@@ -5,7 +5,6 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
@@ -24,6 +23,7 @@ import { getCodesName } from 'utils/Utils';
 
 const SamplingSiteList = () => {
   const history = useHistory();
+
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
 
@@ -31,9 +31,7 @@ const SamplingSiteList = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  useEffect(() => {
-    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-  }, []);
+  surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
@@ -48,7 +46,8 @@ const SamplingSiteList = () => {
     (surveyContext.sampleSiteDataLoader.isLoading && !codesContext.codesDataLoader.data) ||
     codesContext.codesDataLoader.isLoading
   ) {
-    return <CircularProgress color="inherit" />;
+    // TODO add loading animation
+    return <></>;
   }
 
   return (

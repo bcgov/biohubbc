@@ -28,45 +28,6 @@ const SamplingSiteEditPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
-  // useEffect(() => {
-  //   const setFormikValues = (data: IEditSamplingSiteRequest) => {
-  //     formikRef.current?.setValues(data);
-  //   };
-
-  //   if (surveyContext.sampleSiteDataLoader.data) {
-  //     const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
-  //       (x) => x.survey_sample_site_id === surveySampleSiteId
-  //     );
-
-  //     console.log('data', data);
-  //     if (data !== undefined) {
-  //       const formInitialValues: IEditSamplingSiteRequest = {
-  //         sampleSite: {
-  //           name: data.name,
-  //           description: data.description,
-  //           survey_id: data.survey_id,
-  //           survey_sample_sites: data.geojson,
-  //           methods:
-  //             (data.sample_methods &&
-  //               data.sample_methods.map((item) => {
-  //                 return {
-  //                   ...item,
-  //                   periods: item.sample_periods || []
-  //                 };
-  //               })) ||
-  //             []
-  //         }
-  //       };
-
-  //       setFormikValues(formInitialValues as unknown as IEditSamplingSiteRequest);
-  //     }
-  //   }
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [surveyContext.sampleSiteDataLoader.data]);
-
-  console.log('surveyContext.sampleSiteDataLoader.data', surveyContext.sampleSiteDataLoader.data);
-
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
       dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
@@ -83,8 +44,9 @@ const SamplingSiteEditPage = () => {
   };
 
   const handleSubmit = async (values: IEditSamplingSiteRequest) => {
-    setIsSubmitting(true);
     try {
+      setIsSubmitting(true);
+
       await biohubApi.samplingSite.editSampleSite(
         surveyContext.projectId,
         surveyContext.surveyId,
@@ -94,6 +56,10 @@ const SamplingSiteEditPage = () => {
 
       // Disable cancel prompt so we can navigate away from the page after saving
       setEnableCancelCheck(false);
+
+      // Refresh the context, so the next page loads with the latest data
+      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
       // create complete, navigate back to observations page
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
     } catch (error) {
@@ -103,7 +69,6 @@ const SamplingSiteEditPage = () => {
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
-    } finally {
       setIsSubmitting(false);
     }
   };

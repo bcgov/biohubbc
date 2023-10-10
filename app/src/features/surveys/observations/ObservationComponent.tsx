@@ -135,7 +135,11 @@ const ObservationComponent = () => {
         </Toolbar>
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
           <Box position="absolute" width="100%" height="100%">
-            <ObservationsTable sample_sites={sampleSites} sample_methods={sampleMethods} sample_periods={samplePeriods} />
+            <ObservationsTable
+              sample_sites={sampleSites}
+              sample_methods={sampleMethods}
+              sample_periods={samplePeriods}
+            />
           </Box>
         </Box>
       </Box>

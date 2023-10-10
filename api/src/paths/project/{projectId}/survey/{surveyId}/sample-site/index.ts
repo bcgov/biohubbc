@@ -158,6 +158,7 @@ export function getSurveySampleLocationRecords(): RequestHandler {
       return res.status(200).json({ sampleSites: result });
     } catch (error) {
       defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -309,6 +310,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
       return res.status(201).send();
     } catch (error) {
       defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
