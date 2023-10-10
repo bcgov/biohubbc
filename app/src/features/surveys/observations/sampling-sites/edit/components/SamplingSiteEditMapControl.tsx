@@ -129,9 +129,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
         <Typography component="legend" data-testid="funding-source-list-found">
           Site Location Preview &zwnj;
           <Typography component="span" color="textSecondary" fontWeight="400">
-            {samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length > 0
-              ? `(${samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length} locations detected)`
-              : ''}
+            {samplingSiteGeoJsonFeatures.length > 0 ? `(${samplingSiteGeoJsonFeatures.length} locations detected)` : ''}
           </Typography>
         </Typography>
         {get(errors, name) && (
@@ -152,7 +150,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
               onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
               bounds={updatedBounds}
             />
-            {samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length > 0 && (
+            {samplingSiteGeoJsonFeatures.length > 0 && (
               <Box position="absolute" top="126px" left="10px" zIndex="999">
                 <IconButton
                   aria-label="zoom to initial extent"
