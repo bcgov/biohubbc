@@ -187,7 +187,9 @@ describe('SamplePeriodService', () => {
 
       const surveySampleMethodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
-      const response = await samplePeriodService.checkSamplePeriodToDelete(surveySampleMethodId, []);
+      const response = await samplePeriodService.checkSamplePeriodToDelete(surveySampleMethodId, [
+        { survey_sample_period_id: 2 } as SamplePeriodRecord
+      ]);
 
       expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(surveySampleMethodId);
       expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith(mockSamplePeriodRecords[0].survey_sample_period_id);

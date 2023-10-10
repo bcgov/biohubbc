@@ -144,7 +144,7 @@ GET.apiDoc = {
 export function getSurveySampleMethodRecords(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveySampleSiteId) {
-      throw new HTTP400('Missing required param `surveySampleMethodId`');
+      throw new HTTP400('Missing required param `surveySampleSiteId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);

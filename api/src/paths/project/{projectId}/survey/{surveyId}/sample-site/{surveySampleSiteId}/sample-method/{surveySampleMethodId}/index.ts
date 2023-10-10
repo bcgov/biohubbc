@@ -115,7 +115,7 @@ PUT.apiDoc = {
 export function updateSurveySampleMethod(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveySampleSiteId) {
-      throw new HTTP400('Missing required param `surveySampleMethodId`');
+      throw new HTTP400('Missing required param `surveySampleSiteId`');
     }
 
     if (!req.params.surveySampleMethodId) {

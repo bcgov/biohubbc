@@ -142,8 +142,14 @@ describe('SampleLocationService', () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
 
+      const survey_sample_site_id = 1;
+      const methods = [
+        { survey_sample_method_id: 2, method_lookup_id: 3, description: 'Cool method', periods: [] } as any,
+        { method_lookup_id: 4, description: 'Cool method', periods: [] } as any
+      ];
+
       const updateSampleLocationStub = sinon.stub(SampleLocationRepository.prototype, 'updateSampleLocation').resolves({
-        survey_sample_site_id: 1,
+        survey_sample_site_id: survey_sample_site_id,
         survey_id: 1,
         name: 'Cool new site',
         description: 'Check out this description',
@@ -156,22 +162,43 @@ describe('SampleLocationService', () => {
         update_user: 1,
         revision_count: 0
       });
-      sinon.stub(SampleMethodService.prototype, 'checkSampleMethodsToDelete').resolves();
-      sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
+      const insertSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
+      const updateSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'updateSampleMethod').resolves();
+      const checkSampleMethodsToDeleteStub = sinon
+        .stub(SampleMethodService.prototype, 'checkSampleMethodsToDelete')
+        .resolves();
 
-      service.updateSampleLocationMethodPeriod({
-        survey_sample_site_id: 1,
+      await service.updateSampleLocationMethodPeriod({
+        survey_sample_site_id: survey_sample_site_id,
         survey_id: 1,
         name: 'Cool new site',
         description: 'Check out this description',
-        survey_sample_sites: [],
-        methods: [
-          { survey_sample_method_id: 1, method_lookup_id: 1, description: 'Cool method', periods: [] } as any,
-          { method_lookup_id: 1, description: 'Cool method', periods: [] } as any
-        ]
+        survey_sample_sites: [{ type: 'Feature', geometry: {}, properties: {} } as any],
+        methods: methods
       });
 
-      expect(updateSampleLocationStub).to.be.calledOnce;
+      expect(updateSampleLocationStub).to.be.calledOnceWith({
+        survey_sample_site_id: survey_sample_site_id,
+        survey_id: 1,
+        name: 'Cool new site',
+        description: 'Check out this description',
+        geojson: { type: 'Feature', geometry: {}, properties: {} },
+        methods: methods
+      });
+      expect(checkSampleMethodsToDeleteStub).to.be.calledOnceWith(survey_sample_site_id, methods);
+      expect(insertSampleMethodStub).to.be.calledOnceWith({
+        survey_sample_site_id: survey_sample_site_id,
+        method_lookup_id: 4,
+        description: 'Cool method',
+        periods: []
+      });
+      expect(updateSampleMethodStub).to.be.calledOnceWith({
+        survey_sample_site_id: survey_sample_site_id,
+        survey_sample_method_id: 2,
+        method_lookup_id: 3,
+        description: 'Cool method',
+        periods: []
+      });
     });
   });
 });
