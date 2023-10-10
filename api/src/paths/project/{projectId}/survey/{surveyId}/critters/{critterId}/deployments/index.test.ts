@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../../../database/db';
+import { HTTPError } from '../../../../../../../../errors/http-error';
 import { BctwService } from '../../../../../../../../services/bctw-service';
 import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
@@ -53,6 +54,7 @@ describe('critter deployments', () => {
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
+        expect((mockError as HTTPError).message).to.eql('a test error');
         expect(mockGetDBConnection.calledOnce).to.be.true;
         expect(mockAddDeployment.calledOnce).to.be.true;
         expect(mockBctwService.notCalled).to.be.true;
@@ -88,6 +90,7 @@ describe('critter deployments', () => {
           await requestHandler(mockReq, mockRes, mockNext);
           expect.fail();
         } catch (actualError) {
+          expect((mockError as HTTPError).message).to.eql('a test error');
           expect(mockGetDBConnection.calledOnce).to.be.true;
           expect(mockAddDeployment.calledOnce).to.be.true;
           expect(mockBctwService.notCalled).to.be.true;

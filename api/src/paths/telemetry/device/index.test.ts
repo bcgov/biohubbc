@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { HTTPError } from '../../../errors/http-error';
 import { BctwService } from '../../../services/bctw-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { POST, upsertDevice } from './index';
@@ -41,6 +42,7 @@ describe('upsertDevice', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
+      expect((mockError as HTTPError).message).to.eql('a test error');
       expect(mockBctwService.calledOnce).to.be.true;
     }
   });
