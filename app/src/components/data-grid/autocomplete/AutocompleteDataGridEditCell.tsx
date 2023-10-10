@@ -78,9 +78,6 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
       handleHomeEndKeys
       value={getCurrentValue()}
       options={options}
-      onError={(error) => {
-        console.log('onError', error);
-      }}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={(option, value) => {
         if (!option?.value || !value?.value) {

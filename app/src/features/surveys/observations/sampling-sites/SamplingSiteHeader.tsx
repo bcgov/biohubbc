@@ -1,10 +1,11 @@
 import { LoadingButton } from '@mui/lab';
 import { Breadcrumbs, Button, Paper, Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
 import { useHistory } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { ICreateSamplingSiteRequest } from './SamplingSitePage';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -41,14 +42,18 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
           px: 3
         }}>
         <Breadcrumbs aria-label="breadcrumb">
-          <Link to={`/admin/projects/${project_id}/surveys/${survey_id}/details`} style={{ textDecoration: 'none' }}>
+          <Link
+            component={RouterLink}
+            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
+            underline="none">
             <Typography component="span" variant="body2">
               {survey_name}
             </Typography>
           </Link>
           <Link
+            component={RouterLink}
             to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
-            style={{ textDecoration: 'none' }}>
+            underline="none">
             <Typography component="span" variant="body2">
               Manage Survey Observations
             </Typography>

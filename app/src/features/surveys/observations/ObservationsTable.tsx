@@ -1,6 +1,5 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
@@ -83,9 +82,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
-      preProcessEditCellProps: (params) => {
-        return { ...params.props };
-      },
       renderCell: (params) => {
         return (
           <AutocompleteDataGridViewCell
@@ -118,9 +114,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
-      preProcessEditCellProps: (params) => {
-        return { ...params.props };
-      },
       renderCell: (params) => {
         return (
           <ConditionalAutocompleteDataGridViewCell
@@ -157,9 +150,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
-      preProcessEditCellProps: (params) => {
-        return { ...params.props };
-      },
       renderCell: (params) => {
         return (
           <ConditionalAutocompleteDataGridViewCell
@@ -226,9 +216,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
-      preProcessEditCellProps: (params) => {
-        return { ...params.props };
-      },
       renderCell: (params) => {
         if (!params.value) {
           return null;
@@ -353,10 +340,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     return updatedRow;
   };
 
-  if (!apiRef) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
   return (
     <>
       <YesNoDialog
@@ -381,7 +364,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         editMode="row"
         onCellClick={handleCellClick}
         onRowEditStop={handleRowEditStop}
-        // onRowEditStart={handleRowEditStart}
         processRowUpdate={handleProcessRowUpdate}
         columns={observationColumns}
         rows={observationsContext.initialRows}

@@ -5,6 +5,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
@@ -18,12 +19,10 @@ import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
 
 const SamplingSiteList = () => {
-  const history = useHistory();
-
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
 
@@ -46,8 +45,8 @@ const SamplingSiteList = () => {
     (surveyContext.sampleSiteDataLoader.isLoading && !codesContext.codesDataLoader.data) ||
     codesContext.codesDataLoader.isLoading
   ) {
-    // TODO add loading animation
-    return <></>;
+    // TODO Fix styling: spinner loads in the corner of the component
+    return <CircularProgress size={40} />;
   }
 
   return (
@@ -64,10 +63,7 @@ const SamplingSiteList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem
-          onClick={() => {
-            history.push(`sampling/${selectedSampleSiteId}/edit`);
-          }}>
+        <MenuItem component={RouterLink} to={`sampling/${selectedSampleSiteId}/edit`}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
@@ -98,9 +94,8 @@ const SamplingSiteList = () => {
             }}
             variant="contained"
             color="primary"
-            onClick={() => {
-              history.push('sampling');
-            }}
+            component={RouterLink}
+            to={'sampling'}
             startIcon={<Icon path={mdiPlus} size={1} />}>
             Add
           </Button>
