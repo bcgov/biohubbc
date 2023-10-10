@@ -96,6 +96,8 @@ const MapBoundary = (props: IMapBoundaryProps) => {
     };
   };
 
+  console.log('values:', values)
+
   return (
     <>
       <ComponentDialog
