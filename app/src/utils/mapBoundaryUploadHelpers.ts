@@ -53,9 +53,18 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
           } else {
             features = geojson.features;
           }
-          features.map((feature) => {
-            feature.id = hash(feature);
+
+          // Ensure each Feature has a non-null ID
+          features.forEach((feature) => {
+            if (feature.id) {
+              // Feature already specifies an id (safe to assume it is unique?)
+              return;
+            }
+
+            // Feature has id, hash the entire feature to create a unique id
+            feature.id = generateFeatureId(feature);
           });
+
           resolve(features);
         })
         .catch((error) => {
@@ -70,6 +79,16 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
     // Start reading file
     reader.readAsArrayBuffer(file);
   });
+};
+
+/**
+ * Generates a unique ID for a geoJSON Feature.
+ *
+ * @param {Feature} feature
+ * @return {*}  {string}
+ */
+const generateFeatureId = (feature: Feature): string => {
+  return hash(feature);
 };
 
 /**
