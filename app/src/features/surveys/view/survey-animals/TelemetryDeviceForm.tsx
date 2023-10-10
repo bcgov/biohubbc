@@ -71,7 +71,7 @@ const DeploymentFormSection = ({
   removeAction: (deployment_id: string) => void;
 }): JSX.Element => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [deploymentToDelete, setDeploymentToDelete] = useState('');
+  const [deploymentToDelete, setDeploymentToDelete] = useState<string | null>(null);
   return (
     <>
       <YesNoDialog
@@ -86,7 +86,9 @@ const DeploymentFormSection = ({
         onClose={() => setOpenDeleteDialog(false)}
         onNo={() => setOpenDeleteDialog(false)}
         onYes={async () => {
-          removeAction(String(deploymentToDelete));
+          if (deploymentToDelete) {
+            removeAction(deploymentToDelete);
+          }
           setOpenDeleteDialog(false);
         }}
       />
