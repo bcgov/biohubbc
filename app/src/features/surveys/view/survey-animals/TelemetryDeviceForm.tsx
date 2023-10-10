@@ -1,6 +1,6 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, FormHelperText, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -15,7 +15,6 @@ import { Form, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { Fragment, useEffect, useState } from 'react';
-import { dateRangesOverlap } from 'utils/Utils';
 import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import { TelemetryFileUpload } from './TelemetryFileUpload';
 
