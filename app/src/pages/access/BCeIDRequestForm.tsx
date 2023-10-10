@@ -53,8 +53,7 @@ const BCeIDRequestForm = (props: IBCeIDRequestFormProps) => {
           </Grid>
         )}
         <Grid item xs={12}>
-          <h3>Why are you requesting access to Species Inventory Management System (SIMS)?</h3>
-          <CustomTextField name="reason" label="Request Reason" other={{ multiline: true, rows: 4 }} />
+          <CustomTextField name="reason" label="Reason For Reqeust" other={{ multiline: true, rows: 4 }} />
         </Grid>
       </Grid>
     </Box>

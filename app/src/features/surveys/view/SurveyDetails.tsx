@@ -12,6 +12,7 @@ import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 import Partnerships from './components/Partnerships';
 import SamplingMethods from './components/SamplingMethods';
 import Grid from '@mui/material/Grid';
+import { grey } from '@mui/material/colors';
 
 /**
  * Survey details content for a survey.
@@ -23,32 +24,6 @@ const SurveyDetails = () => {
 
   return (
     <Paper>
-    <Box
-      sx={{
-        '& h4': {
-          mb: 2,
-          fontSize: '0.875rem',
-          fontWeight: 700,
-          textTransform: 'uppercase'
-        },
-        '& dl': {
-          m: 0
-        },
-        '& dt': {
-          display: 'inline-block',
-          flex: '0 0 auto',
-          width: {sm: '100%', md: '25%'},
-          typography: {sm: 'body2', md: 'body1'},
-          color: 'text.secondary'
-        },
-        '& dd': {
-          ml: 0,
-          display: 'inline-block',
-          typography: 'body1',
-          color: 'text.primary'
-        },
-      }}
-    >
       <Toolbar>
         <Typography variant="h4" component="h2">
           Survey Details
@@ -61,55 +36,86 @@ const SurveyDetails = () => {
         sx={{
           '& section + section': {
             mt: 3
+          },
+          '& h3': {
+            mb: 2,
+            flex: '0 0 auto',
+            fontSize: '0.875rem',
+            fontWeight: 700,
+            textTransform: 'uppercase'
+          },
+          '& h4': {
+            width: {xs: '100%', md: '300px'},
+            flex: '0 0 auto',
+            color: 'text.secondary'
+          },
+          '& dl': {
+            flex: '1 1 auto',
+            m: 0,
+          },
+          '& dt': {
+            flex: '0 0 auto',
+            width: {xs: '100%', md: '300px'},
+            typography: {xs: 'body2', md: 'body1'},
+            color: 'text.secondary'
+          },
+          '& dd': {
+            typography: 'body1',
+            color: 'text.primary'
+          },
+          '& .row': {
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: {xs: 'wrap', md: 'nowrap'},
+            gap: {xs: 0, md: '24px'},
+            py: 1.25,
+            borderTop: '1px solid' + grey[300]
+          },
+          '& section.row': {
+            mt: 0
           }
         }}
       >
         <Grid container spacing={3}>
           <Grid item xs={12}>
 
-            <Paper elevation={0} component="section">
-              <Typography component="h4">General Information</Typography>
+            <Box component="section">
+              <Typography component="h3">General Information</Typography>
               <SurveyGeneralInformation />
-            </Paper>
+            </Box>
 
-            <Paper elevation={0} component="section">
-              <Typography component="h4">Purpose and Methodology</Typography>
+            <Box component="section">
+              <Typography component="h3">Purpose and Methodology</Typography>
               <SurveyPurposeAndMethodologyData />
-            </Paper>
+            </Box>
 
-            <Paper elevation={0} component="section">
-              <Typography component="h4">Sampling Methods</Typography>
+            <Box component="section">
+              <Typography component="h3">Sampling Methods</Typography>
               <SamplingMethods />
-            </Paper>
+            </Box>
 
-            <Paper elevation={0} component="section" sx={{display: 'none'}}>
-              <Typography component="h4">Survey Participants</Typography>
+            <Box component="section" sx={{display: 'none'}}>
+              <Typography component="h3">Survey Participants</Typography>
               <SurveyParticipants/>
-            </Paper>
+            </Box>
 
-            <Box component="section" sx={{ display: 'none' }}>
-              <Divider sx={{ my: 2 }}></Divider>
-              <Typography component="h4">Proprietary Information</Typography>
-              <Divider sx={{ my: 2 }}></Divider>
+            <Box component="section">
+              <Typography component="h3">Funding Sources & Partnerships</Typography>
+              <SurveyFundingSources />
+              <Partnerships />
+            </Box>
+
+            <Box component="section">
+              <Typography component="h3">Permits</Typography>
+              <Permits />
+            </Box>
+
+            <Box component="section">
+              <Typography component="h3">Proprietary Information</Typography>
               <SurveyProprietaryData />
             </Box>
 
-            <Paper elevation={0} component="section">
-              <Typography component="h4">Funding Sources</Typography>
-              <SurveyFundingSources />
-            </Paper>
-
-            <Paper elevation={0} component="section">
-              <Typography component="h4">Partnerships</Typography>
-              <Partnerships />
-            </Paper>
-
-            <Paper elevation={0} component="section">
-              <Typography component="h4">Permits</Typography>
-              <Permits />
-            </Paper>
-
-            <Paper elevation={0} component="section" sx={{display: 'none'}}>
+            <Box component="section" sx={{display: 'none !important'}}>
               <Typography component="h4">Study Area Location</Typography>
               <Box component="dl" display="flex" flexDirection="row" gap="24px">
                 <Grid container spacing={1}>
@@ -176,12 +182,11 @@ const SurveyDetails = () => {
                   </Grid>
                 </Grid>
               </Box>
-            </Paper>
+            </Box>
 
           </Grid>
         </Grid>
       </Box>
-    </Box>
     </Paper>
   );
 };

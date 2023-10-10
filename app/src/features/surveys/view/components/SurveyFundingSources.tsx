@@ -3,7 +3,6 @@ import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import { getFormattedAmount } from 'utils/Utils';
-import { grey } from '@mui/material/colors';
 
 /**
  * Funding source content for a survey.
@@ -23,22 +22,7 @@ const SurveyFundingSources = () => {
   } = surveyForViewData;
 
   return (
-    <Box 
-      component="dl"
-      sx={{
-        '& .row': {
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: {sm: 'wrap', md: 'nowrap'},
-          py: 1,
-          borderTop: '1px solid' + grey[300]
-        },
-        '& dt': {
-          flex: '1 1 auto',
-          maxWidth: {sm: '100%', md: '25%'}
-        }
-      }}
-    >
+    <Box component="dl">
       {funding_sources.length > 0 ? (
         <>
           {funding_sources.map((surveyFundingSource) => (
