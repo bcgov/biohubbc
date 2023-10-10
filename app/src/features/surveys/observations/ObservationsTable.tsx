@@ -194,6 +194,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'number',
       minWidth: 100,
       disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
       renderEditCell: (params) => (
         <GridEditInputCell
           {...params}
@@ -242,7 +244,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return (
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <TimePicker
-              value={moment(params.value, 'HH:mm:ss')}
+              value={(params.value && moment(params.value, 'HH:mm:ss')) || null}
               onChange={(value) => {
                 apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
               }}
@@ -289,7 +291,12 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       resizable: false,
       getActions: (params) => [
-        <IconButton onClick={() => handleConfirmDeleteRow(params.id)} key={`actions[${params.id}].handleDeleteRow`}>
+        <IconButton
+          onClick={(event) => {
+            event.preventDefault(); // Prevent row from going into edit mode
+            handleConfirmDeleteRow(params.id);
+          }}
+          key={`actions[${params.id}].handleDeleteRow`}>
           <Icon path={mdiTrashCanOutline} size={1} />
         </IconButton>
       ]
@@ -356,7 +363,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         dialogTitle={ObservationsTableI18N.removeRecordDialogTitle}
         dialogText={ObservationsTableI18N.removeRecordDialogText}
         yesButtonProps={{ color: 'error' }}
-        yesButtonLabel={'Discard Record'}
+        yesButtonLabel={'Delete Record'}
         noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
         open={showConfirmDeleteDialog}
