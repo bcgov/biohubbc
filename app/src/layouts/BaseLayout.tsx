@@ -1,34 +1,12 @@
-import { Theme } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
 import Footer from 'components/layout/Footer';
 import Header from 'components/layout/Header';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { PropsWithChildren } from 'react';
 
-interface IBaseLayoutProps {
-  className?: string;
-}
-
-const useStyles = makeStyles((theme: Theme) => ({
-  baseLayoutContainer: {
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  alert: {
-    borderRadius: 0
-  },
-  globalAlert: {
-    color: theme.palette.primary.main,
-    backgroundColor: '#fcba19'
-  }
-}));
-
-const BaseLayout = (props: PropsWithChildren<IBaseLayoutProps>) => {
+const BaseLayout = (props: PropsWithChildren) => {
   function isSupportedBrowser() {
     if (
       navigator.userAgent.indexOf('Chrome') !== -1 ||
@@ -42,14 +20,22 @@ const BaseLayout = (props: PropsWithChildren<IBaseLayoutProps>) => {
     return false;
   }
 
-  const classes = useStyles();
-
   return (
-    <Box className={clsx(classes.baseLayoutContainer, props.className)}>
+    <Box
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
       <CssBaseline />
       <DialogContextProvider>
         {!isSupportedBrowser() && (
-          <Alert severity="error" className={classes.alert}>
+          <Alert
+            severity="error"
+            sx={{
+              color: 'primary.main',
+              backgroundColor: '#fcba19'
+            }}>
             This is an unsupported browser. Some functionality may not work as expected.
           </Alert>
         )}
