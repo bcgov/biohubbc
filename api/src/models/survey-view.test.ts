@@ -36,14 +36,6 @@ describe('GetSurveyData', () => {
     it('sets geojson', () => {
       expect(data.geometry).to.eql([]);
     });
-
-    it('sets biologist_first_name', () => {
-      expect(data.biologist_first_name).to.equal('');
-    });
-
-    it('sets biologist_last_name', () => {
-      expect(data.biologist_last_name).to.equal('');
-    });
   });
 
   describe('All values provided', () => {
@@ -53,9 +45,7 @@ describe('GetSurveyData', () => {
       name: 'survey name',
       end_date: '2020/04/04',
       start_date: '2020/03/03',
-      lead_first_name: 'first',
       geojson: [{ data: 'data' }],
-      lead_last_name: 'last',
       revision_count: 'count'
     };
 
@@ -77,14 +67,6 @@ describe('GetSurveyData', () => {
 
     it('sets geojson', () => {
       expect(data.geometry).to.equal(obj.geojson);
-    });
-
-    it('sets biologist_first_name', () => {
-      expect(data.biologist_first_name).to.equal(obj.lead_first_name);
-    });
-
-    it('sets biologist_last_name', () => {
-      expect(data.biologist_last_name).to.equal(obj.lead_last_name);
     });
 
     it('sets revision_count', function () {

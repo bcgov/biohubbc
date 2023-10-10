@@ -1,3 +1,4 @@
+import { Divider, Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -26,11 +27,11 @@ const SurveyGeneralInformation = () => {
 
   const codes = codesContext.codesDataLoader.data;
 
-  const surveyTypes =
+  const surveyTypes: string | null =
     codes.type
       .filter((code) => survey_details.survey_types.includes(code.id))
       .map((code) => code.name)
-      .join(', ') || '';
+      .join(', ') || null;
 
   return (
     <Box component="dl">
@@ -38,7 +39,7 @@ const SurveyGeneralInformation = () => {
         <Typography component="dt">
           Survey Type
         </Typography>
-        <Typography component="dd">{surveyTypes ? <>{surveyTypes}</> : 'No Types'}</Typography>
+        <Typography component="dd">{surveyTypes ?? 'No Types'}</Typography>
       </Box>
 
       <Box className="row">
@@ -56,7 +57,7 @@ const SurveyGeneralInformation = () => {
             </>
           ) : (
             <>
-              <span>Start Date:</span>{' '}
+              <span>Start Date: &zwnj;</span>
               {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, survey_details.start_date)}
             </>
           )}

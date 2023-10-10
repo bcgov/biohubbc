@@ -1,5 +1,9 @@
 import { GridRowModelUpdate, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { ObservationsTableI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
@@ -36,8 +40,8 @@ export type IObservationsContext = {
    */
   createNewRecord: () => void;
   /**
-   * Commits all observation rows to the database, including those that are currently being
-   * edited in the Observation Table
+   * Commits all observation rows to the database, including those that are currently being edited in the Observation
+   * Table
    */
   saveRecords: () => Promise<void>;
   /**
@@ -53,8 +57,7 @@ export type IObservationsContext = {
    */
   markRecordWithUnsavedChanges: (id: string | number) => void;
   /**
-   * Indicates all observation table rows that have unsaved changes, include IDs of rows
-   * that have been deleted.
+   * Indicates all observation table rows that have unsaved changes, include IDs of rows that have been deleted.
    */
   unsavedRecordIds: string[];
   /**
@@ -69,9 +72,13 @@ export type IObservationsContext = {
    * API ref used to interface with an MUI DataGrid representing the observation records
    */
   _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
-
+  /**
+   * The initial rows the data grid should render, if any.
+   */
   initialRows: IObservationTableRow[];
-
+  /**
+   * A setState setter for the `initialRows`
+   */
   setInitialRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
 };
 
@@ -90,13 +97,33 @@ export const ObservationsContext = createContext<IObservationsContext>({
 });
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
+  const { projectId, surveyId } = useContext(SurveyContext);
+
+  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
   const _muiDataGridApiRef = useGridApiRef();
   const biohubApi = useBiohubApi();
+  const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
-  const { projectId, surveyId } = useContext(SurveyContext);
-  const observationsDataLoader = useDataLoader(() => biohubApi.observation.getObservationRecords(projectId, surveyId));
+
   const [unsavedRecordIds, _setUnsavedRecordIds] = useState<string[]>([]);
   const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
+
+  const _hideErrorDialog = () => {
+    dialogContext.setErrorDialog({
+      open: false
+    });
+  };
+
+  const _showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      ...textDialogProps,
+      onOk: _hideErrorDialog,
+      onClose: _hideErrorDialog,
+      dialogTitle: ObservationsTableI18N.submitRecordsErrorDialogTitle,
+      dialogText: ObservationsTableI18N.submitRecordsErrorDialogText,
+      open: true
+    });
+  };
 
   observationsDataLoader.load();
 
@@ -153,19 +180,30 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id }));
 
     const { projectId, surveyId } = surveyContext;
-
     const rows = _getActiveRecords();
 
-    await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
-    _setUnsavedRecordIds([]);
-    refreshRecords();
+    try {
+      await biohubApi.observation.insertUpdateObservationRecords(projectId, surveyId, rows);
+      _setUnsavedRecordIds([]);
+      return refreshRecords();
+    } catch (error) {
+      const apiError = error as APIError;
+      _showErrorDialog({ dialogErrorDetails: apiError.errors });
+      return;
+    }
   };
 
   // TODO deleting a row and then calling method currently fails to recover said row...
   const revertRecords = async () => {
+    // Mark all rows as saved
+    _setUnsavedRecordIds([]);
+
+    // Revert any current edits
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
-    _setUnsavedRecordIds([]);
+
+    // Remove any rows that are newly created
+    _muiDataGridApiRef.current.setRows(initialRows);
   };
 
   const refreshRecords = async (): Promise<void> => {

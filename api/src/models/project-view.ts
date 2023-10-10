@@ -2,9 +2,9 @@ import { Feature } from 'geojson';
 import { z } from 'zod';
 import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
 import { ProjectUser } from '../repositories/project-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
 
 export interface IProjectAdvancedFilters {
-  coordinator_agency?: string;
   permit_number?: string;
   project_programs?: number[];
   start_date?: string;
@@ -15,11 +15,11 @@ export interface IProjectAdvancedFilters {
   agency_project_id?: number;
   species?: number[];
 }
+
 export interface IGetProject {
-  coordinator: GetCoordinatorData;
   project: ProjectData;
   objectives: GetObjectivesData;
-  participants: ProjectUser[];
+  participants: (ProjectUser & SystemUser)[];
   location: GetLocationData;
   iucn: GetIUCNClassificationData;
 }
@@ -41,7 +41,6 @@ export const ProjectListData = z.object({
   project_id: z.number(),
   uuid: z.string(),
   project_name: z.string(),
-  coordinator_agency: z.string(),
   project_programs: z.array(z.number()).default([]),
   regions: z.array(z.string()).default([]),
   start_date: z.string(),
@@ -63,30 +62,6 @@ export class GetObjectivesData {
   constructor(objectivesData?: any) {
     this.objectives = objectivesData?.objectives || '';
     this.revision_count = objectivesData?.revision_count ?? null;
-  }
-}
-
-/**
- * Pre-processes GET /projects/{id} coordinator data
- *
- * @export
- * @class GetCoordinatorData
- */
-export class GetCoordinatorData {
-  first_name: string;
-  last_name: string;
-  email_address: string;
-  coordinator_agency: string;
-  share_contact_details: string;
-  revision_count: number;
-
-  constructor(coordinatorData?: any) {
-    this.first_name = coordinatorData?.coordinator_first_name || '';
-    this.last_name = coordinatorData?.coordinator_last_name || '';
-    this.email_address = coordinatorData?.coordinator_email_address || '';
-    this.coordinator_agency = coordinatorData?.coordinator_agency_name || '';
-    this.share_contact_details = coordinatorData?.coordinator_public ? 'true' : 'false';
-    this.revision_count = coordinatorData?.revision_count ?? null;
   }
 }
 

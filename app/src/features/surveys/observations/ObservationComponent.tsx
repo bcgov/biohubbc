@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiFloppy, mdiPlus, mdiTrashCan } from '@mdi/js';
+import { mdiCogOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
@@ -33,7 +33,7 @@ const ObservationComponent = () => {
         dialogText={ObservationsTableI18N.removeAllDialogText}
         yesButtonProps={{ color: 'error' }}
         yesButtonLabel={'Discard Changes'}
-        noButtonProps={{ color: 'primary', variant: 'contained' }}
+        noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
         open={showConfirmRemoveAllDialog}
         onYes={() => {
@@ -47,6 +47,7 @@ const ObservationComponent = () => {
         display="flex"
         flexDirection="column"
         flex="1 1 auto"
+        height="100%"
         sx={{
           overflow: 'hidden'
         }}>
@@ -66,19 +67,10 @@ const ObservationComponent = () => {
           </Typography>
           {showSaveButton && (
             <>
-              <LoadingButton
-                loading={isSaving}
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiFloppy} size={1} />}
-                onClick={() => handleSaveChanges()}>
+              <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
                 Save
               </LoadingButton>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiTrashCan} size={1} />}
-                onClick={() => setShowConfirmRemoveAllDialog(true)}>
+              <Button variant="contained" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
                 Discard Changes
               </Button>
             </>
@@ -99,8 +91,10 @@ const ObservationComponent = () => {
             Configure
           </Button>
         </Toolbar>
-        <Box display="flex" flexDirection="column" flex="1 1 auto">
-          <ObservationsTable />
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+          <Box position="absolute" width="100%" height="100%">
+            <ObservationsTable />
+          </Box>
         </Box>
       </Box>
     </>

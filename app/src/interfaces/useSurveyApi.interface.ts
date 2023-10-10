@@ -56,8 +56,6 @@ export interface IGetSurveyForViewResponseDetails {
   survey_name: string;
   start_date: string;
   end_date: string;
-  biologist_first_name: string;
-  biologist_last_name: string;
   survey_types: number[];
   revision_count: number;
 }
@@ -141,8 +139,6 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
     survey_name: string;
     start_date: string;
     end_date: string;
-    biologist_first_name: string;
-    biologist_last_name: string;
     survey_types: number[];
     revision_count: number;
   };

@@ -15,8 +15,6 @@ export const surveyObject: SurveyViewObject = {
     survey_name: 'survey name',
     start_date: '1998-10-10',
     end_date: '2021-02-26',
-    biologist_first_name: 'first',
-    biologist_last_name: 'last',
     survey_types: [1],
     revision_count: 0
   },

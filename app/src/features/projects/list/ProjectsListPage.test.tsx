@@ -133,7 +133,6 @@ describe('ProjectsListPage', () => {
           name: 'Project 1',
           start_date: null,
           end_date: null,
-          coordinator_agency: 'contact agency',
           project_programs: [1],
           regions: ['region'],
           permits_list: '1, 2, 3',
