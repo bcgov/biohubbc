@@ -66,142 +66,127 @@ const SamplingSiteList = () => {
         }}>
         <MenuItem
           onClick={() => {
-            history.push('sampling');
-          }}
-          startIcon={<Icon path={mdiPlus} size={1} />}>
-          Add
-        </Button>
-      </Toolbar>
-      <Box
-        position="relative"
-        display="flex"
-        flex="1 1 auto"
-        sx={{
-          overflowY: 'scroll',
-          background: grey[50],
-          '& .MuiAccordion-root + .MuiAccordion-root': {
-            borderTopStyle: 'solid',
-            borderTopWidth: '1px',
-            borderTopColor: grey[300]
-          }
-        }}>
+            history.push(`sampling/${selectedSampleSiteId}/edit`);
+          }}>
+          <ListItemIcon>
+            <Icon path={mdiPencilOutline} size={1} />
+          </ListItemIcon>
+          Edit Details
+        </MenuItem>
+        <MenuItem onClick={() => console.log('DELETE THIS SAMPLING SITE')}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          Remove
+        </MenuItem>
+      </Menu>
+      <Box display="flex" flexDirection="column" height="100%">
+        <Toolbar
+          sx={{
+            flex: '0 0 auto',
+            borderBottom: '1px solid #ccc'
+          }}>
+          <Typography
+            sx={{
+              flexGrow: '1'
+            }}>
+            <strong>Sampling Sites</strong>
+          </Typography>
+          <Button
+            sx={{
+              mr: -1
+            }}
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              history.push('sampling');
+            }}
+            startIcon={<Icon path={mdiPlus} size={1} />}>
+            Add
+          </Button>
+        </Toolbar>
         <Box
           sx={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%'
+            overflowY: 'scroll',
+            background: grey[50],
+            '& .MuiAccordion-root + .MuiAccordion-root': {
+              borderTopStyle: 'solid',
+              borderTopWidth: '1px',
+              borderTopColor: grey[300]
+            }
           }}>
-          <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
-            <Typography variant="body2">No Sampling Sites</Typography>
-          </Box>
-
-          <Accordion
-            square
-            disableGutters
-            sx={{
-              display: 'none',
-              boxShadow: 'none',
-              '&:before': {
-                display: 'none'
-              }
-            }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
-              <AccordionSummary
-                aria-controls="panel1bh-content"
-                id="panel1bh-header"
-                sx={{
-                  p: 0
-                }}>
-                <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                  Sampling Site 1
-                </Typography>
-              </AccordionSummary>
-              <IconButton edge="end">
-                <Icon path={mdiDotsVertical} size={1}></Icon>
-              </IconButton>
+          {!surveyContext.sampleSiteDataLoader.data.sampleSites.length && (
+            <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center">
+              <Typography variant="body2">No Sampling Sites</Typography>
             </Box>
-            <AccordionDetails
-              sx={{
-                pt: 0
-              }}>
-              <List component="div" disablePadding>
-                <ListItem
-                  sx={{
-                    background: grey[200]
-                  }}>
-                  <ListItemText>
-                    <Typography variant="body2">Method 1</Typography>
-                  </ListItemText>
-                </ListItem>
-              </List>
-              <List disablePadding>
-                <ListItem>
-                  <ListItemText>
-                    <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText>
-                    <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
-                  </ListItemText>
-                </ListItem>
-              </List>
-            </AccordionDetails>
-          </Accordion>
+          )}
 
-          <Accordion
-            square
-            disableGutters
-            sx={{
-              display: 'none',
-              boxShadow: 'none',
-              '&:before': {
-                display: 'none'
-              }
-            }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
-              <AccordionSummary
-                aria-controls="panel1bh-content"
-                id="panel1bh-header"
+          {surveyContext.sampleSiteDataLoader.data.sampleSites.map((sampleSite, index) => {
+            return (
+              <Accordion
+                key={`sample_site_${sampleSite.survey_sample_site_id}`}
+                square
+                disableGutters
                 sx={{
-                  p: 0
+                  boxShadow: 'none'
                 }}>
-                <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                  Sampling Site 1
-                </Typography>
-              </AccordionSummary>
-              <IconButton edge="end">
-                <Icon path={mdiDotsVertical} size={1}></Icon>
-              </IconButton>
-            </Box>
-            <AccordionDetails
-              sx={{
-                pt: 0
-              }}>
-              <List disablePadding>
-                <ListItem
+                <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
+                  <AccordionSummary sx={{ width: '100%' }} aria-controls="panel1bh-content">
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                      {sampleSite.name}
+                    </Typography>
+                  </AccordionSummary>
+                  <IconButton
+                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                      handleMenuClick(event, sampleSite.survey_sample_site_id)
+                    }
+                    aria-label="settings">
+                    <MoreVertIcon />
+                  </IconButton>
+                </Box>
+                <AccordionDetails
                   sx={{
-                    background: grey[200]
+                    pt: 0
                   }}>
-                  <ListItemText>
-                    <Typography variant="body2">Method 1</Typography>
-                  </ListItemText>
-                </ListItem>
-              </List>
-              <List disablePadding>
-                <ListItem>
-                  <ListItemText>
-                    <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemText>
-                    <Typography variant="body2">YYYY-MM-DD to YYYY-MM-DD</Typography>
-                  </ListItemText>
-                </ListItem>
-              </List>
-            </AccordionDetails>
-          </Accordion>
+                  <List component="div" disablePadding>
+                    {sampleSite.sample_methods?.map((sampleMethod) => {
+                      return (
+                        <ListItem key={`sample_method_${sampleMethod.survey_sample_method_id}`}>
+                          <ListItemText>
+                            <Typography
+                              sx={{
+                                background: grey[200],
+                                p: 1
+                              }}
+                              variant="body2">
+                              {getCodesName(
+                                codesContext.codesDataLoader.data,
+                                'sample_methods',
+                                sampleMethod.method_lookup_id
+                              )}
+                            </Typography>
+                            <List disablePadding>
+                              {sampleMethod.sample_periods?.map((samplePeriod) => {
+                                return (
+                                  <ListItem key={`sample_period_${samplePeriod.survey_sample_period_id}`}>
+                                    <ListItemText>
+                                      <Typography variant="body2">
+                                        {samplePeriod.start_date} to {samplePeriod.end_date}
+                                      </Typography>
+                                    </ListItemText>
+                                  </ListItem>
+                                );
+                              })}
+                            </List>
+                          </ListItemText>
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </AccordionDetails>
+              </Accordion>
+            );
+          })}
         </Box>
       </Box>
     </>
