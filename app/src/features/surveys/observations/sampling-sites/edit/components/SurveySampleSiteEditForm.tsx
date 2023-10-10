@@ -13,25 +13,22 @@ const SurveySamplingSiteEditForm = () => {
   }
 
   return (
-    <>
-      <Box component="fieldset">
-        <Typography component="legend">Import Spatial File</Typography>
-        <Typography
-          variant="body1"
-          color="textSecondary"
-          sx={{
-            maxWidth: '92ch'
-          }}>
-          Shapefiles must be compressed into a single zip file. They can include one or more sampling site locations.
-        </Typography>
-        <SamplingSiteEditMapControl
-          name="sampleSite.survey_sample_sites"
-          title={`Site Boundary Preview `}
-          mapId="study_area_form_map"
-          formikProps={formikProps}
-        />
-      </Box>
-    </>
+    <Box component="fieldset">
+      <Typography component="legend">Import Spatial File</Typography>
+      <Typography
+        variant="body1"
+        color="textSecondary"
+        sx={{
+          maxWidth: '92ch'
+        }}>
+        Shapefiles must be compressed into a single zip file. They can include one or more sampling site locations.
+      </Typography>
+      <SamplingSiteEditMapControl
+        name="sampleSite.survey_sample_sites"
+        mapId="study_area_form_map"
+        formikProps={formikProps}
+      />
+    </Box>
   );
 };
 

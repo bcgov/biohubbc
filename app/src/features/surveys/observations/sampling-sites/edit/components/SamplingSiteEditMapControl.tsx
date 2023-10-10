@@ -45,7 +45,6 @@ const useStyles = makeStyles(() => ({
 
 export interface ISamplingSiteEditMapControlProps {
   name: string;
-  title: string;
   mapId: string;
   formikProps: FormikContextType<any>;
 }
@@ -86,7 +85,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   };
 
   const removeFile = () => {
-    setFieldValue(name, [sampleSiteData?.geojson] || []);
+    setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
     setFieldError(name, undefined);
   };
 
@@ -107,71 +106,69 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   }, [samplingSiteGeoJsonFeatures]);
 
   return (
-    <>
-      <Grid item xs={12}>
-        <Box my={3}>
-          <FileUpload
-            uploadHandler={boundaryUploadHandler()}
-            onRemove={removeFile}
-            dropZoneProps={{
-              maxNumFiles: 1,
-              multiple: false,
-              acceptedFileExtensions: '.zip'
-            }}
-            hideDropZoneOnMaxFiles={true}
-            FileUploadItemComponent={FileUploadItem}
-            FileUploadItemComponentProps={{
-              SubtextComponent: SampleSiteFileUploadItemSubtext,
-              ActionButtonComponent: SampleSiteFileUploadItemActionButton,
-              ProgressBarComponent: SampleSiteFileUploadItemProgressBar
-            }}
-          />
-        </Box>
-        <Box component="fieldset">
-          <Typography component="legend" data-testid="funding-source-list-found">
-            Site Location Preview &zwnj;
-            <Typography component="span" color="textSecondary" fontWeight="400">
-              {samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length > 0
-                ? `(${samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length} locations detected)`
-                : ''}
-            </Typography>
+    <Grid item xs={12}>
+      <Box my={3}>
+        <FileUpload
+          uploadHandler={boundaryUploadHandler()}
+          onRemove={removeFile}
+          dropZoneProps={{
+            maxNumFiles: 1,
+            multiple: false,
+            acceptedFileExtensions: '.zip'
+          }}
+          hideDropZoneOnMaxFiles={true}
+          FileUploadItemComponent={FileUploadItem}
+          FileUploadItemComponentProps={{
+            SubtextComponent: SampleSiteFileUploadItemSubtext,
+            ActionButtonComponent: SampleSiteFileUploadItemActionButton,
+            ProgressBarComponent: SampleSiteFileUploadItemProgressBar
+          }}
+        />
+      </Box>
+      <Box component="fieldset">
+        <Typography component="legend" data-testid="funding-source-list-found">
+          Site Location Preview &zwnj;
+          <Typography component="span" color="textSecondary" fontWeight="400">
+            {samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length > 0
+              ? `(${samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length} locations detected)`
+              : ''}
           </Typography>
-          {get(errors, name) && (
-            <Alert
-              sx={{
-                mb: 2
-              }}
-              severity="error">
-              <AlertTitle>Multiple boundaries detected</AlertTitle>
-              {get(errors, name) as string}
-            </Alert>
-          )}
-          <Paper variant="outlined">
-            <Box position="relative" height={500}>
-              <MapContainer
-                mapId={mapId}
-                staticLayers={staticLayers}
-                onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
-                bounds={updatedBounds}
-              />
-              {samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length > 0 && (
-                <Box position="absolute" top="126px" left="10px" zIndex="999">
-                  <IconButton
-                    aria-label="zoom to initial extent"
-                    title="Zoom to initial extent"
-                    className={classes.zoomToBoundaryExtentBtn}
-                    onClick={() => {
-                      setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
-                    }}>
-                    <Icon size={1} path={mdiRefresh} />
-                  </IconButton>
-                </Box>
-              )}
-            </Box>
-          </Paper>
-        </Box>
-      </Grid>
-    </>
+        </Typography>
+        {get(errors, name) && (
+          <Alert
+            sx={{
+              mb: 2
+            }}
+            severity="error">
+            <AlertTitle>Multiple boundaries detected</AlertTitle>
+            {get(errors, name) as string}
+          </Alert>
+        )}
+        <Paper variant="outlined">
+          <Box position="relative" height={500}>
+            <MapContainer
+              mapId={mapId}
+              staticLayers={staticLayers}
+              onDrawChange={(newGeo: Feature[]) => setFieldValue(name, newGeo)}
+              bounds={updatedBounds}
+            />
+            {samplingSiteGeoJsonFeatures && samplingSiteGeoJsonFeatures.length > 0 && (
+              <Box position="absolute" top="126px" left="10px" zIndex="999">
+                <IconButton
+                  aria-label="zoom to initial extent"
+                  title="Zoom to initial extent"
+                  className={classes.zoomToBoundaryExtentBtn}
+                  onClick={() => {
+                    setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
+                  }}>
+                  <Icon size={1} path={mdiRefresh} />
+                </IconButton>
+              </Box>
+            )}
+          </Box>
+        </Paper>
+      </Box>
+    </Grid>
   );
 };
 
