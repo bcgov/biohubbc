@@ -53,14 +53,12 @@ const SamplingSiteEditPage = () => {
             survey_id: data.survey_id,
             survey_sample_sites: [data.geojson as unknown as Feature],
             methods:
-              (data.sample_methods &&
-                data.sample_methods.map((item) => {
-                  return {
-                    ...item,
-                    periods: item.sample_periods || []
-                  };
-                })) ||
-              []
+              data.sample_methods?.map((item) => {
+                return {
+                  ...item,
+                  periods: item.sample_periods || []
+                };
+              }) || []
           }
         };
 
