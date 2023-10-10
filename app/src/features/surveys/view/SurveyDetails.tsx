@@ -9,6 +9,7 @@ import SurveyProprietaryData from 'features/surveys/view/components/SurveyPropri
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
 import SurveyFundingSources from './components/SurveyFundingSources';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
+import SurveyStudyArea from './components/SurveyStudyArea';
 import Partnerships from './components/Partnerships';
 import SamplingMethods from './components/SamplingMethods';
 import Grid from '@mui/material/Grid';
@@ -34,6 +35,10 @@ const SurveyDetails = () => {
       
       <Box p={3}
         sx={{
+          // '& section': {
+          //   display: 'flex',
+          //   flexDirection: 'row'
+          // },
           '& section + section': {
             mt: 3
           },
@@ -68,8 +73,8 @@ const SurveyDetails = () => {
             flexDirection: 'row',
             flexWrap: {xs: 'wrap', md: 'nowrap'},
             gap: {xs: 0, md: '24px'},
-            py: 1.25,
-            borderTop: '1px solid' + grey[300]
+            py: 1,
+            borderTop: '1px solid' + grey[200]
           },
           '& section.row': {
             mt: 0
@@ -84,104 +89,56 @@ const SurveyDetails = () => {
               <SurveyGeneralInformation />
             </Box>
 
+            <Divider sx={{ my: 3 }}></Divider>
+
+            <Box component="section">
+              <Typography component="h3">Study Area Location</Typography>
+              <SurveyStudyArea />
+            </Box>
+            
+            <Divider sx={{ my: 3 }}></Divider>
+
             <Box component="section">
               <Typography component="h3">Purpose and Methodology</Typography>
               <SurveyPurposeAndMethodologyData />
             </Box>
+            
+            <Divider sx={{ my: 3 }}></Divider>
 
             <Box component="section">
               <Typography component="h3">Sampling Methods</Typography>
               <SamplingMethods />
             </Box>
 
-            <Box component="section" sx={{display: 'none'}}>
+            <Divider sx={{ my: 3 }}></Divider>
+
+            <Box component="section">
               <Typography component="h3">Survey Participants</Typography>
               <SurveyParticipants/>
             </Box>
 
+            <Divider sx={{ my: 3 }}></Divider>
+
             <Box component="section">
               <Typography component="h3">Funding Sources & Partnerships</Typography>
-              <SurveyFundingSources />
-              <Partnerships />
+              <Box flex="1 1 auto">
+                <SurveyFundingSources />
+                <Partnerships />
+              </Box>
             </Box>
+
+            <Divider sx={{ my: 3 }}></Divider>
 
             <Box component="section">
               <Typography component="h3">Permits</Typography>
               <Permits />
             </Box>
 
+            <Divider sx={{ my: 3 }}></Divider>
+
             <Box component="section">
               <Typography component="h3">Proprietary Information</Typography>
               <SurveyProprietaryData />
-            </Box>
-
-            <Box component="section" sx={{display: 'none !important'}}>
-              <Typography component="h4">Study Area Location</Typography>
-              <Box component="dl" display="flex" flexDirection="row" gap="24px">
-                <Grid container spacing={1}>
-                  <Grid item xs={12}>
-                    <Box component="dt">Area Name</Box>
-                    <Box component="dd">My Study Area Name</Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box component="dt" flex="0 0 auto">Natural Resource Ministry Regions</Box>
-                    <Box flex="1 1 auto"
-                      sx={{
-                        '& dd': {
-                          position: 'relative',
-                          display: 'inline-block',
-                          mr: 0.75
-                        },
-                        '& dd:not(:last-child):after': {
-                          content: '", "'
-                        }
-                      }}
-                    >
-                      <Box component="dd">Omenica Region</Box>
-                      <Box component="dd">Peace Region</Box>
-                      <Box component="dd">Skeena Region</Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box component="dt">Ministry of Environment Regions</Box>
-                    <Box flex="1 1 auto"
-                      sx={{
-                        '& dd': {
-                          position: 'relative',
-                          display: 'inline-block',
-                          mr: 0.75
-                        },
-                        '& dd:not(:last-child):after': {
-                          content: '", "'
-                        }
-                      }}
-                    >
-                      <Box component="dd">Omenica Region</Box>
-                      <Box component="dd">Peace Region</Box>
-                      <Box component="dd">Skeena Region</Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box component="dt">Parks and Eco-reserves</Box>
-                    <Box
-                      sx={{
-                        '& dd': {
-                          position: 'relative',
-                          display: 'inline-block',
-                          mr: 0.75
-                        },
-                        '& dd:not(:last-child):after': {
-                          content: '", "'
-                        }
-                      }}
-                    >
-                      <Box component="dd">Park One</Box>
-                      <Box component="dd">Park Two</Box>
-                      <Box component="dd">Park Three</Box>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
             </Box>
 
           </Grid>

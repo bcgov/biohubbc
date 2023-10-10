@@ -67,14 +67,11 @@ const SurveyGeneralInformation = () => {
         <Typography component="dt">
           Species of Interest
         </Typography>
-        <Box display="inline-block"
-          sx={{
-            width: {sm: '100%', md: '75%'}
-          }}
+        <Box
         >
           {species.focal_species_names?.map((focalSpecies: string, index: number) => {
             return (
-              <Typography component="dd" variant="body1" key={index}
+              <Typography component="dd" key={index}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',

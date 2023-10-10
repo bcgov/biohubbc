@@ -53,7 +53,7 @@ const SamplingMethods = () => {
       </Box>
 
       {site_selection.stratums.length > 0 &&
-        <Box className="row" component="section" mt={0}>
+        <Box className="row" component="section">
           <Typography component="h4">
             Stratums
           </Typography>
@@ -84,7 +84,7 @@ const SamplingMethods = () => {
 
       {blocks.length > 0 &&
         <Box component="section" className="row">
-          <Typography component="h4" sx={{mb: 1.5}}>
+          <Typography component="h4">
             Blocks
           </Typography>
           <List disablePadding>

@@ -1,6 +1,5 @@
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 
@@ -22,35 +21,27 @@ const SurveyParticipants = () => {
   } = surveyForViewData;
 
   return (
-    <List disablePadding
-      sx={{
-        '& li:first-of-type': {
-          paddingTop: 0
-        },
-        '& .MuiListItemText-root': {
-          margin: 0
-        }
-      }}
-    >
+    <>
       {participants.length > 0 ? (
-        <>
+        <Box component="dl">
           {participants.map((surveyParticipants) => (
-            <ListItem disableGutters key={surveyParticipants.system_user_id}>
-              <ListItemText
-                primary={surveyParticipants.display_name}
-                secondary={surveyParticipants.survey_job_name}
-              >
-              </ListItemText>
-            </ListItem>
+            <Box className="row" key={surveyParticipants.system_user_id}>
+              <Typography component='dt'>
+                {surveyParticipants.display_name}
+              </Typography>
+              <Typography component='dd'>
+                {surveyParticipants.survey_job_name}
+              </Typography>
+            </Box>
           ))}
-        </>
+        </Box>
       ) : (
-        <ListItem disableGutters>
-          <ListItemText primary="No particpants"></ListItemText>
-        </ListItem>
+        <Box className="row">
+          No participants
+        </Box>
       )}
 
-    </List>
+    </>
   );
 };
 
