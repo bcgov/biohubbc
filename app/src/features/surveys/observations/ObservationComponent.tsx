@@ -37,7 +37,7 @@ const ObservationComponent = () => {
     });
   };
 
-  const showSaveButton = observationsContext.hasUnsavedChanges() || true;
+  const showSaveButton = observationsContext.hasUnsavedChanges();
 
   if (surveyContext.sampleSiteDataLoader.data && codesContext.codesDataLoader.data) {
     // loop through and collect all sites

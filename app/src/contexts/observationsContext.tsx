@@ -148,7 +148,9 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         survey_sample_period_id: undefined,
         count: undefined,
         observation_date: undefined,
-        observation_time: undefined
+        observation_time: undefined,
+        latitude: undefined,
+        longitude: undefined
       } as GridRowModelUpdate
     ]);
 
