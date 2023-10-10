@@ -40,8 +40,8 @@ export type IObservationsContext = {
    */
   createNewRecord: () => void;
   /**
-   * Commits all observation rows to the database, including those that are currently being
-   * edited in the Observation Table
+   * Commits all observation rows to the database, including those that are currently being edited in the Observation
+   * Table
    */
   saveRecords: () => Promise<void>;
   /**
@@ -57,8 +57,7 @@ export type IObservationsContext = {
    */
   markRecordWithUnsavedChanges: (id: string | number) => void;
   /**
-   * Indicates all observation table rows that have unsaved changes, include IDs of rows
-   * that have been deleted.
+   * Indicates all observation table rows that have unsaved changes, include IDs of rows that have been deleted.
    */
   unsavedRecordIds: string[];
   /**
@@ -74,11 +73,11 @@ export type IObservationsContext = {
    */
   _muiDataGridApiRef: React.MutableRefObject<GridApiCommunity>;
   /**
-   * TODO
+   * The initial rows the data grid should render, if any.
    */
   initialRows: IObservationTableRow[];
   /**
-   * TODO
+   * A setState setter for the `initialRows`
    */
   setInitialRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
 };
@@ -228,8 +227,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     initialRows,
     setInitialRows
   };
-
-  console.log({ observationsContext });
 
   return <ObservationsContext.Provider value={observationsContext}>{props.children}</ObservationsContext.Provider>;
 };
