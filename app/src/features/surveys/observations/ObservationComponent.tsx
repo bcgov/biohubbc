@@ -47,6 +47,7 @@ const ObservationComponent = () => {
         display="flex"
         flexDirection="column"
         flex="1 1 auto"
+        height="100%"
         sx={{
           overflow: 'hidden'
         }}>
@@ -90,8 +91,10 @@ const ObservationComponent = () => {
             Configure
           </Button>
         </Toolbar>
-        <Box display="flex" flexDirection="column" flex="1 1 auto">
-          <ObservationsTable />
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+          <Box position="absolute" width="100%" height="100%">
+            <ObservationsTable />
+          </Box>
         </Box>
       </Box>
     </>

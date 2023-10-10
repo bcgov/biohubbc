@@ -7,12 +7,6 @@ import BaseLayout from 'layouts/BaseLayout';
 import LandingActions from './LandingActions';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  baseLayoutContainer: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center'
-  },
   heroContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -58,7 +52,7 @@ export const LandingPage = () => {
   const classes = useStyles();
 
   return (
-    <BaseLayout className={classes.baseLayoutContainer}>
+    <BaseLayout>
       <Box className={classes.heroContainer}>
         <Container maxWidth="xl">
           <Box className={classes.heroContainerInner}>
