@@ -15,6 +15,11 @@ import { Prompt, useHistory, useParams } from 'react-router';
 import SamplingSiteHeader from '../SamplingSiteHeader';
 import SampleSiteEditForm, { IEditSamplingSiteRequest, samplingSiteYupSchema } from './components/SampleSiteEditForm';
 
+/**
+ * Page to edit a sampling site.
+ *
+ * @return {*}
+ */
 const SamplingSiteEditPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
@@ -29,6 +34,7 @@ const SamplingSiteEditPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
+  // Initial load of the sampling site data
   useEffect(() => {
     const setFormikValues = (data: IEditSamplingSiteRequest) => {
       formikRef.current?.setValues(data);
@@ -191,7 +197,7 @@ const SamplingSiteEditPage = () => {
               survey_id={surveyContext.surveyId}
               survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
               is_submitting={isSubmitting}
-              title="Edit Sampling Site"
+              title={`Edit Sampling Site > ${formikRef.current?.values.sampleSite.name}`}
               breadcrumb="Edit Sampling Sites"
             />
           </Box>
