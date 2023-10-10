@@ -3,7 +3,6 @@ import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   CardContent,
-  Divider,
   IconButton,
   List,
   ListItem,
@@ -122,7 +121,8 @@ const SamplingMethodForm = () => {
               mb: 2,
               maxWidth: '92ch'
             }}>
-            Methods added here will be applied to ALL sampling locations. These can be modified later if required.
+            Methods added here will be applied to ALL sampling locations. These can be modifialValues: initialData ||
+            SurveySampleMethodDataInitialValued later if required.
           </Typography>
           {errors.methods && !Array.isArray(errors.methods) && (
             <Alert
@@ -136,7 +136,7 @@ const SamplingMethodForm = () => {
           )}
           <TransitionGroup>
             {values.methods.map((item, index) => (
-              <Collapse key={`${item.description}-${item.method_lookup_id}-${item.periods.length}`}>
+              <Collapse key={`sample_method_${item.method_lookup_id}_${item.periods.length}`}>
                 <Card
                   variant="outlined"
                   sx={{
@@ -181,16 +181,15 @@ const SamplingMethodForm = () => {
                       Time Periods
                     </Typography>
                     <List>
-                      {item.periods.map((period) => (
-                        <>
-                          <Divider />
-                          <ListItem>
-                            <ListItemIcon>
-                              <Icon path={mdiCalendarRangeOutline} size={1} />
-                            </ListItemIcon>
-                            <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
-                          </ListItem>
-                        </>
+                      {item.periods.map((period, index) => (
+                        <ListItem
+                          key={`period_${period.survey_sample_period_id}_${period.start_date}-${period.end_date}_${index}`}
+                          divider>
+                          <ListItemIcon>
+                            <Icon path={mdiCalendarRangeOutline} size={1} />
+                          </ListItemIcon>
+                          <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
+                        </ListItem>
                       ))}
                     </List>
                   </CardContent>

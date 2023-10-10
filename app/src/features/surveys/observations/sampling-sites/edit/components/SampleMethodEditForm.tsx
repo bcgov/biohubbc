@@ -3,7 +3,6 @@ import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   CardContent,
-  Divider,
   IconButton,
   List,
   ListItem,
@@ -36,7 +35,7 @@ export interface SampleMethodEditFormProps {
   name: string;
 }
 
-const SampleMethodEditForm: React.FC<SampleMethodEditFormProps> = (props) => {
+const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const { name } = props;
 
   const { values, errors, setFieldValue, validateField } = useFormikContext<IEditSamplingSiteRequest>();
@@ -142,9 +141,8 @@ const SampleMethodEditForm: React.FC<SampleMethodEditFormProps> = (props) => {
           )}
           <TransitionGroup>
             {values.sampleSite.methods.map((item, index) => (
-              <Collapse key={`${item.description}-${item.method_lookup_id}-${item.periods.length}`}>
+              <Collapse key={`${item.survey_sample_method_id}`}>
                 <Card
-                  key={`${item.description}-${item.method_lookup_id}-${item.periods.length}`}
                   variant="outlined"
                   sx={{
                     mt: 1,
@@ -189,15 +187,12 @@ const SampleMethodEditForm: React.FC<SampleMethodEditFormProps> = (props) => {
                     </Typography>
                     <List>
                       {item.periods.map((period) => (
-                        <Box key={`li-${period.survey_sample_period_id}`}>
-                          <Divider />
-                          <ListItem>
-                            <ListItemIcon>
-                              <Icon path={mdiCalendarRangeOutline} size={1} />
-                            </ListItemIcon>
-                            <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
-                          </ListItem>
-                        </Box>
+                        <ListItem key={`period_${period.survey_sample_period_id}`} divider>
+                          <ListItemIcon>
+                            <Icon path={mdiCalendarRangeOutline} size={1} />
+                          </ListItemIcon>
+                          <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
+                        </ListItem>
                       ))}
                     </List>
                   </CardContent>

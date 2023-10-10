@@ -22,7 +22,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { getCodesName } from 'utils/Utils';
 
@@ -30,7 +30,9 @@ const SamplingSiteList = () => {
   const history = useHistory();
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
-  codesContext.codesDataLoader.load();
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
@@ -122,6 +124,7 @@ const SamplingSiteList = () => {
           {surveyContext.sampleSiteDataLoader.data.sampleSites.map((sampleSite, index) => {
             return (
               <Accordion
+                key={`sample_site_${sampleSite.survey_sample_site_id}`}
                 square
                 disableGutters
                 sx={{
@@ -148,7 +151,7 @@ const SamplingSiteList = () => {
                   <List component="div" disablePadding>
                     {sampleSite.sample_methods?.map((sampleMethod) => {
                       return (
-                        <ListItem>
+                        <ListItem key={`sample_method_${sampleMethod.survey_sample_method_id}`}>
                           <ListItemText>
                             <Typography
                               sx={{
@@ -165,7 +168,7 @@ const SamplingSiteList = () => {
                             <List disablePadding>
                               {sampleMethod.sample_periods?.map((samplePeriod) => {
                                 return (
-                                  <ListItem>
+                                  <ListItem key={`sample_period_${samplePeriod.survey_sample_period_id}`}>
                                     <ListItemText>
                                       <Typography variant="body2">
                                         {samplePeriod.start_date} to {samplePeriod.end_date}
