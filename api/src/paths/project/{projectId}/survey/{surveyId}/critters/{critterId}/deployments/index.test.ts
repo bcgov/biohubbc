@@ -2,7 +2,6 @@ import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../../errors/http-error';
 import { BctwService } from '../../../../../../../../services/bctw-service';
 import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
@@ -45,7 +44,7 @@ describe('critter deployments', () => {
       const mockError = new Error('a test error');
       const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
       const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').rejects(mockError);
-      const mockBctwService = sinon.stub(BctwService.prototype, 'updateDeployment');
+      const mockBctwService = sinon.stub(BctwService.prototype, 'updateDeployment').rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -54,7 +53,7 @@ describe('critter deployments', () => {
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
-        expect((mockError as HTTPError).message).to.eql('a test error');
+        expect(actualError).to.equal(mockError);
         expect(mockGetDBConnection.calledOnce).to.be.true;
         expect(mockAddDeployment.calledOnce).to.be.true;
         expect(mockBctwService.notCalled).to.be.true;
@@ -81,7 +80,7 @@ describe('critter deployments', () => {
         const mockError = new Error('a test error');
         const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
         const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').rejects(mockError);
-        const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice');
+        const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice').rejects(mockError);
 
         const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -90,7 +89,7 @@ describe('critter deployments', () => {
           await requestHandler(mockReq, mockRes, mockNext);
           expect.fail();
         } catch (actualError) {
-          expect((mockError as HTTPError).message).to.eql('a test error');
+          expect(actualError).to.equal(mockError);
           expect(mockGetDBConnection.calledOnce).to.be.true;
           expect(mockAddDeployment.calledOnce).to.be.true;
           expect(mockBctwService.notCalled).to.be.true;

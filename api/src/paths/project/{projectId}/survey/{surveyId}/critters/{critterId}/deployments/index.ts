@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { v4 } from 'uuid';
@@ -253,7 +252,7 @@ export function deployDevice(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'addDeployment', message: 'error', error });
       await connection.rollback();
-      return res.status(500).json((error as AxiosError).response);
+      throw error;
     } finally {
       connection.release();
     }
@@ -278,9 +277,8 @@ export function updateDeployment(): RequestHandler {
       return res.status(200).json({ message: 'Deployment updated.' });
     } catch (error) {
       defaultLog.error({ label: 'updateDeployment', message: 'error', error });
-      console.log(JSON.stringify((error as Error).message));
       await connection.rollback();
-      return res.status(500).json((error as AxiosError).response);
+      throw error;
     } finally {
       connection.release();
     }
