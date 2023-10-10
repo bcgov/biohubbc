@@ -57,7 +57,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
   // The current data grid value
   const dataGridValue = dataGridProps.value;
   // The input field value
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState<IAutocompleteDataGridOption<ValueType>['label']>('');
   // The currently selected option
   const [currentOption, setCurrentOption] = useState<IAutocompleteDataGridOption<ValueType> | null>(null);
   // The array of options to choose from
