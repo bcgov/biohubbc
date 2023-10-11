@@ -11,16 +11,17 @@ import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyObservations from './survey-observations/SurveyObservations';
 import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
-import { useHistory } from 'react-router';
 import { Toolbar } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ObservationsMap from '../observations/ObservationsMap';
+import { ObservationsContext } from 'contexts/observationsContext';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -32,7 +33,9 @@ import ObservationsMap from '../observations/ObservationsMap';
 const SurveyPage: React.FC = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
-  const history = useHistory();
+  const observationsContext = useContext(ObservationsContext);
+
+  const numObservations: number = observationsContext.observationsDataLoader.data?.surveyObservations.length || 0;
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -54,13 +57,17 @@ const SurveyPage: React.FC = () => {
                   flex: '1 1 auto'
                 }}
               >
-                Observations
+                Observations &zwnj;
+                <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+                  ({numObservations})
+                </Typography>
               </Typography>
               <Button
+                component={RouterLink}
+                to={'observations'}
                 title="Submit Survey Data and Documents"
                 color="primary"
-                variant="contained"
-                onClick={() => history.push('observations')}>
+                variant="contained">
                 Manage Observations
               </Button>
             </Toolbar>
