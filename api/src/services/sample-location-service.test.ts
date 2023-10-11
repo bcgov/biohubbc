@@ -68,7 +68,8 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0
+        revision_count: 0,
+        sample_methods: []
       });
       const insertMethod = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
 
@@ -96,7 +97,8 @@ describe('SampleLocationService', () => {
           create_user: 1,
           update_date: '',
           update_user: 1,
-          revision_count: 0
+          revision_count: 0,
+          sample_methods: []
         }
       ]);
 
@@ -125,7 +127,8 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0
+        revision_count: 0,
+        sample_methods: []
       });
 
       const { survey_sample_site_id } = await service.deleteSampleLocationRecord(1);
@@ -150,7 +153,8 @@ describe('SampleLocationService', () => {
         create_user: 1,
         update_date: '',
         update_user: 1,
-        revision_count: 0
+        revision_count: 0,
+        sample_methods: []
       });
 
       const { name, description } = await service.updateSampleLocation({

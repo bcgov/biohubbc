@@ -1,7 +1,7 @@
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import { Link } from 'react-router-dom';
 
 export interface SurveyObservationHeaderProps {
   project_id: number;
@@ -26,8 +26,10 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
           sx={{
             mb: 1
           }}>
-          <Link variant="body2" underline="hover" href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
-            {survey_name}
+          <Link to={`/admin/projects/${project_id}/surveys/${survey_id}/details`} style={{ textDecoration: 'none' }}>
+            <Typography component="span" variant="body2">
+              {survey_name}
+            </Typography>
           </Link>
           <Typography component="span" variant="body2" color="text.secondary">
             Manage Survey Observations

@@ -172,6 +172,7 @@ export function getSurveySamplePeriodRecords(): RequestHandler {
       return res.status(200).json({ samplePeriods: result });
     } catch (error) {
       defaultLog.error({ label: 'getSurveySamplePeriodRecords', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -311,6 +312,7 @@ export function createSurveySamplePeriodRecord(): RequestHandler {
       return res.status(201).send();
     } catch (error) {
       defaultLog.error({ label: 'createSurveySamplePeriodRecord', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
