@@ -79,24 +79,26 @@ export class SampleMethodService extends DBService {
   }
 
   /**
-   * Checks for sample methods to delete.
+   * Fetches and compares any existing sample methods for a given sample site id.
+   * Any sample methods not found in the given array will be deleted.
    *
    * @param {number} surveySampleSiteId
    * @param {UpdateSampleMethodRecord[]} newMethods
    * @memberof SampleMethodService
    */
-  async checkSampleMethodsToDelete(surveySampleSiteId: number, newMethods: UpdateSampleMethodRecord[]) {
-    //Get any existing methods for the sample location
+  async deleteSampleMethodsNotInArray(surveySampleSiteId: number, newMethods: UpdateSampleMethodRecord[]) {
+    //Get any existing methods for the sample site
     const existingMethods = await this.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
 
     //Compare input and existing for methods to delete
+    // Any existing methods that are not found in the new methods being passed in will be collected for deletion
     const existingMethodsToDelete = existingMethods.filter((existingMethod) => {
       return !newMethods.find(
         (incomingMethod) => incomingMethod.survey_sample_method_id === existingMethod.survey_sample_method_id
       );
     });
 
-    // Delete any non existing methods
+    // Delete any methods not found in the passed in array
     if (existingMethodsToDelete.length > 0) {
       const promises: Promise<any>[] = [];
 
@@ -119,7 +121,7 @@ export class SampleMethodService extends DBService {
     const samplePeriodService = new SamplePeriodService(this.connection);
 
     // Check for any sample periods to delete
-    await samplePeriodService.checkSamplePeriodToDelete(sampleMethod.survey_sample_method_id, sampleMethod.periods);
+    await samplePeriodService.deleteSamplePeriodsNotInArray(sampleMethod.survey_sample_method_id, sampleMethod.periods);
 
     // Loop through all new sample periods
     // For each sample period, check if it exists in the existing list
