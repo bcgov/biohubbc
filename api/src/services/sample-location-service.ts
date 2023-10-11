@@ -109,7 +109,7 @@ export class SampleLocationService extends DBService {
     await this.sampleLocationRepository.updateSampleLocation(sampleSite);
 
     // Check for methods to delete
-    await methodService.checkSampleMethodsToDelete(sampleSite.survey_sample_site_id, sampleSite.methods);
+    await methodService.deleteSampleMethodsNotInArray(sampleSite.survey_sample_site_id, sampleSite.methods);
 
     // Loop through all methods
     // For each method, check if it exists
