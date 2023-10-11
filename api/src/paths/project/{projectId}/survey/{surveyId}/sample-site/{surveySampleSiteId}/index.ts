@@ -91,7 +91,7 @@ PUT.apiDoc = {
                   minItems: 1,
                   items: {
                     type: 'object',
-                    required: ['method_lookup_id', 'description', 'period'],
+                    required: ['method_lookup_id', 'description', 'periods'],
                     properties: {
                       method_lookup_id: {
                         type: 'integer',
@@ -100,7 +100,7 @@ PUT.apiDoc = {
                       description: {
                         type: 'string'
                       },
-                      period: {
+                      periods: {
                         type: 'array',
                         minItems: 1,
                         items: {
