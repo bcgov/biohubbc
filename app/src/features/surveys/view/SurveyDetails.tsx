@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,6 +15,9 @@ import Partnerships from './components/Partnerships';
 import SamplingMethods from './components/SamplingMethods';
 import Grid from '@mui/material/Grid';
 import { grey } from '@mui/material/colors';
+import { useHistory } from 'react-router';
+import Icon from '@mdi/react';
+import { mdiPencilOutline } from '@mdi/js';
 
 /**
  * Survey details content for a survey.
@@ -23,12 +27,21 @@ import { grey } from '@mui/material/colors';
 
 const SurveyDetails = () => {
 
+  const history = useHistory();
+
   return (
     <Paper>
       <Toolbar>
-        <Typography variant="h4" component="h2">
+        <Typography variant="h4" component="h2" sx={{flex: '1 1 auto'}}>
           Survey Details
         </Typography>
+        <IconButton
+          aria-label="Edit Details"
+          onClick={() => history.push('edit')}
+        >
+          <Icon path={mdiPencilOutline} size={1} />
+        </IconButton>
+
       </Toolbar>
 
       <Divider sx={{ m: 0 }}></Divider>
@@ -74,7 +87,7 @@ const SurveyDetails = () => {
             flexWrap: {xs: 'wrap', md: 'nowrap'},
             gap: {xs: 0, md: '24px'},
             py: 1,
-            borderTop: '1px solid' + grey[200]
+            borderTop: '1px solid' + grey[300]
           },
           '& section.row': {
             mt: 0

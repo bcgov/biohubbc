@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
@@ -82,17 +82,20 @@ const ObservationComponent = () => {
             onClick={() => observationsContext.createNewRecord()}>
             Add Record
           </Button>
-          <Button
+
+          {/*TODO: FUTURE FUNCTIONALITY */}
+          {/* <Button
             variant="outlined"
             sx={{
               mr: -1
             }}
             startIcon={<Icon path={mdiCogOutline} size={1} />}>
             Configure
-          </Button>
+          </Button> */}
+
         </Toolbar>
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
-          <Box position="absolute" width="100%" height="100%">
+          <Box position="absolute" width="100%" height="100%" px={2}>
             <ObservationsTable />
           </Box>
         </Box>

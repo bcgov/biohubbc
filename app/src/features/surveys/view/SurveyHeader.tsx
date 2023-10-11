@@ -35,6 +35,7 @@ import { useHistory } from 'react-router';
 import Link from '@mui/material/Link';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { Link as RouterLink } from 'react-router-dom'
+import { grey } from '@mui/material/colors';
 
 /**
  * Survey header for a single-survey view.
@@ -139,13 +140,14 @@ const SurveyHeader = () => {
 
   return (
     <>
-      <Paper elevation={1} square={true} id="pageTitle"
+      <Paper elevation={0} square={true} id="pageTitle"
         sx={{
           position: 'sticky',
           top: 0,
           zIndex: 1002,
           pt: 3,
-          pb: 3,
+          pb: 4,
+          borderBottom: '1px solid' + grey[300]
         }}
       >
         <Container maxWidth="xl" >

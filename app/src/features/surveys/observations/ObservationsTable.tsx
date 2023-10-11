@@ -6,6 +6,7 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import { useContext, useEffect, useState } from 'react';
+import { grey } from '@mui/material/colors';
 
 const ObservationsTable = () => {
   const observationColumns: GridColDef<IObservationTableRow>[] = [
@@ -89,7 +90,7 @@ const ObservationsTable = () => {
       headerName: 'Lat',
       type: 'number',
       editable: true,
-      width: 150,
+      width: 120,
       disableColumnMenu: true,
       renderCell: (params) => String(params.row.latitude)
     },
@@ -98,7 +99,7 @@ const ObservationsTable = () => {
       headerName: 'Long',
       type: 'number',
       editable: true,
-      width: 150,
+      width: 120,
       disableColumnMenu: true,
       renderCell: (params) => String(params.row.longitude)
     },
@@ -109,6 +110,7 @@ const ObservationsTable = () => {
       width: 96,
       disableColumnMenu: true,
       resizable: false,
+      cellClassName: 'test',
       getActions: (params) => [
         <IconButton
           onClick={(event) => {
@@ -197,6 +199,7 @@ const ObservationsTable = () => {
         onNo={() => handleCancelDeleteRow()}
       />
       <DataGrid
+        rowHeight={56}
         apiRef={apiRef}
         editMode="row"
         onCellClick={handleCellClick}
@@ -211,14 +214,6 @@ const ObservationsTable = () => {
         sx={{
           background: '#fff',
           border: 'none',
-          '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
-            background: '#fff'
-          },
-          '& .MuiDataGrid-columnHeaderTitle': {
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            color: '#999'
-          },
           '& .test': {
             position: 'sticky',
             right: 0,
@@ -240,6 +235,53 @@ const ObservationsTable = () => {
           },
           '& .MuiDataGrid-actionsCell': {
             gap: 0
+          },
+          '& .MuiDataGrid-cell.MuiDataGrid-cell--editing:focus-within': {
+            outline: 'none'
+          },
+          '& .MuiDataGrid-cell.MuiDataGrid-cell--editing': {
+            padding: '6px',
+            background: grey[100]
+          },
+          '& .MuiInputBase-root': {
+            height: '40px',
+            borderRadius: '4px',
+            background: '#fff',
+            '&.MuiDataGrid-editInputCell': {
+              padding: 0
+            }
+          },
+          '& .MuiOutlinedInput-root': {
+            height: '40px', 
+            borderRadius: '4px',
+            background: '#fff',
+            border: 'none',
+            fontSize: '14px',
+            '&:hover': {
+              borderColor: 'blue'
+            }
+          },
+          '& .MuiDataGrid-editInputCell, .MuiOutlinedInput-notchedOutline': {
+            border: '1px solid #ccc',
+            '&.Mui-focused': {
+              border: '1px solid blue'
+            }
+          },
+          '& .MuiDataGrid-editInputCell:hover': {
+            border: '1px solid blue'
+          },
+          '& .MuiDataGrid-row': {
+            '&--editing': {
+              boxShadow: 'none'
+            }
+          },
+          '& .MuiOutlinedInput-root:hover': {
+            "& > fieldset": {
+              border: '1px solid blue',
+            }
+          },
+          '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+            border: '1px solid blue'
           }
         }}
       />

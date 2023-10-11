@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -20,10 +21,7 @@ export const SurveyObservationPage = () => {
       flexDirection="column"
       height="100%"
       overflow="hidden"
-      position="relative"
-      sx={{
-        background: '#fff'
-      }}>
+      position="relative">
       <Box
         zIndex={999}
         sx={{
@@ -38,23 +36,33 @@ export const SurveyObservationPage = () => {
         />
       </Box>
 
-      <Box display="flex" flex="1 1 auto" overflow="hidden">
+      <Box display="flex" flex="1 1 auto" overflow="hidden" p={3}>
         {/* Sampling Site List */}
-        <Box
-          flex="0 0 auto"
-          width={400}
+        <Paper 
+          elevation={0}
           sx={{
-            borderRightStyle: 'solid',
-            borderRightWidth: '1px',
-            borderRightColor: grey[300]
+            flex: '0 0 auto',
+            width: 400,
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+            borderRight: '1px solid' + grey[300]
           }}>
           <SamplingSiteList />
-        </Box>
+        </Paper>
 
         {/* Observations Component */}
-        <Box flex="1 1 auto" overflow="hidden">
+        <Paper
+          elevation={0}
+          sx={{
+            flex: '1 1 auto',
+            overflow: 'hidden',
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0
+          }}
+        >
           <ObservationComponent />
-        </Box>
+        </Paper>
+
       </Box>
     </Box>
   );

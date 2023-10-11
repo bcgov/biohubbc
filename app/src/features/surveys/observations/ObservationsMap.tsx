@@ -29,11 +29,12 @@ const ObservationsMap = () => {
   }, [observationsContext.observationsDataLoader.data])
 
   return (
-    <Box position="relative" height={600} sx={{ px: 3, pb: 3 }}>
+    <Box position="relative" height={600}>
       <MapContainer
         mapId="survey_observations_map"
         scrollWheelZoom={true}
         nonEditableGeometries={surveyObservations}
+        zoom={6}
       />
     </Box>
   );
