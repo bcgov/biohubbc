@@ -46,10 +46,8 @@ export class SampleMethodService extends DBService {
 
     // Delete all associated sample periods
     const existingSamplePeriods = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
-    const promises = existingSamplePeriods.map((item) => {
-      return samplePeriodService.deleteSamplePeriodRecord(item.survey_sample_period_id);
-    });
-    await Promise.all(promises);
+    const periodsToDelete = existingSamplePeriods.map((item) => item.survey_sample_period_id);
+    await samplePeriodService.deleteSamplePeriodRecords(periodsToDelete);
 
     return this.sampleMethodRepository.deleteSampleMethodRecord(surveySampleMethodId);
   }

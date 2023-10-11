@@ -63,7 +63,6 @@ export class SampleMethodRepository extends BaseRepository {
    * @memberof SampleMethodRepository
    */
   async updateSampleMethod(sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
-    console.log('updateSampleMethod', sampleMethod);
     const sql = SQL`
       UPDATE survey_sample_method
       SET

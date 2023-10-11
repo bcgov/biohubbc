@@ -45,6 +45,17 @@ export class SamplePeriodService extends DBService {
   }
 
   /**
+   * Deletes multiple Survey Sample Periods for a given array of period ids.
+   *
+   * @param {number[]} periodsToDelete an array of period ids to delete
+   * @returns {*} {Promise<SamplePeriodRecord[]>} an array of promises for the deleted periods
+   * @memberof SamplePeriodService
+   */
+  async deleteSamplePeriodRecords(periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
+    return this.samplePeriodRepository.deleteSamplePeriods(periodsToDelete);
+  }
+
+  /**
    * Inserts survey Sample Period.
    *
    * @param {InsertSamplePeriodRecord} samplePeriod
@@ -84,15 +95,10 @@ export class SamplePeriodService extends DBService {
       );
     });
 
-    // Delete any non existing Period
+    // Delete any Periods that do not appear in the passed in periods
     if (existingPeriodToDelete.length > 0) {
-      const promises: Promise<any>[] = [];
-
-      existingPeriodToDelete.forEach((method: any) => {
-        promises.push(this.deleteSamplePeriodRecord(method.survey_sample_period_id));
-      });
-
-      await Promise.all(promises);
+      const idsToDelete = existingPeriodToDelete.map((item) => item.survey_sample_period_id);
+      await this.deleteSamplePeriodRecords(idsToDelete);
     }
   }
 }
