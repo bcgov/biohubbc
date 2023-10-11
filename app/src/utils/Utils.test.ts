@@ -3,6 +3,7 @@ import { IConfig } from 'contexts/configContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import {
   buildUrl,
+  dateRangesOverlap,
   ensureProtocol,
   getFormattedAmount,
   getFormattedDate,
@@ -390,5 +391,22 @@ describe('pluralize', () => {
   it('does not pluralize a word with a custom suffix and single quantity', () => {
     const response = pluralize(1, 'berr', 'y', 'ies');
     expect(response).toEqual('berry');
+  });
+});
+
+describe('dateRangesOverlap', () => {
+  it('should return false for non-overlapping dates', () => {
+    const response = dateRangesOverlap('2023-01-01', '2023-01-02', '2023-03-03', '2023-04-04');
+    expect(response).toEqual(false);
+  });
+
+  it('should return true for overlapping dates without optional params', () => {
+    const response = dateRangesOverlap('2019-12-12', null, '2023-01-01', '2023-03-03');
+    expect(response).toEqual(true);
+  });
+
+  it('should return true for overlapping dates with optional params', () => {
+    const response = dateRangesOverlap('2023-01-01', '2023-01-02', '2023-01-01', '2023-03-03');
+    expect(response).toEqual(true);
   });
 });
