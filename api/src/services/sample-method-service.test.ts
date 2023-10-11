@@ -37,7 +37,6 @@ describe('SampleMethodService', () => {
           survey_sample_site_id: 2,
           method_lookup_id: 3,
           description: 'description',
-          sample_periods: [],
           create_date: '2023-05-06',
           create_user: 1,
           update_date: null,
@@ -74,7 +73,6 @@ describe('SampleMethodService', () => {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',
-        sample_periods: [],
         create_date: '2023-05-06',
         create_user: 1,
         update_date: null,
@@ -90,7 +88,7 @@ describe('SampleMethodService', () => {
         .stub(SamplePeriodService.prototype, 'getSamplePeriodsForSurveyMethodId')
         .resolves([{ survey_sample_period_id: survey_sample_period_id } as SamplePeriodRecord]);
       const deleteSamplePeriodRecordStub = sinon
-        .stub(SamplePeriodService.prototype, 'deleteSamplePeriodRecord')
+        .stub(SamplePeriodService.prototype, 'deleteSamplePeriodRecords')
         .resolves();
 
       const surveySampleMethodId = 1;
@@ -98,7 +96,7 @@ describe('SampleMethodService', () => {
       const response = await sampleMethodService.deleteSampleMethodRecord(surveySampleMethodId);
 
       expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(surveySampleMethodId);
-      expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith(survey_sample_period_id);
+      expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith([survey_sample_period_id]);
       expect(response).to.eql(mockSampleMethodRecord);
     });
   });
@@ -115,7 +113,6 @@ describe('SampleMethodService', () => {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_lookup_id: 3,
-        sample_periods: [],
         description: 'description',
         create_date: '2023-05-06',
         create_user: 1,
@@ -183,7 +180,6 @@ describe('SampleMethodService', () => {
         survey_sample_site_id: 2,
         method_lookup_id: 3,
         description: 'description',
-        sample_periods: [],
         create_date: '2023-05-06',
         create_user: 1,
         update_date: null,
@@ -195,7 +191,7 @@ describe('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'updateSampleMethod')
         .resolves(mockSampleMethodRecord);
 
-      sinon.stub(SamplePeriodService.prototype, 'checkSamplePeriodToDelete').resolves();
+      sinon.stub(SamplePeriodService.prototype, 'deleteSamplePeriodsNotInArray').resolves();
       sinon.stub(SamplePeriodService.prototype, 'updateSamplePeriod').resolves();
       sinon.stub(SamplePeriodService.prototype, 'insertSamplePeriod').resolves();
 
@@ -217,7 +213,7 @@ describe('SampleMethodService', () => {
     });
   });
 
-  describe('checkSampleMethodsToDelete', () => {
+  describe('deleteSampleMethodsNotInArray', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -252,7 +248,7 @@ describe('SampleMethodService', () => {
 
       const sampleMethodService = new SampleMethodService(mockDBConnection);
 
-      await sampleMethodService.checkSampleMethodsToDelete(surveySampleSiteId, [
+      await sampleMethodService.deleteSampleMethodsNotInArray(surveySampleSiteId, [
         { survey_sample_method_id: 2 } as UpdateSampleMethodRecord
       ]);
 
