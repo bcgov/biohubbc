@@ -112,7 +112,7 @@ yup.addMethod(
       }
 
       // compare valid start and end dates
-      return moment(this.parent.start_date, dateFormat, true).isBefore(moment(value, dateFormat, true));
+      return moment(this.parent[startDateName], dateFormat, true).isBefore(moment(value, dateFormat, true));
     });
   }
 );
@@ -137,7 +137,7 @@ yup.addMethod(
       }
 
       // compare valid start and end dates
-      return moment(this.parent.start_date, dateFormat, true).isSameOrBefore(moment(value, dateFormat, true));
+      return moment(this.parent[startDateName], dateFormat, true).isSameOrBefore(moment(value, dateFormat, true));
     });
   }
 );
