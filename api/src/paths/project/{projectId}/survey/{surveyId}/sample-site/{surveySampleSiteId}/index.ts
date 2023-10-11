@@ -71,9 +71,11 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          required: ['sampleSite'],
           properties: {
             sampleSite: {
               type: 'object',
+              required: ['name', 'description', 'methods', 'survey_sample_sites'],
               properties: {
                 name: {
                   type: 'string'
@@ -81,27 +83,29 @@ PUT.apiDoc = {
                 description: {
                   type: 'string'
                 },
-                survey_sample_sites: {
-                  type: 'array',
-                  items: {
-                    ...(GeoJSONFeature as object)
-                  }
+                geojson: {
+                  ...(GeoJSONFeature as object)
                 },
                 methods: {
                   type: 'array',
+                  minItems: 1,
                   items: {
                     type: 'object',
+                    required: ['method_lookup_id', 'description', 'period'],
                     properties: {
                       method_lookup_id: {
-                        type: 'integer'
+                        type: 'integer',
+                        minimum: 1
                       },
                       description: {
                         type: 'string'
                       },
                       period: {
                         type: 'array',
+                        minItems: 1,
                         items: {
                           type: 'object',
+                          required: ['start_date', 'end_date'],
                           properties: {
                             start_date: {
                               type: 'string'

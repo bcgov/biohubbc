@@ -3,8 +3,7 @@ import { IDBConnection } from '../database/db';
 import {
   SampleLocationRecord,
   SampleLocationRepository,
-  UpdateSampleSiteRecord,
-  UpdateSampleSitesRecord
+  UpdateSampleSiteRecord
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
@@ -97,17 +96,14 @@ export class SampleLocationService extends DBService {
     return results;
   }
 
-  async updateSampleLocationMethodPeriod(sampleSites: UpdateSampleSitesRecord) {
+  /**
+   * Updates a survey entire Sample Site Record, with Location and associated methods and periods.
+   *
+   * @param {UpdateSampleSiteRecord} sampleSite
+   * @memberof SampleLocationService
+   */
+  async updateSampleLocationMethodPeriod(sampleSite: UpdateSampleSiteRecord) {
     const methodService = new SampleMethodService(this.connection);
-
-    const sampleSite: UpdateSampleSiteRecord = {
-      survey_sample_site_id: sampleSites.survey_sample_site_id,
-      survey_id: sampleSites.survey_id,
-      name: sampleSites.name,
-      description: sampleSites.description,
-      geojson: sampleSites.survey_sample_sites[0],
-      methods: sampleSites.methods
-    };
 
     // Update the main sample location
     await this.sampleLocationRepository.updateSampleLocation(sampleSite);

@@ -36,7 +36,8 @@ export interface IEditSamplingSiteRequest {
     name: string;
     description: string;
     survey_id: number;
-    survey_sample_sites: Feature[]; // extracted list from shape files
+    survey_sample_sites: Feature[]; // extracted list from shape files (used for formik loading)
+    geojson?: Feature; // geojson object from map (used for sending to api)
     methods: ISurveySampleMethodData[];
   };
 }

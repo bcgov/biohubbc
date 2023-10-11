@@ -95,6 +95,7 @@ const SamplingSiteEditPage = () => {
           description: values.sampleSite.description,
           survey_id: values.sampleSite.survey_id,
           survey_sample_sites: values.sampleSite.survey_sample_sites as unknown as Feature[],
+          geojson: values.sampleSite.survey_sample_sites[0],
           methods: values.sampleSite.methods
         }
       };

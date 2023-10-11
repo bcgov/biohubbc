@@ -69,12 +69,27 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
+                  required: [
+                    'survey_sample_site_id',
+                    'survey_id',
+                    'name',
+                    'description',
+                    'geojson',
+                    'geography',
+                    'create_date',
+                    'create_user',
+                    'update_date',
+                    'update_user',
+                    'revision_count'
+                  ],
                   properties: {
                     survey_sample_site_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     survey_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     name: {
                       type: 'string'
@@ -217,6 +232,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          required: ['name', 'description', 'methods', 'survey_sample_sites'],
           properties: {
             name: {
               type: 'string'
@@ -226,8 +242,10 @@ POST.apiDoc = {
             },
             methods: {
               type: 'array',
+              minItems: 1,
               items: {
                 type: 'object',
+                required: ['method_lookup_id', 'description', 'periods'],
                 properties: {
                   method_lookup_id: {
                     type: 'integer'
@@ -237,8 +255,10 @@ POST.apiDoc = {
                   },
                   periods: {
                     type: 'array',
+                    minItems: 1,
                     items: {
                       type: 'object',
+                      required: ['start_date', 'end_date'],
                       properties: {
                         start_date: {
                           type: 'string'
@@ -254,6 +274,7 @@ POST.apiDoc = {
             },
             survey_sample_sites: {
               type: 'array',
+              minItems: 1,
               items: {
                 ...(GeoJSONFeature as object)
               }
