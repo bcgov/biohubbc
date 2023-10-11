@@ -1,9 +1,12 @@
-import { Box, FormHelperText, Typography } from '@mui/material';
+import { mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Box, IconButton, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import { grey } from '@mui/material/colors';
 import Grid from '@mui/material/Grid';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
@@ -11,7 +14,6 @@ import { AttachmentType } from 'constants/attachments';
 import { Form, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import moment from 'moment';
 import { Fragment, useEffect, useState } from 'react';
 import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import { TelemetryFileUpload } from './TelemetryFileUpload';
@@ -26,7 +28,7 @@ export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
   attachmentType?: AttachmentType;
 }
 
-const AttchmentFormSection = (props: { index: number; deviceMake: string }) => {
+const AttachmentFormSection = (props: { index: number; deviceMake: string }) => {
   return (
     <>
       {props.deviceMake === 'Vectronic' && (
@@ -59,27 +61,65 @@ const AttchmentFormSection = (props: { index: number; deviceMake: string }) => {
 
 const DeploymentFormSection = ({
   index,
-  deployments
+  deployments,
+  mode,
+  removeAction
 }: {
   index: number;
   deployments: IDeploymentTimespan[];
+  mode: TELEMETRY_DEVICE_FORM_MODE;
+  removeAction: (deployment_id: string) => void;
 }): JSX.Element => {
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deploymentToDelete, setDeploymentToDelete] = useState<string | null>(null);
   return (
     <>
+      <YesNoDialog
+        dialogTitle={'Remove deployment?'}
+        dialogText={`Are you sure you want to remove this deployment? 
+          If you would like to end a deployment / unattach a device, you should set the attachment end date instead. 
+          Please confirm that you wish to permanently erase this deployment.`}
+        open={openDeleteDialog}
+        yesButtonLabel="Delete"
+        noButtonLabel="Cancel"
+        yesButtonProps={{ color: 'error' }}
+        onClose={() => setOpenDeleteDialog(false)}
+        onNo={() => setOpenDeleteDialog(false)}
+        onYes={async () => {
+          if (deploymentToDelete) {
+            removeAction(deploymentToDelete);
+          }
+          setOpenDeleteDialog(false);
+        }}
+      />
       <Grid container spacing={3}>
         {deployments.map((deploy, i) => {
           return (
             <Fragment key={`deployment-item-${deploy.deployment_id}`}>
-              <Grid item xs={6}>
+              <Grid item xs={mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 6 : 5.5}>
                 <SingleDateField
                   name={`${index}.deployments.${i}.attachment_start`}
                   required={true}
                   label={'Start Date'}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 6 : 5.5}>
                 <SingleDateField name={`${index}.deployments.${i}.attachment_end`} label={'End Date'} />
               </Grid>
+              {mode === TELEMETRY_DEVICE_FORM_MODE.EDIT && (
+                <Grid item xs={1}>
+                  <IconButton
+                    sx={{ mt: 1 }}
+                    title="Remove Deployment"
+                    aria-label="remove-deployment"
+                    onClick={() => {
+                      setDeploymentToDelete(String(deploy.deployment_id));
+                      setOpenDeleteDialog(true);
+                    }}>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </IconButton>
+                </Grid>
+              )}
             </Fragment>
           );
         })}
@@ -92,11 +132,10 @@ interface IDeviceFormSectionProps {
   mode: TELEMETRY_DEVICE_FORM_MODE;
   values: IAnimalTelemetryDeviceFile[];
   index: number;
+  removeAction: (deploymentId: string) => void;
 }
 
-const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JSX.Element => {
-  const { setStatus } = useFormikContext<{ formValues: IAnimalTelemetryDeviceFile[] }>();
-  const [bctwErrors, setBctwErrors] = useState<Record<string, string | undefined>>({});
+const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSectionProps): JSX.Element => {
   const api = useTelemetryApi();
 
   const { data: bctwDeviceData, refresh } = useDataLoader(() => api.devices.getDeviceDetails(values[index].device_id));
@@ -108,33 +147,6 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values[index].device_id]);
-
-  useEffect(() => {
-    const errors: { device_make?: string; attachment_start?: string } = {};
-    if (bctwDeviceData?.device && bctwDeviceData.device?.device_make !== values[index].device_make) {
-      errors.device_make = `Submitting this form would change the registered device make of device ${values[index].device_id}, which is disallowed.`;
-    }
-
-    for (const deployment of values[index].deployments ?? []) {
-      const existingDeployment = bctwDeviceData?.deployments?.find(
-        (a) =>
-          deployment.deployment_id !== a.deployment_id &&
-          moment(deployment.attachment_start).isSameOrAfter(moment(a.attachment_start)) &&
-          (moment(deployment.attachment_start).isSameOrBefore(moment(a.attachment_end)) || a.attachment_end == null)
-      ); //Check if there is already a deployment that is not the same id as this one and overlaps the time we are trying to upload.
-      if (existingDeployment) {
-        errors.attachment_start = `Cannot make a deployment starting on this date, it will conflict with deployment ${
-          existingDeployment.deployment_id
-        } 
-        running from ${existingDeployment.attachment_start} until ${
-          existingDeployment.attachment_end ?? 'indefinite'
-        }.`;
-      }
-    }
-
-    setBctwErrors(errors);
-    setStatus({ forceDisable: Object.entries(errors).length > 0 });
-  }, [bctwDeviceData, index, setStatus, values]);
 
   return (
     <>
@@ -200,26 +212,21 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
           <Typography component="legend" variant="body2">
             Upload Attachment
           </Typography>
-          <AttchmentFormSection index={index} deviceMake={values[index].device_make} />
+          <AttachmentFormSection index={index} deviceMake={values[index].device_make} />
         </Box>
       )}
       <Box component="fieldset" sx={{ mt: 3 }}>
         <Typography component="legend" variant="body2">
           Deployment Dates
         </Typography>
-
-        {<DeploymentFormSection index={index} deployments={values[index].deployments ?? []} />}
-      </Box>
-      <Box sx={{ mt: 3 }}>
-        {Object.entries(bctwErrors).length > 0 && (
-          <Grid item xs={12}>
-            {Object.entries(bctwErrors).map((bctwError) => (
-              <FormHelperText key={`bctw-error-${bctwError[0]}`} error={true}>
-                {bctwError[1]}
-              </FormHelperText>
-            ))}
-          </Grid>
-        )}
+        {
+          <DeploymentFormSection
+            index={index}
+            deployments={values[index].deployments ?? []}
+            mode={mode}
+            removeAction={removeAction}
+          />
+        }
       </Box>
     </>
   );
@@ -227,9 +234,10 @@ const DeviceFormSection = ({ values, index, mode }: IDeviceFormSectionProps): JS
 
 interface ITelemetryDeviceFormProps {
   mode: TELEMETRY_DEVICE_FORM_MODE;
+  removeAction: (deployment_id: string) => void;
 }
 
-const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
+const TelemetryDeviceForm = ({ mode, removeAction }: ITelemetryDeviceFormProps) => {
   const { values } = useFormikContext<IAnimalTelemetryDeviceFile[]>();
 
   return (
@@ -268,6 +276,7 @@ const TelemetryDeviceForm = ({ mode }: ITelemetryDeviceFormProps) => {
                 values={values}
                 key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
                 index={idx}
+                removeAction={removeAction}
               />
             </CardContent>
           </Card>
