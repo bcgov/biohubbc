@@ -462,7 +462,10 @@ describe('insertUpdateSurveyObservations', () => {
           latitude: 48.103322,
           longitude: -122.798892,
           observation_date: '1970-01-01',
-          observation_time: '00:00:00'
+          observation_time: '00:00:00',
+          survey_sample_site_id: 1,
+          survey_sample_method_id: 1,
+          survey_sample_period_id: 1
         },
         {
           wldtaxonomic_units_id: 1234,
@@ -470,12 +473,15 @@ describe('insertUpdateSurveyObservations', () => {
           latitude: 48.103322,
           longitude: -122.798892,
           observation_date: '1970-01-01',
-          observation_time: '00:00:00'
+          observation_time: '00:00:00',
+          survey_sample_site_id: 1,
+          survey_sample_method_id: 1,
+          survey_sample_period_id: 1
         }
       ]
     };
 
-    const requestHandler = observationRecords.insertUpdateSurveyObservations();
+    const requestHandler = observationRecords.insertUpdateDeleteSurveyObservations();
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, [
@@ -486,7 +492,10 @@ describe('insertUpdateSurveyObservations', () => {
         longitude: -122.798892,
         count: 99,
         observation_date: '1970-01-01',
-        observation_time: '00:00:00'
+        observation_time: '00:00:00',
+        survey_sample_site_id: 1,
+        survey_sample_method_id: 1,
+        survey_sample_period_id: 1
       },
       {
         survey_observation_id: undefined,
@@ -495,7 +504,10 @@ describe('insertUpdateSurveyObservations', () => {
         longitude: -122.798892,
         count: 99,
         observation_date: '1970-01-01',
-        observation_time: '00:00:00'
+        observation_time: '00:00:00',
+        survey_sample_site_id: 1,
+        survey_sample_method_id: 1,
+        survey_sample_period_id: 1
       }
     ]);
     expect(mockRes.statusValue).to.equal(200);
@@ -533,7 +545,7 @@ describe('insertUpdateSurveyObservations', () => {
     };
 
     try {
-      const requestHandler = observationRecords.insertUpdateSurveyObservations();
+      const requestHandler = observationRecords.insertUpdateDeleteSurveyObservations();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();

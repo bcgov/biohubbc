@@ -180,6 +180,7 @@ export function updateSurveySampleSite(): RequestHandler {
       return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveySampleSite', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -287,6 +288,7 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
       return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySampleSiteRecord', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

@@ -130,7 +130,7 @@ export class SampleLocationRepository extends BaseRepository {
       RETURNING
         *;`);
 
-    const response = await this.connection.sql(sql);
+    const response = await this.connection.sql(sql, SampleLocationRecord);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update sample location record', [

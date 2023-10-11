@@ -14,9 +14,9 @@ import { SurveyContext } from './surveyContext';
 export interface IObservationRecord {
   survey_observation_id: number | undefined;
   wldtaxonomic_units_id: number | undefined;
-  samplingSite: string | undefined;
-  samplingMethod: string | undefined;
-  samplingPeriod: string | undefined;
+  survey_sample_site_id: number | undefined;
+  survey_sample_method_id: number | undefined;
+  survey_sample_period_id: number | undefined;
   count: number | undefined;
   observation_date: Date | undefined;
   observation_time: string | undefined;
@@ -61,7 +61,7 @@ export type IObservationsContext = {
    */
   unsavedRecordIds: string[];
   /**
-   * Inidicates whether the observation table has any unsaved changes
+   * Indicates whether the observation table has any unsaved changes
    */
   hasUnsavedChanges: () => boolean;
   /**
@@ -83,7 +83,7 @@ export type IObservationsContext = {
 };
 
 export const ObservationsContext = createContext<IObservationsContext>({
-  _muiDataGridApiRef: { current: null as unknown as GridApiCommunity },
+  _muiDataGridApiRef: null as unknown as React.MutableRefObject<GridApiCommunity>,
   observationsDataLoader: {} as DataLoader<never, IGetSurveyObservationsResponse, unknown>,
   unsavedRecordIds: [],
   initialRows: [],
@@ -143,14 +143,14 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         id,
         survey_observation_id: null,
         wldtaxonomic_units: undefined,
-        samplingSite: undefined,
-        samplingMethod: undefined,
-        samplingPeriod: undefined,
+        survey_sample_site_id: undefined,
+        survey_sample_method_id: undefined,
+        survey_sample_period_id: undefined,
         count: undefined,
         observation_date: undefined,
         observation_time: undefined,
-        lat: undefined,
-        long: undefined
+        latitude: undefined,
+        longitude: undefined
       } as GridRowModelUpdate
     ]);
 
@@ -164,10 +164,10 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const _getActiveRecords = (): IObservationTableRow[] => {
     return _getRows().map((row) => {
       const editRow = _muiDataGridApiRef.current.state.editRows[row.id];
+
       if (!editRow) {
         return row;
       }
-
       return Object.entries(editRow).reduce(
         (newRow, entry) => ({ ...row, ...newRow, _isModified: true, [entry[0]]: entry[1].value }),
         {}

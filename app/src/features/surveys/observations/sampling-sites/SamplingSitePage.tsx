@@ -89,12 +89,17 @@ const SamplingSitePage = () => {
   };
 
   const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
-    setIsSubmitting(true);
     try {
+      setIsSubmitting(true);
+
       await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
 
       // Disable cancel prompt so we can navigate away from the page after saving
       setEnableCancelCheck(false);
+
+      // Refresh the context, so the next page loads with the latest data
+      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
       // create complete, navigate back to observations page
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
     } catch (error) {
@@ -104,7 +109,6 @@ const SamplingSitePage = () => {
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
