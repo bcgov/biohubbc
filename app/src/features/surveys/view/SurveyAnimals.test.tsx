@@ -95,7 +95,7 @@ describe('SurveyAnimals', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('No Individual Animals')).toBeInTheDocument();
+      expect(getByText('No Marked or Known Animals')).toBeInTheDocument();
     });
   });
 

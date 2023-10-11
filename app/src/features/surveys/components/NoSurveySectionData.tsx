@@ -1,16 +1,6 @@
-import { Theme } from '@mui/material';
-import Box from '@mui/material/Box';
 import Paper, { PaperProps } from '@mui/material/Paper';
-import { makeStyles } from '@mui/styles';
+import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  importFile: {
-    display: 'flex',
-    minHeight: '66px',
-    fontWeight: 700,
-    color: theme.palette.text.secondary
-  }
-}));
 
 interface NoSurveySectionDataProps {
   text: string;
@@ -18,13 +8,20 @@ interface NoSurveySectionDataProps {
 }
 
 const NoSurveySectionData = ({ text, paperVariant }: NoSurveySectionDataProps) => {
-  const classes = useStyles();
   return (
     <>
-      <Paper variant={paperVariant} elevation={0} className={classes.importFile}>
-        <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2}>
-          <span data-testid="no-summary-section-data">{text}</span>
-        </Box>
+      <Paper variant={paperVariant} elevation={0}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '66px',
+          p: 2
+        }}
+      >
+        <Typography component="span" color="textSecondary" variant="body2" data-testid="no-summary-section-data">
+          {text}
+        </Typography>
       </Paper>
     </>
   );
