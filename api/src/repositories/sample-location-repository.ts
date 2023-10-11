@@ -1,8 +1,10 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
+import { SampleMethodRecord } from './sample-method-repository';
 
 // This describes a row in the database for Survey Sample Location
 export const SampleLocationRecord = z.object({
@@ -16,7 +18,8 @@ export const SampleLocationRecord = z.object({
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number()
+  revision_count: z.number(),
+  sample_methods: z.array(SampleMethodRecord).default([])
 });
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
 
@@ -45,13 +48,46 @@ export class SampleLocationRepository extends BaseRepository {
    * @memberof SampleLocationRepository
    */
   async getSampleLocationsForSurveyId(surveyId: number): Promise<SampleLocationRecord[]> {
-    const sql = SQL`
-      SELECT *
-      FROM survey_sample_site
-      WHERE survey_id = ${surveyId};
-    `;
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .with('json_sample_period', (qb) => {
+        // aggregate all sample periods based on method id
+        qb.select('survey_sample_method_id', knex.raw('json_agg(ssp.*) as sample_periods'))
+          .from({ ssp: 'survey_sample_period' })
+          .groupBy('survey_sample_method_id');
+      })
+      .with('json_sample_methods', (qb) => {
+        // join aggregated samples to methods
+        // aggregate methods base on site id
+        qb.select(
+          'survey_sample_site_id',
+          knex.raw(`
+          json_agg(json_build_object(
+            'sample_periods', jsp.sample_periods,
+            'survey_sample_method_id', ssm.survey_sample_method_id,
+            'method_lookup_id', ssm.method_lookup_id,
+            'description', ssm.description,
+            'create_date', ssm.create_date,
+            'create_user', ssm.create_user,
+            'update_date', ssm.update_date,
+            'update_user', ssm.update_user,
+            'survey_sample_site_id', ssm.survey_sample_site_id,
+            'revision_count', ssm.revision_count
+          )) as sample_methods`)
+        )
+          .from({ ssm: 'survey_sample_method' })
+          .leftJoin('json_sample_period as jsp', 'jsp.survey_sample_method_id', 'ssm.survey_sample_method_id')
+          .groupBy('ssm.survey_sample_site_id');
+      })
+      // join aggregated methods to sampling sites
+      .select('*')
+      .from({ sss: 'survey_sample_site' })
+      .leftJoin('json_sample_methods as jsm', 'jsm.survey_sample_site_id', 'sss.survey_sample_site_id')
+      .where('sss.survey_id', surveyId)
+      .orderBy('sss.survey_sample_site_id', 'asc');
 
-    const response = await this.connection.sql(sql, SampleLocationRecord);
+    const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
     return response.rows;
   }
 

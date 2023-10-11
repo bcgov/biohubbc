@@ -2,13 +2,61 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
+import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
+import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
+import ConditionalAutocompleteDataGridViewCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridViewCell';
+import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
+import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import moment from 'moment';
 import { useContext, useEffect, useState } from 'react';
 import { grey } from '@mui/material/colors';
 
-const ObservationsTable = () => {
+export interface ISampleSiteSelectProps {
+  survey_sample_site_id: number;
+  sample_site_name: string;
+}
+
+export interface ISampleMethodSelectProps {
+  survey_sample_method_id: number;
+  survey_sample_site_id: number;
+  sample_method_name: string;
+}
+
+export interface ISamplePeriodSelectProps {
+  survey_sample_period_id: number;
+  survey_sample_method_id: number;
+  sample_period_name: string;
+}
+export interface ISpeciesObservationTableProps {
+  sample_sites: {
+    survey_sample_site_id: number;
+    sample_site_name: string;
+  }[];
+  sample_methods: {
+    survey_sample_method_id: number;
+    survey_sample_site_id: number;
+    sample_method_name: string;
+  }[];
+  sample_periods: {
+    survey_sample_period_id: number;
+    survey_sample_method_id: number;
+    sample_period_name: string;
+  }[];
+}
+
+const ObservationsTable = (props: ISpeciesObservationTableProps) => {
+  const { sample_sites, sample_methods, sample_periods } = props;
+  const observationsContext = useContext(ObservationsContext);
+  const { observationsDataLoader } = observationsContext;
+
+  const apiRef = observationsContext._muiDataGridApiRef;
+
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
       field: 'wldtaxonomic_units_id',
@@ -17,39 +65,118 @@ const ObservationsTable = () => {
       flex: 1,
       minWidth: 250,
       disableColumnMenu: true,
-
-      // TODO: To be addressed by https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-288
-      renderCell: () => 'Moose (Alces Americanus)'
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => {
+        return <TaxonomyDataGridViewCell dataGridProps={params} />;
+      },
+      renderEditCell: (params) => {
+        return <TaxonomyDataGridEditCell dataGridProps={params} />;
+      }
     },
     {
-      field: 'samplingSite',
+      field: 'survey_sample_site_id',
       headerName: 'Sampling Site',
       editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Site 1', 'Site 2', 'Site 3', 'Site 4'],
       flex: 1,
       minWidth: 200,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => {
+        return (
+          <AutocompleteDataGridViewCell
+            dataGridProps={params}
+            options={sample_sites.map((item) => ({
+              label: item.sample_site_name,
+              value: item.survey_sample_site_id
+            }))}
+          />
+        );
+      },
+      renderEditCell: (params) => {
+        return (
+          <AutocompleteDataGridEditCell
+            dataGridProps={params}
+            options={sample_sites.map((item) => ({
+              label: item.sample_site_name,
+              value: item.survey_sample_site_id
+            }))}
+          />
+        );
+      }
     },
     {
-      field: 'samplingMethod',
+      field: 'survey_sample_method_id',
       headerName: 'Sampling Method',
       editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Method 1', 'Method 2', 'Method 3', 'Method 4'],
       flex: 1,
       minWidth: 200,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => {
+        return (
+          <ConditionalAutocompleteDataGridViewCell
+            dataGridProps={params}
+            optionsGetter={(row, allOptions) => {
+              return allOptions
+                .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
+                .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
+            }}
+            allOptions={sample_methods}
+          />
+        );
+      },
+      renderEditCell: (params) => {
+        return (
+          <ConditionalAutocompleteDataGridEditCell
+            dataGridProps={params}
+            optionsGetter={(row, allOptions) => {
+              return allOptions
+                .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
+                .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
+            }}
+            allOptions={sample_methods}
+          />
+        );
+      }
     },
     {
-      field: 'samplingPeriod',
+      field: 'survey_sample_period_id',
       headerName: 'Sampling Period',
       editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Period 1', 'Period 2', 'Period 3', 'Period 4', 'Undefined'],
       flex: 1,
       minWidth: 200,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => {
+        return (
+          <ConditionalAutocompleteDataGridViewCell
+            dataGridProps={params}
+            optionsGetter={(row, allOptions) => {
+              return allOptions
+                .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
+                .map((item) => ({ label: item.sample_period_name, value: item.survey_sample_period_id }));
+            }}
+            allOptions={sample_periods}
+          />
+        );
+      },
+      renderEditCell: (params) => {
+        return (
+          <ConditionalAutocompleteDataGridEditCell
+            dataGridProps={params}
+            optionsGetter={(row, allOptions) => {
+              return allOptions
+                .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
+                .map((item) => ({ label: item.sample_period_name, value: item.survey_sample_period_id }));
+            }}
+            allOptions={sample_periods}
+          />
+        );
+      }
     },
     {
       field: 'count',
@@ -58,6 +185,8 @@ const ObservationsTable = () => {
       type: 'number',
       minWidth: 100,
       disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
       renderEditCell: (params) => (
         <GridEditInputCell
           {...params}
@@ -74,16 +203,51 @@ const ObservationsTable = () => {
       editable: true,
       type: 'date',
       minWidth: 150,
-      valueGetter: (params) => (params.row.observation_date ? new Date(params.row.observation_date) : null),
-      disableColumnMenu: true
+      valueGetter: (params) => (params.row.observation_date ? moment(params.row.observation_date).toDate() : null),
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: 'observation_time',
       headerName: 'Time',
       editable: true,
-      type: 'time',
+      type: 'string',
       width: 150,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params) => {
+        if (!params.value) {
+          return null;
+        }
+
+        if (moment.isMoment(params.value)) {
+          return <>{params.value.format('HH:mm')}</>;
+        }
+
+        return <>{moment(params.value, 'HH:mm:ss').format('HH:mm')}</>;
+      },
+      renderEditCell: (params) => {
+        return (
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <TimePicker
+              value={(params.value && moment(params.value, 'HH:mm:ss')) || null}
+              onChange={(value) => {
+                apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
+              }}
+              onAccept={(value) => {
+                apiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value: value?.format('HH:mm:ss')
+                });
+              }}
+              ampm={false}
+            />
+          </LocalizationProvider>
+        );
+      }
     },
     {
       field: 'latitude',
@@ -92,6 +256,8 @@ const ObservationsTable = () => {
       editable: true,
       width: 120,
       disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
       renderCell: (params) => String(params.row.latitude)
     },
     {
@@ -101,6 +267,8 @@ const ObservationsTable = () => {
       editable: true,
       width: 120,
       disableColumnMenu: true,
+      headerAlign: 'left',
+      align: 'left',
       renderCell: (params) => String(params.row.longitude)
     },
     {
@@ -124,10 +292,6 @@ const ObservationsTable = () => {
     }
   ];
 
-  const observationsContext = useContext(ObservationsContext);
-  const { observationsDataLoader } = observationsContext;
-  const apiRef = observationsContext._muiDataGridApiRef;
-
   const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
   const showConfirmDeleteDialog = Boolean(deletingObservation);
 
@@ -142,7 +306,6 @@ const ObservationsTable = () => {
 
       observationsContext.setInitialRows(rows);
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsDataLoader.data]);
 
@@ -156,7 +319,7 @@ const ObservationsTable = () => {
 
   const handleDeleteRow = (id: string | number) => {
     observationsContext.markRecordWithUnsavedChanges(id);
-    apiRef.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
+    apiRef?.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
   };
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
@@ -166,11 +329,11 @@ const ObservationsTable = () => {
   const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
     const { id } = params.row;
 
-    if (apiRef.current.state.editRows[id]) {
+    if (apiRef?.current.state.editRows[id]) {
       return;
     }
 
-    apiRef.current.startRowEditMode({ id, fieldToFocus: params.field });
+    apiRef?.current.startRowEditMode({ id, fieldToFocus: params.field });
     observationsContext.markRecordWithUnsavedChanges(id);
   };
 
@@ -223,15 +386,6 @@ const ObservationsTable = () => {
           },
           '& .MuiDataGrid-columnHeaders': {
             position: 'relative'
-          },
-          '& .MuiDataGrid-columnHeaders:after': {
-            content: "''",
-            position: 'absolute',
-            right: 0,
-            width: '96px',
-            height: '80px',
-            borderLeft: '1px solid #ccc',
-            background: '#fff'
           },
           '& .MuiDataGrid-actionsCell': {
             gap: 0

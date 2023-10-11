@@ -2,7 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
-import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
+import { InsertSamplePeriodRecord, SamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
 
 export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
@@ -24,7 +24,8 @@ export const SampleMethodRecord = z.object({
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number()
+  revision_count: z.number(),
+  sample_periods: z.array(SamplePeriodRecord).default([])
 });
 export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
 

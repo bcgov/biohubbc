@@ -37,6 +37,9 @@ const mockSurveyContext: ISurveyContext = {
   observationDataLoader: {
     data: null
   } as DataLoader<any, any, any>,
+  sampleSiteDataLoader: {
+    data: null
+  } as DataLoader<any, any, any>,
   surveyId: 1,
   projectId: 1
 };

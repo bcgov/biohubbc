@@ -20,6 +20,7 @@ describe('SurveyProprietaryData', () => {
     >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
       <SurveyContext.Provider
@@ -29,7 +30,8 @@ describe('SurveyProprietaryData', () => {
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           observationDataLoader: mockObservationDataLoader,
-          summaryDataLoader: mockSummaryDataLoader
+          summaryDataLoader: mockSummaryDataLoader,
+          sampleSiteDataLoader: mockSampleSiteDataLoader
         }}>
         <SurveyProprietaryData />
       </SurveyContext.Provider>
@@ -51,6 +53,7 @@ describe('SurveyProprietaryData', () => {
     >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
       <SurveyContext.Provider
@@ -60,7 +63,8 @@ describe('SurveyProprietaryData', () => {
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           observationDataLoader: mockObservationDataLoader,
-          summaryDataLoader: mockSummaryDataLoader
+          summaryDataLoader: mockSummaryDataLoader,
+          sampleSiteDataLoader: mockSampleSiteDataLoader
         }}>
         <SurveyProprietaryData />
       </SurveyContext.Provider>
@@ -80,6 +84,7 @@ describe('SurveyProprietaryData', () => {
     >;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { container } = render(
       <SurveyContext.Provider
@@ -89,7 +94,8 @@ describe('SurveyProprietaryData', () => {
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           observationDataLoader: mockObservationDataLoader,
-          summaryDataLoader: mockSummaryDataLoader
+          summaryDataLoader: mockSummaryDataLoader,
+          sampleSiteDataLoader: mockSampleSiteDataLoader
         }}>
         <SurveyProprietaryData />
       </SurveyContext.Provider>
