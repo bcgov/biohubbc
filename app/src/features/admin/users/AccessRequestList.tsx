@@ -97,15 +97,14 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     setActiveReviewDialog({ open: false, request: null });
 
     try {
-      await biohubApi.admin.approveAccessRequest(
-        updatedRequest.id,
-        updatedRequest.data.userGuid,
-        updatedRequest.data.username,
-        updatedRequest.data.identitySource,
-        updatedRequest.data.email,
-        updatedRequest.data.displayName,
-        (values.system_role && [values.system_role]) || []
-      );
+      await biohubApi.admin.approveAccessRequest(updatedRequest.id, {
+        userGuid: updatedRequest.data.userGuid,
+        userIdentifier: updatedRequest.data.username,
+        identitySource: updatedRequest.data.identitySource,
+        email: updatedRequest.data.email,
+        displayName: updatedRequest.data.displayName,
+        roleIds: (values.system_role && [values.system_role]) || []
+      });
 
       try {
         await biohubApi.admin.sendGCNotification(

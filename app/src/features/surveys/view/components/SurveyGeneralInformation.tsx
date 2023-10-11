@@ -51,14 +51,6 @@ const SurveyGeneralInformation = () => {
             </Grid>
             <Grid item sm={6}>
               <Typography component="dt" color="textSecondary" variant="subtitle2">
-                Survey Lead
-              </Typography>
-              <Typography component="dd">
-                {survey_details.biologist_first_name} {survey_details.biologist_last_name}
-              </Typography>
-            </Grid>
-            <Grid item sm={6}>
-              <Typography component="dt" color="textSecondary" variant="subtitle2">
                 Timeline
               </Typography>
               <Typography component="dd" data-testid="survey_timeline">

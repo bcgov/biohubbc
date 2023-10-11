@@ -44,6 +44,7 @@ describe('SurveyStudyArea', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { container } = render(
       <SurveyContext.Provider
@@ -53,7 +54,8 @@ describe('SurveyStudyArea', () => {
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           observationDataLoader: mockObservationsDataLoader,
-          summaryDataLoader: mockSummaryDataLoader
+          summaryDataLoader: mockSummaryDataLoader,
+          sampleSiteDataLoader: mockSampleSiteDataLoader
         }}>
         <SurveyStudyArea />
       </SurveyContext.Provider>
@@ -78,6 +80,7 @@ describe('SurveyStudyArea', () => {
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
       const { container, queryByTestId } = render(
         <SurveyContext.Provider
@@ -87,7 +90,8 @@ describe('SurveyStudyArea', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
@@ -104,6 +108,7 @@ describe('SurveyStudyArea', () => {
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
       const { container, getByTestId } = render(
         <SurveyContext.Provider
@@ -113,7 +118,8 @@ describe('SurveyStudyArea', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
@@ -134,6 +140,7 @@ describe('SurveyStudyArea', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
@@ -153,7 +160,8 @@ describe('SurveyStudyArea', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
@@ -224,6 +232,7 @@ describe('SurveyStudyArea', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     mockUseApi.survey.getSurveyForView.mockResolvedValue({
       surveyData: {
@@ -234,8 +243,6 @@ describe('SurveyStudyArea', () => {
           survey_name: 'survey name is this',
           start_date: '1999-09-09',
           end_date: '2021-01-25',
-          biologist_first_name: 'firstttt',
-          biologist_last_name: 'lastttt',
           survey_types: [1],
           revision_count: 0
         }
@@ -262,7 +269,8 @@ describe('SurveyStudyArea', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>

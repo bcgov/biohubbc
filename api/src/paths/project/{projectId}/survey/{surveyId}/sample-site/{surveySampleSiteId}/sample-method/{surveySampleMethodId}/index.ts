@@ -143,6 +143,7 @@ export function updateSurveySampleMethod(): RequestHandler {
       return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveySampleMethod', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -250,6 +251,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
       return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySampleMethodRecord', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

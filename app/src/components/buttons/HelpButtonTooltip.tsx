@@ -6,6 +6,7 @@ import { ReactNode } from 'react';
 interface HelpButtonTooltipProps {
   content: string;
   children?: ReactNode;
+  iconSx?: object;
 }
 
 /**
@@ -16,7 +17,7 @@ interface HelpButtonTooltipProps {
  * @return {*}
  */
 
-const HelpButtonTooltip = ({ content, children }: HelpButtonTooltipProps) => {
+const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps) => {
   return (
     <Box
       sx={{
@@ -59,7 +60,8 @@ const HelpButtonTooltip = ({ content, children }: HelpButtonTooltipProps) => {
             position: 'absolute',
             top: '8px',
             right: '8px',
-            color: '#38598A'
+            color: '#38598A',
+            ...iconSx
           }}>
           <Icon path={mdiHelpCircleOutline} size={1} />
         </IconButton>

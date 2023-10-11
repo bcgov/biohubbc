@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutCoordinatorData, PutIUCNData, PutLocationData, PutObjectivesData, PutProjectData } from './project-update';
+import { PutIUCNData, PutLocationData, PutObjectivesData, PutProjectData } from './project-update';
 
 describe('PutProjectData', () => {
   describe('No values provided', () => {
@@ -103,81 +103,6 @@ describe('PutObjectivesData', () => {
 
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(obj.revision_count);
-    });
-  });
-});
-
-describe('PutCoordinatorData', () => {
-  describe('No values provided', () => {
-    let data: PutCoordinatorData;
-
-    before(() => {
-      data = new PutCoordinatorData(null);
-    });
-
-    it('sets first_name', () => {
-      expect(data.first_name).to.equal(null);
-    });
-
-    it('sets last_name', () => {
-      expect(data.last_name).to.equal(null);
-    });
-
-    it('sets email_address', () => {
-      expect(data.email_address).to.equal(null);
-    });
-
-    it('sets coordinator_agency', () => {
-      expect(data.coordinator_agency).to.equal(null);
-    });
-
-    it('sets share_contact_details', () => {
-      expect(data.share_contact_details).to.equal(false);
-    });
-
-    it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(null);
-    });
-  });
-
-  describe('all values provided', () => {
-    const obj = {
-      first_name: 'coordinator_first_name',
-      last_name: 'coordinator_last_name',
-      email_address: 'coordinator_email_address',
-      coordinator_agency: 'coordinator_agency_name',
-      share_contact_details: 'true',
-      revision_count: 1
-    };
-
-    let data: PutCoordinatorData;
-
-    before(() => {
-      data = new PutCoordinatorData(obj);
-    });
-
-    it('sets first_name', () => {
-      expect(data.first_name).to.equal('coordinator_first_name');
-    });
-
-    it('sets last_name', () => {
-      expect(data.last_name).to.equal('coordinator_last_name');
-    });
-
-    it('sets email_address', () => {
-      expect(data.email_address).to.equal('coordinator_email_address');
-    });
-
-    it('sets coordinator_agency', () => {
-      expect(data.coordinator_agency).to.equal('coordinator_agency_name');
-    });
-
-    it('sets share_contact_details', () => {
-      expect(data.share_contact_details).to.equal(true);
-    });
-
-    it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(1);
     });
   });
 });

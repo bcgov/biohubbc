@@ -7,7 +7,6 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
 import {
   GetAttachmentsData,
-  GetCoordinatorData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
@@ -27,7 +26,6 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       const input = {
-        coordinator_agency: 'string',
         start_date: 'start',
         end_date: undefined,
         project_name: 'string',
@@ -49,7 +47,6 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       const input = {
-        coordinator_agency: 'string',
         start_date: undefined,
         end_date: 'end',
         project_programs: [1],
@@ -132,35 +129,6 @@ describe('ProjectRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get project objectives data');
-      }
-    });
-  });
-
-  describe('getCoordinatorData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ coordinator_first_name: 'name' }], rowCount: 1 } as any) as Promise<
-        QueryResult<any>
-      >;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new ProjectRepository(dbConnection);
-
-      const response = await repository.getCoordinatorData(1);
-
-      expect(response).to.eql(new GetCoordinatorData({ coordinator_first_name: 'name' }));
-    });
-
-    it('should throw an error', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new ProjectRepository(dbConnection);
-
-      try {
-        await repository.getCoordinatorData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get project contact data');
       }
     });
   });
@@ -285,14 +253,7 @@ describe('ProjectRepository', () => {
           comments: 'comments'
         },
         objectives: { objectives: '' },
-        location: { location_description: '', geometry: [{ id: 1 }] },
-        coordinator: {
-          first_name: 'first_name',
-          last_name: 'last_name',
-          email_address: 'email_address',
-          coordinator_agency: 'coordinator_agency',
-          share_contact_details: 'share_contact_details'
-        }
+        location: { location_description: '', geometry: [{ id: 1 }] }
       } as unknown) as PostProjectObject;
 
       const response = await repository.insertProject(input);
@@ -315,14 +276,7 @@ describe('ProjectRepository', () => {
           comments: 'comments'
         },
         objectives: { objectives: '' },
-        location: { location_description: '', geometry: [] },
-        coordinator: {
-          first_name: 'first_name',
-          last_name: 'last_name',
-          email_address: 'email_address',
-          coordinator_agency: 'coordinator_agency',
-          share_contact_details: 'share_contact_details'
-        }
+        location: { location_description: '', geometry: [] }
       } as unknown) as PostProjectObject;
 
       const response = await repository.insertProject(input);
@@ -345,14 +299,7 @@ describe('ProjectRepository', () => {
           comments: 'comments'
         },
         objectives: { objectives: '' },
-        location: { location_description: '', geometry: [] },
-        coordinator: {
-          first_name: 'first_name',
-          last_name: 'last_name',
-          email_address: 'email_address',
-          coordinator_agency: 'coordinator_agency',
-          share_contact_details: 'share_contact_details'
-        }
+        location: { location_description: '', geometry: [] }
       } as unknown) as PostProjectObject;
 
       try {

@@ -33,7 +33,6 @@ export const GET: Operation = [
 ];
 
 export enum GET_ENTITIES {
-  coordinator = 'coordinator',
   project = 'project',
   objectives = 'objectives',
   location = 'location',
@@ -106,40 +105,6 @@ GET.apiDoc = {
                     format: 'date',
                     description: 'ISO 8601 date string for the project end date',
                     nullable: true
-                  },
-                  revision_count: {
-                    type: 'number'
-                  }
-                }
-              },
-              coordinator: {
-                title: 'Project coordinator',
-                type: 'object',
-                nullable: true,
-                required: [
-                  'first_name',
-                  'last_name',
-                  'email_address',
-                  'coordinator_agency',
-                  'share_contact_details',
-                  'revision_count'
-                ],
-                properties: {
-                  first_name: {
-                    type: 'string'
-                  },
-                  last_name: {
-                    type: 'string'
-                  },
-                  email_address: {
-                    type: 'string'
-                  },
-                  coordinator_agency: {
-                    type: 'string'
-                  },
-                  share_contact_details: {
-                    type: 'string',
-                    enum: ['true', 'false']
                   },
                   revision_count: {
                     type: 'number'
@@ -393,7 +358,6 @@ PUT.apiDoc = {
 };
 
 export interface IUpdateProject {
-  coordinator: any | null;
   project: any | null;
   objectives: any | null;
   location: { geometry: Feature[]; location_description: string } | null;

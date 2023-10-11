@@ -38,6 +38,7 @@ describe('SurveyObservations', () => {
       artifactDataLoader: {} as unknown as DataLoader<any, any, any>,
       surveyDataLoader: {} as unknown as DataLoader<any, any, any>,
       summaryDataLoader: {} as unknown as DataLoader<any, any, any>,
+      sampleSiteDataLoader: {} as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1
     };

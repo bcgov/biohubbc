@@ -223,15 +223,14 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
       expect(mockUseApi.admin.approveAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockUseApi.admin.approveAccessRequest).toHaveBeenCalledWith(
-        1,
-        'aaaa',
-        'testusername',
-        SYSTEM_IDENTITY_SOURCE.IDIR,
-        'email@email.com',
-        'test user',
-        [2]
-      );
+      expect(mockUseApi.admin.approveAccessRequest).toHaveBeenCalledWith(1, {
+        displayName: 'test user',
+        email: 'email@email.com',
+        identitySource: 'IDIR',
+        roleIds: [2],
+        userGuid: 'aaaa',
+        userIdentifier: 'testusername'
+      });
     });
   });
 

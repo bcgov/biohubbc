@@ -2,7 +2,6 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import FundingSourcesLayout from './FundingSourcesLayout';
 import FundingSourcesListPage from './list/FundingSourcesListPage';
 
 /**
@@ -14,9 +13,7 @@ const FundingSourcesRouter: React.FC = () => {
   return (
     <Switch>
       <RouteWithTitle exact path="/admin/funding-sources" title={getTitle('Funding Sources')}>
-        <FundingSourcesLayout>
-          <FundingSourcesListPage />
-        </FundingSourcesLayout>
+        <FundingSourcesListPage />
       </RouteWithTitle>
 
       {/*  Catch any unknown routes, and re-direct to the not found page */}

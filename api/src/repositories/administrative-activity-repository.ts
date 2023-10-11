@@ -9,7 +9,7 @@ import { jsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
 
 export const IAdministrativeActivityStanding = z.object({
-  has_pending_acccess_request: z.boolean(),
+  has_pending_access_request: z.boolean(),
   has_one_or_more_project_roles: z.boolean()
 });
 
@@ -176,13 +176,13 @@ export class AdministrativeActivityRepository extends BaseRepository {
   }
 
   /**
-   * SQL query to count pending records in the administrative_activity table.
+   * SQL query to count pending records in the administrative_activity table for a given user GUID
    *
-   * @param {string} userIdentifier
+   * @param {string} userGUID
    * @return {*}  {(Promise<IAdministrativeActivityStanding>)}
    * @memberof AdministrativeActivityRepository
    */
-  async getAdministrativeActivityStanding(userIdentifier: string): Promise<IAdministrativeActivityStanding> {
+  async getAdministrativeActivityStanding(userGUID: string): Promise<IAdministrativeActivityStanding> {
     const sqlStatement = SQL`
       WITH
         administrative_activity_with_status
@@ -191,7 +191,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
           CASE
             WHEN COUNT(*) > 0 THEN TRUE
             ELSE FALSE
-          END AS has_pending_acccess_request
+          END AS has_pending_access_request
         FROM
           administrative_activity aa
         LEFT OUTER JOIN
@@ -199,7 +199,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         ON
           aa.administrative_activity_status_type_id = aast.administrative_activity_status_type_id
         WHERE
-          (aa.data -> 'username')::text =  '"' || ${userIdentifier} || '"'
+            (aa.data -> 'userGuid')::text =  '"' || ${userGUID} || '"'
         AND
           aast.name = 'Pending'
       ),
@@ -217,7 +217,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         ON
           pp.system_user_id = su.system_user_id 
         WHERE
-          su.user_identifier = ${userIdentifier}
+          su.user_guid = ${userGUID}
       ) SELECT
         *
       FROM

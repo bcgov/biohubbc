@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   GetAttachmentsData,
-  GetCoordinatorData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
@@ -126,77 +125,6 @@ describe('GetObjectivesData', () => {
 
     it('sets revision_count', function () {
       expect(projectObjectivesData.revision_count).to.equal(obj.revision_count);
-    });
-  });
-});
-
-describe('GetCoordinatorData', () => {
-  describe('No values provided', () => {
-    let projectCoordinatorData: GetCoordinatorData;
-
-    before(() => {
-      projectCoordinatorData = new GetCoordinatorData(null);
-    });
-
-    it('sets first_name', function () {
-      expect(projectCoordinatorData.first_name).to.equal('');
-    });
-
-    it('sets last_name', function () {
-      expect(projectCoordinatorData.last_name).to.equal('');
-    });
-
-    it('sets email_address', function () {
-      expect(projectCoordinatorData.email_address).to.equal('');
-    });
-
-    it('sets coordinator_agency', function () {
-      expect(projectCoordinatorData.coordinator_agency).to.equal('');
-    });
-
-    it('sets share_contact_details', function () {
-      expect(projectCoordinatorData.share_contact_details).to.equal('false');
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectCoordinatorData: GetCoordinatorData;
-
-    const obj = {
-      coordinator_first_name: 'first',
-      coordinator_last_name: 'last',
-      coordinator_email_address: 'email@example.com',
-      coordinator_agency_name: 'agency',
-      coordinator_public: true,
-      revision_count: 'count'
-    };
-
-    before(() => {
-      projectCoordinatorData = new GetCoordinatorData(obj);
-    });
-
-    it('sets first_name', function () {
-      expect(projectCoordinatorData.first_name).to.equal(obj.coordinator_first_name);
-    });
-
-    it('sets last_name', function () {
-      expect(projectCoordinatorData.last_name).to.equal(obj.coordinator_last_name);
-    });
-
-    it('sets email_address', function () {
-      expect(projectCoordinatorData.email_address).to.equal(obj.coordinator_email_address);
-    });
-
-    it('sets coordinator_agency', function () {
-      expect(projectCoordinatorData.coordinator_agency).to.equal(obj.coordinator_agency_name);
-    });
-
-    it('sets share_contact_details', function () {
-      expect(projectCoordinatorData.share_contact_details).to.equal('true');
-    });
-
-    it('sets revision_count', function () {
-      expect(projectCoordinatorData.revision_count).to.equal('count');
     });
   });
 });

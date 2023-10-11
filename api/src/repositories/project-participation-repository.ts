@@ -116,6 +116,8 @@ export class ProjectParticipationRepository extends BaseRepository {
         array_remove(array_agg(sr.name), NULL) AS role_names,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         pp.project_participation_id,
         pp.project_id,
@@ -155,9 +157,14 @@ export class ProjectParticipationRepository extends BaseRepository {
         uis.name,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         pp.project_participation_id,
-        pp.project_id;
+        pp.project_id,
+        pp.create_date
+      ORDER BY
+        pp.create_date DESC;
     `;
 
     const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
@@ -184,6 +191,8 @@ export class ProjectParticipationRepository extends BaseRepository {
         array_remove(array_agg(sr.name), NULL) AS role_names,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         pp.project_participation_id,
         pp.project_id,
@@ -221,9 +230,14 @@ export class ProjectParticipationRepository extends BaseRepository {
         uis.name,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         pp.project_participation_id,
-        pp.project_id;
+        pp.project_id,
+        pp.create_date
+      ORDER BY
+        pp.create_date DESC;
     `;
 
     const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
@@ -315,6 +329,8 @@ export class ProjectParticipationRepository extends BaseRepository {
         array_remove(array_agg(sr.name), NULL) AS role_names,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         pp.project_participation_id,
         pp.project_id,
@@ -352,9 +368,14 @@ export class ProjectParticipationRepository extends BaseRepository {
         uis.name,
         su.email,
         su.display_name,
+        su.given_name,
+        su.family_name,
         su.agency,
         pp.project_participation_id,
-        pp.project_id;
+        pp.project_id,
+        pp.create_date
+      ORDER BY
+        pp.create_date DESC;
     `;
 
     const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
