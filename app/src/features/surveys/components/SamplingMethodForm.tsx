@@ -177,7 +177,7 @@ const SamplingMethodForm = () => {
                       Time Periods
                     </Typography>
                     <List>
-                      {item.periods.map((period, index) => (
+                      {item.periods.map((period) => (
                         <ListItem key={`sample_period_${period.start_date}-${period.end_date}`} divider>
                           <ListItemIcon>
                             <Icon path={mdiCalendarRangeOutline} size={1} />
