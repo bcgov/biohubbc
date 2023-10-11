@@ -15,7 +15,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useState } from 'react';
-import { datesSameNullable } from 'utils/Utils';
+import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
@@ -24,6 +24,7 @@ import {
   transformCritterbaseAPIResponseToForm
 } from './survey-animals/animal-form-helpers';
 import {
+  AnimalDeploymentTimespanSchema,
   AnimalTelemetryDeviceSchema,
   Device,
   IAnimalTelemetryDevice,
@@ -45,6 +46,7 @@ const SurveyAnimals: React.FC = () => {
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
+  const [isSubmittingTelemetry, setIsSubmittingTelemetry] = useState(false);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
     TELEMETRY_DEVICE_FORM_MODE.ADD
@@ -117,6 +119,89 @@ const SurveyAnimals: React.FC = () => {
     ]
   };
 
+  const deploymentOverlapTest = async (
+    device_id: number,
+    deployment_id: string,
+    attachment_start: string | undefined,
+    attachment_end: string | null | undefined
+  ): Promise<string> => {
+    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
+    if (!attachment_start) {
+      return 'Attachment start is required.'; //It probably won't actually display this but just in case.
+    }
+    const existingDeployment = deviceDetails?.deployments?.find(
+      (a) =>
+        a.deployment_id !== deployment_id &&
+        dateRangesOverlap(a.attachment_start, a.attachment_end, attachment_start, attachment_end)
+    );
+    if (existingDeployment) {
+      return `This will conflict with an existing deployment for the device running from ${
+        existingDeployment.attachment_start
+      } until ${existingDeployment.attachment_end ?? 'indefinite.'}`;
+    } else {
+      return '';
+    }
+  };
+
+  const AnimalDeploymentSchemaAsyncValidation = AnimalTelemetryDeviceSchema.shape({
+    device_make: yup
+      .string()
+      .required('Required')
+      .test('checkDeviceMakeIsNotChanged', '', async (value, context) => {
+        const deviceDetails = await telemetryApi.devices.getDeviceDetails(Number(context.parent.device_id));
+        if (deviceDetails.device?.device_make && deviceDetails.device?.device_make !== value) {
+          return context.createError({
+            message: `The current make for this device is ${deviceDetails.device?.device_make}, this value should not be changed.`
+          });
+        }
+        return true;
+      }),
+    deployments: yup.array(
+      AnimalDeploymentTimespanSchema.shape({
+        attachment_start: yup
+          .string()
+          .required('Required.')
+          .isValidDateString()
+          .typeError('Required.')
+          .test('checkDeploymentRange', '', async (value, context) => {
+            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
+            const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
+            const errStr = await deploymentOverlapTest(
+              deviceId,
+              context.parent.deployment_id,
+              value,
+              context.parent.attachment_end
+            );
+            if (errStr.length) {
+              return context.createError({ message: errStr });
+            } else {
+              return true;
+            }
+          }),
+        attachment_end: yup
+          .string()
+          .isValidDateString()
+          .isEndDateSameOrAfterStartDate('attachment_start')
+          .nullable()
+          .test('checkDeploymentRangeEnd', '', async (value, context) => {
+            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
+            const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
+            const errStr = await deploymentOverlapTest(
+              deviceId,
+              context.parent.deployment_id,
+              context.parent.attachment_start,
+              value
+            );
+            if (errStr.length) {
+              return context.createError({ message: errStr });
+            } else {
+              return true;
+            }
+          })
+      })
+    )
+  });
+
   const obtainAnimalFormInitialvalues = (mode: ANIMAL_FORM_MODE): IAnimal | null => {
     switch (mode) {
       case ANIMAL_FORM_MODE.ADD:
@@ -146,7 +231,11 @@ const SurveyAnimals: React.FC = () => {
           const red = deployments.reduce((acc: IAnimalTelemetryDevice[], curr) => {
             const currObj = acc.find((a: any) => a.device_id === curr.device_id);
             const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
-            const deployment = { deployment_id, attachment_start, attachment_end };
+            const deployment = {
+              deployment_id,
+              attachment_start: attachment_start?.split('T')?.[0] ?? '',
+              attachment_end: attachment_end?.split('T')?.[0]
+            };
             if (!currObj) {
               acc.push({ ...rest, deployments: [deployment] });
             } else {
@@ -329,12 +418,14 @@ const SurveyAnimals: React.FC = () => {
   };
 
   const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+    setIsSubmittingTelemetry(true);
     if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
       await handleAddTelemetry(survey_critter_id, data);
     } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
       await handleEditTelemetry(survey_critter_id, data);
     }
 
+    setIsSubmittingTelemetry(false);
     setOpenDeviceDialog(false);
     refreshDeployments();
     surveyContext.artifactDataLoader.refresh(projectId, surveyId);
@@ -343,7 +434,8 @@ const SurveyAnimals: React.FC = () => {
   const handleRemoveCritter = async () => {
     try {
       if (!selectedCritterId) {
-        throw Error('Critter ID not set correctly.');
+        setPopup('Failed to remove critter from survey.');
+        return;
       }
       await bhApi.survey.removeCritterFromSurvey(projectId, surveyId, selectedCritterId);
     } catch (e) {
@@ -351,6 +443,25 @@ const SurveyAnimals: React.FC = () => {
     }
     setOpenRemoveCritterDialog(false);
     refreshCritters();
+  };
+
+  const handleRemoveDeployment = async (deployment_id: string) => {
+    try {
+      if (!selectedCritterId) {
+        setPopup('Failed to delete deployment.');
+        return;
+      }
+      await bhApi.survey.removeDeployment(projectId, surveyId, selectedCritterId, deployment_id);
+    } catch (e) {
+      setPopup('Failed to delete deployment.');
+      return;
+    }
+
+    const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId) ?? [];
+    if (deployments.length <= 1) {
+      setOpenDeviceDialog(false);
+    }
+    refreshDeployments();
   };
 
   return (
@@ -362,10 +473,13 @@ const SurveyAnimals: React.FC = () => {
         }
         dialogSaveButtonLabel="Save"
         open={openDeviceDialog}
+        dialogLoading={isSubmittingTelemetry}
         component={{
-          element: <TelemetryDeviceForm mode={telemetryFormMode} />,
+          element: <TelemetryDeviceForm removeAction={handleRemoveDeployment} mode={telemetryFormMode} />,
           initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
-          validationSchema: yup.array(AnimalTelemetryDeviceSchema)
+          validationSchema: yup.array(AnimalDeploymentSchemaAsyncValidation),
+          validateOnBlur: false,
+          validateOnChange: true
         }}
         onCancel={() => setOpenDeviceDialog(false)}
         onSave={(values) => {

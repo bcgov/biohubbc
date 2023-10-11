@@ -7,6 +7,7 @@ import sinonChai from 'sinon-chai';
 import {
   BctwService,
   BCTW_API_HOST,
+  DELETE_DEPLOYMENT_ENDPOINT,
   DEPLOY_DEVICE_ENDPOINT,
   GET_CODE_ENDPOINT,
   GET_COLLAR_VENDORS_ENDPOINT,
@@ -271,6 +272,16 @@ describe('BctwService', () => {
           collar_id: ''
         };
         await bctwService.updateDevice(body).catch((e) => expect(e.message).to.equal('[{"device_id":"error"}]'));
+      });
+    });
+
+    describe('deleteDeployment', () => {
+      it('should sent a delete request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'delete').resolves();
+
+        await bctwService.deleteDeployment('asdf');
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${DELETE_DEPLOYMENT_ENDPOINT}/asdf`);
       });
     });
   });

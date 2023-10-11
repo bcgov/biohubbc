@@ -89,4 +89,15 @@ describe('SurveyService', () => {
       expect(response).to.be.undefined;
     });
   });
+
+  describe('removeDeployment', () => {
+    it('removes deployment and returns void', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyCritterService(dbConnection);
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'removeDeployment').resolves();
+      const response = await service.removeDeployment(1, 'deployment_id');
+      expect(repoStub).to.be.calledOnce;
+      expect(response).to.be.undefined;
+    });
+  });
 });

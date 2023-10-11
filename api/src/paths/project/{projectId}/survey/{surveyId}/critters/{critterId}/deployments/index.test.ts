@@ -1,11 +1,11 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import * as db from '../../../../../../../database/db';
-import { BctwService } from '../../../../../../../services/bctw-service';
-import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
-import { deployDevice, PATCH, POST, updateDeployment } from './deployments';
+import * as db from '../../../../../../../../database/db';
+import { BctwService } from '../../../../../../../../services/bctw-service';
+import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
+import { deployDevice, PATCH, POST, updateDeployment } from './index';
 
 describe('critter deployments', () => {
   afterEach(() => {
@@ -44,7 +44,7 @@ describe('critter deployments', () => {
       const mockError = new Error('a test error');
       const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
       const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').rejects(mockError);
-      const mockBctwService = sinon.stub(BctwService.prototype, 'updateDeployment');
+      const mockBctwService = sinon.stub(BctwService.prototype, 'updateDeployment').rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -53,6 +53,7 @@ describe('critter deployments', () => {
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
+        expect(actualError).to.equal(mockError);
         expect(mockGetDBConnection.calledOnce).to.be.true;
         expect(mockAddDeployment.calledOnce).to.be.true;
         expect(mockBctwService.notCalled).to.be.true;
@@ -79,7 +80,7 @@ describe('critter deployments', () => {
         const mockError = new Error('a test error');
         const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
         const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').rejects(mockError);
-        const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice');
+        const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice').rejects(mockError);
 
         const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -88,6 +89,7 @@ describe('critter deployments', () => {
           await requestHandler(mockReq, mockRes, mockNext);
           expect.fail();
         } catch (actualError) {
+          expect(actualError).to.equal(mockError);
           expect(mockGetDBConnection.calledOnce).to.be.true;
           expect(mockAddDeployment.calledOnce).to.be.true;
           expect(mockBctwService.notCalled).to.be.true;
