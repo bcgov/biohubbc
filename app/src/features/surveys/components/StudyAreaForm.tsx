@@ -1,8 +1,10 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import MapBoundary from 'components/boundary/MapBoundary';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
+import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyLocationForm {
@@ -47,9 +49,21 @@ export const SurveyLocationYupSchema = yup.object({
 const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
 
+  const history = useHistory();
   const { handleSubmit } = formikProps;
   return (
     <form onSubmit={handleSubmit}>
+      <Button
+        title="TODO"
+        color="primary"
+        variant="contained"
+        onClick={() => history.push('locations')}
+        sx={{
+          minWidth: 7,
+          marginRight: 1
+        }}>
+        IMPORT
+      </Button>
       <Box mb={4}>
         <CustomTextField
           name={`locations[0].name`}
