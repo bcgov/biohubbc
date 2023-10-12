@@ -231,6 +231,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return (
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <TimePicker
+              timeSteps={{ hours: 1, minutes: 1 }}
               value={(params.value && moment(params.value, 'HH:mm:ss')) || null}
               onChange={(value) => {
                 apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
