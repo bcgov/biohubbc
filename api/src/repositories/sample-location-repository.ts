@@ -1,17 +1,18 @@
+import { Feature } from 'geojson';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
-import { SampleMethodRecord } from './sample-method-repository';
+import { SampleMethodRecord, UpdateSampleMethodRecord } from './sample-method-repository';
 
 // This describes a row in the database for Survey Sample Location
 export const SampleLocationRecord = z.object({
   survey_sample_site_id: z.number(),
   survey_id: z.number(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   geojson: z.any(),
   geography: z.any(),
   create_date: z.string(),
@@ -31,6 +32,15 @@ export type UpdateSampleLocationRecord = Pick<
   SampleLocationRecord,
   'survey_sample_site_id' | 'survey_id' | 'name' | 'description' | 'geojson'
 >;
+
+export type UpdateSampleSiteRecord = {
+  survey_id: number;
+  survey_sample_site_id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
+  methods: UpdateSampleMethodRecord[];
+};
 
 /**
  * Sample Location Repository
@@ -100,7 +110,8 @@ export class SampleLocationRepository extends BaseRepository {
    */
   async updateSampleLocation(sample: UpdateSampleLocationRecord): Promise<SampleLocationRecord> {
     const sql = SQL`
-      UPDATE survey_sample_site
+      UPDATE
+        survey_sample_site
       SET
         survey_id=${sample.survey_id},
         name=${sample.name},
@@ -109,7 +120,7 @@ export class SampleLocationRepository extends BaseRepository {
         geography=public.geography(
           public.ST_Force2D(
             public.ST_SetSRID(
-    `;
+      `;
     const geometryCollectionSQL = generateGeometryCollectionSQL(sample.geojson);
     sql.append(geometryCollectionSQL);
     sql.append(SQL`, 4326)))`);

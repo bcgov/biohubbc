@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { IEditSamplingSiteRequest } from 'features/surveys/observations/sampling-sites/edit/components/SampleSiteEditForm';
 import { ICreateSamplingSiteRequest } from 'features/surveys/observations/sampling-sites/SamplingSitePage';
 import { IGetSampleSiteResponse } from 'interfaces/useSurveyApi.interface';
 
@@ -43,14 +44,14 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} sampleSiteId
-   * @param {ICreateSamplingSiteRequest} sampleSite
+   * @param {IEditSamplingSiteRequest} sampleSite
    * @return {*}  {Promise<void>}
    */
   const editSampleSite = async (
     projectId: number,
     surveyId: number,
     sampleSiteId: number,
-    sampleSite: ICreateSamplingSiteRequest
+    sampleSite: IEditSamplingSiteRequest
   ): Promise<void> => {
     await axios.put(`/api/project/${projectId}/survey/${surveyId}/sample-site/${sampleSiteId}`, sampleSite);
   };
