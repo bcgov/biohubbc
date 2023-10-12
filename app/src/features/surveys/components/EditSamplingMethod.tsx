@@ -1,6 +1,10 @@
 import EditDialog from 'components/dialog/EditDialog';
 import yup from 'utils/YupSchema';
-import MethodForm, { IEditSurveySampleMethodData, ISurveySampleMethodData } from './MethodForm';
+import MethodForm, {
+  IEditSurveySampleMethodData,
+  ISurveySampleMethodData,
+  SurveySampleMethodDataInitialValues
+} from './MethodForm';
 
 interface IEditSamplingMethodProps {
   open: boolean;
@@ -37,13 +41,7 @@ const EditSamplingMethod: React.FC<IEditSamplingMethodProps> = (props) => {
         dialogLoading={false}
         component={{
           element: <MethodForm />,
-          initialValues: {
-            survey_sample_method_id: initialData?.survey_sample_method_id || null,
-            survey_sample_site_id: initialData?.survey_sample_site_id || null,
-            method_lookup_id: initialData?.method_lookup_id || null,
-            description: initialData?.description || '',
-            periods: initialData?.periods || []
-          },
+          initialValues: initialData || SurveySampleMethodDataInitialValues,
           validationSchema: SamplingSiteMethodYupSchema
         }}
         dialogSaveButtonLabel="Update"

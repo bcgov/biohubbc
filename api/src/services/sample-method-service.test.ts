@@ -66,6 +66,8 @@ describe('SampleMethodService', () => {
     it('Gets permit by admin user id', async () => {
       const mockDBConnection = getMockDBConnection();
 
+      const survey_sample_period_id = 1;
+
       const mockSampleMethodRecord: SampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
@@ -82,11 +84,19 @@ describe('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'deleteSampleMethodRecord')
         .resolves(mockSampleMethodRecord);
 
+      sinon
+        .stub(SamplePeriodService.prototype, 'getSamplePeriodsForSurveyMethodId')
+        .resolves([{ survey_sample_period_id: survey_sample_period_id } as SamplePeriodRecord]);
+      const deleteSamplePeriodRecordStub = sinon
+        .stub(SamplePeriodService.prototype, 'deleteSamplePeriodRecords')
+        .resolves();
+
       const surveySampleMethodId = 1;
       const sampleMethodService = new SampleMethodService(mockDBConnection);
       const response = await sampleMethodService.deleteSampleMethodRecord(surveySampleMethodId);
 
       expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(surveySampleMethodId);
+      expect(deleteSamplePeriodRecordStub).to.be.calledOnceWith([survey_sample_period_id]);
       expect(response).to.eql(mockSampleMethodRecord);
     });
   });
@@ -181,6 +191,10 @@ describe('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'updateSampleMethod')
         .resolves(mockSampleMethodRecord);
 
+      sinon.stub(SamplePeriodService.prototype, 'deleteSamplePeriodsNotInArray').resolves();
+      sinon.stub(SamplePeriodService.prototype, 'updateSamplePeriod').resolves();
+      sinon.stub(SamplePeriodService.prototype, 'insertSamplePeriod').resolves();
+
       const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
@@ -188,7 +202,7 @@ describe('SampleMethodService', () => {
         description: 'description',
         periods: [
           { end_date: '2023-01-02', start_date: '2023-10-02', survey_sample_method_id: 1, survey_sample_period_id: 4 },
-          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1, survey_sample_period_id: 5 }
+          { end_date: '2023-10-03', start_date: '2023-11-05', survey_sample_method_id: 1 } as SamplePeriodRecord
         ]
       };
       const sampleMethodService = new SampleMethodService(mockDBConnection);
@@ -196,6 +210,51 @@ describe('SampleMethodService', () => {
 
       expect(updateSampleMethodStub).to.be.calledOnceWith(sampleMethod);
       expect(response).to.eql(mockSampleMethodRecord);
+    });
+  });
+
+  describe('deleteSampleMethodsNotInArray', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('should run without issue', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const survey_sample_method_id = 1;
+
+      const mockSampleMethodRecord: SampleMethodRecord = {
+        survey_sample_method_id: survey_sample_method_id,
+        survey_sample_site_id: 2,
+        method_lookup_id: 3,
+        description: 'description',
+        sample_periods: [],
+        create_date: '2023-05-06',
+        create_user: 1,
+        update_date: null,
+        update_user: null,
+        revision_count: 0
+      };
+
+      const mockSampleMethodRecords: SampleMethodRecord[] = [mockSampleMethodRecord];
+      const getSampleMethodsForSurveySampleSiteIdStub = sinon
+        .stub(SampleMethodRepository.prototype, 'getSampleMethodsForSurveySampleSiteId')
+        .resolves(mockSampleMethodRecords);
+
+      const deleteSampleMethodRecordStub = sinon
+        .stub(SampleMethodService.prototype, 'deleteSampleMethodRecord')
+        .resolves();
+
+      const surveySampleSiteId = 1;
+
+      const sampleMethodService = new SampleMethodService(mockDBConnection);
+
+      await sampleMethodService.deleteSampleMethodsNotInArray(surveySampleSiteId, [
+        { survey_sample_method_id: 2 } as UpdateSampleMethodRecord
+      ]);
+
+      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(surveySampleSiteId);
+
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(mockSampleMethodRecord.survey_sample_method_id);
     });
   });
 });

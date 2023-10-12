@@ -13,7 +13,7 @@ const SampleSiteGeneralInformationForm: React.FC = (props) => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <CustomTextField
-            name="name"
+            name="sampleSite.name"
             label="Name"
             other={{
               required: true
@@ -21,11 +21,7 @@ const SampleSiteGeneralInformationForm: React.FC = (props) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <CustomTextField
-            name="description"
-            label="Description"
-            other={{ multiline: true, required: true, rows: 4 }}
-          />
+          <CustomTextField name="sampleSite.description" label="Description" other={{ multiline: true, rows: 4 }} />
         </Grid>
       </Grid>
     </>
