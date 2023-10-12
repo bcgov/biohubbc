@@ -15,7 +15,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { datesSameNullable, pluralize } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
@@ -72,11 +72,35 @@ const SurveyAnimals: React.FC = () => {
     loadCritters();
   }
 
-  const currentCritterbaseCritterId = critterData?.find((a) => a.survey_critter_id === selectedCritterId)?.critter_id;
+  const currentCritterbaseCritterId = useMemo(
+    () => critterData?.find((a) => a.survey_critter_id === selectedCritterId)?.critter_id,
+    [critterData, selectedCritterId]
+  );
 
   if (!deploymentData) {
     loadDeployments();
   }
+
+  const {
+    refresh: refreshTelemetry,
+    data: telemetryData,
+    isLoading: telemetryLoading
+  } = useDataLoader(() =>
+    bhApi.survey.getCritterTelemetry(
+      projectId,
+      surveyId,
+      selectedCritterId ?? 0,
+      '1970-01-01',
+      new Date().toISOString()
+    )
+  );
+
+  useEffect(() => {
+    if (currentCritterbaseCritterId) {
+      refreshTelemetry();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCritterbaseCritterId]);
 
   const toggleDialog = () => {
     setAnimalFormMode(ANIMAL_FORM_MODE.ADD);
@@ -430,14 +454,22 @@ const SurveyAnimals: React.FC = () => {
         )}
       </Box>
       <ComponentDialog
-        dialogProps={{ fullScreen: true, maxWidth: false }}
+        dialogProps={{ fullScreen: !!telemetryData?.points?.features?.length, maxWidth: false }}
         dialogTitle={'View Telemetry'}
         open={openViewTelemetryDialog}
         onClose={() => setOpenViewTelemetryDialog(false)}>
-        <TelemetryMap
-          deploymentData={deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId) ?? []}
-          surveyCritterId={selectedCritterId ?? 0}
-        />
+        {telemetryData?.points.features.length ? (
+          <TelemetryMap
+            telemetryData={telemetryData}
+            deploymentData={deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId)}
+          />
+        ) : (
+          <Typography>
+            {telemetryLoading
+              ? 'Loading telemetry...'
+              : "No telemetry has been collected for this animal's deployments."}
+          </Typography>
+        )}
       </ComponentDialog>
     </Box>
   );

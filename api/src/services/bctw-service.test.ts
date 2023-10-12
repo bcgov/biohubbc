@@ -19,7 +19,9 @@ import {
   IDeployDevice,
   IDeploymentUpdate,
   UPDATE_DEPLOYMENT_ENDPOINT,
-  UPSERT_DEVICE_ENDPOINT
+  UPSERT_DEVICE_ENDPOINT,
+  GET_TELEMETRY_POINTS_ENDPOINT,
+  GET_TELEMETRY_TRACKS_ENDPOINT
 } from './bctw-service';
 import { KeycloakService } from './keycloak-service';
 
@@ -271,6 +273,34 @@ describe('BctwService', () => {
           collar_id: ''
         };
         await bctwService.updateDevice(body).catch((e) => expect(e.message).to.equal('[{"device_id":"error"}]'));
+      });
+    });
+
+    describe('getCritterTelemetryPoints', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        await bctwService.getCritterTelemetryPoints('asdf', new Date(), new Date());
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(GET_TELEMETRY_POINTS_ENDPOINT, {
+          critter_id: 'asdf',
+          start: new Date().toISOString(),
+          end: new Date().toISOString()
+        });
+      });
+    });
+
+    describe('getCritterTelemetryTracks', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        await bctwService.getCritterTelemetryTracks('asdf', new Date(), new Date());
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(GET_TELEMETRY_TRACKS_ENDPOINT, {
+          critter_id: 'asdf',
+          start: new Date().toISOString(),
+          end: new Date().toISOString()
+        });
       });
     });
   });

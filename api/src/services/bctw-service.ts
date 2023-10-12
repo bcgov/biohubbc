@@ -369,11 +369,11 @@ export class BctwService {
 
   /**
    * Get all telemetry points for an animal.
-   * The geometry will be points, and the properties.
-   * @param critterId
+   * The geometry will be points, and the properties will include the critter id and deployment id.
+   * @param critterId uuid
    * @param startDate
    * @param endDate
-   * @returns
+   * @returns {*} CritterTelemetryResponse
    */
   async getCritterTelemetryPoints(
     critterId: string,
@@ -387,6 +387,16 @@ export class BctwService {
     });
   }
 
+  /**
+   * Get all telemetry tracks for an animal.
+   * The geometry will be lines, and the properties will include the critter id and deployment id.
+   * The lines are actually just generated on the fly by the the db using the same points as getCritterTelemetryPoints.
+   *
+   * @param critterId uuid
+   * @param startDate
+   * @param endDate
+   * @returns {*} CritterTelemetryResponse
+   */
   async getCritterTelemetryTracks(
     critterId: string,
     startDate: Date,
