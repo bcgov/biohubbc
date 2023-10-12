@@ -3,7 +3,6 @@ import bbox from '@turf/bbox';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import hash from 'object-hash';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -55,14 +54,15 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
           }
 
           // Ensure each Feature has a non-null ID
+          // This will allow the map to re render newly uploaded features properly
           features.forEach((feature) => {
             if (feature.id) {
               // Feature already specifies an id (safe to assume it is unique?)
               return;
             }
 
-            // Feature has id, hash the entire feature to create a unique id
-            feature.id = generateFeatureId(feature);
+            // No feature id is present, create a UUID
+            feature.id = uuidv4();
           });
 
           resolve(features);
@@ -79,16 +79,6 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
     // Start reading file
     reader.readAsArrayBuffer(file);
   });
-};
-
-/**
- * Generates a unique ID for a geoJSON Feature.
- *
- * @param {Feature} feature
- * @return {*}  {string}
- */
-const generateFeatureId = (feature: Feature): string => {
-  return hash(feature);
 };
 
 /**
