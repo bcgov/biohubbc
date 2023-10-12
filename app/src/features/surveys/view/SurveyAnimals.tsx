@@ -2,6 +2,7 @@ import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Divider, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
@@ -35,8 +36,7 @@ import TelemetryDeviceForm, {
   IAnimalTelemetryDeviceFile,
   TELEMETRY_DEVICE_FORM_MODE
 } from './survey-animals/TelemetryDeviceForm';
-import ComponentDialog from 'components/dialog/ComponentDialog';
-import MapContainer from 'components/map/MapContainer';
+import TelemetryMap from './survey-animals/TelemetryMap';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
@@ -391,13 +391,6 @@ const SurveyAnimals: React.FC = () => {
         onNo={() => setOpenRemoveCritterDialog(false)}
         onYes={handleRemoveCritter}
       />
-      <ComponentDialog
-        dialogProps={{ fullScreen: true, maxWidth: false }}
-        dialogTitle={'View Telemetry'}
-        open={openViewTelemetryDialog}
-        onClose={() => setOpenViewTelemetryDialog(false)}>
-        <Typography>amogus</Typography>
-      </ComponentDialog>
       <H2ButtonToolbar
         label="Individual Animals"
         buttonLabel="Import"
@@ -436,6 +429,16 @@ const SurveyAnimals: React.FC = () => {
           <NoSurveySectionData text={'No Individual Animals'} paperVariant={'outlined'} />
         )}
       </Box>
+      <ComponentDialog
+        dialogProps={{ fullScreen: true, maxWidth: false }}
+        dialogTitle={'View Telemetry'}
+        open={openViewTelemetryDialog}
+        onClose={() => setOpenViewTelemetryDialog(false)}>
+        <TelemetryMap
+          deploymentData={deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId) ?? []}
+          surveyCritterId={selectedCritterId ?? 0}
+        />
+      </ComponentDialog>
     </Box>
   );
 };
