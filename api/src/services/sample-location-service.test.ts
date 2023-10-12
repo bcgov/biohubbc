@@ -64,7 +64,6 @@ describe('SampleLocationService', () => {
         description: '',
         geojson: [],
         geography: [],
-        sample_methods: [],
         create_date: '',
         create_user: 1,
         update_date: '',
@@ -94,7 +93,6 @@ describe('SampleLocationService', () => {
           description: '',
           geojson: [],
           geography: [],
-          sample_methods: [],
           create_date: '',
           create_user: 1,
           update_date: '',
@@ -125,7 +123,6 @@ describe('SampleLocationService', () => {
         description: '',
         geojson: [],
         geography: [],
-        sample_methods: [],
         create_date: '',
         create_user: 1,
         update_date: '',
@@ -158,7 +155,6 @@ describe('SampleLocationService', () => {
         description: 'Check out this description',
         geojson: [],
         geography: [],
-        sample_methods: [],
         create_date: '',
         create_user: 1,
         update_date: '',
@@ -169,7 +165,7 @@ describe('SampleLocationService', () => {
       const insertSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'insertSampleMethod').resolves();
       const updateSampleMethodStub = sinon.stub(SampleMethodService.prototype, 'updateSampleMethod').resolves();
       const checkSampleMethodsToDeleteStub = sinon
-        .stub(SampleMethodService.prototype, 'checkSampleMethodsToDelete')
+        .stub(SampleMethodService.prototype, 'deleteSampleMethodsNotInArray')
         .resolves();
 
       await service.updateSampleLocationMethodPeriod({
@@ -177,7 +173,7 @@ describe('SampleLocationService', () => {
         survey_id: 1,
         name: 'Cool new site',
         description: 'Check out this description',
-        survey_sample_sites: [{ type: 'Feature', geometry: {}, properties: {} } as any],
+        geojson: { type: 'Feature', geometry: {}, properties: {} } as any,
         methods: methods
       });
 
