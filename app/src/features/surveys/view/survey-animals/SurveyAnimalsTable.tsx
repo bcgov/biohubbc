@@ -1,10 +1,7 @@
-import { Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/tables/CustomDataGrid';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { getFormattedDate } from 'utils/Utils';
 import { IAnimalDeployment } from './device';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 
@@ -26,10 +23,6 @@ interface ISurveyAnimalsTableProps {
   onEditCritter: (critter_id: number) => void;
   onMapOpen: () => void;
 }
-
-const noOpPlaceHolder = (critter_id: number) => {
-  // This function intentionally left blank - used as placeholder.
-};
 
 export const SurveyAnimalsTable = ({
   animalData,
@@ -55,6 +48,11 @@ export const SurveyAnimalsTable = ({
 
   const columns: GridColDef<ISurveyAnimalsTableEntry>[] = [
     {
+      field: 'taxon',
+      headerName: 'Species',
+      flex: 1
+    },
+    {
       field: 'animal_id',
       headerName: 'Alias',
       flex: 1
@@ -63,20 +61,7 @@ export const SurveyAnimalsTable = ({
       field: 'wlh_id',
       headerName: 'WLH ID',
       flex: 1,
-      renderCell: (params) => <Typography>{params.value || 'None'}</Typography>
-    },
-    {
-      field: 'taxon',
-      headerName: 'Taxon',
-      flex: 1
-    },
-    {
-      field: 'create_timestamp',
-      headerName: 'Created On',
-      flex: 1,
-      renderCell: (params) => (
-        <Typography>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}</Typography>
-      )
+      renderCell: (params) => <>{params.value ? params.value : 'None'}</>
     },
     {
       field: 'current_devices',
@@ -117,7 +102,6 @@ export const SurveyAnimalsTable = ({
           devices={params.row?.deployments}
           onMenuOpen={onMenuOpen}
           onAddDevice={onAddDevice}
-          onRemoveDevice={noOpPlaceHolder}
           onEditCritter={onEditCritter}
           onEditDevice={onEditDevice}
           onRemoveCritter={onRemoveCritter}

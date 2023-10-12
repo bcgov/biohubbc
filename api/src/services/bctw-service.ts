@@ -110,6 +110,7 @@ export const GET_DEPLOYMENTS_ENDPOINT = '/get-deployments';
 export const GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT = '/get-deployments-by-critter-id';
 export const GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT = '/get-deployments-by-device-id';
 export const UPDATE_DEPLOYMENT_ENDPOINT = '/update-deployment';
+export const DELETE_DEPLOYMENT_ENDPOINT = '/delete-deployment';
 export const GET_COLLAR_VENDORS_ENDPOINT = '/get-collar-vendors';
 export const HEALTH_ENDPOINT = '/health';
 export const GET_CODE_ENDPOINT = '/get-code';
@@ -154,8 +155,8 @@ export class BctwService {
         return Promise.reject(
           new ApiError(
             ApiErrorType.UNKNOWN,
-            `API request failed with status code ${error?.response?.status} - ${error.request.url}`,
-            error?.response?.data
+            `API request failed with status code ${error?.response?.status}, ${error.response?.data}`,
+            error?.request?.data
           )
         );
       }
@@ -293,7 +294,18 @@ export class BctwService {
    * @memberof BctwService
    */
   async updateDeployment(deployment: IDeploymentUpdate): Promise<IDeploymentRecord> {
-    return await this.axiosInstance.patch(UPDATE_DEPLOYMENT_ENDPOINT, deployment);
+    return this.axiosInstance.patch(UPDATE_DEPLOYMENT_ENDPOINT, deployment);
+  }
+
+  /**
+   * Soft deletes the deployment in BCTW.
+   *
+   * @param {string} deployment_id uuid
+   * @returns {*} {Promise<IDeploymentRecord>}
+   * @memberof BctwService
+   */
+  async deleteDeployment(deployment_id: string): Promise<IDeploymentRecord> {
+    return this.axiosInstance.delete(`${DELETE_DEPLOYMENT_ENDPOINT}/${deployment_id}`);
   }
 
   /**

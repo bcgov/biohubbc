@@ -299,12 +299,12 @@ export const SubmitSurveyBiohubI18N = {
 
 export const SurveyAnimalsI18N = {
   animalIndividualsHelp:
-    'Individual animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',
+    'Animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',
   animalDialogTitle: 'Invidividual Animals',
   animalDialogAddNew: 'Add New Individual',
   animalSectionComment: (section: string) => `Add comment about this ${section}`,
   animalGeneralTitle: 'General',
-  animalGeneralHelp: 'General help placeholder',
+  animalGeneralHelp: 'General information about this animal.',
   animalCaptureTitle: 'Capture Information',
   animalCaptureTitle2: 'Capture Event',
   animalCaptureHelp:
@@ -338,9 +338,9 @@ export const SurveyAnimalsI18N = {
   animalCollectionUnitAddBtn: 'Add Unit',
   // Input help strings
   taxonHelp:
-    'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family',
-  taxonLabelHelp: 'A custom and unique name for you to recognize this individual',
-  wlhIdHelp: 'The Wildlife Health ID associated with this critter.',
+    'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family.',
+  taxonLabelHelp: 'A unique name for you to recognize this individual.',
+  wlhIdHelp: 'An ID used to identify animals in the BC Wildlife Health Program',
   sexHelp: 'The sex of this critter. Leave as Unknown if unsure.'
 };
 
@@ -387,4 +387,14 @@ export const CreateSamplingSiteI18N = {
   createErrorTitle: 'Error Creating Sampling Site(s)',
   createErrorText:
     'An error has occurred while attempting to create your sampling site(s). Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const ObservationsTableI18N = {
+  removeAllDialogTitle: 'Discard changes?',
+  removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',
+  removeRecordDialogTitle: 'Delete record?',
+  removeRecordDialogText: 'Are you sure you want to delete this record? This action cannot be undone.',
+  submitRecordsErrorDialogTitle: 'Error Updating Observation Records',
+  submitRecordsErrorDialogText:
+    'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.'
 };

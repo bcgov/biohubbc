@@ -70,8 +70,9 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
   };
 
   const handleSubmitFundingService = async (values: IFundingSourceData) => {
-    setIsSubmitting(true);
     try {
+      setIsSubmitting(true);
+
       await biohubApi.funding.putFundingSource(values);
 
       // creation was a success, tell parent to refresh
@@ -92,6 +93,7 @@ const EditFundingSource: React.FC<IEditFundingSourceProps> = (props) => {
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError).errors
       });
+    } finally {
       setIsSubmitting(false);
     }
   };

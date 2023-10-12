@@ -1,10 +1,11 @@
 import { LoadingButton } from '@mui/lab';
-import { Button, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
+import { Theme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import { Container } from '@mui/system';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -89,12 +90,17 @@ const SamplingSitePage = () => {
   };
 
   const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
-    setIsSubmitting(true);
     try {
+      setIsSubmitting(true);
+
       await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
 
       // Disable cancel prompt so we can navigate away from the page after saving
       setEnableCancelCheck(false);
+
+      // Refresh the context, so the next page loads with the latest data
+      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
       // create complete, navigate back to observations page
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
     } catch (error) {
@@ -104,7 +110,6 @@ const SamplingSitePage = () => {
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -145,6 +150,7 @@ const SamplingSitePage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
+
       <Formik
         innerRef={formikRef}
         initialValues={{
@@ -173,6 +179,8 @@ const SamplingSitePage = () => {
               survey_id={surveyContext.surveyId}
               survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
               is_submitting={isSubmitting}
+              title="New Sampling Site"
+              breadcrumb="Add Sampling Sites"
             />
           </Box>
           <Box display="flex" flex="1 1 auto">

@@ -311,8 +311,17 @@ export const formatLabel = (str: string): string => {
     .join(' ');
 };
 
-export const datesSameNullable = (date1: string | undefined, date2: string | undefined): boolean => {
+/**
+ * Checks if two dates are the same, but safe to use against nullish values.
+ * By default moment(null).isSame(moment(null)) returns false, which is not always desirable.
+ *
+ * @param date1
+ * @param date2
+ * @returns boolean
+ */
+export const datesSameNullable = (date1: string | null | undefined, date2: string | null | undefined): boolean => {
   if (date1 == null && date2 == null) {
+    //Note: intentionally loose equality
     return true;
   } else {
     return moment(date1).isSame(moment(date2));
@@ -335,6 +344,35 @@ export const datesSameNullable = (date1: string | undefined, date2: string | und
  */
 export const pluralize = (quantity: number, word: string, singularSuffix = '', pluralSuffix = 's') => {
   return `${word}${quantity === 1 ? singularSuffix : pluralSuffix}`;
+};
+
+/**
+ * Check if two date ranges overlap. End dates are allowed to be null, which is taken to mean indefinite.
+ * Note that the order of arguments does matter here.
+ *
+ * @example dateRangesOverlap('2019-12-12', null, '2023-01-01', '2023-03-03') => true
+ * @example dateRangesOverlap('2023-01-01', '2023-01-02', '2023-01-01', '2023-03-03') => true
+ * @example dateRangesOverlap('2023-01-01', '2023-01-02', '2023-03-03', '2023-04-04') => false
+ *
+ * @param startDateA
+ * @param endDateA
+ * @param startDateB
+ * @param endDateB
+ * @returns boolean
+ */
+export const dateRangesOverlap = (
+  startDateA: string,
+  endDateA: string | null | undefined,
+  startDateB: string,
+  endDateB: string | null | undefined
+): boolean => {
+  const startA = moment(startDateA);
+  const startB = moment(startDateB);
+
+  const endA = endDateA ? moment(endDateA) : moment('2300-01-01');
+  const endB = endDateB ? moment(endDateB) : moment('2300-01-01');
+
+  return startA.isSameOrBefore(endB) && endA.isSameOrAfter(startB);
 };
 
 /**

@@ -41,17 +41,17 @@ export interface IEditSurveySampleMethodData extends ISurveySampleMethodData {
 }
 
 export const SurveySampleMethodPeriodArrayItemInitialValues = {
-  method_lookup_id: null,
-  survey_sample_period_id: null,
-  survey_sample_method_id: null,
+  method_lookup_id: '' as unknown as null,
+  survey_sample_period_id: '' as unknown as null,
+  survey_sample_method_id: '' as unknown as null,
   start_date: '',
   end_date: ''
 };
 
 export const SurveySampleMethodDataInitialValues = {
-  survey_sample_method_id: null,
-  survey_sample_site_id: null,
-  method_lookup_id: null,
+  survey_sample_method_id: '' as unknown as null,
+  survey_sample_site_id: '' as unknown as null,
+  method_lookup_id: '' as unknown as null,
   description: '',
   periods: [SurveySampleMethodPeriodArrayItemInitialValues]
 };
@@ -106,7 +106,7 @@ const MethodForm = () => {
             name={'method_lookup_id'}
             labelId={'method_lookup_id-label'}
             label={'Method Type'}
-            value={formikProps.values.method_lookup_id}
+            value={values.method_lookup_id}
             displayEmpty
             inputProps={{ id: 'method_lookup_id', 'aria-label': 'Method Type' }}
             onChange={handleChange}
@@ -144,12 +144,12 @@ const MethodForm = () => {
             render={(arrayHelpers: FieldArrayRenderProps) => (
               <>
                 <List disablePadding>
-                  {values.periods?.map((item, index) => {
+                  {values.periods.map((period, index) => {
                     return (
                       <ListItem
                         alignItems="flex-start"
                         disableGutters
-                        key={`${item.start_date}-${item.end_date}`}
+                        key={`sample_period_${period.start_date}-${period.end_date}`}
                         sx={{
                           '& .MuiListItemSecondaryAction-root': {
                             top: '36px'

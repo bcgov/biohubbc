@@ -23,6 +23,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -33,7 +34,8 @@ describe('SurveyPurposeAndMethodologyData', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyPurposeAndMethodologyData />
         </SurveyContext.Provider>
@@ -72,6 +74,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -82,7 +85,8 @@ describe('SurveyPurposeAndMethodologyData', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyPurposeAndMethodologyData />
         </SurveyContext.Provider>

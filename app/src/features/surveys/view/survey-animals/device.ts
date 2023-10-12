@@ -8,7 +8,7 @@ export type IDeploymentTimespan = InferType<typeof AnimalDeploymentTimespanSchem
 
 export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
 
-export type ITelemetryPointCollection = { points: FeatureCollection, tracks: FeatureCollection };
+export type ITelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
 
 const req = 'Required.';
 const mustBeNum = 'Must be a number';
@@ -16,8 +16,8 @@ const numSchema = yup.number().typeError(mustBeNum);
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   deployment_id: yup.string(),
-  attachment_start: yup.string().required(req),
-  attachment_end: yup.string()
+  attachment_start: yup.string().isValidDateString().required(req).typeError(req),
+  attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start').nullable()
 });
 
 export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
@@ -33,8 +33,8 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   assignment_id: yup.string().required(),
   collar_id: yup.string().required(),
   critter_id: yup.string().required(),
-  attachment_start: yup.string().required(),
-  attachment_end: yup.string(),
+  attachment_start: yup.string().isValidDateString().required(),
+  attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start'),
   deployment_id: yup.string().required(),
   device_id: yup.number().required(),
   device_make: yup.string().required(),

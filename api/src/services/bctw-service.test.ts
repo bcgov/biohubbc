@@ -7,6 +7,7 @@ import sinonChai from 'sinon-chai';
 import {
   BctwService,
   BCTW_API_HOST,
+  DELETE_DEPLOYMENT_ENDPOINT,
   DEPLOY_DEVICE_ENDPOINT,
   GET_CODE_ENDPOINT,
   GET_COLLAR_VENDORS_ENDPOINT,
@@ -15,13 +16,13 @@ import {
   GET_DEPLOYMENTS_ENDPOINT,
   GET_DEVICE_DETAILS,
   GET_KEYX_STATUS_ENDPOINT,
+  GET_TELEMETRY_POINTS_ENDPOINT,
+  GET_TELEMETRY_TRACKS_ENDPOINT,
   HEALTH_ENDPOINT,
   IDeployDevice,
   IDeploymentUpdate,
   UPDATE_DEPLOYMENT_ENDPOINT,
-  UPSERT_DEVICE_ENDPOINT,
-  GET_TELEMETRY_POINTS_ENDPOINT,
-  GET_TELEMETRY_TRACKS_ENDPOINT
+  UPSERT_DEVICE_ENDPOINT
 } from './bctw-service';
 import { KeycloakService } from './keycloak-service';
 
@@ -301,6 +302,16 @@ describe('BctwService', () => {
           start: new Date().toISOString(),
           end: new Date().toISOString()
         });
+      });
+    });
+
+    describe('deleteDeployment', () => {
+      it('should sent a delete request', async () => {
+        const mockAxios = sinon.stub(bctwService.axiosInstance, 'delete').resolves();
+
+        await bctwService.deleteDeployment('asdf');
+
+        expect(mockAxios).to.have.been.calledOnceWith(`${DELETE_DEPLOYMENT_ENDPOINT}/asdf`);
       });
     });
   });

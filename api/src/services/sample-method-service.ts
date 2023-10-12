@@ -42,6 +42,13 @@ export class SampleMethodService extends DBService {
    * @memberof SampleMethodService
    */
   async deleteSampleMethodRecord(surveySampleMethodId: number): Promise<SampleMethodRecord> {
+    const samplePeriodService = new SamplePeriodService(this.connection);
+
+    // Delete all associated sample periods
+    const existingSamplePeriods = await samplePeriodService.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+    const periodsToDelete = existingSamplePeriods.map((item) => item.survey_sample_period_id);
+    await samplePeriodService.deleteSamplePeriodRecords(periodsToDelete);
+
     return this.sampleMethodRepository.deleteSampleMethodRecord(surveySampleMethodId);
   }
 
@@ -72,6 +79,38 @@ export class SampleMethodService extends DBService {
   }
 
   /**
+   * Fetches and compares any existing sample methods for a given sample site id.
+   * Any sample methods not found in the given array will be deleted.
+   *
+   * @param {number} surveySampleSiteId
+   * @param {UpdateSampleMethodRecord[]} newMethods
+   * @memberof SampleMethodService
+   */
+  async deleteSampleMethodsNotInArray(surveySampleSiteId: number, newMethods: UpdateSampleMethodRecord[]) {
+    //Get any existing methods for the sample site
+    const existingMethods = await this.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+
+    //Compare input and existing for methods to delete
+    // Any existing methods that are not found in the new methods being passed in will be collected for deletion
+    const existingMethodsToDelete = existingMethods.filter((existingMethod) => {
+      return !newMethods.find(
+        (incomingMethod) => incomingMethod.survey_sample_method_id === existingMethod.survey_sample_method_id
+      );
+    });
+
+    // Delete any methods not found in the passed in array
+    if (existingMethodsToDelete.length > 0) {
+      const promises: Promise<any>[] = [];
+
+      existingMethodsToDelete.forEach((method: any) => {
+        promises.push(this.deleteSampleMethodRecord(method.survey_sample_method_id));
+      });
+
+      await Promise.all(promises);
+    }
+  }
+
+  /**
    * updates a survey Sample method.
    *
    * @param {InsertSampleMethodRecord} sampleMethod
@@ -79,6 +118,27 @@ export class SampleMethodService extends DBService {
    * @memberof SampleMethodService
    */
   async updateSampleMethod(sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
+    const samplePeriodService = new SamplePeriodService(this.connection);
+
+    // Check for any sample periods to delete
+    await samplePeriodService.deleteSamplePeriodsNotInArray(sampleMethod.survey_sample_method_id, sampleMethod.periods);
+
+    // Loop through all new sample periods
+    // For each sample period, check if it exists in the existing list
+    // If it does, update it, otherwise create it
+    for (const item of sampleMethod.periods) {
+      if (item.survey_sample_period_id) {
+        await samplePeriodService.updateSamplePeriod(item);
+      } else {
+        const samplePeriod = {
+          survey_sample_method_id: sampleMethod.survey_sample_method_id,
+          start_date: item.start_date,
+          end_date: item.end_date
+        };
+        await samplePeriodService.insertSamplePeriod(samplePeriod);
+      }
+    }
+
     return this.sampleMethodRepository.updateSampleMethod(sampleMethod);
   }
 }
