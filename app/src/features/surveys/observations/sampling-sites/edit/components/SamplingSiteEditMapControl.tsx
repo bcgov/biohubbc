@@ -28,6 +28,7 @@ import {
   handleKMLUpload,
   handleShapeFileUpload
 } from 'utils/mapBoundaryUploadHelpers';
+import { pluralize } from 'utils/Utils';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -59,7 +60,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   const classes = useStyles();
   const surveyContext = useContext(SurveyContext);
   const urlParams: Record<string, string | number | undefined> = useParams();
-  const surveySampleSiteId = Number(urlParams['survey_sample_site_id']);
+  const surveySampleSiteId: number | null = Number(urlParams['survey_sample_site_id']) || null;
 
   const sampleSiteData = surveyContext.sampleSiteDataLoader.data
     ? surveyContext.sampleSiteDataLoader.data.sampleSites.find((x) => x.survey_sample_site_id === surveySampleSiteId)
@@ -128,9 +129,14 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
       <Box component="fieldset">
         <Typography component="legend" data-testid="funding-source-list-found">
           Site Location Preview &zwnj;
-          <Typography component="span" color="textSecondary" fontWeight="400">
-            {samplingSiteGeoJsonFeatures.length > 0 ? `(${samplingSiteGeoJsonFeatures.length} locations detected)` : ''}
-          </Typography>
+          {samplingSiteGeoJsonFeatures.length > 0 && (
+            <Typography component="span" color="textSecondary" fontWeight="400">
+              {`(${samplingSiteGeoJsonFeatures.length} ${pluralize(
+                samplingSiteGeoJsonFeatures.length,
+                'location'
+              )} detected)`}
+            </Typography>
+          )}
         </Typography>
         {get(errors, name) && (
           <Alert

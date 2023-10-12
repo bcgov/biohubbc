@@ -25,6 +25,7 @@ import {
   handleKMLUpload,
   handleShapeFileUpload
 } from 'utils/mapBoundaryUploadHelpers';
+import { pluralize } from 'utils/Utils';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -119,11 +120,14 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
         <Box component="fieldset">
           <Typography component="legend" data-testid="funding-source-list-found">
             Site Location Preview &zwnj;
-            <Typography component="span" color="textSecondary" fontWeight="400">
-              {samplingSiteGeoJsonFeatures.length > 0
-                ? `(${samplingSiteGeoJsonFeatures.length} locations detected)`
-                : ''}
-            </Typography>
+            {samplingSiteGeoJsonFeatures.length > 0 && (
+              <Typography component="span" color="textSecondary" fontWeight="400">
+                {`(${samplingSiteGeoJsonFeatures.length} ${pluralize(
+                  samplingSiteGeoJsonFeatures.length,
+                  'location'
+                )} detected)`}
+              </Typography>
+            )}
           </Typography>
           <Paper variant="outlined">
             <Box position="relative" height={500}>

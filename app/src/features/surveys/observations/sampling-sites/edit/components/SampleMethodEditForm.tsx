@@ -53,9 +53,9 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
 
   const handleDelete = () => {
     if (editData) {
-      const data = values.sampleSite.methods;
-      data.splice(editData.index, 1);
-      setFieldValue('methods', data);
+      const methods = values.sampleSite.methods;
+      methods.splice(editData.index, 1);
+      setFieldValue('methods', methods);
     }
     setAnchorEl(null);
   };

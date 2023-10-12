@@ -12,7 +12,7 @@ import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/s
 import { FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import { useContext } from 'react';
-import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 import SampleMethodEditForm from './SampleMethodEditForm';
 import SampleSiteGeneralInformationForm from './SampleSiteGeneralInformationForm';
@@ -65,7 +65,6 @@ export const samplingSiteYupSchema = yup.object({
 
 const SampleSiteEditForm: React.FC<ISampleSiteEditForm> = (props) => {
   const classes = useStyles();
-  const history = useHistory();
 
   const surveyContext = useContext(SurveyContext);
 
@@ -114,11 +113,8 @@ const SampleSiteEditForm: React.FC<ISampleSiteEditForm> = (props) => {
               <Button
                 variant="outlined"
                 color="primary"
-                onClick={() => {
-                  history.push(
-                    `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
-                  );
-                }}
+                component={RouterLink}
+                to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}
                 className={classes.actionButton}>
                 Cancel
               </Button>
