@@ -1,6 +1,7 @@
 import { LoadingButton } from '@mui/lab';
 import { Breadcrumbs, Button, Paper, Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
@@ -41,6 +42,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
           pb: 3,
           px: 3
         }}>
+        <Container maxWidth="xl">
         <Breadcrumbs aria-label="breadcrumb">
           <Link
             component={RouterLink}
@@ -94,6 +96,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             </Button>
           </Box>
         </Box>
+        </Container>
       </Paper>
     </>
   );

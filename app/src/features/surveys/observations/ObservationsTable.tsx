@@ -15,7 +15,7 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import moment from 'moment';
 import { useContext, useEffect, useState } from 'react';
-import { grey } from '@mui/material/colors';
+// import { grey } from '@mui/material/colors';
 
 export interface ISampleSiteSelectProps {
   survey_sample_site_id: number;
@@ -275,10 +275,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'actions',
       headerName: '',
       type: 'actions',
-      width: 96,
+      width: 70,
       disableColumnMenu: true,
       resizable: false,
-      cellClassName: 'test',
+      cellClassName: 'pinnedColumn',
       getActions: (params) => [
         <IconButton
           onClick={(event) => {
@@ -374,10 +374,15 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         localeText={{
           noRowsLabel: 'No Records'
         }}
+        getRowHeight={() => 'auto'}
         sx={{
-          background: '#fff',
           border: 'none',
-          '& .test': {
+          '& .MuiDataGrid-columnHeaderTitle': {
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            color: 'text.secondary'
+          },
+          '& .pinnedColumn': {
             position: 'sticky',
             right: 0,
             top: 0,
@@ -387,30 +392,41 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           '& .MuiDataGrid-columnHeaders': {
             position: 'relative'
           },
+          '& .MuiDataGrid-columnHeaders:after': {
+            content: "''",
+            position: 'absolute',
+            top: '20px',
+            right: 0,
+            width: '70px',
+            height: '60px',
+            background: '#fff'
+          },
           '& .MuiDataGrid-actionsCell': {
             gap: 0
+          },
+          '& .MuiDataGrid-cell': {
+            p: 1
           },
           '& .MuiDataGrid-cell.MuiDataGrid-cell--editing:focus-within': {
             outline: 'none'
           },
           '& .MuiDataGrid-cell.MuiDataGrid-cell--editing': {
-            padding: '6px',
-            background: grey[100]
+            px: 0.5,
+            py: 1
           },
           '& .MuiInputBase-root': {
             height: '40px',
             borderRadius: '4px',
             background: '#fff',
+            fontSize: '0.875rem',
             '&.MuiDataGrid-editInputCell': {
               padding: 0
             }
           },
           '& .MuiOutlinedInput-root': {
-            height: '40px', 
             borderRadius: '4px',
             background: '#fff',
             border: 'none',
-            fontSize: '14px',
             '&:hover': {
               borderColor: 'blue'
             }
@@ -421,22 +437,22 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               border: '1px solid blue'
             }
           },
-          '& .MuiDataGrid-editInputCell:hover': {
-            border: '1px solid blue'
-          },
+          // '& .MuiDataGrid-editInputCell:hover': {
+          //   border: '1px solid blue'
+          // },
           '& .MuiDataGrid-row': {
             '&--editing': {
               boxShadow: 'none'
             }
           },
-          '& .MuiOutlinedInput-root:hover': {
-            "& > fieldset": {
-              border: '1px solid blue',
-            }
-          },
-          '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-            border: '1px solid blue'
-          }
+          // '& .MuiOutlinedInput-root:hover': {
+          //   "& > fieldset": {
+          //     border: '1px solid blue',
+          //   }
+          // },
+          // '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+          //   border: '1px solid blue'
+          // }
         }}
       />
     </>

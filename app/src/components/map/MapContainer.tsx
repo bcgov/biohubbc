@@ -163,7 +163,7 @@ const MapContainer = (props: IMapContainerProps) => {
       zoom={zoom ?? 5}
       maxZoom={17}
       fullscreenControl={true}
-      scrollWheelZoom={scrollWheelZoom ?? true}>
+      scrollWheelZoom={scrollWheelZoom ?? false}>
       <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={Boolean(scrollWheelZoom)} />
 
       <SetMapBounds bounds={bounds} />

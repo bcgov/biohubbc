@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -75,9 +75,11 @@ const SamplingSiteList = () => {
           }}>
           <Typography
             sx={{
-              flexGrow: '1'
+              flexGrow: '1',
+              fontSize: '1.125rem',
+              fontWeight: 700
             }}>
-            <strong>Sampling Sites</strong>
+            Sampling Sites
           </Typography>
           <Button
             sx={{
@@ -97,7 +99,6 @@ const SamplingSiteList = () => {
           flex="1 1 auto"
           sx={{
             overflowY: 'scroll',
-            background: grey[50],
             '& .MuiAccordion-root + .MuiAccordion-root': {
               borderTopStyle: 'solid',
               borderTopWidth: '1px',
@@ -108,12 +109,16 @@ const SamplingSiteList = () => {
             sx={{
               position: 'absolute',
               width: '100%',
-              height: '100%'
+              height: '100%',
+              p: 1
             }}>
+
             {/* Display spinner if data loaders are still waiting for a response */}
-            {!surveyContext.sampleSiteDataLoader.data ||
+            {true && !surveyContext.sampleSiteDataLoader.data ||
               (surveyContext.sampleSiteDataLoader.isLoading && !codesContext.codesDataLoader.data) ||
-              (codesContext.codesDataLoader.isLoading && <CircularProgress size={40} />)}
+              (codesContext.codesDataLoader.isLoading &&
+                <CircularProgress size={40} />
+              )}
 
             {/* Display text if the sample site data loader has no items in it */}
             {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
@@ -124,27 +129,34 @@ const SamplingSiteList = () => {
             {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
               return (
                 <Accordion
-                  square
-                  disableGutters
-                  key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
                   sx={{
-                    boxShadow: 'none',
-                    '&:before': {
-                      display: 'none'
-                    }
-                  }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" py={1} px={3}>
+                    boxShadow: 'none'
+                  }}
+                  key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}>
+                  <Box display="flex" overflow="hidden" alignItems="center" pr={1.5}
+                    sx={{
+                      background: grey[50],
+                    }}
+                  >
                     <AccordionSummary
+                      expandIcon={<Icon path={mdiChevronDown} size={1} />}
+                      aria-controls="panel1bh-content"
                       sx={{
-                        p: 0
+                        flex: '1 1 auto',
+                        overflow: 'hidden',
+                        py: 0.25,
+                        pr: 1.5,
+                        gap: '16px',
+                        '& .MuiAccordionSummary-content': {
+                          flex: '1 1 auto',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                        }
                       }}
-                      aria-controls="panel1bh-content">
-                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                        {sampleSite.name}
-                      </Typography>
+                      >
+                      <Typography sx={{overflow: 'hidden', fontWeight: 700, textOverflow: 'ellipsis'}}>{sampleSite.name}</Typography>
                     </AccordionSummary>
                     <IconButton
-                      edge="end"
                       onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                         handleMenuClick(event, sampleSite.survey_sample_site_id)
                       }
@@ -154,36 +166,34 @@ const SamplingSiteList = () => {
                   </Box>
                   <AccordionDetails
                     sx={{
-                      pt: 0
+                      pt: 0,
+                      pb: 0
                     }}>
-                    <List component="div" disablePadding>
+                    <List disablePadding>
                       {sampleSite.sample_methods?.map((sampleMethod) => {
                         return (
-                          <ListItem
-                            key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
-                            sx={{
-                              background: grey[200]
-                            }}>
-                            <ListItemText>
-                              <Typography
-                                sx={{
-                                  background: grey[200],
-                                  p: 1
-                                }}
-                                variant="body2">
-                                {getCodesName(
-                                  codesContext.codesDataLoader.data,
-                                  'sample_methods',
-                                  sampleMethod.method_lookup_id
-                                )}
-                              </Typography>
+                          <>
+                            <ListItem disableGutters divider
+                              key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
+                              sx={{
+                                display: 'block'
+                              }}>
+                              <ListItemText
+                                primary=
+                                  {getCodesName(
+                                    codesContext.codesDataLoader.data,
+                                    'sample_methods',
+                                    sampleMethod.method_lookup_id
+                                  )}
+                              >
+                              </ListItemText>
                               <List disablePadding>
                                 {sampleMethod.sample_periods?.map((samplePeriod) => {
                                   return (
-                                    <ListItem
+                                    <ListItem divider
                                       key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
                                       <ListItemText>
-                                        <Typography variant="body2">
+                                        <Typography variant="body2" color="textSecondary">
                                           {samplePeriod.start_date} to {samplePeriod.end_date}
                                         </Typography>
                                       </ListItemText>
@@ -191,8 +201,8 @@ const SamplingSiteList = () => {
                                   );
                                 })}
                               </List>
-                            </ListItemText>
-                          </ListItem>
+                            </ListItem>
+                          </>
                         );
                       })}
                     </List>

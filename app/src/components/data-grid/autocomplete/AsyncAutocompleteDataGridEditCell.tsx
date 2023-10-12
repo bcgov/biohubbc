@@ -1,5 +1,3 @@
-import { mdiMagnify } from '@mdi/js';
-import Icon from '@mdi/react';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -171,15 +169,10 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
         <TextField
           {...params}
           variant="outlined"
-          placeholder={'Type to search...'}
+          // placeholder={'Type to search...'}
           fullWidth
           InputProps={{
             ...params.InputProps,
-            startAdornment: (
-              <Box mt="6px">
-                <Icon path={mdiMagnify} size={1}></Icon>
-              </Box>
-            ),
             endAdornment: (
               <>
                 {isLoading ? <CircularProgress color="inherit" size={20} /> : null}

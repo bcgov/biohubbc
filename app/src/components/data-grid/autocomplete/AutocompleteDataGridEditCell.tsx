@@ -99,7 +99,6 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
         <TextField
           {...params}
           variant="outlined"
-          placeholder={'Type to filter...'}
           fullWidth
           InputProps={{
             ...params.InputProps

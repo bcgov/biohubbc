@@ -103,9 +103,12 @@ const ObservationComponent = () => {
           }}>
           <Typography
             sx={{
-              flexGrow: '1'
-            }}>
-            <strong>Observations</strong>
+              flexGrow: '1',
+              fontSize: '1.125rem',
+              fontWeight: 700
+            }}
+          >
+            Observations
           </Typography>
           {showSaveButton && (
             <>
@@ -136,8 +139,9 @@ const ObservationComponent = () => {
           </Button> */}
 
         </Toolbar>
-        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
-          <Box position="absolute" width="100%" height="100%" px={2}>
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative"
+        >
+          <Box position="absolute" width="100%" height="100%" p={1} px={2}>
             <ObservationsTable
               sample_sites={sampleSites}
               sample_methods={sampleMethods}
