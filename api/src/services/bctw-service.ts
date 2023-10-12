@@ -211,7 +211,6 @@ export class BctwService {
       const params = new URLSearchParams(queryParams);
       url += `?${params.toString()}`;
     }
-    console.log('bctw makeGetRequest to ' + this.axiosInstance.defaults.baseURL + url);
     const response = await this.axiosInstance.get(url);
     return response.data;
   }

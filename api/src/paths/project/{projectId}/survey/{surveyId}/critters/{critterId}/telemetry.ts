@@ -7,6 +7,7 @@ import { BctwService } from '../../../../../../../services/bctw-service';
 import { ICritterbaseUser } from '../../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../../utils/logger';
+import { HTTP400, HTTPError, HTTPErrorType } from '../../../../../../../errors/http-error';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/telemetry');
 export const GET: Operation = [
@@ -41,7 +42,7 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer'
       },
       required: true
     },
@@ -49,8 +50,9 @@ GET.apiDoc = {
       in: 'path',
       name: 'critterId',
       schema: {
-        type: 'number'
-      }
+        type: 'integer'
+      },
+      required: true
     },
     {
       in: 'query',
@@ -283,7 +285,7 @@ export function getCritterTelemetry(): RequestHandler {
       const surveyCritters = await surveyCritterService.getCrittersInSurvey(surveyId);
       const thisCritter = surveyCritters.find((a) => a.critter_id === critterId);
       if (!thisCritter) {
-        throw Error('Specified critter was not part of this survey.');
+        throw new HTTP400('Specified critter was not part of this survey.');
       }
       const points = await bctw.getCritterTelemetryPoints(
         thisCritter.critterbase_critter_id,

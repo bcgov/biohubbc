@@ -27,18 +27,24 @@ const Legend = ({ hasData, colourMap }: ILegend) => {
       <div className="leaflet-control leaflet-bar">
         <Paper sx={{ padding: 2 }}>
           {hasData ? (
-            colourMap.map((a, i) => (
+            colourMap.map((deploymentAndColour, idx) => (
               <Box
-                key={a.deployment_id}
+                key={deploymentAndColour.deployment_id}
                 display={'flex'}
                 flexDirection={'row'}
                 alignItems={'center'}
-                marginTop={i > 0 ? 1 : 0} /*<- Any better way to do this? */
+                marginTop={idx > 0 ? 1 : 0} /*<- Any better way to do this? */
               >
-                <Box sx={{ marginRight: 1, backgroundColor: a.colour, height: '16px', width: '16px' }} />
-                <Typography>{`Device ID: ${a.device_id}, deployed from ${moment(a.attachment_start).format(
-                  'DD-MM-YYYY'
-                )} to ${a.attachment_end ? moment(a.attachment_end).format('DD-MM-YYYY') : 'indefinite'}`}</Typography>
+                <Box
+                  sx={{ marginRight: 1, backgroundColor: deploymentAndColour.colour, height: '16px', width: '16px' }}
+                />
+                <Typography>{`Device ID: ${deploymentAndColour.device_id}, deployed from ${moment(
+                  deploymentAndColour.attachment_start
+                ).format('DD-MM-YYYY')} to ${
+                  deploymentAndColour.attachment_end
+                    ? moment(deploymentAndColour.attachment_end).format('DD-MM-YYYY')
+                    : 'indefinite'
+                }`}</Typography>
               </Box>
             ))
           ) : (
@@ -81,10 +87,10 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
 
   const mapBounds = useMemo(() => {
     const bounds = new L.LatLngBounds([]);
-    telemetryData?.points.features.forEach((a) => {
-      if (a.geometry.type === 'Point') {
-        const lat = a.geometry.coordinates[1];
-        const lon = a.geometry.coordinates[0];
+    telemetryData?.points.features.forEach((feature) => {
+      if (feature.geometry.type === 'Point') {
+        const lat = feature.geometry.coordinates[1];
+        const lon = feature.geometry.coordinates[0];
         if (lon > -140 && lon < -110 && lat > 45 && lat < 60) {
           //We filter points that are clearly bad values out of the map bounds so that we don't wind up too zoomed out due to one wrong point.
           //These values are still present on the map if you move around though.
@@ -109,8 +115,12 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
       scrollWheelZoom={true}
       bounds={mapBounds}
       additionalLayers={[
-        ...features.map((a) => (
-          <GeoJSON pointToLayer={point} style={{ color: a.properties?.colour }} key={v4()} data={a}></GeoJSON>
+        ...features.map((feature) => (
+          <GeoJSON
+            pointToLayer={point}
+            style={{ color: feature.properties?.colour }}
+            key={v4()}
+            data={feature}></GeoJSON>
         )),
         <Legend hasData={features.length > 0} colourMap={legendColours} />
       ]}
