@@ -15,7 +15,7 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import moment from 'moment';
 import { useContext, useEffect, useState } from 'react';
-// import { grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 
 export interface ISampleSiteSelectProps {
   survey_sample_site_id: number;
@@ -423,35 +423,46 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               padding: 0
             }
           },
+          '& .MuiDataGrid-editInputCell:hover': {
+            borderColor: 'primary.main'
+          },
+          '& .MuiDataGrid-editInputCell': {
+            border: '1px solid #ccc',
+            '&.Mui-focused': {
+              borderColor: 'primary.main',
+              outlineWidth: '2px',
+              outlineStyle: 'solid',
+              outlineColor: 'primary.main',
+              outlineOffset: '-2px'
+            }
+          },
           '& .MuiOutlinedInput-root': {
             borderRadius: '4px',
             background: '#fff',
             border: 'none',
             '&:hover': {
-              borderColor: 'blue'
+              borderColor: 'primary.main'
             }
           },
-          '& .MuiDataGrid-editInputCell, .MuiOutlinedInput-notchedOutline': {
+          '& .MuiOutlinedInput-root:hover': {
+            "& > fieldset": {
+              border: '1px solid' + 'primary.main'
+            }
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
             border: '1px solid #ccc',
             '&.Mui-focused': {
-              border: '1px solid blue'
+              borderColor: 'primary.main'
             }
           },
-          // '& .MuiDataGrid-editInputCell:hover': {
-          //   border: '1px solid blue'
-          // },
           '& .MuiDataGrid-row': {
             '&--editing': {
-              boxShadow: 'none'
+              boxShadow: 'none',
+              background: grey[100]
             }
           },
-          // '& .MuiOutlinedInput-root:hover': {
-          //   "& > fieldset": {
-          //     border: '1px solid blue',
-          //   }
-          // },
           // '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-          //   border: '1px solid blue'
+          //   border: '1px solid' + 'primary.main'
           // }
         }}
       />

@@ -98,6 +98,7 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
       renderInput={(params) => (
         <TextField
           {...params}
+          size="small"
           variant="outlined"
           fullWidth
           InputProps={{

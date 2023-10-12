@@ -141,7 +141,7 @@ const ObservationComponent = () => {
         </Toolbar>
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative"
         >
-          <Box position="absolute" width="100%" height="100%" p={1} px={2}>
+          <Box position="absolute" width="100%" height="100%" pt={0.25} pb={1} px={2}>
             <ObservationsTable
               sample_sites={sampleSites}
               sample_methods={sampleMethods}
