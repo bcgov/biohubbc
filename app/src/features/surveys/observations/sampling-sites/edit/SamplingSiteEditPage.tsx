@@ -5,15 +5,21 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { FormikProps } from 'formik';
+import { Formik, FormikProps } from 'formik';
+import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import SamplingSiteHeader from '../SamplingSiteHeader';
-import SampleSiteEditForm, { IEditSamplingSiteRequest } from './components/SampleSiteEditForm';
+import SampleSiteEditForm, { IEditSamplingSiteRequest, samplingSiteYupSchema } from './components/SampleSiteEditForm';
 
+/**
+ * Page to edit a sampling site.
+ *
+ * @return {*}
+ */
 const SamplingSiteEditPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
@@ -27,6 +33,46 @@ const SamplingSiteEditPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [initialFormData, setInitialFormData] = useState<IEditSamplingSiteRequest>({
+    sampleSite: {
+      survey_id: surveyContext.surveyId,
+      name: '',
+      description: '',
+      survey_sample_sites: [],
+      methods: []
+    }
+  });
+
+  // Initial load of the sampling site data
+  useEffect(() => {
+    if (surveyContext.sampleSiteDataLoader.data) {
+      const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
+        (x) => x.survey_sample_site_id === surveySampleSiteId
+      );
+
+      if (data !== undefined) {
+        const formInitialValues: IEditSamplingSiteRequest = {
+          sampleSite: {
+            name: data.name,
+            description: data.description,
+            survey_id: data.survey_id,
+            survey_sample_sites: [data.geojson as unknown as Feature],
+            methods:
+              data.sample_methods?.map((item) => {
+                return {
+                  ...item,
+                  periods: item.sample_periods || []
+                };
+              }) || []
+          }
+        };
+        setInitialFormData(formInitialValues);
+        formikRef.current?.setValues(formInitialValues);
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.sampleSiteDataLoader]);
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -44,22 +90,31 @@ const SamplingSiteEditPage = () => {
   };
 
   const handleSubmit = async (values: IEditSamplingSiteRequest) => {
-    try {
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
+    try {
+      // create edit request
+      const editSampleSite: IEditSamplingSiteRequest = {
+        sampleSite: {
+          name: values.sampleSite.name,
+          description: values.sampleSite.description,
+          survey_id: values.sampleSite.survey_id,
+          survey_sample_sites: values.sampleSite.survey_sample_sites as unknown as Feature[],
+          geojson: values.sampleSite.survey_sample_sites[0],
+          methods: values.sampleSite.methods
+        }
+      };
+
+      // send edit request
       await biohubApi.samplingSite.editSampleSite(
         surveyContext.projectId,
         surveyContext.surveyId,
         surveySampleSiteId,
-        values
+        editSampleSite
       );
 
       // Disable cancel prompt so we can navigate away from the page after saving
       setEnableCancelCheck(false);
-
-      // Refresh the context, so the next page loads with the latest data
-      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-
       // create complete, navigate back to observations page
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
     } catch (error) {
@@ -69,6 +124,7 @@ const SamplingSiteEditPage = () => {
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -114,29 +170,38 @@ const SamplingSiteEditPage = () => {
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
 
-      <Box display="flex" flexDirection="column" height="100%">
-        <Box
-          position="sticky"
-          top="0"
-          zIndex={1001}
-          sx={{
-            borderBottomStyle: 'solid',
-            borderBottomWidth: '1px',
-            borderBottomColor: grey[300]
-          }}>
-          <SamplingSiteHeader
-            project_id={surveyContext.projectId}
-            survey_id={surveyContext.surveyId}
-            survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            is_submitting={isSubmitting}
-            title="Edit Sampling Site"
-            breadcrumb="Edit Sampling Sites"
-          />
+      <Formik
+        innerRef={formikRef}
+        initialValues={initialFormData}
+        validationSchema={samplingSiteYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        enableReinitialize
+        onSubmit={handleSubmit}>
+        <Box display="flex" flexDirection="column" height="100%">
+          <Box
+            position="sticky"
+            top="0"
+            zIndex={1001}
+            sx={{
+              borderBottomStyle: 'solid',
+              borderBottomWidth: '1px',
+              borderBottomColor: grey[300]
+            }}>
+            <SamplingSiteHeader
+              project_id={surveyContext.projectId}
+              survey_id={surveyContext.surveyId}
+              survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+              is_submitting={isSubmitting}
+              title={`Edit Sampling Site > ${initialFormData.sampleSite.name}`}
+              breadcrumb="Edit Sampling Sites"
+            />
+          </Box>
+          <Box display="flex" flex="1 1 auto">
+            <SampleSiteEditForm formikRef={formikRef} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
+          </Box>
         </Box>
-        <Box display="flex" flex="1 1 auto">
-          <SampleSiteEditForm formikRef={formikRef} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
-        </Box>
-      </Box>
+      </Formik>
     </>
   );
 };

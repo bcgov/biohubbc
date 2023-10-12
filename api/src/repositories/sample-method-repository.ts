@@ -74,7 +74,7 @@ export class SampleMethodRepository extends BaseRepository {
       RETURNING
         *;`;
 
-    const response = await this.connection.sql(sql, SampleMethodRecord);
+    const response = await this.connection.sql(sql);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update sample method', [
