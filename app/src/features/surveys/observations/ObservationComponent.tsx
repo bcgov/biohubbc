@@ -17,6 +17,8 @@ import ObservationsTable, {
 } from 'features/surveys/observations/ObservationsTable';
 import { useContext, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
+import Collapse from '@mui/material/Collapse';
+import { TransitionGroup } from 'react-transition-group';
 
 const ObservationComponent = () => {
   const sampleSites: ISampleSiteSelectProps[] = [];
@@ -97,7 +99,10 @@ const ObservationComponent = () => {
           sx={{
             flex: '0 0 auto',
             borderBottom: '1px solid #ccc',
-            '& Button + Button': {
+            '& button': {
+              minWidth: '6rem'
+            },
+            '& button + button': {
               ml: 1
             }
           }}>
@@ -110,23 +115,40 @@ const ObservationComponent = () => {
           >
             Observations
           </Typography>
-          {showSaveButton && (
-            <>
-              <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
-                Save
-              </LoadingButton>
-              <Button variant="contained" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
-                Discard Changes
-              </Button>
-            </>
-          )}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => observationsContext.createNewRecord()}>
-            Add Record
-          </Button>
+          
+          <Box
+            sx={{
+              '& div:first-of-type': {
+                display: 'flex',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap'
+              }
+            }}
+          >
+          <TransitionGroup>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => observationsContext.createNewRecord()}>
+              Add Record
+            </Button>
+            {showSaveButton && (
+              
+              <Collapse orientation="horizontal">
+                  <Box ml={1} whiteSpace="nowrap">
+                    <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
+                      Save
+                    </LoadingButton>
+                    <Button variant="outlined" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
+                      Discard Changes
+                    </Button>
+                  </Box>
+                  </Collapse>
+              )}
+          </TransitionGroup>
+          </Box>
+
 
           {/*TODO: FUTURE FUNCTIONALITY */}
           {/* <Button
