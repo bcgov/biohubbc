@@ -281,12 +281,15 @@ describe('BctwService', () => {
       it('should send a get request', async () => {
         const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
-        await bctwService.getCritterTelemetryPoints('asdf', new Date(), new Date());
+        const startDate = new Date();
+        const endDate = new Date();
+
+        await bctwService.getCritterTelemetryPoints('asdf', startDate, endDate);
 
         expect(mockGetRequest).to.have.been.calledOnceWith(GET_TELEMETRY_POINTS_ENDPOINT, {
           critter_id: 'asdf',
-          start: new Date().toISOString(),
-          end: new Date().toISOString()
+          start: startDate.toISOString(),
+          end: endDate.toISOString()
         });
       });
     });
@@ -295,12 +298,15 @@ describe('BctwService', () => {
       it('should send a get request', async () => {
         const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
-        await bctwService.getCritterTelemetryTracks('asdf', new Date(), new Date());
+        const startDate = new Date();
+        const endDate = new Date();
+
+        await bctwService.getCritterTelemetryTracks('asdf', startDate, endDate);
 
         expect(mockGetRequest).to.have.been.calledOnceWith(GET_TELEMETRY_TRACKS_ENDPOINT, {
           critter_id: 'asdf',
-          start: new Date().toISOString(),
-          end: new Date().toISOString()
+          start: startDate.toISOString(),
+          end: endDate.toISOString()
         });
       });
     });
