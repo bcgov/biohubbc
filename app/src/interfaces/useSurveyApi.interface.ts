@@ -352,7 +352,7 @@ export interface IGetSampleLocationRecord {
   survey_id: number;
   name: string;
   description: string;
-  geojson: Feature[];
+  geojson: Feature;
   geography: string;
   create_date: string;
   create_user: number;

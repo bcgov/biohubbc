@@ -45,6 +45,17 @@ export class SamplePeriodService extends DBService {
   }
 
   /**
+   * Deletes multiple Survey Sample Periods for a given array of period ids.
+   *
+   * @param {number[]} periodsToDelete an array of period ids to delete
+   * @returns {*} {Promise<SamplePeriodRecord[]>} an array of promises for the deleted periods
+   * @memberof SamplePeriodService
+   */
+  async deleteSamplePeriodRecords(periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
+    return this.samplePeriodRepository.deleteSamplePeriods(periodsToDelete);
+  }
+
+  /**
    * Inserts survey Sample Period.
    *
    * @param {InsertSamplePeriodRecord} samplePeriod
@@ -64,5 +75,32 @@ export class SamplePeriodService extends DBService {
    */
   async updateSamplePeriod(samplePeriod: UpdateSamplePeriodRecord): Promise<SamplePeriodRecord> {
     return this.samplePeriodRepository.updateSamplePeriod(samplePeriod);
+  }
+
+  /**
+   * Fetches and compares any existing sample periods for a given sample method id.
+   * Any sample periods not found in the given array will be deleted.
+   *
+   * @param {number} surveySampleMethodId
+   * @param {UpdateSampleMethodRecord[]} newPeriod
+   * @memberof SamplePeriodService
+   */
+  async deleteSamplePeriodsNotInArray(surveySampleMethodId: number, newPeriod: UpdateSamplePeriodRecord[]) {
+    // Get any existing Period for the given sample method
+    const existingPeriods = await this.getSamplePeriodsForSurveyMethodId(surveySampleMethodId);
+
+    // Compare input and existing for Period to delete
+    // Any existing periods that are not found in the new Periods being passed in will be collected for deletion
+    const existingPeriodToDelete = existingPeriods.filter((existingPeriod) => {
+      return !newPeriod.find(
+        (incomingMethod) => incomingMethod.survey_sample_period_id === existingPeriod.survey_sample_period_id
+      );
+    });
+
+    // Delete any Periods not found in the passed in array
+    if (existingPeriodToDelete.length > 0) {
+      const idsToDelete = existingPeriodToDelete.map((item) => item.survey_sample_period_id);
+      await this.deleteSamplePeriodRecords(idsToDelete);
+    }
   }
 }

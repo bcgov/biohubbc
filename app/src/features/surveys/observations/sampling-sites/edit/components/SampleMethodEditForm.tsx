@@ -19,17 +19,23 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
+import CreateSamplingMethod from 'features/surveys/components/CreateSamplingMethod';
+import EditSamplingMethod from 'features/surveys/components/EditSamplingMethod';
+import { IEditSurveySampleMethodData } from 'features/surveys/components/MethodForm';
 import { useFormikContext } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
-import { ICreateSamplingSiteRequest } from '../observations/sampling-sites/SamplingSitePage';
-import CreateSamplingMethod from './CreateSamplingMethod';
-import EditSamplingMethod from './EditSamplingMethod';
-import { IEditSurveySampleMethodData } from './MethodForm';
+import { IEditSamplingSiteRequest } from './SampleSiteEditForm';
 
-const SamplingMethodForm = () => {
-  const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
+export interface SampleMethodEditFormProps {
+  name: string;
+}
+
+const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
+  const { name } = props;
+
+  const { values, errors, setFieldValue, validateField } = useFormikContext<IEditSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -42,14 +48,14 @@ const SamplingMethodForm = () => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    setEditData({ ...values.methods[index], index });
+    setEditData({ ...values.sampleSite.methods[index], index });
   };
 
   const handleDelete = () => {
     if (editData) {
-      const data = values.methods;
-      data.splice(editData.index, 1);
-      setFieldValue('methods', data);
+      const methods = values.sampleSite.methods;
+      methods.splice(editData.index, 1);
+      setFieldValue('methods', methods);
     }
     setAnchorEl(null);
   };
@@ -60,8 +66,8 @@ const SamplingMethodForm = () => {
       <CreateSamplingMethod
         open={isCreateModalOpen}
         onSubmit={(data) => {
-          setFieldValue(`methods[${values.methods.length}]`, data);
-          validateField('methods');
+          setFieldValue(`${name}[${values.sampleSite.methods.length}]`, data);
+          validateField(`${name}`);
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
@@ -74,7 +80,7 @@ const SamplingMethodForm = () => {
         initialData={editData}
         open={isEditModalOpen}
         onSubmit={(data, index) => {
-          setFieldValue(`methods[${index}]`, data);
+          setFieldValue(`${name}[${index}]`, data);
           setIsEditModalOpen(false);
         }}
         onClose={() => {
@@ -94,13 +100,13 @@ const SamplingMethodForm = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={() => setIsEditModalOpen(true)}>
+        <MenuItem key={'edit-details'} onClick={() => setIsEditModalOpen(true)}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
           Edit Details
         </MenuItem>
-        <MenuItem onClick={() => handleDelete()}>
+        <MenuItem key={'remove-details'} onClick={() => handleDelete()}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -120,19 +126,19 @@ const SamplingMethodForm = () => {
             }}>
             Methods added here will be applied to ALL sampling locations. These can be modified later if required.
           </Typography>
-          {errors.methods && !Array.isArray(errors.methods) && (
+          {errors?.sampleSite && errors.sampleSite.methods && !Array.isArray(errors.sampleSite.methods) && (
             <Alert
               sx={{
                 my: 1
               }}
               severity="error">
               <AlertTitle>Missing sampling method</AlertTitle>
-              {errors.methods}
+              {errors.sampleSite.methods}
             </Alert>
           )}
           <TransitionGroup>
-            {values.methods.map((item, index) => (
-              <Collapse key={`sample_method_${item.method_lookup_id}_${item.periods.length}`}>
+            {values.sampleSite.methods.map((item, index) => (
+              <Collapse key={`${item.survey_sample_method_id}`}>
                 <Card
                   variant="outlined"
                   sx={{
@@ -178,7 +184,7 @@ const SamplingMethodForm = () => {
                     </Typography>
                     <List>
                       {item.periods.map((period) => (
-                        <ListItem key={`sample_period_${period.start_date}-${period.end_date}`} divider>
+                        <ListItem key={`sample_period_${period.survey_sample_period_id}`} divider>
                           <ListItemIcon>
                             <Icon path={mdiCalendarRangeOutline} size={1} />
                           </ListItemIcon>
@@ -212,4 +218,4 @@ const SamplingMethodForm = () => {
   );
 };
 
-export default SamplingMethodForm;
+export default SampleMethodEditForm;

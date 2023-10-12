@@ -4,7 +4,7 @@ import MultiAutocompleteFieldVariableSize, {
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyPartnershipsForm {
@@ -34,7 +34,9 @@ const SurveyPartnershipsForm = () => {
   const codesContext = useContext(CodesContext);
 
   const codes = codesContext.codesDataLoader.data;
-  codesContext.codesDataLoader.load();
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const { handleSubmit } = formikProps;
 
