@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
@@ -75,7 +74,175 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             title: 'Telemetry response',
-            type: 'object'
+            type: 'object',
+            properties: {
+              points: {
+                type: 'object',
+                properties: {
+                  type: {
+                    type: 'string'
+                  },
+                  features: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'integer'
+                        },
+                        type: {
+                          type: 'string'
+                        },
+                        geometry: {
+                          type: 'object',
+                          properties: {
+                            type: {
+                              type: 'string'
+                            },
+                            coordinates: {
+                              type: 'array',
+                              items: {
+                                type: 'number'
+                              }
+                            }
+                          }
+                        },
+                        properties: {
+                          type: 'object',
+                          properties: {
+                            collar_id: {
+                              type: 'string',
+                              format: 'uuid'
+                            },
+                            device_id: {
+                              type: 'integer'
+                            },
+                            elevation: {
+                              type: 'number',
+                              nullable: true
+                            },
+                            frequency: {
+                              type: 'number',
+                              nullable: true
+                            },
+                            critter_id: {
+                              type: 'string',
+                              format: 'uuid'
+                            },
+                            date_recorded: {
+                              type: 'string'
+                            },
+                            deployment_id: {
+                              type: 'string',
+                              format: 'uuid'
+                            },
+                            device_status: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            device_vendor: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            frequency_unit: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            wlh_id: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            animal_id: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            sex: {
+                              type: 'string'
+                            },
+                            taxon: {
+                              type: 'string'
+                            },
+                            collection_units: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  collection_unit_id: {
+                                    type: 'string',
+                                    format: 'uuid'
+                                  },
+                                  unit_name: {
+                                    type: 'string'
+                                  },
+                                  collection_category_id: {
+                                    type: 'string',
+                                    format: 'uuid'
+                                  },
+                                  category_name: {
+                                    type: 'string'
+                                  }
+                                }
+                              }
+                            },
+                            mortality_timestamp: {
+                              type: 'string',
+                              nullable: true
+                            },
+                            _merged: {
+                              type: 'boolean'
+                            },
+                            map_colour: {
+                              type: 'string'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              tracks: {
+                type: 'object',
+                properties: {
+                  type: {
+                    type: 'string'
+                  },
+                  geometry: {
+                    type: 'object',
+                    properties: {
+                      type: {
+                        type: 'string'
+                      },
+                      coordinates: {
+                        type: 'array',
+                        items: {
+                          type: 'array',
+                          items: {
+                            type: 'number'
+                          }
+                        }
+                      }
+                    }
+                  },
+                  properties: {
+                    type: 'object',
+                    properties: {
+                      critter_id: {
+                        type: 'string',
+                        format: 'uuid'
+                      },
+                      deployment_id: {
+                        type: 'string',
+                        format: 'uuid'
+                      },
+                      map_colour: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -132,9 +299,8 @@ export function getCritterTelemetry(): RequestHandler {
       return res.status(200).json({ points, tracks });
     } catch (error) {
       defaultLog.error({ label: 'telemetry', message: 'error', error });
-      console.log(JSON.stringify((error as Error).message));
       await connection.rollback();
-      return res.status(500).json((error as AxiosError).response);
+      throw error;
     } finally {
       connection.release();
     }

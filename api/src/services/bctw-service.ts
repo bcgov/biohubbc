@@ -4,6 +4,7 @@ import { URLSearchParams } from 'url';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { HTTP500 } from '../errors/http-error';
+import { GeoJSONFeatureCollectionZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { KeycloakService } from './keycloak-service';
 
 export const IDeployDevice = z.object({
@@ -97,6 +98,8 @@ interface ICodeResponse {
   description: string;
   long_description: string;
 }
+
+export type CritterTelemetryResponse = z.infer<typeof GeoJSONFeatureCollectionZodSchema>;
 
 export type IBctwUser = z.infer<typeof IBctwUser>;
 
@@ -207,7 +210,7 @@ export class BctwService {
       const params = new URLSearchParams(queryParams);
       url += `?${params.toString()}`;
     }
-    console.log('bctw makeGetRequest to ' + this.axiosInstance.defaults.baseURL +  url);
+    console.log('bctw makeGetRequest to ' + this.axiosInstance.defaults.baseURL + url);
     const response = await this.axiosInstance.get(url);
     return response.data;
   }
@@ -364,7 +367,19 @@ export class BctwService {
     return this._makeGetRequest(GET_CODE_ENDPOINT, { codeHeader: codeHeaderName });
   }
 
-  async getCritterTelemetryPoints(critterId: string, startDate: Date, endDate: Date): Promise<any> {
+  /**
+   * Get all telemetry points for an animal.
+   * The geometry will be points, and the properties.
+   * @param critterId
+   * @param startDate
+   * @param endDate
+   * @returns
+   */
+  async getCritterTelemetryPoints(
+    critterId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<CritterTelemetryResponse> {
     return this._makeGetRequest(GET_TELEMETRY_POINTS_ENDPOINT, {
       critter_id: critterId,
       start: startDate.toISOString(),
@@ -372,7 +387,11 @@ export class BctwService {
     });
   }
 
-  async getCritterTelemetryTracks(critterId: string, startDate: Date, endDate: Date): Promise<any> {
+  async getCritterTelemetryTracks(
+    critterId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<CritterTelemetryResponse> {
     return this._makeGetRequest(GET_TELEMETRY_TRACKS_ENDPOINT, {
       critter_id: critterId,
       start: startDate.toISOString(),

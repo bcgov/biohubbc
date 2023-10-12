@@ -422,8 +422,6 @@ export const uuidToColor = (id: string): { fillColor: string; outlineColor: stri
   const hslFillColor = intToHSL(intVal);
   const hslOutlineColor = generateOutlineColor(hslFillColor);
 
-  console.log(`HSL Fill: ${JSON.stringify(hslFillColor)}, HSL Outline: ${JSON.stringify(hslOutlineColor)}`);
-
   const rgbFillColor = HSLToRGB(hslFillColor);
   const rgbOutlineColor = HSLToRGB(hslOutlineColor);
 
