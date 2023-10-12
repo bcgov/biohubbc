@@ -40,15 +40,6 @@ const SamplingSiteList = () => {
     setSelectedSampleSiteId(sample_site_id);
   };
 
-  if (
-    !surveyContext.sampleSiteDataLoader.data ||
-    (surveyContext.sampleSiteDataLoader.isLoading && !codesContext.codesDataLoader.data) ||
-    codesContext.codesDataLoader.isLoading
-  ) {
-    // TODO Fix styling: spinner loads in the corner of the component
-    return <CircularProgress size={40} />;
-  }
-
   return (
     <>
       <Menu
@@ -119,13 +110,18 @@ const SamplingSiteList = () => {
               width: '100%',
               height: '100%'
             }}>
-            {!surveyContext.sampleSiteDataLoader.data.sampleSites.length && (
+            {/* Display spinner if data loaders are still waiting for a response */}
+            {!surveyContext.sampleSiteDataLoader.data ||
+              (surveyContext.sampleSiteDataLoader.isLoading && !codesContext.codesDataLoader.data) ||
+              (codesContext.codesDataLoader.isLoading && <CircularProgress size={40} />)}
+
+            {/* Display text if the sample site data loader has no items in it */}
+            {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
               <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
                 <Typography variant="body2">No Sampling Sites</Typography>
               </Box>
             )}
-
-            {surveyContext.sampleSiteDataLoader.data.sampleSites.map((sampleSite, index) => {
+            {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
               return (
                 <Accordion
                   square
