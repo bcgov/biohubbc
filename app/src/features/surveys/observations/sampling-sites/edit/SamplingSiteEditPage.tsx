@@ -33,13 +33,18 @@ const SamplingSiteEditPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [initialFormData, setInitialFormData] = useState<IEditSamplingSiteRequest>({
+    sampleSite: {
+      survey_id: surveyContext.surveyId,
+      name: '',
+      description: '',
+      survey_sample_sites: [],
+      methods: []
+    }
+  });
 
   // Initial load of the sampling site data
   useEffect(() => {
-    const setFormikValues = (data: IEditSamplingSiteRequest) => {
-      formikRef.current?.setValues(data);
-    };
-
     if (surveyContext.sampleSiteDataLoader.data) {
       const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
         (x) => x.survey_sample_site_id === surveySampleSiteId
@@ -61,8 +66,8 @@ const SamplingSiteEditPage = () => {
               }) || []
           }
         };
-
-        setFormikValues(formInitialValues as unknown as IEditSamplingSiteRequest);
+        setInitialFormData(formInitialValues);
+        formikRef.current?.setValues(formInitialValues);
       }
     }
 
@@ -167,15 +172,7 @@ const SamplingSiteEditPage = () => {
 
       <Formik
         innerRef={formikRef}
-        initialValues={{
-          sampleSite: {
-            survey_id: surveyContext.surveyId,
-            name: '',
-            description: '',
-            survey_sample_sites: [],
-            methods: []
-          }
-        }}
+        initialValues={initialFormData}
         validationSchema={samplingSiteYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
@@ -196,7 +193,7 @@ const SamplingSiteEditPage = () => {
               survey_id={surveyContext.surveyId}
               survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
               is_submitting={isSubmitting}
-              title={`Edit Sampling Site > ${formikRef.current?.values.sampleSite.name}`}
+              title={`Edit Sampling Site > ${initialFormData.sampleSite.name}`}
               breadcrumb="Edit Sampling Sites"
             />
           </Box>
