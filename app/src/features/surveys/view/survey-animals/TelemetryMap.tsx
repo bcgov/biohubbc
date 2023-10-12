@@ -122,7 +122,7 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
             key={v4()}
             data={feature}></GeoJSON>
         )),
-        <Legend hasData={features.length > 0} colourMap={legendColours} />
+        <Legend key={'view-animal-telemetry-map-legend'} hasData={features.length > 0} colourMap={legendColours} />
       ]}
     />
   );
