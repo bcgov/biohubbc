@@ -18,14 +18,18 @@ export interface ISurveyAreaListProps {
   title: string;
   isLoading: boolean;
   data: ISurveyLocation[];
+  openEdit: (index: number) => void;
+  openDelete: () => void;
 }
 
 export const SurveyAreaList = (props: ISurveyAreaListProps) => {
-  const { title, data } = props;
+  const { title, data, openEdit } = props;
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [currentItemIndex, setCurrentItemIndex] = useState<number | null>(-1);
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, location_index: number) => {
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
+    setCurrentItemIndex(index);
   };
 
   return (
@@ -43,7 +47,13 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={() => console.log('EDIT LOCATION')}>
+        <MenuItem
+          onClick={() => {
+            console.log('UMM WHAT THE HELL', currentItemIndex);
+            if (currentItemIndex != null) {
+              openEdit(currentItemIndex);
+            }
+          }}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
