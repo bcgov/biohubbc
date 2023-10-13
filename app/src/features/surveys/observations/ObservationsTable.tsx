@@ -1,6 +1,8 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import Skeleton from '@mui/lab/Skeleton'
 import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridInputRowSelectionModel, GridRowModelUpdate } from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
@@ -50,6 +52,19 @@ export interface ISpeciesObservationTableProps {
     survey_sample_method_id: number;
     sample_period_name: string;
   }[];
+}
+
+const LoadingOverlay = () => {
+  return (
+    <Box display='flex' flexDirection='column' p={1} gap={2}>
+      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
+      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
+      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
+      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
+      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
+      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
+    </Box>
+  );
 }
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
@@ -375,6 +390,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onNo={() => handleCancelDeleteRow()}
       />
       <DataGrid
+        loading={observationsDataLoader.isLoading}
         rowHeight={56}
         apiRef={apiRef}
         editMode="row"
@@ -389,6 +405,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }}
         rowSelectionModel={rowSelectionModel}
         getRowHeight={() => 'auto'}
+        slots={{
+          loadingOverlay: LoadingOverlay
+        }}
         sx={{
           border: 'none',
           '& .MuiDataGrid-columnHeaderTitle': {
