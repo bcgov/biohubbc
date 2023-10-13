@@ -16,6 +16,7 @@ import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'c
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { grey } from '@mui/material/colors';
+import { cyan } from '@mui/material/colors';
 import { useLocation } from 'react-router';
 
 export interface ISampleSiteSelectProps {
@@ -425,7 +426,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           },
           '& .MuiDataGrid-cell.MuiDataGrid-cell--editing': {
             px: 0.5,
-            py: 1
+            py: 1,
+            backgroundColor: cyan[50]
           },
           '& .MuiInputBase-root': {
             height: '40px',
