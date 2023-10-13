@@ -4,6 +4,7 @@ import { URLSearchParams } from 'url';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { HTTP500 } from '../errors/http-error';
+import { GeoJSONFeatureCollectionZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { KeycloakService } from './keycloak-service';
 
 export const IDeployDevice = z.object({
@@ -98,6 +99,8 @@ interface ICodeResponse {
   long_description: string;
 }
 
+export type CritterTelemetryResponse = z.infer<typeof GeoJSONFeatureCollectionZodSchema>;
+
 export type IBctwUser = z.infer<typeof IBctwUser>;
 
 export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
@@ -114,6 +117,8 @@ export const GET_CODE_ENDPOINT = '/get-code';
 export const GET_DEVICE_DETAILS = '/get-collar-history-by-device/';
 export const UPLOAD_KEYX_ENDPOINT = '/import-xml';
 export const GET_KEYX_STATUS_ENDPOINT = '/get-collars-keyx';
+export const GET_TELEMETRY_POINTS_ENDPOINT = '/get-critters';
+export const GET_TELEMETRY_TRACKS_ENDPOINT = '/get-critter-tracks';
 
 export class BctwService {
   user: IBctwUser;
@@ -371,5 +376,47 @@ export class BctwService {
    */
   async getCode(codeHeaderName: string): Promise<ICodeResponse[]> {
     return this._makeGetRequest(GET_CODE_ENDPOINT, { codeHeader: codeHeaderName });
+  }
+
+  /**
+   * Get all telemetry points for an animal.
+   * The geometry will be points, and the properties will include the critter id and deployment id.
+   * @param critterId uuid
+   * @param startDate
+   * @param endDate
+   * @returns {*} CritterTelemetryResponse
+   */
+  async getCritterTelemetryPoints(
+    critterId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<CritterTelemetryResponse> {
+    return this._makeGetRequest(GET_TELEMETRY_POINTS_ENDPOINT, {
+      critter_id: critterId,
+      start: startDate.toISOString(),
+      end: endDate.toISOString()
+    });
+  }
+
+  /**
+   * Get all telemetry tracks for an animal.
+   * The geometry will be lines, and the properties will include the critter id and deployment id.
+   * The lines are actually just generated on the fly by the the db using the same points as getCritterTelemetryPoints.
+   *
+   * @param critterId uuid
+   * @param startDate
+   * @param endDate
+   * @returns {*} CritterTelemetryResponse
+   */
+  async getCritterTelemetryTracks(
+    critterId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<CritterTelemetryResponse> {
+    return this._makeGetRequest(GET_TELEMETRY_TRACKS_ENDPOINT, {
+      critter_id: critterId,
+      start: startDate.toISOString(),
+      end: endDate.toISOString()
+    });
   }
 }
