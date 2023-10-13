@@ -1,4 +1,4 @@
-import Button from '@mui/material/Button';
+import { LoadingButton } from '@mui/lab';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -43,6 +43,11 @@ export interface IComponentDialogProps {
    * @memberof IComponentDialogProps
    */
   dialogProps?: Partial<DialogProps>;
+
+  /**
+   *
+   */
+  isLoading?: boolean;
 }
 
 /**
@@ -73,9 +78,9 @@ const ComponentDialog: React.FC<PropsWithChildren<IComponentDialogProps>> = (pro
       <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
       <DialogContent>{props.children}</DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
+        <LoadingButton loading={props.isLoading} onClick={props.onClose} color="primary" variant="contained" autoFocus>
           {props.closeButtonLabel ? props.closeButtonLabel : 'Ok'}
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
