@@ -7,8 +7,8 @@ import CardHeader from '@mui/material/CardHeader';
 import { grey } from '@mui/material/colors';
 import Grid from '@mui/material/Grid';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import CustomNumberField from 'components/fields/CustomNumberField';
 import CustomTextField from 'components/fields/CustomTextField';
-import IntegerField from 'components/fields/IntegerField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import { AttachmentType } from 'constants/attachments';
@@ -157,7 +157,13 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={6}>
-            <IntegerField label="Device ID" name={`${index}.device_id`} disabled={mode === 'edit'} min={1} />
+            <CustomNumberField
+              label="Device ID"
+              name={`${index}.device_id`}
+              disabled={mode === 'edit'}
+              min={1}
+              max={2147483647}
+            />
           </Grid>
           <Grid item xs={6}>
             <Grid container>

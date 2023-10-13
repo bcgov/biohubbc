@@ -4,12 +4,13 @@ import get from 'lodash-es/get';
 import React from 'react';
 import NumberFormat, { NumberFormatProps } from 'react-number-format';
 
-export type IIntegerFieldProps = TextFieldProps & {
+export type INumberFieldProps = TextFieldProps & {
   required?: boolean;
   label: string;
   name: string;
   min?: number;
   max?: number;
+  float?: boolean;
 };
 
 interface NumberFormatCustomProps {
@@ -17,13 +18,14 @@ interface NumberFormatCustomProps {
   name: string;
   min?: number;
   max?: number;
+  float?: boolean;
 }
 
 const NumberFormatCustom = React.forwardRef<NumberFormatProps, NumberFormatCustomProps>(function NumericFormatCustom(
   props,
   ref
 ) {
-  const { onChange, min = -2147483648, max = 2147483647, ...other } = props;
+  const { onChange, min, max, float = false, ...other } = props;
 
   return (
     <NumberFormat
@@ -33,23 +35,26 @@ const NumberFormatCustom = React.forwardRef<NumberFormatProps, NumberFormatCusto
         onChange({
           target: {
             name: props.name,
-            value: parseInt(values.value)
+            value: float ? parseFloat(values.value) : parseInt(values.value)
           }
         });
       }}
-      decimalScale={0}
+      decimalScale={float ? 7 : 0}
       isAllowed={(values) => {
-        const intValue = parseInt(values.value);
-        return values.value === '' || (intValue >= min && intValue <= max);
+        const value = float ? parseFloat(values.value) : parseInt(values.value);
+        return (
+          values.value === '' ||
+          (value >= (min ?? Number.MIN_SAFE_INTEGER) && value <= (max ?? Number.MAX_SAFE_INTEGER))
+        );
       }}
     />
   );
 });
 
-const IntegerField: React.FC<IIntegerFieldProps> = (props) => {
-  const { values, handleChange, touched, errors } = useFormikContext<IIntegerFieldProps>();
+const CustomNumberField: React.FC<INumberFieldProps> = (props) => {
+  const { values, handleChange, touched, errors } = useFormikContext<INumberFieldProps>();
 
-  const { name, min, max, ...rest } = props;
+  const { name, min, max, float, ...rest } = props;
 
   return (
     <TextField
@@ -69,4 +74,4 @@ const IntegerField: React.FC<IIntegerFieldProps> = (props) => {
   );
 };
 
-export default IntegerField;
+export default CustomNumberField;

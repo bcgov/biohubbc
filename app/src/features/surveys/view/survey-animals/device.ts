@@ -16,7 +16,7 @@ const mustBePos = 'Must be positive';
 const mustBeInt = 'Must be an integer';
 const maxInt = 2147483647;
 const numSchema = yup.number().typeError(mustBeNum).min(0, mustBePos);
-export const intSchema = numSchema.max(maxInt, `Must be less than ${maxInt}`).integer(mustBeInt).required(req);
+const intSchema = numSchema.max(maxInt, `Must be less than ${maxInt}`).integer(mustBeInt).required(req);
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   deployment_id: yup.string(),
