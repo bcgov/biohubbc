@@ -28,8 +28,6 @@ const ObservationsMap = () => {
   const classes = useStyles();
   const observationsContext = useContext(ObservationsContext);
 
-  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
-
   const surveyObservations: INonEditableGeometries[] = useMemo(() => {
     const observations = observationsContext.observationsDataLoader.data?.surveyObservations;
 
@@ -39,23 +37,40 @@ const ObservationsMap = () => {
 
     return observations
       .filter((observation) => observation.latitude !== undefined && observation.longitude !== undefined)
-      .map((observation) => ({
-        feature: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Point',
-            coordinates: [observation.longitude, observation.latitude] as Position
-          }
+      .map((observation) => {
+        /*
+        const link = observation.survey_observation_id
+          ? `observations/#view-${observation.survey_observation_id}`
+          : 'observations'
+        */
+
+        return {
+          feature: {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Point',
+              coordinates: [observation.longitude, observation.latitude] as Position
+            }
+          },
+          popupComponent: undefined
+          /*(
+            <Popup>
+              <div>{JSON.stringify(observation)}</div>
+              <Button component={RouterLink} to={link}>
+                Check 'er Out
+              </Button>
+            </Popup>
+          )*/
         }
-      }));
-  }, [observationsContext.observationsDataLoader.data])
+      });
+  }, [observationsContext.observationsDataLoader.data]);
+
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(calculateUpdatedMapBounds(surveyObservations.map((observation) => observation.feature)));
 
   const zoomToBoundaryExtent = useCallback(() => {
     const features = surveyObservations.map((observation) => observation.feature);
-    console.log('features', features)
     const updatedBounds = calculateUpdatedMapBounds(features)
-    console.log('new bounds', updatedBounds)
     setBounds(updatedBounds);
   }, [surveyObservations]);
 

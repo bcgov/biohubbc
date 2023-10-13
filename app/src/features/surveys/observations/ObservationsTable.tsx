@@ -1,7 +1,7 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
-import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridInputRowSelectionModel, GridRowModelUpdate } from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
@@ -12,10 +12,11 @@ import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyData
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
-import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import moment from 'moment';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { grey } from '@mui/material/colors';
+import { useLocation } from 'react-router';
 
 export interface ISampleSiteSelectProps {
   survey_sample_site_id: number;
@@ -52,9 +53,10 @@ export interface ISpeciesObservationTableProps {
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const { sample_sites, sample_methods, sample_periods } = props;
+  const location = useLocation();
+
   const observationsContext = useContext(ObservationsContext);
   const { observationsDataLoader } = observationsContext;
-
   const apiRef = observationsContext._muiDataGridApiRef;
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
@@ -295,10 +297,19 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
   const showConfirmDeleteDialog = Boolean(deletingObservation);
 
+  const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
+    if (location.hash.startsWith('#view-')) {
+      const selectedId = location.hash.split('-')[1];
+      return [selectedId];
+    }
+
+    return undefined;
+  }, []);
+
   useEffect(() => {
     if (observationsDataLoader.data?.surveyObservations) {
       const rows: IObservationTableRow[] = observationsDataLoader.data.surveyObservations.map(
-        (row: IObservationTableRow) => ({
+        (row: IObservationRecord) => ({
           ...row,
           id: String(row.survey_observation_id)
         })
@@ -374,6 +385,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         localeText={{
           noRowsLabel: 'No Records'
         }}
+        rowSelectionModel={rowSelectionModel}
         sx={{
           background: '#fff',
           border: 'none',
