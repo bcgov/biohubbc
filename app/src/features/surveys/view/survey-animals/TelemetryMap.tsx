@@ -14,7 +14,7 @@ interface ITelemetryMapProps {
   deploymentData?: IAnimalDeployment[];
 }
 
-type ColourDeployment = IAnimalDeployment & { colour: string };
+type ColourDeployment = IAnimalDeployment & { colour: string; fillColour: string };
 
 interface ILegend {
   hasData: boolean;
@@ -36,7 +36,14 @@ const Legend = ({ hasData, colourMap }: ILegend) => {
                 marginTop={idx > 0 ? 1 : 0} /*<- Any better way to do this? */
               >
                 <Box
-                  sx={{ marginRight: 1, backgroundColor: deploymentAndColour.colour, height: '16px', width: '16px' }}
+                  sx={{
+                    marginRight: 1,
+                    backgroundColor: deploymentAndColour.colour,
+                    borderColor: deploymentAndColour.fillColour,
+                    borderWidth: '1px',
+                    height: '16px',
+                    width: '16px'
+                  }}
                 />
                 <Typography>{`Device ID: ${deploymentAndColour.device_id}, deployed from ${moment(
                   deploymentAndColour.attachment_start
@@ -61,16 +68,19 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
 
   const features = useMemo(() => {
     const featureCollections = telemetryData;
+    //.toSorted((a, b) => a.geometry.type.localeCompare(b.geometry.type))
     if (!featureCollections || !deploymentData) {
       return [];
     }
     const result: Feature[] = [];
     const colourMap: Record<string, string> = {};
+    const fillColourMap: Record<string, string> = {};
     const legendColours: ColourDeployment[] = [];
     deploymentData.forEach((deployment) => {
-      const fillColor = uuidToColor(deployment.deployment_id);
-      colourMap[deployment.deployment_id] = fillColor;
-      legendColours.push({ ...deployment, colour: fillColor });
+      const { fillColor, outlineColor } = uuidToColor(deployment.deployment_id);
+      fillColourMap[deployment.deployment_id] = fillColor;
+      colourMap[deployment.deployment_id] = outlineColor;
+      legendColours.push({ ...deployment, colour: fillColor, fillColour: outlineColor });
     });
     setLegendColours(legendColours);
     for (const featureCollection of Object.values(featureCollections)) {
@@ -79,9 +89,11 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
           feature.properties = {};
         }
         feature.properties.colour = colourMap[feature.properties.deployment_id];
+        feature.properties.fillColour = fillColourMap[feature.properties.deployment_id];
         result.push(feature);
       }
     }
+    result.sort((a, b) => a.geometry.type.localeCompare(b.geometry.type));
     return result;
   }, [telemetryData, deploymentData]);
 
@@ -89,8 +101,7 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
     const bounds = new L.LatLngBounds([]);
     telemetryData?.points.features.forEach((feature) => {
       if (feature.geometry.type === 'Point') {
-        const lat = feature.geometry.coordinates[1];
-        const lon = feature.geometry.coordinates[0];
+        const [lon, lat] = feature.geometry.coordinates;
         if (lon > -140 && lon < -110 && lat > 45 && lat < 60) {
           //We filter points that are clearly bad values out of the map bounds so that we don't wind up too zoomed out due to one wrong point.
           //These values are still present on the map if you move around though.
@@ -118,7 +129,7 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
         ...features.map((feature) => (
           <GeoJSON
             pointToLayer={point}
-            style={{ color: feature.properties?.colour }}
+            style={{ weight: 2, color: feature.properties?.colour, fillColor: feature.properties?.fillColour }}
             key={v4()}
             data={feature}></GeoJSON>
         )),

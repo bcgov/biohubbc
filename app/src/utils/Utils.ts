@@ -404,7 +404,7 @@ export const getCodesName = (
  * @param id uuid
  * @returns {*} {fillColor: string, outlineColor: string}
  */
-export const uuidToColor = (id: string): string => {
+export const uuidToColor = (id: string): { fillColor: string; outlineColor: string } => {
   const uuidToInt = (uuid: string): number => {
     const noDashes = uuid.replace(/-/g, '');
     const substring = noDashes.substring(0, 9);
@@ -450,10 +450,21 @@ export const uuidToColor = (id: string): string => {
     return rgb.map((val) => val.toString(16).padStart(2, '0')).join('');
   }
 
+  function generateOutlineColor(hsl: HSL) {
+    const { h, s, l } = hsl;
+    const outlineL = l >= 50 ? l - 40 : l + 40;
+    return { h, s, l: outlineL };
+  }
+
   const intVal = uuidToInt(id);
   const hslFillColor = intToHSL(intVal);
-  const rgbFillColor = HSLToRGB(hslFillColor);
-  const hexFillColor = RGBToHex(rgbFillColor);
+  const hslOutlineColor = generateOutlineColor(hslFillColor);
 
-  return hexFillColor;
+  const rgbFillColor = HSLToRGB(hslFillColor);
+  const rgbOutlineColor = HSLToRGB(hslOutlineColor);
+
+  const hexFillColor = RGBToHex(rgbFillColor);
+  const hexOutlineColor = RGBToHex(rgbOutlineColor);
+
+  return { fillColor: `#${hexFillColor}`, outlineColor: `#${hexOutlineColor}` };
 };
