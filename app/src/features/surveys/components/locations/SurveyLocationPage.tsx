@@ -3,7 +3,9 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import { SurveyContext } from 'contexts/surveyContext';
+import { FormikContextType } from 'formik';
 import { useContext } from 'react';
+import { ISurveyLocationForm } from '../StudyAreaForm';
 import { SurveyAreaList } from './SurveyAreaList';
 import { SurveyAreaMapControl } from './SurveyAreaMapControl';
 
@@ -60,12 +62,17 @@ export const SurveyLocationPage = () => {
             borderRightWidth: '1px',
             borderRightColor: grey[300]
           }}>
-          <SurveyAreaList />
+          <SurveyAreaList title={''} isLoading={false} data={[]} />
         </Box>
 
         {/* Map Component */}
         <Box flex="1 1 auto" overflow="hidden">
-          <SurveyAreaMapControl />
+          <SurveyAreaMapControl
+            map_id=""
+            title=""
+            formik_key=""
+            formik_props={{} as any as FormikContextType<ISurveyLocationForm>}
+          />
         </Box>
       </Box>
     </Box>

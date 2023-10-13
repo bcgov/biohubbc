@@ -1,24 +1,61 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { useState } from 'react';
+import { ISurveyLocation } from '../StudyAreaForm';
 
 export interface ISurveyAreaListProps {
   title: string;
   isLoading: boolean;
-  data: any[];
+  data: ISurveyLocation[];
 }
 
-export const SurveyAreaList = () => {
+export const SurveyAreaList = (props: ISurveyAreaListProps) => {
+  const { title, data } = props;
+  const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, location_index: number) => {
+    setAnchorEl(event.currentTarget);
+  };
+
   return (
     <>
+      {/* CONTEXT MENU */}
+      <Menu
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}>
+        <MenuItem onClick={() => console.log('EDIT LOCATION')}>
+          <ListItemIcon>
+            <Icon path={mdiPencilOutline} size={1} />
+          </ListItemIcon>
+          Edit Details
+        </MenuItem>
+        <MenuItem onClick={() => console.log('DELETE LOCATION')}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          Remove
+        </MenuItem>
+      </Menu>
       <Box display="flex" flexDirection="column" height="100%">
         <Toolbar
           sx={{
@@ -29,18 +66,8 @@ export const SurveyAreaList = () => {
             sx={{
               flexGrow: '1'
             }}>
-            <strong>Boundaries (3)</strong>
+            <strong>{title}</strong>
           </Typography>
-          <Button
-            sx={{
-              mr: -1
-            }}
-            variant="outlined"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => console.log('Open Import Component')}>
-            Import
-          </Button>
         </Toolbar>
         <Box
           position="relative"
@@ -57,41 +84,26 @@ export const SurveyAreaList = () => {
               borderTopColor: grey[300]
             }
           }}>
-          <Card sx={{ marginBottom: 1 }} variant="outlined">
-            <CardHeader
-              title={'Card Header Title'}
-              subheader={'Card Header Description'}
-              action={
-                <IconButton onClick={() => console.log('Open Context Menu')}>
-                  <MoreVertIcon />
-                </IconButton>
-              }
-            />
-          </Card>
-
-          <Card sx={{ marginBottom: 1 }} variant="outlined">
-            <CardHeader
-              title={'Card Header Title'}
-              subheader={'Card Header Description'}
-              action={
-                <IconButton onClick={() => console.log('Open Context Menu')}>
-                  <MoreVertIcon />
-                </IconButton>
-              }
-            />
-          </Card>
-
-          <Card sx={{ marginBottom: 1 }} variant="outlined">
-            <CardHeader
-              title={'Card Header Title'}
-              subheader={'Card Header Description'}
-              action={
-                <IconButton onClick={() => console.log('Open Context Menu')}>
-                  <MoreVertIcon />
-                </IconButton>
-              }
-            />
-          </Card>
+          {data.map((item: ISurveyLocation, index: number) => {
+            return (
+              <Card key={`${item.name}-${item.description}-${index}`} sx={{ marginBottom: 1 }} variant="outlined">
+                <CardHeader
+                  title={item.name}
+                  subheader={item.description}
+                  action={
+                    <IconButton
+                      edge="end"
+                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                        handleMenuClick(event, index)
+                      }
+                      aria-label="settings">
+                      <MoreVertIcon />
+                    </IconButton>
+                  }
+                />
+              </Card>
+            );
+          })}
         </Box>
       </Box>
     </>

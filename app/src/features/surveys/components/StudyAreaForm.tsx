@@ -1,20 +1,19 @@
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import MapBoundary from 'components/boundary/MapBoundary';
-import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
+import { SurveyAreaList } from './locations/SurveyAreaList';
+import { SurveyAreaMapControl } from './locations/SurveyAreaMapControl';
 
+export interface ISurveyLocation {
+  survey_location_id?: number;
+  name: string;
+  description: string;
+  geojson: Feature[];
+  revision_count?: number;
+}
 export interface ISurveyLocationForm {
-  locations: {
-    survey_location_id?: number;
-    name: string;
-    description: string;
-    geojson: Feature[];
-    revision_count?: number;
-  }[];
+  locations: ISurveyLocation[];
 }
 
 export const SurveyLocationInitialValues: ISurveyLocationForm = {
@@ -48,38 +47,26 @@ export const SurveyLocationYupSchema = yup.object({
  */
 const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
-
-  const history = useHistory();
-  const { handleSubmit } = formikProps;
+  // const [updatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
+  const { handleSubmit, values } = formikProps;
   return (
     <form onSubmit={handleSubmit}>
-      <Button
-        title="TODO"
-        color="primary"
-        variant="contained"
-        onClick={() => history.push('locations')}
-        sx={{
-          minWidth: 7,
-          marginRight: 1
-        }}>
-        IMPORT
-      </Button>
-      <Box mb={4}>
-        <CustomTextField
-          name={`locations[0].name`}
-          label="Survey Area Name"
-          other={{
-            required: true
-          }}
-        />
-      </Box>
-      <MapBoundary
+      {/* <MapBoundary
         name={`locations[0].geojson`}
         title="Study Area Boundary"
         mapId="study_area_form_map"
-        bounds={undefined}
+        bounds={updatedBounds}
         formikProps={formikProps}
-      />
+      /> */}
+      <Box height={500}>
+        <SurveyAreaMapControl
+          map_id={'study_area_map'}
+          title="Study Area Boundary"
+          formik_key="locations"
+          formik_props={formikProps}
+        />
+      </Box>
+      <SurveyAreaList title="Survey Study Area" isLoading={false} data={values.locations} />
     </form>
   );
 };
