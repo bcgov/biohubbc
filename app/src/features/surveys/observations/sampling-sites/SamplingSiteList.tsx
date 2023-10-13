@@ -1,6 +1,6 @@
 import { mdiCalendarRange, mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Skeleton } from '@mui/material';
+import { Fade, Skeleton } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -8,6 +8,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 // import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
+import { cyan } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -42,6 +43,18 @@ const SamplingSiteList = () => {
     setAnchorEl(event.currentTarget);
     setSelectedSampleSiteId(sample_site_id);
   };
+
+  const SampleSiteSkeleton = () => (
+    <Box p={2}
+      sx={{
+        display: 'flex',
+        gap: '16px',
+        borderBottom: '1px solid' + grey[300]
+      }}
+    >
+      <Skeleton sx={{flex: '1 1 auto'}} />
+    </Box>
+  );
 
   return (
     <>
@@ -110,118 +123,30 @@ const SamplingSiteList = () => {
         <Box
           position="relative"
           display="flex"
-          flex="1 1 auto">
+          flex="1 1 auto"
+          overflow="hidden">
 
           {/* Display spinner if data loaders are still waiting for a response */}
-          {!surveyContext.sampleSiteDataLoader.data ||
-            (surveyContext.sampleSiteDataLoader.isLoading && !codesContext.codesDataLoader.data) ||
-            (codesContext.codesDataLoader.isLoading &&
-            <Box
-              sx={{
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                p: 1,
-                overflowY: 'auto',
-                background: '#fff',
-                zIndex: 2
-              }}
-            >
-              <Box p={2}
+          {(surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading) && (
+            <Fade in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}>
+              <Box
                 sx={{
-                  display: 'flex',
-                  gap: '16px',
-                  background: grey[100]
+                  position: 'absolute',
+                  width: '100%',
+                  height: '100%',
+                  p: 1,
+                  background: '#fff',
+                  zIndex: 2
                 }}
               >
-                <Skeleton animation="wave" sx={{flex: '1 1 auto'}} />
+                <SampleSiteSkeleton/>
+                <SampleSiteSkeleton/>
+                <SampleSiteSkeleton/>
+                <SampleSiteSkeleton/>
+                <SampleSiteSkeleton/>
               </Box>
-              <Box p={2} mt="1px"
-                sx={{
-                  display: 'flex',
-                  gap: '16px',
-                  background: grey[100],
-                }}
-              >
-                <Skeleton animation="wave" sx={{flex: '1 1 auto'}} />
-              </Box>
-              <Box p={2} mt="1px"
-                sx={{
-                  display: 'flex',
-                  gap: '16px',
-                  background: grey[100],
-                }}
-              >
-                <Skeleton animation="wave" sx={{flex: '1 1 auto'}} />
-              </Box>
-              <Box p={2} mt="1px"
-                sx={{
-                  display: 'flex',
-                  gap: '16px',
-                  background: grey[100],
-                }}
-              >
-                <Skeleton animation="wave" sx={{flex: '1 1 auto'}} />
-              </Box>
-            </Box>
+            </Fade>
           )}
-
-          {/* Display spinner if data loaders are still waiting for a response */}
-          {/* {(surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading) && (
-            <Box 
-              display="flex" 
-              flex="1 1 auto" 
-              alignItems="center"
-              justifyContent="center"
-              m={1}
-              sx={{
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                background: 'blude'
-              }}
-            >
-              <CircularProgress size={40} />
-            </Box>
-          )} */}
-
-          <Box  
-            flex="1 1 auto" 
-            p={1}
-            sx={{
-              position: 'absolute',
-              zIndex: 2,
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              // background: '#fff',
-            }}
-          >
-            {/* <CircularProgress size={40} /> */}
-            <Box p={2}
-              sx={{
-                borderBottom: '1px solid #ccc'
-              }}
-            >
-              <Typography variant="body1"><Skeleton animation="wave" /></Typography>
-            </Box>
-            <Box
-              sx={{
-                borderBottom: '1px solid #ccc'
-              }}
-            >
-              <Typography variant="body1"><Skeleton animation="wave" /></Typography>
-            </Box>
-            <Box
-              sx={{
-                borderBottom: '1px solid #ccc'
-              }}
-            >
-              <Typography variant="body1"><Skeleton animation="wave" /></Typography>
-            </Box>
-          </Box>
-
 
           <Box
             sx={{
@@ -242,15 +167,14 @@ const SamplingSiteList = () => {
 
             {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
               return (
-                <Accordion key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}  
+                <Accordion disableGutters key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}  
                   sx={{
                     boxShadow: 'none',
                     '&.Mui-expanded': {
-                      my: 1,
-                      background: grey[50]
+                      // my: 1
                     },
                     '&.Mui-expanded .test': {
-                      background: grey[100],
+                      background: cyan[50]
                     }
                   }}>
                   <Box 
@@ -314,10 +238,10 @@ const SamplingSiteList = () => {
                                 )}
                             >
                             </ListItemText>
-                            <List disablePadding>
+                            <List disablePadding dense>
                               {sampleMethod.sample_periods?.map((samplePeriod) => {
                                 return (
-                                  <ListItem divider
+                                  <ListItem dense divider
                                     key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
                                     <ListItemIcon>
                                       <Icon path={mdiCalendarRange} size={0.8}></Icon>
@@ -338,6 +262,7 @@ const SamplingSiteList = () => {
                 </Accordion>
               );
             })}
+
           </Box>
 
         </Box>
