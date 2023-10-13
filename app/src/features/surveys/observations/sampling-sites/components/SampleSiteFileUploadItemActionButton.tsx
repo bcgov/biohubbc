@@ -1,7 +1,7 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import { Theme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import { IActionButtonProps, UploadFileStatus } from 'components/file-upload/FileUploadItem';
 

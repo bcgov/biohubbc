@@ -31,7 +31,7 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
             {survey_name}
           </Link>
           <Typography component="span" variant="body2" color="text.secondary">
-            Manage Survey Observations
+            Manage Observations
           </Typography>
         </Breadcrumbs>
         <Typography
@@ -40,7 +40,7 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
           sx={{
             ml: '-2px'
           }}>
-          Manage Survey Observations
+          Manage Observations
         </Typography>
       </Paper>
     </>

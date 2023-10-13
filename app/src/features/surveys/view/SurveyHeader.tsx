@@ -203,7 +203,7 @@ const SurveyHeader = () => {
                   }}
                 >
                   <Icon path={mdiMapMarkerOutline} size={0.875}/>
-                  <Typography component="span" sx={{ml: 0.75}}>Region(s): Omenica, Peace, Skeena</Typography>
+                  <Typography component="span" sx={{ml: 0.75}}>Region(s): Thompson-Okanagan</Typography>
                 </Typography>
                 <Typography
                   component="span"

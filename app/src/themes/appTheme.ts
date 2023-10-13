@@ -216,10 +216,10 @@ const appTheme = createTheme({
           color: '#1a5a96',
           borderRadius: '1px',
           cursor: 'pointer',
-          '&:focus': {
-            outline: '2px solid #3B99FC',
-            outlineOffset: '2px'
-          }
+          // '&:focus': {
+          //   outline: '2px solid #3B99FC',
+          //   outlineOffset: '2px'
+          // }
         }
       }
     },

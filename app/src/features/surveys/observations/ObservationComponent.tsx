@@ -17,6 +17,7 @@ import ObservationsTable, {
 } from 'features/surveys/observations/ObservationsTable';
 import { useContext, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
+import Collapse from '@mui/material/Collapse';
 
 const ObservationComponent = () => {
   const sampleSites: ISampleSiteSelectProps[] = [];
@@ -97,33 +98,54 @@ const ObservationComponent = () => {
           sx={{
             flex: '0 0 auto',
             borderBottom: '1px solid #ccc',
-            '& Button + Button': {
+            '& button': {
+              minWidth: '6rem'
+            },
+            '& button + button': {
               ml: 1
             }
           }}>
           <Typography
             sx={{
-              flexGrow: '1'
-            }}>
-            <strong>Observations</strong>
+              flexGrow: '1',
+              fontSize: '1.125rem',
+              fontWeight: 700
+            }}
+          >
+            Observations
           </Typography>
-          {showSaveButton && (
-            <>
-              <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
-                Save
-              </LoadingButton>
-              <Button variant="contained" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
-                Discard Changes
+          
+          <Box
+            sx={{
+              '& div:first-of-type': {
+                display: 'flex',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap'
+              }
+            }}
+          >
+
+            <Box display="flex" overflow="hidden">
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Icon path={mdiPlus} size={1} />}
+                onClick={() => observationsContext.createNewRecord()}>
+                Add Record
               </Button>
-            </>
-          )}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => observationsContext.createNewRecord()}>
-            Add Record
-          </Button>
+              <Collapse in={showSaveButton} orientation="horizontal">
+                <Box ml={1} whiteSpace="nowrap">
+                  <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
+                    Save
+                  </LoadingButton>
+                  <Button variant="outlined" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
+                    Discard Changes
+                  </Button>
+                </Box>
+              </Collapse>
+            </Box>
+
+          </Box>
 
           {/*TODO: FUTURE FUNCTIONALITY */}
           {/* <Button
@@ -136,8 +158,9 @@ const ObservationComponent = () => {
           </Button> */}
 
         </Toolbar>
-        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
-          <Box position="absolute" width="100%" height="100%" px={2}>
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative"
+        >
+          <Box position="absolute" width="100%" height="100%" p={1} pt={0.5}>
             <ObservationsTable
               sample_sites={sampleSites}
               sample_methods={sampleMethods}

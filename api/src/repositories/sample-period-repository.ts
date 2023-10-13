@@ -142,4 +142,33 @@ export class SamplePeriodRepository extends BaseRepository {
 
     return response.rows[0];
   }
+
+  /**
+   * Deletes multiple Survey Sample Periods for a given array of period ids.
+   *
+   * @param {number[]} periodsToDelete an array of period ids to delete
+   * @returns {*} {Promise<SamplePeriodRecord[]>} an array of promises for the deleted periods
+   * @memberof SamplePeriodRepository
+   */
+  async deleteSamplePeriods(periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
+    const sqlStatement = SQL`
+      DELETE FROM
+        survey_sample_period
+      WHERE
+        survey_sample_period_id IN (${periodsToDelete.join(',')})
+      RETURNING
+        *;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
+
+    if (!response?.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete sample period', [
+        'SamplePeriodRepository->deleteSamplePeriods',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows;
+  }
 }

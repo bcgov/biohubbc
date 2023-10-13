@@ -71,9 +71,11 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
+          required: ['sampleSite'],
           properties: {
             sampleSite: {
               type: 'object',
+              required: ['name', 'description', 'methods', 'survey_sample_sites'],
               properties: {
                 name: {
                   type: 'string'
@@ -81,8 +83,41 @@ PUT.apiDoc = {
                 description: {
                   type: 'string'
                 },
-                survey_sample_site: {
+                geojson: {
                   ...(GeoJSONFeature as object)
+                },
+                methods: {
+                  type: 'array',
+                  minItems: 1,
+                  items: {
+                    type: 'object',
+                    required: ['method_lookup_id', 'description', 'periods'],
+                    properties: {
+                      method_lookup_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      description: {
+                        type: 'string'
+                      },
+                      periods: {
+                        type: 'array',
+                        minItems: 1,
+                        items: {
+                          type: 'object',
+                          required: ['start_date', 'end_date'],
+                          properties: {
+                            start_date: {
+                              type: 'string'
+                            },
+                            end_date: {
+                              type: 'string'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -138,8 +173,7 @@ export function updateSurveySampleSite(): RequestHandler {
       await connection.open();
 
       const sampleLocationService = new SampleLocationService(connection);
-
-      await sampleLocationService.updateSampleLocation(sampleSite);
+      await sampleLocationService.updateSampleLocationMethodPeriod(sampleSite);
 
       await connection.commit();
 

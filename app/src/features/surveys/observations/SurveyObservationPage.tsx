@@ -36,7 +36,7 @@ export const SurveyObservationPage = () => {
         />
       </Box>
 
-      <Box display="flex" flex="1 1 auto" overflow="hidden" p={3}>
+      <Box display="flex" flex="1 1 auto" overflow="hidden" p={1}>
         {/* Sampling Site List */}
         <Paper 
           elevation={0}

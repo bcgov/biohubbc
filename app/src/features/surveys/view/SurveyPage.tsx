@@ -68,7 +68,7 @@ const SurveyPage: React.FC = () => {
                 title="Submit Survey Data and Documents"
                 color="primary"
                 variant="contained">
-                Manage Observations
+                Manage
               </Button>
             </Toolbar>
             <ObservationsMap />
