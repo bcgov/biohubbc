@@ -1,15 +1,159 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { OpenAPIV3 } from 'openapi-types';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
+import { GeoJSONFeatureCollection } from '../../../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { BctwService } from '../../../../../../../services/bctw-service';
 import { ICritterbaseUser } from '../../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../../utils/logger';
-
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/telemetry');
+
+const GeoJSONFeatureCollectionFeaturesItems = (GeoJSONFeatureCollection.properties
+  ?.features as OpenAPIV3.ArraySchemaObject)?.items as OpenAPIV3.SchemaObject;
+
+const GeoJSONTelemetryPointsAPISchema: OpenAPIV3.SchemaObject = {
+  ...GeoJSONFeatureCollection,
+  properties: {
+    ...GeoJSONFeatureCollection.properties,
+    features: {
+      type: 'array',
+      items: {
+        ...GeoJSONFeatureCollectionFeaturesItems,
+        properties: {
+          ...GeoJSONFeatureCollectionFeaturesItems?.properties,
+          properties: {
+            type: 'object',
+            required: ['collar_id', 'device_id', 'date_recorded', 'deployment_id', 'critter_id'],
+            properties: {
+              collar_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              device_id: {
+                type: 'integer'
+              },
+              elevation: {
+                type: 'number',
+                nullable: true
+              },
+              frequency: {
+                type: 'number',
+                nullable: true
+              },
+              critter_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              date_recorded: {
+                type: 'string'
+              },
+              deployment_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              device_status: {
+                type: 'string',
+                nullable: true
+              },
+              device_vendor: {
+                type: 'string',
+                nullable: true
+              },
+              frequency_unit: {
+                type: 'string',
+                nullable: true
+              },
+              wlh_id: {
+                type: 'string',
+                nullable: true
+              },
+              animal_id: {
+                type: 'string',
+                nullable: true
+              },
+              sex: {
+                type: 'string'
+              },
+              taxon: {
+                type: 'string'
+              },
+              collection_units: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    collection_unit_id: {
+                      type: 'string',
+                      format: 'uuid'
+                    },
+                    unit_name: {
+                      type: 'string'
+                    },
+                    collection_category_id: {
+                      type: 'string',
+                      format: 'uuid'
+                    },
+                    category_name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              mortality_timestamp: {
+                type: 'string',
+                nullable: true
+              },
+              _merged: {
+                type: 'boolean'
+              },
+              map_colour: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+const GeoJSONTelemetryTracksAPISchema: OpenAPIV3.SchemaObject = {
+  ...GeoJSONFeatureCollection,
+  properties: {
+    ...GeoJSONFeatureCollection.properties,
+    features: {
+      type: 'array',
+      items: {
+        ...GeoJSONFeatureCollectionFeaturesItems,
+        properties: {
+          ...GeoJSONFeatureCollectionFeaturesItems?.properties,
+          properties: {
+            type: 'object',
+            required: ['critter_id', 'deployment_id'],
+            properties: {
+              critter_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              deployment_id: {
+                type: 'string',
+                format: 'uuid'
+              },
+              map_colour: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
@@ -57,6 +201,7 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'startDate',
+      required: true,
       schema: {
         type: 'string'
       }
@@ -64,6 +209,7 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'endDate',
+      required: true,
       schema: {
         type: 'string'
       }
@@ -77,173 +223,10 @@ GET.apiDoc = {
           schema: {
             title: 'Telemetry response',
             type: 'object',
+            required: ['tracks', 'points'],
             properties: {
-              points: {
-                type: 'object',
-                properties: {
-                  type: {
-                    type: 'string'
-                  },
-                  features: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        id: {
-                          type: 'integer'
-                        },
-                        type: {
-                          type: 'string'
-                        },
-                        geometry: {
-                          type: 'object',
-                          properties: {
-                            type: {
-                              type: 'string'
-                            },
-                            coordinates: {
-                              type: 'array',
-                              items: {
-                                type: 'number'
-                              }
-                            }
-                          }
-                        },
-                        properties: {
-                          type: 'object',
-                          properties: {
-                            collar_id: {
-                              type: 'string',
-                              format: 'uuid'
-                            },
-                            device_id: {
-                              type: 'integer'
-                            },
-                            elevation: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            frequency: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            critter_id: {
-                              type: 'string',
-                              format: 'uuid'
-                            },
-                            date_recorded: {
-                              type: 'string'
-                            },
-                            deployment_id: {
-                              type: 'string',
-                              format: 'uuid'
-                            },
-                            device_status: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            device_vendor: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            frequency_unit: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            wlh_id: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            animal_id: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            sex: {
-                              type: 'string'
-                            },
-                            taxon: {
-                              type: 'string'
-                            },
-                            collection_units: {
-                              type: 'array',
-                              items: {
-                                type: 'object',
-                                properties: {
-                                  collection_unit_id: {
-                                    type: 'string',
-                                    format: 'uuid'
-                                  },
-                                  unit_name: {
-                                    type: 'string'
-                                  },
-                                  collection_category_id: {
-                                    type: 'string',
-                                    format: 'uuid'
-                                  },
-                                  category_name: {
-                                    type: 'string'
-                                  }
-                                }
-                              }
-                            },
-                            mortality_timestamp: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            _merged: {
-                              type: 'boolean'
-                            },
-                            map_colour: {
-                              type: 'string'
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              tracks: {
-                type: 'object',
-                properties: {
-                  type: {
-                    type: 'string'
-                  },
-                  geometry: {
-                    type: 'object',
-                    properties: {
-                      type: {
-                        type: 'string'
-                      },
-                      coordinates: {
-                        type: 'array',
-                        items: {
-                          type: 'array',
-                          items: {
-                            type: 'number'
-                          }
-                        }
-                      }
-                    }
-                  },
-                  properties: {
-                    type: 'object',
-                    properties: {
-                      critter_id: {
-                        type: 'string',
-                        format: 'uuid'
-                      },
-                      deployment_id: {
-                        type: 'string',
-                        format: 'uuid'
-                      },
-                      map_colour: {
-                        type: 'string'
-                      }
-                    }
-                  }
-                }
-              }
+              points: GeoJSONTelemetryPointsAPISchema,
+              tracks: GeoJSONTelemetryTracksAPISchema
             }
           }
         }
