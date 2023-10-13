@@ -18,7 +18,6 @@ import ObservationsTable, {
 import { useContext, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
 import Collapse from '@mui/material/Collapse';
-import { TransitionGroup } from 'react-transition-group';
 
 const ObservationComponent = () => {
   const sampleSites: ISampleSiteSelectProps[] = [];
@@ -125,30 +124,28 @@ const ObservationComponent = () => {
               }
             }}
           >
-          <TransitionGroup>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => observationsContext.createNewRecord()}>
-              Add Record
-            </Button>
-            {showSaveButton && (
-              
-              <Collapse orientation="horizontal">
-                  <Box ml={1} whiteSpace="nowrap">
-                    <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
-                      Save
-                    </LoadingButton>
-                    <Button variant="outlined" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
-                      Discard Changes
-                    </Button>
-                  </Box>
-                  </Collapse>
-              )}
-          </TransitionGroup>
-          </Box>
 
+            <Box display="flex" overflow="hidden">
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Icon path={mdiPlus} size={1} />}
+                onClick={() => observationsContext.createNewRecord()}>
+                Add Record
+              </Button>
+              <Collapse in={showSaveButton} orientation="horizontal">
+                <Box ml={1} whiteSpace="nowrap">
+                  <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
+                    Save
+                  </LoadingButton>
+                  <Button variant="outlined" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
+                    Discard Changes
+                  </Button>
+                </Box>
+              </Collapse>
+            </Box>
+
+          </Box>
 
           {/*TODO: FUTURE FUNCTIONALITY */}
           {/* <Button
@@ -163,7 +160,7 @@ const ObservationComponent = () => {
         </Toolbar>
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative"
         >
-          <Box position="absolute" width="100%" height="100%" pt={0.25} pb={1} px={2}>
+          <Box position="absolute" width="100%" height="100%" p={1} pt={0.5}>
             <ObservationsTable
               sample_sites={sampleSites}
               sample_methods={sampleMethods}
