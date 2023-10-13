@@ -1,7 +1,7 @@
 import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
 import { FormikContextType } from 'formik';
-import { Feature } from 'geojson';
+import { BBox, Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -176,10 +176,10 @@ export const handleKMLUpload = async <T>(file: File, name: string, formikProps: 
 /**
  * Calculates the bounding box that encompasses all of the given features
  * 
- * @param features The features used to calculate the map bounds
- * @returns The Lat/Long bounding box, or undefined if a bounding box cannot be calculated.
+ * @param features The features used to calculate the bounding box
+ * @returns The bounding box, or undefined if a bounding box cannot be calculated.
  */
-export const calculateUpdatedMapBounds = (features: Feature[]): LatLngBoundsExpression | undefined => {
+export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefined  => {
   // If no geometries, we do not need to set bounds
   if (!features || !features.length) {
     return;
@@ -194,10 +194,7 @@ export const calculateUpdatedMapBounds = (features: Feature[]): LatLngBoundsExpr
     const singlePoint = features[0]?.geometry;
     const [longitude, latitude] = singlePoint.coordinates;
 
-    return [
-      [latitude + 1, longitude + 1],
-      [latitude - 1, longitude - 1]
-    ];
+    return [longitude + 1, latitude + 1, longitude - 1, latitude - 1];
   }
 
   /**
@@ -209,11 +206,35 @@ export const calculateUpdatedMapBounds = (features: Feature[]): LatLngBoundsExpr
     features: [...features]
   };
 
-  const bboxCoords = bbox(allGeosFeatureCollection);
+  return bbox(allGeosFeatureCollection);
+};
+
+/**
+ * Converts a bounding box to a lat/long bounds expression
+ * @param boundingBox 
+ * @returns 
+ */
+export const latLngBoundsFromBoundingBox = (boundingBox: BBox): LatLngBoundsExpression => {
   return [
-    [bboxCoords[1], bboxCoords[0]],
-    [bboxCoords[3], bboxCoords[2]]
+    [boundingBox[1], boundingBox[0]],
+    [boundingBox[3], boundingBox[2]]
   ];
+}
+
+/**
+ * Calculates the bounding box that encompasses all of the given features
+ * 
+ * @param features The features used to calculate the map bounds
+ * @returns The Lat/Long bounding box, or undefined if a bounding box cannot be calculated.
+ */
+export const calculateUpdatedMapBounds = (features: Feature[]): LatLngBoundsExpression | undefined => {
+  const bboxCoords = calculateFeatureBoundingBox(features);
+
+  if (!bboxCoords) {
+    return;
+  }
+
+  return latLngBoundsFromBoundingBox(bboxCoords);
 };
 
 /**

@@ -8,7 +8,8 @@ import Icon from '@mdi/react';
 import { makeStyles } from '@mui/styles';
 import { mdiRefresh } from '@mdi/js';
 import { LatLngBoundsExpression } from 'leaflet';
-import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { calculateFeatureBoundingBox,  latLngBoundsFromBoundingBox } from 'utils/mapBoundaryUploadHelpers';
+import { square } from '@turf/turf';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -66,12 +67,21 @@ const ObservationsMap = () => {
       });
   }, [observationsContext.observationsDataLoader.data]);
 
-  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(calculateUpdatedMapBounds(surveyObservations.map((observation) => observation.feature)));
+  const getDefaultMapBounds = useCallback((): LatLngBoundsExpression | undefined => {
+    const features = surveyObservations.map((observation) => observation.feature);
+    const boundingBox = calculateFeatureBoundingBox(features);
+
+    if (!boundingBox) {
+      return;
+    }
+
+    return latLngBoundsFromBoundingBox(square(boundingBox));
+  }, [surveyObservations]);
+
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(getDefaultMapBounds());
 
   const zoomToBoundaryExtent = useCallback(() => {
-    const features = surveyObservations.map((observation) => observation.feature);
-    const updatedBounds = calculateUpdatedMapBounds(features)
-    setBounds(updatedBounds);
+    setBounds(getDefaultMapBounds());
   }, [surveyObservations]);
 
   return (
