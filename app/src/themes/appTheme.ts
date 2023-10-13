@@ -290,6 +290,15 @@ const appTheme = createTheme({
           fontWeight: 700
         }
       }
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          '& h2': {
+            fontSize: '1.125rem'
+          }
+        }
+      }
     }
   }
 });
