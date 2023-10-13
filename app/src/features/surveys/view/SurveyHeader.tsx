@@ -20,7 +20,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PublishSurveyDialog from 'components/publish/PublishSurveyDialog';
-import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
@@ -229,19 +229,6 @@ const SurveyHeader = () => {
               </Box>
             </Box>
             <Box display="flex" alignItems="flex-start" flex="0 0 auto">
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <Button
-                  title="Submit Survey Data and Documents"
-                  color="primary"
-                  variant="contained"
-                  onClick={() => setPublishSurveyDialogOpen(true)}
-                  sx={{
-                    display: 'none',
-                    minWidth: '7rem'
-                  }}>
-                  Submit
-                </Button>
-              </SystemRoleGuard>
               <ProjectRoleGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
