@@ -30,7 +30,9 @@ const SamplingSiteList = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  useEffect(() => {
+    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+  }, []);
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
@@ -112,20 +114,20 @@ const SamplingSiteList = () => {
               height: '100%',
               p: 1
             }}>
-
             {/* Display spinner if data loaders are still waiting for a response */}
-            {true && !surveyContext.sampleSiteDataLoader.data ||
-              (surveyContext.sampleSiteDataLoader.isLoading && !codesContext.codesDataLoader.data) ||
-              (codesContext.codesDataLoader.isLoading &&
+            {(surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading) && (
+              <Box display="flex" flex="1 1 auto" m={1} alignItems="center" justifyContent="center">
                 <CircularProgress size={40} />
-              )}
-
-            {/* Display text if the sample site data loader has no items in it */}
-            {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
-              <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
-                <Typography variant="body2">No Sampling Sites</Typography>
               </Box>
             )}
+
+            {/* Display text if the sample site data loader has no items in it */}
+            {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
+              !surveyContext.sampleSiteDataLoader.isLoading && (
+                <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
+                  <Typography variant="body2">No Sampling Sites</Typography>
+                </Box>
+              )}
             {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
               return (
                 <Accordion
@@ -133,11 +135,14 @@ const SamplingSiteList = () => {
                     boxShadow: 'none'
                   }}
                   key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}>
-                  <Box display="flex" overflow="hidden" alignItems="center" pr={1.5}
+                  <Box
+                    display="flex"
+                    overflow="hidden"
+                    alignItems="center"
+                    pr={1.5}
                     sx={{
-                      background: grey[50],
-                    }}
-                  >
+                      background: grey[50]
+                    }}>
                     <AccordionSummary
                       expandIcon={<Icon path={mdiChevronDown} size={1} />}
                       aria-controls="panel1bh-content"
@@ -150,11 +155,12 @@ const SamplingSiteList = () => {
                         '& .MuiAccordionSummary-content': {
                           flex: '1 1 auto',
                           overflow: 'hidden',
-                          whiteSpace: 'nowrap',
+                          whiteSpace: 'nowrap'
                         }
-                      }}
-                      >
-                      <Typography sx={{overflow: 'hidden', fontWeight: 700, textOverflow: 'ellipsis'}}>{sampleSite.name}</Typography>
+                      }}>
+                      <Typography sx={{ overflow: 'hidden', fontWeight: 700, textOverflow: 'ellipsis' }}>
+                        {sampleSite.name}
+                      </Typography>
                     </AccordionSummary>
                     <IconButton
                       onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
@@ -173,24 +179,24 @@ const SamplingSiteList = () => {
                       {sampleSite.sample_methods?.map((sampleMethod) => {
                         return (
                           <>
-                            <ListItem disableGutters divider
+                            <ListItem
+                              disableGutters
+                              divider
                               key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                               sx={{
                                 display: 'block'
                               }}>
                               <ListItemText
-                                primary=
-                                  {getCodesName(
-                                    codesContext.codesDataLoader.data,
-                                    'sample_methods',
-                                    sampleMethod.method_lookup_id
-                                  )}
-                              >
-                              </ListItemText>
+                                primary={getCodesName(
+                                  codesContext.codesDataLoader.data,
+                                  'sample_methods',
+                                  sampleMethod.method_lookup_id
+                                )}></ListItemText>
                               <List disablePadding>
                                 {sampleMethod.sample_periods?.map((samplePeriod) => {
                                   return (
-                                    <ListItem divider
+                                    <ListItem
+                                      divider
                                       key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
                                       <ListItemText>
                                         <Typography variant="body2" color="textSecondary">
