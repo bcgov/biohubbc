@@ -1,20 +1,15 @@
-import { mdiImport } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { HasProjectOrSystemRole } from 'components/security/Guards';
-import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-import { PublishStatus } from 'constants/attachments';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import FileSummaryResults from './components/FileSummaryResults';
 import SummaryResultsErrors from './components/SummaryResultsErrors';
 import SummaryResultsLoading from './components/SummaryResultsLoading';
@@ -42,9 +37,6 @@ const SurveySummaryResults = () => {
   }, [surveyContext.summaryDataLoader, projectId, surveyId]);
 
   const summaryData = surveyContext.summaryDataLoader.data?.surveySummaryData;
-  const summarySubmissionStatus = surveyContext.summaryDataLoader.data?.surveySummarySupplementaryData?.event_timestamp
-    ? PublishStatus.SUBMITTED
-    : PublishStatus.UNSUBMITTED;
 
   const importSummaryResults = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
@@ -55,26 +47,6 @@ const SurveySummaryResults = () => {
           surveyContext.summaryDataLoader.refresh(projectId, surveyId);
         });
     };
-  };
-
-  const showUploadDialog = () => {
-    if (summaryData) {
-      // already have summary data, prompt user to confirm override
-      dialogContext.setYesNoDialog({
-        dialogTitle: 'Import New Summary Results Data',
-        dialogText:
-          'Importing a new file will overwrite the existing summary results data. Are you sure you want to proceed?',
-        onClose: () => dialogContext.setYesNoDialog({ open: false }),
-        onNo: () => dialogContext.setYesNoDialog({ open: false }),
-        open: true,
-        onYes: () => {
-          setOpenImportSummaryResults(true);
-          dialogContext.setYesNoDialog({ open: false });
-        }
-      });
-    } else {
-      setOpenImportSummaryResults(true);
-    }
   };
 
   const showDeleteDialog = () => {
@@ -125,30 +97,9 @@ const SurveySummaryResults = () => {
 
   return (
     <>
-      <H2ButtonToolbar
-        label="Summary Results"
-        buttonProps={{ variant: 'contained', color: 'primary' }}
-        buttonLabel="Import"
-        buttonTitle="Import Summary Results"
-        buttonStartIcon={<Icon path={mdiImport} size={1} />}
-        buttonOnClick={() => showUploadDialog()}
-        renderButton={(buttonProps) => {
-          const { disabled, ...rest } = buttonProps;
-
-          // admins should always see this button
-          // button should only be visible if the data has not been published
-          if (
-            HasProjectOrSystemRole({
-              validProjectRoles: [],
-              validProjectPermissions: [],
-              validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
-            }) ||
-            summarySubmissionStatus !== PublishStatus.SUBMITTED
-          ) {
-            return <Button {...rest} />;
-          }
-        }}
-      />
+      <Toolbar>
+        <Typography variant="h2">Summary Results</Typography>
+      </Toolbar>
 
       <Divider />
 
@@ -158,7 +109,7 @@ const SurveySummaryResults = () => {
 
         {/* No summary */}
         {!surveyContext.summaryDataLoader.data && surveyContext.summaryDataLoader.isReady && (
-          <NoSurveySectionData text={'No Summary Results'} paperVariant="outlined" />
+          <NoSurveySectionData text={'Currently Unavailable'} paperVariant="outlined" />
         )}
 
         {/* Got a summary with errors */}

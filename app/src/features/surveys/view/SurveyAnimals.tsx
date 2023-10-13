@@ -570,7 +570,7 @@ const SurveyAnimals: React.FC = () => {
             }}
           />
         ) : (
-          <NoSurveySectionData text={'No Individual Animals'} paperVariant={'outlined'} />
+          <NoSurveySectionData text={'No Marked or Known Animals'} paperVariant={'outlined'} />
         )}
       </Box>
       <ComponentDialog
