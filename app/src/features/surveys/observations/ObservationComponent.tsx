@@ -18,6 +18,9 @@ import ObservationsTable, {
 import { useContext, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
 import Collapse from '@mui/material/Collapse';
+import ComponentDialog from 'components/dialog/ComponentDialog';
+import FileUpload from 'components/file-upload/FileUpload';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 
 const ObservationComponent = () => {
   const sampleSites: ISampleSiteSelectProps[] = [];
@@ -37,6 +40,27 @@ const ObservationComponent = () => {
     return observationsContext.saveRecords().finally(() => {
       setIsSaving(false);
     });
+  };
+
+  const handleImportObservations = (): IUploadHandler => {
+    return async (file, cancelToken, handleFileUploadProgress) => {
+      /*
+      return biohubApi.observation
+        .uploadObservationSubmission(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
+        .then((result: IUploadObservationSubmissionResponse) => {
+          if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
+            // Process a DwCA zip file
+            return biohubApi.observation.processDWCFile(projectId, result.submissionId);
+          }
+
+          // Process an Observation Template file
+          return biohubApi.observation.processOccurrences(projectId, result.submissionId, surveyId);
+        })
+        .finally(() => {
+          surveyContext.observationDataLoader.refresh(projectId, surveyId);
+        });
+      */
+    };
   };
 
   const hasUnsavedChanges = observationsContext.hasUnsavedChanges();
@@ -72,6 +96,15 @@ const ObservationComponent = () => {
 
   return (
     <>
+      <ComponentDialog
+        open={showImportDiaolog}
+        dialogTitle="Import Observation CSV"
+        onClose={() => setShowImportDiaolog(false)}>
+        <FileUpload
+          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv' }}
+          uploadHandler={handleImportObservations()}
+        />
+      </ComponentDialog>
       <YesNoDialog
         dialogTitle={ObservationsTableI18N.removeAllDialogTitle}
         dialogText={ObservationsTableI18N.removeAllDialogText}
