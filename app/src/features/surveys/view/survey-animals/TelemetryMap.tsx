@@ -25,21 +25,16 @@ const Legend = ({ hasData, colourMap }: ILegend) => {
   return (
     <div className="leaflet-bottom leaflet-left">
       <div className="leaflet-control leaflet-bar">
-        <Paper sx={{ padding: 2 }}>
+        <Paper sx={{ padding: 2, gap: 1 }}>
           {hasData ? (
-            colourMap.map((deploymentAndColour, idx) => (
-              <Box
-                key={deploymentAndColour.deployment_id}
-                display={'flex'}
-                flexDirection={'row'}
-                alignItems={'center'}
-                marginTop={idx > 0 ? 1 : 0} /*<- Any better way to do this? */
-              >
+            colourMap.map((deploymentAndColour) => (
+              <Box key={deploymentAndColour.deployment_id} display={'flex'} flexDirection={'row'} alignItems={'center'}>
                 <Box
                   sx={{
                     marginRight: 1,
                     backgroundColor: deploymentAndColour.colour,
-                    borderColor: deploymentAndColour.fillColour,
+                    borderColor: 'black',
+                    borderStyle: 'solid',
                     borderWidth: '1px',
                     height: '16px',
                     width: '16px'
@@ -68,7 +63,6 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
 
   const features = useMemo(() => {
     const featureCollections = telemetryData;
-    //.toSorted((a, b) => a.geometry.type.localeCompare(b.geometry.type))
     if (!featureCollections || !deploymentData) {
       return [];
     }
