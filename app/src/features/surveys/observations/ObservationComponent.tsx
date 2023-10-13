@@ -1,4 +1,4 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiImport, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
@@ -28,6 +28,7 @@ const ObservationComponent = () => {
   const codesContext = useContext(CodesContext);
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [showImportDiaolog, setShowImportDiaolog] = useState<boolean>(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
 
   const handleSaveChanges = async () => {
@@ -38,7 +39,7 @@ const ObservationComponent = () => {
     });
   };
 
-  const showSaveButton = observationsContext.hasUnsavedChanges();
+  const hasUnsavedChanges = observationsContext.hasUnsavedChanges();
 
   if (surveyContext.sampleSiteDataLoader.data && codesContext.codesDataLoader.data) {
     // loop through and collect all sites
@@ -129,11 +130,18 @@ const ObservationComponent = () => {
               <Button
                 variant="contained"
                 color="primary"
+                startIcon={<Icon path={mdiImport} size={1} />}
+                onClick={() => setShowImportDiaolog(true)}>
+                Import
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
                 startIcon={<Icon path={mdiPlus} size={1} />}
                 onClick={() => observationsContext.createNewRecord()}>
                 Add Record
               </Button>
-              <Collapse in={showSaveButton} orientation="horizontal">
+              <Collapse in={hasUnsavedChanges} orientation="horizontal">
                 <Box ml={1} whiteSpace="nowrap">
                   <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
                     Save
