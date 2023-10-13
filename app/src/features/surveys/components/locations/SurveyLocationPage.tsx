@@ -4,6 +4,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
+import { SurveyAreaList } from './SurveyAreaList';
+import { SurveyAreaMapControl } from './SurveyAreaMapControl';
 
 export const SurveyLocationPage = () => {
   const surveyContext = useContext(SurveyContext);
@@ -58,19 +60,12 @@ export const SurveyLocationPage = () => {
             borderRightWidth: '1px',
             borderRightColor: grey[300]
           }}>
-          <></>
+          <SurveyAreaList />
         </Box>
 
         {/* Map Component */}
         <Box flex="1 1 auto" overflow="hidden">
-          {/* <MapBoundary
-            name={`locations`}
-            title="Study Area Boundary"
-            mapId="survey_locations_map"
-            bounds={undefined}
-            formikProps={formikRef}
-          /> */}
-          Map Goes here
+          <SurveyAreaMapControl />
         </Box>
       </Box>
     </Box>
