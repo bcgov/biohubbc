@@ -1,5 +1,7 @@
-import Box from '@mui/material/Box'
+import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -11,8 +13,6 @@ import { useContext, useEffect, useState } from 'react';
 import FileSummaryResults from './components/FileSummaryResults';
 import SummaryResultsErrors from './components/SummaryResultsErrors';
 import SummaryResultsLoading from './components/SummaryResultsLoading';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 
 export enum ClassGrouping {
   NOTICE = 'Notice',

@@ -295,7 +295,7 @@ const appTheme = createTheme({
       styleOverrides: {
         root: {
           '& h2': {
-            fontSize: '1.125rem',
+            fontSize: '1.125rem'
           }
         }
       }

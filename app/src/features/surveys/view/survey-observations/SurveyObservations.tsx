@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
@@ -70,7 +70,7 @@ const SurveyObservations: React.FC = () => {
         });
     };
   };
-  
+
   function handleCloseImportObservations() {
     setOpenImportObservations(false);
   }
