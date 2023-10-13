@@ -1,3 +1,4 @@
+import { FeatureCollection } from 'geojson';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
 
@@ -7,7 +8,9 @@ export type IDeploymentTimespan = InferType<typeof AnimalDeploymentTimespanSchem
 
 export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
 
-const req = 'Required';
+export type ITelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
+
+const req = 'Required.';
 const mustBeNum = 'Must be a number';
 const mustBePos = 'Must be positive';
 const mustBeInt = 'Must be an integer';
