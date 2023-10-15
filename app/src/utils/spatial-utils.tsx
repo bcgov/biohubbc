@@ -4,7 +4,7 @@ import DatasetPopup from 'components/map/DatasetPopup';
 import FeaturePopup, { BoundaryCentroidFeature, BoundaryFeature, OccurrenceFeature } from 'components/map/FeaturePopup';
 import { LAYER_NAME, SPATIAL_COMPONENT_TYPE } from 'constants/spatial';
 import { Feature } from 'geojson';
-import { EmptyObject, ISpatialData, ITaxaData } from 'interfaces/useObservationApi.interface';
+import { EmptyObject, ISpatialData, ITaxaData } from 'interfaces/useDwcaApi.interface';
 import { LatLngTuple } from 'leaflet';
 import { isObject } from 'lodash-es';
 

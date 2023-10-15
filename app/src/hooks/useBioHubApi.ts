@@ -18,6 +18,7 @@ import useSpatialApi from './api/useSpatialApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
+import useDwcaApi from './api/useDwcaApi';
 
 /**
  * Returns a set of supported api methods.
@@ -47,6 +48,8 @@ export const useBiohubApi = () => {
   const admin = useAdminApi(apiAxios);
 
   const observation = useObservationApi(apiAxios);
+  
+  const dwca = useDwcaApi(apiAxios);
 
   const resources = useResourcesApi(apiAxios);
 
@@ -68,6 +71,7 @@ export const useBiohubApi = () => {
       taxonomy,
       survey,
       observation,
+      dwca,
       resources,
       codes,
       draft,
