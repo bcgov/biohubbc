@@ -24,10 +24,6 @@ export const SurveyAnimalPage = () => {
   loadCritters();
   const [currentCritterId, setCurrentCritterId] = useState<string | null>(null);
 
-
-
-
-
   const obtainAnimalFormInitialvalues = useMemo(() => {
     const AnimalFormValues: IAnimal = {
       general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: AnimalSex.UNKNOWN, critter_id: '' },

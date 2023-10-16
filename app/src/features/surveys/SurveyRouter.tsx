@@ -5,10 +5,13 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import { SurveySectionFullPageLayout } from './components/SurveySectionFullPageLayout';
 import EditSurveyPage from './edit/EditSurveyPage';
+import ObservationComponent from './observations/ObservationComponent';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
+import SamplingSiteList from './observations/sampling-sites/SamplingSiteList';
 import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
-import { SurveyObservationPage } from './observations/SurveyObservationPage';
+import AnimalList from './view/survey-animals/AnimalList';
 import { SurveyAnimalPage } from './view/survey-animals/SurveyAnimalPage';
 
 /**
@@ -30,12 +33,19 @@ const SurveyRouter: React.FC = () => {
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/observations" title={getTitle('Observations')}>
-        <SurveyObservationPage />
+        <SurveySectionFullPageLayout
+          pageTitle="Manage Observations"
+          sideBarComponent={<SamplingSiteList />}
+          mainComponent={<ObservationComponent />}
+        />
       </RouteWithTitle>
 
-
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/animals" title={getTitle('Observations')}>
-        <SurveyAnimalPage />
+        <SurveySectionFullPageLayout
+          pageTitle="Manage Animals"
+          sideBarComponent={<AnimalList onSelectCritter={() => {}} />}
+          mainComponent={<SurveyAnimalPage />}
+        />
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Sampling Sites')}>
