@@ -1,6 +1,5 @@
 import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
-import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import shp from 'shpjs';
@@ -82,44 +81,26 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
 };
 
 /**
- * Function to handle zipped shapefile spatial boundary uploads
+ *  Function to handle parsing and prep work of a shape file for upload
  *
- * @template T Type of the formikProps (should be auto-determined if the incoming formikProps are properly typed)
  * @param {File} file The file to upload
- * @param {string} name The name of the formik field that the parsed geometry will be saved to
- * @param {FormikContextType<T>} formikProps The formik props
+ * @return {*}  {Promise<Feature[]>}
  */
-export const handleShapeFileUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { setFieldValue, setFieldError } = formikProps;
-
+export const handleShapeFileUpload = (file: File): Promise<Feature[]> => {
   try {
-    const features = await parseShapeFile(file);
-
-    setFieldValue(name, [...features]);
+    return parseShapeFile(file);
   } catch (error) {
-    setFieldError(name, 'You must upload a valid shapefile (.zip format). Please try again.');
+    throw 'You must upload a valid shapefile (.zip format). Please try again.';
   }
 };
 
-/**
- * Function to handle GPX file spatial boundary uploads
- *
- * @template T Type of the formikProps (should be auto-determined if the incoming formikProps are properly typed)
- * @param {File} file The file to upload
- * @param {string} name The name of the formik field that the parsed geometry will be saved to
- * @param {FormikContextType<T>} formikProps The formik props
- * @return {*}
- */
-export const handleGPXUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { setFieldValue, setFieldError } = formikProps;
-
+export const handleGPXUpload = async (file: File) => {
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
 
   if (!file?.type.includes('gpx') && !fileAsString?.includes('</gpx>')) {
-    setFieldError(name, 'You must upload a GPX file, please try again.');
-    return;
+    throw 'You must upload a GPX file, please try again.';
   }
 
   try {
@@ -133,31 +114,19 @@ export const handleGPXUpload = async <T>(file: File, name: string, formikProps: 
       }
     });
 
-    setFieldValue(name, [...sanitizedGeoJSON]);
+    return [...sanitizedGeoJSON];
   } catch (error) {
-    setFieldError(name, 'Error uploading your GPX file, please check the file and try again.');
+    throw 'Error uploading your GPX file, please check the file and try again.';
   }
 };
 
-/**
- * Function to handle KML file spatial boundary uploads
- *
- * @template T Type of the formikProps (should be auto-determined if the incoming formikProps are properly typed)
- * @param {File} file The file to upload
- * @param {string} name The name of the formik field that the parsed geometry will be saved to
- * @param {FormikContextType<T>} formikProps The formik props
- * @return {*}
- */
-export const handleKMLUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { setFieldValue, setFieldError } = formikProps;
-
+export const handleKMLUpload = async (file: File) => {
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
 
   if (file?.type !== 'application/vnd.google-earth.kml+xml' && !fileAsString?.includes('</kml>')) {
-    setFieldError(name, 'You must upload a KML file, please try again.');
-    return;
+    throw 'You must upload a KML file, please try again.';
   }
 
   const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');
@@ -170,7 +139,7 @@ export const handleKMLUpload = async <T>(file: File, name: string, formikProps: 
     }
   });
 
-  setFieldValue(name, [...sanitizedGeoJSON]);
+  return [...sanitizedGeoJSON];
 };
 
 /**
