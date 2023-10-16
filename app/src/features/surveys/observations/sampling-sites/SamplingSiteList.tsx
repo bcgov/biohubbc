@@ -7,13 +7,13 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Fade, Skeleton } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { cyan, grey } from '@mui/material/colors';
+import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -21,6 +21,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
@@ -181,7 +182,13 @@ const SamplingSiteList = () => {
                       background: cyan[50]
                     }
                   }}>
-                  <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} height={52} className="sampleSiteHeader">
+                  <Box
+                    display="flex"
+                    overflow="hidden"
+                    alignItems="center"
+                    pr={1.5}
+                    height={52}
+                    className="sampleSiteHeader">
                     <AccordionSummary
                       expandIcon={<Icon path={mdiChevronDown} size={1} />}
                       aria-controls="panel1bh-content"
@@ -197,7 +204,9 @@ const SamplingSiteList = () => {
                           whiteSpace: 'nowrap'
                         }
                       }}>
-                      <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', typography: 'body2' }}>{sampleSite.name}</Typography>
+                      <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', typography: 'body2' }}>
+                        {sampleSite.name}
+                      </Typography>
                     </AccordionSummary>
                     <IconButton
                       onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>

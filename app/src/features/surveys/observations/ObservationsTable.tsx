@@ -1,13 +1,13 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Skeleton from '@mui/lab/Skeleton';
 import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
+import Skeleton from '@mui/material/Skeleton';
+import TextField from '@mui/material/TextField';
 import {
   DataGrid,
   GridColDef,
-  GridEditInputCell,
   GridEventListener,
   GridInputRowSelectionModel,
   GridRowModelUpdate
@@ -83,10 +83,10 @@ const SampleSiteSkeleton = () => (
 const LoadingOverlay = () => {
   return (
     <Box display="flex" flexDirection="column">
-      <SampleSiteSkeleton/>
-      <SampleSiteSkeleton/>
-      <SampleSiteSkeleton/>
-      <SampleSiteSkeleton/>
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
     </Box>
   );
 };
@@ -109,6 +109,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
+      valueSetter: (params) => {
+        return { ...params.row, wldtaxonomic_units_id: Number(params.value) };
+      },
       renderCell: (params) => {
         return <TaxonomyDataGridViewCell dataGridProps={params} />;
       },
@@ -229,15 +232,41 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',
-      renderEditCell: (params) => (
-        <GridEditInputCell
-          {...params}
-          inputProps={{
-            min: 0,
-            max: 99999
-          }}
-        />
-      )
+      valueSetter: (params) => {
+        const value = Number(params.value);
+        return { ...params.row, count: (isNaN(value) && null) || value };
+      },
+      valueParser: (value) => {
+        if (!value) {
+          return '';
+        }
+
+        if (/^[0-9]*$/.test(value)) {
+          // Value contains only number characters
+          return value;
+        }
+
+        // Value contains non-number characters, strip out non-number characters
+        return value.replace(/\D/g, '');
+      },
+      renderEditCell: (params) => {
+        const value = !params.value || isNaN(params.value) ? '' : params.value;
+        return (
+          <TextField
+            onChange={(event) => {
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={value}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'observation_date',
@@ -259,22 +288,31 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',
+      valueSetter: (params) => {
+        return { ...params.row, observation_time: params.value };
+      },
+      valueParser: (value) => {
+        if (!value) {
+          return null;
+        }
+
+        if (moment.isMoment(value)) {
+          return value.format('HH:mm');
+        }
+
+        return moment(value, 'HH:mm:ss').format('HH:mm');
+      },
       renderCell: (params) => {
         if (!params.value) {
           return null;
         }
 
-        if (moment.isMoment(params.value)) {
-          return <>{params.value.format('HH:mm')}</>;
-        }
-
-        return <>{moment(params.value, 'HH:mm:ss').format('HH:mm')}</>;
+        return <>{params.value}</>;
       },
       renderEditCell: (params) => {
         return (
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <TimePicker
-              timeSteps={{ hours: 1, minutes: 1 }}
               value={(params.value && moment(params.value, 'HH:mm:ss')) || null}
               onChange={(value) => {
                 apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
@@ -286,6 +324,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: value?.format('HH:mm:ss')
                 });
               }}
+              timeSteps={{ hours: 1, minutes: 1 }}
               ampm={false}
             />
           </LocalizationProvider>
@@ -295,24 +334,84 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     {
       field: 'latitude',
       headerName: 'Lat',
-      type: 'number',
       editable: true,
+      type: 'number',
       width: 120,
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',
-      renderCell: (params) => String(params.row.latitude)
+      valueSetter: (params) => {
+        if (/^-?[0-9]{0,3}(?:\.[0-9]{1,12})?$/.test(params.value)) {
+          // If the value is a legal latitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, latitude: Number(params.value) };
+        }
+
+        return { ...params.row, latitude: parseFloat(params.value) };
+      },
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^-?[0-9]{0,3}(?:\.[0-9]{0,12})?$/.test(event.target.value)) {
+                // If the value is not a subset of a legal latitude value, prevent the value from being applied
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={params.value || ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'longitude',
       headerName: 'Long',
-      type: 'number',
       editable: true,
+      type: 'number',
       width: 120,
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',
-      renderCell: (params) => String(params.row.longitude)
+      valueSetter: (params) => {
+        if (/^-?[0-9]{1,3}(?:\.[0-9]{1,12})?$/.test(params.value)) {
+          // If the value is a legal latitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, longitude: Number(params.value) };
+        }
+
+        return { ...params.row, longitude: parseFloat(params.value) };
+      },
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^-?[0-9]{0,3}(?:\.[0-9]{0,12})?$/.test(event.target.value)) {
+                // If the value is not a subset of a legal latitude value, prevent the value from being applied
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={parseFloat(params.value) || ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'actions',
@@ -389,11 +488,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     observationsContext.markRecordWithUnsavedChanges(id);
   };
 
-  const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
-    const updatedRow = { ...newRow, wldtaxonomic_units_id: Number(newRow.wldtaxonomic_units_id) };
-    return updatedRow;
-  };
-
   return (
     <>
       <YesNoDialog
@@ -420,7 +514,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         editMode="row"
         onCellClick={handleCellClick}
         onRowEditStop={handleRowEditStop}
-        processRowUpdate={handleProcessRowUpdate}
         columns={observationColumns}
         rows={observationsContext.initialRows}
         disableRowSelectionOnClick
@@ -462,7 +555,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             position: 'sticky',
             right: 0,
             top: 0,
-            borderLeft: '1px solid #ccc',
+            borderLeft: '1px solid #ccc'
           },
           '& .MuiDataGrid-row--editing': {
             boxShadow: 'none',

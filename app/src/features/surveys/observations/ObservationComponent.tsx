@@ -27,16 +27,7 @@ const ObservationComponent = () => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
 
-  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
-
-  const handleSaveChanges = async () => {
-    setIsSaving(true);
-
-    return observationsContext.saveRecords().finally(() => {
-      setIsSaving(false);
-    });
-  };
 
   const showSaveButton = observationsContext.hasUnsavedChanges();
 
@@ -127,19 +118,25 @@ const ObservationComponent = () => {
                 variant="contained"
                 color="primary"
                 startIcon={<Icon path={mdiPlus} size={1} />}
-                onClick={() => observationsContext.createNewRecord()}>
+                onClick={() => observationsContext.createNewRecord()}
+                disabled={observationsContext.isSaving}>
                 Add Record
               </Button>
               <Collapse in={showSaveButton} orientation="horizontal">
                 <Box ml={1} whiteSpace="nowrap">
                   <LoadingButton
-                    loading={isSaving}
+                    loading={observationsContext.isSaving}
                     variant="contained"
                     color="primary"
-                    onClick={() => handleSaveChanges()}>
+                    onClick={() => observationsContext.stopEditAndSaveRows()}
+                    disabled={observationsContext.isSaving}>
                     Save
                   </LoadingButton>
-                  <Button variant="outlined" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => setShowConfirmRemoveAllDialog(true)}
+                    disabled={observationsContext.isSaving}>
                     Discard Changes
                   </Button>
                 </Box>
