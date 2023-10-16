@@ -14,20 +14,14 @@ import { makeStyles } from '@mui/styles';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
-import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import MapContainer from 'components/map/MapContainer';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
-import { Feature, GeoJsonProperties, Geometry } from 'geojson';
+import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import { useEffect, useState } from 'react';
-import {
-  calculateUpdatedMapBounds,
-  handleGPXUpload1,
-  handleKMLUpload1,
-  handleShapeFileUpload1
-} from 'utils/mapBoundaryUploadHelpers';
+import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -84,25 +78,6 @@ const MapBoundary = (props: IMapBoundaryProps) => {
     setShouldUpdateBounds(false);
   }, [updatedBounds]);
 
-  const boundaryUploadHandler = (): IUploadHandler => {
-    return async (file) => {
-      let features: Feature<Geometry, GeoJsonProperties>[] = [];
-      try {
-        if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-          features = await handleShapeFileUpload1(file);
-        } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-          features = await handleGPXUpload1(file);
-        } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-          features = await handleKMLUpload1(file);
-        }
-
-        setFieldValue(name, [...features]);
-      } catch (error) {
-        setFieldError(name, String(error));
-      }
-    };
-  };
-
   return (
     <>
       <ComponentDialog
@@ -114,7 +89,14 @@ const MapBoundary = (props: IMapBoundaryProps) => {
             <Alert severity="info">If importing a shapefile, it must be configured with a valid projection.</Alert>
           </Box>
           <FileUpload
-            uploadHandler={boundaryUploadHandler()}
+            uploadHandler={boundaryUploadHelper({
+              onSuccess: (features) => {
+                setFieldValue(name, [...features]);
+              },
+              onFailure: (message) => {
+                setFieldError(name, message);
+              }
+            })}
             dropZoneProps={{
               acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.SPATIAL
             }}

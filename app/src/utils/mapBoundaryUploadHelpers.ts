@@ -1,6 +1,7 @@
 import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
-import { Feature } from 'geojson';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -140,6 +141,29 @@ export const handleKMLUpload = async (file: File) => {
   });
 
   return [...sanitizedGeoJSON];
+};
+
+export const boundaryUploadHelper = (params: {
+  onSuccess: (features: Feature[]) => void;
+  onFailure: (message: string) => void;
+}): IUploadHandler => {
+  const { onSuccess, onFailure } = params;
+  return async (file) => {
+    let features: Feature<Geometry, GeoJsonProperties>[] = [];
+    try {
+      if (file?.type.includes('zip') || file?.name.includes('.zip')) {
+        features = await handleShapeFileUpload(file);
+      } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
+        features = await handleGPXUpload(file);
+      } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
+        features = await handleKMLUpload(file);
+      }
+
+      onSuccess(features);
+    } catch (error) {
+      onFailure(String(error));
+    }
+  };
 };
 
 /**

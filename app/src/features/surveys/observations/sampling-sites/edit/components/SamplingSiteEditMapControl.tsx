@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import FileUpload from 'components/file-upload/FileUpload';
-import FileUploadItem, { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import FileUploadItem from 'components/file-upload/FileUploadItem';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -22,12 +22,7 @@ import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import {
-  calculateUpdatedMapBounds,
-  handleGPXUpload,
-  handleKMLUpload,
-  handleShapeFileUpload
-} from 'utils/mapBoundaryUploadHelpers';
+import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize } from 'utils/Utils';
 
 const useStyles = makeStyles(() => ({
@@ -73,18 +68,6 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
-  const boundaryUploadHandler = (): IUploadHandler => {
-    return async (file) => {
-      if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        await handleShapeFileUpload(file, name, formikProps);
-      } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        await handleGPXUpload(file, name, formikProps);
-      } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        await handleKMLUpload(file, name, formikProps);
-      }
-    };
-  };
-
   const removeFile = () => {
     setFieldValue(name, sampleSiteData?.geojson ? [sampleSiteData?.geojson] : []);
     setFieldError(name, undefined);
@@ -110,7 +93,14 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
     <Grid item xs={12}>
       <Box my={3}>
         <FileUpload
-          uploadHandler={boundaryUploadHandler()}
+          uploadHandler={boundaryUploadHelper({
+            onSuccess: (features: Feature[]) => {
+              setFieldValue(name, [...features]);
+            },
+            onFailure: (message: string) => {
+              setFieldError(name, message);
+            }
+          })}
           onRemove={removeFile}
           dropZoneProps={{
             maxNumFiles: 1,
