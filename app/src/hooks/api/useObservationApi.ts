@@ -23,7 +23,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyObservations: IObservationTableRow[]
   ): Promise<IObservationRecord[]> => {
     const { data } = await axios.put<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observation`,
+      `/api/project/${projectId}/survey/${surveyId}/observations`,
       { surveyObservations }
     );
 
@@ -42,7 +42,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number
   ): Promise<IGetSurveyObservationsResponse> => {
     const { data } = await axios.get<IGetSurveyObservationsResponse>(
-      `/api/project/${projectId}/survey/${surveyId}/observation`
+      `/api/project/${projectId}/survey/${surveyId}/observations`
     );
 
     return data;
