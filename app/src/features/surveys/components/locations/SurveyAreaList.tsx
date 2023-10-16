@@ -49,17 +49,21 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
         }}>
         <MenuItem
           onClick={() => {
-            console.log('UMM WHAT THE HELL', currentItemIndex);
             if (currentItemIndex != null) {
               openEdit(currentItemIndex);
             }
+            setAnchorEl(null);
           }}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
           Edit Details
         </MenuItem>
-        <MenuItem onClick={() => console.log('DELETE LOCATION')}>
+        <MenuItem
+          onClick={() => {
+            console.log('DELETE LOCATION');
+            setAnchorEl(null);
+          }}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>

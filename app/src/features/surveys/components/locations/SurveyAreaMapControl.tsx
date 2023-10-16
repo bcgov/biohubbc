@@ -42,10 +42,11 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           features = await handleKMLUpload1(file);
         }
 
+        // I think this will need to all be wired up to the map though, so the features can be updated
         const mapStaticLayers = features.map((item: Feature, index) => {
           return { layerName: `Study Area ${index + 1}`, features: [{ geoJSON: item }] };
         });
-        console.log(formik_key);
+
         const formData = features.map((item: Feature, index) => {
           return {
             name: `Study Area ${index + 1}`,

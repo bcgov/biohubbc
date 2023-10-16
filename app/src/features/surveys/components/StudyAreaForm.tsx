@@ -45,19 +45,35 @@ export const SurveyLocationYupSchema = yup.object({
  */
 const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
-  const { handleSubmit, values } = formikProps;
+  const { handleSubmit, values, setFieldValue } = formikProps;
   const [isOpen, setIsOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState<number | undefined>(undefined);
   const onOpen = () => {
     setIsOpen(true);
   };
   const onClose = () => {
     setIsOpen(false);
+    setCurrentIndex(undefined);
   };
   const onSave = (data: { name: string; description: string }) => {
     console.log('ON SAVE');
   };
 
   const onDelete = () => {};
+
+  const getDialogData = () => {
+    // Initial Dialog Data
+    const dialogData = {
+      name: '',
+      description: ''
+    };
+
+    if (currentIndex !== undefined) {
+      dialogData.name = values.locations[currentIndex]?.name;
+      dialogData.description = values.locations[currentIndex]?.description;
+    }
+    return dialogData;
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -68,16 +84,16 @@ const StudyAreaForm = () => {
           dialogLoading={false}
           component={{
             element: <SurveyAreaLocationForm />,
-            initialValues: {
-              name: '',
-              description: ''
-            },
+            initialValues: getDialogData(),
             validationSchema: SurveyLocationDetailsYupSchema
           }}
           dialogSaveButtonLabel="Update Location"
-          onCancel={() => onClose()}
+          onCancel={() => {
+            onClose();
+          }}
           onSave={(formValues) => {
             onSave(formValues);
+            onClose();
           }}
         />
         <SurveyAreaMapControl
@@ -91,7 +107,7 @@ const StudyAreaForm = () => {
         title="Survey Study Area"
         isLoading={false}
         openEdit={(index) => {
-          console.log(`Current Item Index: ${index}`);
+          setCurrentIndex(index);
           onOpen();
         }}
         openDelete={onDelete}
