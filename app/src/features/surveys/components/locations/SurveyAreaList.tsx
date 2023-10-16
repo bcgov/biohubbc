@@ -19,11 +19,11 @@ export interface ISurveyAreaListProps {
   isLoading: boolean;
   data: ISurveyLocation[];
   openEdit: (index: number) => void;
-  openDelete: () => void;
+  openDelete: (index: number) => void;
 }
 
 export const SurveyAreaList = (props: ISurveyAreaListProps) => {
-  const { title, data, openEdit } = props;
+  const { title, data, openEdit, openDelete } = props;
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [currentItemIndex, setCurrentItemIndex] = useState<number | null>(-1);
 
@@ -61,7 +61,9 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            console.log('DELETE LOCATION');
+            if (currentItemIndex != null) {
+              openDelete(currentItemIndex);
+            }
             setAnchorEl(null);
           }}>
           <ListItemIcon>

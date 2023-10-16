@@ -56,10 +56,18 @@ const StudyAreaForm = () => {
     setCurrentIndex(undefined);
   };
   const onSave = (data: { name: string; description: string }) => {
-    console.log('ON SAVE');
+    setFieldValue(`locations[${currentIndex}].name`, data.name);
+    setFieldValue(`locations[${currentIndex}].description`, data.description);
   };
 
-  const onDelete = () => {};
+  const onDelete = (index: number) => {
+    // remove the item at index
+    const data = values.locations;
+    data.splice(index, 1);
+
+    // set values
+    setFieldValue('locations', data);
+  };
 
   const getDialogData = () => {
     // Initial Dialog Data

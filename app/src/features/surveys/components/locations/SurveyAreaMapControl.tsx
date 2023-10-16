@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
@@ -25,9 +24,8 @@ export interface ISurveyAreMapControlProps {
 
 export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const { map_id, formik_key, formik_props } = props;
-  const { setFieldValue, setFieldError } = formik_props;
+  const { setFieldValue, setFieldError, values } = formik_props;
   const [updatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
-  const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   const boundaryUploadHandler = (): IUploadHandler => {
@@ -42,11 +40,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           features = await handleKMLUpload1(file);
         }
 
-        // I think this will need to all be wired up to the map though, so the features can be updated
-        const mapStaticLayers = features.map((item: Feature, index) => {
-          return { layerName: `Study Area ${index + 1}`, features: [{ geoJSON: item }] };
-        });
-
+        // Map features into form data
         const formData = features.map((item: Feature, index) => {
           return {
             name: `Study Area ${index + 1}`,
@@ -55,7 +49,6 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             revision_count: 0
           };
         });
-        setStaticLayers(mapStaticLayers);
         setFieldValue(formik_key, formData);
       } catch (error) {
         setFieldError(formik_key, String(error));
@@ -91,13 +84,10 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
       </Button>
       <MapContainer
         mapId={map_id}
-        staticLayers={staticLayers}
-        // staticLayers={[
-        //   {
-        //     layerName: 'Sample Layer',
-        //     features: []
-        //   }
-        // ]}
+        staticLayers={values.locations.map((item) => {
+          // Features will be split at upload to each be a single item so it is safe to access the first item
+          return { layerName: item.name, features: [{ geoJSON: item.geojson[0] }] };
+        })}
         bounds={updatedBounds}
       />
     </>
