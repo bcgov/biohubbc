@@ -31,7 +31,7 @@ const useDwcaApi = (axios: AxiosInstance) => {
     req_message.append('media', file);
 
     const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`,
+      `/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/upload`,
       req_message,
       {
         cancelToken: cancelTokenSource?.token,
@@ -53,7 +53,7 @@ const useDwcaApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number
   ): Promise<IGetObservationSubmissionResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/get`);
 
     return data;
   };
@@ -95,7 +95,7 @@ const useDwcaApi = (axios: AxiosInstance) => {
     submissionId: number
   ): Promise<number> => {
     const { data } = await axios.delete(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`
+      `/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/${submissionId}/delete`
     );
 
     return data;
@@ -113,7 +113,7 @@ const useDwcaApi = (axios: AxiosInstance) => {
     submissionId: number
   ): Promise<string> => {
     const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/getSignedUrl`
+      `/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/${submissionId}/getSignedUrl`
     );
 
     return data;
