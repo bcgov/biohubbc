@@ -1,9 +1,11 @@
 import { SOURCE_SYSTEM } from '../constants/database';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
-import { Models } from '../models';
+import { ProjectUser } from '../repositories/project-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { getKeycloakSource, getUserGuid } from '../utils/keycloak-utils';
 import { DBService } from './db-service';
+import { ProjectParticipationService } from './project-participation-service';
 import { UserService } from './user-service';
 
 export enum AuthorizeOperator {
@@ -71,18 +73,20 @@ export type AuthorizationScheme = AuthorizeConfigAnd | AuthorizeConfigOr;
 
 export class AuthorizationService extends DBService {
   _userService = new UserService(this.connection);
-  _systemUser: Models.user.UserObject | undefined = undefined;
+  _projectParticipationService = new ProjectParticipationService(this.connection);
+  _systemUser: SystemUser | undefined = undefined;
+  _projectUser: (ProjectUser & SystemUser) | undefined = undefined;
   _keycloakToken: object | undefined = undefined;
 
-  constructor(connection: IDBConnection, init?: { systemUser?: Models.user.UserObject; keycloakToken?: object }) {
+  constructor(
+    connection: IDBConnection,
+    init?: { systemUser?: SystemUser; projectUser?: ProjectUser & SystemUser; keycloakToken?: object }
+  ) {
     super(connection);
 
     this._systemUser = init?.systemUser;
+    this._projectUser = init?.projectUser;
     this._keycloakToken = init?.keycloakToken;
-  }
-
-  get systemUser(): Models.user.UserObject | undefined {
-    return this._systemUser;
   }
 
   /**
@@ -132,29 +136,32 @@ export class AuthorizationService extends DBService {
 
   async authorizeByProjectPermission(authorizeProjectPermission: AuthorizeByProjectPermission): Promise<boolean> {
     if (!authorizeProjectPermission) {
-      // Cannot verify user roles
+      // Cannot verify user permissions
       return false;
     }
 
-    const systemUserObject = this._systemUser || (await this.getSystemUserObject());
+    if (this._projectUser?.project_id !== authorizeProjectPermission.projectId) {
+      // A projectUser was previously cached, but for a different project
+      this._projectUser = undefined;
+    }
 
-    if (!systemUserObject) {
+    const projectUserObject =
+      this._projectUser || (await this.getProjectUserObject(authorizeProjectPermission.projectId));
+    if (!projectUserObject) {
       // Cannot verify user roles
       return false;
     }
 
     // Cache the _systemUser for future use, if needed
-    this._systemUser = systemUserObject;
-
-    if (systemUserObject.record_end_date) {
+    this._systemUser = projectUserObject;
+    if (projectUserObject.record_end_date) {
       //system user has an expired record
       return false;
     }
-
-    // Check if the user has at least 1 of the valid roles
+    // Check if the user has at least 1 of the valid project permissions
     return AuthorizationService.hasAtLeastOneValidValue(
       authorizeProjectPermission.validProjectPermissions,
-      systemUserObject?.role_names
+      projectUserObject.project_role_permissions
     );
   }
 
@@ -208,7 +215,7 @@ export class AuthorizationService extends DBService {
     // Check if the user has at least 1 of the valid roles
     return AuthorizationService.hasAtLeastOneValidValue(
       authorizeSystemRoles.validSystemRoles,
-      systemUserObject?.role_names
+      systemUserObject.role_names
     );
   }
 
@@ -286,7 +293,7 @@ export class AuthorizationService extends DBService {
     return false;
   };
 
-  async getSystemUserObject(): Promise<Models.user.UserObject | null> {
+  async getSystemUserObject(): Promise<SystemUser | null> {
     let systemUserWithRoles;
 
     try {
@@ -305,9 +312,9 @@ export class AuthorizationService extends DBService {
   /**
    * Finds a single user based on their keycloak token information.
    *
-   * @return {*}  {(Promise<Models.user.UserObject | null>)}
+   * @return {*}  {(Promise<SystemUser | null>)}
    */
-  async getSystemUserWithRoles(): Promise<Models.user.UserObject | null> {
+  async getSystemUserWithRoles(): Promise<SystemUser | null> {
     if (!this._keycloakToken) {
       return null;
     }
@@ -319,5 +326,35 @@ export class AuthorizationService extends DBService {
     }
 
     return this._userService.getUserByGuid(userGuid);
+  }
+
+  async getProjectUserObject(projectId: number): Promise<(ProjectUser & SystemUser) | null> {
+    let projectUserWithRoles;
+
+    try {
+      projectUserWithRoles = await this.getProjectUserWithRoles(projectId);
+    } catch {
+      return null;
+    }
+
+    if (!projectUserWithRoles) {
+      return null;
+    }
+
+    return projectUserWithRoles;
+  }
+
+  async getProjectUserWithRoles(projectId: number) {
+    if (!this._keycloakToken) {
+      return null;
+    }
+
+    const userGuid = getUserGuid(this._keycloakToken);
+
+    if (!userGuid) {
+      return null;
+    }
+
+    return this._projectParticipationService.getProjectParticipantByUserGuid(projectId, userGuid);
   }
 }
