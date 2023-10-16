@@ -12,6 +12,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import { AttachmentType } from 'constants/attachments';
+import { PG_MAX_INT } from 'constants/misc';
 import { Form, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
@@ -162,7 +163,7 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
               name={`${index}.device_id`}
               disabled={mode === 'edit'}
               min={1}
-              max={2147483647}
+              max={PG_MAX_INT}
             />
           </Grid>
           <Grid item xs={6}>

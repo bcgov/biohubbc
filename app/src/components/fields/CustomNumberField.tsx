@@ -4,22 +4,18 @@ import get from 'lodash-es/get';
 import React from 'react';
 import NumberFormat, { NumberFormatProps } from 'react-number-format';
 
-export type INumberFieldProps = TextFieldProps & {
-  required?: boolean;
-  label: string;
+type BaseNumberFieldProps = {
   name: string;
   min?: number;
   max?: number;
   float?: boolean;
 };
 
-interface NumberFormatCustomProps {
+type INumberFieldProps = TextFieldProps & BaseNumberFieldProps & { required?: boolean; label: string };
+
+type NumberFormatCustomProps = BaseNumberFieldProps & {
   onChange: (event: { target: { name: string; value: number } }) => void;
-  name: string;
-  min?: number;
-  max?: number;
-  float?: boolean;
-}
+};
 
 const NumberFormatCustom = React.forwardRef<NumberFormatProps, NumberFormatCustomProps>(function NumericFormatCustom(
   props,
