@@ -26,12 +26,13 @@ const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props)
         </Typography>
         <Box>
           {data.map((item: string, index: number) => (
-            <Typography key={index} component="dd"
+            <Typography
+              key={index}
+              component="dd"
               sx={{
                 display: 'inline-block',
                 mr: '5px'
-              }}
-            >
+              }}>
               {item}
               {index < data.length - 1 && ', '}
             </Typography>

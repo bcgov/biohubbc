@@ -28,14 +28,10 @@ const Partnerships = () => {
   return (
     <Box component="dl">
       <Box className="row">
-        <Typography component="dt">
-          Indigenous Partnerships
-        </Typography>
+        <Typography component="dt">Indigenous Partnerships</Typography>
         {surveyData.partnerships.indigenous_partnerships?.map((indigenousPartnership: number) => {
           return (
-            <Typography
-              component="dd"
-              key={`first-nations-${indigenousPartnership}`}>
+            <Typography component="dd" key={`first-nations-${indigenousPartnership}`}>
               {codes.first_nations?.find((item: any) => item.id === indigenousPartnership)?.name}
             </Typography>
           );
@@ -44,26 +40,17 @@ const Partnerships = () => {
       </Box>
 
       <Box className="row">
-        <Typography component="dt">
-          Other Partnerships
-        </Typography>
+        <Typography component="dt">Other Partnerships</Typography>
         {surveyData.partnerships.stakeholder_partnerships?.map((stakeholderPartnership: string) => {
           return (
-            <Typography
-              component="dd"
-              key={`stakeholder-${stakeholderPartnership}`}>
+            <Typography component="dd" key={`stakeholder-${stakeholderPartnership}`}>
               {stakeholderPartnership}
             </Typography>
           );
         })}
 
-        {!hasStakeholderPartnerships && (
-          <Typography component="dd">
-            None
-          </Typography>
-        )}
+        {!hasStakeholderPartnerships && <Typography component="dd">None</Typography>}
       </Box>
-
     </Box>
   );
 };

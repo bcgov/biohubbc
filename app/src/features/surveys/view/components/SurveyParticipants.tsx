@@ -26,21 +26,14 @@ const SurveyParticipants = () => {
         <Box component="dl">
           {participants.map((surveyParticipants) => (
             <Box className="row" key={surveyParticipants.system_user_id}>
-              <Typography component='dt'>
-                {surveyParticipants.display_name}
-              </Typography>
-              <Typography component='dd'>
-                {surveyParticipants.survey_job_name}
-              </Typography>
+              <Typography component="dt">{surveyParticipants.display_name}</Typography>
+              <Typography component="dd">{surveyParticipants.survey_job_name}</Typography>
             </Box>
           ))}
         </Box>
       ) : (
-        <Box className="row">
-          No participants
-        </Box>
+        <Box className="row">No participants</Box>
       )}
-
     </>
   );
 };

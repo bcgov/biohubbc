@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import Typography from '@mui/material/Typography';
 
 /**
  * General information content for a survey.
@@ -27,12 +27,8 @@ const Permits = () => {
       {permit.permits?.map((item, index: number) => {
         return (
           <Box className="row" key={index}>
-            <Typography component="dt">
-            {'#' + item.permit_number}
-            </Typography>
-            <Typography component="dd">
-              {item.permit_type}
-            </Typography>
+            <Typography component="dt">{'#' + item.permit_number}</Typography>
+            <Typography component="dd">{item.permit_type}</Typography>
           </Box>
         );
       })}

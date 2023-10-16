@@ -26,7 +26,6 @@ import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from './SamplingSiteHeader';
 
-
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
     minWidth: '6rem',
