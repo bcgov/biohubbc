@@ -204,24 +204,24 @@ export class ProjectParticipationRepository extends BaseRepository {
     queryBuilder
       .select(
         knex.raw(`
-            su.system_user_id,
-            su.user_identifier,
-            su.user_guid,
-            su.record_end_date,
-            uis.name AS identity_source,
-            array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-            array_remove(array_agg(sr.name), NULL) AS role_names,
-            su.email,
-            su.display_name,
-            su.given_name,
-            su.family_name,
-            su.agency,
-            pp.project_participation_id,
-            pp.project_id,
-            array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-            array_remove(array_agg(pr.name), NULL) AS project_role_names,
-            array_remove(array_agg(pp2.name), NULL) as project_role_permissions
-          `)
+          su.system_user_id,
+          su.user_identifier,
+          su.user_guid,
+          su.record_end_date,
+          uis.name AS identity_source,
+          array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+          array_remove(array_agg(sr.name), NULL) AS role_names,
+          su.email,
+          su.display_name,
+          su.given_name,
+          su.family_name,
+          su.agency,
+          pp.project_participation_id,
+          pp.project_id,
+          array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
+          array_remove(array_agg(pr.name), NULL) AS project_role_names,
+          array_remove(array_agg(pp2.name), NULL) as project_role_permissions
+        `)
       )
       .from('project_participation as pp')
       .leftJoin('project_role as pr', 'pp.project_role_id', 'pr.project_role_id')
