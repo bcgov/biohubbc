@@ -20,15 +20,7 @@ export interface ISurveyLocationForm {
 }
 
 export const SurveyLocationInitialValues: ISurveyLocationForm = {
-  locations: [
-    // {
-    //   survey_location_id: null as unknown as number,
-    //   name: '',
-    //   description: '',
-    //   geojson: [],
-    //   revision_count: 0
-    // }
-  ]
+  locations: []
 };
 
 export const SurveyLocationDetailsYupSchema = yup.object({

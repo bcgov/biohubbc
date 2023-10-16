@@ -10,7 +10,7 @@ import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
-import { Feature } from 'geojson';
+import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useState } from 'react';
 import { handleGPXUpload1, handleKMLUpload1, handleShapeFileUpload1 } from 'utils/mapBoundaryUploadHelpers';
@@ -32,7 +32,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
 
   const boundaryUploadHandler = (): IUploadHandler => {
     return async (file) => {
-      let features: Feature[] = [];
+      let features: Feature<Geometry, GeoJsonProperties>[] = [];
       try {
         if (file?.type.includes('zip') || file?.name.includes('.zip')) {
           features = await handleShapeFileUpload1(file);
@@ -42,13 +42,20 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           features = await handleKMLUpload1(file);
         }
 
-        const data = features.map((item: Feature, index) => {
-          return { features: { geoJSON: item }, layerName: 'Some name' };
+        const mapStaticLayers = features.map((item: Feature, index) => {
+          return { layerName: `Study Area ${index + 1}`, features: [{ geoJSON: item }] };
         });
-
-        console.log(data);
-        setStaticLayers(data as unknown as IStaticLayer[]);
-        setFieldValue(formik_key, [...features]);
+        console.log(formik_key);
+        const formData = features.map((item: Feature, index) => {
+          return {
+            name: `Study Area ${index + 1}`,
+            description: '',
+            geojson: [item],
+            revision_count: 0
+          };
+        });
+        setStaticLayers(mapStaticLayers);
+        setFieldValue(formik_key, formData);
       } catch (error) {
         setFieldError(formik_key, String(error));
       }
