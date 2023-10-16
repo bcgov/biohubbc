@@ -18,15 +18,15 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import MapContainer from 'components/map/MapContainer';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
-import { Feature } from 'geojson';
+import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import { useEffect, useState } from 'react';
 import {
   calculateUpdatedMapBounds,
-  handleGPXUpload,
-  handleKMLUpload,
-  handleShapeFileUpload
+  handleGPXUpload1,
+  handleKMLUpload1,
+  handleShapeFileUpload1
 } from 'utils/mapBoundaryUploadHelpers';
 
 const useStyles = makeStyles(() => ({
@@ -67,7 +67,7 @@ const MapBoundary = (props: IMapBoundaryProps) => {
 
   const { name, title, mapId, bounds, formikProps } = props;
 
-  const { values, errors, setFieldValue } = formikProps;
+  const { values, errors, setFieldValue, setFieldError } = formikProps;
 
   const [openUploadBoundary, setOpenUploadBoundary] = useState(false);
   const [shouldUpdateBounds, setShouldUpdateBounds] = useState<boolean>(false);
@@ -86,12 +86,19 @@ const MapBoundary = (props: IMapBoundaryProps) => {
 
   const boundaryUploadHandler = (): IUploadHandler => {
     return async (file) => {
-      if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        handleShapeFileUpload(file, name, formikProps);
-      } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        await handleGPXUpload(file, name, formikProps);
-      } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        await handleKMLUpload(file, name, formikProps);
+      let features: Feature<Geometry, GeoJsonProperties>[] = [];
+      try {
+        if (file?.type.includes('zip') || file?.name.includes('.zip')) {
+          features = await handleShapeFileUpload1(file);
+        } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
+          features = await handleGPXUpload1(file);
+        } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
+          features = await handleKMLUpload1(file);
+        }
+
+        setFieldValue(name, [...features]);
+      } catch (error) {
+        setFieldError(name, String(error));
       }
     };
   };

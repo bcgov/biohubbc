@@ -6,7 +6,6 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { FormikContextType } from 'formik';
 import { useContext } from 'react';
 import { ISurveyLocationForm } from '../StudyAreaForm';
-import { SurveyAreaList } from './SurveyAreaList';
 import { SurveyAreaMapControl } from './SurveyAreaMapControl';
 
 export const SurveyLocationPage = () => {
@@ -61,9 +60,7 @@ export const SurveyLocationPage = () => {
             borderRightStyle: 'solid',
             borderRightWidth: '1px',
             borderRightColor: grey[300]
-          }}>
-          <SurveyAreaList title={''} isLoading={false} data={[]} />
-        </Box>
+          }}></Box>
 
         {/* Map Component */}
         <Box flex="1 1 auto" overflow="hidden">
