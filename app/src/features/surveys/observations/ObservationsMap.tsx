@@ -2,7 +2,6 @@ import { mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import { makeStyles } from '@mui/styles';
 import { square } from '@turf/turf';
 import MapContainer, { INonEditableGeometries } from 'components/map/MapContainer';
 import { ObservationsContext } from 'contexts/observationsContext';
@@ -11,22 +10,7 @@ import { LatLngBoundsExpression } from 'leaflet';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { calculateFeatureBoundingBox, latLngBoundsFromBoundingBox } from 'utils/mapBoundaryUploadHelpers';
 
-const useStyles = makeStyles(() => ({
-  zoomToBoundaryExtentBtn: {
-    padding: '3px',
-    borderRadius: '4px',
-    background: '#ffffff',
-    color: '#000000',
-    border: '2px solid rgba(0,0,0,0.2)',
-    backgroundClip: 'padding-box',
-    '&:hover': {
-      backgroundColor: '#eeeeee'
-    }
-  }
-}));
-
 const ObservationsMap = () => {
-  const classes = useStyles();
   const observationsContext = useContext(ObservationsContext);
 
   const surveyObservations: INonEditableGeometries[] = useMemo(() => {
@@ -89,16 +73,26 @@ const ObservationsMap = () => {
       <MapContainer
         mapId="survey_observations_map"
         bounds={bounds}
-        scrollWheelZoom={true}
+        scrollWheelZoom={false}
         nonEditableGeometries={surveyObservations}
         zoom={6}
       />
       {surveyObservations.length > 0 && (
         <Box position="absolute" top="126px" left="10px" zIndex="999">
           <IconButton
+            sx={{
+              padding: '3px',
+              borderRadius: '4px',
+              background: '#ffffff',
+              color: '#000000',
+              border: '2px solid rgba(0,0,0,0.2)',
+              backgroundClip: 'padding-box',
+              '&:hover': {
+                backgroundColor: '#eeeeee'
+              }
+            }}
             aria-label="zoom to initial extent"
             title="Zoom to initial extent"
-            className={classes.zoomToBoundaryExtentBtn}
             onClick={() => zoomToBoundaryExtent()}>
             <Icon size={1} path={mdiRefresh} />
           </IconButton>
