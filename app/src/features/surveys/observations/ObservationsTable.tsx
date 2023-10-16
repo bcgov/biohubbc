@@ -67,7 +67,8 @@ const SampleSiteSkeleton = () => (
       gap: '16px',
       alignItemx: 'center',
       p: 1,
-      height: 57,
+      height: 58,
+      background: '#fff',
       borderBottom: '1px solid' + grey[300]
     }}>
     <Skeleton height={26} sx={{ flex: '1 1 auto' }} />

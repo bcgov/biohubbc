@@ -51,10 +51,11 @@ const SamplingSiteList = () => {
 
   const SampleSiteSkeleton = () => (
     <Box
-      p={2}
       sx={{
         display: 'flex',
         gap: '16px',
+        py: 1.5,
+        px: 2,
         borderBottom: '1px solid' + grey[300]
       }}>
       <Skeleton sx={{ flex: '1 1 auto' }} />
@@ -174,11 +175,11 @@ const SamplingSiteList = () => {
                     '&.Mui-expanded': {
                       // my: 1
                     },
-                    '&.Mui-expanded .test': {
+                    '&.Mui-expanded .sampleSiteHeader': {
                       background: cyan[50]
                     }
                   }}>
-                  <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="test">
+                  <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="sampleSiteHeader">
                     <AccordionSummary
                       expandIcon={<Icon path={mdiChevronDown} size={1} />}
                       aria-controls="panel1bh-content"
@@ -194,7 +195,7 @@ const SamplingSiteList = () => {
                           whiteSpace: 'nowrap'
                         }
                       }}>
-                      <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{sampleSite.name}</Typography>
+                      <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', typography: 'body2' }}>{sampleSite.name}</Typography>
                     </AccordionSummary>
                     <IconButton
                       onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>

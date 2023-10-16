@@ -2,9 +2,6 @@ import {
   mdiCalendarRangeOutline,
   mdiChevronDown,
   mdiCogOutline,
-
-  // mdiCircle,
-  mdiMapMarkerOutline,
   mdiPencilOutline,
   mdiTrashCanOutline
 } from '@mdi/js';
@@ -189,21 +186,6 @@ const SurveyHeader = () => {
                 {surveyWithDetails.surveyData.survey_details.survey_name}
               </Typography>
               <Box mt={1} display="flex" alignItems="center" flexWrap="wrap">
-                <Typography
-                  className="info"
-                  component="span"
-                  variant="subtitle1"
-                  color="textSecondary"
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    mr: 2
-                  }}>
-                  <Icon path={mdiMapMarkerOutline} size={0.875} />
-                  <Typography component="span" sx={{ ml: 0.75 }}>
-                    Region(s): Thompson-Okanagan
-                  </Typography>
-                </Typography>
                 <Typography
                   component="span"
                   variant="subtitle1"

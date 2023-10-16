@@ -1,4 +1,6 @@
-import { Toolbar } from '@mui/material';
+import Toolbar from '@mui/material/Toolbar';
+import Icon from '@mdi/react';
+import { mdiPencilOutline } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -49,7 +51,7 @@ const SurveyPage: React.FC = () => {
     <>
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Paper elevation={0}>
+        <Paper elevation={0} sx={{overflow: 'hidden'}}>
           <Toolbar>
             <Typography
               component="h3"
@@ -63,12 +65,14 @@ const SurveyPage: React.FC = () => {
               </Typography>
             </Typography>
             <Button
+              
               component={RouterLink}
               to={'observations'}
               title="Submit Survey Data and Documents"
               color="primary"
-              variant="contained">
-              Manage
+              variant="contained"
+              startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+              Manage Observations
             </Button>
           </Toolbar>
           <ObservationsMap />

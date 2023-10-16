@@ -158,7 +158,7 @@ const ObservationComponent = () => {
           </Button> */}
         </Toolbar>
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
-          <Box position="absolute" width="100%" height="100%" p={1} pt={0.5}>
+          <Box position="absolute" width="100%" height="100%" py={1} px={2} pt={0.5}>
             <ObservationsTable
               sample_sites={sampleSites}
               sample_methods={sampleMethods}
