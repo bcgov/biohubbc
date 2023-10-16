@@ -32,28 +32,20 @@ const SurveyProprietaryData = () => {
       {proprietor && (
         <Box component="dl">
           <Box className="row">
-            <Typography component="dt">
-              Proprietor Name
-            </Typography>
+            <Typography component="dt">Proprietor Name</Typography>
             <Typography component="dd" data-testid="survey_proprietor_name">
               {proprietor.proprietor_name}
             </Typography>
           </Box>
           <Box className="row">
-            <Typography component="dt">
-              Data Category
-            </Typography>
+            <Typography component="dt">Data Category</Typography>
             <Typography component="dd" data-testid="survey_proprietor_type_name">
               {proprietor.proprietor_type_name}
             </Typography>
           </Box>
           <Box className="row">
-            <Typography component="dt">
-              Category Rationale
-            </Typography>
-            <Typography data-testid="survey_category_rationale">
-              {proprietor.category_rationale}
-            </Typography>
+            <Typography component="dt">Category Rationale</Typography>
+            <Typography data-testid="survey_category_rationale">{proprietor.category_rationale}</Typography>
           </Box>
         </Box>
       )}

@@ -1,4 +1,11 @@
-import { mdiCalendarRange, mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiCalendarRange,
+  mdiChevronDown,
+  mdiDotsVertical,
+  mdiPencilOutline,
+  mdiPlus,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import { Fade, Skeleton } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
@@ -6,9 +13,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-// import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
-import { cyan } from '@mui/material/colors';
+import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -45,14 +50,14 @@ const SamplingSiteList = () => {
   };
 
   const SampleSiteSkeleton = () => (
-    <Box p={2}
+    <Box
+      p={2}
       sx={{
         display: 'flex',
         gap: '16px',
         borderBottom: '1px solid' + grey[300]
-      }}
-    >
-      <Skeleton sx={{flex: '1 1 auto'}} />
+      }}>
+      <Skeleton sx={{ flex: '1 1 auto' }} />
     </Box>
   );
 
@@ -70,16 +75,17 @@ const SamplingSiteList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem sx={{
-          p: 0,
-          '& a': {
-            display: 'flex',
-            px: 2,
-            py: '6px',
-            textDecoration: 'none',
-            color: 'text.primary'
-          }
-        }}>
+        <MenuItem
+          sx={{
+            p: 0,
+            '& a': {
+              display: 'flex',
+              px: 2,
+              py: '6px',
+              textDecoration: 'none',
+              color: 'text.primary'
+            }
+          }}>
           <RouterLink to={`sampling/${selectedSampleSiteId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
@@ -120,12 +126,7 @@ const SamplingSiteList = () => {
             Add
           </Button>
         </Toolbar>
-        <Box
-          position="relative"
-          display="flex"
-          flex="1 1 auto"
-          overflow="hidden">
-
+        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           {/* Display spinner if data loaders are still waiting for a response */}
           {(surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading) && (
             <Fade in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}>
@@ -137,13 +138,12 @@ const SamplingSiteList = () => {
                   p: 1,
                   background: '#fff',
                   zIndex: 2
-                }}
-              >
-                <SampleSiteSkeleton/>
-                <SampleSiteSkeleton/>
-                <SampleSiteSkeleton/>
-                <SampleSiteSkeleton/>
-                <SampleSiteSkeleton/>
+                }}>
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
               </Box>
             </Fade>
           )}
@@ -156,7 +156,6 @@ const SamplingSiteList = () => {
               p: 1,
               overflowY: 'auto'
             }}>
-
             {/* Display text if the sample site data loader has no items in it */}
             {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
               !surveyContext.sampleSiteDataLoader.isLoading && (
@@ -167,7 +166,9 @@ const SamplingSiteList = () => {
 
             {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
               return (
-                <Accordion disableGutters key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}  
+                <Accordion
+                  disableGutters
+                  key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
                   sx={{
                     boxShadow: 'none',
                     '&.Mui-expanded': {
@@ -177,13 +178,7 @@ const SamplingSiteList = () => {
                       background: cyan[50]
                     }
                   }}>
-                  <Box 
-                    display="flex" 
-                    overflow="hidden" 
-                    alignItems="center" 
-                    pr={1.5}
-                    className="test"
-                  >
+                  <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="test">
                     <AccordionSummary
                       expandIcon={<Icon path={mdiChevronDown} size={1} />}
                       aria-controls="panel1bh-content"
@@ -199,9 +194,7 @@ const SamplingSiteList = () => {
                           whiteSpace: 'nowrap'
                         }
                       }}>
-                      <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {sampleSite.name}
-                      </Typography>
+                      <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{sampleSite.name}</Typography>
                     </AccordionSummary>
                     <IconButton
                       onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
@@ -215,41 +208,40 @@ const SamplingSiteList = () => {
                     sx={{
                       py: 0
                     }}>
-                    <List disablePadding
+                    <List
+                      disablePadding
                       sx={{
                         '& .MuiListItemText-primary': {
                           fontSize: '0.875rem'
                         }
-                      }}
-                    >
+                      }}>
                       {sampleSite.sample_methods?.map((sampleMethod) => {
                         return (
-                          <ListItem disableGutters divider
+                          <ListItem
+                            disableGutters
+                            divider
                             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                             sx={{
                               display: 'block'
                             }}>
                             <ListItemText
-                              primary=
-                                {getCodesName(
-                                  codesContext.codesDataLoader.data,
-                                  'sample_methods',
-                                  sampleMethod.method_lookup_id
-                                )}
-                            >
-                            </ListItemText>
+                              primary={getCodesName(
+                                codesContext.codesDataLoader.data,
+                                'sample_methods',
+                                sampleMethod.method_lookup_id
+                              )}></ListItemText>
                             <List disablePadding dense>
                               {sampleMethod.sample_periods?.map((samplePeriod) => {
                                 return (
-                                  <ListItem dense divider
+                                  <ListItem
+                                    dense
+                                    divider
                                     key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
                                     <ListItemIcon>
                                       <Icon path={mdiCalendarRange} size={0.8}></Icon>
                                     </ListItemIcon>
                                     <ListItemText
-                                      primary={`${samplePeriod.start_date} to ${samplePeriod.end_date}`}
-                                    >
-                                    </ListItemText>
+                                      primary={`${samplePeriod.start_date} to ${samplePeriod.end_date}`}></ListItemText>
                                   </ListItem>
                                 );
                               })}
@@ -262,9 +254,7 @@ const SamplingSiteList = () => {
                 </Accordion>
               );
             })}
-
           </Box>
-
         </Box>
       </Box>
     </>

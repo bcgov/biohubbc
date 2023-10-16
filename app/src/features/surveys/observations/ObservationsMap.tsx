@@ -1,15 +1,15 @@
-import { useContext, useCallback, useMemo, useState } from 'react';
+import { mdiRefresh } from '@mdi/js';
+import Icon from '@mdi/react';
+import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
+import { makeStyles } from '@mui/styles';
+import { square } from '@turf/turf';
 import MapContainer, { INonEditableGeometries } from 'components/map/MapContainer';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { Position } from 'geojson';
-import { IconButton } from '@mui/material';
-import Icon from '@mdi/react';
-import { makeStyles } from '@mui/styles';
-import { mdiRefresh } from '@mdi/js';
 import { LatLngBoundsExpression } from 'leaflet';
-import { calculateFeatureBoundingBox,  latLngBoundsFromBoundingBox } from 'utils/mapBoundaryUploadHelpers';
-import { square } from '@turf/turf';
+import { useCallback, useContext, useMemo, useState } from 'react';
+import { calculateFeatureBoundingBox, latLngBoundsFromBoundingBox } from 'utils/mapBoundaryUploadHelpers';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -63,7 +63,7 @@ const ObservationsMap = () => {
               </Button>
             </Popup>
           )*/
-        }
+        };
       });
   }, [observationsContext.observationsDataLoader.data]);
 

@@ -2,17 +2,20 @@ import {
   mdiCalendarRangeOutline,
   mdiChevronDown,
   mdiCogOutline,
-  mdiPencilOutline,
-  mdiTrashCanOutline,
+
   // mdiCircle,
-  mdiMapMarkerOutline
+  mdiMapMarkerOutline,
+  mdiPencilOutline,
+  mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import { grey } from '@mui/material/colors';
+import Container from '@mui/material/Container';
+import Link from '@mui/material/Link';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -32,10 +35,8 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
-import Link from '@mui/material/Link';
+import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import { Link as RouterLink } from 'react-router-dom'
-import { grey } from '@mui/material/colors';
 
 /**
  * Survey header for a single-survey view.
@@ -133,14 +134,16 @@ const SurveyHeader = () => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [publishSurveyDialogOpen, setPublishSurveyDialogOpen] = useState<boolean>(false);
 
-
   if (!surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <Paper elevation={0} square={true} id="pageTitle"
+      <Paper
+        elevation={0}
+        square={true}
+        id="pageTitle"
         sx={{
           position: 'sticky',
           top: 0,
@@ -148,21 +151,18 @@ const SurveyHeader = () => {
           pt: 3,
           pb: 4,
           borderBottom: '1px solid' + grey[300]
-        }}
-      >
-        <Container maxWidth="xl" >
+        }}>
+        <Container maxWidth="xl">
           <Breadcrumbs
             sx={{
               mb: 1.5
-            }}
-          >
+            }}>
             <Link
               component={RouterLink}
-              variant="body2" 
+              variant="body2"
               underline="hover"
               to={`/admin/projects/${projectWithDetails?.projectData.project.project_id}`}
-              aria-current="page"
-            >
+              aria-current="page">
               {projectWithDetails?.projectData.project.project_name}
             </Link>
             <Typography variant="body2" component="span">
@@ -175,19 +175,17 @@ const SurveyHeader = () => {
             gap="1.5rem"
             sx={{
               flexDirection: { xs: 'column', lg: 'row' }
-            }}
-          >
+            }}>
             <Box>
               <Typography
-                variant="h2" 
+                variant="h2"
                 component="h1"
                 sx={{
                   display: 'block',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
                   textOverflow: 'ellipsis'
-                }} 
-                >
+                }}>
                 {surveyWithDetails.surveyData.survey_details.survey_name}
               </Typography>
               <Box mt={1} display="flex" alignItems="center" flexWrap="wrap">
@@ -195,30 +193,30 @@ const SurveyHeader = () => {
                   className="info"
                   component="span"
                   variant="subtitle1"
-                  color='textSecondary'
+                  color="textSecondary"
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
                     mr: 2
-                  }}
-                >
-                  <Icon path={mdiMapMarkerOutline} size={0.875}/>
-                  <Typography component="span" sx={{ml: 0.75}}>Region(s): Thompson-Okanagan</Typography>
+                  }}>
+                  <Icon path={mdiMapMarkerOutline} size={0.875} />
+                  <Typography component="span" sx={{ ml: 0.75 }}>
+                    Region(s): Thompson-Okanagan
+                  </Typography>
                 </Typography>
                 <Typography
                   component="span"
                   variant="subtitle1"
-                  color='textSecondary'
+                  color="textSecondary"
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
                     '& svg': {
                       color: 'text.secondary'
                     }
-                  }}
-                >
+                  }}>
                   <Icon path={mdiCalendarRangeOutline} size={0.875} />
-                  <Typography component="span" sx={{ml: 0.75}}>
+                  <Typography component="span" sx={{ ml: 0.75 }}>
                     {getFormattedDateRangeString(
                       DATE_FORMAT.ShortMediumDateFormat,
                       surveyWithDetails.surveyData.survey_details.start_date,

@@ -179,7 +179,9 @@ export const AccessRequestPage: React.FC = () => {
           }}>
           {({ handleSubmit }) => (
             <Box component={Paper} p={3}>
-              <Typography variant="h3" component="h1">Request Access</Typography>
+              <Typography variant="h3" component="h1">
+                Request Access
+              </Typography>
               <Box mt={3}>
                 <Typography variant="body1" color="textSecondary">
                   You will need to provide some additional details before you are granted access to this application.

@@ -175,21 +175,21 @@ export const handleKMLUpload = async <T>(file: File, name: string, formikProps: 
 
 /**
  * Calculates the bounding box that encompasses all of the given features
- * 
+ *
  * @param features The features used to calculate the bounding box
  * @returns The bounding box, or undefined if a bounding box cannot be calculated.
  */
-export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefined  => {
+export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefined => {
   // If no geometries, we do not need to set bounds
   if (!features || !features.length) {
     return;
   }
 
-  /** 
+  /**
    * If there is only one geometry and it is a point, we cannot automatically calculate
    * a bounding box, because leaflet does not know how to handle the scale, and tries
    * to zoom in way too much. In this case, we manually create a bounding box.
-  */
+   */
   if (features.length === 1 && features[0]?.geometry?.type === 'Point') {
     const singlePoint = features[0]?.geometry;
     const [longitude, latitude] = singlePoint.coordinates;
@@ -211,19 +211,19 @@ export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefin
 
 /**
  * Converts a bounding box to a lat/long bounds expression
- * @param boundingBox 
- * @returns 
+ * @param boundingBox
+ * @returns
  */
 export const latLngBoundsFromBoundingBox = (boundingBox: BBox): LatLngBoundsExpression => {
   return [
     [boundingBox[1], boundingBox[0]],
     [boundingBox[3], boundingBox[2]]
   ];
-}
+};
 
 /**
  * Calculates the bounding box that encompasses all of the given features
- * 
+ *
  * @param features The features used to calculate the map bounds
  * @returns The Lat/Long bounding box, or undefined if a bounding box cannot be calculated.
  */

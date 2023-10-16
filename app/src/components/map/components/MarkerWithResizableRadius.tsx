@@ -34,7 +34,6 @@ const MarkerWithResizableRadius = (props: IClickMarkerProps): JSX.Element => {
     shadowSize: [41, 41]
   };
 
-  
   //Using this open source icons from GitHub since it's not very convenient to style the markers directly.
   const blueIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',

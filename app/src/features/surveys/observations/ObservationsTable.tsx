@@ -1,9 +1,17 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
+import Skeleton from '@mui/lab/Skeleton';
 import Box from '@mui/material/Box';
-import Skeleton from '@mui/lab/Skeleton'
-import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridInputRowSelectionModel, GridRowModelUpdate } from '@mui/x-data-grid';
+import { cyan, grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import {
+  DataGrid,
+  GridColDef,
+  GridEditInputCell,
+  GridEventListener,
+  GridInputRowSelectionModel,
+  GridRowModelUpdate
+} from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
@@ -17,8 +25,6 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { grey } from '@mui/material/colors';
-import { cyan } from '@mui/material/colors';
 import { useLocation } from 'react-router';
 
 export interface ISampleSiteSelectProps {
@@ -54,18 +60,35 @@ export interface ISpeciesObservationTableProps {
   }[];
 }
 
+const SampleSiteSkeleton = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      gap: '16px',
+      alignItemx: 'center',
+      p: 1,
+      height: 57,
+      borderBottom: '1px solid' + grey[300]
+    }}>
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+  </Box>
+);
+
 const LoadingOverlay = () => {
   return (
-    <Box display='flex' flexDirection='column' p={1} gap={2}>
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
+    <Box display="flex" flexDirection="column">
+      <SampleSiteSkeleton/>
+      <SampleSiteSkeleton/>
+      <SampleSiteSkeleton/>
+      <SampleSiteSkeleton/>
     </Box>
   );
-}
+};
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const { sample_sites, sample_methods, sample_periods } = props;
@@ -479,7 +502,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             }
           },
           '& .MuiOutlinedInput-root:hover': {
-            "& > fieldset": {
+            '& > fieldset': {
               border: '1px solid' + 'primary.main'
             }
           },
@@ -494,7 +517,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               boxShadow: 'none',
               background: grey[100]
             }
-          },
+          }
           // '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
           //   border: '1px solid' + 'primary.main'
           // }

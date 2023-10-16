@@ -24,11 +24,8 @@ const SurveyPurposeAndMethodologyData = () => {
 
   return (
     <Box component="dl">
-
       <Box className="row">
-        <Typography component="dt">
-          Intended Outcome
-        </Typography>
+        <Typography component="dt">Intended Outcome</Typography>
         <Typography component="dd" variant="body1" data-testid="survey_intended_outcome">
           {Boolean(surveyData.purpose_and_methodology.intended_outcome_id) &&
             codes?.intended_outcomes?.find(
@@ -36,9 +33,8 @@ const SurveyPurposeAndMethodologyData = () => {
             )?.name}
         </Typography>
       </Box>
-      {surveyData.purpose_and_methodology.additional_details &&
+      {surveyData.purpose_and_methodology.additional_details && (
         <>
-
           <Box className="row">
             <Typography component="dt">Additional Details</Typography>
             <Typography component="dd" variant="body1" data-testid="survey_additional_details">
@@ -46,24 +42,19 @@ const SurveyPurposeAndMethodologyData = () => {
             </Typography>
           </Box>
         </>
-      }
+      )}
 
       <Box className="row">
-        <Typography component="dt">
-          Field Method
-        </Typography>
+        <Typography component="dt">Field Method</Typography>
         <Typography component="dd" data-testid="survey_field_method">
           {Boolean(surveyData.purpose_and_methodology.field_method_id) &&
-            codes?.field_methods?.find(
-              (item: any) => item.id === surveyData.purpose_and_methodology.field_method_id
-            )?.name}
+            codes?.field_methods?.find((item: any) => item.id === surveyData.purpose_and_methodology.field_method_id)
+              ?.name}
         </Typography>
       </Box>
 
       <Box className="row">
-        <Typography component="dt">
-          Ecological Season
-        </Typography>
+        <Typography component="dt">Ecological Season</Typography>
         <Typography component="dd" data-testid="survey_ecological_season">
           {Boolean(surveyData.purpose_and_methodology.ecological_season_id) &&
             codes?.ecological_seasons?.find(
@@ -73,9 +64,7 @@ const SurveyPurposeAndMethodologyData = () => {
       </Box>
 
       <Box className="row">
-        <Typography component="dt">
-          Vantage Code(s)
-        </Typography>
+        <Typography component="dt">Vantage Code(s)</Typography>
         {surveyData.purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
           return (
             <Typography
