@@ -2,11 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
+import { HTTP400, HTTP500 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../../../services/survey-service';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
+import { ObservationService } from '../../../../../../services/observation-service';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
 
@@ -134,34 +135,11 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const response = await insertSurveyOccurrenceSubmission(
-        Number(req.params.surveyId),
-        'BioHub',
-        rawMediaFile.originalname,
-        connection
-      );
+      // TODO
+  
+      const observationService = new ObservationService(connection);
 
-      const { submissionId } = response;
-
-      const inputKey = generateS3FileKey({
-        projectId: Number(req.params.projectId),
-        surveyId: Number(req.params.surveyId),
-        folder: `submissions/${submissionId}`,
-        fileName: rawMediaFile.originalname
-      });
-
-      // Query to update the record with the inputKey before uploading the file
-      await updateSurveyOccurrenceSubmissionWithKey(submissionId, inputKey, connection);
-
-      await connection.commit();
-
-      const metadata = {
-        filename: rawMediaFile.originalname,
-        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
-        email: (req['auth_payload'] && req['auth_payload'].email) || ''
-      };
-
-      await uploadFileToS3(rawMediaFile, inputKey, metadata);
+      const submissionId = null; // TODO
 
       return res.status(200).send({ submissionId });
     } catch (error) {
@@ -174,56 +152,3 @@ export function uploadMedia(): RequestHandler {
   };
 }
 
-/**
- * Inserts a new record into the `occurrence_submission` table.
- *
- * @param {number} surveyId
- * @param {string} source
- * @param {string} inputFileName
- * @param {IDBConnection} connection
- * @return {*}  {Promise<void>}
- */
-export const insertSurveyOccurrenceSubmission = async (
-  surveyId: number,
-  source: string,
-  inputFileName: string,
-  connection: IDBConnection
-): Promise<{ submissionId: number }> => {
-  const surveyService = new SurveyService(connection);
-
-  const response = await surveyService.insertSurveyOccurrenceSubmission({
-    surveyId,
-    source,
-    inputFileName
-  });
-
-  if (!response.submissionId) {
-    throw new HTTP400('Failed to insert survey occurrence submission record');
-  }
-
-  return response;
-};
-
-/**
- * Update existing `occurrence_submission` record with inputKey.
- *
- * @param {number} submissionId
- * @param {string} inputKey
- * @param {IDBConnection} connection
- * @return {*}  {Promise<void>}
- */
-export const updateSurveyOccurrenceSubmissionWithKey = async (
-  submissionId: number,
-  inputKey: string,
-  connection: IDBConnection
-): Promise<{ submissionId: number }> => {
-  const surveyService = new SurveyService(connection);
-
-  const response = await surveyService.updateSurveyOccurrenceSubmission({ submissionId, inputKey });
-
-  if (!response.submissionId) {
-    throw new HTTP400('Failed to update survey occurrence submission record');
-  }
-
-  return response;
-};
