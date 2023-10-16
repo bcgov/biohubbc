@@ -35,16 +35,12 @@ const SurveyGeneralInformation = () => {
   return (
     <Box component="dl">
       <Box className="row">
-        <Typography component="dt">
-          Type
-        </Typography>
+        <Typography component="dt">Type</Typography>
         <Typography component="dd">{surveyTypes ?? 'No Types'}</Typography>
       </Box>
 
       <Box className="row">
-        <Typography component="dt">
-          Timeline
-        </Typography>
+        <Typography component="dt">Timeline</Typography>
         <Typography component="dd" data-testid="survey_timeline">
           {survey_details.end_date ? (
             <>
@@ -64,14 +60,13 @@ const SurveyGeneralInformation = () => {
       </Box>
 
       <Box className="row">
-        <Typography component="dt">
-          Species of Interest
-        </Typography>
-        <Box
-        >
+        <Typography component="dt">Species of Interest</Typography>
+        <Box>
           {species.focal_species_names?.map((focalSpecies: string, index: number) => {
             return (
-              <Typography component="dd" key={index}
+              <Typography
+                component="dd"
+                key={index}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',
@@ -84,8 +79,7 @@ const SurveyGeneralInformation = () => {
                   '&:last-child::after': {
                     display: 'none'
                   }
-                }}
-              >
+                }}>
                 {focalSpecies}
               </Typography>
             );
@@ -94,13 +88,13 @@ const SurveyGeneralInformation = () => {
       </Box>
 
       <Box className="row">
-        <Typography component="dt">
-          Secondary Species
-        </Typography>
+        <Typography component="dt">Secondary Species</Typography>
         <Box display="inline-block">
           {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
             return (
-              <Typography component="dd" key={index}
+              <Typography
+                component="dd"
+                key={index}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',
@@ -113,20 +107,16 @@ const SurveyGeneralInformation = () => {
                   '&:last-child::after': {
                     display: 'none'
                   }
-                }}
-              >
+                }}>
                 {ancillarySpecies}
               </Typography>
             );
           })}
           {species.ancillary_species_names?.length <= 0 && (
-            <Typography component="dd">
-              No secondary species of interest
-            </Typography>
+            <Typography component="dd">No secondary species of interest</Typography>
           )}
         </Box>
       </Box>
-
     </Box>
   );
 };

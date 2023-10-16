@@ -3,6 +3,7 @@ import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -17,7 +18,6 @@ import ObservationsTable, {
 } from 'features/surveys/observations/ObservationsTable';
 import { useContext, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
-import Collapse from '@mui/material/Collapse';
 
 const ObservationComponent = () => {
   const sampleSites: ISampleSiteSelectProps[] = [];
@@ -110,11 +110,10 @@ const ObservationComponent = () => {
               flexGrow: '1',
               fontSize: '1.125rem',
               fontWeight: 700
-            }}
-          >
+            }}>
             Observations
           </Typography>
-          
+
           <Box
             sx={{
               '& div:first-of-type': {
@@ -122,9 +121,7 @@ const ObservationComponent = () => {
                 overflow: 'hidden',
                 whiteSpace: 'nowrap'
               }
-            }}
-          >
-
+            }}>
             <Box display="flex" overflow="hidden">
               <Button
                 variant="contained"
@@ -135,7 +132,11 @@ const ObservationComponent = () => {
               </Button>
               <Collapse in={showSaveButton} orientation="horizontal">
                 <Box ml={1} whiteSpace="nowrap">
-                  <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
+                  <LoadingButton
+                    loading={isSaving}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleSaveChanges()}>
                     Save
                   </LoadingButton>
                   <Button variant="outlined" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
@@ -144,23 +145,10 @@ const ObservationComponent = () => {
                 </Box>
               </Collapse>
             </Box>
-
           </Box>
-
-          {/*TODO: FUTURE FUNCTIONALITY */}
-          {/* <Button
-            variant="outlined"
-            sx={{
-              mr: -1
-            }}
-            startIcon={<Icon path={mdiCogOutline} size={1} />}>
-            Configure
-          </Button> */}
-
         </Toolbar>
-        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative"
-        >
-          <Box position="absolute" width="100%" height="100%" p={1} pt={0.5}>
+        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
+          <Box position="absolute" width="100%" height="100%" py={1} px={2} pt={0.5}>
             <ObservationsTable
               sample_sites={sampleSites}
               sample_methods={sampleMethods}

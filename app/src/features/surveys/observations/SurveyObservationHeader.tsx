@@ -1,5 +1,5 @@
-import Link from '@mui/material/Link';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router-dom';
@@ -27,7 +27,11 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
           sx={{
             mb: 1
           }}>
-          <Link component={RouterLink} variant="body2" underline="hover" to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+          <Link
+            component={RouterLink}
+            variant="body2"
+            underline="hover"
+            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
           <Typography component="span" variant="body2" color="text.secondary">

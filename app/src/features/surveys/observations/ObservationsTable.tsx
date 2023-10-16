@@ -1,9 +1,17 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
+import Skeleton from '@mui/lab/Skeleton';
 import Box from '@mui/material/Box';
-import Skeleton from '@mui/lab/Skeleton'
-import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridInputRowSelectionModel, GridRowModelUpdate } from '@mui/x-data-grid';
+import { cyan, grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import {
+  DataGrid,
+  GridColDef,
+  GridEditInputCell,
+  GridEventListener,
+  GridInputRowSelectionModel,
+  GridRowModelUpdate
+} from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
@@ -17,8 +25,6 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { grey } from '@mui/material/colors';
-import { cyan } from '@mui/material/colors';
 import { useLocation } from 'react-router';
 
 export interface ISampleSiteSelectProps {
@@ -54,18 +60,36 @@ export interface ISpeciesObservationTableProps {
   }[];
 }
 
+const SampleSiteSkeleton = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      gap: '16px',
+      alignItemx: 'center',
+      p: 1,
+      height: 58,
+      background: '#fff',
+      borderBottom: '1px solid' + grey[300]
+    }}>
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+  </Box>
+);
+
 const LoadingOverlay = () => {
   return (
-    <Box display='flex' flexDirection='column' p={1} gap={2}>
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
+    <Box display="flex" flexDirection="column">
+      <SampleSiteSkeleton/>
+      <SampleSiteSkeleton/>
+      <SampleSiteSkeleton/>
+      <SampleSiteSkeleton/>
     </Box>
   );
-}
+};
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const { sample_sites, sample_methods, sample_periods } = props;
@@ -203,8 +227,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'number',
       minWidth: 100,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
+      headerAlign: 'right',
+      align: 'right',
       renderEditCell: (params) => (
         <GridEditInputCell
           {...params}
@@ -233,8 +257,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'string',
       width: 150,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
+      headerAlign: 'right',
+      align: 'right',
       renderCell: (params) => {
         if (!params.value) {
           return null;
@@ -275,8 +299,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       editable: true,
       width: 120,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
+      headerAlign: 'right',
+      align: 'right',
       renderCell: (params) => String(params.row.latitude)
     },
     {
@@ -286,8 +310,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       editable: true,
       width: 120,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
+      headerAlign: 'right',
+      align: 'right',
       renderCell: (params) => String(params.row.longitude)
     },
     {
@@ -410,6 +434,21 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }}
         sx={{
           border: 'none',
+          '& .MuiDataGrid-columnHeaders': {
+            position: 'relative',
+            '&:after': {
+              content: "''",
+              position: 'absolute',
+              top: '20px',
+              right: 0,
+              width: '70px',
+              height: '60px',
+              background: '#fff'
+            }
+          },
+          '& .MuiDataGrid-columnHeader:focus': {
+            outline: 'none'
+          },
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 700,
             textTransform: 'uppercase',
@@ -419,34 +458,38 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             position: 'sticky',
             right: 0,
             top: 0,
+            background: '#fff',
             borderLeft: '1px solid #ccc',
-            background: '#fff'
           },
-          '& .MuiDataGrid-columnHeaders': {
-            position: 'relative'
-          },
-          '& .MuiDataGrid-columnHeaders:after': {
-            content: "''",
-            position: 'absolute',
-            top: '20px',
-            right: 0,
-            width: '70px',
-            height: '60px',
-            background: '#fff'
-          },
-          '& .MuiDataGrid-actionsCell': {
-            gap: 0
+          '& .MuiDataGrid-row': {
+            '&--editing': {
+              boxShadow: 'none',
+              background: grey[100]
+            }
           },
           '& .MuiDataGrid-cell': {
-            p: 1
+            p: 1,
+            '&.MuiDataGrid-cell--editing:focus-within': {
+              outline: 'none'
+            },
+            '&.MuiDataGrid-cell--editing': {
+              px: 0.5,
+              py: 1,
+              backgroundColor: cyan[50]
+            }
           },
-          '& .MuiDataGrid-cell.MuiDataGrid-cell--editing:focus-within': {
-            outline: 'none'
-          },
-          '& .MuiDataGrid-cell.MuiDataGrid-cell--editing': {
-            px: 0.5,
-            py: 1,
-            backgroundColor: cyan[50]
+          '& .MuiDataGrid-editInputCell': {
+            border: '1px solid #ccc',
+            '&:hover': {
+              borderColor: 'primary.main'
+            },
+            '&.Mui-focused': {
+              borderColor: 'primary.main',
+              outlineWidth: '2px',
+              outlineStyle: 'solid',
+              outlineColor: 'primary.main',
+              outlineOffset: '-2px'
+            }
           },
           '& .MuiInputBase-root': {
             height: '40px',
@@ -457,17 +500,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               padding: 0
             }
           },
-          '& .MuiDataGrid-editInputCell:hover': {
-            borderColor: 'primary.main'
+          '& .MuiOutlinedInput': {
+            '&-notchedoutline': {
+              border: '1px solid' + grey[300]
+            }
           },
-          '& .MuiDataGrid-editInputCell': {
-            border: '1px solid #ccc',
+          '& .MuiOutlinedInput-notchedOutline': {
             '&.Mui-focused': {
-              borderColor: 'primary.main',
-              outlineWidth: '2px',
-              outlineStyle: 'solid',
-              outlineColor: 'primary.main',
-              outlineOffset: '-2px'
+              borderColor: 'primary.main'
             }
           },
           '& .MuiOutlinedInput-root': {
@@ -476,28 +516,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             border: 'none',
             '&:hover': {
               borderColor: 'primary.main'
-            }
-          },
-          '& .MuiOutlinedInput-root:hover': {
-            "& > fieldset": {
+            },
+            '&:hover > fieldset': {
               border: '1px solid' + 'primary.main'
             }
-          },
-          '& .MuiOutlinedInput-notchedOutline': {
-            border: '1px solid #ccc',
-            '&.Mui-focused': {
-              borderColor: 'primary.main'
-            }
-          },
-          '& .MuiDataGrid-row': {
-            '&--editing': {
-              boxShadow: 'none',
-              background: grey[100]
-            }
-          },
-          // '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-          //   border: '1px solid' + 'primary.main'
-          // }
+          }
         }}
       />
     </>
