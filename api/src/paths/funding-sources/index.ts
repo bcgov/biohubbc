@@ -2,6 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { FundingSource, FundingSourceSupplementaryData } from '../../repositories/funding-source-repository';
+import { SystemUser } from '../../repositories/user-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { FundingSourceService, IFundingSourceSearchParams } from '../../services/funding-source-service';
 import { getLogger } from '../../utils/logger';
@@ -11,7 +13,10 @@ const defaultLog = getLogger('paths/funding-sources/index');
 export const GET: Operation = [
   authorizeRequestHandler(() => {
     return {
-      and: [
+      or: [
+        {
+          discriminator: 'SystemUser'
+        },
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
@@ -39,14 +44,7 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
-              required: [
-                'funding_source_id',
-                'name',
-                'description',
-                'revision_count',
-                'survey_reference_count',
-                'survey_reference_amount_total'
-              ],
+              required: ['funding_source_id', 'name', 'description', 'revision_count'],
               properties: {
                 funding_source_id: {
                   type: 'integer',
@@ -118,9 +116,15 @@ export function getFundingSources(): RequestHandler {
 
       const fundingSourceService = new FundingSourceService(connection);
 
-      const response = await fundingSourceService.getFundingSources(filterFields);
+      let response = await fundingSourceService.getFundingSources(filterFields);
 
       await connection.commit();
+
+      const systemUserObject: SystemUser = req['system_user'];
+      if (!isAdmin(systemUserObject)) {
+        // User is not an admin, strip sensitive fields from response
+        response = removeNonAdminFieldsFromFundingSourcesResponse(response);
+      }
 
       return res.status(200).json(response);
     } catch (error) {
@@ -131,6 +135,36 @@ export function getFundingSources(): RequestHandler {
       connection.release();
     }
   };
+}
+
+/**
+ * Checks if the system user is an admin (has an admin level system role).
+ *
+ * @param {SystemUser} systemUserObject
+ * @return {*}  {boolean} `true` if the user is an admin, `false` otherwise.
+ */
+function isAdmin(systemUserObject: SystemUser): boolean {
+  return (
+    systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
+    systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
+  );
+}
+
+/**
+ * Removes sensitive (admin-only) fields from the funding sources response, returning a new sanitized array.
+ *
+ * @param {((FundingSource & FundingSourceSupplementaryData)[])} fundingSources
+ * @return {*}  {((FundingSource & FundingSourceSupplementaryData)[])} array of funding sources with admin-only fields
+ * removed.
+ */
+function removeNonAdminFieldsFromFundingSourcesResponse(
+  fundingSources: (FundingSource & FundingSourceSupplementaryData)[]
+): (FundingSource & FundingSourceSupplementaryData)[] {
+  return fundingSources.map((item) => {
+    delete item.survey_reference_count;
+    delete item.survey_reference_amount_total;
+    return item;
+  });
 }
 
 export const POST: Operation = [

@@ -141,7 +141,7 @@ const SurveyObservations: React.FC = () => {
 
         {/* Submission data has finished loading, but is null, no submission to display */}
         {!surveyContext.observationDataLoader.data && surveyContext.observationDataLoader.isReady && (
-          <NoSurveySectionData text={'No Observations'} paperVariant={'outlined'} />
+          <NoSurveySectionData text={'Currently Unavailable'} paperVariant={'outlined'} />
         )}
 
         {/* Submission data exists, validation is running */}
