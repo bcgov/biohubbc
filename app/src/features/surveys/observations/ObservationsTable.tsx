@@ -225,7 +225,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Count',
       editable: true,
       type: 'number',
-      minWidth: 100,
+      minWidth: 110,
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',

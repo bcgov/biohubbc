@@ -56,6 +56,7 @@ const SamplingSiteList = () => {
         gap: '16px',
         py: 1.5,
         px: 2,
+        height: '52px',
         borderBottom: '1px solid' + grey[300]
       }}>
       <Skeleton sx={{ flex: '1 1 auto' }} />
@@ -180,7 +181,7 @@ const SamplingSiteList = () => {
                       background: cyan[50]
                     }
                   }}>
-                  <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="sampleSiteHeader">
+                  <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} height={52} className="sampleSiteHeader">
                     <AccordionSummary
                       expandIcon={<Icon path={mdiChevronDown} size={1} />}
                       aria-controls="panel1bh-content"

@@ -25,7 +25,7 @@ import StaticLayers, { IStaticLayer } from './components/StaticLayers';
 import WFSFeatureGroup from './WFSFeatureGroup';
 
 const point = (feature: Feature, latlng: LatLng) => {
-  return new L.CircleMarker(latlng, { radius: 5, fillOpacity: 1 });
+  return new L.CircleMarker(latlng, { radius: 6, fillOpacity: 1, fillColor: '#006edc', color: '#ffffff', weight: 1 });
 };
 
 /*
