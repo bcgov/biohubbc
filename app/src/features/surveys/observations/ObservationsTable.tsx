@@ -121,7 +121,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Sampling Site',
       editable: true,
       flex: 1,
-      minWidth: 200,
+      minWidth: 250,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -153,7 +153,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Sampling Method',
       editable: true,
       flex: 1,
-      minWidth: 200,
+      minWidth: 250,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -188,8 +188,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'survey_sample_period_id',
       headerName: 'Sampling Period',
       editable: true,
-      flex: 1,
-      minWidth: 200,
+      flex: 0,
+      width: 240,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -446,6 +446,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               background: '#fff'
             }
           },
+          '& .MuiDataGrid-columnHeader': {
+            px: 2,
+            py: 1
+          },
           '& .MuiDataGrid-columnHeader:focus': {
             outline: 'none'
           },
@@ -458,17 +462,19 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             position: 'sticky',
             right: 0,
             top: 0,
-            background: '#fff',
             borderLeft: '1px solid #ccc',
           },
-          '& .MuiDataGrid-row': {
-            '&--editing': {
-              boxShadow: 'none',
-              background: grey[100]
+          '& .MuiDataGrid-row--editing': {
+            boxShadow: 'none',
+            backgroundColor: cyan[50],
+            '& .MuiDataGrid-cell': {
+              backgroundColor: cyan[50]
             }
           },
           '& .MuiDataGrid-cell': {
-            p: 1,
+            px: 2,
+            py: 1,
+            background: '#fff',
             '&.MuiDataGrid-cell--editing:focus-within': {
               outline: 'none'
             },
