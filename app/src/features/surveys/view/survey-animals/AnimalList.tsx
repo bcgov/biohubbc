@@ -20,7 +20,11 @@ import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-const AnimalList = () => {
+interface AnimalListProps {
+  onSelectCritter: (critter_id: string) => void;
+}
+
+const AnimalList = ({ onSelectCritter }: AnimalListProps) => {
   const bhApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
@@ -45,6 +49,20 @@ const AnimalList = () => {
     'Observations',
     'Telemetry'
   ];
+
+  const selectSectionAction = (sectionName: string) => {
+    switch (sectionName) {
+      case SurveyAnimalsI18N.animalGeneralTitle:
+        document.getElementById('general-animal-form')?.scrollIntoView({ behavior: 'smooth' });
+        break;
+      case SurveyAnimalsI18N.animalMarkingTitle:
+        document.getElementById('marking-animal-form')?.scrollIntoView({ behavior: 'smooth' });
+        break;
+      case SurveyAnimalsI18N.animalFamilyTitle:
+        document.getElementById('family-animal-form')?.scrollIntoView({ behavior: 'smooth' });
+        break;
+    }
+  };
 
   return (
     <Box display="flex" flexDirection="column" height="100%">
@@ -122,7 +140,14 @@ const AnimalList = () => {
                   }
                 }}>
                 {animalSubSections.map((section) => (
-                  <ListItem dense divider button onClick={() => console.log('clicked')}>
+                  <ListItem
+                    dense
+                    divider
+                    button
+                    onClick={() => {
+                      selectSectionAction(section);
+                      onSelectCritter(critter.critter_id);
+                    }}>
                     <ListItemText>{section}</ListItemText>
                   </ListItem>
                 ))}

@@ -23,7 +23,7 @@ const GeneralAnimalForm = () => {
   };
 
   return (
-    <Box component="fieldset">
+    <Box id="general-animal-form" component="fieldset">
       <Typography component="legend">{SurveyAnimalsI18N.animalGeneralTitle}</Typography>
       <Typography
         variant="body1"
@@ -36,7 +36,7 @@ const GeneralAnimalForm = () => {
       </Typography>
 
       <Grid container spacing={3} key={'animal-general-section'}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} lg={3}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
             <CbSelectField
               name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
@@ -51,7 +51,7 @@ const GeneralAnimalForm = () => {
             />
           </HelpButtonTooltip>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} lg={3}>
           <CbSelectField
             name={getAnimalFieldName<IAnimalGeneral>(name, 'sex')}
             controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'sex') }}
@@ -60,7 +60,7 @@ const GeneralAnimalForm = () => {
             route={'lookups/sex'}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} lg={3}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonLabelHelp}>
             <CustomTextField
               other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
@@ -70,7 +70,7 @@ const GeneralAnimalForm = () => {
             />
           </HelpButtonTooltip>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} lg={3}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.wlhIdHelp}>
             <CustomTextField
               other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'wlh_id') }}

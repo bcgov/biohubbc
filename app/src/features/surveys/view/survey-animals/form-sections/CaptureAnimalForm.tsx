@@ -98,7 +98,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
   const renderCaptureFields = (): JSX.Element => {
     return (
       <Fragment key={'capture-fields'}>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6} lg={3}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
             required={true}
@@ -139,7 +139,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
   const renderReleaseFields = (): JSX.Element => {
     return (
       <Fragment key={`capture-release-fields`}>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6} lg={3}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
             label={'Release Date'}

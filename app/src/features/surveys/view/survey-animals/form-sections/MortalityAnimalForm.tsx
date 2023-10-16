@@ -93,7 +93,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
   const renderFields = (): JSX.Element => {
     return (
       <Fragment key={'mortality-fields'}>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6} lg={3}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
             required={isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp')}
