@@ -25,7 +25,7 @@ const NumberFormatCustom = React.forwardRef<NumberFormatProps, NumberFormatCusto
   props,
   ref
 ) {
-  const { onChange, min, max, float = false, ...other } = props;
+  const { onChange, min, max, float, ...other } = props;
 
   return (
     <NumberFormat
