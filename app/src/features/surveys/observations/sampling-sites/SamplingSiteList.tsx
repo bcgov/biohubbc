@@ -195,7 +195,9 @@ const SamplingSiteList = () => {
                           whiteSpace: 'nowrap'
                         }
                       }}>
-                      <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', typography: 'body2' }}>{sampleSite.name}</Typography>
+                      <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', typography: 'body2' }}>
+                        {sampleSite.name}
+                      </Typography>
                     </AccordionSummary>
                     <IconButton
                       onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>

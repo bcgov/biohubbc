@@ -122,7 +122,7 @@ const AnimalList = () => {
                   }
                 }}>
                 {animalSubSections.map((section) => (
-                  <ListItem>
+                  <ListItem dense divider button onClick={() => console.log('clicked')}>
                     <ListItemText>{section}</ListItemText>
                   </ListItem>
                 ))}
