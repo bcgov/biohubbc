@@ -5,10 +5,15 @@ import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
 import React, { useContext } from 'react';
 import SurveySectionHeader from '../components/SurveySectionHeader';
-import ObservationComponent from './ObservationComponent';
-import SamplingSiteList from './sampling-sites/SamplingSiteList';
 
-export const SurveyObservationPage = () => {
+interface SurveySectionFullPageLayoutProps {
+  sideBarComponent: JSX.Element;
+  mainComponent: JSX.Element;
+  pageTitle: string;
+}
+
+export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutProps) => {
+  const { sideBarComponent, mainComponent, pageTitle } = props;
   const surveyContext = useContext(SurveyContext);
 
   if (!surveyContext.surveyDataLoader.data) {
@@ -28,12 +33,12 @@ export const SurveyObservationPage = () => {
           project_id={surveyContext.projectId}
           survey_id={surveyContext.surveyId}
           survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-          title={'Manage Observations'}
+          title={pageTitle}
         />
       </Box>
 
       <Box display="flex" flex="1 1 auto" overflow="hidden" p={1}>
-        {/* Sampling Site List */}
+        {/* Sidebar Component */}
         <Paper
           elevation={0}
           sx={{
@@ -43,10 +48,10 @@ export const SurveyObservationPage = () => {
             borderBottomRightRadius: 0,
             borderRight: '1px solid' + grey[300]
           }}>
-          <SamplingSiteList />
+          {sideBarComponent}
         </Paper>
 
-        {/* Observations Component */}
+        {/* Main content Component */}
         <Paper
           elevation={0}
           sx={{
@@ -55,7 +60,7 @@ export const SurveyObservationPage = () => {
             borderTopLeftRadius: 0,
             borderBottomLeftRadius: 0
           }}>
-          <ObservationComponent />
+          {mainComponent}
         </Paper>
       </Box>
     </Box>

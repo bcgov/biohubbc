@@ -14,41 +14,39 @@ export interface SurveySectionHeaderProps {
 const SurveySectionHeader: React.FC<SurveySectionHeaderProps> = (props) => {
   const { project_id, survey_id, survey_name, title } = props;
   return (
-    <>
-      <Paper
-        square
-        elevation={0}
+    <Paper
+      square
+      elevation={0}
+      sx={{
+        pt: 3,
+        pb: 3.5,
+        px: 3
+      }}>
+      <Breadcrumbs
+        aria-label="breadcrumb"
         sx={{
-          pt: 3,
-          pb: 3.5,
-          px: 3
+          mb: 1
         }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          sx={{
-            mb: 1
-          }}>
-          <Link
-            component={RouterLink}
-            variant="body2"
-            underline="hover"
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
-            {survey_name}
-          </Link>
-          <Typography component="span" variant="body2" color="text.secondary">
-            {title}
-          </Typography>
-        </Breadcrumbs>
-        <Typography
-          variant="h3"
-          component="h1"
-          sx={{
-            ml: '-2px'
-          }}>
+        <Link
+          component={RouterLink}
+          variant="body2"
+          underline="hover"
+          to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+          {survey_name}
+        </Link>
+        <Typography component="span" variant="body2" color="text.secondary">
           {title}
         </Typography>
-      </Paper>
-    </>
+      </Breadcrumbs>
+      <Typography
+        variant="h3"
+        component="h1"
+        sx={{
+          ml: '-2px'
+        }}>
+        {title}
+      </Typography>
+    </Paper>
   );
 };
 
