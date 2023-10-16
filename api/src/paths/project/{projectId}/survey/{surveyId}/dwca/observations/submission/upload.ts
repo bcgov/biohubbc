@@ -1,12 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SurveyService } from '../../../../../../../services/survey-service';
-import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../errors/http-error';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../../../../../../services/survey-service';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
 

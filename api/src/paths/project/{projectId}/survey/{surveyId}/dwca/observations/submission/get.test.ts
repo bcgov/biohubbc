@@ -8,16 +8,16 @@ import {
   MESSAGE_CLASS_NAME,
   SUBMISSION_MESSAGE_TYPE,
   SUBMISSION_STATUS_TYPE
-} from '../../../../../../../constants/status';
-import * as db from '../../../../../../../database/db';
-import { OccurrenceSubmissionPublish } from '../../../../../../../repositories/history-publish-repository';
+} from '../../../../../../../../constants/status';
+import * as db from '../../../../../../../../database/db';
+import { OccurrenceSubmissionPublish } from '../../../../../../../../repositories/history-publish-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   SurveyRepository
-} from '../../../../../../../repositories/survey-repository';
-import { HistoryPublishService } from '../../../../../../../services/history-publish-service';
-import { SurveyService } from '../../../../../../../services/survey-service';
-import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+} from '../../../../../../../../repositories/survey-repository';
+import { HistoryPublishService } from '../../../../../../../../services/history-publish-service';
+import { SurveyService } from '../../../../../../../../services/survey-service';
+import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
 import * as observationSubmission from './get';
 
 chai.use(sinonChai);
