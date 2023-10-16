@@ -2,9 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
+import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { FundingSource, FundingSourceSupplementaryData } from '../../repositories/funding-source-repository';
+import { SystemUser } from '../../repositories/user-repository';
 import { FundingSourceService } from '../../services/funding-source-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { getFundingSources, postFundingSource } from '../funding-sources';
@@ -48,6 +51,23 @@ describe('getFundingSources', () => {
       sinon.stub(FundingSourceService.prototype, 'getFundingSources').resolves(mockFundingSources);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      const systemUser: SystemUser = {
+        system_user_id: 2,
+        user_identifier: 'username',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        user_guid: '123-456-789',
+        record_end_date: null,
+        role_ids: [1],
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test user',
+        agency: null
+      };
+      // system_user would be set by the authorization-service, if this endpoint was called for real
+      mockReq['system_user'] = systemUser;
 
       const requestHandler = getFundingSources();
 
@@ -93,11 +113,35 @@ describe('getFundingSources', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
+      const systemUser: SystemUser = {
+        system_user_id: 2,
+        user_identifier: 'username',
+        identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+        user_guid: '123-456-789',
+        record_end_date: null,
+        role_ids: [3],
+        role_names: [SYSTEM_ROLE.PROJECT_CREATOR], // Not an admin role
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test user',
+        agency: null
+      };
+      // system_user would be set by the authorization-service, if this endpoint was called for real
+      mockReq['system_user'] = systemUser;
+
       const requestHandler = getFundingSources();
 
       await requestHandler(mockReq, mockRes, mockNext);
 
-      expect(mockRes.jsonValue).to.eql(mockFundingSources);
+      expect(mockRes.jsonValue).to.eql(
+        mockFundingSources.map((item) => {
+          // remove sensitive fields
+          delete item.survey_reference_amount_total;
+          delete item.survey_reference_count;
+          return item;
+        })
+      );
 
       expect(mockDBConnection.open).to.have.been.calledOnce;
       expect(mockDBConnection.commit).to.have.been.calledOnce;

@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { SOURCE_SYSTEM } from '../constants/database';
+import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { SYSTEM_ROLE } from '../constants/roles';
 import * as db from '../database/db';
 import { SystemUser } from '../repositories/user-repository';
@@ -496,7 +496,20 @@ describe('getSystemUserObject', function () {
   it('returns a `UserObject`', async function () {
     const mockDBConnection = getMockDBConnection();
 
-    const mockSystemUserWithRolesResponse = new SystemUser();
+    const mockSystemUserWithRolesResponse: SystemUser = {
+      system_user_id: 2,
+      user_identifier: 'username',
+      identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+      user_guid: '',
+      record_end_date: null,
+      role_ids: [1],
+      role_names: [SYSTEM_ROLE.SYSTEM_ADMIN],
+      email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
+      display_name: 'test user',
+      agency: null
+    };
     sinon.stub(AuthorizationService.prototype, 'getSystemUserWithRoles').resolves(mockSystemUserWithRolesResponse);
 
     const authorizationService = new AuthorizationService(mockDBConnection);
@@ -540,7 +553,20 @@ describe('getSystemUserWithRoles', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const userObjectMock = new SystemUser();
+    const userObjectMock: SystemUser = {
+      system_user_id: 2,
+      user_identifier: 'username',
+      identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+      user_guid: '',
+      record_end_date: null,
+      role_ids: [1],
+      role_names: [SYSTEM_ROLE.SYSTEM_ADMIN],
+      email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
+      display_name: 'test user',
+      agency: null
+    };
     sinon.stub(UserService.prototype, 'getUserByGuid').resolves((userObjectMock as unknown) as any);
 
     const authorizationService = new AuthorizationService(mockDBConnection, {

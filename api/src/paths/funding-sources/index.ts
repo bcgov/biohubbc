@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { FundingSource, FundingSourceSupplementaryData } from '../../repositories/funding-source-repository';
 import { SystemUser } from '../../repositories/user-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { FundingSourceService, IFundingSourceSearchParams } from '../../services/funding-source-service';
@@ -120,16 +121,9 @@ export function getFundingSources(): RequestHandler {
       await connection.commit();
 
       const systemUserObject: SystemUser = req['system_user'];
-      const isAdmin =
-        systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
-        systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR);
-      if (!isAdmin) {
+      if (!isAdmin(systemUserObject)) {
         // User is not an admin, strip sensitive fields from response
-        response = response.map((item) => {
-          delete item.survey_reference_count;
-          delete item.survey_reference_amount_total;
-          return item;
-        });
+        response = removeNonAdminFieldsFromFundingSourcesResponse(response);
       }
 
       return res.status(200).json(response);
@@ -141,6 +135,23 @@ export function getFundingSources(): RequestHandler {
       connection.release();
     }
   };
+}
+
+function isAdmin(systemUserObject: SystemUser): boolean {
+  return (
+    systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
+    systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
+  );
+}
+
+function removeNonAdminFieldsFromFundingSourcesResponse(
+  fundingSources: (FundingSource & FundingSourceSupplementaryData)[]
+): (FundingSource & FundingSourceSupplementaryData)[] {
+  return fundingSources.map((item) => {
+    delete item.survey_reference_count;
+    delete item.survey_reference_amount_total;
+    return item;
+  });
 }
 
 export const POST: Operation = [
