@@ -56,9 +56,10 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
           elevation={0}
           sx={{
             flex: '1 1 auto',
-            overflow: 'hidden',
+            overflowY: 'auto',
             borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0
+            borderBottomLeftRadius: 0,
+            padding: 2
           }}>
           {mainComponent}
         </Paper>
