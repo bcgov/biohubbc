@@ -90,9 +90,9 @@ const SamplingSiteEditPage = () => {
   };
 
   const handleSubmit = async (values: IEditSamplingSiteRequest) => {
-    setIsSubmitting(true);
-
     try {
+      setIsSubmitting(true);
+
       // create edit request
       const editSampleSite: IEditSamplingSiteRequest = {
         sampleSite: {
@@ -115,6 +115,10 @@ const SamplingSiteEditPage = () => {
 
       // Disable cancel prompt so we can navigate away from the page after saving
       setEnableCancelCheck(false);
+
+      // Refresh the context, so the next page loads with the latest data
+      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
       // create complete, navigate back to observations page
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
     } catch (error) {
@@ -124,7 +128,6 @@ const SamplingSiteEditPage = () => {
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
