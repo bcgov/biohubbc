@@ -21,8 +21,7 @@ export const SurveyAnimalPage = () => {
           borderBottomStyle: 'solid',
           borderBottomWidth: '1px',
           borderBottomColor: grey[300]
-        }}>
-      </Box>
+        }}></Box>
 
       <Box display="flex" flex="1 1 auto" overflow="hidden" p={1}>
         {/* Animals List */}
@@ -46,8 +45,7 @@ export const SurveyAnimalPage = () => {
             overflow: 'hidden',
             borderTopLeftRadius: 0,
             borderBottomLeftRadius: 0
-          }}>
-        </Paper>
+          }}></Paper>
       </Box>
     </Box>
   );
