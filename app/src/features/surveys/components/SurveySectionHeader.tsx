@@ -4,14 +4,15 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface SurveyObservationHeaderProps {
+export interface SurveySectionHeaderProps {
   project_id: number;
   survey_id: number;
   survey_name: string;
+  title: string;
 }
 
-const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) => {
-  const { project_id, survey_id, survey_name } = props;
+const SurveySectionHeader: React.FC<SurveySectionHeaderProps> = (props) => {
+  const { project_id, survey_id, survey_name, title } = props;
   return (
     <>
       <Paper
@@ -35,7 +36,7 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
             {survey_name}
           </Link>
           <Typography component="span" variant="body2" color="text.secondary">
-            Manage Observations
+            {title}
           </Typography>
         </Breadcrumbs>
         <Typography
@@ -44,11 +45,11 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
           sx={{
             ml: '-2px'
           }}>
-          Manage Observations
+          {title}
         </Typography>
       </Paper>
     </>
   );
 };
 
-export default SurveyObservationHeader;
+export default SurveySectionHeader;

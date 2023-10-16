@@ -3,6 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
+import SurveySectionHeader from 'features/surveys/components/SurveySectionHeader';
 import React, { useContext } from 'react';
 import AnimalList from './AnimalList';
 
@@ -21,7 +22,14 @@ export const SurveyAnimalPage = () => {
           borderBottomStyle: 'solid',
           borderBottomWidth: '1px',
           borderBottomColor: grey[300]
-        }}></Box>
+        }}>
+        <SurveySectionHeader
+          project_id={surveyContext.projectId}
+          survey_id={surveyContext.surveyId}
+          survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+          title={'Manage Animals'}
+        />
+      </Box>
 
       <Box display="flex" flex="1 1 auto" overflow="hidden" p={1}>
         {/* Animals List */}

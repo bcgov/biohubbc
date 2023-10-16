@@ -3,10 +3,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
+import SurveySectionHeader from '../components/SurveySectionHeader';
 import ObservationComponent from './ObservationComponent';
 import SamplingSiteList from './sampling-sites/SamplingSiteList';
-import SurveyObservationHeader from './SurveyObservationHeader';
 
 export const SurveyObservationPage = () => {
   const surveyContext = useContext(SurveyContext);
@@ -24,10 +24,11 @@ export const SurveyObservationPage = () => {
           borderBottomWidth: '1px',
           borderBottomColor: grey[300]
         }}>
-        <SurveyObservationHeader
+        <SurveySectionHeader
           project_id={surveyContext.projectId}
           survey_id={surveyContext.surveyId}
           survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+          title={'Manage Observations'}
         />
       </Box>
 
