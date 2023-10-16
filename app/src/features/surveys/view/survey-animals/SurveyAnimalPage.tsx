@@ -3,7 +3,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
+import AnimalList from './AnimalList';
 
 export const SurveyAnimalPage = () => {
   const surveyContext = useContext(SurveyContext);
@@ -24,7 +25,7 @@ export const SurveyAnimalPage = () => {
       </Box>
 
       <Box display="flex" flex="1 1 auto" overflow="hidden" p={1}>
-        {/* Sampling Site List */}
+        {/* Animals List */}
         <Paper
           elevation={0}
           sx={{
@@ -34,9 +35,10 @@ export const SurveyAnimalPage = () => {
             borderBottomRightRadius: 0,
             borderRight: '1px solid' + grey[300]
           }}>
+          <AnimalList />
         </Paper>
 
-        {/* Observations Component */}
+        {/* Marked and Known animals Component */}
         <Paper
           elevation={0}
           sx={{
