@@ -12,7 +12,7 @@ import { FormikContextType } from 'formik';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useState } from 'react';
-import { handleGPXUpload1, handleKMLUpload1, handleShapeFileUpload1 } from 'utils/mapBoundaryUploadHelpers';
+import { handleGPXUpload, handleKMLUpload, handleShapeFileUpload } from 'utils/mapBoundaryUploadHelpers';
 import { ISurveyLocationForm } from '../StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
@@ -33,11 +33,11 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
       let features: Feature<Geometry, GeoJsonProperties>[] = [];
       try {
         if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-          features = await handleShapeFileUpload1(file);
+          features = await handleShapeFileUpload(file);
         } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-          features = await handleGPXUpload1(file);
+          features = await handleGPXUpload(file);
         } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-          features = await handleKMLUpload1(file);
+          features = await handleKMLUpload(file);
         }
 
         // Map features into form data
