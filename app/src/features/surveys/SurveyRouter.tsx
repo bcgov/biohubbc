@@ -1,4 +1,5 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
@@ -44,7 +45,12 @@ const SurveyRouter: React.FC = () => {
         <SurveySectionFullPageLayout
           pageTitle="Manage Animals"
           sideBarComponent={<AnimalList onSelectCritter={() => {}} />}
-          mainComponent={<AddEditAnimal />}
+          mainComponent={
+            <AddEditAnimal
+              currentCritterId="826aa7b4-31cf-44d5-80cd-fc159e42d7e7"
+              currentFormState={SurveyAnimalsI18N.animalGeneralTitle}
+            />
+          }
         />
       </RouteWithTitle>
 

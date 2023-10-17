@@ -1,15 +1,28 @@
+import { Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
-import { Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { AnimalSchema, AnimalSex, IAnimal } from './animal';
 import { transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
-import IndividualAnimalForm from './IndividualAnimalForm';
+import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
+import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
+import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
+import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
+import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
+import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
+import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
 
-export const AddEditAnimal = () => {
+interface IAddEditAnimalProps {
+  currentCritterId: string;
+  currentFormState: string;
+}
+
+export const AddEditAnimal = ({ currentCritterId, currentFormState }: IAddEditAnimalProps) => {
   const surveyContext = useContext(SurveyContext);
   const bhApi = useBiohubApi();
 
@@ -18,7 +31,6 @@ export const AddEditAnimal = () => {
   );
 
   loadCritters();
-  const [currentCritterId, setCurrentCritterId] = useState<string | null>(null);
 
   const obtainAnimalFormInitialvalues = useMemo(() => {
     const AnimalFormValues: IAnimal = {
@@ -42,6 +54,27 @@ export const AddEditAnimal = () => {
     return transformCritterbaseAPIResponseToForm(existingCritter);
   }, [critterData, currentCritterId]);
 
+  const renderFormContent = useMemo(() => {
+    switch (currentFormState) {
+      case SurveyAnimalsI18N.animalGeneralTitle:
+        return <GeneralAnimalForm />;
+      case SurveyAnimalsI18N.animalMarkingTitle:
+        return <MarkingAnimalForm />;
+      case SurveyAnimalsI18N.animalCaptureTitle:
+        return <CaptureAnimalForm />;
+      case SurveyAnimalsI18N.animalMortalityTitle:
+        return <MortalityAnimalForm />;
+      case SurveyAnimalsI18N.animalMeasurementTitle:
+        return <MeasurementAnimalForm />;
+      case SurveyAnimalsI18N.animalFamilyTitle:
+        return <FamilyAnimalForm />;
+      case SurveyAnimalsI18N.animalCollectionUnitTitle:
+        return <CollectionUnitAnimalForm />;
+      default:
+        return <Typography>Unimplemented</Typography>;
+    }
+  }, [currentFormState]);
+
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -54,7 +87,7 @@ export const AddEditAnimal = () => {
       validateOnBlur={true}
       validateOnChange={false}
       onSubmit={(values) => {}}>
-      <IndividualAnimalForm />
+      <Form>{renderFormContent}</Form>
     </Formik>
   );
 };
