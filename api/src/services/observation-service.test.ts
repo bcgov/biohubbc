@@ -47,7 +47,10 @@ describe('ObservationService', () => {
           create_user: 1,
           update_date: null,
           update_user: null,
-          revision_count: 0
+          revision_count: 0,
+          survey_sample_site_id: 1,
+          survey_sample_method_id: 1,
+          survey_sample_period_id: 1
         },
         {
           survey_observation_id: 6,
@@ -62,7 +65,10 @@ describe('ObservationService', () => {
           create_user: 1,
           update_date: '2023-04-04',
           update_user: 2,
-          revision_count: 1
+          revision_count: 1,
+          survey_sample_site_id: 1,
+          survey_sample_method_id: 1,
+          survey_sample_period_id: 1
         }
       ];
       const insertUpdateSurveyObservationsStub = sinon
@@ -119,7 +125,10 @@ describe('ObservationService', () => {
           create_user: 1,
           update_date: null,
           update_user: null,
-          revision_count: 0
+          revision_count: 0,
+          survey_sample_site_id: 1,
+          survey_sample_method_id: 1,
+          survey_sample_period_id: 1
         },
         {
           survey_observation_id: 6,
@@ -134,7 +143,10 @@ describe('ObservationService', () => {
           create_user: 1,
           update_date: '2023-04-04',
           update_user: 2,
-          revision_count: 1
+          revision_count: 1,
+          survey_sample_site_id: 1,
+          survey_sample_method_id: 1,
+          survey_sample_period_id: 1
         }
       ];
       const getSurveyObservationsStub = sinon

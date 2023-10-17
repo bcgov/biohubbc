@@ -1,9 +1,15 @@
 import { LoadingButton } from '@mui/lab';
-import { Breadcrumbs, Button, Link, Paper, Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import { Theme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
 import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import { ICreateSamplingSiteRequest } from './SamplingSitePage';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -20,13 +26,15 @@ export interface ISamplingSiteHeaderProps {
   survey_id: number;
   survey_name: string;
   is_submitting: boolean;
+  title: string;
+  breadcrumb: string;
 }
 export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) => {
   const classes = useStyles();
   const history = useHistory();
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
 
-  const { project_id, survey_id, survey_name, is_submitting } = props;
+  const { project_id, survey_id, survey_name, is_submitting, title, breadcrumb } = props;
   return (
     <>
       <Paper
@@ -38,17 +46,24 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
           px: 3
         }}>
         <Breadcrumbs aria-label="breadcrumb">
-          <Link variant="body2" underline="hover" href={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
-            {survey_name}
+          <Link
+            component={RouterLink}
+            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
+            underline="none">
+            <Typography component="span" variant="body2">
+              {survey_name}
+            </Typography>
           </Link>
           <Link
-            variant="body2"
-            underline="hover"
-            href={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}>
-            Manage Survey Observations
+            component={RouterLink}
+            to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
+            underline="none">
+            <Typography component="span" variant="body2">
+              Manage Survey Observations
+            </Typography>
           </Link>
           <Typography component="span" color="text.secondary" variant="body2">
-            Add Sampling Sites
+            {breadcrumb}
           </Typography>
         </Breadcrumbs>
         <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -58,7 +73,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             sx={{
               ml: '-2px'
             }}>
-            New Sampling Site
+            {title}
           </Typography>
           <Box>
             <LoadingButton

@@ -16,6 +16,7 @@ describe('SurveyAnimalsTableActions', () => {
         onEditCritter={onEditCritter}
         onRemoveCritter={onRemoveCritter}
         onMenuOpen={() => {}}
+        onMapOpen={() => {}}
       />
     );
 

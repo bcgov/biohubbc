@@ -162,6 +162,7 @@ export function updateSurveySamplePeriod(): RequestHandler {
       return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveySamplePeriod', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -287,6 +288,7 @@ export function deleteSurveySamplePeriodRecord(): RequestHandler {
       return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySamplePeriodRecord', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

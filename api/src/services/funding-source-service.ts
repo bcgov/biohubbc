@@ -31,12 +31,12 @@ export class FundingSourceService extends DBService {
   /**
    * Get all funding sources.
    *
-   * @return {*}  {(Promise<(FundingSource | FundingSourceSupplementaryData)[]>)}
+   * @return {*}  {(Promise<(FundingSource & FundingSourceSupplementaryData)[]>)}
    * @memberof FundingSourceService
    */
   async getFundingSources(
     searchParams: IFundingSourceSearchParams
-  ): Promise<(FundingSource | FundingSourceSupplementaryData)[]> {
+  ): Promise<(FundingSource & FundingSourceSupplementaryData)[]> {
     const fundingSources = await this.fundingSourceRepository.getFundingSources(searchParams);
 
     return Promise.all(
@@ -54,7 +54,7 @@ export class FundingSourceService extends DBService {
    *
    * @param {number} fundingSourceId
    * @return {*}  {(Promise<{
-   *     funding_source: FundingSource | FundingSourceSupplementaryData;
+   *     funding_source: FundingSource & FundingSourceSupplementaryData;
    *     funding_source_survey_references: (SurveyFundingSource | SurveyFundingSourceSupplementaryData)[];
    *   }>)}
    * @memberof FundingSourceService
@@ -62,7 +62,7 @@ export class FundingSourceService extends DBService {
   async getFundingSource(
     fundingSourceId: number
   ): Promise<{
-    funding_source: FundingSource | FundingSourceSupplementaryData;
+    funding_source: FundingSource & FundingSourceSupplementaryData;
     funding_source_survey_references: (SurveyFundingSource | SurveyFundingSourceSupplementaryData)[];
   }> {
     const results = await Promise.all([

@@ -1,5 +1,7 @@
 import { AxiosInstance } from 'axios';
+import { IEditSamplingSiteRequest } from 'features/surveys/observations/sampling-sites/edit/components/SampleSiteEditForm';
 import { ICreateSamplingSiteRequest } from 'features/surveys/observations/sampling-sites/SamplingSitePage';
+import { IGetSampleSiteResponse } from 'interfaces/useSurveyApi.interface';
 
 /**
  * Returns a set of supported api methods for working with search functionality
@@ -9,9 +11,12 @@ import { ICreateSamplingSiteRequest } from 'features/surveys/observations/sampli
  */
 const useSamplingSiteApi = (axios: AxiosInstance) => {
   /**
-   * Get search results (spatial)
+   * Create Sampling Sites
    *
-   * @return {*}  {Promise<IGetSearchResultsResponse[]>}
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ICreateSamplingSiteRequest} samplingSite
+   * @return {*}  {Promise<void>}
    */
   const createSamplingSites = async (
     projectId: number,
@@ -21,8 +26,40 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site`, samplingSite);
   };
 
+  /**
+   * Get Sample Sites
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<void>}
+   */
+  const getSampleSites = async (projectId: number, surveyId: number): Promise<IGetSampleSiteResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site`);
+    return data;
+  };
+
+  /**
+   * Edit Sample Site
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} sampleSiteId
+   * @param {IEditSamplingSiteRequest} sampleSite
+   * @return {*}  {Promise<void>}
+   */
+  const editSampleSite = async (
+    projectId: number,
+    surveyId: number,
+    sampleSiteId: number,
+    sampleSite: IEditSamplingSiteRequest
+  ): Promise<void> => {
+    await axios.put(`/api/project/${projectId}/survey/${surveyId}/sample-site/${sampleSiteId}`, sampleSite);
+  };
+
   return {
-    createSamplingSites
+    createSamplingSites,
+    getSampleSites,
+    editSampleSite
   };
 };
 

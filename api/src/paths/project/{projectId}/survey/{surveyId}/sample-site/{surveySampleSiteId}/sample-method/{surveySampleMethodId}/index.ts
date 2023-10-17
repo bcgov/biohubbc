@@ -115,7 +115,7 @@ PUT.apiDoc = {
 export function updateSurveySampleMethod(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveySampleSiteId) {
-      throw new HTTP400('Missing required param `surveySampleMethodId`');
+      throw new HTTP400('Missing required param `surveySampleSiteId`');
     }
 
     if (!req.params.surveySampleMethodId) {
@@ -143,6 +143,7 @@ export function updateSurveySampleMethod(): RequestHandler {
       return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'updateSurveySampleMethod', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -250,6 +251,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
       return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveySampleMethodRecord', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

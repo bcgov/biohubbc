@@ -1,5 +1,5 @@
-import { Theme } from '@mui/material';
 import LinearProgress from '@mui/material/LinearProgress';
+import { Theme } from '@mui/material/styles';
 import { makeStyles } from '@mui/styles';
 import { IProgressBarProps, UploadFileStatus } from 'components/file-upload/FileUploadItem';
 

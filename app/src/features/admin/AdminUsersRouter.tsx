@@ -1,4 +1,3 @@
-import AdminUsersLayout from 'features/admin/AdminUsersLayout';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
@@ -15,15 +14,11 @@ const AdminUsersRouter: React.FC = () => {
   return (
     <Switch>
       <RouteWithTitle exact path="/admin/users" title={getTitle('Manage Users')}>
-        <AdminUsersLayout>
-          <ManageUsersPage />
-        </AdminUsersLayout>
+        <ManageUsersPage />
       </RouteWithTitle>
 
       <Route exact path="/admin/users/:id">
-        <AdminUsersLayout>
-          <UsersDetailPage />
-        </AdminUsersLayout>
+        <UsersDetailPage />
       </Route>
 
       {/*  Catch any unknown routes, and re-direct to the not found page */}

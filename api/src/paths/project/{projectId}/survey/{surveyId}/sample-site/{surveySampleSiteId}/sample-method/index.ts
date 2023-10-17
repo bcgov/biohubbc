@@ -144,7 +144,7 @@ GET.apiDoc = {
 export function getSurveySampleMethodRecords(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveySampleSiteId) {
-      throw new HTTP400('Missing required param `surveySampleMethodId`');
+      throw new HTTP400('Missing required param `surveySampleSiteId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -163,6 +163,7 @@ export function getSurveySampleMethodRecords(): RequestHandler {
       return res.status(200).json({ sampleMethods: result });
     } catch (error) {
       defaultLog.error({ label: 'getSurveySampleMethodRecords', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -298,6 +299,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
       return res.status(201).send();
     } catch (error) {
       defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

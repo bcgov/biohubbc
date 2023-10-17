@@ -191,17 +191,6 @@ const SurveyHeader = () => {
                 </Box>
               </Box>
               <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
-                <Button
-                  title="Submit Survey Data and Documents"
-                  color="primary"
-                  variant="contained"
-                  onClick={() => history.push('observations')}
-                  sx={{
-                    minWidth: 7,
-                    marginRight: 1
-                  }}>
-                  Manage Observations
-                </Button>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button
                     title="Submit Survey Data and Documents"

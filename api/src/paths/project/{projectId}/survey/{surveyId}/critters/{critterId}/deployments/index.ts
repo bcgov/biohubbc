@@ -1,15 +1,13 @@
-import { AxiosError } from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { v4 } from 'uuid';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { BctwService } from '../../../../../../../services/bctw-service';
-import { ICritterbaseUser } from '../../../../../../../services/critterbase-service';
-import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
-import { getLogger } from '../../../../../../../utils/logger';
-
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../database/db';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { BctwService } from '../../../../../../../../services/bctw-service';
+import { ICritterbaseUser } from '../../../../../../../../services/critterbase-service';
+import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
+import { getLogger } from '../../../../../../../../utils/logger';
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/deployments');
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -254,7 +252,7 @@ export function deployDevice(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'addDeployment', message: 'error', error });
       await connection.rollback();
-      return res.status(500).json((error as AxiosError).response);
+      throw error;
     } finally {
       connection.release();
     }
@@ -279,9 +277,8 @@ export function updateDeployment(): RequestHandler {
       return res.status(200).json({ message: 'Deployment updated.' });
     } catch (error) {
       defaultLog.error({ label: 'updateDeployment', message: 'error', error });
-      console.log(JSON.stringify((error as Error).message));
       await connection.rollback();
-      return res.status(500).json((error as AxiosError).response);
+      throw error;
     } finally {
       connection.release();
     }

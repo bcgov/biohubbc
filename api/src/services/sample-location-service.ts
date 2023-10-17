@@ -3,7 +3,7 @@ import { IDBConnection } from '../database/db';
 import {
   SampleLocationRecord,
   SampleLocationRepository,
-  UpdateSampleLocationRecord
+  UpdateSampleSiteRecord
 } from '../repositories/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
 import { DBService } from './db-service';
@@ -17,6 +17,7 @@ export interface PostSampleLocations {
   survey_sample_sites: Feature[];
   methods: InsertSampleMethodRecord[];
 }
+
 /**
  * Sample Location Repository
  *
@@ -96,13 +97,43 @@ export class SampleLocationService extends DBService {
   }
 
   /**
-   * updates a survey Sample Location.
+   * Updates a survey entire Sample Site Record, with Location and associated methods and periods.
    *
-   * @param {PostSampleLocation} sampleLocation
-   * @return {*}  {Promise<SampleLocationRecord>}
+   * @param {UpdateSampleSiteRecord} sampleSite
    * @memberof SampleLocationService
    */
-  async updateSampleLocation(sampleLocation: UpdateSampleLocationRecord): Promise<SampleLocationRecord> {
-    return this.sampleLocationRepository.updateSampleLocation(sampleLocation);
+  async updateSampleLocationMethodPeriod(sampleSite: UpdateSampleSiteRecord) {
+    const methodService = new SampleMethodService(this.connection);
+
+    // Update the main sample location
+    await this.sampleLocationRepository.updateSampleLocation(sampleSite);
+
+    // Check for methods to delete
+    await methodService.deleteSampleMethodsNotInArray(sampleSite.survey_sample_site_id, sampleSite.methods);
+
+    // Loop through all methods
+    // For each method, check if it exists
+    // If it exists, update it
+    // If it does not exist, create it
+    for (const item of sampleSite.methods) {
+      if (item.survey_sample_method_id) {
+        const sampleMethod = {
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          survey_sample_method_id: item.survey_sample_method_id,
+          method_lookup_id: item.method_lookup_id,
+          description: item.description,
+          periods: item.periods
+        };
+        await methodService.updateSampleMethod(sampleMethod);
+      } else {
+        const sampleMethod = {
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
+          method_lookup_id: item.method_lookup_id,
+          description: item.description,
+          periods: item.periods
+        };
+        await methodService.insertSampleMethod(sampleMethod);
+      }
+    }
   }
 }

@@ -60,4 +60,15 @@ export class SurveyCritterService extends DBService {
   async upsertDeployment(critterId: number, deplyomentId: string): Promise<void> {
     return this.critterRepository.upsertDeployment(critterId, deplyomentId);
   }
+
+  /**
+   * Removes the deployment in SIMS.
+   *
+   * @param {id} critterId
+   * @param {string} deploymentId the bctw deployment uuid
+   * @returns {*}
+   */
+  async removeDeployment(critterId: number, deploymentId: string): Promise<void> {
+    return this.critterRepository.removeDeployment(critterId, deploymentId);
+  }
 }

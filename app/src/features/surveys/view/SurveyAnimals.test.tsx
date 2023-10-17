@@ -95,7 +95,7 @@ describe('SurveyAnimals', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('No Individual Animals')).toBeInTheDocument();
+      expect(getByText('No Marked or Known Animals')).toBeInTheDocument();
     });
   });
 
@@ -113,6 +113,7 @@ describe('SurveyAnimals', () => {
 
     mockUseBiohub.survey.getDeploymentsInSurvey.mockResolvedValue([{ critter_id: 'critter_uuid', device_id: 123 }]);
     mockUseBiohub.survey.createCritterAndAddToSurvey.mockResolvedValue({});
+    mockUseTelemetry.devices.getDeviceDetails.mockResolvedValue({ device: undefined, deployments: [] });
     const { getByText, getByTestId } = render(
       <AuthStateContext.Provider value={authState}>
         <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>

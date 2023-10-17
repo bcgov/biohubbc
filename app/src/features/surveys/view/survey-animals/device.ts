@@ -1,3 +1,4 @@
+import { FeatureCollection } from 'geojson';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
 
@@ -7,18 +8,24 @@ export type IDeploymentTimespan = InferType<typeof AnimalDeploymentTimespanSchem
 
 export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
 
-const req = 'Required';
+export type ITelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
+
+const req = 'Required.';
 const mustBeNum = 'Must be a number';
-const numSchema = yup.number().typeError(mustBeNum);
+const mustBePos = 'Must be positive';
+const mustBeInt = 'Must be an integer';
+const maxInt = 2147483647;
+const numSchema = yup.number().typeError(mustBeNum).min(0, mustBePos);
+const intSchema = numSchema.max(maxInt, `Must be less than ${maxInt}`).integer(mustBeInt).required(req);
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   deployment_id: yup.string(),
-  attachment_start: yup.string().required(req),
-  attachment_end: yup.string()
+  attachment_start: yup.string().isValidDateString().required(req).typeError(req),
+  attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start').nullable()
 });
 
 export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
-  device_id: numSchema.required(req),
+  device_id: intSchema,
   device_make: yup.string().required(req),
   frequency: numSchema,
   frequency_unit: yup.string().nullable(),
@@ -30,8 +37,8 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   assignment_id: yup.string().required(),
   collar_id: yup.string().required(),
   critter_id: yup.string().required(),
-  attachment_start: yup.string().required(),
-  attachment_end: yup.string(),
+  attachment_start: yup.string().isValidDateString().required(),
+  attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start'),
   deployment_id: yup.string().required(),
   device_id: yup.number().required(),
   device_make: yup.string().required(),
