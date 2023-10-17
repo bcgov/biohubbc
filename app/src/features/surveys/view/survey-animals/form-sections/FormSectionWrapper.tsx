@@ -48,7 +48,7 @@ const FormSectionWrapper = ({
 
   return (
     <>
-      <Divider sx={{ mt: 4, mb: 3 }} />
+      {/*<Divider sx={{ mt: 4, mb: 3 }} />*/}
       <Box component="fieldset">
         <Typography component="legend">{title}</Typography>
         <Typography

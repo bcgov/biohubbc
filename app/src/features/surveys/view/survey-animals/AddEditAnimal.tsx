@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -7,7 +7,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useMemo } from 'react';
-import { AnimalSchema, AnimalSex, IAnimal } from './animal';
+import { AnimalSchema, AnimalSex, IAnimal, IAnimalSubSections } from './animal';
 import { transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
@@ -17,14 +17,16 @@ import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
 
-interface IAddEditAnimalProps {
-  currentCritterId: string;
-  currentFormState: string;
+interface AddEditAnimalProps {
+  critter_id: string | null;
+  section: IAnimalSubSections;
 }
 
-export const AddEditAnimal = ({ currentCritterId, currentFormState }: IAddEditAnimalProps) => {
+export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const surveyContext = useContext(SurveyContext);
   const bhApi = useBiohubApi();
+
+  const { critter_id, section } = props;
 
   const { data: critterData, load: loadCritters } = useDataLoader(() =>
     bhApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
@@ -46,16 +48,16 @@ export const AddEditAnimal = ({ currentCritterId, currentFormState }: IAddEditAn
     };
 
     const existingCritter = critterData?.find(
-      (critter: IDetailedCritterWithInternalId) => currentCritterId === critter.critter_id
+      (critter: IDetailedCritterWithInternalId) => critter_id === critter.critter_id
     );
     if (!existingCritter) {
       return AnimalFormValues;
     }
     return transformCritterbaseAPIResponseToForm(existingCritter);
-  }, [critterData, currentCritterId]);
+  }, [critterData, critter_id]);
 
   const renderFormContent = useMemo(() => {
-    switch (currentFormState) {
+    switch (section) {
       case SurveyAnimalsI18N.animalGeneralTitle:
         return <GeneralAnimalForm />;
       case SurveyAnimalsI18N.animalMarkingTitle:
@@ -73,7 +75,7 @@ export const AddEditAnimal = ({ currentCritterId, currentFormState }: IAddEditAn
       default:
         return <Typography>Unimplemented</Typography>;
     }
-  }, [currentFormState]);
+  }, [section]);
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -87,7 +89,17 @@ export const AddEditAnimal = ({ currentCritterId, currentFormState }: IAddEditAn
       validateOnBlur={true}
       validateOnChange={false}
       onSubmit={(values) => {}}>
-      <Form>{renderFormContent}</Form>
+      <Form>
+        <Typography color={'grey'} marginBottom={1}>{`Editing Critter ID: ${critter_id}`}</Typography>
+        {renderFormContent}
+
+        <Button
+          sx={{ position: 'absolute', marginTop: 'auto', right: '20px', bottom: '20px' }}
+          variant="contained"
+          onClick={() => {}}>
+          Save Changes
+        </Button>
+      </Form>
     </Formik>
   );
 };

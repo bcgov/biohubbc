@@ -1,4 +1,4 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiPencil } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Divider, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
@@ -517,7 +517,7 @@ const SurveyAnimals: React.FC = () => {
       />
       <YesNoDialog
         dialogTitle={'Remove critter from survey?'}
-        dialogText={`Are you sure you would like to remove this critter from the survey? 
+        dialogText={`Are you sure you would like to remove this critter from the survey?
           The critter will remain present in Critterbase, but will no longer appear in the survey list.`}
         open={openRemoveCritterDialog}
         yesButtonProps={{ color: 'error' }}
@@ -529,10 +529,10 @@ const SurveyAnimals: React.FC = () => {
       />
       <H2ButtonToolbar
         label="Marked or Known Animals"
-        buttonLabel="Add Animal"
-        buttonTitle="Add Animal"
+        buttonLabel="Manage Animals"
+        buttonTitle="Manage Animals"
         buttonProps={{ variant: 'contained', color: 'primary' }}
-        buttonStartIcon={<Icon path={mdiPlus} size={1} />}
+        buttonStartIcon={<Icon path={mdiPencil} size={1} />}
         buttonOnClick={toggleDialog}
       />
       <Divider></Divider>
