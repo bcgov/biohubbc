@@ -65,7 +65,7 @@ describe('FundingSourceService', () => {
       const dbConnection = getMockDBConnection();
       const fundingSourceService = new FundingSourceService(dbConnection);
 
-      const expectedResult1: FundingSource | FundingSourceSupplementaryData = {
+      const expectedResult1: FundingSource & FundingSourceSupplementaryData = {
         funding_source_id: 1,
         name: 'name',
         start_date: '2020-01-01',
