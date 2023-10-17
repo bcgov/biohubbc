@@ -27,7 +27,7 @@ const Permits = () => {
       {permit.permits?.map((permit) => {
         return (
           <Box className="row" key={permit.id}>
-            <Typography component="dt">{'#' + permit.permit_number}</Typography>
+            <Typography component="dt">{`#${permit.permit_number}`}</Typography>
             <Typography component="dd">{permit.permit_type}</Typography>
           </Box>
         );
