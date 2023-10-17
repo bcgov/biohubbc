@@ -342,7 +342,7 @@ export const SurveyAnimalsI18N = {
   taxonLabelHelp: 'A unique name for you to recognize this individual.',
   wlhIdHelp: 'An ID used to identify animals in the BC Wildlife Health Program',
   sexHelp: 'The sex of this critter. Leave as Unknown if unsure.'
-};
+} as const;
 
 export const FundingSourceI18N = {
   cancelTitle: 'Discard changes and exit?',
