@@ -36,7 +36,6 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   loadCritters();
 
   //temp
-  const showSaveButton = true;
   const isSaving = false;
 
   const obtainAnimalFormInitialvalues = useMemo(() => {
@@ -104,7 +103,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               fontSize: '1.125rem',
               fontWeight: 700
             }}>
-            {critterData && critterData[0] ? `Animal: ${critterData[1].animal_id}` : 'Animal'}
+            {critter_id ? `Animal: ${obtainAnimalFormInitialvalues.general.animal_id}` : 'No Animal Selected'}
           </Typography>
 
           <Box
@@ -116,7 +115,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               }
             }}>
             <Box display="flex" overflow="hidden">
-              <Collapse in={showSaveButton} orientation="horizontal">
+              <Collapse in={!!critter_id} orientation="horizontal">
                 <Box ml={1} whiteSpace="nowrap">
                   <LoadingButton
                     loading={isSaving}
@@ -133,7 +132,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             </Box>
           </Box>
         </Toolbar>
-        {renderFormContent}
+        {critter_id ? renderFormContent : null}
       </Form>
     </Formik>
   );

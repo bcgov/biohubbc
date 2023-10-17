@@ -82,7 +82,6 @@ const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: Anima
           <Accordion
             disableGutters
             expanded={critter.critter_id == selectedCritter}
-            onClick={() => handleCritterSelect(critter.critter_id)}
             sx={{
               boxShadow: 'none',
               '&.Mui-expanded': {},
@@ -93,6 +92,7 @@ const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: Anima
             <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="sampleSiteHeader">
               <AccordionSummary
                 expandIcon={<Icon path={mdiChevronDown} size={1} />}
+                onClick={() => handleCritterSelect(critter.critter_id)}
                 aria-controls="panel1bh-content"
                 sx={{
                   flex: '1 1 auto',
@@ -129,7 +129,6 @@ const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: Anima
                     button
                     onClick={() => {
                       onSelectSection(section);
-                      onSelectCritter(critter.critter_id);
                     }}>
                     <ListItemText>{section}</ListItemText>
                   </ListItem>
