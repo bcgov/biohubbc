@@ -1,9 +1,17 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
-import Skeleton from '@mui/lab/Skeleton'
-import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridInputRowSelectionModel, GridRowModelUpdate } from '@mui/x-data-grid';
+import { cyan, grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import Skeleton from '@mui/material/Skeleton';
+import TextField from '@mui/material/TextField';
+import {
+  DataGrid,
+  GridColDef,
+  GridEventListener,
+  GridInputRowSelectionModel,
+  GridRowModelUpdate
+} from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
@@ -17,8 +25,6 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { grey } from '@mui/material/colors';
-import { cyan } from '@mui/material/colors';
 import { useLocation } from 'react-router';
 
 export interface ISampleSiteSelectProps {
@@ -54,18 +60,36 @@ export interface ISpeciesObservationTableProps {
   }[];
 }
 
+const SampleSiteSkeleton = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      gap: '16px',
+      alignItemx: 'center',
+      p: 1,
+      height: 58,
+      background: '#fff',
+      borderBottom: '1px solid' + grey[300]
+    }}>
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+  </Box>
+);
+
 const LoadingOverlay = () => {
   return (
-    <Box display='flex' flexDirection='column' p={1} gap={2}>
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
-      <Skeleton width="100%" height={40} sx={{ transform: 'none' }} />
+    <Box display="flex" flexDirection="column">
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
     </Box>
   );
-}
+};
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const { sample_sites, sample_methods, sample_periods } = props;
@@ -85,6 +109,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
+      valueSetter: (params) => {
+        return { ...params.row, wldtaxonomic_units_id: Number(params.value) };
+      },
       renderCell: (params) => {
         return <TaxonomyDataGridViewCell dataGridProps={params} />;
       },
@@ -97,7 +124,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Sampling Site',
       editable: true,
       flex: 1,
-      minWidth: 200,
+      minWidth: 250,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -129,7 +156,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Sampling Method',
       editable: true,
       flex: 1,
-      minWidth: 200,
+      minWidth: 250,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -164,8 +191,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'survey_sample_period_id',
       headerName: 'Sampling Period',
       editable: true,
-      flex: 1,
-      minWidth: 200,
+      flex: 0,
+      width: 240,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -201,19 +228,45 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Count',
       editable: true,
       type: 'number',
-      minWidth: 100,
+      minWidth: 110,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderEditCell: (params) => (
-        <GridEditInputCell
-          {...params}
-          inputProps={{
-            min: 0,
-            max: 99999
-          }}
-        />
-      )
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        const value = Number(params.value);
+        return { ...params.row, count: (isNaN(value) && null) || value };
+      },
+      valueParser: (value) => {
+        if (!value) {
+          return '';
+        }
+
+        if (/^[0-9]*$/.test(value)) {
+          // Value contains only number characters
+          return value;
+        }
+
+        // Value contains non-number characters, strip out non-number characters
+        return value.replace(/\D/g, '');
+      },
+      renderEditCell: (params) => {
+        const value = !params.value || isNaN(params.value) ? '' : params.value;
+        return (
+          <TextField
+            onChange={(event) => {
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={value}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'observation_date',
@@ -233,24 +286,33 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'string',
       width: 150,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        return { ...params.row, observation_time: params.value };
+      },
+      valueParser: (value) => {
+        if (!value) {
+          return null;
+        }
+
+        if (moment.isMoment(value)) {
+          return value.format('HH:mm');
+        }
+
+        return moment(value, 'HH:mm:ss').format('HH:mm');
+      },
       renderCell: (params) => {
         if (!params.value) {
           return null;
         }
 
-        if (moment.isMoment(params.value)) {
-          return <>{params.value.format('HH:mm')}</>;
-        }
-
-        return <>{moment(params.value, 'HH:mm:ss').format('HH:mm')}</>;
+        return <>{params.value}</>;
       },
       renderEditCell: (params) => {
         return (
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <TimePicker
-              timeSteps={{ hours: 1, minutes: 1 }}
               value={(params.value && moment(params.value, 'HH:mm:ss')) || null}
               onChange={(value) => {
                 apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
@@ -262,6 +324,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: value?.format('HH:mm:ss')
                 });
               }}
+              timeSteps={{ hours: 1, minutes: 1 }}
               ampm={false}
             />
           </LocalizationProvider>
@@ -271,24 +334,84 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     {
       field: 'latitude',
       headerName: 'Lat',
-      type: 'number',
       editable: true,
+      type: 'number',
       width: 120,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderCell: (params) => String(params.row.latitude)
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        if (/^-?[0-9]{0,3}(?:\.[0-9]{1,12})?$/.test(params.value)) {
+          // If the value is a legal latitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, latitude: Number(params.value) };
+        }
+
+        return { ...params.row, latitude: parseFloat(params.value) };
+      },
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^-?[0-9]{0,3}(?:\.[0-9]{0,12})?$/.test(event.target.value)) {
+                // If the value is not a subset of a legal latitude value, prevent the value from being applied
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={params.value || ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'longitude',
       headerName: 'Long',
-      type: 'number',
       editable: true,
+      type: 'number',
       width: 120,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderCell: (params) => String(params.row.longitude)
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        if (/^-?[0-9]{1,3}(?:\.[0-9]{1,12})?$/.test(params.value)) {
+          // If the value is a legal latitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, longitude: Number(params.value) };
+        }
+
+        return { ...params.row, longitude: parseFloat(params.value) };
+      },
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^-?[0-9]{0,3}(?:\.[0-9]{0,12})?$/.test(event.target.value)) {
+                // If the value is not a subset of a legal latitude value, prevent the value from being applied
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={parseFloat(params.value) || ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'actions',
@@ -365,11 +488,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     observationsContext.markRecordWithUnsavedChanges(id);
   };
 
-  const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
-    const updatedRow = { ...newRow, wldtaxonomic_units_id: Number(newRow.wldtaxonomic_units_id) };
-    return updatedRow;
-  };
-
   return (
     <>
       <YesNoDialog
@@ -396,7 +514,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         editMode="row"
         onCellClick={handleCellClick}
         onRowEditStop={handleRowEditStop}
-        processRowUpdate={handleProcessRowUpdate}
         columns={observationColumns}
         rows={observationsContext.initialRows}
         disableRowSelectionOnClick
@@ -410,6 +527,25 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }}
         sx={{
           border: 'none',
+          '& .MuiDataGrid-columnHeaders': {
+            position: 'relative',
+            '&:after': {
+              content: "''",
+              position: 'absolute',
+              top: '20px',
+              right: 0,
+              width: '70px',
+              height: '60px',
+              background: '#fff'
+            }
+          },
+          '& .MuiDataGrid-columnHeader': {
+            px: 2,
+            py: 1
+          },
+          '& .MuiDataGrid-columnHeader:focus': {
+            outline: 'none'
+          },
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 700,
             textTransform: 'uppercase',
@@ -419,34 +555,40 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             position: 'sticky',
             right: 0,
             top: 0,
-            borderLeft: '1px solid #ccc',
-            background: '#fff'
+            borderLeft: '1px solid #ccc'
           },
-          '& .MuiDataGrid-columnHeaders': {
-            position: 'relative'
-          },
-          '& .MuiDataGrid-columnHeaders:after': {
-            content: "''",
-            position: 'absolute',
-            top: '20px',
-            right: 0,
-            width: '70px',
-            height: '60px',
-            background: '#fff'
-          },
-          '& .MuiDataGrid-actionsCell': {
-            gap: 0
+          '& .MuiDataGrid-row--editing': {
+            boxShadow: 'none',
+            backgroundColor: cyan[50],
+            '& .MuiDataGrid-cell': {
+              backgroundColor: cyan[50]
+            }
           },
           '& .MuiDataGrid-cell': {
-            p: 1
-          },
-          '& .MuiDataGrid-cell.MuiDataGrid-cell--editing:focus-within': {
-            outline: 'none'
-          },
-          '& .MuiDataGrid-cell.MuiDataGrid-cell--editing': {
-            px: 0.5,
+            px: 2,
             py: 1,
-            backgroundColor: cyan[50]
+            background: '#fff',
+            '&.MuiDataGrid-cell--editing:focus-within': {
+              outline: 'none'
+            },
+            '&.MuiDataGrid-cell--editing': {
+              px: 0.5,
+              py: 1,
+              backgroundColor: cyan[50]
+            }
+          },
+          '& .MuiDataGrid-editInputCell': {
+            border: '1px solid #ccc',
+            '&:hover': {
+              borderColor: 'primary.main'
+            },
+            '&.Mui-focused': {
+              borderColor: 'primary.main',
+              outlineWidth: '2px',
+              outlineStyle: 'solid',
+              outlineColor: 'primary.main',
+              outlineOffset: '-2px'
+            }
           },
           '& .MuiInputBase-root': {
             height: '40px',
@@ -457,17 +599,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               padding: 0
             }
           },
-          '& .MuiDataGrid-editInputCell:hover': {
-            borderColor: 'primary.main'
+          '& .MuiOutlinedInput': {
+            '&-notchedoutline': {
+              border: '1px solid' + grey[300]
+            }
           },
-          '& .MuiDataGrid-editInputCell': {
-            border: '1px solid #ccc',
+          '& .MuiOutlinedInput-notchedOutline': {
             '&.Mui-focused': {
-              borderColor: 'primary.main',
-              outlineWidth: '2px',
-              outlineStyle: 'solid',
-              outlineColor: 'primary.main',
-              outlineOffset: '-2px'
+              borderColor: 'primary.main'
             }
           },
           '& .MuiOutlinedInput-root': {
@@ -476,28 +615,11 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             border: 'none',
             '&:hover': {
               borderColor: 'primary.main'
-            }
-          },
-          '& .MuiOutlinedInput-root:hover': {
-            "& > fieldset": {
+            },
+            '&:hover > fieldset': {
               border: '1px solid' + 'primary.main'
             }
-          },
-          '& .MuiOutlinedInput-notchedOutline': {
-            border: '1px solid #ccc',
-            '&.Mui-focused': {
-              borderColor: 'primary.main'
-            }
-          },
-          '& .MuiDataGrid-row': {
-            '&--editing': {
-              boxShadow: 'none',
-              background: grey[100]
-            }
-          },
-          // '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-          //   border: '1px solid' + 'primary.main'
-          // }
+          }
         }}
       />
     </>

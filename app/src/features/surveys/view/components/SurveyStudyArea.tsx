@@ -238,7 +238,7 @@ const SurveyStudyArea = () => {
 
       <ErrorDialog {...errorDialogProps} />
 
-      <Box sx={{display: 'none'}}>
+      <Box sx={{ display: 'none' }}>
         <H2ButtonToolbar
           label="Observations"
           buttonLabel="Edit"
@@ -257,8 +257,7 @@ const SurveyStudyArea = () => {
       </Box>
 
       <Box>
-
-        <Box height={500} position="relative" sx={{display: 'none'}}>
+        <Box height={500} position="relative" sx={{ display: 'none' }}>
           <MemoizedMapContainer
             mapId="survey_study_area_map"
             bounds={bounds}
@@ -280,14 +279,11 @@ const SurveyStudyArea = () => {
             </Box>
           )}
         </Box>
-
       </Box>
 
       <Box component="dl">
         <Box className="row">
-          <Typography component="dt">
-            Name
-          </Typography>
+          <Typography component="dt">Name</Typography>
           <Typography component="dd">{surveyLocation?.name}</Typography>
         </Box>
         <InferredLocationDetails layers={inferredLayersInfo} />

@@ -1,6 +1,7 @@
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import Typography from '@mui/material/Typography';
 
 export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
@@ -32,7 +33,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
     return null;
   }
 
-  return <>{taxonomyDataLoader.data?.searchResponse[0].label}</>;
+  return <Typography variant="body2" component="div" sx={{overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{taxonomyDataLoader.data?.searchResponse[0].label}</Typography>;
 };
 
 export default TaxonomyDataGridViewCell;

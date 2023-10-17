@@ -27,15 +27,13 @@ const SurveyFundingSources = () => {
         <>
           {funding_sources.map((surveyFundingSource) => (
             <Box className="row" key={surveyFundingSource.funding_source_id}>
-              <Typography component="dt">
-              {surveyFundingSource.funding_source_name}
-              </Typography>
-              <Typography component="dd"
+              <Typography component="dt">{surveyFundingSource.funding_source_name}</Typography>
+              <Typography
+                component="dd"
                 sx={{
                   display: 'inline-block',
                   width: 'auto'
-                }}
-              >
+                }}>
                 {getFormattedAmount(surveyFundingSource.amount)}
               </Typography>
             </Box>
@@ -46,7 +44,6 @@ const SurveyFundingSources = () => {
           <Typography>No Funding Sources</Typography>
         </Box>
       )}
-
     </Box>
   );
 };
