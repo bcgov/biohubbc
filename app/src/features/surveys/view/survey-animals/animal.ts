@@ -1,10 +1,32 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 import { isEqual as deepEquals, omit, omitBy } from 'lodash-es';
 import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
 import { AnimalTelemetryDeviceSchema } from './device';
+
+export type IAnimalSubSections =
+  | 'General'
+  | 'Markings'
+  | 'Measurements'
+  | 'Capture Information'
+  | 'Mortality'
+  | 'Family'
+  | 'Observations'
+  | 'Telemetry';
+
+export const ANIMAL_SUBSECTIONS: IAnimalSubSections[] = [
+  SurveyAnimalsI18N.animalGeneralTitle,
+  SurveyAnimalsI18N.animalMarkingTitle,
+  SurveyAnimalsI18N.animalMeasurementTitle,
+  SurveyAnimalsI18N.animalCaptureTitle,
+  SurveyAnimalsI18N.animalMortalityTitle,
+  SurveyAnimalsI18N.animalFamilyTitle,
+  'Observations',
+  'Telemetry'
+] as IAnimalSubSections[];
 
 export enum AnimalSex {
   MALE = 'Male',

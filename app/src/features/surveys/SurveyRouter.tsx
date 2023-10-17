@@ -11,8 +11,7 @@ import ObservationComponent from './observations/ObservationComponent';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSiteList from './observations/sampling-sites/SamplingSiteList';
 import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
-import { AddEditAnimal } from './view/survey-animals/AddEditAnimal';
-import AnimalList from './view/survey-animals/AnimalList';
+import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -41,11 +40,7 @@ const SurveyRouter: React.FC = () => {
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/animals" title={getTitle('Observations')}>
-        <SurveySectionFullPageLayout
-          pageTitle="Manage Animals"
-          sideBarComponent={<AnimalList onSelectCritter={() => {}} />}
-          mainComponent={<AddEditAnimal />}
-        />
+        <SurveyAnimalsPage />
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Sampling Sites')}>

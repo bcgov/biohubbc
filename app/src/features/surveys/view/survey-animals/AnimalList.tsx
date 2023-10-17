@@ -19,12 +19,14 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { ANIMAL_SUBSECTIONS, IAnimalSubSections } from './animal';
 
 interface AnimalListProps {
   onSelectCritter: (critter_id: string) => void;
+  onSelectSection: (section: IAnimalSubSections) => void;
 }
 
-const AnimalList = ({ onSelectCritter }: AnimalListProps) => {
+const AnimalList = ({ onSelectCritter, onSelectSection }: AnimalListProps) => {
   const bhApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
@@ -39,18 +41,8 @@ const AnimalList = ({ onSelectCritter }: AnimalListProps) => {
     loadCritters();
   }
 
-  const animalSubSections = [
-    SurveyAnimalsI18N.animalGeneralTitle,
-    SurveyAnimalsI18N.animalMarkingTitle,
-    SurveyAnimalsI18N.animalMeasurementTitle,
-    SurveyAnimalsI18N.animalCaptureTitle,
-    SurveyAnimalsI18N.animalMortalityTitle,
-    SurveyAnimalsI18N.animalFamilyTitle,
-    'Observations',
-    'Telemetry'
-  ];
-
-  const selectSectionAction = (sectionName: string) => {
+  const selectSectionAction = (sectionName: IAnimalSubSections) => {
+    onSelectSection(sectionName);
     switch (sectionName) {
       case SurveyAnimalsI18N.animalGeneralTitle:
         document.getElementById('general-animal-form')?.scrollIntoView({ behavior: 'smooth' });
@@ -100,6 +92,7 @@ const AnimalList = ({ onSelectCritter }: AnimalListProps) => {
         critterData?.map((critter) => (
           <Accordion
             disableGutters
+            onClick={() => onSelectCritter(critter.critter_id)}
             sx={{
               boxShadow: 'none',
               '&.Mui-expanded': {},
@@ -139,7 +132,7 @@ const AnimalList = ({ onSelectCritter }: AnimalListProps) => {
                     fontSize: '0.875rem'
                   }
                 }}>
-                {animalSubSections.map((section) => (
+                {ANIMAL_SUBSECTIONS.map((section) => (
                   <ListItem
                     dense
                     divider

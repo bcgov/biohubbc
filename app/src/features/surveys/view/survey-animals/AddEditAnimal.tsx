@@ -5,11 +5,17 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useMemo, useState } from 'react';
-import { AnimalSchema, AnimalSex, IAnimal } from './animal';
+import { AnimalSchema, AnimalSex, IAnimal, IAnimalSubSections } from './animal';
 import { transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import IndividualAnimalForm from './IndividualAnimalForm';
 
-export const AddEditAnimal = () => {
+interface AddEditAnimalProps {
+  critter_id: string | null;
+  section: IAnimalSubSections;
+}
+
+export const AddEditAnimal = (props: AddEditAnimalProps) => {
+  console.log(props.critter_id, props.section);
   const surveyContext = useContext(SurveyContext);
   const bhApi = useBiohubApi();
 
@@ -18,7 +24,7 @@ export const AddEditAnimal = () => {
   );
 
   loadCritters();
-  const [currentCritterId, setCurrentCritterId] = useState<string | null>(null);
+  const [currentCritterId] = useState<string | null>(null);
 
   const obtainAnimalFormInitialvalues = useMemo(() => {
     const AnimalFormValues: IAnimal = {
