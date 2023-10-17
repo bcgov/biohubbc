@@ -65,7 +65,7 @@ export class ObservationService extends DBService {
     file: Express.Multer.File,
     projectId: number,
     surveyId: number
-  ): Promise<{ key: string }> {
+  ): Promise<{ submission_id: number; key: string }> {
     const key = generateS3FileKey({
       projectId: projectId,
       surveyId: surveyId,
@@ -78,6 +78,6 @@ export class ObservationService extends DBService {
       file.originalname
     );
 
-    return { key: insertResult.key };
+    return { submission_id: insertResult.submission_id, key };
   }
 }

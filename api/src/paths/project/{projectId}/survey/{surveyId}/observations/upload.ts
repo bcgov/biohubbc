@@ -135,7 +135,7 @@ export function uploadMedia(): RequestHandler {
 
       // Insert a new record in the `survey_observation_submission` table
       const observationService = new ObservationService(connection);
-      const submissionId = await observationService.insertSurveyObservationSubmission(
+      const { submission_id: submissionId, key } = await observationService.insertSurveyObservationSubmission(
         rawMediaFile,
         Number(req.params.projectId),
         Number(req.params.surveyId)
@@ -148,7 +148,7 @@ export function uploadMedia(): RequestHandler {
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
 
-      const result = await uploadFileToS3(rawMediaFile, submissionId.key, metadata);
+      const result = await uploadFileToS3(rawMediaFile, key, metadata);
 
       defaultLog.debug({ label: 'uploadMedia', message: 'result', result });
 
