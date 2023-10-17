@@ -112,7 +112,7 @@ const AnimalList = ({ onSelectCritter, onSelectSection }: AnimalListProps) => {
                   gap: '16px',
                   '& .MuiAccordionSummary-content': {
                     flex: '1 1 auto',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
                     whiteSpace: 'nowrap'
                   }
                 }}>
