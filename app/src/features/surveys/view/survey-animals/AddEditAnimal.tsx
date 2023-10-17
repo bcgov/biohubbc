@@ -1,4 +1,5 @@
-import { Button, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -6,9 +7,9 @@ import { Form, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { AnimalSchema, AnimalSex, IAnimal, IAnimalSubSections } from './animal';
-import { transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
+import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
@@ -26,10 +27,12 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const surveyContext = useContext(SurveyContext);
   const bhApi = useBiohubApi();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { projectId, surveyId } = surveyContext;
   const { critter_id, section } = props;
 
   const { data: critterData, load: loadCritters } = useDataLoader(() =>
-    bhApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
+    bhApi.survey.getSurveyCritters(projectId, surveyId)
   );
 
   loadCritters();
@@ -55,6 +58,43 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     }
     return transformCritterbaseAPIResponseToForm(existingCritter);
   }, [critterData, critter_id]);
+
+  const handleCritterSave = async (currentFormValues: IAnimal) => {
+    const patchCritterPayload = async () => {
+      const initialFormValues = obtainAnimalFormInitialvalues;
+      if (!initialFormValues) {
+        throw Error('Could not obtain initial form values.');
+      }
+      const { create: createCritter, update: updateCritter } = createCritterUpdatePayload(
+        initialFormValues,
+        currentFormValues
+      );
+      const surveyCritter = critterData?.find((critter) => critter.critter_id === critter_id);
+      if (!critter_id || !surveyCritter) {
+        throw Error('The internal critter id for this row was not set correctly.');
+      }
+      await bhApi.survey.updateSurveyCritter(
+        projectId,
+        surveyId,
+        surveyCritter.survey_critter_id,
+        updateCritter,
+        createCritter
+      );
+      /*console.log(`Initial values. ${JSON.stringify(initialFormValues, null, 2)}`);
+      console.log(`Current values. ${JSON.stringify(currentFormValues, null, 2)}`);
+
+      console.log(`Create payload. ${JSON.stringify(createCritter, null, 2)}`);
+      console.log(`Update payload. ${JSON.stringify(updateCritter, null, 2)}`);*/
+    };
+    try {
+      setIsSubmitting(true);
+      await patchCritterPayload();
+    } catch (err) {
+      console.log(`Submmision failed ${(err as Error).message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const renderFormContent = useMemo(() => {
     switch (section) {
@@ -88,18 +128,23 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       validationSchema={AnimalSchema}
       validateOnBlur={true}
       validateOnChange={false}
-      onSubmit={(values) => {}}>
-      <Form>
-        <Typography color={'grey'} marginBottom={1}>{`Editing Critter ID: ${critter_id}`}</Typography>
-        {renderFormContent}
+      onSubmit={(values) => handleCritterSave(values)}>
+      {(formikProps) => (
+        <Form>
+          <Typography color={'grey'} marginBottom={1}>{`Editing Critter ID: ${critter_id}`}</Typography>
+          {renderFormContent}
 
-        <Button
-          sx={{ position: 'absolute', marginTop: 'auto', right: '20px', bottom: '20px' }}
-          variant="contained"
-          onClick={() => {}}>
-          Save Changes
-        </Button>
-      </Form>
+          <LoadingButton
+            sx={{ position: 'absolute', marginTop: 'auto', right: '20px', bottom: '20px' }}
+            variant="contained"
+            disabled={isSubmitting}
+            loading={isSubmitting}
+            onClick={formikProps.submitForm}>
+            Save Changes
+          </LoadingButton>
+          <pre>{JSON.stringify(formikProps.errors, null, 2)}</pre>
+        </Form>
+      )}
     </Formik>
   );
 };
