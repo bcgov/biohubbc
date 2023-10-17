@@ -15,7 +15,7 @@ export type IAnimalSubSections =
   | 'Capture Information'
   | 'Mortality'
   | 'Family'
-  | 'Observations'
+  //| 'Observations'
   | 'Telemetry';
 
 export const ANIMAL_SUBSECTIONS: IAnimalSubSections[] = [
@@ -26,7 +26,7 @@ export const ANIMAL_SUBSECTIONS: IAnimalSubSections[] = [
   SurveyAnimalsI18N.animalCaptureTitle,
   SurveyAnimalsI18N.animalMortalityTitle,
   SurveyAnimalsI18N.animalFamilyTitle,
-  'Observations',
+  //'Observations',
   'Telemetry'
 ];
 

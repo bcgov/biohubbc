@@ -97,7 +97,7 @@ const FamilyAnimalForm = () => {
                       name={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
                       onChange={handleChange}
                       controlProps={{
-                        size: 'small',
+                        size: 'medium',
                         required: isRequiredInSchema(AnimalRelationshipSchema, 'family_id')
                       }}>
                       {[
@@ -117,7 +117,7 @@ const FamilyAnimalForm = () => {
                         name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
                         onChange={handleChange}
                         controlProps={{
-                          size: 'small',
+                          size: 'medium',
                           required: isRequiredInSchema(AnimalRelationshipSchema, 'relationship')
                         }}>
                         <MenuItem key={'parent'} value={'parent'}>

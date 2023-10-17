@@ -98,7 +98,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
             required={isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp')}
             label={'Mortality Date'}
-            other={{ size: 'small' }}
+            other={{ size: 'medium' }}
           />
         </Grid>
         <Grid item xs={5}>
@@ -107,7 +107,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             handleChangeSideEffect={(_value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
             label={'PCOD Reason'}
             controlProps={{
-              size: 'small',
+              size: 'medium',
               required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_id')
             }}
             id={`${index}-pcod-reason`}
@@ -119,7 +119,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_confidence', index)}
             label={'PCOD Confidence'}
             controlProps={{
-              size: 'small',
+              size: 'medium',
               required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_confidence')
             }}
             id={`${index}-pcod-confidence`}
@@ -131,7 +131,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_predated_by_taxon_id', index)}
             label={'PCOD Taxon'}
             controlProps={{
-              size: 'small',
+              size: 'medium',
               disabled: pcodTaxonDisabled,
               required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_predated_by_taxon_id')
             }}
@@ -147,7 +147,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             }}
             label={'UCOD Reason'}
             controlProps={{
-              size: 'small',
+              size: 'medium',
               required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_id')
             }}
             id={`${index}-ucod-reason`}
@@ -159,7 +159,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_confidence', index)}
             label={'UCOD Confidence'}
             controlProps={{
-              size: 'small',
+              size: 'medium',
               required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_confidence')
             }}
             id={`${index}-ucod-confidence`}
@@ -171,7 +171,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_predated_by_taxon_id', index)}
             label={'UCOD Taxon'}
             controlProps={{
-              size: 'small',
+              size: 'medium',
               disabled: ucodTaxonDisabled,
               required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_predated_by_taxon_id')
             }}
@@ -186,7 +186,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
             <CustomTextField
               other={{
                 required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_comment'),
-                size: 'small'
+                size: 'medium'
               }}
               label="Mortality Comment"
               name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_comment', index)}

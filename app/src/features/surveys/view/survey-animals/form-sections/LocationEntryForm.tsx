@@ -102,7 +102,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           <>
             <Grid item xs={12} md={6} lg={3}>
               <CustomTextField
-                other={{ required: true, size: 'small' }}
+                other={{ required: true, size: 'medium' }}
                 label={formatLabel(fields.latitude as string)}
                 name={getAnimalFieldName<T>(name, fields.latitude, index)}
                 handleBlur={handleBlur}
@@ -110,7 +110,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             </Grid>
             <Grid item xs={12} md={6} lg={3}>
               <CustomTextField
-                other={{ required: true, size: 'small' }}
+                other={{ required: true, size: 'medium' }}
                 label={formatLabel(fields.longitude as string)}
                 name={getAnimalFieldName<T>(name, fields.longitude, index)}
                 handleBlur={handleBlur}
@@ -121,7 +121,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           <>
             <Grid item xs={12} md={6} lg={3}>
               <CustomTextField
-                other={{ required: true, size: 'small' }}
+                other={{ required: true, size: 'medium' }}
                 label={formatLabel(fields.utm_northing as string)}
                 name={getAnimalFieldName<T>(name, fields.utm_northing, index)}
                 handleBlur={handleBlur}
@@ -129,7 +129,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             </Grid>
             <Grid item xs={12} md={6} lg={3}>
               <CustomTextField
-                other={{ required: true, size: 'small' }}
+                other={{ required: true, size: 'medium' }}
                 label={formatLabel(fields.utm_easting as string)}
                 name={getAnimalFieldName<T>(name, fields.utm_easting, index)}
                 handleBlur={handleBlur}
@@ -140,7 +140,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
 
         <Grid item xs={12} md={6} lg={3}>
           <CustomTextField
-            other={{ required: true, size: 'small' }}
+            other={{ required: true, size: 'medium' }}
             label={formatLabel(fields.coordinate_uncertainty as string)}
             name={getAnimalFieldName<T>(name, fields.coordinate_uncertainty, index)}
             handleBlur={handleBlur}
@@ -189,7 +189,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             <FormGroup sx={{ alignItems: 'end' }}>
               <FormControlLabel
                 control={
-                  <Switch checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} size={'small'} />
+                  <Switch checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} size={'medium'} />
                 }
                 label="UTM Coordinates"
               />
@@ -210,7 +210,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             <FormGroup sx={{ alignItems: 'end' }}>
               <FormControlLabel
                 control={
-                  <Switch checked={placeSecondaryMode} onChange={(e, b) => setPlaceSecondary(b)} size={'small'} />
+                  <Switch checked={placeSecondaryMode} onChange={(e, b) => setPlaceSecondary(b)} size={'medium'} />
                 }
                 label={'Place Other Coordinate'}
               />

@@ -72,7 +72,7 @@ const MarkingAnimalForm = () => {
                       id="marking_type"
                       route="lookups/marking-types"
                       controlProps={{
-                        size: 'small',
+                        size: 'medium',
                         required: isRequiredInSchema(AnimalMarkingSchema, 'marking_type_id')
                       }}
                     />
@@ -85,7 +85,7 @@ const MarkingAnimalForm = () => {
                       route="xref/taxon-marking-body-locations"
                       query={`taxon_id=${values.general.taxon_id}`}
                       controlProps={{
-                        size: 'small',
+                        size: 'medium',
                         required: isRequiredInSchema(AnimalMarkingSchema, 'taxon_marking_body_location_id')
                       }}
                     />
@@ -97,7 +97,7 @@ const MarkingAnimalForm = () => {
                       id="primary_colour_id"
                       route="lookups/colours"
                       controlProps={{
-                        size: 'small',
+                        size: 'medium',
                         required: isRequiredInSchema(AnimalMarkingSchema, 'primary_colour_id')
                       }}
                     />
@@ -109,7 +109,7 @@ const MarkingAnimalForm = () => {
                       id="secondary_colour_id"
                       route="lookups/colours"
                       controlProps={{
-                        size: 'small',
+                        size: 'medium',
                         required: isRequiredInSchema(AnimalMarkingSchema, 'secondary_colour_id')
                       }}
                     />
@@ -119,7 +119,7 @@ const MarkingAnimalForm = () => {
                       <CustomTextField
                         label="Marking Comment"
                         name={getAnimalFieldName<IAnimalMarking>(name, 'marking_comment', index)}
-                        other={{ size: 'small', required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment') }}
+                        other={{ size: 'medium', required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment') }}
                         handleBlur={handleBlur}
                       />
                     </TextInputToggle>

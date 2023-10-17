@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import { cyan } from '@mui/material/colors';
 import { Box } from '@mui/system';
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -22,11 +21,12 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ANIMAL_SUBSECTIONS, IAnimalSubSections } from './animal';
 
 interface AnimalListProps {
-  onSelectCritter: (critter_id: string) => void;
+  selectedCritter: string | null;
+  onSelectCritter: (critter_id: string | null) => void;
   onSelectSection: (section: IAnimalSubSections) => void;
 }
 
-const AnimalList = ({ onSelectCritter, onSelectSection }: AnimalListProps) => {
+const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: AnimalListProps) => {
   const bhApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
 
@@ -41,19 +41,8 @@ const AnimalList = ({ onSelectCritter, onSelectSection }: AnimalListProps) => {
     loadCritters();
   }
 
-  const selectSectionAction = (sectionName: IAnimalSubSections) => {
-    onSelectSection(sectionName);
-    switch (sectionName) {
-      case SurveyAnimalsI18N.animalGeneralTitle:
-        document.getElementById('general-animal-form')?.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case SurveyAnimalsI18N.animalMarkingTitle:
-        document.getElementById('marking-animal-form')?.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case SurveyAnimalsI18N.animalFamilyTitle:
-        document.getElementById('family-animal-form')?.scrollIntoView({ behavior: 'smooth' });
-        break;
-    }
+  const handleCritterSelect = (id: string) => {
+    id === selectedCritter ? onSelectCritter(null) : onSelectCritter(id);
   };
 
   return (
@@ -92,7 +81,8 @@ const AnimalList = ({ onSelectCritter, onSelectSection }: AnimalListProps) => {
         critterData?.map((critter) => (
           <Accordion
             disableGutters
-            onClick={() => onSelectCritter(critter.critter_id)}
+            expanded={critter.critter_id == selectedCritter}
+            onClick={() => handleCritterSelect(critter.critter_id)}
             sx={{
               boxShadow: 'none',
               '&.Mui-expanded': {},
@@ -138,7 +128,7 @@ const AnimalList = ({ onSelectCritter, onSelectSection }: AnimalListProps) => {
                     divider
                     button
                     onClick={() => {
-                      selectSectionAction(section);
+                      onSelectSection(section);
                       onSelectCritter(critter.critter_id);
                     }}>
                     <ListItemText>{section}</ListItemText>
