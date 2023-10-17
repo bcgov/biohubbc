@@ -8,7 +8,7 @@ import { SurveyService } from '../../../../../../../../services/survey-service';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/dwca/observations/submission/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {

@@ -9,7 +9,7 @@ import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../..
 import { getLogger } from '../../../../../../utils/logger';
 import { ObservationService } from '../../../../../../services/observation-service';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {

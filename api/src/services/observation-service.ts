@@ -15,6 +15,10 @@ export class ObservationService extends DBService {
     this.observationRepository = new ObservationRepository(connection);
   }
 
+  static validateCsvFile(file: any) {
+    //
+  }
+
   /**
    * Performs an upsert for all observation records belonging to the given survey, while removing
    * any records associated for the survey that aren't included in the given records, then
@@ -49,5 +53,13 @@ export class ObservationService extends DBService {
    */
   async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     return this.observationRepository.getSurveyObservations(surveyId);
+  }
+
+  // TODO swap out for real method later
+  async _getObservationSubmissionById(submissionId: number) {
+    return {
+      submission_id: submissionId,
+      key: 'test-key'
+    }
   }
 }

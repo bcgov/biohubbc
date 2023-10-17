@@ -10,7 +10,7 @@ import { getLogger } from '../../../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/getSignedUrl'
+  '/api/project/{projectId}/survey/{surveyId}/dwca/observations/submission/{submissionId}/getSignedUrl'
 );
 
 export const GET: Operation = [
