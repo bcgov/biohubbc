@@ -17,18 +17,18 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { ANIMAL_SUBSECTIONS, IAnimalSubSections } from './animal';
+import { useHistory, useParams } from 'react-router-dom';
+import { ANIMAL_SUBSECTIONS, IAnimalSubSections, MANAGE_ANIMALS_URL_PARAM } from './animal';
 
 interface AnimalListProps {
-  selectedCritter: string | null;
-  onSelectCritter: (critter_id: string | null) => void;
   onSelectSection: (section: IAnimalSubSections) => void;
 }
 
-const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: AnimalListProps) => {
+const AnimalList = ({ onSelectSection }: AnimalListProps) => {
   const bhApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
+  const { critter_id } = useParams<{ critter_id?: string }>();
+  const history = useHistory();
 
   const {
     //refresh: refreshCritters,
@@ -42,7 +42,8 @@ const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: Anima
   }
 
   const handleCritterSelect = (id: string) => {
-    id === selectedCritter ? onSelectCritter(null) : onSelectCritter(id);
+    const paramCritterID = id === critter_id ? MANAGE_ANIMALS_URL_PARAM : id;
+    history.push(paramCritterID);
   };
 
   return (
@@ -66,8 +67,6 @@ const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: Anima
           }}
           variant="contained"
           color="primary"
-          component={RouterLink}
-          to={'sampling'}
           startIcon={<Icon path={mdiPlus} size={1} />}>
           Add
         </Button>
@@ -81,7 +80,7 @@ const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: Anima
         critterData?.map((critter) => (
           <Accordion
             disableGutters
-            expanded={critter.critter_id == selectedCritter}
+            expanded={critter.critter_id == critter_id}
             sx={{
               boxShadow: 'none',
               '&.Mui-expanded': {},

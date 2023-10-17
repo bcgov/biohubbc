@@ -1,5 +1,4 @@
 import { mdiPencilOutline } from '@mdi/js';
-import { Link as RouterLink } from 'react-router-dom';
 import Icon from '@mdi/react';
 import { Box, Button, Divider, Toolbar, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
@@ -16,10 +15,11 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
+import { AnimalSchema, AnimalSex, Critter, IAnimal, MANAGE_ANIMALS_URL_PARAM } from './survey-animals/animal';
 import {
   createCritterUpdatePayload,
   transformCritterbaseAPIResponseToForm
@@ -527,25 +527,25 @@ const SurveyAnimals: React.FC = () => {
         onNo={() => setOpenRemoveCritterDialog(false)}
         onYes={handleRemoveCritter}
       />
-          <Toolbar>
-            <Typography
-              component="h2"
-              variant="h4"
-              sx={{
-                flex: '1 1 auto'
-              }}>
-              Marked and Known Animals
-            </Typography>
-            <Button
-              component={RouterLink}
-              to={'animals'}
-              title="Manage Marked and Known Animals"
-              color="primary"
-              variant="contained"
-              startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-              Manage Animals
-            </Button>
-          </Toolbar>
+      <Toolbar>
+        <Typography
+          component="h2"
+          variant="h4"
+          sx={{
+            flex: '1 1 auto'
+          }}>
+          Marked and Known Animals
+        </Typography>
+        <Button
+          component={RouterLink}
+          to={`animals/${MANAGE_ANIMALS_URL_PARAM}`}
+          title="Manage Marked and Known Animals"
+          color="primary"
+          variant="contained"
+          startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+          Manage Animals
+        </Button>
+      </Toolbar>
       <Divider></Divider>
       <Box p={3}>
         {critterData?.length ? (

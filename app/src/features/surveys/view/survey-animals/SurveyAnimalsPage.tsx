@@ -6,18 +6,11 @@ import AnimalList from './AnimalList';
 
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSubSections>('General');
-  const [selectedCritterID, setSelectedCritterID] = useState<string | null>(null);
   return (
     <SurveySectionFullPageLayout
       pageTitle="Manage Animals"
-      sideBarComponent={
-        <AnimalList
-          selectedCritter={selectedCritterID}
-          onSelectSection={(section) => setSelectedSection(section)}
-          onSelectCritter={(critter_id) => setSelectedCritterID(critter_id)}
-        />
-      }
-      mainComponent={<AddEditAnimal critter_id={selectedCritterID} section={selectedSection} />}
+      sideBarComponent={<AnimalList onSelectSection={(section) => setSelectedSection(section)} />}
+      mainComponent={<AddEditAnimal section={selectedSection} />}
     />
   );
 };

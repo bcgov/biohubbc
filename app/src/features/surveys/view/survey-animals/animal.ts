@@ -30,6 +30,8 @@ export const ANIMAL_SUBSECTIONS: IAnimalSubSections[] = [
   'Telemetry'
 ];
 
+export const MANAGE_ANIMALS_URL_PARAM = 'manage';
+
 export enum AnimalSex {
   MALE = 'Male',
   FEMALE = 'Female',

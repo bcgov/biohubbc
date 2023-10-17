@@ -9,6 +9,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo } from 'react';
+import { useParams } from 'react-router';
 import { AnimalSchema, AnimalSex, IAnimal, IAnimalSubSections } from './animal';
 import { transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
@@ -20,15 +21,15 @@ import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
 
 interface AddEditAnimalProps {
-  critter_id: string | null;
   section: IAnimalSubSections;
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const surveyContext = useContext(SurveyContext);
   const bhApi = useBiohubApi();
+  const { critter_id } = useParams<{ critter_id: string }>();
 
-  const { critter_id, section } = props;
+  const { section } = props;
 
   const { data: critterData, load: loadCritters } = useDataLoader(() =>
     bhApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
