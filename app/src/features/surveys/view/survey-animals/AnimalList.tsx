@@ -130,6 +130,7 @@ const AnimalList = ({ onSelectSection }: AnimalListProps) => {
                 }}>
                 {ANIMAL_SUBSECTIONS.map((section) => (
                   <ListItem
+                    key={section}
                     dense
                     divider
                     button

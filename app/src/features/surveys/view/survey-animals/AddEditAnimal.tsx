@@ -156,7 +156,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 fontSize: '1.125rem',
                 fontWeight: 700
               }}>
-              {survey_critter_id
+              {parseInt(survey_critter_id)
                 ? `Animal Details: ${obtainAnimalFormInitialvalues.general.animal_id}`
                 : 'Animal Details'}
             </Typography>
@@ -187,7 +187,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               </Box>
             </Box>
           </Toolbar>
-          <Form>{survey_critter_id ? renderFormContent : null}</Form>
+          <Form>{parseInt(survey_critter_id) ? renderFormContent : null}</Form>
           {Object.keys(formik.errors).length > 0 && (
             <Typography color="error">{`There are issues preventing save in the following sections: ${Object.keys(
               formik.errors
