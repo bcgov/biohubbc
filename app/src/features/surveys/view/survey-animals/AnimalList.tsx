@@ -21,10 +21,11 @@ import { useHistory, useParams } from 'react-router-dom';
 import { ANIMAL_SUBSECTIONS, IAnimalSubSections, MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './animal';
 
 interface AnimalListProps {
+  selectedSection: IAnimalSubSections;
   onSelectSection: (section: IAnimalSubSections) => void;
 }
 
-const AnimalList = ({ onSelectSection }: AnimalListProps) => {
+const AnimalList = ({ selectedSection, onSelectSection }: AnimalListProps) => {
   const bhApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
   const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
@@ -112,7 +113,7 @@ const AnimalList = ({ onSelectSection }: AnimalListProps) => {
                     whiteSpace: 'nowrap'
                   }
                 }}>
-                <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', typography: 'body2' }}>
+                <Typography fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {critter.animal_id}
                 </Typography>
               </AccordionSummary>
@@ -134,6 +135,9 @@ const AnimalList = ({ onSelectSection }: AnimalListProps) => {
                     dense
                     divider
                     button
+                    sx={{
+                      background: section === selectedSection ? cyan[50] : 'transparent'
+                    }}
                     onClick={() => {
                       onSelectSection(section);
                     }}>
