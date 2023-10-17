@@ -2,16 +2,17 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { SurveyAnimalsI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Form, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { AnimalSchema, AnimalSex, IAnimal, IAnimalSubSections } from './animal';
-import { transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
+import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
@@ -26,19 +27,30 @@ interface AddEditAnimalProps {
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const surveyContext = useContext(SurveyContext);
+  const dialogContext = useContext(DialogContext);
   const bhApi = useBiohubApi();
   const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
 
   const { section } = props;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { projectId, surveyId } = surveyContext;
 
   const { data: critterData, load: loadCritters } = useDataLoader(() =>
-    bhApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
+    bhApi.survey.getSurveyCritters(projectId, surveyId)
   );
 
   loadCritters();
 
-  //temp
-  const isSaving = false;
+  const setPopup = (message: string) => {
+    dialogContext.setSnackbar({
+      open: true,
+      snackbarMessage: (
+        <Typography variant="body2" component="div">
+          {message}
+        </Typography>
+      )
+    });
+  };
 
   const obtainAnimalFormInitialvalues = useMemo(() => {
     const AnimalFormValues: IAnimal = {
@@ -61,6 +73,44 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     }
     return transformCritterbaseAPIResponseToForm(existingCritter);
   }, [critterData, survey_critter_id]);
+
+  const handleCritterSave = async (currentFormValues: IAnimal) => {
+    const patchCritterPayload = async () => {
+      const initialFormValues = obtainAnimalFormInitialvalues;
+      if (!initialFormValues) {
+        throw Error('Could not obtain initial form values.');
+      }
+      const { create: createCritter, update: updateCritter } = createCritterUpdatePayload(
+        initialFormValues,
+        currentFormValues
+      );
+      const surveyCritter = critterData?.find((critter) => critter.survey_critter_id === parseInt(survey_critter_id));
+      if (!survey_critter_id || !surveyCritter) {
+        throw Error('The internal critter id for this row was not set correctly.');
+      }
+      await bhApi.survey.updateSurveyCritter(
+        projectId,
+        surveyId,
+        surveyCritter.survey_critter_id,
+        updateCritter,
+        createCritter
+      );
+      /*console.log(`Initial values. ${JSON.stringify(initialFormValues, null, 2)}`);
+      console.log(`Current values. ${JSON.stringify(currentFormValues, null, 2)}`);
+
+      console.log(`Create payload. ${JSON.stringify(createCritter, null, 2)}`);
+      console.log(`Update payload. ${JSON.stringify(updateCritter, null, 2)}`);*/
+    };
+    try {
+      setIsSubmitting(true);
+      await patchCritterPayload();
+      setPopup('Successfully updated animal.');
+    } catch (err) {
+      setPopup(`Submmision failed ${(err as Error).message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const renderFormContent = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSubSections, JSX.Element>> = {
@@ -86,7 +136,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       validationSchema={AnimalSchema}
       validateOnBlur={true}
       validateOnChange={false}
-      onSubmit={(values) => {}}>
+      onSubmit={handleCritterSave}>
       {(formik) => (
         <>
           <Toolbar
@@ -123,10 +173,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 <Collapse in={!isEqual(formik.initialValues, formik.values)} orientation="horizontal">
                   <Box ml={1} whiteSpace="nowrap">
                     <LoadingButton
-                      loading={isSaving}
+                      loading={isSubmitting}
                       variant="contained"
                       color="primary"
-                      onClick={() => console.log(formik)}>
+                      onClick={() => formik.submitForm}>
                       Save
                     </LoadingButton>
                     <Button variant="outlined" color="primary" onClick={() => console.log('discarding')}>
@@ -138,6 +188,11 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             </Box>
           </Toolbar>
           <Form>{survey_critter_id ? renderFormContent : null}</Form>
+          {Object.keys(formik.errors).length > 0 && (
+            <Typography color="error">{`There are issues preventing save in the following sections: ${Object.keys(
+              formik.errors
+            ).join(',')}`}</Typography>
+          )}
         </>
       )}
     </Formik>

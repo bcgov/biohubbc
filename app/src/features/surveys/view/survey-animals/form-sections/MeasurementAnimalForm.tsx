@@ -100,14 +100,20 @@ interface MeasurementFormContentProps {
 
 const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
   const { values, handleChange, setFieldValue, handleBlur } = useFormikContext<IAnimal>();
-  const [measurement, setMeasurement] = useState<IMeasurementStub>();
-
   const taxonMeasurementId = values.measurements[index].taxon_measurement_id;
+  const [measurement, setMeasurement] = useState<IMeasurementStub | undefined>(
+    measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId)
+  );
   const isQuantMeasurement = has(measurement, 'unit');
 
   const tMeasurementIDName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'taxon_measurement_id', index);
   const valueName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'value', index);
   const optionName = getAnimalFieldName<IAnimalMeasurement>(NAME, 'qualitative_option_id', index);
+
+  useEffect(() => {
+    setMeasurement(measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [measurements]); //Sometimes will not display the correct fields without this useEffect but could have side effects, may need to revisit.
 
   const handleMeasurementTypeChange = (event: SelectChangeEvent<unknown>) => {
     handleChange(event);

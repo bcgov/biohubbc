@@ -16,7 +16,7 @@ import { Box } from '@mui/system';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { ANIMAL_SUBSECTIONS, IAnimalSubSections, MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './animal';
 
@@ -45,6 +45,12 @@ const AnimalList = ({ onSelectSection }: AnimalListProps) => {
     const critterParam = survey_critter_id == id ? MANAGE_ANIMALS_DEFAULT_URL_PARAM : id;
     history.push(critterParam);
   };
+
+  const sortedCritterData = useMemo(() => {
+    return [...(critterData ?? [])].sort(
+      (a, b) => new Date(a.create_timestamp).getTime() - new Date(b.create_timestamp).getTime()
+    );
+  }, [critterData]);
 
   return (
     <Box display="flex" flexDirection="column" height="100%">
@@ -77,7 +83,7 @@ const AnimalList = ({ onSelectSection }: AnimalListProps) => {
         <div>LOADING</div>
       ) : critterData ? (
         // Animal List
-        critterData?.map((critter) => (
+        sortedCritterData?.map((critter) => (
           <Accordion
             disableGutters
             key={critter.critter_id}
