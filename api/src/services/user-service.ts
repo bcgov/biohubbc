@@ -22,12 +22,12 @@ export class UserService extends DBService {
    * @param {SystemUser} systemUser
    * @return {*}  {boolean} `true` if the user is an admin, `false` otherwise.
    */
-    static isAdmin(systemUser: SystemUser): boolean {
-      return (
-        systemUser.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
-        systemUser.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
-      );
-    }
+  static isAdmin(systemUser: SystemUser): boolean {
+    return (
+      systemUser.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
+      systemUser.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
+    );
+  }
 
   /**
    * Fetch a single system user by their system user ID.

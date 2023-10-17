@@ -6,8 +6,8 @@ import { FundingSource, FundingSourceSupplementaryData } from '../../repositorie
 import { SystemUser } from '../../repositories/user-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { FundingSourceService, IFundingSourceSearchParams } from '../../services/funding-source-service';
-import { getLogger } from '../../utils/logger';
 import { UserService } from '../../services/user-service';
+import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/funding-sources/index');
 

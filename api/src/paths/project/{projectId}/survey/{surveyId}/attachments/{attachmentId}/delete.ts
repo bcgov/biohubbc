@@ -5,9 +5,9 @@ import { getDBConnection } from '../../../../../../../database/db';
 import { SystemUser } from '../../../../../../../repositories/user-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
+import { UserService } from '../../../../../../../services/user-service';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
-import { UserService } from '../../../../../../../services/user-service';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/delete');
 

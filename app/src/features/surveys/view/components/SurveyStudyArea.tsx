@@ -14,7 +14,6 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 
-
 /**
  * View survey - Study area section
  *
@@ -91,7 +90,6 @@ const SurveyStudyArea = () => {
 
   return (
     <>
-
       <Box>
         <Box height={500} position="relative" sx={{ display: 'none' }}>
           <MemoizedMapContainer
@@ -108,7 +106,6 @@ const SurveyStudyArea = () => {
       <Box component="dl">
         <InferredLocationDetails layers={inferredLayersInfo} />
       </Box>
-
     </>
   );
 };
