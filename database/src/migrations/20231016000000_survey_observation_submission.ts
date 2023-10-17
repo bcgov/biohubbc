@@ -59,6 +59,13 @@ export async function up(knex: Knex): Promise<void> {
   ----------------------------------------------------------------------------------------
   set search_path=biohub_dapi_v1;
   create or replace view survey_observation_submission as select * from biohub.survey_observation_submission;
+
+  ----------------------------------------------------------------------------------------
+  -- Deprecate occurrence_submission table
+  ----------------------------------------------------------------------------------------
+  set search_path=biohub;
+
+  COMMENT ON TABLE  occurrence_submission IS '(Deprecated in favor of survey_observation_submission) Provides a historical listing of published dates and pointers to raw data versions for occurrence submissions.';
   `);
 }
 
