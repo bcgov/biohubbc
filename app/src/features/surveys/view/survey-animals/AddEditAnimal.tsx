@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Typography } from '@mui/material';
+import { Box, Button, Collapse, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -97,24 +97,16 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   };
 
   const renderFormContent = useMemo(() => {
-    switch (section) {
-      case SurveyAnimalsI18N.animalGeneralTitle:
-        return <GeneralAnimalForm />;
-      case SurveyAnimalsI18N.animalMarkingTitle:
-        return <MarkingAnimalForm />;
-      case SurveyAnimalsI18N.animalCaptureTitle:
-        return <CaptureAnimalForm />;
-      case SurveyAnimalsI18N.animalMortalityTitle:
-        return <MortalityAnimalForm />;
-      case SurveyAnimalsI18N.animalMeasurementTitle:
-        return <MeasurementAnimalForm />;
-      case SurveyAnimalsI18N.animalFamilyTitle:
-        return <FamilyAnimalForm />;
-      case SurveyAnimalsI18N.animalCollectionUnitTitle:
-        return <CollectionUnitAnimalForm />;
-      default:
-        return <Typography>Unimplemented</Typography>;
-    }
+    const sectionMap: Partial<Record<IAnimalSubSections, JSX.Element>> = {
+      [SurveyAnimalsI18N.animalGeneralTitle]: <GeneralAnimalForm />,
+      [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalForm />,
+      [SurveyAnimalsI18N.animalMeasurementTitle]: <MeasurementAnimalForm />,
+      [SurveyAnimalsI18N.animalCaptureTitle]: <CaptureAnimalForm />,
+      [SurveyAnimalsI18N.animalMortalityTitle]: <MortalityAnimalForm />,
+      [SurveyAnimalsI18N.animalFamilyTitle]: <FamilyAnimalForm />,
+      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />
+    };
+    return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
   }, [section]);
 
   if (!surveyContext.surveyDataLoader.data) {
@@ -128,21 +120,57 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       validationSchema={AnimalSchema}
       validateOnBlur={true}
       validateOnChange={false}
-      onSubmit={(values) => handleCritterSave(values)}>
+      onSubmit={handleCritterSave}>
       {(formikProps) => (
         <Form>
-          <Typography color={'grey'} marginBottom={1}>{`Editing Critter ID: ${critter_id}`}</Typography>
-          {renderFormContent}
+          <Toolbar
+            sx={{
+              flex: '0 0 auto',
+              borderBottom: '1px solid #ccc',
+              '& button': {
+                minWidth: '6rem'
+              },
+              '& button + button': {
+                ml: 1
+              }
+            }}>
+            <Typography
+              sx={{
+                flexGrow: '1',
+                fontSize: '1.125rem',
+                fontWeight: 700
+              }}>
+              {critter_id ? `Animal: ${obtainAnimalFormInitialvalues.general.animal_id}` : 'No Animal Selected'}
+            </Typography>
+            <Box
+              sx={{
+                '& div:first-of-type': {
+                  display: 'flex',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap'
+                }
+              }}>
+              <Box display="flex" overflow="hidden">
+                <Collapse in={!!critter_id} orientation="horizontal">
+                  <Box ml={1} whiteSpace="nowrap">
+                    <LoadingButton
+                      color="primary"
+                      variant="contained"
+                      disabled={isSubmitting}
+                      loading={isSubmitting}
+                      onClick={formikProps.submitForm}>
+                      Save Changes
+                    </LoadingButton>
 
-          <LoadingButton
-            sx={{ position: 'absolute', marginTop: 'auto', right: '20px', bottom: '20px' }}
-            variant="contained"
-            disabled={isSubmitting}
-            loading={isSubmitting}
-            onClick={formikProps.submitForm}>
-            Save Changes
-          </LoadingButton>
-          <pre>{JSON.stringify(formikProps.errors, null, 2)}</pre>
+                    <Button variant="outlined" color="primary" onClick={() => console.log('discarding')}>
+                      Discard Changes
+                    </Button>
+                  </Box>
+                </Collapse>
+              </Box>
+            </Box>
+          </Toolbar>
+          {critter_id ? renderFormContent : null}
         </Form>
       )}
     </Formik>

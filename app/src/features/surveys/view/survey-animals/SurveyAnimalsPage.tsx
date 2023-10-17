@@ -12,6 +12,7 @@ export const SurveyAnimalsPage = () => {
       pageTitle="Manage Animals"
       sideBarComponent={
         <AnimalList
+          selectedCritter={selectedCritterID}
           onSelectSection={(section) => setSelectedSection(section)}
           onSelectCritter={(critter_id) => setSelectedCritterID(critter_id)}
         />

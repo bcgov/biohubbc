@@ -103,7 +103,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
             required={true}
             label={'Capture Date'}
-            other={{ size: 'small' }}
+            other={{ size: 'medium' }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -111,7 +111,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             toggleProps={{ handleToggle: () => setShowCaptureComment((c) => !c), toggleState: showCaptureComment }}
             label="Add comment about this Capture">
             <CustomTextField
-              other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
+              other={{ size: 'medium', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
               label="Capture Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
               handleBlur={handleBlur}
@@ -143,7 +143,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
             label={'Release Date'}
-            other={{ size: 'small' }}
+            other={{ size: 'medium' }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -151,7 +151,7 @@ const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormConte
             label="Add comment about this Release"
             toggleProps={{ handleToggle: () => setShowReleaseComment((c) => !c), toggleState: showReleaseComment }}>
             <CustomTextField
-              other={{ size: 'small', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
+              other={{ size: 'medium', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
               label="Release Comment"
               name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
               handleBlur={handleBlur}

@@ -72,7 +72,7 @@ const CollectionUnitAnimalForm = () => {
                     query={`taxon_id=${values.general.taxon_id}`}
                     route={'lookups/taxon-collection-categories'}
                     controlProps={{
-                      size: 'small',
+                      size: 'medium',
                       required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_category_id')
                     }}
                   />
@@ -85,7 +85,7 @@ const CollectionUnitAnimalForm = () => {
                     query={`category_id=${unit.collection_category_id}`}
                     name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_unit_id', index)}
                     controlProps={{
-                      size: 'small',
+                      size: 'medium',
                       required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_unit_id')
                     }}
                   />

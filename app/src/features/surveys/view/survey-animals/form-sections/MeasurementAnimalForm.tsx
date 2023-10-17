@@ -140,7 +140,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
           name={tMeasurementIDName}
           onChange={handleMeasurementTypeChange}
           controlProps={{
-            size: 'small',
+            size: 'medium',
             required: isRequiredInSchema(AnimalMeasurementSchema, 'taxon_measurement_id'),
             disabled: !measurements?.length
           }}>
@@ -160,7 +160,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             route="xref/taxon-qualitative-measurement-options"
             query={`taxon_measurement_id=${taxonMeasurementId}`}
             controlProps={{
-              size: 'small',
+              size: 'medium',
               required: true,
               disabled: !taxonMeasurementId
             }}
@@ -173,7 +173,7 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
             label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
             other={{
               required: true,
-              size: 'small',
+              size: 'medium',
               disabled: !taxonMeasurementId
             }}
             validate={validateValue}
@@ -185,13 +185,13 @@ const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentP
           name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measured_timestamp', index)}
           required={isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp')}
           label={'Measured Date'}
-          other={{ size: 'small' }}
+          other={{ size: 'medium' }}
         />
       </Grid>
       <Grid item xs={12}>
         <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Measurement')}>
           <CustomTextField
-            other={{ size: 'small', required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment') }}
+            other={{ size: 'medium', required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment') }}
             label="Measurement Comment"
             name={getAnimalFieldName<IAnimalMeasurement>(NAME, 'measurement_comment', index)}
             handleBlur={handleBlur}
