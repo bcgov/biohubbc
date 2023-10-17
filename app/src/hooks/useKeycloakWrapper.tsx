@@ -1,7 +1,6 @@
-import { useKeycloak } from '@react-keycloak/web';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import Keycloak from 'keycloak-js';
 import { useCallback } from 'react';
+import { AuthContextProps, useAuth } from 'react-oidc-context';
 import { buildUrl } from 'utils/Utils';
 import { useBiohubApi } from './useBioHubApi';
 import { useCritterbaseApi } from './useCritterbaseApi';
@@ -52,10 +51,10 @@ export interface IKeycloakWrapper {
   /**
    * Original raw keycloak object.
    *
-   * @type {(Keycloak)}
+   * @type {AuthContextProps}
    * @memberof IKeycloakWrapper
    */
-  keycloak: Keycloak;
+  keycloak: AuthContextProps;
   /**
    * Returns `true` if the user's information has finished being loaded, false otherwise.
    *
@@ -154,7 +153,7 @@ export interface IKeycloakWrapper {
    * @param {string} [redirectUri] Optionally URL to redirect the user to upon logging in
    * @memberof IKeycloakWrapper
    */
-  getLoginUrl: (redirectUri?: string) => string;
+  getLoginUrl: (redirectUri?: string) => Promise<void>;
   /**
    * The logged in user's data.
    *
@@ -177,18 +176,25 @@ export interface IKeycloakWrapper {
  * @return {*}  {IKeycloakWrapper}
  */
 function useKeycloakWrapper(): IKeycloakWrapper {
-  const { keycloak } = useKeycloak();
+  const auth = useAuth();
+
+  console.log(auth);
+  console.log(auth.user);
 
   const biohubApi = useBiohubApi();
   const cbApi = useCritterbaseApi();
 
-  const keycloakUserDataLoader = useDataLoader(async () => {
-    return (
-      (keycloak.token &&
-        (keycloak.loadUserInfo() as unknown as IIDIRUserInfo | IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)) ||
-      undefined
-    );
-  });
+  const keycloakUserDataLoader = {
+    data: auth?.user?.profile
+  };
+
+  //   const keycloakUserDataLoader = useDataLoader(async () => {
+  //     return (
+  //       (auth.user?.access_token &&
+  //         (auth.user?.profileloadUserInfo() as unknown as IIDIRUserInfo | IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)) ||
+  //       undefined
+  //     );
+  //   });
 
   const userDataLoader = useDataLoader(() => biohubApi.user.getUser());
 
@@ -200,12 +206,18 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const administrativeActivityStandingDataLoader = useDataLoader(biohubApi.admin.getAdministrativeActivityStanding);
 
-  if (keycloak) {
+  if (!auth.isLoading) {
     // keycloak is ready, load keycloak user info
-    keycloakUserDataLoader.load();
+    //   keycloakUserDataLoader.load();
+
+    console.log('NOT LOADING ANYMORE');
+
+    console.log(auth);
+    console.log(auth.user);
+    console.log(auth.user?.profile);
   }
 
-  if (keycloak.authenticated) {
+  if (auth.isAuthenticated) {
     // keycloak user is authenticated, load system user info
     userDataLoader.load();
 
@@ -252,8 +264,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
    */
   const getUserIdentifier = useCallback((): string | null => {
     const userIdentifier =
-      (keycloakUserDataLoader.data as IIDIRUserInfo)?.idir_username ||
-      (keycloakUserDataLoader.data as IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)?.bceid_username;
+      (keycloakUserDataLoader.data as unknown as IIDIRUserInfo)?.idir_username ||
+      (keycloakUserDataLoader.data as unknown as IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)?.bceid_username;
 
     if (!userIdentifier) {
       return null;
@@ -312,13 +324,14 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const username = (): string | undefined => {
     return (
-      (keycloakUserDataLoader.data as IIDIRUserInfo)?.idir_username ||
-      (keycloakUserDataLoader.data as IBCEIDBasicUserInfo)?.bceid_username
+      (keycloakUserDataLoader.data as unknown as IIDIRUserInfo)?.idir_username ||
+      (keycloakUserDataLoader.data as unknown as IBCEIDBasicUserInfo)?.bceid_username
     );
   };
 
   const displayName = (): string | undefined => {
-    return keycloakUserDataLoader.data?.display_name;
+    return '';
+    // return keycloakUserDataLoader.data?.display_name;
   };
 
   const email = (): string | undefined => {
@@ -335,7 +348,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   };
 
   const getLoginUrl = (redirectUri = '/admin/projects'): string => {
-    return keycloak?.createLoginUrl({ redirectUri: buildUrl(window.location.origin, redirectUri) }) || '/login';
+    return auth.signinRedirect({ redirectUri: buildUrl(window.location.origin, redirectUri) }) || '/login';
   };
 
   const user = (): ISystemUser | undefined => {
@@ -347,7 +360,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   }, [critterbaseSignupLoader.data?.user_id]);
 
   return {
-    keycloak,
+    keycloak: auth,
     hasLoadedAllUserInfo: userDataLoader.isReady || !!administrativeActivityStandingDataLoader.data,
     systemRoles: getSystemRoles(),
     hasSystemRole,

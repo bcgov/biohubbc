@@ -1,6 +1,6 @@
-import { useKeycloak } from '@react-keycloak/web';
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { useMemo, useRef } from 'react';
+import { useAuth } from 'react-oidc-context';
 import { ensureProtocol } from 'utils/Utils';
 
 export class APIError extends Error {
@@ -28,7 +28,7 @@ const AXIOS_AUTH_REFRESH_ATTEMPTS_MAX = Number(process.env.REACT_APP_AXIOS_AUTH_
  * @return {*} {AxiosInstance} an instance of axios
  */
 const useAxios = (baseUrl?: string): AxiosInstance => {
-  const { keycloak } = useKeycloak();
+  const auth = useAuth();
 
   // Track how many times its been attempted to refresh the token and re-send the failed request in order to prevent
   // the possibility of an infinite loop (in the case where the token is unable to ever successfully refresh).
@@ -37,7 +37,7 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
   return useMemo(() => {
     const instance = axios.create({
       headers: {
-        Authorization: `Bearer ${keycloak.token}`
+        Authorization: `Bearer ${auth?.user?.access_token}`
       },
       // Note: axios requires that the baseURL include a protocol (http:// or https://)
       baseURL: baseUrl && ensureProtocol(baseUrl)
@@ -83,8 +83,7 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
     );
 
     return instance;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keycloak, keycloak.token]);
+  }, [baseUrl, auth?.user?.access_token]);
 };
 
 export default useAxios;

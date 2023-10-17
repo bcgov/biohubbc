@@ -4,6 +4,7 @@ import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { makeStyles } from '@mui/styles';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext } from 'contexts/configContext';
 import { useContext, useEffect } from 'react';
 import { getLogOutUrl } from 'utils/Utils';
@@ -16,6 +17,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const LogOutPage = () => {
   const classes = useStyles();
+
+  const { keycloakWrapper } = useContext(AuthStateContext);
 
   const config = useContext(ConfigContext);
 
@@ -30,6 +33,7 @@ const LogOutPage = () => {
       return;
     }
 
+    keycloakWrapper?.keycloak.removeUser();
     window.location.replace(logOutURL);
   }, [config]);
 

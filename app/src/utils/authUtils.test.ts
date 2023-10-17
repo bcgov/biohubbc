@@ -19,7 +19,7 @@ describe('isAuthenticated', () => {
   it('returns false when keycloakWrapper.keycloak.authenticated is falsy', () => {
     const keycloakWrapper = {
       keycloak: {
-        authenticated: false
+        isAuthenticated: false
       }
     } as IKeycloakWrapper;
 
@@ -38,7 +38,7 @@ describe('isAuthenticated', () => {
     const keycloakWrapper = {
       hasLoadedAllUserInfo: true,
       keycloak: {
-        authenticated: true
+        isAuthenticated: true
       }
     } as IKeycloakWrapper;
 

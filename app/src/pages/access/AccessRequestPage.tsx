@@ -118,7 +118,7 @@ export const AccessRequestPage: React.FC = () => {
     }
   };
 
-  if (!keycloakWrapper?.keycloak.authenticated) {
+  if (!keycloakWrapper?.keycloak.isAuthenticated) {
     // User is not logged in
     return <Redirect to={{ pathname: '/' }} />;
   }

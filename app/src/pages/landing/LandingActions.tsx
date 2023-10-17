@@ -11,7 +11,7 @@ import clsx from 'clsx';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -69,7 +69,7 @@ const LandingActions = () => {
   const { keycloakWrapper } = useContext(AuthStateContext);
   const classes = useStyles();
 
-  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
+  //   const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
   const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
 
   const hasPendingAccessRequest = keycloakWrapper?.hasAccessRequest;
@@ -96,7 +96,8 @@ const LandingActions = () => {
           <Box className={classes.heroActions}>
             <Button
               component="a"
-              href={loginUrl}
+              href={'#'}
+              onClick={() => keycloakWrapper?.getLoginUrl()}
               variant="contained"
               className={clsx(classes.heroButton, classes.heroButton)}
               size="large"

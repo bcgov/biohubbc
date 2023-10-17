@@ -8,8 +8,13 @@ const LoginPage = () => {
   const { redirectUri } = useRedirect('/');
 
   useEffect(() => {
-    keycloakWrapper?.keycloak?.login({ redirectUri });
-  });
+    console.log('-----------------------------------------------');
+    switch (keycloakWrapper?.keycloak.activeNavigator) {
+      default:
+        console.log(keycloakWrapper?.keycloak.activeNavigator);
+    }
+    keycloakWrapper?.getLoginUrl(redirectUri);
+  }, []);
 
   return <CircularProgress className="pageProgress" />;
 };

@@ -160,9 +160,9 @@ export const getFormattedAmount = (
  * @param {IConfig} config
  * @return {*}  {(string | undefined)}
  */
-export const getLogOutUrl = (config: IConfig): string | undefined => {
+export const getLogOutUrl = (config?: IConfig): string | undefined => {
   if (config?.KEYCLOAK_CONFIG.url && config?.KEYCLOAK_CONFIG.realm && config?.SITEMINDER_LOGOUT_URL) {
-    const localRedirectURL = `${window.location.origin}/`;
+    const localRedirectURL = `${window.location.origin}/logout`;
 
     const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
 

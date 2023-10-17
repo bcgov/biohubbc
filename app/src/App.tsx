@@ -3,14 +3,14 @@ import { ThemeProvider } from '@mui/material/styles';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 // TODO safe to remove this?
 // import type {} from '@mui/material/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
-import { ReactKeycloakProvider } from '@react-keycloak/web';
 import AppRouter from 'AppRouter';
 import { AuthStateContextProvider } from 'contexts/authStateContext';
 import { ConfigContext, ConfigContextProvider } from 'contexts/configContext';
-import Keycloak from 'keycloak-js';
 import React from 'react';
+import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
 import { BrowserRouter } from 'react-router-dom';
 import appTheme from 'themes/appTheme';
+import { buildUrl } from 'utils/Utils';
 
 const App: React.FC = () => {
   return (
@@ -22,19 +22,30 @@ const App: React.FC = () => {
               return <CircularProgress className="pageProgress" size={40} />;
             }
 
-            const keycloak = new Keycloak(config.KEYCLOAK_CONFIG);
+            // const keycloak = new Keycloak(config.KEYCLOAK_CONFIG);
+
+            console.log(buildUrl(window.location.origin));
+
+            const authConfig: AuthProviderProps = {
+              authority: 'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/',
+              client_id: config.KEYCLOAK_CONFIG.clientId || '',
+              redirect_uri: buildUrl(window.location.origin),
+              loadUserInfo: true,
+              onRemoveUser: () => {
+                console.log('REMOVE USER!!');
+              }
+            };
+
+            console.log(authConfig);
 
             return (
-              <ReactKeycloakProvider
-                authClient={keycloak}
-                initOptions={{ pkceMethod: 'S256' }}
-                LoadingComponent={<CircularProgress className="pageProgress" size={40} />}>
+              <AuthProvider {...authConfig}>
                 <AuthStateContextProvider>
                   <BrowserRouter>
                     <AppRouter />
                   </BrowserRouter>
                 </AuthStateContextProvider>
-              </ReactKeycloakProvider>
+              </AuthProvider>
             );
           }}
         </ConfigContext.Consumer>

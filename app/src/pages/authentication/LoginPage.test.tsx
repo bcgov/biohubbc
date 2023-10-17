@@ -20,7 +20,7 @@ describe('LoginPage', () => {
       overrides: {
         keycloakWrapper: {
           keycloak: {
-            login: () => {
+            signinRedirect: () => {
               mockLoginFunction();
             }
           }

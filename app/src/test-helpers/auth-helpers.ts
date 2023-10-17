@@ -1,6 +1,6 @@
 import { SYSTEM_ROLE } from 'constants/roles';
 import { IAuthState } from 'contexts/authStateContext';
-import Keycloak from 'keycloak-js';
+import { AuthContextProps } from 'react-oidc-context';
 
 /**
  * Represents an unauthenticated user who has:
@@ -9,8 +9,8 @@ import Keycloak from 'keycloak-js';
 export const UnauthenticatedUserAuthState: IAuthState = {
   keycloakWrapper: {
     keycloak: {
-      authenticated: false
-    } as unknown as Keycloak,
+      isAuthenticated: false
+    } as unknown as AuthContextProps,
     hasLoadedAllUserInfo: false,
     systemRoles: [],
     isSystemUser: () => false,
@@ -28,7 +28,7 @@ export const UnauthenticatedUserAuthState: IAuthState = {
     refresh: () => {
       // do nothing
     },
-    getLoginUrl: () => '/login',
+    getLoginUrl: async () => undefined
     critterbaseUuid: () => undefined
   }
 };
@@ -44,7 +44,7 @@ export const SystemUserAuthState: IAuthState = {
   keycloakWrapper: {
     keycloak: {
       authenticated: true
-    } as unknown as Keycloak,
+    } as unknown as AuthContextProps,
     hasLoadedAllUserInfo: true,
     systemRoles: [],
     isSystemUser: () => true,
@@ -62,7 +62,7 @@ export const SystemUserAuthState: IAuthState = {
     refresh: () => {
       // do nothing
     },
-    getLoginUrl: () => '/login',
+    getLoginUrl: async () => undefined
     critterbaseUuid: () => 'fakeguid'
   }
 };
@@ -78,7 +78,7 @@ export const SystemAdminAuthState: IAuthState = {
   keycloakWrapper: {
     keycloak: {
       authenticated: true
-    } as unknown as Keycloak,
+    } as unknown as AuthContextProps,
     hasLoadedAllUserInfo: true,
     systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
     isSystemUser: () => true,
@@ -96,7 +96,7 @@ export const SystemAdminAuthState: IAuthState = {
     refresh: () => {
       // do nothing
     },
-    getLoginUrl: () => '/login',
+    getLoginUrl: async () => undefined
     critterbaseUuid: () => 'fakeguid'
   }
 };
