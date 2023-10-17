@@ -9,7 +9,9 @@ export const SurveyAnimalsPage = () => {
   return (
     <SurveySectionFullPageLayout
       pageTitle="Manage Animals"
-      sideBarComponent={<AnimalList onSelectSection={(section) => setSelectedSection(section)} />}
+      sideBarComponent={
+        <AnimalList selectedSection={selectedSection} onSelectSection={(section) => setSelectedSection(section)} />
+      }
       mainComponent={<AddEditAnimal section={selectedSection} />}
     />
   );
