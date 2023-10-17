@@ -49,7 +49,7 @@ export async function up(knex: Knex): Promise<void> {
 
   -- Add unique constraint
   CREATE UNIQUE INDEX survey_observation_submission_uk1 ON survey_observation_submission(key);
-  
+
   ----------------------------------------------------------------------------------------
   -- Create View
   ----------------------------------------------------------------------------------------

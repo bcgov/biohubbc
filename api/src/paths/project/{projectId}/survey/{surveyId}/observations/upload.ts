@@ -1,13 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../../../errors/http-error';
+import { getDBConnection } from '../../../../../../database/db';
+import { HTTP400 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { SurveyService } from '../../../../../../services/survey-service';
-import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../utils/logger';
 import { ObservationService } from '../../../../../../services/observation-service';
+import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
 
@@ -102,8 +101,7 @@ POST.apiDoc = {
 };
 
 /**
- * Uploads a media file to S3 and inserts a matching record in the `occurrence_submission` table.
- * @TODO create a new table for occurrence submissions??
+ * Uploads a media file to S3 and inserts a matching record in the `survey_observation_submission` table.
  *
  * @return {*}  {RequestHandler}
  */
@@ -135,11 +133,24 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      // TODO
-  
+      // Insert a new record in the `survey_observation_submission` table
       const observationService = new ObservationService(connection);
+      const submissionId = await observationService.insertSurveyObservationSubmission(
+        rawMediaFile,
+        Number(req.params.projectId),
+        Number(req.params.surveyId)
+      );
 
-      const submissionId = null; // TODO
+      // Upload file to S3
+      const metadata = {
+        filename: rawMediaFile.originalname,
+        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
+        email: (req['auth_payload'] && req['auth_payload'].email) || ''
+      };
+
+      const result = await uploadFileToS3(rawMediaFile, submissionId.key, metadata);
+
+      defaultLog.debug({ label: 'uploadMedia', message: 'result', result });
 
       return res.status(200).send({ submissionId });
     } catch (error) {
@@ -151,4 +162,3 @@ export function uploadMedia(): RequestHandler {
     }
   };
 }
-

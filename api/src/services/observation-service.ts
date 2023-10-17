@@ -5,6 +5,7 @@ import {
   ObservationRepository,
   UpdateObservation
 } from '../repositories/observation-repository';
+import { generateS3FileKey } from '../utils/file-utils';
 import { DBService } from './db-service';
 
 export class ObservationService extends DBService {
@@ -49,5 +50,34 @@ export class ObservationService extends DBService {
    */
   async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     return this.observationRepository.getSurveyObservations(surveyId);
+  }
+
+  /**
+   * Inserts a survey observation submission record into the database and returns the key
+   *
+   * @param {Express.Multer.File} file
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ key: string }>}
+   * @memberof ObservationService
+   */
+  async insertSurveyObservationSubmission(
+    file: Express.Multer.File,
+    projectId: number,
+    surveyId: number
+  ): Promise<{ key: string }> {
+    const key = generateS3FileKey({
+      projectId: projectId,
+      surveyId: surveyId,
+      fileName: file.originalname
+    });
+
+    const insertResult = await this.observationRepository.insertSurveyObservationSubmission(
+      key,
+      surveyId,
+      file.originalname
+    );
+
+    return { key: insertResult.key };
   }
 }

@@ -61,6 +61,22 @@ export type UpdateObservation = Pick<
   | 'survey_sample_period_id'
 >;
 
+/**
+ * Interface reflecting survey observations retrieved from the database
+ */
+export const ObservationSubmissionRecord = z.object({
+  submission_id: z.number(),
+  survey_id: z.number(),
+  key: z.string(),
+  original_filename: z.string(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable()
+});
+
+export type ObservationSubmissionRecord = z.infer<typeof ObservationSubmissionRecord>;
+
 export class ObservationRepository extends BaseRepository {
   /**
    * Deletes all survey observation records associated with the given survey, except
@@ -189,5 +205,31 @@ export class ObservationRepository extends BaseRepository {
 
     const response = await this.connection.knex(sqlStatement, ObservationRecord);
     return response.rows;
+  }
+
+  /**
+   * Inserts a survey observation submission record into the database and returns the record
+   *
+   * @param {string} key
+   * @param {number} survey_id
+   * @param {string} original_filename
+   * @return {*}  {Promise<ObservationSubmissionRecord>}
+   * @memberof ObservationRepository
+   */
+  async insertSurveyObservationSubmission(
+    key: string,
+    survey_id: number,
+    original_filename: string
+  ): Promise<ObservationSubmissionRecord> {
+    const sqlStatement = SQL`
+      INSERT INTO
+        survey_observation_submission
+        (key, survey_id, original_filename)
+      VALUES
+        (${key}, ${survey_id}, ${original_filename})
+      RETURNING*;`;
+    const response = await this.connection.sql(sqlStatement);
+
+    return response.rows[0];
   }
 }
