@@ -27,7 +27,7 @@ interface AddEditAnimalProps {
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const surveyContext = useContext(SurveyContext);
   const bhApi = useBiohubApi();
-  const { critter_id } = useParams<{ critter_id: string }>();
+  const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
 
   const { section } = props;
 
@@ -54,13 +54,13 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     };
 
     const existingCritter = critterData?.find(
-      (critter: IDetailedCritterWithInternalId) => critter_id === critter.critter_id
+      (critter: IDetailedCritterWithInternalId) => survey_critter_id === `${critter.survey_critter_id}`
     );
     if (!existingCritter) {
       return AnimalFormValues;
     }
     return transformCritterbaseAPIResponseToForm(existingCritter);
-  }, [critterData, critter_id]);
+  }, [critterData, survey_critter_id]);
 
   const renderFormContent = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSubSections, JSX.Element>> = {
@@ -106,7 +106,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 fontSize: '1.125rem',
                 fontWeight: 700
               }}>
-              {critter_id ? `Animal Details: ${obtainAnimalFormInitialvalues.general.animal_id}` : 'Animal Details'}
+              {survey_critter_id
+                ? `Animal Details: ${obtainAnimalFormInitialvalues.general.animal_id}`
+                : 'Animal Details'}
             </Typography>
 
             <Box
@@ -135,7 +137,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               </Box>
             </Box>
           </Toolbar>
-          <Form>{critter_id ? renderFormContent : null}</Form>
+          <Form>{survey_critter_id ? renderFormContent : null}</Form>
         </>
       )}
     </Formik>

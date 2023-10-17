@@ -15,11 +15,11 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import { AnimalSchema, AnimalSex, Critter, IAnimal, MANAGE_ANIMALS_URL_PARAM } from './survey-animals/animal';
+import { AnimalSchema, AnimalSex, Critter, IAnimal, MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './survey-animals/animal';
 import {
   createCritterUpdatePayload,
   transformCritterbaseAPIResponseToForm
@@ -44,6 +44,7 @@ const SurveyAnimals: React.FC = () => {
   const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
+  const history = useHistory();
 
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
@@ -538,7 +539,7 @@ const SurveyAnimals: React.FC = () => {
         </Typography>
         <Button
           component={RouterLink}
-          to={`animals/${MANAGE_ANIMALS_URL_PARAM}`}
+          to={`animals/${MANAGE_ANIMALS_DEFAULT_URL_PARAM}`}
           title="Manage Marked and Known Animals"
           color="primary"
           variant="contained"
@@ -565,8 +566,8 @@ const SurveyAnimals: React.FC = () => {
               setOpenDeviceDialog(true);
             }}
             onEditCritter={() => {
-              setAnimalFormMode(ANIMAL_FORM_MODE.EDIT);
-              setOpenAddCritterDialog(true);
+              //setAnimalFormMode(ANIMAL_FORM_MODE.EDIT);
+              history.push(`animals/${selectedCritterId}`);
             }}
             onMapOpen={() => {
               setOpenViewTelemetryDialog(true);

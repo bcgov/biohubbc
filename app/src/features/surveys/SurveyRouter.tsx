@@ -41,7 +41,7 @@ const SurveyRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/animals/:critter_id"
+        path={['/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id']}
         title={getTitle('Manage Animals')}>
         <SurveyAnimalsPage />
       </RouteWithTitle>
