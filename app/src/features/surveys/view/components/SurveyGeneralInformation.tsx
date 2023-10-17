@@ -52,7 +52,7 @@ const SurveyGeneralInformation = () => {
             </>
           ) : (
             <>
-              <span>Start Date: &zwnj;</span>
+              <span>Start Date: </span>
               {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, survey_details.start_date)}
             </>
           )}
