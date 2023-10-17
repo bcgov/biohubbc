@@ -1,6 +1,6 @@
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Divider, Grid, IconButton, PaperProps, Typography } from '@mui/material';
+import { Box, Button, Grid, IconButton, PaperProps, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';

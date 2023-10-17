@@ -1,5 +1,4 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
