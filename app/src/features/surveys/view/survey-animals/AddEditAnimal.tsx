@@ -2,6 +2,7 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { SurveyAnimalsI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Form, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -25,6 +26,7 @@ interface AddEditAnimalProps {
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const surveyContext = useContext(SurveyContext);
+  const dialogContext = useContext(DialogContext);
   const bhApi = useBiohubApi();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,6 +38,17 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   );
 
   loadCritters();
+
+  const setPopup = (message: string) => {
+    dialogContext.setSnackbar({
+      open: true,
+      snackbarMessage: (
+        <Typography variant="body2" component="div">
+          {message}
+        </Typography>
+      )
+    });
+  };
 
   const obtainAnimalFormInitialvalues = useMemo(() => {
     const AnimalFormValues: IAnimal = {
@@ -89,8 +102,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     try {
       setIsSubmitting(true);
       await patchCritterPayload();
+      setPopup('Successfully updated animal.');
     } catch (err) {
-      console.log(`Submmision failed ${(err as Error).message}`);
+      setPopup(`Submmision failed ${(err as Error).message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -171,6 +185,11 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             </Box>
           </Toolbar>
           {critter_id ? renderFormContent : null}
+          {Object.keys(formikProps.errors).length > 0 && (
+            <Typography color="error">{`There are issues preventing save in the following sections: ${Object.keys(
+              formikProps.errors
+            ).join(',')}`}</Typography>
+          )}
         </Form>
       )}
     </Formik>
