@@ -10,8 +10,8 @@ import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import { useState } from 'react';
-import { boundaryUploadHelper } from 'utils/mapBoundaryUploadHelpers';
+import { useEffect, useState } from 'react';
+import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { ISurveyLocationForm } from '../StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
@@ -24,8 +24,12 @@ export interface ISurveyAreMapControlProps {
 export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const { map_id, formik_key, formik_props } = props;
   const { setFieldValue, setFieldError, values } = formik_props;
-  const [updatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
+  const [updatedBounds, setUpdateBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setUpdateBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
+  }, [formik_props.values.locations]);
 
   return (
     <>
@@ -46,6 +50,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                     revision_count: 0
                   };
                 });
+                setUpdateBounds(calculateUpdatedMapBounds(features));
                 setFieldValue(formik_key, formData);
               },
               onFailure: (message: string) => {
@@ -58,17 +63,19 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           />
         </Box>
       </ComponentDialog>
-      <Button
-        sx={{ marginBottom: 1 }}
-        color="primary"
-        variant="outlined"
-        data-testid="boundary_file-upload"
-        startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-        onClick={() => {
-          setIsOpen(true);
-        }}>
-        Import Boundary
-      </Button>
+      <Box mt={4} display="flex" alignItems="flex-start">
+        <Button
+          sx={{ marginBottom: 1 }}
+          color="primary"
+          variant="outlined"
+          data-testid="boundary_file-upload"
+          startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+          onClick={() => {
+            setIsOpen(true);
+          }}>
+          Import Boundary
+        </Button>
+      </Box>
       <MapContainer
         mapId={map_id}
         staticLayers={values.locations.map((item) => {

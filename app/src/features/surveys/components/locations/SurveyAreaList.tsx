@@ -92,7 +92,7 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
           flex="1 1 auto"
           p={1}
           sx={{
-            overflowY: 'scroll',
+            // overflowY: 'scroll',
             background: grey[50],
             '& .MuiAccordion-root + .MuiAccordion-root': {
               borderTopStyle: 'solid',
