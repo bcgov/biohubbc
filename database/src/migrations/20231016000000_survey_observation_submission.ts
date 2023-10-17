@@ -50,6 +50,10 @@ export async function up(knex: Knex): Promise<void> {
   -- Add unique constraint
   CREATE UNIQUE INDEX survey_observation_submission_uk1 ON survey_observation_submission(key);
 
+  -- Create audit and journal triggers
+  create trigger audit_survey_observation_submission before insert or update or delete on survey_observation_submission for each row execute procedure tr_audit_trigger();
+  create trigger journal_survey_observation_submission after insert or update or delete on survey_observation_submission for each row execute procedure tr_journal_trigger();
+
   ----------------------------------------------------------------------------------------
   -- Create View
   ----------------------------------------------------------------------------------------
