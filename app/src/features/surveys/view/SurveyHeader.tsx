@@ -1,10 +1,4 @@
-import {
-  mdiCalendarRangeOutline,
-  mdiChevronDown,
-  mdiCogOutline,
-  mdiPencilOutline,
-  mdiTrashCanOutline
-} from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -147,7 +141,7 @@ const SurveyHeader = () => {
           zIndex: 1002,
           pt: 3,
           pb: 4,
-          borderBottom: '1px solid' + grey[300]
+          borderBottom: '1px solid ' + grey[300]
         }}>
         <Container maxWidth="xl">
           <Breadcrumbs

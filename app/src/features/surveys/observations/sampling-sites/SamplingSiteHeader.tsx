@@ -66,13 +66,12 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             <Box
               sx={{
                 '& button': {
-                  minWidth: '6rem',
+                  minWidth: '6rem'
                 },
                 '& button + button': {
                   ml: 1
                 }
-              }}
-            >
+              }}>
               <LoadingButton
                 type="submit"
                 variant="contained"

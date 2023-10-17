@@ -30,6 +30,20 @@ import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
 
+const SampleSiteSkeleton = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      gap: '16px',
+      py: 1.5,
+      px: 2,
+      height: '52px',
+      borderBottom: '1px solid ' + grey[300]
+    }}>
+    <Skeleton sx={{ flex: '1 1 auto' }} />
+  </Box>
+);
+
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
@@ -45,20 +59,6 @@ const SamplingSiteList = () => {
     setAnchorEl(event.currentTarget);
     setSelectedSampleSiteId(sample_site_id);
   };
-
-  const SampleSiteSkeleton = () => (
-    <Box
-      sx={{
-        display: 'flex',
-        gap: '16px',
-        py: 1.5,
-        px: 2,
-        height: '52px',
-        borderBottom: '1px solid' + grey[300]
-      }}>
-      <Skeleton sx={{ flex: '1 1 auto' }} />
-    </Box>
-  );
 
   return (
     <>

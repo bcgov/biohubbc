@@ -23,7 +23,7 @@ describe('getFundingSource', () => {
 
   it('gets a funding source', async () => {
     const mockFundingSource: {
-      funding_source: FundingSource | FundingSourceSupplementaryData;
+      funding_source: FundingSource & FundingSourceSupplementaryData;
       funding_source_survey_references: (SurveyFundingSource | SurveyFundingSourceSupplementaryData)[];
     } = {
       funding_source: {

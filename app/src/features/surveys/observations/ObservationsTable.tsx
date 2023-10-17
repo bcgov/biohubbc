@@ -69,7 +69,7 @@ const SampleSiteSkeleton = () => (
       p: 1,
       height: 58,
       background: '#fff',
-      borderBottom: '1px solid' + grey[300]
+      borderBottom: '1px solid ' + grey[300]
     }}>
     <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
     <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
@@ -234,14 +234,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       align: 'right',
       valueSetter: (params) => {
         const value = Number(params.value);
-        return { ...params.row, count: (isNaN(value) && null) || value };
+        return { ...params.row, count: isNaN(value) ? value : undefined };
       },
       valueParser: (value) => {
         if (!value) {
           return '';
         }
 
-        if (/^[0-9]*$/.test(value)) {
+        if (/^\d*$/.test(value)) {
           // Value contains only number characters
           return value;
         }
@@ -341,7 +341,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerAlign: 'right',
       align: 'right',
       valueSetter: (params) => {
-        if (/^-?[0-9]{0,3}(?:\.[0-9]{1,12})?$/.test(params.value)) {
+        if (/^-?\d{0,3}(?:\.\d{1,12})?$/.test(params.value)) {
           // If the value is a legal latitude value
           // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
           return { ...params.row, latitude: Number(params.value) };
@@ -353,7 +353,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return (
           <TextField
             onChange={(event) => {
-              if (!/^-?[0-9]{0,3}(?:\.[0-9]{0,12})?$/.test(event.target.value)) {
+              if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
                 // If the value is not a subset of a legal latitude value, prevent the value from being applied
                 return;
               }
@@ -382,7 +382,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerAlign: 'right',
       align: 'right',
       valueSetter: (params) => {
-        if (/^-?[0-9]{1,3}(?:\.[0-9]{1,12})?$/.test(params.value)) {
+        if (/^-?\d{1,3}(?:\.\d{1,12})?$/.test(params.value)) {
           // If the value is a legal latitude value
           // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
           return { ...params.row, longitude: Number(params.value) };
@@ -394,7 +394,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return (
           <TextField
             onChange={(event) => {
-              if (!/^-?[0-9]{0,3}(?:\.[0-9]{0,12})?$/.test(event.target.value)) {
+              if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
                 // If the value is not a subset of a legal latitude value, prevent the value from being applied
                 return;
               }
@@ -601,7 +601,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           },
           '& .MuiOutlinedInput': {
             '&-notchedoutline': {
-              border: '1px solid' + grey[300]
+              border: '1px solid ' + grey[300]
             }
           },
           '& .MuiOutlinedInput-notchedOutline': {
@@ -617,7 +617,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               borderColor: 'primary.main'
             },
             '&:hover > fieldset': {
-              border: '1px solid' + 'primary.main'
+              border: '1px solid primary.main'
             }
           }
         }}

@@ -1,6 +1,6 @@
+import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
-import Typography from '@mui/material/Typography';
 
 export interface IAutocompleteDataGridViewCellProps<
   DataGridType extends GridValidRowModel,
@@ -34,7 +34,14 @@ const AutocompleteDataGridViewCell = <DataGridType extends GridValidRowModel, Va
   props: IAutocompleteDataGridViewCellProps<DataGridType, ValueType>
 ) => {
   const { dataGridProps, options } = props;
-  return <Typography variant="body2" component="div" sx={{overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{options.find((item) => item.value === dataGridProps.value)?.label ?? ''}</Typography>;
+  return (
+    <Typography
+      variant="body2"
+      component="div"
+      sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+      {options.find((item) => item.value === dataGridProps.value)?.label ?? ''}
+    </Typography>
+  );
 };
 
 export default AutocompleteDataGridViewCell;
