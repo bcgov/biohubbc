@@ -124,6 +124,10 @@ export function uploadMedia(): RequestHandler {
     try {
       const rawMediaFile = rawMediaArray[0];
 
+      if (!rawMediaFile?.originalname.endsWith('.csv')) {
+        throw new HTTP400('Invalid file type');
+      }
+
       await connection.open();
 
       // Scan file for viruses using ClamAV
