@@ -9,6 +9,7 @@ import { AnimalTelemetryDeviceSchema } from './device';
 
 export type IAnimalSubSections =
   | 'General'
+  | 'Ecological Units'
   | 'Markings'
   | 'Measurements'
   | 'Capture Information'
@@ -19,6 +20,7 @@ export type IAnimalSubSections =
 
 export const ANIMAL_SUBSECTIONS: IAnimalSubSections[] = [
   SurveyAnimalsI18N.animalGeneralTitle,
+  SurveyAnimalsI18N.animalCollectionUnitTitle,
   SurveyAnimalsI18N.animalMarkingTitle,
   SurveyAnimalsI18N.animalMeasurementTitle,
   SurveyAnimalsI18N.animalCaptureTitle,
@@ -26,7 +28,7 @@ export const ANIMAL_SUBSECTIONS: IAnimalSubSections[] = [
   SurveyAnimalsI18N.animalFamilyTitle,
   'Observations',
   'Telemetry'
-] as IAnimalSubSections[];
+];
 
 export enum AnimalSex {
   MALE = 'Male',
@@ -243,11 +245,11 @@ type ICritterLocation = InferType<typeof LocationSchema>;
 
 type ICritterMortality = Omit<
   ICritterID &
-    IAnimalMortality & {
-      location_id: string;
-      mortality_id: string | undefined;
-      location?: ICritterLocation;
-    },
+  IAnimalMortality & {
+    location_id: string;
+    mortality_id: string | undefined;
+    location?: ICritterLocation;
+  },
   | '_id'
   | 'mortality_utm_easting'
   | 'mortality_utm_northing'
@@ -259,14 +261,14 @@ type ICritterMortality = Omit<
 
 type ICritterCapture = Omit<
   ICritterID &
-    Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
-      capture_id: string | undefined;
-      capture_location_id: string;
-      release_location_id: string | undefined;
-      capture_location?: ICritterLocation;
-      release_location?: ICritterLocation;
-      force_create_release?: boolean;
-    },
+  Pick<IAnimalCapture, 'capture_timestamp' | 'release_timestamp' | 'release_comment' | 'capture_comment'> & {
+    capture_id: string | undefined;
+    capture_location_id: string;
+    release_location_id: string | undefined;
+    capture_location?: ICritterLocation;
+    release_location?: ICritterLocation;
+    force_create_release?: boolean;
+  },
   '_id'
 >;
 
