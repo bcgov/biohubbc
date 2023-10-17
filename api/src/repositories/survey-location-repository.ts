@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { PostLocationData } from '../models/survey-create';
 import { PutSurveyLocationData } from '../models/survey-update';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
-import { jsonSchema } from '../zod-schema/json';
+import { shallowJsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
 
 export const SurveyLocationRecord = z.object({
@@ -12,7 +12,7 @@ export const SurveyLocationRecord = z.object({
   description: z.string(),
   geometry: z.record(z.any()).nullable(),
   geography: z.string(),
-  geojson: jsonSchema,
+  geojson: shallowJsonSchema,
   revision_count: z.number()
 });
 

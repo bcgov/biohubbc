@@ -132,23 +132,28 @@ const MapContainer = (props: IMapContainerProps) => {
         // Get map geometries based on whether boundary is non editable or drawn/uploaded
         const mapGeometries: Feature[] = determineMapGeometries(drawControls?.initialFeatures, nonEditableGeometries);
 
-        const getFeatureDetails = await biohubApi.spatial.getRegions(mapGeometries);
+        try {
+          const getFeatureDetails = await biohubApi.spatial.getRegions(mapGeometries);
 
-        if (setInferredLayersInfo) {
-          setInferredLayersInfo({
-            parks: getFeatureDetails.regions
-              .filter((item) => item.sourceLayer === 'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW')
-              .map((item) => item.regionName),
-            nrm: getFeatureDetails.regions
-              .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG')
-              .map((item) => item.regionName),
-            env: getFeatureDetails.regions
-              .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW')
-              .map((item) => item.regionName),
-            wmu: getFeatureDetails.regions
-              .filter((item) => item.sourceLayer === 'WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW')
-              .map((item) => item.regionName)
-          });
+          if (setInferredLayersInfo) {
+            setInferredLayersInfo({
+              parks: getFeatureDetails.regions
+                .filter((item) => item.sourceLayer === 'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW')
+                .map((item) => item.regionName),
+              nrm: getFeatureDetails.regions
+                .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG')
+                .map((item) => item.regionName),
+              env: getFeatureDetails.regions
+                .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW')
+                .map((item) => item.regionName),
+              wmu: getFeatureDetails.regions
+                .filter((item) => item.sourceLayer === 'WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW')
+                .map((item) => item.regionName)
+            });
+          }
+        } catch (error) {
+          //TODO: is there a better way to handle this?
+          console.log(error);
         }
       }, 300),
     [biohubApi.spatial, drawControls?.initialFeatures, nonEditableGeometries, setInferredLayersInfo]
