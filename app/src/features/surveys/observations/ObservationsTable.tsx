@@ -234,14 +234,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       align: 'right',
       valueSetter: (params) => {
         const value = Number(params.value);
-        return { ...params.row, count: (isNaN(value) && null) || value };
+        return { ...params.row, count: isNaN(value) ? value : undefined };
       },
       valueParser: (value) => {
         if (!value) {
           return '';
         }
 
-        if (/^[0-9]*$/.test(value)) {
+        if (/^\d*$/.test(value)) {
           // Value contains only number characters
           return value;
         }

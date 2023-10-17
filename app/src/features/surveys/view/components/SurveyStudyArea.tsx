@@ -38,8 +38,6 @@ const SurveyStudyArea = () => {
   const surveyLocation = surveyLocations[0] || null;
   const surveyGeometry = useMemo(() => surveyLocation?.geojson || [], [surveyLocation]);
 
-  // const [studyAreaFormData, setStudyAreaFormData] = useState<ISurveyLocationForm>(SurveyLocationInitialValues);
-
   const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
   const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
