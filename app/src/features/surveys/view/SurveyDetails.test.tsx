@@ -8,10 +8,30 @@ import { codes } from 'test-helpers/code-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
 import SurveyDetails from './SurveyDetails';
+import { useBiohubApi } from '../../../hooks/useBioHubApi';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/2'] });
 
+jest.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
+  }
+};
+
 describe('SurveyDetails', () => {
+  beforeEach(() => {
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
+  });
+
   const mockCodesContext: ICodesContext = {
     codesDataLoader: {
       data: codes

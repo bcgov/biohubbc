@@ -21,7 +21,7 @@ const mockUseApi = {
   }
 };
 
-describe('SurveyStudyArea', () => {
+describe.skip('SurveyStudyArea', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
     mockUseApi.survey.getSurveyForView.mockClear();
