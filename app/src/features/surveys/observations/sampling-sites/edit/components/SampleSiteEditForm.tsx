@@ -10,11 +10,11 @@ import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/s
 import { FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import { useContext } from 'react';
+import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SampleMethodEditForm from './SampleMethodEditForm';
 import SampleSiteGeneralInformationForm from './SampleSiteGeneralInformationForm';
 import SurveySamplingSiteEditForm from './SurveySampleSiteEditForm';
-import { useHistory } from 'react-router';
 
 export interface IEditSamplingSiteRequest {
   sampleSite: {
@@ -90,13 +90,12 @@ const SampleSiteEditForm: React.FC<ISampleSiteEditForm> = (props) => {
               <Box
                 sx={{
                   '& button': {
-                    minWidth: '6rem',
+                    minWidth: '6rem'
                   },
                   '& button + button': {
                     ml: 1
                   }
-                }}
-              >
+                }}>
                 <LoadingButton
                   type="submit"
                   variant="contained"
@@ -111,7 +110,9 @@ const SampleSiteEditForm: React.FC<ISampleSiteEditForm> = (props) => {
                   variant="outlined"
                   color="primary"
                   onClick={() => {
-                    history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`)
+                    history.push(
+                      `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
+                    );
                   }}>
                   Cancel
                 </Button>

@@ -1,11 +1,15 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { createMemoryHistory } from 'history';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import { Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
 import SurveyDetails from './SurveyDetails';
+
+const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/2'] });
 
 describe('SurveyDetails', () => {
   const mockCodesContext: ICodesContext = {
@@ -33,20 +37,22 @@ describe('SurveyDetails', () => {
 
   it('renders correctly', async () => {
     const { getByText } = render(
-      <SurveyContext.Provider
-        value={{
-          projectId: 1,
-          surveyId: 1,
-          surveyDataLoader: mockSurveyDataLoader,
-          artifactDataLoader: mockArtifactDataLoader,
-          observationDataLoader: mockObservationsDataLoader,
-          summaryDataLoader: mockSummaryDataLoader,
-          sampleSiteDataLoader: mockSampleSiteDataLoader
-        }}>
-        <CodesContext.Provider value={mockCodesContext}>
-          <SurveyDetails />
-        </CodesContext.Provider>
-      </SurveyContext.Provider>
+      <Router history={history}>
+        <SurveyContext.Provider
+          value={{
+            projectId: 1,
+            surveyId: 1,
+            surveyDataLoader: mockSurveyDataLoader,
+            artifactDataLoader: mockArtifactDataLoader,
+            observationDataLoader: mockObservationsDataLoader,
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
+          }}>
+          <CodesContext.Provider value={mockCodesContext}>
+            <SurveyDetails />
+          </CodesContext.Provider>
+        </SurveyContext.Provider>
+      </Router>
     );
 
     await waitFor(() => {

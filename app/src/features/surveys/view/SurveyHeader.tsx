@@ -1,10 +1,4 @@
-import {
-  mdiCalendarRangeOutline,
-  mdiChevronDown,
-  mdiCogOutline,
-  mdiPencilOutline,
-  mdiTrashCanOutline
-} from '@mdi/js';
+import { mdiCalendarRangeOutline, mdiChevronDown, mdiCogOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
