@@ -54,7 +54,8 @@ const mockProjectContext: IProjectContext = {
     data: null
   } as DataLoader<any, any, any>,
   surveysListDataLoader: {
-    data: null
+    data: null,
+    refresh: () => {}
   } as DataLoader<any, any, any>,
   projectId: 1
 };
@@ -64,6 +65,8 @@ const surveyForView = getSurveyForViewResponse;
 describe('SurveyHeader', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
+
+    mockUseApi.survey.deleteSurvey.mockResolvedValue(true);
   });
 
   afterEach(() => {
