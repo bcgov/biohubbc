@@ -28,3 +28,5 @@ export enum SurveyStatusType {
 export enum DocumentReviewStatus {
   PENDING = 'Pending Review'
 }
+
+export const PG_MAX_INT = 2147483647;

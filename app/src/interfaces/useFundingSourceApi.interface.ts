@@ -6,8 +6,8 @@ export interface IGetFundingSourcesResponse {
   start_date: string | null;
   end_date: string | null;
   revision_count: number;
-  survey_reference_count: number;
-  survey_reference_amount_total: number;
+  survey_reference_count?: number;
+  survey_reference_amount_total?: number;
 }
 
 export interface IGetFundingSourceResponse {
@@ -18,8 +18,8 @@ export interface IGetFundingSourceResponse {
     start_date: string | null;
     end_date: string | null;
     revision_count: number;
-    survey_reference_count: number;
-    survey_reference_amount_total: number;
+    survey_reference_count?: number;
+    survey_reference_amount_total?: number;
   };
   funding_source_survey_references: {
     survey_funding_source_id: number;

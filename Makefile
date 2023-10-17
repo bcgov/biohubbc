@@ -122,7 +122,7 @@ db-container: ## Executes into database container.
 	@echo "Make: Shelling into database container"
 	@echo "==============================================="
 	@export PGPASSWORD=$(DB_ADMIN_PASS)
-	@docker-compose exec db psql -U $(DB_ADMIN) -d $(DB_DATABASE)
+	@	
 
 app-container: ## Executes into the app container.
 	@echo "==============================================="

@@ -2,7 +2,6 @@ import { ConfigContext } from 'contexts/configContext';
 import { useContext } from 'react';
 import useAxios from './api/useAxios';
 import { useAuthentication } from './cb_api/useAuthenticationApi';
-import { useCritterApi } from './cb_api/useCritterApi';
 import { useFamilyApi } from './cb_api/useFamilyApi';
 import { useLookupApi } from './cb_api/useLookupApi';
 import { useMarkings } from './cb_api/useMarkings';
@@ -18,13 +17,11 @@ export const useCritterbaseApi = () => {
   const markings = useMarkings(apiAxios);
   const authentication = useAuthentication(apiAxios);
   const lookup = useLookupApi(apiAxios);
-  const critters = useCritterApi(apiAxios);
   const family = useFamilyApi(apiAxios);
   return {
     markings,
     authentication,
     lookup,
-    critters,
     family
   };
 };

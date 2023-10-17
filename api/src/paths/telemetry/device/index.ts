@@ -7,6 +7,7 @@ import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('paths/telemetry/device/{deviceId}');
 
 export const POST: Operation = [
+  // TODO: Should this endpoint be guarded such that the user must at the very least belong to a project?
   authorizeRequestHandler(() => {
     return {
       and: [
