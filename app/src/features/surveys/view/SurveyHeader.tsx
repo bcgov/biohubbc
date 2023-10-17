@@ -141,7 +141,7 @@ const SurveyHeader = () => {
           zIndex: 1002,
           pt: 3,
           pb: 4,
-          borderBottom: '1px solid' + grey[300]
+          borderBottom: '1px solid ' + grey[300]
         }}>
         <Container maxWidth="xl">
           <Breadcrumbs

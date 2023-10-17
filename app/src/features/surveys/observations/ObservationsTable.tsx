@@ -69,7 +69,7 @@ const SampleSiteSkeleton = () => (
       p: 1,
       height: 58,
       background: '#fff',
-      borderBottom: '1px solid' + grey[300]
+      borderBottom: '1px solid ' + grey[300]
     }}>
     <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
     <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
@@ -601,7 +601,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           },
           '& .MuiOutlinedInput': {
             '&-notchedoutline': {
-              border: '1px solid' + grey[300]
+              border: '1px solid ' + grey[300]
             }
           },
           '& .MuiOutlinedInput-notchedOutline': {
@@ -617,7 +617,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               borderColor: 'primary.main'
             },
             '&:hover > fieldset': {
-              border: '1px solid' + 'primary.main'
+              border: '1px solid primary.main'
             }
           }
         }}

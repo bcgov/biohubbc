@@ -77,7 +77,7 @@ const SurveyDetails = () => {
             flexWrap: { xs: 'wrap', md: 'nowrap' },
             gap: { xs: 0, md: '24px' },
             py: 1,
-            borderTop: '1px solid' + grey[300]
+            borderTop: '1px solid ' + grey[300]
           },
           '& section.row': {
             mt: 0

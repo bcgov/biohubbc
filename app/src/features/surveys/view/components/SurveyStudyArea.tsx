@@ -1,6 +1,5 @@
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
@@ -10,7 +9,6 @@ import assert from 'assert';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IMarkerLayer } from 'components/map/components/MarkerCluster';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import MapContainer from 'components/map/MapContainer';
@@ -18,6 +16,7 @@ import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import StudyAreaForm, {
   ISurveyLocationForm,
@@ -34,7 +33,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
     padding: '3px',
     borderRadius: '4px',
@@ -58,6 +57,8 @@ const SurveyStudyArea = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useContext(SurveyContext);
+
+  const dialogContext = useContext(DialogContext);
 
   // Survey data must be loaded by the parent before this component is rendered
   assert(surveyContext.surveyDataLoader.data);
@@ -127,23 +128,6 @@ const SurveyStudyArea = () => {
     zoomToBoundaryExtent();
   }, [surveyGeometry, occurrence_submission_id, setNonEditableGeometries, zoomToBoundaryExtent]);
 
-  // TODO: This component should not define error dialog props in state and should instead consume the dialog context.
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
-    dialogText: EditSurveyStudyAreaI18N.editErrorText,
-    open: false,
-    onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    },
-    onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    }
-  });
-
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
-  };
-
   const handleDialogEditOpen = () => {
     if (!surveyLocation) {
       return;
@@ -185,8 +169,18 @@ const SurveyStudyArea = () => {
       await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
-      return;
+      dialogContext.setErrorDialog({
+        dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
+        dialogText: apiError.message,
+        dialogErrorDetails: apiError.errors,
+        open: true,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
+      });
     } finally {
       setOpenEditDialog(false);
     }
@@ -235,8 +229,6 @@ const SurveyStudyArea = () => {
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
       />
-
-      <ErrorDialog {...errorDialogProps} />
 
       <Box sx={{ display: 'none' }}>
         <H2ButtonToolbar

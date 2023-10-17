@@ -54,7 +54,7 @@ const SamplingSiteList = () => {
         py: 1.5,
         px: 2,
         height: '52px',
-        borderBottom: '1px solid' + grey[300]
+        borderBottom: '1px solid ' + grey[300]
       }}>
       <Skeleton sx={{ flex: '1 1 auto' }} />
     </Box>

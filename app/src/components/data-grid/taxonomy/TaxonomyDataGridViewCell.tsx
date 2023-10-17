@@ -21,7 +21,19 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
 
   const biohubApi = useBiohubApi();
 
-  const taxonomyDataLoader = useDataLoader(() => biohubApi.taxonomy.getSpeciesFromIds([Number(dataGridProps.value)]));
+  const taxonomyDataLoader = useDataLoader(async () => {
+    if (!dataGridProps.value) {
+      return { searchResponse: [] };
+    }
+
+    const id = Number(dataGridProps.value);
+
+    if (isNaN(id)) {
+      return { searchResponse: [] };
+    }
+
+    return biohubApi.taxonomy.getSpeciesFromIds([Number(dataGridProps.value)]);
+  });
 
   taxonomyDataLoader.load();
 
