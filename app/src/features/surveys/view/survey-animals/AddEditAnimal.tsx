@@ -7,6 +7,7 @@ import { Form, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo } from 'react';
 import { AnimalSchema, AnimalSex, IAnimal, IAnimalSubSections } from './animal';
 import { transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
@@ -85,55 +86,57 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       validateOnBlur={true}
       validateOnChange={false}
       onSubmit={(values) => {}}>
-      <Form>
-        <Toolbar
-          sx={{
-            flex: '0 0 auto',
-            borderBottom: '1px solid #ccc',
-            '& button': {
-              minWidth: '6rem'
-            },
-            '& button + button': {
-              ml: 1
-            }
-          }}>
-          <Typography
+      {(formik) => (
+        <>
+          <Toolbar
             sx={{
-              flexGrow: '1',
-              fontSize: '1.125rem',
-              fontWeight: 700
-            }}>
-            {critter_id ? `Animal: ${obtainAnimalFormInitialvalues.general.animal_id}` : 'No Animal Selected'}
-          </Typography>
-
-          <Box
-            sx={{
-              '& div:first-of-type': {
-                display: 'flex',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap'
+              flex: '0 0 auto',
+              borderBottom: '1px solid #ccc',
+              '& button': {
+                minWidth: '6rem'
+              },
+              '& button + button': {
+                ml: 1
               }
             }}>
-            <Box display="flex" overflow="hidden">
-              <Collapse in={!!critter_id} orientation="horizontal">
-                <Box ml={1} whiteSpace="nowrap">
-                  <LoadingButton
-                    loading={isSaving}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => console.log('saving')}>
-                    Save
-                  </LoadingButton>
-                  <Button variant="outlined" color="primary" onClick={() => console.log('discarding')}>
-                    Discard Changes
-                  </Button>
-                </Box>
-              </Collapse>
+            <Typography
+              sx={{
+                flexGrow: '1',
+                fontSize: '1.125rem',
+                fontWeight: 700
+              }}>
+              {critter_id ? `Animal Details: ${obtainAnimalFormInitialvalues.general.animal_id}` : 'Animal Details'}
+            </Typography>
+
+            <Box
+              sx={{
+                '& div:first-of-type': {
+                  display: 'flex',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap'
+                }
+              }}>
+              <Box display="flex" overflow="hidden">
+                <Collapse in={!isEqual(formik.initialValues, formik.values)} orientation="horizontal">
+                  <Box ml={1} whiteSpace="nowrap">
+                    <LoadingButton
+                      loading={isSaving}
+                      variant="contained"
+                      color="primary"
+                      onClick={() => console.log(formik)}>
+                      Save
+                    </LoadingButton>
+                    <Button variant="outlined" color="primary" onClick={() => console.log('discarding')}>
+                      Discard Changes
+                    </Button>
+                  </Box>
+                </Collapse>
+              </Box>
             </Box>
-          </Box>
-        </Toolbar>
-        {critter_id ? renderFormContent : null}
-      </Form>
+          </Toolbar>
+          <Form>{critter_id ? renderFormContent : null}</Form>
+        </>
+      )}
     </Formik>
   );
 };
