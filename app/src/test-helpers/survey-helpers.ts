@@ -1,5 +1,5 @@
 import { PublishStatus } from 'constants/attachments';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import {
   IGetSurveyForListResponse,
   IGetSurveyForViewResponse,
