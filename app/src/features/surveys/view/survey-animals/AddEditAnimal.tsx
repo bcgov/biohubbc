@@ -22,10 +22,10 @@ interface AddEditAnimalProps {
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
+  const { section, isLoading } = props;
   const surveyContext = useContext(SurveyContext);
   const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
-
-  const { section, isLoading } = props;
+  const { submitForm, initialValues, values, resetForm } = useFormikContext<IAnimal>();
 
   const renderFormContent = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSubSections, JSX.Element>> = {
@@ -39,8 +39,6 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     };
     return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
   }, [section]);
-
-  const { submitForm, initialValues, values } = useFormikContext<IAnimal>();
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -84,7 +82,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm}>
                   Save
                 </LoadingButton>
-                <Button variant="outlined" color="primary" onClick={() => console.log('discarding')}>
+                <Button variant="outlined" color="primary" onClick={() => resetForm()}>
                   Discard Changes
                 </Button>
               </Box>
