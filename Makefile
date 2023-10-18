@@ -122,6 +122,7 @@ db-container: ## Executes into database container.
 	@echo "Make: Shelling into database container"
 	@echo "==============================================="
 	@export PGPASSWORD=$(DB_ADMIN_PASS)
+	@	
 
 app-container: ## Executes into the app container.
 	@echo "==============================================="
