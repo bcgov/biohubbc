@@ -86,7 +86,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           <Box display="flex" overflow="hidden">
             <Collapse in={!isEqual(initialValues, values)} orientation="horizontal">
               <Box ml={1} whiteSpace="nowrap">
-                <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm}>
+                <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
                   Save
                 </LoadingButton>
                 <Button variant="outlined" color="primary" onClick={() => resetForm()}>

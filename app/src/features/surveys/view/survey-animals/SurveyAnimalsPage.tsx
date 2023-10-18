@@ -1,4 +1,5 @@
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import EditDialog from 'components/dialog/EditDialog';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
@@ -9,15 +10,18 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { AddEditAnimal } from './AddEditAnimal';
-import { AnimalSchema, AnimalSex, IAnimal, IAnimalSubSections } from './animal';
+import { AnimalSchema, AnimalSex, Critter, IAnimal, IAnimalSubSections } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import AnimalList from './AnimalList';
+import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
+import { ANIMAL_FORM_MODE } from './IndividualAnimalForm';
 
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSubSections>('General');
   //const [selectedCritterID, setSelectedCritterID] = useState<string | null>(null);
   const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [openAddDialog, setOpenAddDialog] = useState(false);
   const bhApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
   const { surveyId, projectId } = useContext(SurveyContext);
@@ -25,6 +29,7 @@ export const SurveyAnimalsPage = () => {
   const {
     data: critterData,
     load: loadCritters,
+    refresh: refreshCritters,
     isLoading: crittersLoading
   } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
 
@@ -41,8 +46,8 @@ export const SurveyAnimalsPage = () => {
     });
   };
 
-  const critterAsFormikValues = useMemo(() => {
-    const AnimalFormValues: IAnimal = {
+  const defaultFormValues: IAnimal = useMemo(() => {
+    return {
       general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: AnimalSex.UNKNOWN, critter_id: '' },
       captures: [],
       markings: [],
@@ -53,17 +58,25 @@ export const SurveyAnimalsPage = () => {
       images: [],
       device: undefined
     };
+  }, []);
 
+  const critterAsFormikValues = useMemo(() => {
     const existingCritter = critterData?.find(
       (critter: IDetailedCritterWithInternalId) => Number(survey_critter_id) === Number(critter.survey_critter_id)
     );
     if (!existingCritter) {
-      return AnimalFormValues;
+      return defaultFormValues;
     }
     return transformCritterbaseAPIResponseToForm(existingCritter);
-  }, [critterData, survey_critter_id]);
+  }, [defaultFormValues, critterData, survey_critter_id]);
 
-  const handleCritterSave = async (currentFormValues: IAnimal) => {
+  const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE) => {
+    const postCritterPayload = async () => {
+      const critter = new Critter(currentFormValues);
+      setOpenAddDialog(false);
+      await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
+      setPopup('Animal added to survey.');
+    };
     const patchCritterPayload = async () => {
       const initialFormValues = critterAsFormikValues;
       if (!initialFormValues) {
@@ -73,7 +86,9 @@ export const SurveyAnimalsPage = () => {
         initialFormValues,
         currentFormValues
       );
-      const surveyCritter = critterData?.find((critter) => critter.critter_id === survey_critter_id);
+      const surveyCritter = critterData?.find(
+        (critter) => Number(critter.survey_critter_id) === Number(survey_critter_id)
+      );
       if (!survey_critter_id || !surveyCritter) {
         throw Error('The internal critter id for this row was not set correctly.');
       }
@@ -84,16 +99,16 @@ export const SurveyAnimalsPage = () => {
         updateCritter,
         createCritter
       );
-      /*console.log(`Initial values. ${JSON.stringify(initialFormValues, null, 2)}`);
-      console.log(`Current values. ${JSON.stringify(currentFormValues, null, 2)}`);
-
-      console.log(`Create payload. ${JSON.stringify(createCritter, null, 2)}`);
-      console.log(`Update payload. ${JSON.stringify(updateCritter, null, 2)}`);*/
     };
     try {
       setIsSubmitting(true);
-      await patchCritterPayload();
-      setPopup('Successfully updated animal.');
+      if (formMode === ANIMAL_FORM_MODE.ADD) {
+        await postCritterPayload();
+      } else {
+        await patchCritterPayload();
+      }
+      refreshCritters();
+      setPopup(`Successfully ${formMode === ANIMAL_FORM_MODE.ADD ? 'created' : 'updated'} animal.`);
     } catch (err) {
       setPopup(`Submmision failed ${(err as Error).message}`);
     } finally {
@@ -102,25 +117,50 @@ export const SurveyAnimalsPage = () => {
   };
 
   return (
-    <Formik
-      initialValues={critterAsFormikValues}
-      enableReinitialize
-      validationSchema={AnimalSchema}
-      validateOnBlur={true}
-      validateOnChange={false}
-      onSubmit={handleCritterSave}>
-      <SurveySectionFullPageLayout
-        pageTitle="Manage Animals"
-        sideBarComponent={
-          <AnimalList
-            critterData={critterData}
-            isLoading={crittersLoading}
-            selectedSection={selectedSection}
-            onSelectSection={(section) => setSelectedSection(section)}
-          />
-        }
-        mainComponent={<AddEditAnimal isLoading={isSubmitting} section={selectedSection} />}
+    <>
+      <Formik
+        initialValues={critterAsFormikValues}
+        enableReinitialize
+        validationSchema={AnimalSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={(values) => {
+          handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
+        }}>
+        <SurveySectionFullPageLayout
+          pageTitle="Manage Animals"
+          sideBarComponent={
+            <AnimalList
+              onAddButton={() => setOpenAddDialog(true)}
+              critterData={critterData}
+              isLoading={crittersLoading}
+              selectedSection={selectedSection}
+              onSelectSection={(section) => setSelectedSection(section)}
+            />
+          }
+          mainComponent={<AddEditAnimal isLoading={isSubmitting} section={selectedSection} />}
+        />
+      </Formik>
+      <EditDialog
+        dialogTitle={'Add New Animal'}
+        open={openAddDialog}
+        component={{
+          element: (
+            <Box>
+              <Typography marginBottom={4}>
+                Add basic animal info from this form. If you need to add captures, markings, or other details, you may
+                do so after submitting these fields first.
+              </Typography>
+              <GeneralAnimalForm />
+            </Box>
+          ),
+          initialValues: defaultFormValues,
+          validationSchema: AnimalSchema
+        }}
+        dialogSaveButtonLabel="Create Animal"
+        onCancel={() => setOpenAddDialog(false)}
+        onSave={(values) => handleCritterSave(values, ANIMAL_FORM_MODE.ADD)}
       />
-    </Formik>
+    </>
   );
 };

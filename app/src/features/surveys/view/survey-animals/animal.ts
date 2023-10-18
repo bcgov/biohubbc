@@ -154,7 +154,7 @@ export const AnimalMeasurementSchema = yup.object({}).shape(
     measurement_quantitative_id: yup.string(),
     taxon_measurement_id: yup.string().required(req),
     qualitative_option_id: yup.string().when('value', {
-      is: (value: '' | number) => value === 0 || !value,
+      is: (value: '' | number) => value === '' || value == null,
       then: yup.string().required(req),
       otherwise: yup.string()
     }),
