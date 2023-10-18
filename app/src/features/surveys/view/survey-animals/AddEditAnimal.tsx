@@ -187,12 +187,14 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               </Box>
             </Box>
           </Toolbar>
-          <Form>{parseInt(survey_critter_id) ? renderFormContent : null}</Form>
-          {Object.keys(formik.errors).length > 0 && (
-            <Typography color="error">{`There are issues preventing save in the following sections: ${Object.keys(
-              formik.errors
-            ).join(',')}`}</Typography>
-          )}
+          <Box p={2}>
+            <Form>{parseInt(survey_critter_id) ? renderFormContent : null}</Form>
+            {Object.keys(formik.errors).length > 0 && (
+              <Typography color="error">{`There are issues preventing save in the following sections: ${Object.keys(
+                formik.errors
+              ).join(',')}`}</Typography>
+            )}
+          </Box>
         </>
       )}
     </Formik>

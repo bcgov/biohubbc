@@ -58,8 +58,8 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
             flex: '1 1 auto',
             overflowY: 'auto',
             borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            padding: 2
+            borderBottomLeftRadius: 0
+            //padding: 2
           }}>
           {mainComponent}
         </Paper>
