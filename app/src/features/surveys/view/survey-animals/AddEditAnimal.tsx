@@ -126,7 +126,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Box>
         </Box>
       </Toolbar>
-      <Form>{parseInt(survey_critter_id) ? renderFormContent : null}</Form>
+      <Box p={2}>
+        <Form>{parseInt(survey_critter_id) ? renderFormContent : null}</Form>
+      </Box>
     </>
   );
 };
