@@ -121,7 +121,7 @@ export class KeycloakService {
    * @return {*}  {Promise<string>}
    * @memberof KeycloakService
    */
-  async getKeycloakToken(): Promise<string> {
+  async getKeycloakCssApiToken(): Promise<string> {
     try {
       const { data } = await axios.post(
         this.keycloakApiTokenUrl,
@@ -139,7 +139,7 @@ export class KeycloakService {
 
       return data.access_token as string;
     } catch (error) {
-      defaultLog.debug({ label: 'getKeycloakToken', message: 'error', error: error });
+      defaultLog.debug({ label: 'getKeycloakCssApiToken', message: 'error', error: error });
       throw new ApiGeneralError('Failed to authenticate with keycloak', [(error as Error).message]);
     }
   }
@@ -157,7 +157,7 @@ export class KeycloakService {
     email?: string;
     guid?: string;
   }): Promise<KeycloakIDIRUserRecord[]> {
-    const token = await this.getKeycloakToken();
+    const token = await this.getKeycloakCssApiToken();
 
     try {
       const { data } = await axios.get<KeycloakIDIRUserResponse>(

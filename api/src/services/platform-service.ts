@@ -399,7 +399,7 @@ export class PlatformService extends DBService {
   async _submitDwCADatasetToBioHub(dwcaDataset: IDwCADataset): Promise<{ queue_id: number }> {
     const keycloakService = new KeycloakService();
 
-    const token = await keycloakService.getKeycloakToken();
+    const token = await keycloakService.getKeycloakServiceToken();
 
     const formData = new FormData();
 
@@ -791,7 +791,7 @@ export class PlatformService extends DBService {
 
     const keycloakService = new KeycloakService();
 
-    const token = await keycloakService.getKeycloakToken();
+    const token = await keycloakService.getKeycloakServiceToken();
 
     const formData = new FormData();
 
@@ -832,7 +832,7 @@ export class PlatformService extends DBService {
 
     const keycloakService = new KeycloakService();
 
-    const token = await keycloakService.getKeycloakToken();
+    const token = await keycloakService.getKeycloakServiceToken();
 
     const backboneArtifactIntakeUrl = new URL(getBackboneArtifactDeletePath(), getBackboneApiHost()).href;
 
