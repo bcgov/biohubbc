@@ -232,35 +232,22 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',
-      valueSetter: (params) => {
-        const value = Number(params.value);
-        return { ...params.row, count: isNaN(value) ? value : undefined };
-      },
-      valueParser: (value) => {
-        if (!value) {
-          return '';
-        }
-
-        if (/^\d*$/.test(value)) {
-          // Value contains only number characters
-          return value;
-        }
-
-        // Value contains non-number characters, strip out non-number characters
-        return value.replace(/\D/g, '');
-      },
       renderEditCell: (params) => {
-        const value = !params.value || isNaN(params.value) ? '' : params.value;
         return (
           <TextField
             onChange={(event) => {
+              if (!/^\d{0,7}$/.test(event.target.value)) {
+                // If the value is not a number
+                return;
+              }
+
               apiRef?.current.setEditCellValue({
                 id: params.id,
                 field: params.field,
                 value: event.target.value
               });
             }}
-            value={value}
+            value={params.value ?? ''}
             variant="outlined"
             type="text"
             inputProps={{ inputMode: 'numeric' }}
@@ -335,19 +322,19 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'latitude',
       headerName: 'Lat',
       editable: true,
-      type: 'number',
       width: 120,
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',
       valueSetter: (params) => {
-        if (/^-?\d{0,3}(?:\.\d{1,12})?$/.test(params.value)) {
+        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
           // If the value is a legal latitude value
           // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
           return { ...params.row, latitude: Number(params.value) };
         }
 
-        return { ...params.row, latitude: parseFloat(params.value) };
+        const value = parseFloat(params.value);
+        return { ...params.row, longitude: isNaN(value) ? null : value };
       },
       renderEditCell: (params) => {
         return (
@@ -364,7 +351,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 value: event.target.value
               });
             }}
-            value={params.value || ''}
+            value={params.value ?? ''}
             variant="outlined"
             type="text"
             inputProps={{ inputMode: 'numeric' }}
@@ -376,26 +363,26 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'longitude',
       headerName: 'Long',
       editable: true,
-      type: 'number',
       width: 120,
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',
       valueSetter: (params) => {
-        if (/^-?\d{1,3}(?:\.\d{1,12})?$/.test(params.value)) {
-          // If the value is a legal latitude value
+        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
+          // If the value is a legal longitude value
           // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
           return { ...params.row, longitude: Number(params.value) };
         }
 
-        return { ...params.row, longitude: parseFloat(params.value) };
+        const value = parseFloat(params.value);
+        return { ...params.row, longitude: isNaN(value) ? null : value };
       },
       renderEditCell: (params) => {
         return (
           <TextField
             onChange={(event) => {
               if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
-                // If the value is not a subset of a legal latitude value, prevent the value from being applied
+                // If the value is not a subset of a legal longitude value, prevent the value from being applied
                 return;
               }
 
@@ -405,7 +392,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 value: event.target.value
               });
             }}
-            value={parseFloat(params.value) || ''}
+            value={params.value ?? ''}
             variant="outlined"
             type="text"
             inputProps={{ inputMode: 'numeric' }}
