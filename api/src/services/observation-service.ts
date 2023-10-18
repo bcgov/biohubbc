@@ -66,13 +66,17 @@ export class ObservationService extends DBService {
     projectId: number,
     surveyId: number
   ): Promise<{ submission_id: number; key: string }> {
+    const submissionId = await this.observationRepository.getNextSubmissionId();
+
     const key = generateS3FileKey({
       projectId: projectId,
       surveyId: surveyId,
+      submissionId: submissionId,
       fileName: file.originalname
     });
 
     const insertResult = await this.observationRepository.insertSurveyObservationSubmission(
+      submissionId,
       key,
       surveyId,
       file.originalname

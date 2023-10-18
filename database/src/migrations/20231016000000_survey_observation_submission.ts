@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<void> {
   ----------------------------------------------------------------------------------------
   set search_path=biohub;
   CREATE TABLE survey_observation_submission(
-    submission_id                           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    submission_id                           integer           NOT NULL,
     key                                     varchar(255)      NOT NULL,
     survey_id                               integer           NOT NULL,
     original_filename                       varchar(255)      NOT NULL,
@@ -53,6 +53,10 @@ export async function up(knex: Knex): Promise<void> {
   -- Create audit and journal triggers
   create trigger audit_survey_observation_submission before insert or update or delete on survey_observation_submission for each row execute procedure tr_audit_trigger();
   create trigger journal_survey_observation_submission after insert or update or delete on survey_observation_submission for each row execute procedure tr_journal_trigger();
+
+  -- Create sequences
+  CREATE SEQUENCE IF NOT EXISTS survey_observation_submission_id_seq;
+  GRANT USAGE, SELECT ON SEQUENCE survey_observation_submission_id_seq TO biohub_api;
 
   ----------------------------------------------------------------------------------------
   -- Create View

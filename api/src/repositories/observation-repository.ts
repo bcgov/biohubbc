@@ -217,6 +217,7 @@ export class ObservationRepository extends BaseRepository {
    * @memberof ObservationRepository
    */
   async insertSurveyObservationSubmission(
+    submission_id: number,
     key: string,
     survey_id: number,
     original_filename: string
@@ -224,12 +225,27 @@ export class ObservationRepository extends BaseRepository {
     const sqlStatement = SQL`
       INSERT INTO
         survey_observation_submission
-        (key, survey_id, original_filename)
+        (submission_id, key, survey_id, original_filename)
       VALUES
-        (${key}, ${survey_id}, ${original_filename})
+        (${submission_id}, ${key}, ${survey_id}, ${original_filename})
       RETURNING*;`;
     const response = await this.connection.sql(sqlStatement);
+    console.log(response);
 
     return response.rows[0];
+  }
+
+  /**
+   * Retrieves the next submission ID from the survey_observation_submission_seq sequence
+   *
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async getNextSubmissionId(): Promise<number> {
+    const sqlStatement = SQL`
+      SELECT nextval('biohub.survey_observation_submission_id_seq')::integer as submission_id;
+    `;
+    const response = await this.connection.sql(sqlStatement);
+    return response.rows[0].submission_id;
   }
 }
