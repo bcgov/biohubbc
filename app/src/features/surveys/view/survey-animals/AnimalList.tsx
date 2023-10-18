@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiPlus } from '@mdi/js';
+import { mdiAlert, mdiChevronDown, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
   Accordion,
@@ -9,14 +9,16 @@ import {
   ListItem,
   ListItemText,
   Toolbar,
+  Tooltip,
   Typography
 } from '@mui/material';
 import { cyan } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { SurveyContext } from 'contexts/surveyContext';
+import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ANIMAL_SUBSECTIONS, IAnimalSubSections } from './animal';
 
@@ -29,6 +31,8 @@ interface AnimalListProps {
 const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: AnimalListProps) => {
   const bhApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
+
+  const { errors } = useFormikContext();
 
   const {
     //refresh: refreshCritters,
@@ -112,7 +116,13 @@ const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: Anima
                     whiteSpace: 'nowrap'
                   }
                 }}>
-                <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', typography: 'body2' }}>
+                <Typography
+                  color={
+                    Object.values(errors ?? {}).length > 0 && critter.critter_id === selectedCritter
+                      ? 'error'
+                      : undefined
+                  }
+                  sx={{ overflow: 'hidden', textOverflow: 'ellipsis', typography: 'body2' }}>
                   {critter.animal_id}
                 </Typography>
               </AccordionSummary>
@@ -137,6 +147,14 @@ const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: Anima
                       onSelectSection(section);
                     }}>
                     <ListItemText>{section}</ListItemText>
+                    {Object.keys(errors).find((key) => key.toLowerCase() === section.toLowerCase()) !== undefined && (
+                      <Tooltip
+                        placement="top"
+                        arrow
+                        title={'There are errors in this section that must be resolved before submitting the form.'}>
+                        <Icon size={1} color="#D8292F" path={mdiAlert}></Icon>
+                      </Tooltip>
+                    )}
                   </ListItem>
                 ))}
               </List>
@@ -149,6 +167,7 @@ const AnimalList = ({ onSelectCritter, onSelectSection, selectedCritter }: Anima
           <Typography variant="body2">No Animals</Typography>
         </Box>
       )}
+      <pre>{JSON.stringify(errors)}</pre>
     </Box>
   );
 };
