@@ -21,6 +21,7 @@ import { getCodesName } from 'utils/Utils';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 
 const ObservationComponent = () => {
   const sampleSites: ISampleSiteSelectProps[] = [];
@@ -29,27 +30,23 @@ const ObservationComponent = () => {
   const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
+  const biohubApi = useBiohubApi();
 
   const [showImportDiaolog, setShowImportDiaolog] = useState<boolean>(false);
 
   const handleImportObservations = (): IUploadHandler => {
-    return async (file, cancelToken, handleFileUploadProgress) => {
-      /*
-      return biohubApi.observation
-        .uploadObservationSubmission(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
-        .then((result: IUploadObservationSubmissionResponse) => {
-          if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            // Process a DwCA zip file
-            return biohubApi.dwca.processDWCFile(projectId, result.submissionId);
-          }
+    const { projectId, surveyId } = surveyContext;
 
-          // Process an Observation Template file
-          return biohubApi.dwca.processOccurrences(projectId, result.submissionId, surveyId);
+    return async (file, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.observation
+        .uploadCsvForImport(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
+        .then(() => {
+          // TODO dispatch process request
+          return
         })
         .finally(() => {
-          surveyContext.observationDataLoader.refresh(projectId, surveyId);
+          //
         });
-      */
     };
   };
 

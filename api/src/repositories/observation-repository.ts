@@ -2,6 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
+import { getLogger } from '../utils/logger';
 
 /**
  * Interface reflecting survey observations retrieved from the database
@@ -76,6 +77,8 @@ export const ObservationSubmissionRecord = z.object({
 });
 
 export type ObservationSubmissionRecord = z.infer<typeof ObservationSubmissionRecord>;
+
+const defaultLog = getLogger('repositories/observation-repository');
 
 export class ObservationRepository extends BaseRepository {
   /**
@@ -222,13 +225,14 @@ export class ObservationRepository extends BaseRepository {
     survey_id: number,
     original_filename: string
   ): Promise<ObservationSubmissionRecord> {
+    defaultLog.debug({ label: 'insertSurveyObservationSubmission' })
     const sqlStatement = SQL`
       INSERT INTO
         survey_observation_submission
         (submission_id, key, survey_id, original_filename)
       VALUES
         (${submission_id}, ${key}, ${survey_id}, ${original_filename})
-      RETURNING*;`;
+      RETURNING *;`;
     const response = await this.connection.sql(sqlStatement);
     console.log(response);
 

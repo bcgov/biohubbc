@@ -6,7 +6,10 @@ import {
   UpdateObservation
 } from '../repositories/observation-repository';
 import { generateS3FileKey } from '../utils/file-utils';
+import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+
+const defaultLog = getLogger('services/observation-queries');
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
@@ -71,7 +74,7 @@ export class ObservationService extends DBService {
     surveyId: number
   ): Promise<{ submission_id: number; key: string }> {
     const submissionId = await this.observationRepository.getNextSubmissionId();
-
+    
     const key = generateS3FileKey({
       projectId: projectId,
       surveyId: surveyId,
@@ -85,7 +88,8 @@ export class ObservationService extends DBService {
       surveyId,
       file.originalname
     );
-
+    
+    defaultLog.debug({ label: 'insertSurveyObservationSubmission', submissionId, insertResult });
     return { submission_id: insertResult.submission_id, key };
   }
 

@@ -156,6 +156,8 @@ export function uploadMedia(): RequestHandler {
 
       defaultLog.debug({ label: 'uploadMedia', message: 'result', result });
 
+      await connection.commit();
+
       return res.status(200).send({ submissionId });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });

@@ -10,15 +10,15 @@ import { IGetObservationSubmissionResponse, ISpatialData, IUploadObservationSubm
  */
 const useDwcaApi = (axios: AxiosInstance) => {
   /**
-     * Upload survey observation submission.
-     *
-     * @param {number} projectId
-     * @param {number} surveyId
-     * @param {File} file
-     * @param {CancelTokenSource} [cancelTokenSource]
-     * @param {(progressEvent: ProgressEvent) => void} [onProgress]
-     * @return {*}  {Promise<string[]>}
-     */
+   * Upload survey observation submission.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
+   */
   const uploadObservationSubmission = async (
     projectId: number,
     surveyId: number,

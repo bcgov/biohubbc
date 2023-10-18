@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IObservationRecord, IObservationTableRow } from 'contexts/observationsContext';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 
@@ -48,9 +48,33 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const uploadCsvForImport = async (
+    projectId: number,
+    surveyId: number,
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<void> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/observations/upload`,
+      formData,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
   return {
     insertUpdateObservationRecords,
-    getObservationRecords
+    getObservationRecords,
+    uploadCsvForImport
   };
 };
 

@@ -1,11 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { SUBMISSION_STATUS_TYPE } from '../../../../../../constants/status';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ErrorService } from '../../../../../../services/error-service';
-import { ValidationService } from '../../../../../../services/validation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getFileFromS3 } from '../../../../../../utils/file-utils';
@@ -122,6 +119,7 @@ export function processFile(): RequestHandler {
       const s3Object = await getFileFromS3(submission.key);
 
       const csvFile = parseS3File(s3Object);
+      console.log(csvFile.fileName)
 
       await connection.commit();
     } catch (error) {
