@@ -62,7 +62,7 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_API_CLIENT_ID: phases[phase].sso.cssApi.cssApiClientId,
         KEYCLOAK_API_CLIENT_SECRET_KEY: phases[phase].sso.cssApi.keycloakSecretCssApiSecretKey,
         KEYCLOAK_API_HOST: phases[phase].sso.cssApi.cssApiHost,
-        KEYCLOAK_ENVIRONMENT: phases[phase].sso.cssApi.cssApiEnvironment,
+        KEYCLOAK_API_ENVIRONMENT: phases[phase].sso.cssApi.cssApiEnvironment,
         // Log Level
         LOG_LEVEL: phases[phase].logLevel || 'info',
         // Openshift Resources

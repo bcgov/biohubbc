@@ -14,7 +14,7 @@ describe('KeycloakService', () => {
     process.env.KEYCLOAK_API_CLIENT_SECRET = 'secret';
     process.env.KEYCLOAK_API_HOST = 'https://api.host.com/auth';
     process.env.KEYCLOAK_INTEGRATION_ID = '123';
-    process.env.KEYCLOAK_ENVIRONMENT = 'dev';
+    process.env.KEYCLOAK_API_ENVIRONMENT = 'dev';
   });
 
   afterEach(() => {

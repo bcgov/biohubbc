@@ -70,7 +70,7 @@ export class KeycloakService {
 
   // Used to query the CSS API
   keycloakApiHost: string;
-  keycloakEnvironment: string;
+  keycloakApiEnvironment: string;
 
   constructor() {
     this.keycloakHost = `${process.env.KEYCLOAK_HOST}`;
@@ -83,7 +83,7 @@ export class KeycloakService {
     this.keycloakApiClientSecret = `${process.env.KEYCLOAK_API_CLIENT_SECRET}`;
 
     this.keycloakApiHost = `${process.env.KEYCLOAK_API_HOST}`;
-    this.keycloakEnvironment = `${process.env.KEYCLOAK_ENVIRONMENT}`;
+    this.keycloakApiEnvironment = `${process.env.KEYCLOAK_API_ENVIRONMENT}`;
   }
 
   /**
@@ -161,7 +161,7 @@ export class KeycloakService {
 
     try {
       const { data } = await axios.get<KeycloakIDIRUserResponse>(
-        `${this.keycloakApiHost}/${this.keycloakEnvironment}/idir/users?${qs.stringify({ guid: criteria.guid })}`,
+        `${this.keycloakApiHost}/${this.keycloakApiEnvironment}/idir/users?${qs.stringify({ guid: criteria.guid })}`,
         {
           headers: { authorization: `Bearer ${token}` }
         }

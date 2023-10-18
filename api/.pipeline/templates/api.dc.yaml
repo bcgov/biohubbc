@@ -109,7 +109,7 @@ parameters:
   - name: KEYCLOAK_API_HOST
     description: The url of the css rest api
     required: true
-  - name: KEYCLOAK_ENVIRONMENT
+  - name: KEYCLOAK_API_ENVIRONMENT
     description: The css api environment to query (dev, test, prod)
     required: true
   # Object Store (S3)
@@ -294,8 +294,8 @@ objects:
                       key: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
                 - name: KEYCLOAK_API_HOST
                   value: ${KEYCLOAK_API_HOST}
-                - name: KEYCLOAK_ENVIRONMENT
-                  value: ${KEYCLOAK_ENVIRONMENT}
+                - name: KEYCLOAK_API_ENVIRONMENT
+                  value: ${KEYCLOAK_API_ENVIRONMENT}
                 # Elastic Search
                 - name: ELASTICSEARCH_URL
                   value: ${ELASTICSEARCH_URL}
