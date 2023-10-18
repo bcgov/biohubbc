@@ -14,14 +14,14 @@ describe('KeycloakService', () => {
     process.env.KEYCLOAK_API_CLIENT_SECRET = 'secret';
     process.env.KEYCLOAK_API_HOST = 'https://api.host.com/auth';
     process.env.KEYCLOAK_INTEGRATION_ID = '123';
-    process.env.KEYCLOAK_ENVIRONMENT = 'dev';
+    process.env.KEYCLOAK_API_ENVIRONMENT = 'dev';
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  describe('getKeycloakToken', async () => {
+  describe('getKeycloakCssApiToken', async () => {
     it('authenticates with keycloak and returns an access token', async () => {
       const mockAxiosResponse = { data: { access_token: 'token' } };
 
@@ -29,7 +29,7 @@ describe('KeycloakService', () => {
 
       const keycloakService = new KeycloakService();
 
-      const response = await keycloakService.getKeycloakToken();
+      const response = await keycloakService.getKeycloakCssApiToken();
 
       expect(response).to.eql('token');
 
@@ -48,7 +48,7 @@ describe('KeycloakService', () => {
       const keycloakService = new KeycloakService();
 
       try {
-        await keycloakService.getKeycloakToken();
+        await keycloakService.getKeycloakCssApiToken();
 
         expect.fail();
       } catch (error) {
@@ -60,7 +60,7 @@ describe('KeycloakService', () => {
 
   describe('findIDIRUsers', async () => {
     it('finds matching idir users', async () => {
-      sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+      sinon.stub(KeycloakService.prototype, 'getKeycloakCssApiToken').resolves('token');
 
       const mockAxiosResponse = {
         data: {
@@ -108,7 +108,7 @@ describe('KeycloakService', () => {
     });
 
     it('throws an error if no data is returned', async () => {
-      sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+      sinon.stub(KeycloakService.prototype, 'getKeycloakCssApiToken').resolves('token');
 
       sinon.stub(axios, 'get').resolves({ data: null });
 
@@ -125,7 +125,7 @@ describe('KeycloakService', () => {
     });
 
     it('catches and re-throws an error', async () => {
-      sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+      sinon.stub(KeycloakService.prototype, 'getKeycloakCssApiToken').resolves('token');
 
       sinon.stub(axios, 'get').rejects(new Error('a test error'));
 
