@@ -187,7 +187,9 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     }
 
     // Transition all rows in edit mode to view mode
-    editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id }));
+    for (const id of editingIds) {
+      _muiDataGridApiRef.current.stopRowEditMode({ id });
+    }
 
     // Store ids of rows that were in edit mode
     setRowIdsToSave(editingIds);
@@ -265,6 +267,11 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       return;
     }
 
+    if (isSaving) {
+      // Saving already in progress
+      return;
+    }
+
     if (rowIdsToSave.some((id) => _muiDataGridApiRef.current.getRowMode(id) === 'edit')) {
       // Not all rows have transitioned to view mode, cannot save yet
       return;
@@ -272,11 +279,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
     // All rows have transitioned to view mode
     setIsStoppingEdit(false);
-
-    if (isSaving) {
-      // Saving already in progress
-      return;
-    }
 
     // Start saving records
     setIsSaving(true);
