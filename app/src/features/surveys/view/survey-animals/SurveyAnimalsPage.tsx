@@ -86,7 +86,9 @@ export const SurveyAnimalsPage = () => {
         initialFormValues,
         currentFormValues
       );
-      const surveyCritter = critterData?.find((critter) => critter.critter_id === survey_critter_id);
+      const surveyCritter = critterData?.find(
+        (critter) => Number(critter.survey_critter_id) === Number(survey_critter_id)
+      );
       if (!survey_critter_id || !surveyCritter) {
         throw Error('The internal critter id for this row was not set correctly.');
       }
@@ -122,7 +124,9 @@ export const SurveyAnimalsPage = () => {
         validationSchema={AnimalSchema}
         validateOnBlur={true}
         validateOnChange={false}
-        onSubmit={(values) => handleCritterSave(values, ANIMAL_FORM_MODE.EDIT)}>
+        onSubmit={(values) => {
+          handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
+        }}>
         <SurveySectionFullPageLayout
           pageTitle="Manage Animals"
           sideBarComponent={
