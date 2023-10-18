@@ -150,9 +150,7 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading }
                     dense
                     divider
                     button
-                    sx={{
-                      background: section === selectedSection ? cyan[50] : 'transparent'
-                    }}
+                    selected={section === selectedSection}
                     onClick={() => {
                       onSelectSection(section);
                     }}>

@@ -1,6 +1,9 @@
+import { mdiContentCopy } from '@mdi/js';
+import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Collapse, Toolbar, Typography } from '@mui/material';
+import { Box, Button, Collapse, Grid, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Form, useFormikContext } from 'formik';
@@ -15,6 +18,7 @@ import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
+import TelemetryDeviceForm, { TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
 
 interface AddEditAnimalProps {
   section: IAnimalSubSections;
@@ -35,7 +39,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       [SurveyAnimalsI18N.animalCaptureTitle]: <CaptureAnimalForm />,
       [SurveyAnimalsI18N.animalMortalityTitle]: <MortalityAnimalForm />,
       [SurveyAnimalsI18N.animalFamilyTitle]: <FamilyAnimalForm />,
-      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />
+      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />,
+      Telemetry: (
+        <TelemetryDeviceForm mode={TELEMETRY_DEVICE_FORM_MODE.EDIT} removeAction={() => console.log('remove')} />
+      )
     };
     return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
   }, [section]);
@@ -91,6 +98,25 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         </Box>
       </Toolbar>
       <Box p={2}>
+        <Grid item mb={3}>
+          <CustomTextField
+            label="Critter ID"
+            name="test"
+            other={{
+              InputProps: {
+                endAdornment: (
+                  <IconButton aria-label={`Copy Critter ID`}>
+                    <Icon path={mdiContentCopy} size={0.8} />
+                  </IconButton>
+                )
+              },
+              disabled: true,
+              variant: 'filled',
+              defaultValue: initialValues.general.critter_id,
+              sx: { maxWidth: '30%' }
+            }}
+          />
+        </Grid>
         <Form>{parseInt(survey_critter_id) ? renderFormContent : null}</Form>
       </Box>
     </>
