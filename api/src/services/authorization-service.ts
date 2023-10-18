@@ -1,9 +1,10 @@
 import { SOURCE_SYSTEM } from '../constants/database';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
+import { ApiGeneralError } from '../errors/api-error';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
-import { getKeycloakSource, getUserGuid } from '../utils/keycloak-utils';
+import { getKeycloakSource, getKeycloakUserInformationFromKeycloakToken, getUserGuid } from '../utils/keycloak-utils';
 import { DBService } from './db-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { UserService } from './user-service';
@@ -324,11 +325,13 @@ export class AuthorizationService extends DBService {
       return null;
     }
 
-    const userGuid = getUserGuid(this._keycloakToken);
+    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(this._keycloakToken);
 
-    if (!userGuid) {
-      return null;
+    if (!keycloakUserInformation) {
+      throw new ApiGeneralError('Failed to identify authenticated user');
     }
+
+    const userGuid = getUserGuid(keycloakUserInformation);
 
     return this._userService.getUserByGuid(userGuid);
   }
@@ -362,16 +365,16 @@ export class AuthorizationService extends DBService {
    * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
    */
   async getProjectUserWithRoles(projectId: number): Promise<(ProjectUser & SystemUser) | null> {
-    if (!this._keycloakToken) {
+    if (!this._systemUser) {
       return null;
     }
 
-    const userGuid = getUserGuid(this._keycloakToken);
+    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(this._systemUser);
 
-    if (!userGuid) {
-      return null;
+    if (!keycloakUserInformation) {
+      throw new ApiGeneralError('Failed to identify authenticated user');
     }
-
+    const userGuid = getUserGuid(keycloakUserInformation);
     return this._projectParticipationService.getProjectParticipantByUserGuid(projectId, userGuid);
   }
 }
