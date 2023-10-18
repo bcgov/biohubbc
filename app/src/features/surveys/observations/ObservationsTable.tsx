@@ -232,25 +232,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'right',
       align: 'right',
-      valueSetter: (params) => {
-        const value = Number(params.value);
-        return { ...params.row, count: isNaN(value) ? null : value };
-      },
-      valueParser: (value) => {
-        if (!value) {
-          return '';
-        }
-
-        if (/^\d*$/.test(value)) {
-          // Value contains only number characters
-          return value;
-        }
-
-        // Value contains non-number characters, strip out non-number characters
-        return value.replace(/\D/g, '');
-      },
       renderEditCell: (params) => {
-        const value = !params.value || isNaN(params.value) ? '' : params.value;
         return (
           <TextField
             onChange={(event) => {
@@ -265,7 +247,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                 value: event.target.value
               });
             }}
-            value={value}
+            value={params.value ?? ''}
             variant="outlined"
             type="text"
             inputProps={{ inputMode: 'numeric' }}
@@ -351,7 +333,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           return { ...params.row, latitude: Number(params.value) };
         }
 
-        return { ...params.row, latitude: parseFloat(params.value) };
+        const value = parseFloat(params.value);
+        return { ...params.row, longitude: isNaN(value) ? null : value };
       },
       renderEditCell: (params) => {
         return (
@@ -391,7 +374,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           return { ...params.row, longitude: Number(params.value) };
         }
 
-        return { ...params.row, longitude: parseFloat(params.value) };
+        const value = parseFloat(params.value);
+        return { ...params.row, longitude: isNaN(value) ? null : value };
       },
       renderEditCell: (params) => {
         return (

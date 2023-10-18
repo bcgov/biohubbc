@@ -20,8 +20,8 @@ export interface IObservationRecord {
   count: number | null;
   observation_date: Date;
   observation_time: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export interface IObservationTableRow extends Partial<IObservationRecord> {
