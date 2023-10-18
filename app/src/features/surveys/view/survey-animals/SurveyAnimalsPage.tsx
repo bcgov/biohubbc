@@ -7,6 +7,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useMemo, useState } from 'react';
+import { useParams } from 'react-router';
 import { AddEditAnimal } from './AddEditAnimal';
 import { AnimalSchema, AnimalSex, IAnimal, IAnimalSubSections } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
@@ -14,8 +15,8 @@ import AnimalList from './AnimalList';
 
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSubSections>('General');
-  const [selectedCritterID, setSelectedCritterID] = useState<string | null>(null);
-
+  //const [selectedCritterID, setSelectedCritterID] = useState<string | null>(null);
+  const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const bhApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
@@ -39,6 +40,7 @@ export const SurveyAnimalsPage = () => {
   };
 
   const obtainAnimalFormInitialvalues = useMemo(() => {
+    console.log('Recalculated initial values!');
     const AnimalFormValues: IAnimal = {
       general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: AnimalSex.UNKNOWN, critter_id: '' },
       captures: [],
@@ -52,13 +54,14 @@ export const SurveyAnimalsPage = () => {
     };
 
     const existingCritter = critterData?.find(
-      (critter: IDetailedCritterWithInternalId) => selectedCritterID === critter.critter_id
+      (critter: IDetailedCritterWithInternalId) => Number(survey_critter_id) === Number(critter.survey_critter_id)
     );
     if (!existingCritter) {
+      console.log(`No existing critter for ${survey_critter_id} ${typeof survey_critter_id}`);
       return AnimalFormValues;
     }
     return transformCritterbaseAPIResponseToForm(existingCritter);
-  }, [critterData, selectedCritterID]);
+  }, [critterData, survey_critter_id]);
 
   const handleCritterSave = async (currentFormValues: IAnimal) => {
     const patchCritterPayload = async () => {
@@ -70,8 +73,8 @@ export const SurveyAnimalsPage = () => {
         initialFormValues,
         currentFormValues
       );
-      const surveyCritter = critterData?.find((critter) => critter.critter_id === selectedCritterID);
-      if (!selectedCritterID || !surveyCritter) {
+      const surveyCritter = critterData?.find((critter) => critter.critter_id === survey_critter_id);
+      if (!survey_critter_id || !surveyCritter) {
         throw Error('The internal critter id for this row was not set correctly.');
       }
       await bhApi.survey.updateSurveyCritter(
@@ -109,15 +112,9 @@ export const SurveyAnimalsPage = () => {
       <SurveySectionFullPageLayout
         pageTitle="Manage Animals"
         sideBarComponent={
-          <AnimalList
-            selectedCritter={selectedCritterID}
-            onSelectSection={(section) => setSelectedSection(section)}
-            onSelectCritter={(critter_id) => setSelectedCritterID(critter_id)}
-          />
+          <AnimalList selectedSection={selectedSection} onSelectSection={(section) => setSelectedSection(section)} />
         }
-        mainComponent={
-          <AddEditAnimal isLoading={isSubmitting} critter_id={selectedCritterID} section={selectedSection} />
-        }
+        mainComponent={<AddEditAnimal isLoading={isSubmitting} section={selectedSection} />}
       />
     </Formik>
   );

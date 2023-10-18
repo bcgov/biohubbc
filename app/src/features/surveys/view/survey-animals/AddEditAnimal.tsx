@@ -7,7 +7,9 @@ import { Form, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo } from 'react';
+import { useParams } from 'react-router';
 import { AnimalSex, IAnimal, IAnimalSubSections } from './animal';
 import { transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
@@ -19,7 +21,6 @@ import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
 
 interface AddEditAnimalProps {
-  critter_id: string | null;
   section: IAnimalSubSections;
   isLoading?: boolean;
 }
@@ -27,9 +28,10 @@ interface AddEditAnimalProps {
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const surveyContext = useContext(SurveyContext);
   const bhApi = useBiohubApi();
+  const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
 
+  const { section, isLoading } = props;
   const { projectId, surveyId } = surveyContext;
-  const { critter_id, section } = props;
 
   const { data: critterData, load: loadCritters } = useDataLoader(() =>
     bhApi.survey.getSurveyCritters(projectId, surveyId)
@@ -51,13 +53,13 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     };
 
     const existingCritter = critterData?.find(
-      (critter: IDetailedCritterWithInternalId) => critter_id === critter.critter_id
+      (critter: IDetailedCritterWithInternalId) => survey_critter_id === `${critter.survey_critter_id}`
     );
     if (!existingCritter) {
       return AnimalFormValues;
     }
     return transformCritterbaseAPIResponseToForm(existingCritter);
-  }, [critterData, critter_id]);
+  }, [critterData, survey_critter_id]);
 
   const renderFormContent = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSubSections, JSX.Element>> = {
@@ -72,14 +74,14 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
   }, [section]);
 
-  const { submitForm } = useFormikContext();
+  const { submitForm, initialValues, values } = useFormikContext();
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
-    <Form>
+    <>
       <Toolbar
         sx={{
           flex: '0 0 auto',
@@ -97,8 +99,11 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             fontSize: '1.125rem',
             fontWeight: 700
           }}>
-          {critter_id ? `Animal: ${obtainAnimalFormInitialvalues.general.animal_id}` : 'No Animal Selected'}
+          {parseInt(survey_critter_id)
+            ? `Animal Details: ${obtainAnimalFormInitialvalues.general.animal_id}`
+            : 'Animal Details'}
         </Typography>
+
         <Box
           sx={{
             '& div:first-of-type': {
@@ -108,17 +113,11 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             }
           }}>
           <Box display="flex" overflow="hidden">
-            <Collapse in={!!critter_id} orientation="horizontal">
+            <Collapse in={!isEqual(initialValues, values)} orientation="horizontal">
               <Box ml={1} whiteSpace="nowrap">
-                <LoadingButton
-                  color="primary"
-                  variant="contained"
-                  disabled={props.isLoading}
-                  loading={props.isLoading}
-                  onClick={submitForm}>
-                  Save Changes
+                <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm}>
+                  Save
                 </LoadingButton>
-
                 <Button variant="outlined" color="primary" onClick={() => console.log('discarding')}>
                   Discard Changes
                 </Button>
@@ -127,7 +126,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Box>
         </Box>
       </Toolbar>
-      {critter_id ? renderFormContent : null}
-    </Form>
+      <Form>{parseInt(survey_critter_id) ? renderFormContent : null}</Form>
+    </>
   );
 };
