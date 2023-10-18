@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/http-error';
 import { AdministrativeActivityService } from '../services/administrative-activity-service';
-import { getUserGuid } from '../utils/keycloak-utils';
+import { getKeycloakUserInformationFromKeycloakToken, getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
@@ -166,17 +166,18 @@ export function getAdministrativeActivityStanding(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const userGUID = getUserGuid(req['keycloak_token']);
+      const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(req['keycloak_token']);
 
-      if (!userGUID) {
+      if (!keycloakUserInformation) {
         throw new HTTP400('Failed to identify user');
       }
+      const userIdentifier = getUserIdentifier(keycloakUserInformation);
 
       await connection.open();
 
       const administrativeActivityService = new AdministrativeActivityService(connection);
 
-      const response = await administrativeActivityService.getAdministrativeActivityStanding(userGUID);
+      const response = await administrativeActivityService.getAdministrativeActivityStanding(userIdentifier);
 
       await connection.commit();
 

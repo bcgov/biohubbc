@@ -1,39 +1,47 @@
 import knex, { Knex } from 'knex';
 import * as pg from 'pg';
-import { SQLStatement } from 'sql-template-strings';
+import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
-import * as UserQueries from '../queries/database/user-context-queries';
-import { getUserGuid, getUserIdentitySource } from '../utils/keycloak-utils';
+import {
+  getKeycloakUserInformationFromKeycloakToken,
+  getUserGuid,
+  getUserIdentitySource,
+  KeycloakUserInformation
+} from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { asyncErrorWrapper, getZodQueryResult, syncErrorWrapper } from './db-utils';
-
-export const DB_CLIENT = 'pg';
+import {
+  asyncErrorWrapper,
+  getGenericizedKeycloakUserInformation,
+  getZodQueryResult,
+  syncErrorWrapper
+} from './db-utils';
 
 const defaultLog = getLogger('database/db');
 
-const DB_HOST = process.env.DB_HOST;
-const DB_PORT = Number(process.env.DB_PORT);
-const DB_USERNAME = process.env.DB_USER_API;
-const DB_PASSWORD = process.env.DB_USER_API_PASS;
-const DB_DATABASE = process.env.DB_DATABASE;
+const getDbHost = () => process.env.DB_HOST;
+const getDbPort = () => Number(process.env.DB_PORT);
+const getDbUsername = () => process.env.DB_USER_API;
+const getDbPassword = () => process.env.DB_USER_API_PASS;
+const getDbDatabase = () => process.env.DB_DATABASE;
 
 const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
 const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
 const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
 
+export const DB_CLIENT = 'pg';
+
 export const defaultPoolConfig: pg.PoolConfig = {
-  user: DB_USERNAME,
-  password: DB_PASSWORD,
-  database: DB_DATABASE,
-  port: DB_PORT,
-  host: DB_HOST,
+  user: getDbUsername(),
+  password: getDbPassword(),
+  database: getDbDatabase(),
+  port: getDbPort(),
+  host: getDbHost(),
   max: DB_POOL_SIZE,
   connectionTimeoutMillis: DB_CONNECTION_TIMEOUT,
   idleTimeoutMillis: DB_IDLE_TIMEOUT
 };
-
 // Custom type handler for psq `DATE` type to prevent local time/zone information from being added.
 // Why? By default, node-postgres assumes local time/zone for any psql `DATE` or `TIME` types that don't have timezone information.
 // This Can lead to unexpected behavior when the original psql `DATE` value was intentionally omitting time/zone information.
@@ -51,15 +59,9 @@ pg.types.setTypeParser(pg.types.builtins.TIMESTAMP, (stringValue: string) => {
 pg.types.setTypeParser(pg.types.builtins.TIMESTAMPTZ, (stringValue: string) => {
   return stringValue; // 1082 for `DATE` type
 });
-// NUMERIC column types return as strings to maintain precision. Converting this to a float so it is usable by the system
-// Explanation of why Numeric returns as a string: https://github.com/brianc/node-postgres/issues/811
-pg.types.setTypeParser(pg.types.builtins.NUMERIC, (stringValue: string) => {
-  return parseFloat(stringValue);
-});
 
 // singleton pg pool instance used by the api
 let DBPool: pg.Pool | undefined;
-
 /**
  * Initializes the singleton pg pool instance used by the api.
  *
@@ -73,9 +75,7 @@ export const initDBPool = function (poolConfig?: pg.PoolConfig): void {
     // the pool has already been initialized, do nothing
     return;
   }
-
   defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
-
   try {
     DBPool = new pg.Pool(poolConfig);
   } catch (error) {
@@ -83,7 +83,6 @@ export const initDBPool = function (poolConfig?: pg.PoolConfig): void {
     process.exit(1);
   }
 };
-
 /**
  * Get the singleton pg pool instance used by the api.
  *
@@ -94,7 +93,6 @@ export const initDBPool = function (poolConfig?: pg.PoolConfig): void {
 export const getDBPool = function (): pg.Pool | undefined {
   return DBPool;
 };
-
 export interface IDBConnection {
   /**
    * Opens a new connection, begins a transaction, and sets the user context.
@@ -129,9 +127,11 @@ export interface IDBConnection {
   /**
    * Performs a query against this connection, returning the results.
    *
-   * @param {SQLStatement} sqlStatement SQL statement object
+   * @param {string} text SQL text
+   * @param {any[]} [values] SQL values array (optional)
    * @return {*}  {(Promise<QueryResult<any>>)}
    * @throws If the connection is not open.
+   * @deprecated Prefer using `.sql` (pass entire statement object) or `.knex` (pass quiery builder object)
    * @memberof IDBConnection
    */
   query: <T extends pg.QueryResultRow = any>(text: string, values?: any[]) => Promise<pg.QueryResult<T>>;
@@ -169,7 +169,6 @@ export interface IDBConnection {
    */
   systemUserId: () => number;
 }
-
 /**
  * Wraps the pg client, exposing various functions for use when making database calls.
  *
@@ -197,16 +196,11 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   if (!keycloakToken) {
     throw Error('Keycloak token is undefined');
   }
-
   let _client: pg.PoolClient;
-
   let _isOpen = false;
   let _isReleased = false;
-
   let _systemUserId: number | null = null;
-
   const _token = keycloakToken;
-
   /**
    * Opens a new connection, begins a transaction, and sets the user context.
    *
@@ -218,23 +212,16 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     if (_client || _isOpen) {
       return;
     }
-
     const pool = getDBPool();
-
     if (!pool) {
       throw Error('DBPool is not initialized');
     }
-
     _client = await pool.connect();
-
     _isOpen = true;
     _isReleased = false;
-
     await _setUserContext();
-
     await _client.query('BEGIN');
   };
-
   /**
    * Releases (closes) the connection.
    *
@@ -244,17 +231,13 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     if (_isReleased) {
       return;
     }
-
     if (!_client || !_isOpen) {
       return;
     }
-
     _client.release();
-
     _isOpen = false;
     _isReleased = true;
   };
-
   /**
    * Commits the transaction that was opened by calling `.open()`.
    *
@@ -264,10 +247,8 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
     }
-
     await _client.query('COMMIT');
   };
-
   /**
    * Rolls back the transaction, undoing any queries performed by this connection.
    *
@@ -277,10 +258,8 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
     }
-
     await _client.query('ROLLBACK');
   };
-
   /**
    * Performs a query against this connection, returning the results.
    *
@@ -297,18 +276,14 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
     }
-
     return _client.query<T>(text, values || []);
   };
-
   const _getSystemUserID = (): number => {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
     }
-
     return _systemUserId as number;
   };
-
   /**
    * Performs a query against this connection, returning the results.
    *
@@ -323,15 +298,12 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     zodSchema?: z.Schema<T, any, any>
   ): Promise<pg.QueryResult<T>> => {
     const response = await _query(sqlStatement.text, sqlStatement.values);
-
     if (zodSchema) {
       // Validate the response against the zod schema
       return getZodQueryResult(zodSchema).parseAsync(response);
     }
-
     return response;
   };
-
   /**
    * Performs a query against this connection, returning the results.
    *
@@ -346,48 +318,95 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     zodSchema?: z.Schema<T, any, any>
   ) => {
     const { sql, bindings } = queryBuilder.toSQL().toNative();
-
     const response = await _query(sql, bindings as any[]);
-
     if (zodSchema) {
       // Validate the response against the zod schema
       return getZodQueryResult(zodSchema).parseAsync(response);
     }
-
     return response;
   };
-
   /**
    * Set the user context.
    *
-   * Sets the _systemUserId if successful.
+   * Sets the `_systemUserId` if successful.
+   *
+   * @return {*}  {Promise<void>}
    */
-  const _setUserContext = async () => {
-    const userGuid = getUserGuid(_token);
+  const _setUserContext = async (): Promise<void> => {
+    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(_token);
 
-    const userIdentitySource = getUserIdentitySource(_token);
-
-    if (!userGuid || !userIdentitySource) {
+    if (!keycloakUserInformation) {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
-    // Set the user context for all queries made using this connection
-    const setSystemUserContextSQLStatement = UserQueries.setSystemUserContextSQL(userGuid, userIdentitySource);
+    defaultLog.silly({ label: '_setUserContext', keycloakUserInformation });
 
-    if (!setSystemUserContextSQLStatement) {
-      throw new ApiExecuteSQLError('Failed to build SQL user context statement');
-    }
+    // Update the logged in user with their latest information from Keyclaok (if it has changed)
+    await _updateSystemUserInformation(keycloakUserInformation);
 
     try {
-      const response = await _client.query(
-        setSystemUserContextSQLStatement.text,
-        setSystemUserContextSQLStatement.values
+      // Set the user context in the database, so database queries are aware of the calling user when writing to audit
+      // tables, etc.
+      _systemUserId = await _setSystemUserContext(
+        getUserGuid(keycloakUserInformation),
+        getUserIdentitySource(keycloakUserInformation)
       );
-
-      _systemUserId = response?.rows?.[0].api_set_context;
     } catch (error) {
       throw new ApiExecuteSQLError('Failed to set user context', [error as object]);
     }
+  };
+
+  /**
+   * Update a system user's record with the latest information from a verified Keycloak token.
+   *
+   * Note: Does nothing if the user is an internal database user.
+   *
+   * @param {KeycloakUserInformation} keycloakUserInformation
+   * @return {*}  {Promise<void>}
+   */
+  const _updateSystemUserInformation = async (keycloakUserInformation: KeycloakUserInformation): Promise<void> => {
+    const data = getGenericizedKeycloakUserInformation(keycloakUserInformation);
+
+    if (!data) {
+      return;
+    }
+
+    const patchSystemUserSQLStatement = SQL`
+      SELECT api_patch_system_user(
+        ${data.user_guid},
+        ${data.user_identifier},
+        ${data.user_identity_source},
+        ${data.email},
+        ${data.display_name},
+        ${data.given_name || null},
+        ${data.family_name || null},
+        ${data.agency || null}
+      )
+    `;
+
+    await _client.query(patchSystemUserSQLStatement.text, patchSystemUserSQLStatement.values);
+  };
+
+  /**
+   * Set the user context for all queries made using this connection.
+   *
+   * This is necessary in order for the database audit triggers to function properly.
+   *
+   * @param {string} userGuid
+   * @param {SYSTEM_IDENTITY_SOURCE} userIdentitySource
+   * @return {*}
+   */
+  const _setSystemUserContext = async (userGuid: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE) => {
+    const setSystemUserContextSQLStatement = SQL`
+      SELECT api_set_context(${userGuid}, ${userIdentitySource});
+    `;
+
+    const response = await _client.query(
+      setSystemUserContextSQLStatement.text,
+      setSystemUserContextSQLStatement.values
+    );
+
+    return response?.rows?.[0].api_set_context;
   };
 
   return {
@@ -401,7 +420,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     systemUserId: syncErrorWrapper(_getSystemUserID)
   };
 };
-
 /**
  * Returns an IDBConnection where the system user context is set to the API's system user.
  *
@@ -412,8 +430,9 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({
-    preferred_username: `${DB_USERNAME}@${SYSTEM_IDENTITY_SOURCE.DATABASE}`,
-    identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE
+    database_user_guid: getDbUsername(),
+    identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
+    username: getDbUsername()
   });
 };
 
@@ -446,7 +465,6 @@ export const getKnexQueryBuilder = <
 >(): Knex.QueryBuilder<TRecord, TResult> => {
   return knex<TRecord, TResult>({ client: DB_CLIENT }).queryBuilder();
 };
-
 /**
  * Get a Knex instance.
  *
