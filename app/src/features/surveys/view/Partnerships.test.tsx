@@ -6,7 +6,7 @@ import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render } from 'test-helpers/test-utils';
-import Partnerships from './Partnerships';
+import Partnerships from './components/Partnerships';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;

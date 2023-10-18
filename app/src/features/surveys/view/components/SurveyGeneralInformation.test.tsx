@@ -48,7 +48,7 @@ describe('SurveyGeneralInformation', () => {
       </CodesContext.Provider>
     );
 
-    expect(getByTestId('survey_timeline').textContent).toEqual('Oct 10, 1998 - Feb 26, 2021');
+    expect(getByTestId('survey_timeline').textContent).toEqual('October 10, 1998 - February 26, 2021');
   });
 
   it('renders correctly with null end date', () => {

@@ -179,10 +179,12 @@ export const AccessRequestPage: React.FC = () => {
           }}>
           {({ handleSubmit }) => (
             <Box component={Paper} p={3}>
-              <Typography variant="h1">Request Access</Typography>
+              <Typography variant="h3" component="h1">
+                Request Access
+              </Typography>
               <Box mt={3}>
                 <Typography variant="body1" color="textSecondary">
-                  You will need to provide some additional details before accessing this application.
+                  You will need to provide some additional details before you are granted access to this application.
                 </Typography>
               </Box>
               <Box mt={4}>
@@ -190,19 +192,21 @@ export const AccessRequestPage: React.FC = () => {
                   {requestForm}
                   <Box mt={4} display="flex" justifyContent="flex-end">
                     <LoadingButton
+                      sx={{
+                        mr: 1
+                      }}
                       loading={isSubmittingRequest}
                       type="submit"
                       variant="contained"
                       color="primary"
                       className={classes.actionButton}>
-                      <strong>Submit Request</strong>
+                      Submit Request
                     </LoadingButton>
                     <Button
                       variant="outlined"
                       color="primary"
                       component={Link}
                       to="/logout"
-                      className={classes.actionButton}
                       data-testid="logout-button">
                       Log out
                     </Button>
