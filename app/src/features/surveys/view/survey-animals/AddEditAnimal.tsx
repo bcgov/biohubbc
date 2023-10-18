@@ -4,14 +4,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Form, useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo } from 'react';
 import { useParams } from 'react-router';
-import { AnimalSex, IAnimal, IAnimalSubSections } from './animal';
-import { transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
+import { IAnimal, IAnimalSubSections } from './animal';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
@@ -27,39 +23,9 @@ interface AddEditAnimalProps {
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const surveyContext = useContext(SurveyContext);
-  const bhApi = useBiohubApi();
   const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
 
   const { section, isLoading } = props;
-  const { projectId, surveyId } = surveyContext;
-
-  const { data: critterData, load: loadCritters } = useDataLoader(() =>
-    bhApi.survey.getSurveyCritters(projectId, surveyId)
-  );
-
-  loadCritters();
-
-  const obtainAnimalFormInitialvalues = useMemo(() => {
-    const AnimalFormValues: IAnimal = {
-      general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: AnimalSex.UNKNOWN, critter_id: '' },
-      captures: [],
-      markings: [],
-      mortality: [],
-      collectionUnits: [],
-      measurements: [],
-      family: [],
-      images: [],
-      device: undefined
-    };
-
-    const existingCritter = critterData?.find(
-      (critter: IDetailedCritterWithInternalId) => survey_critter_id === `${critter.survey_critter_id}`
-    );
-    if (!existingCritter) {
-      return AnimalFormValues;
-    }
-    return transformCritterbaseAPIResponseToForm(existingCritter);
-  }, [critterData, survey_critter_id]);
 
   const renderFormContent = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSubSections, JSX.Element>> = {
@@ -74,7 +40,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
   }, [section]);
 
-  const { submitForm, initialValues, values } = useFormikContext();
+  const { submitForm, initialValues, values } = useFormikContext<IAnimal>();
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -99,8 +65,8 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             fontSize: '1.125rem',
             fontWeight: 700
           }}>
-          {parseInt(survey_critter_id)
-            ? `Animal Details: ${obtainAnimalFormInitialvalues.general.animal_id}`
+          {initialValues?.general?.animal_id
+            ? `Animal Details: ${initialValues?.general?.animal_id}`
             : 'Animal Details'}
         </Typography>
 

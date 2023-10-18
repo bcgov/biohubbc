@@ -14,37 +14,24 @@ import {
 } from '@mui/material';
 import { cyan } from '@mui/material/colors';
 import { Box } from '@mui/system';
-import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import React, { useContext, useMemo } from 'react';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import React, { useMemo } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { ANIMAL_SUBSECTIONS, IAnimalSubSections, MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './animal';
 
 interface AnimalListProps {
+  isLoading?: boolean;
+  critterData?: IDetailedCritterWithInternalId[];
   selectedSection: IAnimalSubSections;
   onSelectSection: (section: IAnimalSubSections) => void;
 }
 
-const AnimalList = ({ selectedSection, onSelectSection }: AnimalListProps) => {
-  const bhApi = useBiohubApi();
-  const surveyContext = useContext(SurveyContext);
+const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading }: AnimalListProps) => {
   const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
   const history = useHistory();
 
   const { errors } = useFormikContext();
-
-  const {
-    //refresh: refreshCritters,
-    load: loadCritters,
-    data: critterData,
-    isLoading
-  } = useDataLoader(() => bhApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId));
-
-  if (!critterData) {
-    loadCritters();
-  }
 
   const handleCritterSelect = (id: string) => {
     const critterParam = survey_critter_id == id ? MANAGE_ANIMALS_DEFAULT_URL_PARAM : id;

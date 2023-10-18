@@ -22,9 +22,11 @@ export const SurveyAnimalsPage = () => {
   const dialogContext = useContext(DialogContext);
   const { surveyId, projectId } = useContext(SurveyContext);
 
-  const { data: critterData, load: loadCritters } = useDataLoader(() =>
-    bhApi.survey.getSurveyCritters(projectId, surveyId)
-  );
+  const {
+    data: critterData,
+    load: loadCritters,
+    isLoading: crittersLoading
+  } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
 
   loadCritters();
 
@@ -39,8 +41,7 @@ export const SurveyAnimalsPage = () => {
     });
   };
 
-  const obtainAnimalFormInitialvalues = useMemo(() => {
-    console.log('Recalculated initial values!');
+  const critterAsFormikValues = useMemo(() => {
     const AnimalFormValues: IAnimal = {
       general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: AnimalSex.UNKNOWN, critter_id: '' },
       captures: [],
@@ -57,7 +58,6 @@ export const SurveyAnimalsPage = () => {
       (critter: IDetailedCritterWithInternalId) => Number(survey_critter_id) === Number(critter.survey_critter_id)
     );
     if (!existingCritter) {
-      console.log(`No existing critter for ${survey_critter_id} ${typeof survey_critter_id}`);
       return AnimalFormValues;
     }
     return transformCritterbaseAPIResponseToForm(existingCritter);
@@ -65,7 +65,7 @@ export const SurveyAnimalsPage = () => {
 
   const handleCritterSave = async (currentFormValues: IAnimal) => {
     const patchCritterPayload = async () => {
-      const initialFormValues = obtainAnimalFormInitialvalues;
+      const initialFormValues = critterAsFormikValues;
       if (!initialFormValues) {
         throw Error('Could not obtain initial form values.');
       }
@@ -103,7 +103,7 @@ export const SurveyAnimalsPage = () => {
 
   return (
     <Formik
-      initialValues={obtainAnimalFormInitialvalues}
+      initialValues={critterAsFormikValues}
       enableReinitialize
       validationSchema={AnimalSchema}
       validateOnBlur={true}
@@ -112,7 +112,12 @@ export const SurveyAnimalsPage = () => {
       <SurveySectionFullPageLayout
         pageTitle="Manage Animals"
         sideBarComponent={
-          <AnimalList selectedSection={selectedSection} onSelectSection={(section) => setSelectedSection(section)} />
+          <AnimalList
+            critterData={critterData}
+            isLoading={crittersLoading}
+            selectedSection={selectedSection}
+            onSelectSection={(section) => setSelectedSection(section)}
+          />
         }
         mainComponent={<AddEditAnimal isLoading={isSubmitting} section={selectedSection} />}
       />
