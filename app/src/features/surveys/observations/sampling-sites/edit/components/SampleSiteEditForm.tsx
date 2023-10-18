@@ -9,12 +9,12 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
 import { FormikProps } from 'formik';
 import { Feature } from 'geojson';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 import SampleMethodEditForm from './SampleMethodEditForm';
 import SampleSiteGeneralInformationForm from './SampleSiteGeneralInformationForm';
 import SurveySamplingSiteEditForm from './SurveySampleSiteEditForm';
-import { useHistory } from 'react-router';
 
 export interface IEditSamplingSiteRequest {
   sampleSite: {
@@ -27,9 +27,8 @@ export interface IEditSamplingSiteRequest {
   };
 }
 
-export interface ISampleSiteEditForm {
+export interface ISampleSiteEditFormProps {
   handleSubmit: (formikData: IEditSamplingSiteRequest) => void;
-  formikRef: React.RefObject<FormikProps<IEditSamplingSiteRequest>>;
   isSubmitting: boolean;
 }
 
@@ -47,9 +46,9 @@ export const samplingSiteYupSchema = yup.object({
   })
 });
 
-const SampleSiteEditForm: React.FC<ISampleSiteEditForm> = (props) => {
-  const history = useHistory();
+const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
   const surveyContext = useContext(SurveyContext);
+  const formikRef = useRef<FormikProps<IEditSamplingSiteRequest>>(null);
 
   return (
     <>
@@ -90,29 +89,27 @@ const SampleSiteEditForm: React.FC<ISampleSiteEditForm> = (props) => {
               <Box
                 sx={{
                   '& button': {
-                    minWidth: '6rem',
+                    minWidth: '6rem'
                   },
                   '& button + button': {
                     ml: 1
                   }
-                }}
-              >
+                }}>
                 <LoadingButton
                   type="submit"
                   variant="contained"
                   color="primary"
                   loading={props.isSubmitting}
                   onClick={() => {
-                    props.formikRef.current?.submitForm();
+                    formikRef.current?.submitForm();
                   }}>
                   Save and Exit
                 </LoadingButton>
                 <Button
                   variant="outlined"
                   color="primary"
-                  onClick={() => {
-                    history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`)
-                  }}>
+                  component={RouterLink}
+                  to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}>
                   Cancel
                 </Button>
               </Box>

@@ -47,7 +47,7 @@ const SamplingSiteEditPage = () => {
   useEffect(() => {
     if (surveyContext.sampleSiteDataLoader.data) {
       const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
-        (x) => x.survey_sample_site_id === surveySampleSiteId
+        (sampleSite) => sampleSite.survey_sample_site_id === surveySampleSiteId
       );
 
       if (data !== undefined) {
@@ -201,7 +201,7 @@ const SamplingSiteEditPage = () => {
             />
           </Box>
           <Box display="flex" flex="1 1 auto">
-            <SampleSiteEditForm formikRef={formikRef} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
+            <SampleSiteEditForm handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
           </Box>
         </Box>
       </Formik>

@@ -40,11 +40,11 @@ const ObservationComponent = () => {
         .then((result: IUploadObservationSubmissionResponse) => {
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
             // Process a DwCA zip file
-            return biohubApi.observation.processDWCFile(projectId, result.submissionId);
+            return biohubApi.dwca.processDWCFile(projectId, result.submissionId);
           }
 
           // Process an Observation Template file
-          return biohubApi.observation.processOccurrences(projectId, result.submissionId, surveyId);
+          return biohubApi.dwca.processOccurrences(projectId, result.submissionId, surveyId);
         })
         .finally(() => {
           surveyContext.observationDataLoader.refresh(projectId, surveyId);

@@ -6,6 +6,7 @@ import { FundingSource, FundingSourceSupplementaryData } from '../../repositorie
 import { SystemUser } from '../../repositories/user-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { FundingSourceService, IFundingSourceSearchParams } from '../../services/funding-source-service';
+import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/funding-sources/index');
@@ -121,7 +122,7 @@ export function getFundingSources(): RequestHandler {
       await connection.commit();
 
       const systemUserObject: SystemUser = req['system_user'];
-      if (!isAdmin(systemUserObject)) {
+      if (!UserService.isAdmin(systemUserObject)) {
         // User is not an admin, strip sensitive fields from response
         response = removeNonAdminFieldsFromFundingSourcesResponse(response);
       }
@@ -135,19 +136,6 @@ export function getFundingSources(): RequestHandler {
       connection.release();
     }
   };
-}
-
-/**
- * Checks if the system user is an admin (has an admin level system role).
- *
- * @param {SystemUser} systemUserObject
- * @return {*}  {boolean} `true` if the user is an admin, `false` otherwise.
- */
-function isAdmin(systemUserObject: SystemUser): boolean {
-  return (
-    systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
-    systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
-  );
 }
 
 /**

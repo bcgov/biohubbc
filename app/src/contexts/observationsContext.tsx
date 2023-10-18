@@ -12,16 +12,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
 
 export interface IObservationRecord {
-  survey_observation_id: number | undefined;
-  wldtaxonomic_units_id: number | undefined;
-  survey_sample_site_id: number | undefined;
-  survey_sample_method_id: number | undefined;
-  survey_sample_period_id: number | undefined;
-  count: number | undefined;
-  observation_date: Date | undefined;
-  observation_time: string | undefined;
-  latitude: number | undefined;
-  longitude: number | undefined;
+  survey_observation_id: number;
+  wldtaxonomic_units_id: number;
+  survey_sample_site_id: number;
+  survey_sample_method_id: number;
+  survey_sample_period_id: number;
+  count: number | null;
+  observation_date: Date;
+  observation_time: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export interface IObservationTableRow extends Partial<IObservationRecord> {
@@ -151,15 +151,15 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       {
         id,
         survey_observation_id: null,
-        wldtaxonomic_units: undefined,
-        survey_sample_site_id: undefined,
-        survey_sample_method_id: undefined,
-        survey_sample_period_id: undefined,
-        count: undefined,
-        observation_date: undefined,
-        observation_time: undefined,
-        latitude: undefined,
-        longitude: undefined
+        wldtaxonomic_units_id: null,
+        survey_sample_site_id: null,
+        survey_sample_method_id: null,
+        survey_sample_period_id: null,
+        count: null,
+        observation_date: null,
+        observation_time: null,
+        latitude: null,
+        longitude: null
       } as GridRowModelUpdate
     ]);
 
@@ -187,7 +187,9 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     }
 
     // Transition all rows in edit mode to view mode
-    editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id }));
+    for (const id of editingIds) {
+      _muiDataGridApiRef.current.stopRowEditMode({ id });
+    }
 
     // Store ids of rows that were in edit mode
     setRowIdsToSave(editingIds);
@@ -265,6 +267,11 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       return;
     }
 
+    if (isSaving) {
+      // Saving already in progress
+      return;
+    }
+
     if (rowIdsToSave.some((id) => _muiDataGridApiRef.current.getRowMode(id) === 'edit')) {
       // Not all rows have transitioned to view mode, cannot save yet
       return;
@@ -272,11 +279,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
     // All rows have transitioned to view mode
     setIsStoppingEdit(false);
-
-    if (isSaving) {
-      // Saving already in progress
-      return;
-    }
 
     // Start saving records
     setIsSaving(true);

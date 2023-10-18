@@ -8,7 +8,7 @@ import { HistoryPublishService } from '../../../../../../../../services/history-
 import { IMessageTypeGroup, SurveyService } from '../../../../../../../../services/survey-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/get');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/dwca/observations/submission/get');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {

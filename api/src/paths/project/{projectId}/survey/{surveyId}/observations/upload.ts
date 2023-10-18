@@ -8,7 +8,7 @@ import { ObservationService } from '../../../../../../services/observation-servi
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {

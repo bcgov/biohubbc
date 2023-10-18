@@ -60,7 +60,7 @@ const SurveyObservations: React.FC = () => {
       noButtonLabel: 'Cancel',
       open: true,
       onYes: async () => {
-        await biohubApi.observation.deleteObservationSubmission(
+        await biohubApi.dwca.deleteObservationSubmission(
           projectId,
           surveyId,
           occurrenceSubmission.occurrence_submission_id
@@ -78,7 +78,7 @@ const SurveyObservations: React.FC = () => {
       return;
     }
 
-    biohubApi.observation
+    biohubApi.dwca
       .getObservationSubmissionSignedURL(projectId, surveyId, occurrenceSubmission.occurrence_submission_id)
       .then((objectUrl: string) => {
         window.open(objectUrl);

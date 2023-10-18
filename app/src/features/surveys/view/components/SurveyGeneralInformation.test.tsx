@@ -1,7 +1,7 @@
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { codes } from 'test-helpers/code-helpers';
 import { getObservationSubmissionResponse, getSurveyForViewResponse } from 'test-helpers/survey-helpers';
@@ -48,7 +48,7 @@ describe('SurveyGeneralInformation', () => {
       </CodesContext.Provider>
     );
 
-    expect(getByTestId('survey_timeline').textContent).toEqual('Oct 10, 1998 - Feb 26, 2021');
+    expect(getByTestId('survey_timeline').textContent).toEqual('October 10, 1998 - February 26, 2021');
   });
 
   it('renders correctly with null end date', () => {

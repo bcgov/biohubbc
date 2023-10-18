@@ -40,7 +40,7 @@ export const SurveyObservationPage = () => {
             width: 400,
             borderTopRightRadius: 0,
             borderBottomRightRadius: 0,
-            borderRight: '1px solid' + grey[300]
+            borderRight: '1px solid ' + grey[300]
           }}>
           <SamplingSiteList />
         </Paper>

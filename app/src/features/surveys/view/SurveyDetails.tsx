@@ -12,7 +12,7 @@ import Permits from 'features/surveys/view/components/Permits';
 import SurveyParticipants from 'features/surveys/view/components/SurveyParticipants';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
-import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import Partnerships from './components/Partnerships';
 import SamplingMethods from './components/SamplingMethods';
 import SurveyFundingSources from './components/SurveyFundingSources';
@@ -26,15 +26,13 @@ import SurveyStudyArea from './components/SurveyStudyArea';
  */
 
 const SurveyDetails = () => {
-  const history = useHistory();
-
   return (
     <Paper>
       <Toolbar>
         <Typography variant="h4" component="h2" sx={{ flex: '1 1 auto' }}>
           Survey Details
         </Typography>
-        <IconButton aria-label="Edit Details" onClick={() => history.push('edit')}>
+        <IconButton component={RouterLink} aria-label="Edit Details" to="edit">
           <Icon path={mdiPencilOutline} size={1} />
         </IconButton>
       </Toolbar>
@@ -44,10 +42,6 @@ const SurveyDetails = () => {
       <Box
         p={3}
         sx={{
-          // '& section': {
-          //   display: 'flex',
-          //   flexDirection: 'row'
-          // },
           '& section + section': {
             mt: 3
           },
@@ -83,7 +77,7 @@ const SurveyDetails = () => {
             flexWrap: { xs: 'wrap', md: 'nowrap' },
             gap: { xs: 0, md: '24px' },
             py: 1,
-            borderTop: '1px solid' + grey[300]
+            borderTop: '1px solid ' + grey[300]
           },
           '& section.row': {
             mt: 0

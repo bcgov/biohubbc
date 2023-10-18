@@ -76,7 +76,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
-    const { getByTestId, getAllByTestId } = render(
+    const { getByTestId, getAllByTestId, queryByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
@@ -100,6 +100,6 @@ describe('SurveyPurposeAndMethodologyData', () => {
       'Vantage Code 1',
       'Vantage Code 2'
     ]);
-    expect(getByTestId('survey_additional_details').textContent).toEqual('No additional details');
+    expect(queryByTestId('survey_additional_details')).toBeNull();
   });
 });

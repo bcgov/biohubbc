@@ -54,7 +54,7 @@ const DatasetPopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
   const api = useBiohubApi();
 
   const dataLoader = useDataLoader(() => {
-    return api.observation.getSpatialMetadata(submissionSpatialComponentIds);
+    return api.dwca.getSpatialMetadata(submissionSpatialComponentIds);
   });
 
   dataLoader.load();

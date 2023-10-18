@@ -181,7 +181,7 @@ export const handleKMLUpload = async <T>(file: File, name: string, formikProps: 
  */
 export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefined => {
   // If no geometries, we do not need to set bounds
-  if (!features || !features.length) {
+  if (!features.length) {
     return;
   }
 
