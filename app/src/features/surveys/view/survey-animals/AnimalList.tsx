@@ -25,9 +25,10 @@ interface AnimalListProps {
   critterData?: IDetailedCritterWithInternalId[];
   selectedSection: IAnimalSubSections;
   onSelectSection: (section: IAnimalSubSections) => void;
+  onAddButton: () => void;
 }
 
-const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading }: AnimalListProps) => {
+const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, onAddButton }: AnimalListProps) => {
   const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
   const history = useHistory();
 
@@ -65,7 +66,8 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading }
           }}
           variant="contained"
           color="primary"
-          startIcon={<Icon path={mdiPlus} size={1} />}>
+          startIcon={<Icon path={mdiPlus} size={1} />}
+          onClick={onAddButton}>
           Add
         </Button>
       </Toolbar>
