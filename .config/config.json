@@ -37,7 +37,7 @@
       "host": "https://dev.loginproxy.gov.bc.ca/auth",
       "realm": "standard",
       "clientId": "sims-4461",
-      "keycloakSecret": "sims_svc_client_password",
+      "keycloakSecret": "keycloak",
       "serviceClient": {
         "serviceClientName": "sims-svc-4464",
         "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
@@ -71,7 +71,7 @@
       "host": "https://loginproxy.gov.bc.ca/auth",
       "realm": "standard",
       "clientId": "sims-4461",
-      "keycloakSecret": "sims_svc_client_password",
+      "keycloakSecret": "keycloak",
       "serviceClient": {
         "serviceClientName": "sims-svc-4464",
         "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
