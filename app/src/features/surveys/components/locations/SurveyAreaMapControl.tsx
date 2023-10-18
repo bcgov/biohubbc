@@ -3,6 +3,9 @@ import Icon from '@mdi/react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import MapContainer from 'components/map/MapContainer';
@@ -26,6 +29,13 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const { setFieldValue, setFieldError, values } = formik_props;
   const [updatedBounds, setUpdateBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedLayer, setSelectedLayer] = useState('');
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
+    parks: [],
+    nrm: [],
+    env: [],
+    wmu: []
+  });
 
   useEffect(() => {
     setUpdateBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
@@ -52,6 +62,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 });
                 setUpdateBounds(calculateUpdatedMapBounds(features));
                 setFieldValue(formik_key, formData);
+                setSelectedLayer('');
               },
               onFailure: (message: string) => {
                 setFieldError(formik_key, message);
@@ -75,6 +86,32 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           }}>
           Import Boundary
         </Button>
+        <Box ml={2}>
+          <Select
+            size="small"
+            id="layer"
+            name="layer"
+            value={selectedLayer}
+            onChange={(event) => setSelectedLayer(event.target.value as string)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Choose Map Layer' }}
+            sx={{
+              fontSize: '14px'
+            }}>
+            <MenuItem disabled value="">
+              View Layer
+            </MenuItem>
+            <MenuItem key={1} value="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW">
+              Wildlife Management Units
+            </MenuItem>
+            <MenuItem key={2} value="pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW">
+              Parks and EcoRegions
+            </MenuItem>
+            <MenuItem key={3} value="pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG">
+              NRM Regional Boundaries
+            </MenuItem>
+          </Select>
+        </Box>
       </Box>
       <MapContainer
         mapId={map_id}
@@ -83,7 +120,14 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           return { layerName: item.name, features: [{ geoJSON: item.geojson[0] }] };
         })}
         bounds={updatedBounds}
+        selectedLayer={selectedLayer}
+        setInferredLayersInfo={setInferredLayersInfo}
       />
+      {!Object.values(inferredLayersInfo).every((item: any) => !item.length) && (
+        <Box p={2}>
+          <InferredLocationDetails layers={inferredLayersInfo} />
+        </Box>
+      )}
     </>
   );
 };

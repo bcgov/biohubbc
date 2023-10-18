@@ -213,16 +213,15 @@ const MapContainer = (props: IMapContainerProps) => {
           minZoom={7}
           featureKeyHandler={layerContentHandlers[selectedLayer].featureKeyHandler}
           popupContentHandler={layerContentHandlers[selectedLayer].popupContentHandler}
-          existingGeometry={drawControls?.initialFeatures}
+          existingGeometry={staticLayers?.flatMap((item) => item.features.map((feature) => feature.geoJSON))}
           onSelectGeometry={setPreDefinedGeometry}
         />
       )}
 
       {additionalLayers && <AdditionalLayers layers={additionalLayers} />}
 
+      <StaticLayers layers={staticLayers} />
       <LayersControl position="bottomright">
-        <StaticLayers layers={staticLayers} />
-
         <MarkerCluster layers={markerLayers} />
 
         <BaseLayerControls />
