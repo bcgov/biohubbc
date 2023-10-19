@@ -3,8 +3,8 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { getLogger } from '../../../../../../utils/logger';
 import { ObservationService } from '../../../../../../services/observation-service';
+import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/process');
 
@@ -98,14 +98,14 @@ POST.apiDoc = {
 
 export function processFile(): RequestHandler {
   return async (req, res) => {
-    const submissionId = req.body.occurrence_submission_id;
+    const submissionId = req.body.observation_submission_id;
 
     const connection = getDBConnection(req['keycloak_token']);
     try {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      
+
       const response = observationService.processObservationCsvSubmission(submissionId);
 
       res.status(200).json(response);

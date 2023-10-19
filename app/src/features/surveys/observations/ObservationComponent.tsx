@@ -7,7 +7,10 @@ import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import FileUpload from 'components/file-upload/FileUpload';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
@@ -17,12 +20,9 @@ import ObservationsTable, {
   ISamplePeriodSelectProps,
   ISampleSiteSelectProps
 } from 'features/surveys/observations/ObservationsTable';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
-import ComponentDialog from 'components/dialog/ComponentDialog';
-import FileUpload from 'components/file-upload/FileUpload';
-import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 
 const ObservationComponent = () => {
   const sampleSites: ISampleSiteSelectProps[] = [];
@@ -43,15 +43,14 @@ const ObservationComponent = () => {
       return;
     }
 
-    biohubApi.observation.processCsvSubmission(projectId, surveyId, __TEST_processSubmissionId);
-  }
+    biohubApi.observation.processCsvSubmission(projectId, surveyId, 1);
+  };
 
   const handleImportObservations = (): IUploadHandler => {
     return async (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.observation
         .uploadCsvForImport(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
         .then((response) => {
-          
           __TEST_setProcessSubmissionId(response.submissionId);
 
           // TODO dispatch process request
@@ -159,10 +158,7 @@ const ObservationComponent = () => {
             }}>
             <Box display="flex" overflow="hidden">
               {__TEST_processSubmissionId && (
-                <Button
-                  variant="contained"
-                  color="error"
-                  onClick={() => handleProcessSubmission()}>
+                <Button variant="contained" color="error" onClick={() => handleProcessSubmission()}>
                   TEST process submissionId {__TEST_processSubmissionId}
                 </Button>
               )}

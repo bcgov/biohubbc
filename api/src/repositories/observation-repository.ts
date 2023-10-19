@@ -1,8 +1,8 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
-import { BaseRepository } from './base-repository';
 import { getLogger } from '../utils/logger';
+import { BaseRepository } from './base-repository';
 
 /**
  * Interface reflecting survey observations retrieved from the database
@@ -149,7 +149,7 @@ export class ObservationRepository extends BaseRepository {
         observation_time
       )
       OVERRIDING SYSTEM VALUE
-      VALUES 
+      VALUES
     `;
 
     sqlStatement.append(
@@ -225,7 +225,7 @@ export class ObservationRepository extends BaseRepository {
     survey_id: number,
     original_filename: string
   ): Promise<ObservationSubmissionRecord> {
-    defaultLog.debug({ label: 'insertSurveyObservationSubmission' })
+    defaultLog.debug({ label: 'insertSurveyObservationSubmission' });
     const sqlStatement = SQL`
       INSERT INTO
         survey_observation_submission
