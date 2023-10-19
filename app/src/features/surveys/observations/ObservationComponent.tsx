@@ -33,17 +33,30 @@ const ObservationComponent = () => {
   const codesContext = useContext(CodesContext);
   const biohubApi = useBiohubApi();
 
+  const { projectId, surveyId } = surveyContext;
+
   const [showImportDiaolog, setShowImportDiaolog] = useState<boolean>(false);
+  const [__TEST_processSubmissionId, __TEST_setProcessSubmissionId] = useState<number | null>(null);
+
+  const handleProcessSubmission = () => {
+    if (!__TEST_processSubmissionId) {
+      return;
+    }
+
+    biohubApi.observation.processCsvSubmission(projectId, surveyId, __TEST_processSubmissionId);
+  }
 
   const handleImportObservations = (): IUploadHandler => {
-    const { projectId, surveyId } = surveyContext;
-
     return async (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.observation
         .uploadCsvForImport(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
-        .then(() => {
+        .then((response) => {
+          
+          __TEST_setProcessSubmissionId(response.submissionId);
+
           // TODO dispatch process request
-          return
+          // handleProcessSubmission(response.submissionId) // Uncomment this later. For now, use test button in FE.
+          return;
         })
         .finally(() => {
           //
@@ -145,6 +158,14 @@ const ObservationComponent = () => {
               }
             }}>
             <Box display="flex" overflow="hidden">
+              {__TEST_processSubmissionId && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => handleProcessSubmission()}>
+                  TEST process submissionId {__TEST_processSubmissionId}
+                </Button>
+              )}
               <Button
                 variant="contained"
                 color="primary"

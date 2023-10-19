@@ -71,10 +71,19 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const processCsvSubmission = async (projectId: number, surveyId: number, submissionId: number) => {
+    const { data } = await axios.post<{ submissionId: number }>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/process`
+    );
+
+    return data;
+  }
+
   return {
     insertUpdateObservationRecords,
     getObservationRecords,
-    uploadCsvForImport
+    uploadCsvForImport,
+    processCsvSubmission
   };
 };
 
