@@ -7,9 +7,9 @@ import { Container } from '@mui/system';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
-import { FormikProps } from 'formik';
+import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { useContext, useRef } from 'react';
+import { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 import SampleMethodEditForm from './SampleMethodEditForm';
@@ -28,7 +28,6 @@ export interface IEditSamplingSiteRequest {
 }
 
 export interface ISampleSiteEditFormProps {
-  handleSubmit: (formikData: IEditSamplingSiteRequest) => void;
   isSubmitting: boolean;
 }
 
@@ -48,7 +47,7 @@ export const samplingSiteYupSchema = yup.object({
 
 const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
   const surveyContext = useContext(SurveyContext);
-  const formikRef = useRef<FormikProps<IEditSamplingSiteRequest>>(null);
+  const { submitForm } = useFormikContext<IEditSamplingSiteRequest>();
 
   return (
     <>
@@ -100,9 +99,7 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
                   variant="contained"
                   color="primary"
                   loading={props.isSubmitting}
-                  onClick={() => {
-                    formikRef.current?.submitForm();
-                  }}>
+                  onClick={() => submitForm()}>
                   Save and Exit
                 </LoadingButton>
                 <Button

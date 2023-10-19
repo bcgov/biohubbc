@@ -190,7 +190,7 @@ const SamplingSiteEditPage = () => {
             breadcrumb="Edit Sampling Site"
           />
 
-          <SampleSiteEditForm formikRef={formikRef} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
+          <SampleSiteEditForm isSubmitting={isSubmitting} />
         </Box>
       </Formik>
     </>

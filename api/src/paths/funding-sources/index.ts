@@ -139,19 +139,6 @@ export function getFundingSources(): RequestHandler {
 }
 
 /**
- * Checks if the system user is an admin (has an admin level system role).
- *
- * @param {SystemUser} systemUserObject
- * @return {*}  {boolean} `true` if the user is an admin, `false` otherwise.
- */
-function isAdmin(systemUserObject: SystemUser): boolean {
-  return (
-    systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
-    systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
-  );
-}
-
-/**
  * Removes sensitive (admin-only) fields from the funding sources response, returning a new sanitized array.
  *
  * @param {((FundingSource & FundingSourceSupplementaryData)[])} fundingSources
