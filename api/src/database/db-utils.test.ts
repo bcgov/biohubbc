@@ -37,6 +37,7 @@ function zodImplements<Model = never>() {
       ? z.ZodNullableType<z.ZodType<Model[key]>>
       : z.ZodType<Model[key]>;
   };
+
   return {
     with: <
       Schema extends ZodImplements<Model> &
@@ -48,9 +49,11 @@ function zodImplements<Model = never>() {
     ) => z.object(schema)
   };
 }
+
 describe('getZodQueryResult', () => {
   it('defines a zod schema that conforms to the real pg `QueryResult` type', () => {
     const zodQueryResultRow = z.object({});
+
     const zodQueryResult = getZodQueryResult(zodQueryResultRow);
 
     // Not a traditional test: will just cause a compile error if the zod schema doesn't satisfy the `QueryResult` type

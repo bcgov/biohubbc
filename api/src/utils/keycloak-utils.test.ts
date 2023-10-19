@@ -13,7 +13,8 @@ import {
   isBceidBasicUserInformation,
   isBceidBusinessUserInformation,
   isDatabaseUserInformation,
-  isIdirUserInformation
+  isIdirUserInformation,
+  ServiceClientUserInformation
 } from './keycloak-utils';
 
 describe('keycloakUtils', () => {
@@ -325,6 +326,18 @@ describe('keycloakUtils', () => {
 
     it('returns valid database token information', () => {
       const keycloakUserInformation: DatabaseUserInformation = {
+        database_user_guid: '123456789',
+        identity_provider: 'database',
+        username: 'biohub_dapi_v1'
+      };
+
+      const response = getUserIdentitySource(keycloakUserInformation);
+
+      expect(response).not.to.be.null;
+    });
+
+    it('returns valid system token information', () => {
+      const keycloakUserInformation: ServiceClientUserInformation = {
         database_user_guid: '123456789',
         identity_provider: 'database',
         username: 'biohub_dapi_v1'

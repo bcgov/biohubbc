@@ -5,10 +5,12 @@ import { z } from 'zod';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
 import {
+  DatabaseUserInformation,
   getKeycloakUserInformationFromKeycloakToken,
   getUserGuid,
   getUserIdentitySource,
-  KeycloakUserInformation
+  KeycloakUserInformation,
+  ServiceClientUserInformation
 } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 import {
@@ -142,12 +144,16 @@ export interface IDBConnection {
    * @param {any[]} [values] SQL values array (optional)
    * @return {*}  {(Promise<QueryResult<any>>)}
    * @throws If the connection is not open.
-   * @deprecated Prefer using `.sql` (pass entire statement object) or `.knex` (pass quiery builder object)
+   * @deprecated Prefer using `.sql` (pass entire statement object) or `.knex` (pass knex query builder object)
    * @memberof IDBConnection
    */
   query: <T extends pg.QueryResultRow = any>(text: string, values?: any[]) => Promise<pg.QueryResult<T>>;
   /**
    * Performs a query against this connection, returning the results.
+   *
+   * @example
+   * // Create a basic SQLStatement object
+   * const sqlStatement = SQL`select * from table where name = ${name}`;
    *
    * @param {SQLStatement} sqlStatement SQL statement object
    * @param {z.Schema<T, any, any>} zodSchema An optional zod schema
@@ -161,6 +167,8 @@ export interface IDBConnection {
   ) => Promise<pg.QueryResult<T>>;
   /**
    * Performs a query against this connection, returning the results.
+   *
+   * @see {@link getKnex} to get a knex instance.
    *
    * @param {Knex.QueryBuilder} queryBuilder Knex query builder object
    * @param {z.Schema<T, any, any>} zodSchema An optional zod schema
@@ -376,7 +384,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
       throw new ApiGeneralError('Failed to identify authenticated user');
     }
 
-    defaultLog.silly({ label: '_setUserContext', keycloakUserInformation });
+    defaultLog.debug({ label: '_setUserContext', keycloakUserInformation });
 
     // Update the logged in user with their latest information from Keycloak (if it has changed)
     await _updateSystemUserInformation(keycloakUserInformation);
@@ -459,7 +467,30 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
 };
 
 /**
+ * Returns an IDBConnection where the system user context is set to a service client user.
+ *
+ * Note: Spoofs a keycloak token in order to leverage the same keycloak/database code that would normally be
+ * called when queries are executed on behalf of a real human user.
+ *
+ * Future enhancement: Service client users do have real keycloak tokens, and so this/related code could be enhanced to
+ * process a service client token in a similar fashion to a regular token, rather than spoofing the token.
+ *
+ * @param {SOURCE_SYSTEM} sourceSystem
+ * @return {*}  {IDBConnection}
+ */
+export const getServiceClientDBConnection = (sourceSystem: SOURCE_SYSTEM): IDBConnection => {
+  return getDBConnection({
+    database_user_guid: sourceSystem,
+    identity_provider: SYSTEM_IDENTITY_SOURCE.SYSTEM.toLowerCase(),
+    username: `service-account-${sourceSystem}`
+  } as ServiceClientUserInformation);
+};
+
+/**
  * Returns an IDBConnection where the system user context is set to the API's system user.
+ *
+ * Note: Spoofs a keycloak token in order to leverage the same keycloak/database code that would normally be
+ * called when queries are executed on behalf of a real human user.
  *
  * Note: Use of this should be limited to requests that are impossible to initiated under a real user context (ie: when
  * an unknown user is requesting access to BioHub and therefore does not yet have a user in the system).
@@ -471,38 +502,7 @@ export const getAPIUserDBConnection = (): IDBConnection => {
     database_user_guid: getDbUsername(),
     identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
     username: getDbUsername()
-  });
-};
-
-/**
- * Returns an IDBConnection where the system user context is set to a service client user.
- *
- * Note: Use of this should be limited to requests that are sent by an external system that is participating in BioHub
- * by submitting data to the BioHub Platform Backbone.
- *
- * @param {SOURCE_SYSTEM} sourceSystem
- * @return {*}  {IDBConnection}
- */
-export const getServiceAccountDBConnection = (sourceSystem: SOURCE_SYSTEM): IDBConnection => {
-  return getDBConnection({
-    database_user_guid: sourceSystem,
-    identity_provider: SYSTEM_IDENTITY_SOURCE.SYSTEM.toLowerCase(),
-    username: `service-account-${sourceSystem}`
-  });
-};
-
-/**
- * Get a Knex queryBuilder instance.
- *
- * @template TRecord
- * @template TResult
- * @return {*}  {Knex.QueryBuilder<TRecord, TResult>}
- */
-export const getKnexQueryBuilder = <
-  TRecord extends Record<string, any> = any,
-  TResult = Record<string, any>[]
->(): Knex.QueryBuilder<TRecord, TResult> => {
-  return knex<TRecord, TResult>({ client: DB_CLIENT }).queryBuilder();
+  } as DatabaseUserInformation);
 };
 
 /**

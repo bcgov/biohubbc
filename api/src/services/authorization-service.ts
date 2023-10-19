@@ -1,7 +1,6 @@
 import { SOURCE_SYSTEM } from '../constants/database';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
-import { ApiGeneralError } from '../errors/api-error';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 import { getKeycloakSource, getKeycloakUserInformationFromKeycloakToken, getUserGuid } from '../utils/keycloak-utils';
@@ -328,7 +327,7 @@ export class AuthorizationService extends DBService {
     const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(this._keycloakToken);
 
     if (!keycloakUserInformation) {
-      throw new ApiGeneralError('Failed to identify authenticated user');
+      return null;
     }
 
     const userGuid = getUserGuid(keycloakUserInformation);
@@ -365,16 +364,18 @@ export class AuthorizationService extends DBService {
    * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
    */
   async getProjectUserWithRoles(projectId: number): Promise<(ProjectUser & SystemUser) | null> {
-    if (!this._systemUser) {
+    if (!this._keycloakToken) {
       return null;
     }
 
-    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(this._systemUser);
+    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(this._keycloakToken);
 
     if (!keycloakUserInformation) {
-      throw new ApiGeneralError('Failed to identify authenticated user');
+      return null;
     }
+
     const userGuid = getUserGuid(keycloakUserInformation);
+
     return this._projectParticipationService.getProjectParticipantByUserGuid(projectId, userGuid);
   }
 }

@@ -5,7 +5,6 @@ import sinonChai from 'sinon-chai';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import * as db from '../database/db';
-import { ApiGeneralError } from '../errors/api-error';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 import {
@@ -120,7 +119,7 @@ describe('AuthorizationService', () => {
     });
   });
 
-  describe('authorizeByServiceClient', function () {
+  describe('authorizeSystemAdministrator', function () {
     afterEach(() => {
       sinon.restore();
     });
@@ -663,27 +662,26 @@ describe('AuthorizationService', () => {
       const mockDBConnection = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-      const authorizationService = new AuthorizationService(mockDBConnection);
+      const authorizationService = new AuthorizationService(mockDBConnection, {
+        keycloakToken: undefined
+      });
 
       const result = await authorizationService.getSystemUserWithRoles();
 
       expect(result).to.be.null;
     });
 
-    it('throws an exception when keycloakUserInformation is null', async function () {
+    it('returns null if the keycloak token is not a valid format (fails the parser)', async function () {
       const mockDBConnection = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { preferred_username: '' }
+        keycloakToken: { not: '', valid: '' }
       });
 
-      try {
-        await authorizationService.getSystemUserWithRoles();
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as ApiGeneralError).message).to.equal('Failed to identify authenticated user');
-      }
+      const result = await authorizationService.getSystemUserWithRoles();
+
+      expect(result).to.be.null;
     });
 
     it('returns a UserObject', async function () {
@@ -709,7 +707,7 @@ describe('AuthorizationService', () => {
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
         keycloakToken: {
-          idir_user_guid: '123456789',
+          idir_user_guid: '123-456-789',
           identity_provider: 'idir',
           idir_username: 'testuser',
           email_verified: false,
@@ -764,7 +762,7 @@ describe('AuthorizationService', () => {
       expect(projectUser).to.equal(null);
     });
 
-    it('returns a project user', async function () {
+    it('returns a project user when keycloak token is valid', async function () {
       const mockDBConnection = getMockDBConnection();
 
       const projectUserMock: ProjectUser & SystemUser = {
@@ -790,14 +788,13 @@ describe('AuthorizationService', () => {
       sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRoles').resolves(projectUserMock);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        systemUser: ({} as unknown) as SystemUser,
         keycloakToken: {
-          idir_user_guid: '123456789',
+          idir_user_guid: '123-456-789',
           identity_provider: 'idir',
-          idir_username: 'testuser',
+          idir_username: 'username',
           email_verified: false,
           name: 'test user',
-          preferred_username: 'testguid@idir',
+          preferred_username: '123-456-789@idir',
           display_name: 'test user',
           given_name: 'test',
           family_name: 'user',
@@ -822,21 +819,8 @@ describe('AuthorizationService', () => {
       const mockDBConnection = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-      const authorizationService = new AuthorizationService(mockDBConnection);
-
-      const projectId = 1;
-
-      const result = await authorizationService.getProjectUserWithRoles(projectId);
-
-      expect(result).to.be.null;
-    });
-
-    it('returns null if the project user guid is null', async function () {
-      const mockDBConnection = getMockDBConnection();
-      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { preferred_username: '' }
+        keycloakToken: undefined
       });
 
       const projectId = 1;
@@ -846,7 +830,22 @@ describe('AuthorizationService', () => {
       expect(result).to.be.null;
     });
 
-    it('returns a project user', async function () {
+    it('returns null if the keycloak token is not a valid format (fails the parser)', async function () {
+      const mockDBConnection = getMockDBConnection();
+      sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+      const authorizationService = new AuthorizationService(mockDBConnection, {
+        keycloakToken: { not: '', valid: '' }
+      });
+
+      const projectId = 1;
+
+      const result = await authorizationService.getProjectUserWithRoles(projectId);
+
+      expect(result).to.be.null;
+    });
+
+    it('returns a project user when keycloak token is valid', async function () {
       const mockDBConnection = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -874,7 +873,18 @@ describe('AuthorizationService', () => {
         .resolves((projectUserMock as unknown) as any);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { preferred_username: '123-456-789@idir' }
+        keycloakToken: {
+          idir_user_guid: '123-456-789',
+          identity_provider: 'idir',
+          idir_username: 'username',
+          name: 'test user',
+          preferred_username: '123-456-789@idir',
+          display_name: 'test user',
+          email: 'email@email.com',
+          email_verified: false,
+          given_name: 'fname',
+          family_name: 'lname'
+        }
       });
 
       const projectId = 1;

@@ -55,10 +55,16 @@ export const BceidBusinessUserInformation = z.object({
 export type BceidBusinessUserInformation = z.infer<typeof BceidBusinessUserInformation>;
 
 /**
+ * User information for a keycloak service client userF.
+ */
+export const ServiceClientUserInformation = z.object({
+  database_user_guid: z.string(),
+  identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.SYSTEM.toLowerCase()),
+  username: z.string()
+});
+
+/**
  * User information for an internal database user.
- *
- * Note: Spoofs a keycloak token in order to leverage the same keycloak/database code that would normally be
- * called when queries are executed on behalf of a real human user.
  */
 export const DatabaseUserInformation = z.object({
   database_user_guid: z.string(),
@@ -66,13 +72,9 @@ export const DatabaseUserInformation = z.object({
   username: z.string()
 });
 
-export const SystemUserInformation = z.object({
-  database_user_guid: z.string(),
-  identity_provider: z.literal(SYSTEM_IDENTITY_SOURCE.SYSTEM.toLowerCase()),
-  username: z.string()
-});
-
 export type DatabaseUserInformation = z.infer<typeof DatabaseUserInformation>;
+
+export type ServiceClientUserInformation = z.infer<typeof ServiceClientUserInformation>;
 
 /**
  * User information from either an IDIR or BCeID Basic or BCeID Business Keycloak token.
@@ -81,8 +83,8 @@ export const KeycloakUserInformation = z.discriminatedUnion('identity_provider',
   IdirUserInformation,
   BceidBasicUserInformation,
   BceidBusinessUserInformation,
-  DatabaseUserInformation,
-  SystemUserInformation
+  ServiceClientUserInformation,
+  DatabaseUserInformation
 ]);
 
 export type KeycloakUserInformation = z.infer<typeof KeycloakUserInformation>;
