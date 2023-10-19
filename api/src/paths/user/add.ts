@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection, getServiceAccountDBConnection } from '../../database/db';
+import { getDBConnection, getServiceClientDBConnection } from '../../database/db';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getKeycloakSource } from '../../utils/keycloak-utils';
@@ -134,7 +134,7 @@ export function addSystemRoleUser(): RequestHandler {
     const sourceSystem = getKeycloakSource(req['keycloak_token']);
 
     const connection = sourceSystem
-      ? getServiceAccountDBConnection(sourceSystem)
+      ? getServiceClientDBConnection(sourceSystem)
       : getDBConnection(req['keycloak_token']);
 
     try {
