@@ -9,10 +9,12 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
+import yup from 'utils/YupSchema';
 import { AddEditAnimal } from './AddEditAnimal';
 import { AnimalSchema, AnimalSex, Critter, IAnimal, IAnimalSubSections } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import AnimalList from './AnimalList';
+import { AnimalTelemetryDeviceSchema, IAnimalTelemetryDevice } from './device';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { ANIMAL_FORM_MODE } from './IndividualAnimalForm';
 
@@ -33,7 +35,14 @@ export const SurveyAnimalsPage = () => {
     isLoading: crittersLoading
   } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
 
+  const {
+    data: deploymentData,
+    load: loadDeployments,
+    refresh: refreshDeployments
+  } = useDataLoader(() => bhApi.survey.getDeploymentsInSurvey(projectId, surveyId));
+
   loadCritters();
+  loadDeployments();
 
   const setPopup = (message: string) => {
     dialogContext.setSnackbar({
@@ -56,7 +65,7 @@ export const SurveyAnimalsPage = () => {
       measurements: [],
       family: [],
       images: [],
-      device: undefined
+      device: []
     };
   }, []);
 
@@ -67,8 +76,35 @@ export const SurveyAnimalsPage = () => {
     if (!existingCritter) {
       return defaultFormValues;
     }
-    return transformCritterbaseAPIResponseToForm(existingCritter);
-  }, [defaultFormValues, critterData, survey_critter_id]);
+    const animal = transformCritterbaseAPIResponseToForm(existingCritter);
+    const crittersDeployments = deploymentData?.filter((a) => a.critter_id === existingCritter.critter_id);
+    let deployments: IAnimalTelemetryDevice[] = [];
+    if (crittersDeployments) {
+      //Any suggestions on something better than this reduce is welcome.
+      //Idea is to transform flat rows of {device_id, ..., deployment_id, attachment_end, attachment_start}
+      //to {device_id, ..., deployments: [{deployment_id, attachment_start, attachment_end}]}
+      const red = crittersDeployments.reduce((acc: IAnimalTelemetryDevice[], curr) => {
+        const currObj = acc.find((a: any) => a.device_id === curr.device_id);
+        const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
+        const deployment = {
+          deployment_id,
+          attachment_start: attachment_start?.split('T')?.[0] ?? '',
+          attachment_end: attachment_end?.split('T')?.[0]
+        };
+        if (!currObj) {
+          acc.push({ ...rest, deployments: [deployment] });
+        } else {
+          currObj.deployments?.push(deployment);
+        }
+        return acc;
+      }, []);
+      deployments = red;
+    } else {
+      deployments = [];
+    }
+    animal.device = deployments;
+    return animal;
+  }, [critterData, deploymentData, survey_critter_id, defaultFormValues]);
 
   const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE) => {
     const postCritterPayload = async () => {

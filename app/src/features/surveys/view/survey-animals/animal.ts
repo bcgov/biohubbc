@@ -207,7 +207,7 @@ export const AnimalSchema = yup.object({}).shape({
   family: yup.array().of(AnimalRelationshipSchema).required(),
   images: yup.array().of(AnimalImageSchema).required(),
   collectionUnits: yup.array().of(AnimalCollectionUnitSchema).required(),
-  device: AnimalTelemetryDeviceSchema.default(undefined)
+  device: yup.array().of(AnimalTelemetryDeviceSchema).required()
 });
 
 export const LocationSchema = yup.object({}).shape({

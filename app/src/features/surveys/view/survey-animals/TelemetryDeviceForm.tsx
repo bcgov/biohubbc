@@ -11,10 +11,11 @@ import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import { AttachmentType } from 'constants/attachments';
-import { Form, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { Fragment, useEffect, useState } from 'react';
+import { IAnimal } from './animal';
 import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import { TelemetryFileUpload } from './TelemetryFileUpload';
 
@@ -28,7 +29,7 @@ export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
   attachmentType?: AttachmentType;
 }
 
-const AttachmentFormSection = (props: { index: number; deviceMake: string }) => {
+export const AttachmentFormSection = (props: { index: number; deviceMake: string }) => {
   return (
     <>
       {props.deviceMake === 'Vectronic' && (
@@ -59,7 +60,7 @@ const AttachmentFormSection = (props: { index: number; deviceMake: string }) => 
   );
 };
 
-const DeploymentFormSection = ({
+export const DeploymentFormSection = ({
   index,
   deployments,
   mode,
@@ -98,13 +99,13 @@ const DeploymentFormSection = ({
             <Fragment key={`deployment-item-${deploy.deployment_id}`}>
               <Grid item xs={mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 6 : 5.5}>
                 <SingleDateField
-                  name={`${index}.deployments.${i}.attachment_start`}
+                  name={`device.${index}.deployments.${i}.attachment_start`}
                   required={true}
                   label={'Start Date'}
                 />
               </Grid>
               <Grid item xs={mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 6 : 5.5}>
-                <SingleDateField name={`${index}.deployments.${i}.attachment_end`} label={'End Date'} />
+                <SingleDateField name={`device.${index}.deployments.${i}.attachment_end`} label={'End Date'} />
               </Grid>
               {mode === TELEMETRY_DEVICE_FORM_MODE.EDIT && (
                 <Grid item xs={1}>
@@ -130,12 +131,12 @@ const DeploymentFormSection = ({
 
 interface IDeviceFormSectionProps {
   mode: TELEMETRY_DEVICE_FORM_MODE;
-  values: IAnimalTelemetryDeviceFile[];
+  values: IAnimalTelemetryDeviceFile[] | IAnimalTelemetryDevice[];
   index: number;
   removeAction: (deploymentId: string) => void;
 }
 
-const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSectionProps): JSX.Element => {
+export const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSectionProps): JSX.Element => {
   const api = useTelemetryApi();
 
   const { data: bctwDeviceData, refresh } = useDataLoader(() => api.devices.getDeviceDetails(values[index].device_id));
@@ -156,7 +157,11 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={6}>
-            <CustomTextField label="Device ID" name={`${index}.device_id`} other={{ disabled: mode === 'edit' }} />
+            <CustomTextField
+              label="Device ID"
+              name={`device.${index}.device_id`}
+              other={{ disabled: mode === 'edit' }}
+            />
           </Grid>
           <Grid item xs={6}>
             <Grid container>
@@ -169,7 +174,7 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
                     borderBottomRightRadius: 0
                   }
                 }}>
-                <CustomTextField label="Frequency (Optional)" name={`${index}.frequency`} />
+                <CustomTextField label="Frequency (Optional)" name={`device.${index}.frequency`} />
               </Grid>
               <Grid
                 item
@@ -183,7 +188,7 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
                 }}>
                 <TelemetrySelectField
                   label="Units"
-                  name={`${index}.frequency_unit`}
+                  name={`device.${index}.frequency_unit`}
                   id="frequency_unit"
                   fetchData={async () => {
                     const codeVals = await api.devices.getCodeValues('frequency_unit');
@@ -196,13 +201,13 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
           <Grid item xs={6}>
             <TelemetrySelectField
               label="Device Manufacturer"
-              name={`${index}.device_make`}
+              name={`device.${index}.device_make`}
               id="manufacturer"
               fetchData={api.devices.getCollarVendors}
             />
           </Grid>
           <Grid item xs={6}>
-            <CustomTextField label="Device Model (Optional)" name={`${index}.device_model`} />
+            <CustomTextField label="Device Model (Optional)" name={`device.${index}.device_model`} />
           </Grid>
         </Grid>
       </Box>
@@ -238,51 +243,49 @@ interface ITelemetryDeviceFormProps {
 }
 
 const TelemetryDeviceForm = ({ mode, removeAction }: ITelemetryDeviceFormProps) => {
-  const { values } = useFormikContext<IAnimalTelemetryDeviceFile[]>();
+  const { values } = useFormikContext<IAnimal>();
 
   return (
-    <Form>
-      <>
-        {values.map((device, idx) => (
-          <Card
-            key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
-            variant="outlined"
-            sx={{
-              '& + div': {
-                mt: 2
+    <>
+      {values.device?.map((device, idx) => (
+        <Card
+          key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
+          variant="outlined"
+          sx={{
+            '& + div': {
+              mt: 2
+            },
+            '&:only-child': {
+              border: 'none',
+              '& .MuiCardHeader-root': {
+                display: 'none'
               },
-              '&:only-child': {
-                border: 'none',
-                '& .MuiCardHeader-root': {
-                  display: 'none'
-                },
-                '& .MuiCardContent-root': {
-                  padding: 0
-                }
+              '& .MuiCardContent-root': {
+                padding: 0
               }
-            }}>
-            <CardHeader
-              title={`Device ID: ${device.device_id}`}
-              sx={{
-                background: grey[100],
-                borderBottom: '1px solid' + grey[300],
-                '& .MuiCardHeader-title': {
-                  fontSize: '1.125rem'
-                }
-              }}></CardHeader>
-            <CardContent>
-              <DeviceFormSection
-                mode={mode}
-                values={values}
-                key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
-                index={idx}
-                removeAction={removeAction}
-              />
-            </CardContent>
-          </Card>
-        ))}
-      </>
-    </Form>
+            }
+          }}>
+          <CardHeader
+            title={`Device ID: ${device.device_id}`}
+            sx={{
+              background: grey[100],
+              borderBottom: '1px solid' + grey[300],
+              '& .MuiCardHeader-title': {
+                fontSize: '1.125rem'
+              }
+            }}></CardHeader>
+          <CardContent>
+            <DeviceFormSection
+              mode={mode}
+              values={values.device}
+              key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
+              index={idx}
+              removeAction={removeAction}
+            />
+          </CardContent>
+        </Card>
+      ))}
+    </>
   );
 };
 

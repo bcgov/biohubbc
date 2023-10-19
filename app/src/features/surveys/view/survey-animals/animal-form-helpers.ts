@@ -10,7 +10,7 @@ import { AnimalSex, Critter, IAnimal } from './animal';
  * @param existingCritter The critter as seen from the Critterbase DB
  * @returns {*} IAnimal
  */
-export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailedCritterWithInternalId) => {
+export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailedCritterWithInternalId): IAnimal => {
   //This is a pretty long albeit straightforward function, which is why it's been lifted out of the main TSX file.
   //Perhaps some of this could be automated by iterating through each object entries, but I don't think
   //it's necessarily a bad thing to have it this explicit when so many parts need to be handled in particular ways.
@@ -106,7 +106,7 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       }))
     ],
     images: [],
-    device: undefined
+    device: []
   };
 };
 

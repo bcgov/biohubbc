@@ -3,14 +3,17 @@ import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, Grid, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Form, useFormikContext } from 'formik';
 import { isEqual } from 'lodash-es';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
+import yup from 'utils/YupSchema';
 import { IAnimal, IAnimalSubSections } from './animal';
+import { AnimalTelemetryDeviceSchema, IAnimalTelemetryDevice } from './device';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
@@ -26,10 +29,28 @@ interface AddEditAnimalProps {
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
+  const [openDeviceForm, setOpenDeviceForm] = useState(false);
   const { section, isLoading } = props;
   const surveyContext = useContext(SurveyContext);
   const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
   const { submitForm, initialValues, values, resetForm } = useFormikContext<IAnimal>();
+
+  const DeviceFormValues: IAnimalTelemetryDevice = useMemo(() => {
+    return {
+      device_id: '' as unknown as number,
+      device_make: '',
+      frequency: '' as unknown as number,
+      frequency_unit: '',
+      device_model: '',
+      deployments: [
+        {
+          deployment_id: '',
+          attachment_start: '',
+          attachment_end: undefined
+        }
+      ]
+    };
+  }, []);
 
   const renderFormContent = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSubSections, JSX.Element>> = {
@@ -41,11 +62,26 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       [SurveyAnimalsI18N.animalFamilyTitle]: <FamilyAnimalForm />,
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />,
       Telemetry: (
-        <TelemetryDeviceForm mode={TELEMETRY_DEVICE_FORM_MODE.EDIT} removeAction={() => console.log('remove')} />
+        <Box>
+          <Button onClick={() => setOpenDeviceForm(true)} sx={{ marginBottom: 3 }} variant="contained" color="primary">
+            New Device / Deployment
+          </Button>
+          <EditDialog
+            dialogTitle={'New Device / Deployment'}
+            open={openDeviceForm}
+            component={{
+              element: <TelemetryDeviceForm mode={TELEMETRY_DEVICE_FORM_MODE.ADD} removeAction={() => {}} />,
+              initialValues: { device: [DeviceFormValues] },
+              validationSchema: yup.object({ device: yup.array(AnimalTelemetryDeviceSchema) })
+            }}
+            onCancel={() => setOpenDeviceForm(false)}
+            onSave={() => setOpenDeviceForm(false)}></EditDialog>
+          <TelemetryDeviceForm mode={TELEMETRY_DEVICE_FORM_MODE.EDIT} removeAction={() => {}} />
+        </Box>
       )
     };
     return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
-  }, [section]);
+  }, [DeviceFormValues, openDeviceForm, section]);
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
