@@ -213,6 +213,7 @@ export class ObservationRepository extends BaseRepository {
   /**
    * Inserts a survey observation submission record into the database and returns the record
    *
+   * @param {number} submission_id
    * @param {string} key
    * @param {number} survey_id
    * @param {string} original_filename
@@ -234,7 +235,6 @@ export class ObservationRepository extends BaseRepository {
         (${submission_id}, ${key}, ${survey_id}, ${original_filename})
       RETURNING *;`;
     const response = await this.connection.sql(sqlStatement);
-    console.log(response);
 
     return response.rows[0];
   }
