@@ -54,12 +54,12 @@ const useObservationApi = (axios: AxiosInstance) => {
     file: File,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<void> => {
+  ): Promise<{ submissionId: number }> => {
     const formData = new FormData();
 
     formData.append('media', file);
 
-    const { data } = await axios.post(
+    const { data } = await axios.post<{ submissionId: number }>(
       `/api/project/${projectId}/survey/${surveyId}/observations/upload`,
       formData,
       {

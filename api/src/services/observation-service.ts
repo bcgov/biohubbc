@@ -117,6 +117,12 @@ export class ObservationService extends DBService {
     // Step 3. Get the contents of the S3 object
     const csvFile = parseS3File(s3Object);
 
+    // Step 4. Validate the CSV
+
+    // Step 5. Merge all the table rows into an array of ObservationInsert[]
+
+    // Step 6.
+    // this.insertUpdateDeleteSurveyObservations(surveyId, theProcessedRows)
     return csvFile.fileName
   }
 }
