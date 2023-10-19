@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import * as db from '../database/db';
+import { ApiGeneralError } from '../errors/api-error';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 import {
@@ -18,11 +19,10 @@ import {
 import { UserService } from '../services/user-service';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectParticipationService } from './project-participation-service';
-import { ApiGeneralError } from '../errors/api-error';
 
 chai.use(sinonChai);
 
-describe.only('AuthorizationService', () => {
+describe('AuthorizationService', () => {
   describe('executeAuthorizationScheme', function () {
     afterEach(() => {
       sinon.restore();
@@ -336,7 +336,9 @@ describe.only('AuthorizationService', () => {
         discriminator: 'ServiceClient'
       } as unknown) as AuthorizeByServiceClient;
 
-      const isAuthorizedBySystemRole = await authorizationService.authorizeByServiceClient(authorizeByServiceClientData);
+      const isAuthorizedBySystemRole = await authorizationService.authorizeByServiceClient(
+        authorizeByServiceClientData
+      );
 
       expect(isAuthorizedBySystemRole).to.equal(false);
     });
@@ -356,7 +358,9 @@ describe.only('AuthorizationService', () => {
         discriminator: 'ServiceClient'
       } as unknown) as AuthorizeByServiceClient;
 
-      const isAuthorizedBySystemRole = await authorizationService.authorizeByServiceClient(authorizeByServiceClientData);
+      const isAuthorizedBySystemRole = await authorizationService.authorizeByServiceClient(
+        authorizeByServiceClientData
+      );
 
       expect(isAuthorizedBySystemRole).to.equal(true);
     });
@@ -680,7 +684,6 @@ describe.only('AuthorizationService', () => {
       } catch (actualError) {
         expect((actualError as ApiGeneralError).message).to.equal('Failed to identify authenticated user');
       }
-
     });
 
     it('returns a UserObject', async function () {
@@ -701,10 +704,22 @@ describe.only('AuthorizationService', () => {
         display_name: 'test user',
         agency: null
       };
+
       sinon.stub(UserService.prototype, 'getUserByGuid').resolves((userObjectMock as unknown) as any);
 
       const authorizationService = new AuthorizationService(mockDBConnection, {
-        keycloakToken: { preferred_username: '123-456-789@idir' }
+        keycloakToken: {
+          idir_user_guid: '123456789',
+          identity_provider: 'idir',
+          idir_username: 'testuser',
+          email_verified: false,
+          name: 'test user',
+          preferred_username: 'testguid@idir',
+          display_name: 'test user',
+          given_name: 'test',
+          family_name: 'user',
+          email: 'email@email.com'
+        }
       });
 
       const result = await authorizationService.getSystemUserWithRoles();
@@ -774,7 +789,21 @@ describe.only('AuthorizationService', () => {
 
       sinon.stub(AuthorizationService.prototype, 'getProjectUserWithRoles').resolves(projectUserMock);
 
-      const authorizationService = new AuthorizationService(mockDBConnection);
+      const authorizationService = new AuthorizationService(mockDBConnection, {
+        systemUser: ({} as unknown) as SystemUser,
+        keycloakToken: {
+          idir_user_guid: '123456789',
+          identity_provider: 'idir',
+          idir_username: 'testuser',
+          email_verified: false,
+          name: 'test user',
+          preferred_username: 'testguid@idir',
+          display_name: 'test user',
+          given_name: 'test',
+          family_name: 'user',
+          email: 'email@email.com'
+        }
+      });
 
       const projectId = 1;
 
