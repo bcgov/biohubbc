@@ -4,8 +4,8 @@ import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment, useState } from 'react';
-import { v4 } from 'uuid';
 import { AnimalCaptureSchema, getAnimalFieldName, IAnimal, IAnimalCapture, isRequiredInSchema } from '../animal';
+import { ANIMAL_SECTIONS_MAP } from '../animal-sections';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 import LocationEntryForm from './LocationEntryForm';
@@ -22,34 +22,9 @@ import LocationEntryForm from './LocationEntryForm';
  * @return {*}
  */
 
-type ProjectionMode = 'wgs' | 'utm';
 const CaptureAnimalForm = () => {
   const { values } = useFormikContext<IAnimal>();
-
-  const name: keyof IAnimal = 'captures';
-  const newCapture: IAnimalCapture = {
-    _id: v4(),
-
-    capture_latitude: '' as unknown as number,
-    capture_longitude: '' as unknown as number,
-    capture_utm_northing: '' as unknown as number,
-    capture_utm_easting: '' as unknown as number,
-    capture_comment: '',
-    capture_coordinate_uncertainty: 10,
-    capture_timestamp: '' as unknown as Date,
-    projection_mode: 'wgs' as ProjectionMode,
-    show_release: false,
-    release_latitude: '' as unknown as number,
-    release_longitude: '' as unknown as number,
-    release_utm_northing: '' as unknown as number,
-    release_utm_easting: '' as unknown as number,
-    release_comment: '',
-    release_timestamp: '' as unknown as Date,
-    release_coordinate_uncertainty: 10,
-    capture_id: undefined,
-    capture_location_id: undefined,
-    release_location_id: undefined
-  };
+  const { animalKeyName, defaultFormValue } = ANIMAL_SECTIONS_MAP['Capture Information'];
 
   const canAddNewCapture = () => {
     const lastCapture = values.captures[values.captures.length - 1];
@@ -61,7 +36,7 @@ const CaptureAnimalForm = () => {
   };
 
   return (
-    <FieldArray name={name}>
+    <FieldArray name={animalKeyName}>
       {({ remove, push }: FieldArrayRenderProps) => (
         <>
           <FormSectionWrapper
@@ -70,10 +45,10 @@ const CaptureAnimalForm = () => {
             titleHelp={SurveyAnimalsI18N.animalCaptureHelp}
             btnLabel={SurveyAnimalsI18N.animalCaptureAddBtn}
             disableAddBtn={!canAddNewCapture()}
-            handleAddSection={() => push(newCapture)}
+            handleAddSection={() => push(defaultFormValue)}
             handleRemoveSection={remove}>
             {values.captures.map((cap, index) => (
-              <CaptureAnimalFormContent key={cap._id} name={name} index={index} value={cap} />
+              <CaptureAnimalFormContent key={cap._id} name={animalKeyName} index={index} value={cap} />
             ))}
           </FormSectionWrapper>
         </>
