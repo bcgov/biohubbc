@@ -233,8 +233,8 @@ export class ObservationRepository extends BaseRepository {
       VALUES
         (${submission_id}, ${key}, ${survey_id}, ${original_filename})
       RETURNING *;`;
-    const response = await this.connection.sql(sqlStatement);
-    console.log(response);
+
+    const response = await this.connection.sql(sqlStatement, ObservationSubmissionRecord);
 
     return response.rows[0];
   }
@@ -249,7 +249,29 @@ export class ObservationRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT nextval('biohub.survey_observation_submission_id_seq')::integer as submission_id;
     `;
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<{ submission_id: number }>(sqlStatement);
     return response.rows[0].submission_id;
+  }
+
+  /**
+   * Retrieves the observation submission record by the given submission ID.
+   *
+   * @param {number} submissionId
+   * @return {*}  {Promise<ObservationSubmissionRecord>}
+   * @memberof ObservationService
+   */
+  async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .select('*')
+      .from('survey_observation_submission')
+      .where('submission_id', submissionId);
+
+    const response = await this.connection.knex(sqlStatement, ObservationSubmissionRecord);
+
+    // TODO add null check here.
+
+    return response.rows[0];
   }
 }

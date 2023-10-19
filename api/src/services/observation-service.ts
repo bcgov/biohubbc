@@ -3,10 +3,12 @@ import {
   InsertObservation,
   ObservationRecord,
   ObservationRepository,
+  ObservationSubmissionRecord,
   UpdateObservation
 } from '../repositories/observation-repository';
-import { generateS3FileKey } from '../utils/file-utils';
+import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
+import { parseS3File } from '../utils/media/media-utils';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-queries');
@@ -88,16 +90,33 @@ export class ObservationService extends DBService {
       surveyId,
       file.originalname
     );
-    
-    defaultLog.debug({ label: 'insertSurveyObservationSubmission', submissionId, insertResult });
+
     return { submission_id: insertResult.submission_id, key };
   }
 
-  // TODO swap out for real method later
-  async _getObservationSubmissionById(submissionId: number) {
-    return {
-      submission_id: submissionId,
-      key: 'test-key'
-    }
+  /**
+   * Retrieves the observation submission record by the given submission ID.
+   *
+   * @param {number} submissionId
+   * @return {*}  {Promise<ObservationSubmissionRecord>}
+   * @memberof ObservationService
+   */
+  async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
+    return this.observationRepository.getObservationSubmissionById(submissionId);
+  }
+
+  async processObservationCsvSubmission(submissionId: number) {
+    defaultLog.debug({ label: 'processObservationCsvSubmission' });
+
+    // Step 1. Retrieve the observation submission record
+    const submission = await this.getObservationSubmissionById(submissionId);
+
+    // Step 2. Retrieve the S3 object containing the uploaded CSV file
+    const s3Object = await getFileFromS3(submission.key);
+
+    // Step 3. Get the contents of the S3 object
+    const csvFile = parseS3File(s3Object);
+
+    return csvFile.fileName
   }
 }

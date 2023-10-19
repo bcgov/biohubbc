@@ -5,8 +5,6 @@ import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../utils/logger';
 import { ObservationService } from '../../../../../../services/observation-service';
-import { getFileFromS3 } from '../../../../../../utils/file-utils';
-import { parseS3File } from '../../../../../../utils/media/media-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/process');
 
@@ -74,12 +72,7 @@ POST.apiDoc = {
           schema: {
             type: 'object',
             properties: {
-              status: {
-                type: 'string'
-              },
-              reason: {
-                type: 'string'
-              }
+              // TODO
             }
           }
         }
@@ -107,19 +100,15 @@ export function processFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.occurrence_submission_id;
 
-    res.status(200).json({ status: 'success' });
-
     const connection = getDBConnection(req['keycloak_token']);
     try {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      const submission = await observationService._getObservationSubmissionById(submissionId);
+      
+      const response = observationService.processObservationCsvSubmission(submissionId);
 
-      const s3Object = await getFileFromS3(submission.key);
-
-      const csvFile = parseS3File(s3Object);
-      console.log(csvFile.fileName)
+      res.status(200).json(response);
 
       await connection.commit();
     } catch (error) {
