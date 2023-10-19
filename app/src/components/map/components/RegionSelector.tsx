@@ -2,7 +2,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 
-interface IRegionOption {
+export interface IRegionOption {
   key: string;
   name: string;
 }
@@ -52,7 +52,7 @@ export const RegionSelector = (props: IRegionSelectorProps) => {
           <TextField {...params} variant="standard" label="Region Select" placeholder="Regions" />
         )}
         onChange={(_, option) => {
-          handleOnChange(option)
+          handleOnChange(option);
         }}
       />
     </>

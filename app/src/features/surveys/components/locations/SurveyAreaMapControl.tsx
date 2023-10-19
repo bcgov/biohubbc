@@ -7,8 +7,10 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
-import { RegionSelector } from 'components/map/components/RegionSelector';
+import { IRegionOption, RegionSelector } from 'components/map/components/RegionSelector';
 import StaticLayers from 'components/map/components/StaticLayers';
+import { layerContentHandlers, layerNameHandler } from 'components/map/wfs-utils';
+import WFSFeatureGroup from 'components/map/WFSFeatureGroup';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
@@ -30,6 +32,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const { setFieldValue, setFieldError, values } = formik_props;
   const [updatedBounds, setUpdateBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
 
   useEffect(() => {
     setUpdateBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
@@ -82,7 +85,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         <Box ml={2}>
           <RegionSelector
             onRegionSelected={(data) => {
-              console.log(data);
+              setSelectedRegion(data);
             }}
           />
         </Box>
@@ -97,6 +100,27 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         scrollWheelZoom={false}>
         {/* Programmatically set map bounds */}
         <SetMapBounds bounds={updatedBounds} />
+
+        {selectedRegion && (
+          <WFSFeatureGroup
+            typeName={selectedRegion.key}
+            minZoom={7}
+            featureKeyHandler={layerContentHandlers[selectedRegion.key].featureKeyHandler}
+            popupContentHandler={layerContentHandlers[selectedRegion.key].popupContentHandler}
+            existingGeometry={[]}
+            onSelectGeometry={(geo: Feature) => {
+              const layerName = layerNameHandler[selectedRegion.key](geo);
+              const region = {
+                name: layerName,
+                description: '',
+                geojson: [geo],
+                revision_count: 0
+              };
+              setFieldValue(formik_key, [...values.locations, region]);
+              setSelectedRegion(null);
+            }}
+          />
+        )}
 
         <LayersControl position="bottomright">
           <StaticLayers
