@@ -24,8 +24,8 @@ describe('gcnotify', () => {
         recipient: { emailAddress: 'test@email.com', phoneNumber: null, userId: null },
         message: {
           header: 'Hello TEST,',
-          body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
-          body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
+          main_body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
+          main_body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
           footer: 'We will contact you after your request has been reviewed by a member of our team.'
         }
       }
@@ -67,8 +67,8 @@ describe('gcnotify', () => {
         recipient: { emailAddress: null, phoneNumber: 2501231231, userId: null },
         message: {
           header: 'Hello TEST,',
-          body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
-          body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
+          main_body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
+          main_body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
           footer: 'We will contact you after your request has been reviewed by a member of our team.'
         }
       };

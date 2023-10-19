@@ -3,7 +3,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
-import { getKeycloakSource, getUserGuid } from '../utils/keycloak-utils';
+import { getKeycloakSource, getKeycloakUserInformationFromKeycloakToken, getUserGuid } from '../utils/keycloak-utils';
 import { DBService } from './db-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { UserService } from './user-service';
@@ -324,11 +324,13 @@ export class AuthorizationService extends DBService {
       return null;
     }
 
-    const userGuid = getUserGuid(this._keycloakToken);
+    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(this._keycloakToken);
 
-    if (!userGuid) {
+    if (!keycloakUserInformation) {
       return null;
     }
+
+    const userGuid = getUserGuid(keycloakUserInformation);
 
     return this._userService.getUserByGuid(userGuid);
   }
@@ -366,11 +368,13 @@ export class AuthorizationService extends DBService {
       return null;
     }
 
-    const userGuid = getUserGuid(this._keycloakToken);
+    const keycloakUserInformation = getKeycloakUserInformationFromKeycloakToken(this._keycloakToken);
 
-    if (!userGuid) {
+    if (!keycloakUserInformation) {
       return null;
     }
+
+    const userGuid = getUserGuid(keycloakUserInformation);
 
     return this._projectParticipationService.getProjectParticipantByUserGuid(projectId, userGuid);
   }

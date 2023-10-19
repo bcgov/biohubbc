@@ -500,7 +500,9 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      const getKeycloakTokenStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+      const getKeycloakServiceTokenStub = sinon
+        .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
+        .resolves('token');
 
       const axiosStub = sinon.stub(axios, 'post').resolves({ data: { queue_id: 1 } });
 
@@ -523,7 +525,7 @@ describe('PlatformService', () => {
 
       const response = await platformService._submitDwCADatasetToBioHub(dwcaDatasetMock);
 
-      expect(getKeycloakTokenStub).to.have.been.calledOnce;
+      expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
       expect(axiosStub).to.have.been.calledOnceWith(sinon.match.string, sinon.match.any, sinon.match.object);
       expect(response).to.eql({ queue_id: 1 });
     });
@@ -1154,7 +1156,9 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      const keycloakServiceStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+      const getKeycloakServiceTokenStub = sinon
+        .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
+        .resolves('token');
 
       const axiosStub = sinon.stub(axios, 'post').resolves({
         data: {
@@ -1183,7 +1187,7 @@ describe('PlatformService', () => {
 
       await platformService._submitArtifactToBioHub(testArtifact);
 
-      expect(keycloakServiceStub).to.have.been.calledOnce;
+      expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
 
       expect(axiosStub).to.have.been.calledOnceWith(
         'http://backbone-host.dev/api/artifact/intake',
@@ -1210,7 +1214,9 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      const keycloakServiceStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+      const getKeycloakServiceTokenStub = sinon
+        .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
+        .resolves('token');
 
       const axiosStub = sinon.stub(axios, 'post').resolves({
         data: {
@@ -1220,7 +1226,7 @@ describe('PlatformService', () => {
 
       await platformService.deleteAttachmentFromBiohub('uuid');
 
-      expect(keycloakServiceStub).to.have.been.calledOnce;
+      expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
       expect(axiosStub).to.have.been.calledOnceWith(
         'http://backbone-host.dev/api/artifact/delete',
         {
