@@ -8,10 +8,10 @@ interface IRegionOption {
 }
 
 export interface IRegionSelectorProps {
-  onRegionSelected: () => void;
+  onRegionSelected: (data: IRegionOption | null) => void;
 }
 
-export const RegionSelector = () => {
+export const RegionSelector = (props: IRegionSelectorProps) => {
   const regions: IRegionOption[] = [
     {
       key: 'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW',
@@ -27,10 +27,11 @@ export const RegionSelector = () => {
     }
   ];
 
-  const [selectedRegion, setSelectedRegion] = useState<IRegionOption | undefined>(undefined);
+  const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
 
-  const handleOnChange = (selected: { key: string; name: string }) => {
+  const handleOnChange = (selected: IRegionOption | null) => {
     setSelectedRegion(selected);
+    props.onRegionSelected(selected);
   };
 
   const handleCheckOptionEquality = (option: IRegionOption, value: IRegionOption) => {
@@ -51,10 +52,7 @@ export const RegionSelector = () => {
           <TextField {...params} variant="standard" label="Region Select" placeholder="Regions" />
         )}
         onChange={(_, option) => {
-          console.log(option);
-          if (option) {
-            handleOnChange(option);
-          }
+          handleOnChange(option)
         }}
       />
     </>
