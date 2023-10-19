@@ -57,23 +57,24 @@ const defaultLog = getLogger('services/keycloak-service');
  * @class KeycloakService
  */
 export class KeycloakService {
-  // Used to authenticate with the SIMS Service Credentials
   keycloakHost: string;
+
+  // Used to authenticate with the SIMS Service Client
   keycloakServiceClientId: string;
   keycloakServiceClientSecret: string;
 
-  // Used to authenticate with the CSS API using the SIMS API credentials
+  // Used to authenticate with the SIMS CSS API
   keycloakApiTokenUrl: string;
   keycloakApiClientId: string;
   keycloakApiClientSecret: string;
 
   // Used to query the CSS API
   keycloakApiHost: string;
-  keycloakIntegrationId: string;
-  keycloakEnvironment: string;
+  keycloakApiEnvironment: string;
 
   constructor() {
     this.keycloakHost = `${process.env.KEYCLOAK_HOST}`;
+
     this.keycloakServiceClientId = `${process.env.KEYCLOAK_ADMIN_USERNAME}`;
     this.keycloakServiceClientSecret = `${process.env.KEYCLOAK_ADMIN_PASSWORD}`;
 
@@ -82,8 +83,7 @@ export class KeycloakService {
     this.keycloakApiClientSecret = `${process.env.KEYCLOAK_API_CLIENT_SECRET}`;
 
     this.keycloakApiHost = `${process.env.KEYCLOAK_API_HOST}`;
-    this.keycloakIntegrationId = `${process.env.KEYCLOAK_INTEGRATION_ID}`;
-    this.keycloakEnvironment = `${process.env.KEYCLOAK_ENVIRONMENT}`;
+    this.keycloakApiEnvironment = `${process.env.KEYCLOAK_API_ENVIRONMENT}`;
   }
 
   /**
@@ -121,7 +121,7 @@ export class KeycloakService {
    * @return {*}  {Promise<string>}
    * @memberof KeycloakService
    */
-  async getKeycloakToken(): Promise<string> {
+  async getKeycloakCssApiToken(): Promise<string> {
     try {
       const { data } = await axios.post(
         this.keycloakApiTokenUrl,
@@ -139,7 +139,7 @@ export class KeycloakService {
 
       return data.access_token as string;
     } catch (error) {
-      defaultLog.debug({ label: 'getKeycloakToken', message: 'error', error: error });
+      defaultLog.debug({ label: 'getKeycloakCssApiToken', message: 'error', error: error });
       throw new ApiGeneralError('Failed to authenticate with keycloak', [(error as Error).message]);
     }
   }
@@ -157,11 +157,11 @@ export class KeycloakService {
     email?: string;
     guid?: string;
   }): Promise<KeycloakIDIRUserRecord[]> {
-    const token = await this.getKeycloakToken();
+    const token = await this.getKeycloakCssApiToken();
 
     try {
       const { data } = await axios.get<KeycloakIDIRUserResponse>(
-        `${this.keycloakApiHost}/${this.keycloakEnvironment}/idir/users?${qs.stringify({ guid: criteria.guid })}`,
+        `${this.keycloakApiHost}/${this.keycloakApiEnvironment}/idir/users?${qs.stringify({ guid: criteria.guid })}`,
         {
           headers: { authorization: `Bearer ${token}` }
         }
