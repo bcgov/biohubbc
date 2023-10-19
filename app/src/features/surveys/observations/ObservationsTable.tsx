@@ -407,6 +407,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       width: 70,
       disableColumnMenu: true,
       resizable: false,
+      headerClassName: 'pinnedColumn',
       cellClassName: 'pinnedColumn',
       getActions: (params) => [
         <IconButton
@@ -513,54 +514,56 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           loadingOverlay: LoadingOverlay
         }}
         sx={{
+          background: grey[50],
           border: 'none',
+          '& .pinnedColumn': {
+            position: 'sticky',
+            right: 0,
+            top: 0,
+            borderLeft: '1px solid' + grey[300]
+          },
           '& .MuiDataGrid-columnHeaders': {
+            background: '#fff',
             position: 'relative',
             '&:after': {
               content: "''",
               position: 'absolute',
-              top: '20px',
+              top: '0',
               right: 0,
               width: '70px',
               height: '60px',
-              background: '#fff'
+              background: '#fff',
+              borderLeft: '1px solid' + grey[300]
             }
           },
           '& .MuiDataGrid-columnHeader': {
-            px: 2,
-            py: 1
-          },
-          '& .MuiDataGrid-columnHeader:focus': {
-            outline: 'none'
+            px: 3,
+            py: 1,
+            '&:focus': {
+              outline: 'none'
+            }
           },
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 700,
             textTransform: 'uppercase',
             color: 'text.secondary'
           },
-          '& .pinnedColumn': {
-            position: 'sticky',
-            right: 0,
-            top: 0,
-            borderLeft: '1px solid #ccc'
-          },
-          '& .MuiDataGrid-row--editing': {
-            boxShadow: 'none',
-            backgroundColor: cyan[50],
-            '& .MuiDataGrid-cell': {
-              backgroundColor: cyan[50]
-            }
-          },
           '& .MuiDataGrid-cell': {
-            px: 2,
+            px: 3,
             py: 1,
             background: '#fff',
             '&.MuiDataGrid-cell--editing:focus-within': {
               outline: 'none'
             },
             '&.MuiDataGrid-cell--editing': {
-              px: 0.5,
-              py: 1,
+              p: 1,
+              backgroundColor: cyan[100]
+            }
+          },
+          '& .MuiDataGrid-row--editing': {
+            boxShadow: 'none',
+            backgroundColor: cyan[50],
+            '& .MuiDataGrid-cell': {
               backgroundColor: cyan[50]
             }
           },
@@ -586,16 +589,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               padding: 0
             }
           },
-          '& .MuiOutlinedInput': {
-            '&-notchedoutline': {
-              border: '1px solid ' + grey[300]
-            }
-          },
-          '& .MuiOutlinedInput-notchedOutline': {
-            '&.Mui-focused': {
-              borderColor: 'primary.main'
-            }
-          },
           '& .MuiOutlinedInput-root': {
             borderRadius: '4px',
             background: '#fff',
@@ -606,6 +599,15 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             '&:hover > fieldset': {
               border: '1px solid primary.main'
             }
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            border: '1px solid ' + grey[300],
+            '&.Mui-focused': {
+              borderColor: 'primary.main'
+            }
+          },
+          '& .MuiDataGrid-footerContainer': {
+            background: '#fff'
           }
         }}
       />

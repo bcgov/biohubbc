@@ -1,4 +1,5 @@
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { grey } from '@mui/material/colors';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -19,28 +20,26 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
         elevation={0}
         sx={{
           pt: 3,
-          pb: 3.5,
-          px: 3
+          pb: 3.75,
+          px: 3,
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[300]
         }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          sx={{
-            mb: 1
-          }}>
+        <Breadcrumbs aria-label="breadcrumb">
           <Link
             component={RouterLink}
-            variant="body2"
             underline="hover"
             to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
-          <Typography component="span" variant="body2" color="text.secondary">
+          <Typography component="span" color="textSecondary">
             Manage Observations
           </Typography>
         </Breadcrumbs>
         <Typography
-          variant="h3"
           component="h1"
+          variant="h2"
           sx={{
             ml: '-2px'
           }}>
