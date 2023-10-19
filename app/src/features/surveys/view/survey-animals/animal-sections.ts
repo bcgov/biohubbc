@@ -1,41 +1,155 @@
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { v4 } from 'uuid';
-import { IAnimal, ProjectionMode } from './animal';
-import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
-import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
+import {
+  IAnimal,
+  IAnimalCapture,
+  IAnimalCollectionUnit,
+  IAnimalMarking,
+  IAnimalMeasurement,
+  IAnimalMortality,
+  IAnimalRelationship,
+  ProjectionMode
+} from './animal';
 
 export type IAnimalSections =
   | 'General'
-  // | 'Ecological Units'
-  // | 'Markings'
-  // | 'Measurements'
-  | 'Capture Information';
-// | 'Mortality'
-// | 'Family'
+  | 'Ecological Units'
+  | 'Markings'
+  | 'Measurements'
+  | 'Capture Information'
+  | 'Mortality'
+  | 'Family';
 //| 'Observations'
 //'Telemetry';
 
-// Remove partial once complete
-type IAnimalSectionsMap = Record<
-  IAnimalSections,
-  {
-    title: IAnimalSections;
-    comp: () => JSX.Element;
-    animalKeyName: keyof IAnimal;
-    defaultFormValue?: object;
-  }
->;
-export const ANIMAL_SECTIONS_MAP: IAnimalSectionsMap = {
+interface IAnimalSectionsMap
+  extends Record<
+    IAnimalSections,
+    {
+      animalKeyName: keyof IAnimal;
+      defaultFormValue: () => object;
+      addBtnText?: string;
+    }
+  > {
   [SurveyAnimalsI18N.animalGeneralTitle]: {
-    title: SurveyAnimalsI18N.animalGeneralTitle,
-    comp: GeneralAnimalForm,
-    animalKeyName: 'general'
+    animalKeyName: 'general';
+    //This probably needs to change to the correct object, general does not use the formikArray pattern
+    defaultFormValue: () => object;
+    addBtnText?: string;
+  };
+  [SurveyAnimalsI18N.animalCollectionUnitTitle]: {
+    animalKeyName: 'collectionUnits';
+    defaultFormValue: () => IAnimalCollectionUnit;
+    addBtnText: string;
+  };
+  [SurveyAnimalsI18N.animalMarkingTitle]: {
+    animalKeyName: 'markings';
+    defaultFormValue: () => IAnimalMarking;
+    addBtnText: string;
+  };
+  [SurveyAnimalsI18N.animalMeasurementTitle]: {
+    animalKeyName: 'measurements';
+    defaultFormValue: () => IAnimalMeasurement;
+    addBtnText: string;
+  };
+  [SurveyAnimalsI18N.animalCaptureTitle]: {
+    animalKeyName: 'captures';
+    defaultFormValue: () => IAnimalCapture;
+    addBtnText: string;
+  };
+  [SurveyAnimalsI18N.animalMortalityTitle]: {
+    animalKeyName: 'mortality';
+    defaultFormValue: () => IAnimalMortality;
+    addBtnText: string;
+  };
+  [SurveyAnimalsI18N.animalFamilyTitle]: {
+    animalKeyName: 'family';
+    defaultFormValue: () => IAnimalRelationship;
+    addBtnText: string;
+  };
+}
+
+export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
+  [SurveyAnimalsI18N.animalGeneralTitle]: {
+    animalKeyName: 'general',
+    defaultFormValue: () => ({})
+  },
+  [SurveyAnimalsI18N.animalCollectionUnitTitle]: {
+    animalKeyName: 'collectionUnits',
+    addBtnText: 'Add Unit',
+    defaultFormValue: () => ({
+      _id: v4(),
+      collection_unit_id: '',
+      collection_category_id: '',
+      critter_collection_unit_id: undefined
+    })
+  },
+  [SurveyAnimalsI18N.animalMarkingTitle]: {
+    animalKeyName: 'markings',
+    addBtnText: 'Add Marking',
+    defaultFormValue: () => ({
+      _id: v4(),
+
+      marking_type_id: '',
+      taxon_marking_body_location_id: '',
+      primary_colour_id: '',
+      secondary_colour_id: '',
+      marking_comment: '',
+      marking_id: undefined
+    })
+  },
+  [SurveyAnimalsI18N.animalMeasurementTitle]: {
+    animalKeyName: 'measurements',
+    addBtnText: 'Add Measurement',
+    defaultFormValue: () => ({
+      _id: v4(),
+      measurement_qualitative_id: undefined,
+      measurement_quantitative_id: undefined,
+      taxon_measurement_id: '',
+      value: '' as unknown as number,
+      qualitative_option_id: '',
+      measured_timestamp: '' as unknown as Date,
+      measurement_comment: ''
+    })
+  },
+  [SurveyAnimalsI18N.animalMortalityTitle]: {
+    animalKeyName: 'mortality',
+    addBtnText: 'Add Mortality',
+    defaultFormValue: () => ({
+      _id: v4(),
+
+      mortality_longitude: '' as unknown as number,
+      mortality_latitude: '' as unknown as number,
+      mortality_utm_northing: '' as unknown as number,
+      mortality_utm_easting: '' as unknown as number,
+      mortality_timestamp: '' as unknown as Date,
+      mortality_coordinate_uncertainty: 10,
+      mortality_comment: '',
+      proximate_cause_of_death_id: '',
+      proximate_cause_of_death_confidence: '',
+      proximate_predated_by_taxon_id: '',
+      ultimate_cause_of_death_id: '',
+      ultimate_cause_of_death_confidence: '',
+      ultimate_predated_by_taxon_id: '',
+      projection_mode: 'wgs' as ProjectionMode,
+      mortality_id: undefined,
+      location_id: undefined
+    })
+  },
+  [SurveyAnimalsI18N.animalFamilyTitle]: {
+    animalKeyName: 'family',
+    addBtnText: 'Add Relationship',
+    defaultFormValue: () => ({
+      _id: v4(),
+
+      family_id: '',
+      relationship: undefined
+    })
   },
   [SurveyAnimalsI18N.animalCaptureTitle]: {
-    title: SurveyAnimalsI18N.animalCaptureTitle,
-    comp: CaptureAnimalForm,
     animalKeyName: 'captures',
-    defaultFormValue: {
+    addBtnText: 'Add Capture',
+    defaultFormValue: () => ({
       _id: v4(),
 
       capture_latitude: '' as unknown as number,
@@ -57,6 +171,6 @@ export const ANIMAL_SECTIONS_MAP: IAnimalSectionsMap = {
       capture_id: undefined,
       capture_location_id: undefined,
       release_location_id: undefined
-    }
+    })
   }
 };

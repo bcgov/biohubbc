@@ -8,7 +8,6 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { Fragment, useState } from 'react';
-import { v4 } from 'uuid';
 import {
   AnimalRelationshipSchema,
   getAnimalFieldName,
@@ -18,6 +17,7 @@ import {
   lastAnimalValueValid,
   newFamilyIdPlaceholder
 } from '../animal';
+import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 import FormSectionWrapper from './FormSectionWrapper';
 const useStyles = makeStyles((theme: Theme) => ({
   surveyMetadataContainer: {
@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const FamilyAnimalForm = () => {
   const { values, handleChange } = useFormikContext<IAnimal>();
   const critterbase = useCritterbaseApi();
+  const { animalKeyName, defaultFormValue } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalFamilyTitle];
   const { data: allFamilies, load } = useDataLoader(critterbase.family.getAllFamilies);
   const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbase.family.getImmediateFamily);
   const [showFamilyStructure, setShowFamilyStructure] = useState(false);
@@ -60,14 +61,6 @@ const FamilyAnimalForm = () => {
   }
 
   const classes = useStyles();
-
-  const name: keyof IAnimal = 'family';
-  const newRelationship: IAnimalRelationship = {
-    _id: v4(),
-
-    family_id: '',
-    relationship: undefined
-  };
 
   const disabledFamilyIds = values.family.reduce((acc: Record<string, boolean>, curr) => {
     if (curr.family_id) {
@@ -78,7 +71,7 @@ const FamilyAnimalForm = () => {
 
   return (
     <Box id={'family-animal-form'}>
-      <FieldArray validateOnChange={true} name={name}>
+      <FieldArray validateOnChange={true} name={animalKeyName}>
         {({ remove, push }: FieldArrayRenderProps) => (
           <>
             <FormSectionWrapper
@@ -87,14 +80,14 @@ const FamilyAnimalForm = () => {
               titleHelp={SurveyAnimalsI18N.animalFamilyHelp}
               btnLabel={SurveyAnimalsI18N.animalFamilyAddBtn}
               disableAddBtn={!lastAnimalValueValid('family', values)}
-              handleAddSection={() => push(newRelationship)}
+              handleAddSection={() => push(defaultFormValue)}
               handleRemoveSection={remove}>
               {values.family.map((fam, index) => (
                 <Fragment key={fam._id}>
                   <Grid item xs={6}>
                     <CbSelectWrapper
                       label={'Family ID'}
-                      name={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
+                      name={getAnimalFieldName<IAnimalRelationship>(animalKeyName, 'family_id', index)}
                       onChange={handleChange}
                       controlProps={{
                         size: 'medium',
@@ -114,7 +107,7 @@ const FamilyAnimalForm = () => {
                     <Grid item xs={6}>
                       <CbSelectWrapper
                         label={'Relationship'}
-                        name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
+                        name={getAnimalFieldName<IAnimalRelationship>(animalKeyName, 'relationship', index)}
                         onChange={handleChange}
                         controlProps={{
                           size: 'medium',

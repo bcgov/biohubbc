@@ -1,4 +1,4 @@
-import { mdiContentCopy } from '@mdi/js';
+import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Collapse, Grid, IconButton, Toolbar, Typography } from '@mui/material';
@@ -11,7 +11,8 @@ import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formi
 import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo } from 'react';
 import { useParams } from 'react-router';
-import { getAnimalFieldName, IAnimal, IAnimalGeneral, IAnimalSubSections } from './animal';
+import { getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
+import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
@@ -19,10 +20,9 @@ import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
-import TelemetryDeviceForm, { TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
 
 interface AddEditAnimalProps {
-  section: IAnimalSubSections;
+  section: IAnimalSections;
   isLoading?: boolean;
 }
 
@@ -34,17 +34,14 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const dialogContext = useContext(DialogContext);
 
   const renderFormContent = useMemo(() => {
-    const sectionMap: Partial<Record<IAnimalSubSections, JSX.Element>> = {
+    const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
       [SurveyAnimalsI18N.animalGeneralTitle]: <GeneralAnimalForm />,
       [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalForm />,
       [SurveyAnimalsI18N.animalMeasurementTitle]: <MeasurementAnimalForm />,
       [SurveyAnimalsI18N.animalCaptureTitle]: <CaptureAnimalForm />,
       [SurveyAnimalsI18N.animalMortalityTitle]: <MortalityAnimalForm />,
       [SurveyAnimalsI18N.animalFamilyTitle]: <FamilyAnimalForm />,
-      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />,
-      Telemetry: (
-        <TelemetryDeviceForm mode={TELEMETRY_DEVICE_FORM_MODE.EDIT} removeAction={() => console.log('remove')} />
-      )
+      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />
     };
     return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
   }, [section]);
@@ -98,13 +95,22 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             }
           }}>
           <Box display="flex" overflow="hidden">
-            <FieldArray name="markings">
-              {({ push }: FieldArrayRenderProps) => (
-                <Button variant="outlined" color="primary" onClick={() => push({})}>
-                  Add Record
-                </Button>
-              )}
-            </FieldArray>
+            {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
+              <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
+                {({ push }: FieldArrayRenderProps) => (
+                  <Button
+                    startIcon={<Icon path={mdiPlus} size={1} />}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      //Remove this before handling the modal section
+                      push(ANIMAL_SECTIONS_FORM_MAP[section]?.defaultFormValue());
+                    }}>
+                    {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
+                  </Button>
+                )}
+              </FieldArray>
+            ) : null}
             <Collapse in={!isEqual(initialValues, values)} orientation="horizontal">
               <Box ml={1} whiteSpace="nowrap">
                 <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
@@ -139,8 +145,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                     )
                   },
                   disabled: true,
-                  variant: 'filled',
-                  defaultValue: initialValues.general.critter_id
+                  variant: 'filled'
                 }}
               />
             </Grid>

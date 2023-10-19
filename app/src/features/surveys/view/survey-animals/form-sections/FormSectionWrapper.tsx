@@ -1,12 +1,10 @@
-import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Grid, IconButton, PaperProps, Typography } from '@mui/material';
+import { Box, Grid, IconButton, PaperProps, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import { grey } from '@mui/material/colors';
-import { useFormikContext } from 'formik';
-import { IAnimal } from '../animal';
 
 interface FormSectionWrapperProps {
   title: string; // Title ie: General / Capture Information etc
@@ -41,10 +39,10 @@ const FormSectionWrapper = ({
   btnLabel,
   maxSections
 }: FormSectionWrapperProps) => {
-  const { values } = useFormikContext<IAnimal>();
+  //const { values } = useFormikContext<IAnimal>();
+  //const showBtn = btnLabel && handleAddSection && (maxSections === undefined || childs.length < maxSections);
   //For convienence, vs rendering duplicated components for children and children[]
   const childs = Array.isArray(children) ? children : [children];
-  const showBtn = btnLabel && handleAddSection && (maxSections === undefined || childs.length < maxSections);
 
   return (
     <>
@@ -105,7 +103,7 @@ const FormSectionWrapper = ({
             </CardContent>
           </Card>
         ))}
-        {showBtn ? (
+        {/*{showBtn ? (
           <Button
             onClick={handleAddSection}
             startIcon={<Icon path={mdiPlus} size={1} />}
@@ -114,7 +112,7 @@ const FormSectionWrapper = ({
             color="primary">
             {btnLabel}
           </Button>
-        ) : null}
+        ) : null}*/}
       </Box>
     </>
   );

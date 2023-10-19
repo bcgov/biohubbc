@@ -6,7 +6,6 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { Fragment, useEffect } from 'react';
-import { v4 } from 'uuid';
 import {
   AnimalMarkingSchema,
   getAnimalFieldName,
@@ -15,6 +14,7 @@ import {
   isRequiredInSchema,
   lastAnimalValueValid
 } from '../animal';
+import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
@@ -27,6 +27,7 @@ import FormSectionWrapper from './FormSectionWrapper';
 const MarkingAnimalForm = () => {
   const api = useCritterbaseApi();
   const { values, handleBlur } = useFormikContext<IAnimal>();
+  const { animalKeyName, defaultFormValue } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalMarkingTitle];
   const { data: bodyLocations, load, refresh } = useDataLoader(api.lookup.getTaxonMarkingBodyLocations);
 
   if (values.general.taxon_id) {
@@ -38,21 +39,9 @@ const MarkingAnimalForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.general.taxon_id]);
 
-  const name: keyof IAnimal = 'markings';
-  const newMarking: IAnimalMarking = {
-    _id: v4(),
-
-    marking_type_id: '',
-    taxon_marking_body_location_id: '',
-    primary_colour_id: '',
-    secondary_colour_id: '',
-    marking_comment: '',
-    marking_id: undefined
-  };
-
   return (
     <Box id={'marking-animal-form'}>
-      <FieldArray name={name}>
+      <FieldArray name={animalKeyName}>
         {({ remove, push }: FieldArrayRenderProps) => (
           <>
             <FormSectionWrapper
@@ -61,14 +50,14 @@ const MarkingAnimalForm = () => {
               titleHelp={SurveyAnimalsI18N.animalMarkingHelp}
               btnLabel={SurveyAnimalsI18N.animalMarkingAddBtn}
               disableAddBtn={!bodyLocations?.length || !lastAnimalValueValid('markings', values)}
-              handleAddSection={() => push(newMarking)}
+              handleAddSection={() => push(defaultFormValue)}
               handleRemoveSection={remove}>
               {values?.markings?.map((mark, index) => (
                 <Fragment key={mark._id}>
                   <Grid item xs={12} md={6} lg={3}>
                     <CbSelectField
                       label="Marking Type"
-                      name={getAnimalFieldName<IAnimalMarking>(name, 'marking_type_id', index)}
+                      name={getAnimalFieldName<IAnimalMarking>(animalKeyName, 'marking_type_id', index)}
                       id="marking_type"
                       route="lookups/marking-types"
                       controlProps={{
@@ -80,7 +69,7 @@ const MarkingAnimalForm = () => {
                   <Grid item xs={12} md={6} lg={3}>
                     <CbSelectField
                       label="Marking Body Location"
-                      name={getAnimalFieldName<IAnimalMarking>(name, 'taxon_marking_body_location_id', index)}
+                      name={getAnimalFieldName<IAnimalMarking>(animalKeyName, 'taxon_marking_body_location_id', index)}
                       id="marking_body_location"
                       route="xref/taxon-marking-body-locations"
                       query={`taxon_id=${values.general.taxon_id}`}
@@ -93,7 +82,7 @@ const MarkingAnimalForm = () => {
                   <Grid item xs={12} md={6} lg={3}>
                     <CbSelectField
                       label="Primary Colour"
-                      name={getAnimalFieldName<IAnimalMarking>(name, 'primary_colour_id', index)}
+                      name={getAnimalFieldName<IAnimalMarking>(animalKeyName, 'primary_colour_id', index)}
                       id="primary_colour_id"
                       route="lookups/colours"
                       controlProps={{
@@ -105,7 +94,7 @@ const MarkingAnimalForm = () => {
                   <Grid item xs={12} md={6} lg={3}>
                     <CbSelectField
                       label="Secondary Colour"
-                      name={getAnimalFieldName<IAnimalMarking>(name, 'secondary_colour_id', index)}
+                      name={getAnimalFieldName<IAnimalMarking>(animalKeyName, 'secondary_colour_id', index)}
                       id="secondary_colour_id"
                       route="lookups/colours"
                       controlProps={{
@@ -118,7 +107,7 @@ const MarkingAnimalForm = () => {
                     <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Marking')}>
                       <CustomTextField
                         label="Marking Comment"
-                        name={getAnimalFieldName<IAnimalMarking>(name, 'marking_comment', index)}
+                        name={getAnimalFieldName<IAnimalMarking>(animalKeyName, 'marking_comment', index)}
                         other={{ size: 'medium', required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment') }}
                         handleBlur={handleBlur}
                       />

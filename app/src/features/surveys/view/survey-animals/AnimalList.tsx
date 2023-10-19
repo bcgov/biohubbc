@@ -20,13 +20,14 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { ANIMAL_SUBSECTIONS, IAnimalSubSections, MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './animal';
+import { MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './animal';
+import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
 interface AnimalListProps {
   isLoading?: boolean;
   critterData?: IDetailedCritterWithInternalId[];
-  selectedSection: IAnimalSubSections;
-  onSelectSection: (section: IAnimalSubSections) => void;
+  selectedSection: IAnimalSections;
+  onSelectSection: (section: IAnimalSections) => void;
   onAddButton: () => void;
 }
 
@@ -147,7 +148,7 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
                     fontSize: '0.875rem'
                   }
                 }}>
-                {ANIMAL_SUBSECTIONS.map((section) => (
+                {Object.keys(ANIMAL_SECTIONS_FORM_MAP).map((section) => (
                   <ListItem
                     key={section}
                     dense
@@ -155,7 +156,7 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
                     button
                     selected={section === selectedSection}
                     onClick={() => {
-                      onSelectSection(section);
+                      onSelectSection(section as IAnimalSections);
                     }}>
                     <ListItemText>{section}</ListItemText>
                     {Object.keys(errors).find((key) => key.toLowerCase() === section.toLowerCase()) !== undefined && (

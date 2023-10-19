@@ -8,7 +8,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isRequiredInSchema } from '../animal';
-import { ANIMAL_SECTIONS_MAP } from '../animal-sections';
+import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 
 /**
  * Renders the General section for the Individual Animal form
@@ -18,7 +18,7 @@ import { ANIMAL_SECTIONS_MAP } from '../animal-sections';
 
 const GeneralAnimalForm = () => {
   const { setFieldValue, handleBlur, values } = useFormikContext<IAnimal>();
-  const { animalKeyName } = ANIMAL_SECTIONS_MAP['General'];
+  const { animalKeyName } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalGeneralTitle];
   const handleTaxonName = (_value: string, label: string) => {
     setFieldValue(getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'taxon_name'), label);
   };

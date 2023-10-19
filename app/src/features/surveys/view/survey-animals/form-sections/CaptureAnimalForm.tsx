@@ -5,7 +5,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment, useState } from 'react';
 import { AnimalCaptureSchema, getAnimalFieldName, IAnimal, IAnimalCapture, isRequiredInSchema } from '../animal';
-import { ANIMAL_SECTIONS_MAP } from '../animal-sections';
+import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 import LocationEntryForm from './LocationEntryForm';
@@ -24,7 +24,7 @@ import LocationEntryForm from './LocationEntryForm';
 
 const CaptureAnimalForm = () => {
   const { values } = useFormikContext<IAnimal>();
-  const { animalKeyName, defaultFormValue } = ANIMAL_SECTIONS_MAP['Capture Information'];
+  const { animalKeyName, defaultFormValue } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalCaptureTitle];
 
   const canAddNewCapture = () => {
     const lastCapture = values.captures[values.captures.length - 1];

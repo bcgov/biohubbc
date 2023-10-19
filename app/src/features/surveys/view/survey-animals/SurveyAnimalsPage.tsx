@@ -10,14 +10,15 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { AddEditAnimal } from './AddEditAnimal';
-import { AnimalSchema, AnimalSex, Critter, IAnimal, IAnimalSubSections } from './animal';
+import { AnimalSchema, AnimalSex, Critter, IAnimal } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
+import { IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { ANIMAL_FORM_MODE } from './IndividualAnimalForm';
 
 export const SurveyAnimalsPage = () => {
-  const [selectedSection, setSelectedSection] = useState<IAnimalSubSections>('General');
+  const [selectedSection, setSelectedSection] = useState<IAnimalSections>('General');
   //const [selectedCritterID, setSelectedCritterID] = useState<string | null>(null);
   const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);

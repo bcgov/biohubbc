@@ -5,8 +5,8 @@ import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React, { Fragment, useState } from 'react';
-import { v4 } from 'uuid';
 import { AnimalMortalitySchema, getAnimalFieldName, IAnimal, IAnimalMortality, isRequiredInSchema } from '../animal';
+import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 import LocationEntryForm from './LocationEntryForm';
@@ -29,34 +29,12 @@ import LocationEntryForm from './LocationEntryForm';
  * @return {*}
  */
 
-type ProjectionMode = 'wgs' | 'utm';
 const MortalityAnimalForm = () => {
   const { values } = useFormikContext<IAnimal>();
-
-  const name: keyof IAnimal = 'mortality';
-  const newMortality: IAnimalMortality = {
-    _id: v4(),
-
-    mortality_longitude: '' as unknown as number,
-    mortality_latitude: '' as unknown as number,
-    mortality_utm_northing: '' as unknown as number,
-    mortality_utm_easting: '' as unknown as number,
-    mortality_timestamp: '' as unknown as Date,
-    mortality_coordinate_uncertainty: 10,
-    mortality_comment: '',
-    proximate_cause_of_death_id: '',
-    proximate_cause_of_death_confidence: '',
-    proximate_predated_by_taxon_id: '',
-    ultimate_cause_of_death_id: '',
-    ultimate_cause_of_death_confidence: '',
-    ultimate_predated_by_taxon_id: '',
-    projection_mode: 'wgs' as ProjectionMode,
-    mortality_id: undefined,
-    location_id: undefined
-  };
+  const { animalKeyName, defaultFormValue } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalMortalityTitle];
 
   return (
-    <FieldArray name={name}>
+    <FieldArray name={animalKeyName}>
       {({ remove, push }: FieldArrayRenderProps) => (
         <>
           <FormSectionWrapper
@@ -65,10 +43,10 @@ const MortalityAnimalForm = () => {
             titleHelp={SurveyAnimalsI18N.animalMortalityHelp}
             btnLabel={SurveyAnimalsI18N.animalMortalityAddBtn}
             maxSections={1}
-            handleAddSection={() => push(newMortality)}
+            handleAddSection={() => push(defaultFormValue)}
             handleRemoveSection={remove}>
             {values.mortality.map((mort, index) => (
-              <MortalityAnimalFormContent key={mort._id} name={name} index={index} value={mort} />
+              <MortalityAnimalFormContent key={mort._id} name={animalKeyName} index={index} value={mort} />
             ))}
           </FormSectionWrapper>
         </>
