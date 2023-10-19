@@ -1,14 +1,15 @@
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { v4 } from 'uuid';
 import { IAnimal, ProjectionMode } from './animal';
+import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 
 export type IAnimalSections =
-  // | 'General'
+  | 'General'
   // | 'Ecological Units'
   // | 'Markings'
   // | 'Measurements'
-  'Capture Information';
+  | 'Capture Information';
 // | 'Mortality'
 // | 'Family'
 //| 'Observations'
@@ -21,13 +22,18 @@ type IAnimalSectionsMap = Record<
     title: IAnimalSections;
     comp: () => JSX.Element;
     animalKeyName: keyof IAnimal;
-    defaultFormValue: object;
+    defaultFormValue?: object;
   }
 >;
 export const ANIMAL_SECTIONS_MAP: IAnimalSectionsMap = {
+  [SurveyAnimalsI18N.animalGeneralTitle]: {
+    title: SurveyAnimalsI18N.animalGeneralTitle,
+    comp: GeneralAnimalForm,
+    animalKeyName: 'general'
+  },
   [SurveyAnimalsI18N.animalCaptureTitle]: {
     title: SurveyAnimalsI18N.animalCaptureTitle,
-    comp: GeneralAnimalForm,
+    comp: CaptureAnimalForm,
     animalKeyName: 'captures',
     defaultFormValue: {
       _id: v4(),

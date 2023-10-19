@@ -8,6 +8,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isRequiredInSchema } from '../animal';
+import { ANIMAL_SECTIONS_MAP } from '../animal-sections';
 
 /**
  * Renders the General section for the Individual Animal form
@@ -17,10 +18,9 @@ import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isReq
 
 const GeneralAnimalForm = () => {
   const { setFieldValue, handleBlur, values } = useFormikContext<IAnimal>();
-  const name: keyof IAnimal = 'general';
-
+  const { animalKeyName } = ANIMAL_SECTIONS_MAP['General'];
   const handleTaxonName = (_value: string, label: string) => {
-    setFieldValue(getAnimalFieldName<IAnimalGeneral>(name, 'taxon_name'), label);
+    setFieldValue(getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'taxon_name'), label);
   };
 
   return (
@@ -40,7 +40,7 @@ const GeneralAnimalForm = () => {
         <Grid item xs={12} md={6} lg={3}>
           <HelpButtonTooltip content={SurveyAnimalsI18N.taxonHelp}>
             <CbSelectField
-              name={getAnimalFieldName<IAnimalGeneral>(name, 'taxon_id')}
+              name={getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'taxon_id')}
               controlProps={{
                 required: isRequiredInSchema(AnimalGeneralSchema, 'taxon_id'),
                 disabled: !!values.collectionUnits.length
@@ -54,7 +54,7 @@ const GeneralAnimalForm = () => {
         </Grid>
         <Grid item xs={12} md={6} lg={3}>
           <CbSelectField
-            name={getAnimalFieldName<IAnimalGeneral>(name, 'sex')}
+            name={getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'sex')}
             controlProps={{ required: isRequiredInSchema(AnimalGeneralSchema, 'sex') }}
             label="Sex"
             id={'sex'}
@@ -66,7 +66,7 @@ const GeneralAnimalForm = () => {
             <CustomTextField
               other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'animal_id') }}
               label="Alias"
-              name={getAnimalFieldName<IAnimalGeneral>(name, 'animal_id')}
+              name={getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'animal_id')}
               handleBlur={handleBlur}
             />
           </HelpButtonTooltip>
@@ -76,7 +76,7 @@ const GeneralAnimalForm = () => {
             <CustomTextField
               other={{ required: isRequiredInSchema(AnimalGeneralSchema, 'wlh_id') }}
               label="Wildlife Health ID (Optional)"
-              name={getAnimalFieldName<IAnimalGeneral>(name, 'wlh_id')}
+              name={getAnimalFieldName<IAnimalGeneral>(animalKeyName, 'wlh_id')}
               handleBlur={handleBlur}
             />
           </HelpButtonTooltip>
