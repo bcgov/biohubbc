@@ -7,7 +7,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { Form, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formik';
 import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo } from 'react';
 import { useParams } from 'react-router';
@@ -98,6 +98,13 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             }
           }}>
           <Box display="flex" overflow="hidden">
+            <FieldArray name="markings">
+              {({ push }: FieldArrayRenderProps) => (
+                <Button variant="outlined" color="primary" onClick={() => push({})}>
+                  Add Record
+                </Button>
+              )}
+            </FieldArray>
             <Collapse in={!isEqual(initialValues, values)} orientation="horizontal">
               <Box ml={1} whiteSpace="nowrap">
                 <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
@@ -112,31 +119,33 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         </Box>
       </Toolbar>
       <Box p={2}>
-        <Grid container>
-          <Grid item mb={2} lg={4}>
-            <CustomTextField
-              label="Critter ID"
-              name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
-              other={{
-                InputProps: {
-                  endAdornment: (
-                    <IconButton
-                      aria-label={`Copy Critter ID`}
-                      onClick={() => {
-                        navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
-                        setPopup('Copied Critter ID');
-                      }}>
-                      <Icon path={mdiContentCopy} size={0.8} />
-                    </IconButton>
-                  )
-                },
-                disabled: true,
-                variant: 'filled',
-                defaultValue: initialValues.general.critter_id
-              }}
-            />
+        {initialValues.general.critter_id ? (
+          <Grid container>
+            <Grid item mb={2} lg={4} sm={12} md={8}>
+              <CustomTextField
+                label="Critter ID"
+                name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
+                other={{
+                  InputProps: {
+                    endAdornment: (
+                      <IconButton
+                        aria-label={`Copy Critter ID`}
+                        onClick={() => {
+                          navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
+                          setPopup('Copied Critter ID');
+                        }}>
+                        <Icon path={mdiContentCopy} size={0.8} />
+                      </IconButton>
+                    )
+                  },
+                  disabled: true,
+                  variant: 'filled',
+                  defaultValue: initialValues.general.critter_id
+                }}
+              />
+            </Grid>
           </Grid>
-        </Grid>
+        ) : null}
         <Form>{parseInt(survey_critter_id) ? renderFormContent : null}</Form>
       </Box>
     </>
