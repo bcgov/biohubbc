@@ -158,7 +158,7 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send({ submissionId });
+      return res.status(200).json({ submissionId });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
