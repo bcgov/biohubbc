@@ -81,6 +81,9 @@ const SurveyDetails = () => {
           },
           '& section.row': {
             mt: 0
+          },
+          '& hr': {
+            my: 3
           }
         }}>
         <Grid container spacing={3}>
@@ -90,35 +93,35 @@ const SurveyDetails = () => {
               <SurveyGeneralInformation />
             </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+            <Divider></Divider>
 
             <Box component="section">
               <Typography component="h3">Study Area Location</Typography>
               <SurveyStudyArea />
             </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+            <Divider></Divider>
 
             <Box component="section">
               <Typography component="h3">Purpose and Methodology</Typography>
               <SurveyPurposeAndMethodologyData />
             </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+            <Divider></Divider>
 
             <Box component="section">
               <Typography component="h3">Sampling Methods</Typography>
               <SamplingMethods />
             </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+            <Divider></Divider>
 
             <Box component="section">
               <Typography component="h3">Survey Participants</Typography>
               <SurveyParticipants />
             </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+            <Divider></Divider>
 
             <Box component="section">
               <Typography component="h3">Funding Sources & Partnerships</Typography>
@@ -128,14 +131,14 @@ const SurveyDetails = () => {
               </Box>
             </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+            <Divider></Divider>
 
             <Box component="section">
               <Typography component="h3">Permits</Typography>
               <Permits />
             </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+            <Divider></Divider>
 
             <Box component="section">
               <Typography component="h3">Proprietary Information</Typography>

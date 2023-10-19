@@ -4,6 +4,7 @@ import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import { grey } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -122,7 +123,6 @@ const ObservationComponent = () => {
         <Toolbar
           sx={{
             flex: '0 0 auto',
-            borderBottom: '1px solid #ccc',
             '& button': {
               minWidth: '6rem'
             },
@@ -185,8 +185,15 @@ const ObservationComponent = () => {
             </Box>
           </Box>
         </Toolbar>
-        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
-          <Box position="absolute" width="100%" height="100%" py={1} px={1} pt={0.5}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          flex="1 1 auto"
+          position="relative"
+          sx={{
+            background: grey[100]
+          }}>
+          <Box position="absolute" width="100%" height="100%" p={1}>
             <ObservationsTable
               sample_sites={sampleSites}
               sample_methods={sampleMethods}

@@ -140,14 +140,13 @@ const SurveyHeader = () => {
           top: 0,
           zIndex: 1002,
           pt: 3,
-          pb: 4,
-          borderBottom: '1px solid ' + grey[300]
+          pb: 3.75,
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[300]
         }}>
         <Container maxWidth="xl">
-          <Breadcrumbs
-            sx={{
-              mb: 1.5
-            }}>
+          <Breadcrumbs>
             <Link
               component={RouterLink}
               variant="body2"
@@ -169,17 +168,18 @@ const SurveyHeader = () => {
             }}>
             <Box>
               <Typography
-                variant="h2"
                 component="h1"
+                variant="h2"
                 sx={{
                   display: 'block',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis'
+                  textOverflow: 'ellipsis',
+                  ml: '-2px'
                 }}>
                 {surveyWithDetails.surveyData.survey_details.survey_name}
               </Typography>
-              <Box mt={1} display="flex" alignItems="center" flexWrap="wrap">
+              <Box display="flex" alignItems="center" flexWrap="wrap" mt={1}>
                 <Typography
                   component="span"
                   variant="subtitle1"
@@ -191,8 +191,8 @@ const SurveyHeader = () => {
                       color: 'text.secondary'
                     }
                   }}>
-                  <Icon path={mdiCalendarRangeOutline} size={0.875} />
-                  <Typography component="span" sx={{ ml: 0.75 }}>
+                  <Icon path={mdiCalendarRangeOutline} size={1} />
+                  <Typography component="span" sx={{ ml: 1.5 }}>
                     {getFormattedDateRangeString(
                       DATE_FORMAT.ShortMediumDateFormat,
                       surveyWithDetails.surveyData.survey_details.start_date,

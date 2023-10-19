@@ -2,6 +2,7 @@ import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
@@ -30,7 +31,14 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
         square
         elevation={0}
         sx={{
-          py: 3
+          position: 'sticky',
+          top: 0,
+          zIndex: 1002,
+          pt: 3,
+          pb: 3.75,
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[300]
         }}>
         <Container maxWidth="xl">
           <Breadcrumbs aria-label="breadcrumb">
@@ -38,26 +46,20 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
               component={RouterLink}
               to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
               underline="none">
-              <Typography component="span" variant="body2">
-                {survey_name}
-              </Typography>
+              <Typography component="span">{survey_name}</Typography>
             </Link>
             <Link
               component={RouterLink}
               to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
               underline="none">
-              <Typography component="span" variant="body2">
-                Manage Survey Observations
-              </Typography>
+              <Typography component="span">Manage Survey Observations</Typography>
             </Link>
-            <Typography component="span" color="text.secondary" variant="body2">
-              {breadcrumb}
-            </Typography>
+            <Typography component="span">{breadcrumb}</Typography>
           </Breadcrumbs>
           <Box display="flex" alignItems="center" justifyContent="space-between">
             <Typography
-              variant="h3"
               component="h1"
+              variant="h2"
               sx={{
                 ml: '-2px'
               }}>

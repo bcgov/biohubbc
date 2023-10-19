@@ -57,7 +57,7 @@ POST.apiDoc = {
             },
             message: {
               type: 'object',
-              required: ['subject', 'header', 'body1', 'body2', 'footer'],
+              required: ['subject', 'header', 'main_body1', 'main_body2', 'footer'],
               properties: {
                 subject: {
                   type: 'string'
@@ -65,10 +65,10 @@ POST.apiDoc = {
                 header: {
                   type: 'string'
                 },
-                body1: {
+                main_body1: {
                   type: 'string'
                 },
-                body2: {
+                main_body2: {
                   type: 'string'
                 },
                 footer: {

@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -182,27 +181,16 @@ const SamplingSiteEditPage = () => {
         enableReinitialize
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column" height="100%">
-          <Box
-            position="sticky"
-            top="0"
-            zIndex={1001}
-            sx={{
-              borderBottomStyle: 'solid',
-              borderBottomWidth: '1px',
-              borderBottomColor: grey[300]
-            }}>
-            <SamplingSiteHeader
-              project_id={surveyContext.projectId}
-              survey_id={surveyContext.surveyId}
-              survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-              is_submitting={isSubmitting}
-              title={`Edit Sampling Site > ${initialFormData.sampleSite.name}`}
-              breadcrumb="Edit Sampling Sites"
-            />
-          </Box>
-          <Box display="flex" flex="1 1 auto">
-            <SampleSiteEditForm handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
-          </Box>
+          <SamplingSiteHeader
+            project_id={surveyContext.projectId}
+            survey_id={surveyContext.surveyId}
+            survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+            is_submitting={isSubmitting}
+            title="Edit Sampling Site"
+            breadcrumb="Edit Sampling Site"
+          />
+
+          <SampleSiteEditForm formikRef={formikRef} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
         </Box>
       </Formik>
     </>
