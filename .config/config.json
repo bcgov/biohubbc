@@ -34,37 +34,55 @@
   },
   "sso": {
     "dev": {
-      "url": "https://dev.loginproxy.gov.bc.ca/auth",
-      "clientId": "sims-4461",
+      "host": "https://dev.loginproxy.gov.bc.ca/auth",
       "realm": "standard",
-      "integrationId": "4461",
-      "adminHost": "https://loginproxy.gov.bc.ca/auth",
-      "adminUserName": "sims-svc-4464",
-      "apiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
-      "keycloakSecret": "keycloak-admin-password",
-      "keycloakSecretAdminPassword": "keycloak_admin_password"
+      "clientId": "sims-4461",
+      "keycloakSecret": "keycloak",
+      "serviceClient": {
+        "serviceClientName": "sims-svc-4464",
+        "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
+      },
+      "cssApi": {
+        "cssApiTokenUrl": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+        "cssApiClientId": "service-account-team-1190-4229",
+        "cssApiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
+        "keycloakSecretCssApiSecretKey": "css_api_client_secret",
+        "cssApiEnvironment": "dev"
+      }
     },
     "test": {
-      "url": "https://test.loginproxy.gov.bc.ca/auth",
-      "clientId": "sims-4461",
+      "host": "https://test.loginproxy.gov.bc.ca/auth",
       "realm": "standard",
-      "integrationId": "4461",
-      "adminHost": "https://loginproxy.gov.bc.ca/auth",
-      "adminUserName": "sims-svc-4464",
-      "apiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
-      "keycloakSecret": "keycloak-admin-password",
-      "keycloakSecretAdminPassword": "keycloak_admin_password"
+      "clientId": "sims-4461",
+      "keycloakSecret": "keycloak",
+      "serviceClient": {
+        "serviceClientName": "sims-svc-4464",
+        "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
+      },
+      "cssApi": {
+        "cssApiTokenUrl": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+        "cssApiClientId": "service-account-team-1190-4229",
+        "cssApiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
+        "keycloakSecretCssApiSecretKey": "css_api_client_secret",
+        "cssApiEnvironment": "test"
+      }
     },
     "prod": {
-      "url": "https://loginproxy.gov.bc.ca/auth",
-      "clientId": "sims-4461",
+      "host": "https://loginproxy.gov.bc.ca/auth",
       "realm": "standard",
-      "integrationId": "4461",
-      "adminHost": "https://loginproxy.gov.bc.ca/auth",
-      "adminUserName": "sims-svc-4464",
-      "apiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
-      "keycloakSecret": "keycloak-admin-password",
-      "keycloakSecretAdminPassword": "keycloak_admin_password"
+      "clientId": "sims-4461",
+      "keycloakSecret": "keycloak",
+      "serviceClient": {
+        "serviceClientName": "sims-svc-4464",
+        "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
+      },
+      "cssApi": {
+        "cssApiTokenUrl": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+        "cssApiClientId": "service-account-team-1190-4229",
+        "cssApiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
+        "keycloakSecretCssApiSecretKey": "css_api_client_secret",
+        "cssApiEnvironment": "prod"
+      }
     }
   }
 }
