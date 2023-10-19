@@ -66,6 +66,7 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
     if (survey_critter_id === id) {
       critterParamID = MANAGE_ANIMALS_DEFAULT_URL_PARAM;
     }
+    onSelectSection('General');
     formHasChanges ? showCreateYesNoDialog(critterParamID) : history.push(critterParamID);
   };
 
