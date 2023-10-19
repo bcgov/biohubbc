@@ -9,12 +9,11 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
-import yup from 'utils/YupSchema';
 import { AddEditAnimal } from './AddEditAnimal';
 import { AnimalSchema, AnimalSex, Critter, IAnimal, IAnimalSubSections } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import AnimalList from './AnimalList';
-import { AnimalTelemetryDeviceSchema, IAnimalTelemetryDevice } from './device';
+import { IAnimalTelemetryDevice } from './device';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { ANIMAL_FORM_MODE } from './IndividualAnimalForm';
 
@@ -174,7 +173,14 @@ export const SurveyAnimalsPage = () => {
               onSelectSection={(section) => setSelectedSection(section)}
             />
           }
-          mainComponent={<AddEditAnimal isLoading={isSubmitting} section={selectedSection} />}
+          mainComponent={
+            <AddEditAnimal
+              critterData={critterData}
+              deploymentData={deploymentData}
+              isLoading={isSubmitting}
+              section={selectedSection}
+            />
+          }
         />
       </Formik>
       <EditDialog
