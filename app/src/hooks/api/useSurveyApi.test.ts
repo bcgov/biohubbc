@@ -38,7 +38,7 @@ describe('useSurveyApi', () => {
         mortality: [],
         family: [],
         images: [],
-        device: undefined,
+        device: [],
         collectionUnits: []
       };
       const critter = new Critter(animal);

@@ -60,7 +60,7 @@ const animal: IAnimal = {
   measurements: [],
   family: [],
   images: [],
-  device: undefined,
+  device: [],
   collectionUnits: [
     { collection_category_id: 'a', collection_unit_id: 'b', _id: v4(), critter_collection_unit_id: v4() }
   ]

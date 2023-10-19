@@ -129,7 +129,7 @@ const SurveyAnimals: React.FC = () => {
     measurements: [],
     family: [],
     images: [],
-    device: undefined
+    device: []
   };
 
   const DeviceFormValues: IAnimalTelemetryDevice = {
@@ -503,7 +503,7 @@ const SurveyAnimals: React.FC = () => {
         open={openDeviceDialog}
         dialogLoading={isSubmittingTelemetry}
         component={{
-          element: <TelemetryDeviceForm removeAction={handleRemoveDeployment} mode={telemetryFormMode} />,
+          element: <TelemetryDeviceForm removeAction={handleRemoveDeployment} survey_critter_id={-1} />, // This section will be removed
           initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
           validationSchema: yup.array(AnimalDeploymentSchemaAsyncValidation),
           validateOnBlur: false,

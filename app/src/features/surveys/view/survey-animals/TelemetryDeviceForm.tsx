@@ -1,21 +1,35 @@
-import { mdiTrashCanOutline } from '@mdi/js';
+import { mdiPencil, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import { grey } from '@mui/material/colors';
 import Grid from '@mui/material/Grid';
+import EditDialog from 'components/dialog/EditDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import { AttachmentType } from 'constants/attachments';
-import { Form, useFormikContext } from 'formik';
+import { SurveyContext } from 'contexts/surveyContext';
+import { useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { Fragment, useEffect, useState } from 'react';
-import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { isEqual as _deepEquals } from 'lodash';
+import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
+import { datesSameNullable } from 'utils/Utils';
+import yup from 'utils/YupSchema';
+import { IAnimal } from './animal';
+import {
+  AnimalTelemetryDeviceSchema,
+  Device,
+  IAnimalDeployment,
+  IAnimalTelemetryDevice,
+  IDeploymentTimespan
+} from './device';
 import { TelemetryFileUpload } from './TelemetryFileUpload';
 
 export enum TELEMETRY_DEVICE_FORM_MODE {
@@ -28,7 +42,7 @@ export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
   attachmentType?: AttachmentType;
 }
 
-const AttachmentFormSection = (props: { index: number; deviceMake: string }) => {
+export const AttachmentFormSection = (props: { index: number; deviceMake: string }) => {
   return (
     <>
       {props.deviceMake === 'Vectronic' && (
@@ -59,7 +73,7 @@ const AttachmentFormSection = (props: { index: number; deviceMake: string }) => 
   );
 };
 
-const DeploymentFormSection = ({
+export const DeploymentFormSection = ({
   index,
   deployments,
   mode,
@@ -98,13 +112,13 @@ const DeploymentFormSection = ({
             <Fragment key={`deployment-item-${deploy.deployment_id}`}>
               <Grid item xs={mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 6 : 5.5}>
                 <SingleDateField
-                  name={`${index}.deployments.${i}.attachment_start`}
+                  name={`device.${index}.deployments.${i}.attachment_start`}
                   required={true}
                   label={'Start Date'}
                 />
               </Grid>
               <Grid item xs={mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 6 : 5.5}>
-                <SingleDateField name={`${index}.deployments.${i}.attachment_end`} label={'End Date'} />
+                <SingleDateField name={`device.${index}.deployments.${i}.attachment_end`} label={'End Date'} />
               </Grid>
               {mode === TELEMETRY_DEVICE_FORM_MODE.EDIT && (
                 <Grid item xs={1}>
@@ -130,12 +144,12 @@ const DeploymentFormSection = ({
 
 interface IDeviceFormSectionProps {
   mode: TELEMETRY_DEVICE_FORM_MODE;
-  values: IAnimalTelemetryDeviceFile[];
+  values: IAnimalTelemetryDeviceFile[] | IAnimalTelemetryDevice[];
   index: number;
   removeAction: (deploymentId: string) => void;
 }
 
-const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSectionProps): JSX.Element => {
+export const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSectionProps): JSX.Element => {
   const api = useTelemetryApi();
 
   const { data: bctwDeviceData, refresh } = useDataLoader(() => api.devices.getDeviceDetails(values[index].device_id));
@@ -148,6 +162,8 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values[index].device_id]);
 
+  const { values: formikVals } = useFormikContext();
+
   return (
     <>
       <Box component="fieldset">
@@ -156,7 +172,11 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={6}>
-            <CustomTextField label="Device ID" name={`${index}.device_id`} other={{ disabled: mode === 'edit' }} />
+            <CustomTextField
+              label="Device ID"
+              name={`device.${index}.device_id`}
+              other={{ disabled: mode === 'edit' }}
+            />
           </Grid>
           <Grid item xs={6}>
             <Grid container>
@@ -169,7 +189,7 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
                     borderBottomRightRadius: 0
                   }
                 }}>
-                <CustomTextField label="Frequency (Optional)" name={`${index}.frequency`} />
+                <CustomTextField label="Frequency (Optional)" name={`device.${index}.frequency`} />
               </Grid>
               <Grid
                 item
@@ -183,7 +203,7 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
                 }}>
                 <TelemetrySelectField
                   label="Units"
-                  name={`${index}.frequency_unit`}
+                  name={`device.${index}.frequency_unit`}
                   id="frequency_unit"
                   fetchData={async () => {
                     const codeVals = await api.devices.getCodeValues('frequency_unit');
@@ -196,13 +216,13 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
           <Grid item xs={6}>
             <TelemetrySelectField
               label="Device Manufacturer"
-              name={`${index}.device_make`}
+              name={`device.${index}.device_make`}
               id="manufacturer"
               fetchData={api.devices.getCollarVendors}
             />
           </Grid>
           <Grid item xs={6}>
-            <CustomTextField label="Device Model (Optional)" name={`${index}.device_model`} />
+            <CustomTextField label="Device Model (Optional)" name={`device.${index}.device_model`} />
           </Grid>
         </Grid>
       </Box>
@@ -228,61 +248,241 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
           />
         }
       </Box>
+      <pre>{JSON.stringify(formikVals, null, 2)}</pre>
     </>
   );
 };
 
 interface ITelemetryDeviceFormProps {
-  mode: TELEMETRY_DEVICE_FORM_MODE;
+  survey_critter_id: number;
+  critterData?: IDetailedCritterWithInternalId[];
+  deploymentData?: IAnimalDeployment[];
   removeAction: (deployment_id: string) => void;
 }
 
-const TelemetryDeviceForm = ({ mode, removeAction }: ITelemetryDeviceFormProps) => {
-  const { values } = useFormikContext<IAnimalTelemetryDeviceFile[]>();
+const TelemetryDeviceForm = ({
+  survey_critter_id,
+  critterData,
+  deploymentData,
+  removeAction
+}: ITelemetryDeviceFormProps) => {
+  const bhApi = useBiohubApi();
+  const telemetryApi = useTelemetryApi();
+  const { values, initialValues } = useFormikContext<IAnimal>();
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const { surveyId, projectId, artifactDataLoader } = useContext(SurveyContext);
+
+  const setPopup = (msg: string) => {
+    console.log(msg);
+  };
+
+  const DeviceFormValues: IAnimalTelemetryDevice = useMemo(() => {
+    return {
+      device_id: '' as unknown as number,
+      device_make: '',
+      frequency: '' as unknown as number,
+      frequency_unit: '',
+      device_model: '',
+      deployments: [
+        {
+          deployment_id: '',
+          attachment_start: '',
+          attachment_end: undefined
+        }
+      ]
+    };
+  }, []);
+
+  const deviceInitialValues = useMemo(() => {
+    if (selectedIndex != null) {
+      return initialValues;
+    } else {
+      return { device: [DeviceFormValues] };
+    }
+  }, [DeviceFormValues, initialValues, selectedIndex]);
+
+  const uploadAttachment = async (file?: File, attachmentType?: AttachmentType) => {
+    try {
+      if (file && attachmentType === AttachmentType.KEYX) {
+        await bhApi.survey.uploadSurveyKeyx(projectId, surveyId, file);
+      } else if (file && attachmentType === AttachmentType.OTHER) {
+        await bhApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
+      }
+    } catch (error) {
+      throw new Error(`Failed to upload attachment ${file?.name}`);
+    }
+  };
+
+  const handleAddTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+    const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
+    if (!critter) console.log('Did not find critter in addTelemetry!');
+    const { attachmentFile, attachmentType, ...critterTelemetryDevice } = {
+      ...data[0],
+      critter_id: critter?.critter_id ?? ''
+    };
+    try {
+      // Upload attachment if there is one
+      await uploadAttachment(attachmentFile, attachmentType);
+      // create new deployment record
+      await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
+      setPopup('Successfully added deployment.');
+      artifactDataLoader.refresh(projectId, surveyId);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'));
+      } else {
+        setPopup('Failed to add deployment.');
+      }
+    }
+  };
+
+  const updateDevice = async (formValues: IAnimalTelemetryDevice) => {
+    const existingDevice = deploymentData?.find((deployment) => deployment.device_id === formValues.device_id);
+    const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
+    if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
+      try {
+        await telemetryApi.devices.upsertCollar(formDevice);
+      } catch (error) {
+        throw new Error(`Failed to update collar ${formDevice.collar_id}`);
+      }
+    }
+  };
+
+  const updateDeployments = async (formDeployments: IDeploymentTimespan[], survey_critter_id: number) => {
+    for (const formDeployment of formDeployments ?? []) {
+      const existingDeployment = deploymentData?.find(
+        (animalDeployment) => animalDeployment.deployment_id === formDeployment.deployment_id
+      );
+      if (
+        !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
+        !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
+      ) {
+        try {
+          await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
+        } catch (error) {
+          throw new Error(`Failed to update deployment ${formDeployment.deployment_id}`);
+        }
+      }
+    }
+  };
+
+  const handleEditTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
+    const errors: string[] = [];
+    for (const { attachmentFile, attachmentType, ...formValues } of data) {
+      try {
+        await uploadAttachment(attachmentFile, attachmentType);
+        await updateDevice(formValues);
+        await updateDeployments(formValues.deployments ?? [], survey_critter_id);
+      } catch (error) {
+        errors.push(`Device ${formValues.device_id} - ` + (error instanceof Error ? error.message : 'Unknown error'));
+      }
+    }
+    errors.length
+      ? setPopup('Failed to save some data: ' + errors.join(', '))
+      : setPopup('Updated deployment and device data successfully.');
+  };
+
+  const handleTelemetrySave = async (
+    survey_critter_id: number,
+    data: IAnimalTelemetryDeviceFile[],
+    telemetryFormMode: TELEMETRY_DEVICE_FORM_MODE
+  ) => {
+    //setIsSubmittingTelemetry(true);
+    if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
+      await handleAddTelemetry(survey_critter_id, data);
+    } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
+      await handleEditTelemetry(survey_critter_id, data);
+    }
+    setOpenDialog(false);
+  };
+
+  const telemetryFormMode = selectedIndex != null ? TELEMETRY_DEVICE_FORM_MODE.EDIT : TELEMETRY_DEVICE_FORM_MODE.ADD;
 
   return (
-    <Form>
-      <>
-        {values.map((device, idx) => (
-          <Card
-            key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
-            variant="outlined"
-            sx={{
-              '& + div': {
-                mt: 2
+    <>
+      <Button
+        onClick={() => {
+          setSelectedIndex(null);
+          setOpenDialog(true);
+        }}
+        sx={{ marginBottom: 3 }}
+        variant="contained"
+        color="primary">
+        New Device / Deployment
+      </Button>
+      <EditDialog
+        dialogTitle={'New Device / Deployment'}
+        open={openDialog}
+        component={{
+          element: (
+            <DeviceFormSection
+              values={values.device}
+              index={selectedIndex ?? 0}
+              mode={telemetryFormMode}
+              removeAction={() => {}}
+            />
+          ),
+          initialValues: deviceInitialValues,
+          validationSchema: yup.object({ device: yup.array(AnimalTelemetryDeviceSchema) })
+        }}
+        onCancel={() => setOpenDialog(false)}
+        onSave={(data) => handleTelemetrySave(survey_critter_id, data.device, telemetryFormMode)}></EditDialog>
+      {values.device?.map((device, idx) => (
+        <Card
+          key={`device-form-section-${device.device_id}`}
+          variant="outlined"
+          sx={{
+            '& + div': {
+              mt: 2
+            },
+            '&:only-child': {
+              border: 'none',
+              '& .MuiCardHeader-root': {
+                display: 'none'
               },
-              '&:only-child': {
-                border: 'none',
-                '& .MuiCardHeader-root': {
-                  display: 'none'
-                },
-                '& .MuiCardContent-root': {
-                  padding: 0
-                }
+              '& .MuiCardContent-root': {
+                padding: 0
               }
-            }}>
-            <CardHeader
-              title={`Device ID: ${device.device_id}`}
-              sx={{
-                background: grey[100],
-                borderBottom: '1px solid' + grey[300],
-                '& .MuiCardHeader-title': {
-                  fontSize: '1.125rem'
-                }
-              }}></CardHeader>
-            <CardContent>
-              <DeviceFormSection
+            }
+          }}>
+          <CardHeader
+            title={`Device ID: ${device.device_id}`}
+            sx={{
+              background: grey[100],
+              borderBottom: '1px solid' + grey[300],
+              '& .MuiCardHeader-title': {
+                fontSize: '1.125rem'
+              }
+            }}></CardHeader>
+          <CardContent>
+            {/*<DeviceFormSection
                 mode={mode}
-                values={values}
+                values={values.device}
                 key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
                 index={idx}
                 removeAction={removeAction}
-              />
-            </CardContent>
-          </Card>
-        ))}
-      </>
-    </Form>
+              />*/}
+
+            <Box display="flex" flexDirection={'row'} alignItems={'center'}>
+              <Typography>{`Vendor: ${device.device_make} / Model: ${device.device_model || 'N/A'} / Deployments: ${
+                device.deployments?.length
+              }`}</Typography>
+              <IconButton
+                sx={{ marginLeft: 'auto' }}
+                onClick={() => {
+                  setSelectedIndex(idx);
+                  setOpenDialog(true);
+                }}>
+                <Icon path={mdiPencil} size={1}></Icon>
+              </IconButton>
+            </Box>
+          </CardContent>
+        </Card>
+      ))}
+      <pre>{JSON.stringify(values)}</pre>
+      <pre>{`selectedIndex: ${selectedIndex}`}</pre>
+    </>
   );
 };
 

@@ -72,7 +72,7 @@ describe('useCritterApi', () => {
       mortality: [],
       family: [],
       images: [],
-      device: undefined,
+      device: [],
       collectionUnits: []
     };
     const payload = new Critter(forCritter);

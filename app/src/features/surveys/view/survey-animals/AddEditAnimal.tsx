@@ -8,11 +8,13 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formik';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo } from 'react';
 import { useParams } from 'react-router';
 import { getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+import { IAnimalDeployment } from './device';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
@@ -20,13 +22,17 @@ import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
+import TelemetryDeviceForm from './TelemetryDeviceForm';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
+  critterData?: IDetailedCritterWithInternalId[];
+  deploymentData?: IAnimalDeployment[];
   isLoading?: boolean;
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
+  //const [openDeviceForm, setOpenDeviceForm] = useState(false);
   const { section, isLoading } = props;
   const surveyContext = useContext(SurveyContext);
   const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
@@ -41,7 +47,17 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       [SurveyAnimalsI18N.animalCaptureTitle]: <CaptureAnimalForm />,
       [SurveyAnimalsI18N.animalMortalityTitle]: <MortalityAnimalForm />,
       [SurveyAnimalsI18N.animalFamilyTitle]: <FamilyAnimalForm />,
-      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />
+      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />,
+      Telemetry: (
+        <TelemetryDeviceForm
+          survey_critter_id={Number(survey_critter_id)}
+          critterData={props.critterData}
+          deploymentData={props.deploymentData}
+          removeAction={function (deployment_id: string): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
+      )
     };
     return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
   }, [section]);
@@ -104,6 +120,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                     color="primary"
                     onClick={() => {
                       //Remove this before handling the modal section
+                      // This is where we will open the modal from
                       push(ANIMAL_SECTIONS_FORM_MAP[section]?.defaultFormValue());
                     }}>
                     {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}

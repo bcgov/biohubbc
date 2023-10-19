@@ -282,7 +282,7 @@ describe('animal form helpers', () => {
           collectionUnits,
           { ...collectionUnits, critter_collection_unit_id: '0ec88875-0219-4635-b7cf-8da8ba732fc1' }
         ],
-        device: undefined
+        device: []
       };
 
       const currentFormValues: IAnimal = {
@@ -301,7 +301,7 @@ describe('animal form helpers', () => {
         family: [],
         images: [],
         collectionUnits: [],
-        device: undefined
+        device: []
       };
 
       const { create, update } = createCritterUpdatePayload(initialFormValues, currentFormValues);

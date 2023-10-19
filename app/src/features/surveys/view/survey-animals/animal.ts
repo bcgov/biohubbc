@@ -30,13 +30,16 @@ export const getAnimalFieldName = <T>(animalKey: keyof IAnimal, fieldKey: keyof 
  */
 export const lastAnimalValueValid = (animalKey: keyof IAnimal, values: IAnimal) => {
   const section = values[animalKey];
-  const lastIndex = section.length - 1;
-  const lastValue = section[lastIndex];
-  if (!lastValue) {
-    return true;
+  if (Array.isArray(section)) {
+    const lastIndex = section?.length - 1;
+    const lastValue = section[lastIndex];
+    if (!lastValue) {
+      return true;
+    }
+    const schema = reach(AnimalSchema, `${animalKey}[${lastIndex}]`);
+    return schema.isValidSync(lastValue);
   }
-  const schema = reach(AnimalSchema, `${animalKey}[${lastIndex}]`);
-  return schema.isValidSync(lastValue);
+  return true;
 };
 
 /**
@@ -183,7 +186,7 @@ export const AnimalSchema = yup.object({}).shape({
   family: yup.array().of(AnimalRelationshipSchema).required(),
   images: yup.array().of(AnimalImageSchema).required(),
   collectionUnits: yup.array().of(AnimalCollectionUnitSchema).required(),
-  device: AnimalTelemetryDeviceSchema.default(undefined)
+  device: yup.array().of(AnimalTelemetryDeviceSchema).required()
 });
 
 export const LocationSchema = yup.object({}).shape({

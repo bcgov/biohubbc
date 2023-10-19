@@ -18,9 +18,9 @@ export type IAnimalSections =
   | 'Measurements'
   | 'Capture Information'
   | 'Mortality'
-  | 'Family';
+  | 'Family'
+  | 'Telemetry';
 //| 'Observations'
-//'Telemetry';
 
 interface IAnimalSectionsMap
   extends Record<
@@ -172,5 +172,11 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       capture_location_id: undefined,
       release_location_id: undefined
     })
+  },
+  ['Telemetry']: {
+    animalKeyName: 'device',
+    addBtnText: 'Add Device / Deployment',
+    // Graham add the default value here
+    defaultFormValue: () => ({})
   }
 };
