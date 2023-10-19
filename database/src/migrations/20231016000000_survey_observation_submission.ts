@@ -67,9 +67,19 @@ export async function up(knex: Knex): Promise<void> {
   ----------------------------------------------------------------------------------------
   -- Deprecate occurrence_submission table
   ----------------------------------------------------------------------------------------
+
   set search_path=biohub;
 
   COMMENT ON TABLE  occurrence_submission IS '(Deprecated in favor of survey_observation_submission) Provides a historical listing of published dates and pointers to raw data versions for occurrence submissions.';
+
+  ----------------------------------------------------------------------------------------
+  -- Make optional a handful of survey_observation columns
+  ----------------------------------------------------------------------------------------
+
+  ALTER TABLE survey_observation
+  ALTER COLUMN survey_sample_site_id       DROP NOT NULL,
+  ALTER COLUMN survey_sample_method_id     DROP NOT NULL,
+  ALTER COLUMN survey_sample_period_id     DROP NOT NULL;
   `);
 }
 

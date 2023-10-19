@@ -1,8 +1,8 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
-import { BaseRepository } from './base-repository';
 import { getLogger } from '../utils/logger';
+import { BaseRepository } from './base-repository';
 
 /**
  * Interface reflecting survey observations retrieved from the database
@@ -149,7 +149,7 @@ export class ObservationRepository extends BaseRepository {
         observation_time
       )
       OVERRIDING SYSTEM VALUE
-      VALUES 
+      VALUES
     `;
 
     sqlStatement.append(
@@ -226,7 +226,7 @@ export class ObservationRepository extends BaseRepository {
     survey_id: number,
     original_filename: string
   ): Promise<ObservationSubmissionRecord> {
-    defaultLog.debug({ label: 'insertSurveyObservationSubmission' })
+    defaultLog.debug({ label: 'insertSurveyObservationSubmission' });
     const sqlStatement = SQL`
       INSERT INTO
         survey_observation_submission
@@ -234,7 +234,8 @@ export class ObservationRepository extends BaseRepository {
       VALUES
         (${submission_id}, ${key}, ${survey_id}, ${original_filename})
       RETURNING *;`;
-    const response = await this.connection.sql(sqlStatement);
+
+    const response = await this.connection.sql(sqlStatement, ObservationSubmissionRecord);
 
     return response.rows[0];
   }
@@ -249,7 +250,29 @@ export class ObservationRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT nextval('biohub.survey_observation_submission_id_seq')::integer as submission_id;
     `;
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<{ submission_id: number }>(sqlStatement);
     return response.rows[0].submission_id;
+  }
+
+  /**
+   * Retrieves the observation submission record by the given submission ID.
+   *
+   * @param {number} submissionId
+   * @return {*}  {Promise<ObservationSubmissionRecord>}
+   * @memberof ObservationService
+   */
+  async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .select('*')
+      .from('survey_observation_submission')
+      .where('submission_id', submissionId);
+
+    const response = await this.connection.knex(sqlStatement, ObservationSubmissionRecord);
+
+    // TODO add null check here.
+
+    return response.rows[0];
   }
 }
