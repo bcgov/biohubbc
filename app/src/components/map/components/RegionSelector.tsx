@@ -1,6 +1,5 @@
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { useState } from 'react';
 
 export interface IRegionOption {
   key: string;
@@ -8,6 +7,7 @@ export interface IRegionOption {
 }
 
 export interface IRegionSelectorProps {
+  selectedRegion: IRegionOption | null;
   onRegionSelected: (data: IRegionOption | null) => void;
 }
 
@@ -27,10 +27,7 @@ export const RegionSelector = (props: IRegionSelectorProps) => {
     }
   ];
 
-  const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
-
   const handleOnChange = (selected: IRegionOption | null) => {
-    setSelectedRegion(selected);
     props.onRegionSelected(selected);
   };
 
@@ -45,11 +42,11 @@ export const RegionSelector = (props: IRegionSelectorProps) => {
         size="medium"
         sx={{ width: 250, fontSize: 14 }}
         options={regions}
-        value={selectedRegion}
+        value={props.selectedRegion}
         getOptionLabel={(option) => option.name}
         isOptionEqualToValue={handleCheckOptionEquality}
         renderInput={(params) => (
-          <TextField {...params} variant="standard" label="Region Select" placeholder="Regions" />
+          <TextField {...params} variant="outlined" aria-label="Select a region" label="" placeholder="Regions" />
         )}
         onChange={(_, option) => {
           handleOnChange(option);

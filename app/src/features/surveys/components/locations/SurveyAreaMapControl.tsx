@@ -84,6 +84,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         </Button>
         <Box ml={2}>
           <RegionSelector
+            selectedRegion={selectedRegion}
             onRegionSelected={(data) => {
               setSelectedRegion(data);
             }}
@@ -117,7 +118,6 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 revision_count: 0
               };
               setFieldValue(formik_key, [...values.locations, region]);
-              setSelectedRegion(null);
             }}
           />
         )}
