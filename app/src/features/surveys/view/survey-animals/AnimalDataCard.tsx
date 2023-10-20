@@ -4,6 +4,7 @@ import { Card, CardHeader, Collapse, IconButton } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IAnimal } from './animal';
@@ -58,9 +59,11 @@ export const AnimalDataCard = ({ header, subHeaderData, onClickEdit, onClickDele
 
 interface AnimalSectionDataCards {
   section: IAnimalSections;
+  critter?: IDetailedCritterWithInternalId;
 }
-export const AnimalSectionDataCards = ({ section }: AnimalSectionDataCards) => {
+export const AnimalSectionDataCards = ({ section, critter }: AnimalSectionDataCards) => {
   const { values } = useFormikContext<IAnimal>();
+  console.log(critter);
   const sectionDataCardMap: Record<
     IAnimalSections,
     Array<{ header: string; subHeaderData: Record<string, string | number | undefined> }>
@@ -70,13 +73,22 @@ export const AnimalSectionDataCards = ({ section }: AnimalSectionDataCards) => {
       header: `Marking`,
       subHeaderData: { a: 'test' }
     })),
-    [SurveyAnimalsI18N.animalMeasurementTitle]: [{ header: 'Measurement', subHeaderData: {} }],
+    [SurveyAnimalsI18N.animalMeasurementTitle]: values.measurements.map((measurement) => ({
+      header: `Measurement: ${measurement.measured_timestamp}`,
+      subHeaderData: {}
+    })),
     [SurveyAnimalsI18N.animalCaptureTitle]: values.captures.map((capture) => ({
       header: `Animal Captured: ${capture.capture_timestamp}`,
       subHeaderData: { Latitude: capture.capture_latitude, Longitude: capture.capture_longitude }
     })),
-    [SurveyAnimalsI18N.animalMortalityTitle]: [{ header: 'Mortality', subHeaderData: {} }],
-    [SurveyAnimalsI18N.animalFamilyTitle]: [{ header: 'Family', subHeaderData: {} }],
+    [SurveyAnimalsI18N.animalMortalityTitle]: values.mortality.map((mortality) => ({
+      header: `Animal Mortality: ${mortality.mortality_timestamp}`,
+      subHeaderData: { Latitude: mortality.mortality_latitude, Longitude: mortality.mortality_longitude }
+    })),
+    [SurveyAnimalsI18N.animalFamilyTitle]: values.family.map((family) => ({
+      header: `Animal Relationship: ${family.relationship}`,
+      subHeaderData: {}
+    })),
     [SurveyAnimalsI18N.animalCollectionUnitTitle]: [{ header: 'Ecological Unit', subHeaderData: {} }],
     Telemetry: [{ header: 'Device', subHeaderData: {} }]
   };

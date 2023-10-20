@@ -12,6 +12,7 @@ import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formi
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo, useState } from 'react';
+import { useParams } from 'react-router';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import { AnimalSectionDataCards } from './AnimalDataCard';
@@ -26,9 +27,9 @@ interface AddEditAnimalProps {
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
-  const { section, isLoading } = props;
+  const { section, isLoading, critterData } = props;
   const surveyContext = useContext(SurveyContext);
-  //const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
+  const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
   const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
@@ -187,7 +188,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Grid>
         ) : null}
         <Form>
-          <AnimalSectionDataCards section={section} />
+          <AnimalSectionDataCards
+            section={section}
+            critter={critterData?.find((critter) => critter.survey_critter_id === parseInt(survey_critter_id))}
+          />
         </Form>
       </Box>
     </>
