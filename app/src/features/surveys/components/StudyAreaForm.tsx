@@ -14,6 +14,10 @@ export interface ISurveyLocation {
   description: string;
   geojson: Feature[];
   revision_count?: number;
+  // This is a flag meant for the front end only. This is true if the geojson was drawn by the user (on the leaflet map) vs imported (file upload or region selector)
+  // Locations drawn by the user should be editable in the leaflet map using the draw tools available
+  // Any uploaded or selected regions should not be editable and be placed in the 'static' layer on the map
+  isDrawn: boolean;
 }
 export interface ISurveyLocationForm {
   locations: ISurveyLocation[];

@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
+import DrawControls2, { IDrawControlsRef } from 'components/map/components/DrawControls2';
 import { ImportBoundaryDialog } from 'components/map/components/ImportBoundaryDialog';
 import { IRegionOption, RegionSelector } from 'components/map/components/RegionSelector';
 import StaticLayers from 'components/map/components/StaticLayers';
@@ -11,11 +12,11 @@ import { layerContentHandlers, layerNameHandler } from 'components/map/wfs-utils
 import WFSFeatureGroup from 'components/map/WFSFeatureGroup';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
-import { LatLngBoundsExpression } from 'leaflet';
-import { useEffect, useState } from 'react';
-import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
+import { DrawEvents, LatLngBoundsExpression, LeafletEvent } from 'leaflet';
+import { createRef, useEffect, useState } from 'react';
+import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import { ISurveyLocationForm } from '../StudyAreaForm';
+import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
   map_id: string;
@@ -30,6 +31,8 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const [updatedBounds, setUpdateBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
+
+  const drawRef = createRef<IDrawControlsRef>();
 
   useEffect(() => {
     setUpdateBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
@@ -89,6 +92,40 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         {/* Programmatically set map bounds */}
         <SetMapBounds bounds={updatedBounds} />
 
+        <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
+          <DrawControls2
+            ref={drawRef}
+            options={{
+              // Always disable circle, circlemarker and line
+              draw: { circle: false, circlemarker: false, polyline: false }
+              // edit: { remove: false }
+            }}
+            onLayerAdd={(event: DrawEvents.Created, id: number) => {
+              const feature: Feature = event.layer.toGeoJSON();
+              if (feature.properties) {
+                feature.properties.layer_id = id;
+              }
+
+              const location: ISurveyLocation = {
+                name: `Drawn Location ${id}`,
+                description: '',
+                geojson: [feature],
+                revision_count: 0,
+                isDrawn: true
+              };
+              setFieldValue(formik_key, [...values.locations, location]);
+            }}
+            onLayerEdit={(event: LeafletEvent, id: number) => {
+              // console.log('onLayerEdit', event);
+              console.log('edit layer id', id);
+              // console.log(event.propagatedFrom.toGeoJSON());
+            }}
+            onLayerDelete={(event, id: number) => {
+              console.log('onLayerDelete', event);
+            }}
+          />
+        </FeatureGroup>
+
         {selectedRegion && (
           <WFSFeatureGroup
             typeName={selectedRegion.key}
@@ -98,23 +135,25 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             existingGeometry={[]}
             onSelectGeometry={(geo: Feature) => {
               const layerName = layerNameHandler[selectedRegion.key](geo);
-              const region = {
+              const region: ISurveyLocation = {
                 name: layerName,
                 description: '',
                 geojson: [geo],
-                revision_count: 0
+                revision_count: 0,
+                isDrawn: false
               };
               setFieldValue(formik_key, [...values.locations, region]);
             }}
           />
         )}
-
         <LayersControl position="bottomright">
           <StaticLayers
-            layers={values.locations.map((item) => {
-              // Features will be split at upload to each be a single item so it is safe to access the first item
-              return { layerName: item.name, features: [{ geoJSON: item.geojson[0] }] };
-            })}
+            layers={values.locations
+              .filter((item) => !item.isDrawn)
+              .map((item) => {
+                // Features will be split at upload to each be a single item so it is safe to access the first item
+                return { layerName: item.name, features: [{ geoJSON: item.geojson[0] }] };
+              })}
           />
           <BaseLayerControls />
         </LayersControl>

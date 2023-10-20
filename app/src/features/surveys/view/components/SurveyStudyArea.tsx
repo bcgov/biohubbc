@@ -167,7 +167,8 @@ const SurveyStudyArea = () => {
           name: surveyLocation.name,
           description: surveyLocation.description,
           geojson: surveyLocation.geojson,
-          revision_count: surveyLocation.revision_count
+          revision_count: surveyLocation.revision_count,
+          isDrawn: false
         }
       ]
     });
@@ -188,7 +189,8 @@ const SurveyStudyArea = () => {
             name: item.name,
             description: item.description,
             geojson: item.geojson,
-            revision_count: surveyLocation.revision_count
+            revision_count: surveyLocation.revision_count,
+            isDrawn: item.isDrawn
           };
         })
       };

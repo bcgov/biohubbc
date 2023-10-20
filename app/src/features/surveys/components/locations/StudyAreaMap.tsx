@@ -67,7 +67,7 @@ const StudyAreaMap = (props: IMapContainerProps) => {
 
   return (
     <>
-      <Button onClick={() => drawRef.current?.addLayer(ALL_OF_BC_BOUNDARY)}>Add Layer</Button>
+      <Button onClick={() => drawRef.current?.addLayer(ALL_OF_BC_BOUNDARY, () => {})}>Add Layer</Button>
       <LeafletMapContainer
         style={{ height: '100%' }}
         id={mapId}

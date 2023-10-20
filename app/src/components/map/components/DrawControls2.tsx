@@ -31,19 +31,19 @@ export interface IDrawControlsProps {
    *
    * @memberof IDrawControlsProps
    */
-  onLayerAdd: (event: L.DrawEvents.Created) => void;
+  onLayerAdd: (event: L.DrawEvents.Created, leaflet_id: number) => void;
   /**
    * Fired each time an item (layer) is edited.
    *
    * @memberof IDrawControlsProps
    */
-  onLayerEdit: (event: L.LeafletEvent) => void;
+  onLayerEdit: (event: L.LeafletEvent, leaflet_id: number) => void;
   /**
    * Fired each time an item (layer) is deleted.
    *
    * @memberof IDrawControlsProps
    */
-  onLayerDelete: (event: L.LeafletEvent) => void;
+  onLayerDelete: (event: L.LeafletEvent, leaflet_id: number) => void;
 }
 
 export interface IDrawControlsRef {
@@ -52,7 +52,7 @@ export interface IDrawControlsRef {
    *
    * @memberof IDrawControlsRef
    */
-  addLayer: (feature: Feature) => void;
+  addLayer: (feature: Feature, layerId: (id: number) => void) => void;
 }
 
 const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps>((props, ref) => {
@@ -103,10 +103,9 @@ const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProp
   const onDrawCreate = useCallback(
     (event: L.DrawEvents.Created) => {
       const featureGroup = getFeatureGroup();
-
       featureGroup.addLayer(event.layer);
 
-      onLayerAdd(event);
+      onLayerAdd(event, L.stamp(event.layer));
     },
     [getFeatureGroup, onLayerAdd]
   );
@@ -115,8 +114,14 @@ const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProp
    * Handle edit events.
    */
   const onDrawEdit = useCallback(
-    (event: L.LeafletEvent) => {
-      onLayerEdit(event);
+    (event: L.DrawEvents.Edited) => {
+      console.log('______________________');
+      console.log(
+        event.layers.getLayers().forEach((item: L.Layer) => {
+          console.log(L.stamp(item));
+        })
+      );
+      onLayerEdit(event, -1);
     },
     [onLayerEdit]
   );
@@ -125,8 +130,8 @@ const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProp
    * Handle delete events.
    */
   const onDrawDelete = useCallback(
-    (event: L.LeafletEvent) => {
-      onLayerDelete(event);
+    (event: L.DrawEvents.Deleted) => {
+      onLayerDelete(event, L.stamp(event.propagatedFrom));
     },
     [onLayerDelete]
   );
@@ -139,8 +144,8 @@ const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProp
 
     // Register draw control event handlers
     map.on(L.Draw.Event.CREATED, onDrawCreate as L.LeafletEventHandlerFn);
-    map.on(L.Draw.Event.EDITED, onDrawEdit);
-    map.on(L.Draw.Event.DELETED, onDrawDelete);
+    map.on(L.Draw.Event.EDITED, onDrawEdit as L.LeafletEventHandlerFn);
+    map.on(L.Draw.Event.DELETED, onDrawDelete as L.LeafletEventHandlerFn);
   }, [map, onDrawCreate, onDrawDelete, onDrawEdit]);
 
   const drawControlsRef = useRef(getDrawControls());
@@ -166,6 +171,7 @@ const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProp
             return new L.Marker([latlng.lat, latlng.lng]);
           },
           onEachFeature: function (_feature, layer) {
+            console.log('ON EACH FEATURE');
             featureGroup.addLayer(layer);
           }
         });
