@@ -91,7 +91,7 @@ export const handleShapeFileUpload = (file: File): Promise<Feature[]> => {
   try {
     return parseShapeFile(file);
   } catch (error) {
-    throw 'You must upload a valid shapefile (.zip format). Please try again.';
+    throw Error('You must upload a valid shapefile (.zip format). Please try again.');
   }
 };
 
@@ -101,7 +101,7 @@ export const handleGPXUpload = async (file: File) => {
   });
 
   if (!file?.type.includes('gpx') && !fileAsString?.includes('</gpx>')) {
-    throw 'You must upload a GPX file, please try again.';
+    throw Error('You must upload a GPX file, please try again.');
   }
 
   try {
@@ -117,7 +117,7 @@ export const handleGPXUpload = async (file: File) => {
 
     return [...sanitizedGeoJSON];
   } catch (error) {
-    throw 'Error uploading your GPX file, please check the file and try again.';
+    throw Error('Error uploading your GPX file, please check the file and try again.');
   }
 };
 
@@ -127,7 +127,7 @@ export const handleKMLUpload = async (file: File) => {
   });
 
   if (file?.type !== 'application/vnd.google-earth.kml+xml' && !fileAsString?.includes('</kml>')) {
-    throw 'You must upload a KML file, please try again.';
+    throw Error('You must upload a KML file, please try again.');
   }
 
   const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');

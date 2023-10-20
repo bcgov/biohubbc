@@ -2,7 +2,7 @@ import { useLeafletContext } from '@react-leaflet/core';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { Feature } from 'geojson';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
-import * as L from 'leaflet';
+import L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import React, { useEffect, useRef, useState } from 'react';
