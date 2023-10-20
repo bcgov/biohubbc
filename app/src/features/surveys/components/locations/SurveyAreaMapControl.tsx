@@ -1,23 +1,20 @@
 import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
-import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import ComponentDialog from 'components/dialog/ComponentDialog';
-import FileUpload from 'components/file-upload/FileUpload';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
+import { ImportBoundaryDialog } from 'components/map/components/ImportBoundaryDialog';
 import { IRegionOption, RegionSelector } from 'components/map/components/RegionSelector';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { layerContentHandlers, layerNameHandler } from 'components/map/wfs-utils';
 import WFSFeatureGroup from 'components/map/WFSFeatureGroup';
-import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useEffect, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
-import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { ISurveyLocationForm } from '../StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
@@ -40,36 +37,26 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
 
   return (
     <>
-      <ComponentDialog open={isOpen} dialogTitle="Import Boundary" onClose={() => setIsOpen(false)}>
-        <Box>
-          <Box mb={3}>
-            <Alert severity="info">If importing a shapefile, it must be configured with a valid projection.</Alert>
-          </Box>
-          <FileUpload
-            uploadHandler={boundaryUploadHelper({
-              onSuccess: (features: Feature[]) => {
-                // Map features into form data
-                const formData = features.map((item: Feature, index) => {
-                  return {
-                    name: `Study Area ${index + 1}`,
-                    description: '',
-                    geojson: [item],
-                    revision_count: 0
-                  };
-                });
-                setUpdateBounds(calculateUpdatedMapBounds(features));
-                setFieldValue(formik_key, formData);
-              },
-              onFailure: (message: string) => {
-                setFieldError(formik_key, message);
-              }
-            })}
-            dropZoneProps={{
-              acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.SPATIAL
-            }}
-          />
-        </Box>
-      </ComponentDialog>
+      <ImportBoundaryDialog
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onSuccess={(features) => {
+          // Map features into form data
+          const formData = features.map((item: Feature, index) => {
+            return {
+              name: `Study Area ${index + 1}`,
+              description: '',
+              geojson: [item],
+              revision_count: 0
+            };
+          });
+          setUpdateBounds(calculateUpdatedMapBounds(features));
+          setFieldValue(formik_key, formData);
+        }}
+        onFailure={(message) => {
+          setFieldError(formik_key, message);
+        }}
+      />
       <Box mt={4} display="flex" alignItems="flex-start">
         <Button
           sx={{ marginBottom: 1 }}
