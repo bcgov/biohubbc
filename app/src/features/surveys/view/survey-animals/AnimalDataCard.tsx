@@ -1,8 +1,6 @@
-import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Card, CardHeader, Collapse, IconButton } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { Collapse } from '@mui/material';
 import { SurveyAnimalsI18N } from 'constants/i18n';
+import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
@@ -10,55 +8,6 @@ import React, { useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
-
-interface AnimalDataCardProps {
-  header: string;
-  subHeaderData: Record<string, string | number | undefined>;
-  onClickEdit: () => void;
-  onClickDelete: () => void;
-}
-export const AnimalDataCard = ({ header, subHeaderData, onClickEdit, onClickDelete }: AnimalDataCardProps) => {
-  return (
-    <Card
-      variant="outlined"
-      sx={{
-        background: grey[100],
-        '& .MuiCardHeader-subheader': {
-          display: '-webkit-box',
-          WebkitLineClamp: '2',
-          WebkitBoxOrient: 'vertical',
-          maxWidth: '92ch',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          fontSize: '14px'
-        },
-        mt: 1,
-        '& .MuiCardHeader-title': {
-          mb: 0.5
-        }
-      }}>
-      <CardHeader
-        action={
-          <>
-            <IconButton aria-label="settings" onClick={onClickEdit}>
-              <Icon path={mdiPencilOutline} size={1} />
-            </IconButton>
-            <IconButton aria-label="settings" onClick={onClickDelete}>
-              <Icon path={mdiTrashCanOutline} size={1} />
-            </IconButton>
-          </>
-        }
-        title={header}
-        subheader={Object.entries(subHeaderData).map((pairs, idx) => {
-          const SEPARATOR = ' / ';
-          const key = pairs[0];
-          const value = idx < pairs.length - 1 ? `${pairs[1]}${SEPARATOR}` : pairs[1];
-          return value ? `${key} • ${value}` : ``;
-        })}
-      />
-    </Card>
-  );
-};
 
 interface AnimalSectionDataCardsProps {
   section: IAnimalSections;
@@ -134,7 +83,7 @@ export const AnimalSectionDataCards = ({ section, critter }: AnimalSectionDataCa
         <Collapse key={cardData.key}>
           <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
             {({ remove }: FieldArrayRenderProps) => (
-              <AnimalDataCard
+              <EditDeleteStubCard
                 header={cardData.header}
                 subHeaderData={cardData.subHeaderData}
                 onClickEdit={() => console.log('EDIT')}
