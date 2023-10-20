@@ -61,7 +61,7 @@ interface MortalityAnimalFormContentProps {
   value: IAnimalMortality;
 }
 
-const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormContentProps) => {
+export const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormContentProps) => {
   const { handleBlur } = useFormikContext<IAnimal>();
 
   const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
@@ -71,7 +71,7 @@ const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormC
   const renderFields = (): JSX.Element => {
     return (
       <Fragment key={'mortality-fields'}>
-        <Grid item xs={12} md={6} lg={3}>
+        <Grid item xs={12} md={6}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
             required={isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp')}

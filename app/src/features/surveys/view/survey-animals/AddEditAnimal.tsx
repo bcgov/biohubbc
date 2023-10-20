@@ -20,21 +20,19 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formik';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
-import React, { useContext, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import { IAnimalDeployment } from './device';
-import CaptureAnimalForm, { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
-import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
-import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
-import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
-import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
-import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
-import TelemetryDeviceForm from './TelemetryDeviceForm';
+import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
+import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitAnimalForm';
+import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
+import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
+import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
@@ -47,7 +45,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   //const [openDeviceForm, setOpenDeviceForm] = useState(false);
   const { section, isLoading } = props;
   const surveyContext = useContext(SurveyContext);
-  const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
+  //const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
   const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
@@ -55,44 +53,50 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
 
-  const renderFormContent = useMemo(() => {
-    const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
-      [SurveyAnimalsI18N.animalGeneralTitle]: <GeneralAnimalForm />,
-      [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalForm />,
-      [SurveyAnimalsI18N.animalMeasurementTitle]: <MeasurementAnimalForm />,
-      [SurveyAnimalsI18N.animalCaptureTitle]: <CaptureAnimalForm />,
-      [SurveyAnimalsI18N.animalMortalityTitle]: <MortalityAnimalForm />,
-      [SurveyAnimalsI18N.animalFamilyTitle]: <FamilyAnimalForm />,
-      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />,
-      Telemetry: (
-        <TelemetryDeviceForm
-          survey_critter_id={Number(survey_critter_id)}
-          critterData={props.critterData}
-          deploymentData={props.deploymentData}
-          removeAction={function (deployment_id: string): void {
-            throw new Error('Function not implemented.');
-          }}
-        />
-      )
-    };
-    return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
-  }, [section]);
+  const cbApi = useCritterbaseApi();
+
+  //const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
+
+  /*if (!allFamilies) {
+    refreshFamilies();
+  }*/
+
+  const { data: measurements, refresh: refreshMeasurements } = useDataLoader(cbApi.lookup.getTaxonMeasurements);
+  useEffect(() => {
+    refreshMeasurements(values.general.taxon_id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.general.taxon_id]);
 
   const renderSingleForm = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
       [SurveyAnimalsI18N.animalGeneralTitle]: <Typography>Unimplemented</Typography>,
-      [SurveyAnimalsI18N.animalMarkingTitle]: <Typography>Unimplemented</Typography>,
-      [SurveyAnimalsI18N.animalMeasurementTitle]: <Typography>Unimplemented</Typography>,
+      [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalFormContent name={'markings'} index={selectedIndex} />,
+      [SurveyAnimalsI18N.animalMeasurementTitle]: (
+        <MeasurementFormContent index={selectedIndex} measurements={measurements} />
+      ),
       [SurveyAnimalsI18N.animalCaptureTitle]: (
         <CaptureAnimalFormContent name={'captures'} index={selectedIndex} value={values.captures[selectedIndex]} />
       ),
-      [SurveyAnimalsI18N.animalMortalityTitle]: <Typography>Unimplemented</Typography>,
-      [SurveyAnimalsI18N.animalFamilyTitle]: <Typography>Unimplemented</Typography>,
-      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <Typography>Unimplemented</Typography>,
+      [SurveyAnimalsI18N.animalMortalityTitle]: (
+        <MortalityAnimalFormContent name={'mortality'} index={selectedIndex} value={values.mortality[selectedIndex]} />
+      ),
+      [SurveyAnimalsI18N.animalFamilyTitle]: (
+        /*<FamilyAnimalFormContent name={'family'} index={selectedIndex} allFamilies={allFamilies} />*/ <Typography>
+          Unimplemented
+        </Typography>
+      ),
+      [SurveyAnimalsI18N.animalCollectionUnitTitle]: (
+        <CollectionUnitAnimalFormContent name={'collectionUnits'} index={selectedIndex} />
+      ),
       Telemetry: <Typography>Unimplemented</Typography>
     };
-    return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
-  }, [section, selectedIndex, values.captures]);
+    const displayArea = sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
+    return (
+      <Grid spacing={2} container>
+        {displayArea}
+      </Grid>
+    );
+  }, [measurements, section, selectedIndex, values.captures, values.mortality]);
 
   const setPopup = (message: string) => {
     dialogContext.setSnackbar({
@@ -234,7 +238,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           {/*
           parseInt(survey_critter_id) ? renderFormContent : null*/}
           {section === 'General' ? (
-            <Typography>General info placeholder</Typography>
+            <Typography>{`WLH ID: ${values.general.wlh_id} / Animal ID: ${values.general.animal_id} / Taxon: ${values.general.taxon_name}`}</Typography>
           ) : (
             (values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).map((a, i) => (
               <Card key={`${section}-${i}`}>

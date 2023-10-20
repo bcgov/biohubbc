@@ -100,7 +100,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
       <>
         {value.projection_mode === 'wgs' ? (
           <>
-            <Grid item xs={12} md={6} lg={3}>
+            <Grid item xs={12} md={6}>
               <CustomTextField
                 other={{ required: true, size: 'medium' }}
                 label={formatLabel(fields.latitude as string)}
@@ -108,7 +108,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 handleBlur={handleBlur}
               />
             </Grid>
-            <Grid item xs={12} md={6} lg={3}>
+            <Grid item xs={12} md={6}>
               <CustomTextField
                 other={{ required: true, size: 'medium' }}
                 label={formatLabel(fields.longitude as string)}
@@ -119,7 +119,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           </>
         ) : (
           <>
-            <Grid item xs={12} md={6} lg={3}>
+            <Grid item xs={12} md={6}>
               <CustomTextField
                 other={{ required: true, size: 'medium' }}
                 label={formatLabel(fields.utm_northing as string)}
@@ -127,7 +127,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 handleBlur={handleBlur}
               />
             </Grid>
-            <Grid item xs={12} md={6} lg={3}>
+            <Grid item xs={12} md={6}>
               <CustomTextField
                 other={{ required: true, size: 'medium' }}
                 label={formatLabel(fields.utm_easting as string)}
@@ -138,7 +138,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           </>
         )}
 
-        <Grid item xs={12} md={6} lg={3}>
+        <Grid item xs={12} md={6}>
           <CustomTextField
             other={{ required: true, size: 'medium' }}
             label={formatLabel(fields.coordinate_uncertainty as string)}
