@@ -8,7 +8,7 @@ interface AnimalDataCardsProps {
   header: string;
   data: Record<string, string>[];
 }
-export const AnimalDataCards = ({ header, data }: AnimalDataCardsProps) => {
+export const AnimalDataCard = ({ header, data }: AnimalDataCardsProps) => {
   return (
     <TransitionGroup>
       {data.map((item, index) => {

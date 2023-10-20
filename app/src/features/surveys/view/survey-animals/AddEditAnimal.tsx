@@ -32,7 +32,6 @@ interface AddEditAnimalProps {
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
-  //const [openDeviceForm, setOpenDeviceForm] = useState(false);
   const { section, isLoading } = props;
   const surveyContext = useContext(SurveyContext);
   const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
@@ -97,9 +96,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             fontSize: '1.125rem',
             fontWeight: 700
           }}>
-          {initialValues?.general?.animal_id
-            ? `Animal Details: ${initialValues?.general?.animal_id}`
-            : 'Animal Details'}
+          {initialValues?.general?.animal_id ? `Animal Details > ${section}` : 'Animal Details'}
         </Typography>
 
         <Box
