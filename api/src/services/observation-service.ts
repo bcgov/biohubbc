@@ -1,3 +1,4 @@
+import xlsx from 'xlsx';
 import { IDBConnection } from '../database/db';
 import {
   InsertObservation,
@@ -8,9 +9,9 @@ import {
 } from '../repositories/observation-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
+import { CSVWorkBook } from '../utils/media/csv/csv-file';
 import { MediaFile } from '../utils/media/media-file';
 import { parseS3File } from '../utils/media/media-utils';
-import { XLSXCSV } from '../utils/media/xlsx/xlsx-file';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-queries');
@@ -36,8 +37,11 @@ export class ObservationService extends DBService {
       return false;
     }
 
-    const xlsxCSV = new XLSXCSV(file);
-    console.log('xlsxCSV.workbook', xlsxCSV.workbook);
+    const workbook = new CSVWorkBook(xlsx.read(file.buffer, { cellDates: true, cellNF: true, cellHTML: false }));
+    console.log('workbook', workbook);
+
+    const coloumnNames = workbook.worksheets['Sheet1'].getHeadersLowerCase();
+    console.log('coloumnNames', coloumnNames);
 
     return true;
   }
