@@ -1,8 +1,20 @@
-import { mdiContentCopy, mdiPlus } from '@mdi/js';
+import { mdiContentCopy, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Collapse, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Collapse,
+  Grid,
+  IconButton,
+  Toolbar,
+  Typography
+} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -10,12 +22,12 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formik';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
-import { getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
+import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import { IAnimalDeployment } from './device';
-import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
+import CaptureAnimalForm, { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
@@ -36,8 +48,12 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, isLoading } = props;
   const surveyContext = useContext(SurveyContext);
   const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
-  const { submitForm, initialValues, values, resetForm } = useFormikContext<IAnimal>();
+  const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
+
+  const [showDialog, setShowDialog] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
 
   const renderFormContent = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
@@ -62,9 +78,21 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
   }, [section]);
 
-  if (!surveyContext.surveyDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
+  const renderSingleForm = useMemo(() => {
+    const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
+      [SurveyAnimalsI18N.animalGeneralTitle]: <Typography>Unimplemented</Typography>,
+      [SurveyAnimalsI18N.animalMarkingTitle]: <Typography>Unimplemented</Typography>,
+      [SurveyAnimalsI18N.animalMeasurementTitle]: <Typography>Unimplemented</Typography>,
+      [SurveyAnimalsI18N.animalCaptureTitle]: (
+        <CaptureAnimalFormContent name={'captures'} index={selectedIndex} value={values.captures[selectedIndex]} />
+      ),
+      [SurveyAnimalsI18N.animalMortalityTitle]: <Typography>Unimplemented</Typography>,
+      [SurveyAnimalsI18N.animalFamilyTitle]: <Typography>Unimplemented</Typography>,
+      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <Typography>Unimplemented</Typography>,
+      Telemetry: <Typography>Unimplemented</Typography>
+    };
+    return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
+  }, [section, selectedIndex, values.captures]);
 
   const setPopup = (message: string) => {
     dialogContext.setSnackbar({
@@ -77,6 +105,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       )
     });
   };
+
+  if (!surveyContext.surveyDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <>
@@ -101,7 +133,6 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             ? `Animal Details: ${initialValues?.general?.animal_id}`
             : 'Animal Details'}
         </Typography>
-
         <Box
           sx={{
             '& div:first-of-type': {
@@ -113,18 +144,49 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           <Box display="flex" overflow="hidden">
             {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
               <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
-                {({ push }: FieldArrayRenderProps) => (
-                  <Button
-                    startIcon={<Icon path={mdiPlus} size={1} />}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      //Remove this before handling the modal section
-                      // This is where we will open the modal from
-                      push(ANIMAL_SECTIONS_FORM_MAP[section]?.defaultFormValue());
-                    }}>
-                    {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
-                  </Button>
+                {({ push, remove }: FieldArrayRenderProps) => (
+                  <>
+                    <EditDialog
+                      dialogTitle={`Add ${ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}`}
+                      open={showDialog}
+                      component={{
+                        initialValues: values,
+                        element: renderSingleForm,
+                        validationSchema: AnimalSchema
+                      }}
+                      onCancel={() => {
+                        if (openedFromAddButton) {
+                          remove(selectedIndex);
+                        }
+                        setOpenedFromAddButton(false);
+                        setShowDialog(false);
+                      }}
+                      onSave={(saveVals) => {
+                        setOpenedFromAddButton(false);
+                        setShowDialog(false);
+                        setFieldValue(
+                          ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
+                          saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
+                        );
+                      }}
+                    />
+                    <Button
+                      startIcon={<Icon path={mdiPlus} size={1} />}
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        //Remove this before handling the modal section
+                        // This is where we will open the modal from
+                        setOpenedFromAddButton(true);
+                        push(ANIMAL_SECTIONS_FORM_MAP[section]?.defaultFormValue());
+                        setSelectedIndex(
+                          (values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any)['length'] ?? 0
+                        );
+                        setShowDialog(true);
+                      }}>
+                      {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
+                    </Button>
+                  </>
                 )}
               </FieldArray>
             ) : null}
@@ -168,7 +230,40 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             </Grid>
           </Grid>
         ) : null}
-        <Form>{parseInt(survey_critter_id) ? renderFormContent : null}</Form>
+        <Form>
+          {/*
+          parseInt(survey_critter_id) ? renderFormContent : null*/}
+          {section === 'General' ? (
+            <Typography>General info placeholder</Typography>
+          ) : (
+            (values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).map((a, i) => (
+              <Card key={`${section}-${i}`}>
+                <CardHeader title={`${section} ${i + 1}`}></CardHeader>
+                <CardContent>
+                  <Box>
+                    <Typography>{`Capture Date: ${a.capture_timestamp} / LatLng Coordinates: (${a.capture_latitude}, ${a.capture_longitude})`}</Typography>
+                    <IconButton
+                      onClick={() => {
+                        setSelectedIndex(i);
+                        setShowDialog(true);
+                      }}>
+                      <Icon path={mdiPencilOutline} size={1} />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => {
+                        setFieldValue(ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName, [
+                          ...(values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).slice(0, i),
+                          ...(values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).slice(i + 1)
+                        ]);
+                      }}>
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </Form>
       </Box>
     </>
   );
