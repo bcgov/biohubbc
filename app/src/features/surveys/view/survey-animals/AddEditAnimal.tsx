@@ -33,6 +33,8 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
+  const critter = critterData?.find((cData) => cData.survey_critter_id === parseInt(survey_critter_id));
+
   const [showDialog, setShowDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
@@ -187,12 +189,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             </Grid>
           </Grid>
         ) : null}
-        <Form>
-          <AnimalSectionDataCards
-            section={section}
-            critter={critterData?.find((critter) => critter.survey_critter_id === parseInt(survey_critter_id))}
-          />
-        </Form>
+        <Form>{critter ? <AnimalSectionDataCards section={section} critter={critter} /> : null}</Form>
       </Box>
     </>
   );
