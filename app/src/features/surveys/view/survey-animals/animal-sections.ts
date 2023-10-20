@@ -173,10 +173,22 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       release_location_id: undefined
     })
   },
-  ['Telemetry']: {
+  Telemetry: {
     animalKeyName: 'device',
     addBtnText: 'Add Device / Deployment',
-    // Graham add the default value here
-    defaultFormValue: () => ({})
+    defaultFormValue: () => ({
+      device_id: '' as unknown as number,
+      device_make: '',
+      frequency: '' as unknown as number,
+      frequency_unit: '',
+      device_model: '',
+      deployments: [
+        {
+          deployment_id: '',
+          attachment_start: '',
+          attachment_end: undefined
+        }
+      ]
+    })
   }
 };

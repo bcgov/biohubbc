@@ -128,13 +128,17 @@ export const SurveyAnimalsPage = () => {
       if (!survey_critter_id || !surveyCritter) {
         throw Error('The internal critter id for this row was not set correctly.');
       }
-      await bhApi.survey.updateSurveyCritter(
+      /*await bhApi.survey.updateSurveyCritter(
         projectId,
         surveyId,
         surveyCritter.survey_critter_id,
         updateCritter,
         createCritter
-      );
+      );*/
+      console.log('Initial values: ' + JSON.stringify(initialFormValues, null, 2));
+      console.log('Create critter: ' + JSON.stringify(currentFormValues, null, 2))
+      console.log('Create critter: ' + JSON.stringify(createCritter, null, 2));
+      console.log('Update critter: ' + JSON.stringify(updateCritter, null, 2))
     };
     try {
       setIsSubmitting(true);

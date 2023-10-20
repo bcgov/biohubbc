@@ -14,6 +14,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import { AnimalSectionDataCards } from './AnimalDataCard';
@@ -23,6 +24,7 @@ import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitA
 import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
+import { DeviceFormSection, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
@@ -34,7 +36,7 @@ interface AddEditAnimalProps {
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, isLoading } = props;
   const surveyContext = useContext(SurveyContext);
-  //const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
+  const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
   const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
@@ -77,15 +79,24 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: (
         <CollectionUnitAnimalFormContent name={'collectionUnits'} index={selectedIndex} />
       ),
-      Telemetry: <Typography>Unimplemented</Typography>
+      Telemetry: (
+        <DeviceFormSection
+          values={values.device}
+          mode={openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT}
+          index={selectedIndex}
+          removeAction={() => {}}
+        />
+      )
     };
     const displayArea = sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
-    return (
+    return section === 'Telemetry' ? (
+      displayArea
+    ) : (
       <Grid spacing={2} container>
         {displayArea}
       </Grid>
     );
-  }, [measurements, section, selectedIndex, values.captures, values.mortality]);
+  }, [measurements, openedFromAddButton, section, selectedIndex, values.captures, values.device, values.mortality]);
 
   const setPopup = (message: string) => {
     dialogContext.setSnackbar({
@@ -153,6 +164,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         setShowDialog(false);
                       }}
                       onSave={(saveVals) => {
+                        if (section === 'Telemetry') {
+                          console.log('Take some custom action here!');
+                        }
                         setOpenedFromAddButton(false);
                         setShowDialog(false);
                         setFieldValue(
@@ -222,7 +236,13 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Grid>
         ) : null}
         <Form>
-          <AnimalSectionDataCards section={section} />
+          <AnimalSectionDataCards
+            onEditClick={(idx) => {
+              setSelectedIndex(idx);
+              setShowDialog(true);
+            }}
+            section={section}
+          />
         </Form>
       </Box>
     </>

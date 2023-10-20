@@ -30,7 +30,7 @@ interface IMarkingAnimalFormContentProps {
 }
 
 export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormContentProps) => {
-  const { values, handleBlur } = useFormikContext<IAnimal>();
+  const { values, errors, handleBlur } = useFormikContext<IAnimal>();
 
   return (
     <Fragment>
@@ -93,6 +93,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
           />
         </TextInputToggle>
       </Grid>
+      <pre>{JSON.stringify(errors, null, 2)}</pre>
     </Fragment>
   );
 };

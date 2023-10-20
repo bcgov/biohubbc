@@ -58,8 +58,9 @@ export const AnimalDataCard = ({ header, subHeaderData, onClickEdit, onClickDele
 
 interface AnimalSectionDataCards {
   section: IAnimalSections;
+  onEditClick: (idx: number) => void;
 }
-export const AnimalSectionDataCards = ({ section }: AnimalSectionDataCards) => {
+export const AnimalSectionDataCards = ({ section, onEditClick }: AnimalSectionDataCards) => {
   const { values } = useFormikContext<IAnimal>();
   const sectionDataCardMap: Record<
     IAnimalSections,
@@ -78,7 +79,10 @@ export const AnimalSectionDataCards = ({ section }: AnimalSectionDataCards) => {
     [SurveyAnimalsI18N.animalMortalityTitle]: [{ header: 'Mortality', subHeaderData: {} }],
     [SurveyAnimalsI18N.animalFamilyTitle]: [{ header: 'Family', subHeaderData: {} }],
     [SurveyAnimalsI18N.animalCollectionUnitTitle]: [{ header: 'Ecological Unit', subHeaderData: {} }],
-    Telemetry: [{ header: 'Device', subHeaderData: {} }]
+    Telemetry: values.device.map((a) => ({
+      header: 'Device',
+      subHeaderData: { DeviceID: a.device_id, Deployments: a.deployments?.length }
+    }))
   };
 
   const sectionData = sectionDataCardMap[section];
@@ -91,7 +95,7 @@ export const AnimalSectionDataCards = ({ section }: AnimalSectionDataCards) => {
               <AnimalDataCard
                 header={cardData.header}
                 subHeaderData={cardData.subHeaderData}
-                onClickEdit={() => console.log('EDIT')}
+                onClickEdit={() => onEditClick(index)}
                 onClickDelete={() => remove(index)}
               />
             )}
