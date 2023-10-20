@@ -1,18 +1,7 @@
-import { mdiContentCopy, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Collapse,
-  Grid,
-  IconButton,
-  Toolbar,
-  Typography
-} from '@mui/material';
+import { Box, Button, Collapse, Grid, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -27,6 +16,7 @@ import { isEqual } from 'lodash-es';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+import { AnimalSectionDataCards } from './AnimalDataCard';
 import { IAnimalDeployment } from './device';
 import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
 import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitAnimalForm';
@@ -42,7 +32,6 @@ interface AddEditAnimalProps {
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
-  //const [openDeviceForm, setOpenDeviceForm] = useState(false);
   const { section, isLoading } = props;
   const surveyContext = useContext(SurveyContext);
   //const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
@@ -133,9 +122,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             fontSize: '1.125rem',
             fontWeight: 700
           }}>
-          {initialValues?.general?.animal_id
-            ? `Animal Details: ${initialValues?.general?.animal_id}`
-            : 'Animal Details'}
+          {initialValues?.general?.animal_id ? `Animal Details > ${section}` : 'Animal Details'}
         </Typography>
         <Box
           sx={{
@@ -235,38 +222,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Grid>
         ) : null}
         <Form>
-          {/*
-          parseInt(survey_critter_id) ? renderFormContent : null*/}
-          {section === 'General' ? (
-            <Typography>{`WLH ID: ${values.general.wlh_id} / Animal ID: ${values.general.animal_id} / Taxon: ${values.general.taxon_name}`}</Typography>
-          ) : (
-            (values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).map((a, i) => (
-              <Card key={`${section}-${i}`}>
-                <CardHeader title={`${section} ${i + 1}`}></CardHeader>
-                <CardContent>
-                  <Box>
-                    <Typography>{`Capture Date: ${a.capture_timestamp} / LatLng Coordinates: (${a.capture_latitude}, ${a.capture_longitude})`}</Typography>
-                    <IconButton
-                      onClick={() => {
-                        setSelectedIndex(i);
-                        setShowDialog(true);
-                      }}>
-                      <Icon path={mdiPencilOutline} size={1} />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => {
-                        setFieldValue(ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName, [
-                          ...(values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).slice(0, i),
-                          ...(values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).slice(i + 1)
-                        ]);
-                      }}>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))
-          )}
+          <AnimalSectionDataCards section={section} />
         </Form>
       </Box>
     </>
