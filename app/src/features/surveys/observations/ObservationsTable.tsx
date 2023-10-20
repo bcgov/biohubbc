@@ -44,6 +44,7 @@ export interface ISamplePeriodSelectProps {
   sample_period_name: string;
 }
 export interface ISpeciesObservationTableProps {
+  isLoading?: boolean;
   sample_sites: {
     survey_sample_site_id: number;
     sample_site_name: string;
@@ -496,7 +497,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onNo={() => handleCancelDeleteRow()}
       />
       <DataGrid
-        loading={observationsDataLoader.isLoading}
+        loading={observationsDataLoader.isLoading || props.isLoading}
         rowHeight={56}
         apiRef={apiRef}
         editMode="row"

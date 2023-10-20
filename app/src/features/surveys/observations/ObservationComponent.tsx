@@ -25,6 +25,9 @@ import { useContext, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
 
 const ObservationComponent = () => {
+  const [showImportDiaolog, setShowImportDiaolog] = useState<boolean>(false);
+  const [processingRecords, setProcessingRecords] = useState<boolean>(false);
+
   const sampleSites: ISampleSiteSelectProps[] = [];
   const sampleMethods: ISampleMethodSelectProps[] = [];
   const samplePeriods: ISamplePeriodSelectProps[] = [];
@@ -35,27 +38,22 @@ const ObservationComponent = () => {
 
   const { projectId, surveyId } = surveyContext;
 
-  const [showImportDiaolog, setShowImportDiaolog] = useState<boolean>(false);
-  const [__TEST_processSubmissionId, __TEST_setProcessSubmissionId] = useState<number | null>(null);
-
-  const handleProcessSubmission = () => {
-    if (!__TEST_processSubmissionId) {
-      return;
-    }
-
-    biohubApi.observation.processCsvSubmission(projectId, surveyId, 1);
-  };
-
   const handleImportObservations = (): IUploadHandler => {
     return async (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.observation
         .uploadCsvForImport(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
         .then((response) => {
-          __TEST_setProcessSubmissionId(response.submissionId);
-
-          // TODO dispatch process request
-          // handleProcessSubmission(response.submissionId) // Uncomment this later. For now, use test button in FE.
-          return;
+          setShowImportDiaolog(false);
+          setProcessingRecords(true)
+          biohubApi.observation.processCsvSubmission(projectId, surveyId, response.submissionId)
+            .then((response) => {
+              observationsContext.refreshRecords().then(() => {
+                setProcessingRecords(false);
+              });
+            })
+            .catch(() => {
+              setProcessingRecords(false);
+            })
         })
         .finally(() => {
           //
@@ -157,11 +155,6 @@ const ObservationComponent = () => {
               }
             }}>
             <Box display="flex" overflow="hidden">
-              {__TEST_processSubmissionId && (
-                <Button variant="contained" color="error" onClick={() => handleProcessSubmission()}>
-                  TEST process submissionId {__TEST_processSubmissionId}
-                </Button>
-              )}
               <Button
                 variant="contained"
                 color="primary"
@@ -212,6 +205,7 @@ const ObservationComponent = () => {
               sample_sites={sampleSites}
               sample_methods={sampleMethods}
               sample_periods={samplePeriods}
+              isLoading={processingRecords}
             />
           </Box>
         </Box>

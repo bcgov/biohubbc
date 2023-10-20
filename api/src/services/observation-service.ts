@@ -37,11 +37,7 @@ export class ObservationService extends DBService {
       return false;
     }
 
-    const workbook = new CSVWorkBook(xlsx.read(file.buffer, { cellDates: true, cellNF: true, cellHTML: false }));
-    console.log('workbook', workbook);
-
-    const coloumnNames = workbook.worksheets['Sheet1'].getHeadersLowerCase();
-    console.log('coloumnNames', coloumnNames);
+    // TODO perform validation on columns
 
     return true;
   }
@@ -126,31 +122,52 @@ export class ObservationService extends DBService {
     return this.observationRepository.getObservationSubmissionById(submissionId);
   }
 
-  async processObservationCsvSubmission(submissionId: number) {
+  /**
+   * Processes a observation upload submission. This method recieves an ID belonging to an
+   * observation submission, gets the CSV file associated with the submisison, and appends
+   * all of the records in the CSV file to the observations for the survey. If the CSV
+   * file fails validation, this method fails.
+   *
+   * @param {number} submissionId
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationService
+   */
+  async processObservationCsvSubmission(submissionId: number): Promise<ObservationRecord[]> {
     defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
 
     // Step 1. Retrieve the observation submission record
     const submission = await this.getObservationSubmissionById(submissionId);
-    console.log('submission', submission);
+    const surveyId = submission.survey_id
 
     // Step 2. Retrieve the S3 object containing the uploaded CSV file
     const s3Object = await getFileFromS3(submission.key);
-    console.log('s3Object', s3Object);
 
     // Step 3. Get the contents of the S3 object
-    const csvFile = parseS3File(s3Object);
-    console.log('csvFile', csvFile);
+    const mediaFile = parseS3File(s3Object);
 
-    if (!this.validateCsvFile(csvFile)) {
+    // Step 4. Validate the CSV
+    if (!this.validateCsvFile(mediaFile)) {
       throw new Error('Failed to process file for importing observations. Invalid CSV file.');
     }
 
-    // Step 4. Validate the CSV
-
     // Step 5. Merge all the table rows into an array of ObservationInsert[]
+    const workbook = new CSVWorkBook(xlsx.read(mediaFile.buffer, { cellDates: true, cellNF: true, cellHTML: false }));
+    const worksheet = Object.values(workbook.worksheets)[0];
 
-    // Step 6.
-    // this.insertUpdateDeleteSurveyObservations(surveyId, theProcessedRows)
-    return csvFile.fileName;
+    const insertRows: InsertObservation[] = worksheet.getRowObjects().map((row) => ({
+      survey_id: surveyId,
+      wldtaxonomic_units_id: row['SPECIES_TAXONOMIC_ID'],
+      survey_sample_site_id: null,
+      survey_sample_method_id: null,
+      survey_sample_period_id: null,
+      latitude: row['LATITUDE'],
+      longitude: row['LONGITUDE'],
+      count: row['COUNT'],
+      observation_time: row['TIME'],
+      observation_date: row['DATE']
+    }));
+    
+    // Step 6. Insert new rows and return them
+    return this.insertUpdateDeleteSurveyObservations(surveyId, insertRows)
   }
 }

@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
+import { surveyObservationsResponseSchema } from './index';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/process');
 
@@ -70,10 +71,7 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'object',
-            properties: {
-              // TODO
-            }
+            ...surveyObservationsResponseSchema
           }
         }
       }
@@ -106,9 +104,9 @@ export function processFile(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const response = observationService.processObservationCsvSubmission(submissionId);
+      const response = await observationService.processObservationCsvSubmission(submissionId);
 
-      res.status(200).json(response);
+      res.status(200).json({ surveyObservations: response });
 
       await connection.commit();
     } catch (error) {
