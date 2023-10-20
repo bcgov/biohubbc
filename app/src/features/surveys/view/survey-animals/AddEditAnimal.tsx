@@ -1,18 +1,7 @@
-import { mdiContentCopy, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Collapse,
-  Grid,
-  IconButton,
-  Toolbar,
-  Typography
-} from '@mui/material';
+import { Box, Button, Collapse, Grid, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -23,18 +12,11 @@ import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formi
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
 import React, { useContext, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+import { AnimalSectionDataCards } from './AnimalDataCard';
 import { IAnimalDeployment } from './device';
-import CaptureAnimalForm, { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
-import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
-import FamilyAnimalForm from './form-sections/FamilyAnimalForm';
-import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import MarkingAnimalForm from './form-sections/MarkingAnimalForm';
-import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
-import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
-import TelemetryDeviceForm from './TelemetryDeviceForm';
+import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
@@ -46,36 +28,13 @@ interface AddEditAnimalProps {
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, isLoading } = props;
   const surveyContext = useContext(SurveyContext);
-  const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
+  //const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
   const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
   const [showDialog, setShowDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
-
-  const renderFormContent = useMemo(() => {
-    const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
-      [SurveyAnimalsI18N.animalGeneralTitle]: <GeneralAnimalForm />,
-      [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalForm />,
-      [SurveyAnimalsI18N.animalMeasurementTitle]: <MeasurementAnimalForm />,
-      [SurveyAnimalsI18N.animalCaptureTitle]: <CaptureAnimalForm />,
-      [SurveyAnimalsI18N.animalMortalityTitle]: <MortalityAnimalForm />,
-      [SurveyAnimalsI18N.animalFamilyTitle]: <FamilyAnimalForm />,
-      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalForm />,
-      Telemetry: (
-        <TelemetryDeviceForm
-          survey_critter_id={Number(survey_critter_id)}
-          critterData={props.critterData}
-          deploymentData={props.deploymentData}
-          removeAction={function (deployment_id: string): void {
-            throw new Error('Function not implemented.');
-          }}
-        />
-      )
-    };
-    return sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
-  }, [section]);
 
   const renderSingleForm = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
@@ -228,38 +187,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Grid>
         ) : null}
         <Form>
-          {/*
-          parseInt(survey_critter_id) ? renderFormContent : null*/}
-          {section === 'General' ? (
-            <Typography>General info placeholder</Typography>
-          ) : (
-            (values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).map((a, i) => (
-              <Card key={`${section}-${i}`}>
-                <CardHeader title={`${section} ${i + 1}`}></CardHeader>
-                <CardContent>
-                  <Box>
-                    <Typography>{`Capture Date: ${a.capture_timestamp} / LatLng Coordinates: (${a.capture_latitude}, ${a.capture_longitude})`}</Typography>
-                    <IconButton
-                      onClick={() => {
-                        setSelectedIndex(i);
-                        setShowDialog(true);
-                      }}>
-                      <Icon path={mdiPencilOutline} size={1} />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => {
-                        setFieldValue(ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName, [
-                          ...(values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).slice(0, i),
-                          ...(values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any[]).slice(i + 1)
-                        ]);
-                      }}>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))
-          )}
+          <AnimalSectionDataCards section={section} />
         </Form>
       </Box>
     </>
