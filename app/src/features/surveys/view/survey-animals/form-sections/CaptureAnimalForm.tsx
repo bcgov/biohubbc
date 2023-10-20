@@ -63,7 +63,7 @@ interface CaptureAnimalFormContentProps {
   value: IAnimalCapture;
 }
 
-const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormContentProps) => {
+export const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormContentProps) => {
   const { handleBlur, values, handleChange } = useFormikContext<IAnimal>();
   const [showCaptureComment, setShowCaptureComment] = useState(false);
   const [showReleaseComment, setShowReleaseComment] = useState(false);
