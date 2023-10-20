@@ -1,7 +1,6 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
-import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectObjectivesForm {

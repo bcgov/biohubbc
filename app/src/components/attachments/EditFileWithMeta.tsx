@@ -1,4 +1,4 @@
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import EditReportMetaForm, { IEditReportMetaForm } from '../attachments/EditReportMetaForm';

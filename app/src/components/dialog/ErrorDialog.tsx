@@ -1,12 +1,14 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import React from 'react';
+
+const DEFAULT_ERROR_DIALOG_TITLE = 'Error!';
 
 export interface IErrorDialogProps {
   /**
@@ -90,11 +92,14 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
         open={props.open}
         onClose={props.onClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
+        aria-describedby="alert-dialog-description"
+        keepMounted={false}>
+        <DialogTitle id="alert-dialog-title">{props.dialogTitle || DEFAULT_ERROR_DIALOG_TITLE}</DialogTitle>
+
         <DialogContent>
           <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
         </DialogContent>
+
         {props.dialogError && (
           <DialogContent>
             <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>

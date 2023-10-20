@@ -1,14 +1,13 @@
-import { createMuiTheme } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { ThemeProvider } from '@material-ui/styles';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import React from 'react';
+import React, { useState } from 'react';
 import appTheme from 'themes/appTheme';
 
 export interface ISelectWithSubtextFieldOption {
@@ -25,35 +24,41 @@ export interface ISelectWithSubtextField {
   required?: boolean;
 }
 
-const selectWithSubtextTheme = createMuiTheme({
-  ...appTheme,
-  overrides: {
-    ...(appTheme?.overrides || {}),
+const updatedSelect = createTheme({
+  components: {
     MuiMenu: {
-      paper: {
-        minWidth: '72ch !important',
-        maxWidth: '72ch !important',
-        maxHeight: 500
+      styleOverrides: {
+        paper: {
+          minWidth: '72ch !important',
+          maxWidth: '72ch !important',
+          maxHeight: 500
+        }
       }
     },
     MuiMenuItem: {
-      root: {
-        whiteSpace: 'break-spaces',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+      styleOverrides: {
+        root: {
+          whiteSpace: 'break-spaces',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+        }
       }
     },
     MuiListItemText: {
-      primary: {
-        fontSize: '14px',
-        fontWeight: 700
-      },
-      secondary: {
-        marginTop: appTheme.spacing(0.5)
+      styleOverrides: {
+        primary: {
+          fontSize: '14px',
+          fontWeight: 700
+        },
+        secondary: {
+          marginTop: appTheme.spacing(0.5)
+        }
       }
     },
     MuiInputLabel: {
-      root: {
-        paddingRight: '20px'
+      styleOverrides: {
+        root: {
+          paddingRight: '20px'
+        }
       }
     }
   }
@@ -61,21 +66,26 @@ const selectWithSubtextTheme = createMuiTheme({
 
 const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
   const { values, touched, errors, handleChange } = useFormikContext<ISelectWithSubtextFieldOption>();
+  const [menuAnchorEl, setMenuAnchorEl] = useState<(EventTarget & Element) | null>(null);
 
   return (
-    <ThemeProvider theme={selectWithSubtextTheme}>
+    <ThemeProvider theme={updatedSelect}>
       <FormControl
         fullWidth
         variant="outlined"
         required={props.required}
-        error={get(touched, props.name) && Boolean(get(errors, props.name))}>
+        error={get(touched, props.name) && Boolean(get(errors, props.name))}
+        style={{ width: '100%' }}>
         <InputLabel id={`${props.name}-label`}>{props.label}</InputLabel>
         <Select
           name={props.name}
           labelId={`${props.name}-label`}
           label={props.label}
-          value={get(values, props.name)}
+          value={get(values, props.name) ?? ''}
           onChange={handleChange}
+          onOpen={(e) => {
+            setMenuAnchorEl(e.currentTarget);
+          }}
           displayEmpty
           inputProps={{ id: props.id, 'aria-label': props.label }}
           renderValue={(value) => {
@@ -84,7 +94,7 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
             return <>{code?.label}</>;
           }}
           MenuProps={{
-            getContentAnchorEl: null,
+            anchorEl: menuAnchorEl,
             className: 'menuTest',
             anchorOrigin: {
               vertical: 'bottom',

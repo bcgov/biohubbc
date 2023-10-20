@@ -1,17 +1,15 @@
-import Box from '@material-ui/core/Box';
-import { grey } from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import FundingSource from 'features/projects/view/components/FundingSource';
-import GeneralInformation from 'features/projects/view/components/GeneralInformation';
-import IUCNClassification from 'features/projects/view/components/IUCNClassification';
-import Partnerships from 'features/projects/view/components/Partnerships';
-import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
-import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
-import React from 'react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
+import assert from 'assert';
+import { ProjectContext } from 'contexts/projectContext';
+import { useContext } from 'react';
+import GeneralInformation from './components/GeneralInformation';
+import ProjectObjectives from './components/ProjectObjectives';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectMetadata: {
@@ -55,6 +53,10 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectDetails = () => {
   const classes = useStyles();
+  const projectContext = useContext(ProjectContext);
+
+  // Project data must be loaded by a parent before this component is rendered
+  assert(projectContext.projectDataLoader.data);
 
   return (
     <Box>
@@ -81,37 +83,14 @@ const ProjectDetails = () => {
           <GeneralInformation />
         </Box>
 
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Project Coordinator
-          </Typography>
-          <Divider></Divider>
-          <ProjectCoordinator />
-        </Box>
-
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Funding Sources
-          </Typography>
-          <Divider></Divider>
-          <FundingSource />
-        </Box>
-
-        <Box component="section">
-          <Typography component="h4" className={classes.projectMetaSectionHeader}>
-            Partnerships
-          </Typography>
-          <Divider></Divider>
-          <Partnerships />
-        </Box>
-
-        <Box component="section" mb={0}>
+        {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (view) temporarily, while its decided if IUCN information is desired */}
+        {/* <Box component="section" mb={0}>
           <Typography component="h4" className={classes.projectMetaSectionHeader}>
             IUCN Classification
           </Typography>
           <Divider></Divider>
           <IUCNClassification />
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );

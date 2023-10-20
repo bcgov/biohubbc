@@ -4,7 +4,7 @@ import { Feature } from 'geojson';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import * as L from 'leaflet';
 import 'leaflet-draw';
-import 'leaflet/dist/leaflet.css';
+import 'leaflet-draw/dist/leaflet.draw.css';
 import React, { useEffect, useRef, useState } from 'react';
 
 /*
@@ -173,9 +173,6 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
    */
   const drawInitialFeatures = () => {
     const features: Feature[] = props.initialFeatures || [];
-    if (features.length === 0) {
-      return;
-    }
 
     const container = getFeatureGroup();
 

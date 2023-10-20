@@ -1,47 +1,19 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import ListItem from '@material-ui/core/ListItem';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
-import { mdiCheck, mdiFileOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import axios, { CancelTokenSource } from 'axios';
+import FileUploadItemErrorDetails from 'components/file-upload/FileUploadItemErrorDetails';
+import FileUploadItemSubtext from 'components/file-upload/FileUploadItemSubtext';
 import { APIError } from 'hooks/api/useAxios';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  uploadProgress: {
-    marginTop: theme.spacing(0.5)
-  },
-  uploadListItemBox: {
-    width: '100%',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: theme.palette.action.disabled,
-    borderRadius: '4px'
-  },
-  uploadingColor: {
-    color: theme.palette.primary.main
-  },
-  completeColor: {
-    color: theme.palette.success.main
-  },
-  completeBgColor: {
-    background: theme.palette.success.main
-  },
-  errorColor: {
-    color: theme.palette.error.main
-  },
-  errorBgColor: {
-    background: theme.palette.error.main + '44'
-  },
-  fileIconColor: {
-    color: theme.palette.action.disabled
-  }
-}));
+import { v4 } from 'uuid';
+import FileUploadItemActionButton from './FileUploadItemActionButton';
+import FileUploadItemProgressBar from './FileUploadItemProgressBar';
 
 export enum UploadFileStatus {
   STAGED = 'Ready for upload',
@@ -71,25 +43,118 @@ export type IFileHandler = (file: File | null) => void;
 export type IOnUploadSuccess = (response: any) => void;
 
 export interface IFileUploadItemProps {
-  uploadHandler: IUploadHandler;
+  /**
+   * An optional file upload callback fired for each file.
+   *
+   * @type {IUploadHandler}
+   * @memberof IFileUploadItemProps
+   */
+  uploadHandler?: IUploadHandler;
+  /**
+   * An optional callback fired if the file upload is successful.
+   *
+   * @type {IOnUploadSuccess}
+   * @memberof IFileUploadItemProps
+   */
   onSuccess?: IOnUploadSuccess;
+  /**
+   * The file being uploaded.
+   *
+   * @type {File}
+   * @memberof IFileUploadItemProps
+   */
   file: File;
+  /**
+   * An optional initial error to display for this file upload item.
+   *
+   * @type {string}
+   * @memberof IFileUploadItemProps
+   */
   error?: string;
+  /**
+   * A callback fired when the file upload is cancelled or removed.
+   *
+   * @memberof IFileUploadItemProps
+   */
   onCancel: () => void;
+  /**
+   * An optional callback fired for each file.
+   *
+   * @type {IFileHandler}
+   * @memberof IFileUploadItemProps
+   */
   fileHandler?: IFileHandler;
+  /**
+   * The current status of the file upload item.
+   *
+   * @type {UploadFileStatus}
+   * @memberof IFileUploadItemProps
+   */
   status?: UploadFileStatus;
+  /**
+   * If `true`, show advanced error details on a failed upload, for each upload item.
+   *
+   * @type {boolean}
+   * @memberof IFileUploadItemProps
+   */
+  enableErrorDetails?: boolean;
+  /**
+   * A component that renders a subtext string for each file upload item.
+   * If not provided, a default will be used.
+   *
+   * @memberof IFileUploadItemProps
+   */
+  SubtextComponent?: (props: ISubtextProps) => JSX.Element;
+  /**
+   * A component that renders an action button for each file upload item.
+   * If not provided, a default will be used.
+   *
+   * @memberof IFileUploadItemProps
+   */
+  ActionButtonComponent?: (props: IActionButtonProps) => JSX.Element;
+  /**
+   * A component that renders a progress bar for each file upload item.
+   * If not provided, a default will be used.
+   *
+   * @memberof IFileUploadItemProps
+   */
+  ProgressBarComponent?: (props: IProgressBarProps) => JSX.Element;
 }
 
-const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
-  const isMounted = useIsMounted();
-  const classes = useStyles();
+export interface ISubtextProps {
+  file: File;
+  status: UploadFileStatus;
+  progress: number;
+  error?: string;
+}
 
-  const { uploadHandler, fileHandler, onSuccess } = props;
+export interface IErrorDetailsProps {
+  error?: string;
+  errorDetails?: { _id: string; message: string }[];
+}
+
+export interface IActionButtonProps {
+  status: UploadFileStatus;
+  onCancel: () => void;
+}
+
+export interface IProgressBarProps {
+  status: UploadFileStatus;
+  progress: number;
+}
+
+const FileUploadItem = (props: IFileUploadItemProps) => {
+  const isMounted = useIsMounted();
+
+  const { uploadHandler, fileHandler, onSuccess, SubtextComponent, ActionButtonComponent, ProgressBarComponent } =
+    props;
 
   const [file] = useState<File>(props.file);
-  const [error, setError] = useState<string | undefined>(props.error);
 
-  const [status, setStatus] = useState<UploadFileStatus>(props.status || UploadFileStatus.PENDING);
+  const [error, setError] = useState<string | undefined>(props.error);
+  const [errorDetails, setErrorDetails] = useState<{ _id: string; message: string }[] | undefined>();
+
+  const [status, setStatus] = useState<UploadFileStatus>(props.status ?? UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
   const [cancelToken] = useState<CancelTokenSource>(axios.CancelToken.source());
 
@@ -97,6 +162,21 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   const [initiateCancel, setInitiateCancel] = useState<boolean>(false);
   // indicates that the active requests are in a state where they can be safely cancelled
   const [isSafeToCancel, setIsSafeToCancel] = useState<boolean>(false);
+
+  const Subtext = SubtextComponent ?? FileUploadItemSubtext;
+
+  const MemoizedActionButton = React.memo(
+    ActionButtonComponent ?? FileUploadItemActionButton,
+    (prevProps, nextProps) => {
+      // Only re-render if the status changes
+      return prevProps.status === nextProps.status;
+    }
+  );
+
+  const MemoizedProgressBar = React.memo(ProgressBarComponent ?? FileUploadItemProgressBar, (prevProps, nextProps) => {
+    // Only re-render if the status or progress changes
+    return prevProps.status === nextProps.status && prevProps.progress === nextProps.progress;
+  });
 
   const handleFileUploadError = useCallback(() => {
     setStatus(UploadFileStatus.FAILED);
@@ -143,11 +223,18 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       onSuccess?.(response);
     };
 
-    uploadHandler(file, cancelToken, handleFileUploadProgress)
-      .then(handleFileUploadSuccess, (error: APIError) => {
-        setError(error?.message);
-      })
-      .catch();
+    if (uploadHandler) {
+      uploadHandler(file, cancelToken, handleFileUploadProgress)
+        .then(handleFileUploadSuccess, (error: APIError) => {
+          setError(error?.message);
+          setErrorDetails(
+            error?.errors?.map((e) => {
+              return { _id: v4(), message: e?.toString() };
+            })
+          );
+        })
+        .catch();
+    }
 
     setStatus(UploadFileStatus.UPLOADING);
   }, [
@@ -198,161 +285,65 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   }, [initiateCancel, isSafeToCancel, props]);
 
   return (
-    <ListItem key={file.name} disableGutters>
-      <Box className={classes.uploadListItemBox}>
-        <Box display="flex" flexDirection="row" alignItems="center" p={2} width="100%">
-          <Icon path={mdiFileOutline} size={1.5} className={error ? classes.errorColor : classes.fileIconColor} />
-          <Box pl={1.5} flex="1 1 auto">
-            <Box display="flex" flexDirection="row" flex="1 1 auto" alignItems="center" height="3rem">
-              <Box flex="1 1 auto">
-                <Typography variant="body2" component="div">
-                  <strong>{file.name}</strong>
-                </Typography>
-                <Typography variant="caption" component="div">
-                  {error || status}
-                </Typography>
-              </Box>
-              <Box display="flex" alignItems="center">
-                <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />
-              </Box>
-            </Box>
-            <MemoizedProgressBar status={status} progress={progress} />
-          </Box>
-        </Box>
+    <ListItem
+      key={file.name}
+      secondaryAction={<MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />}
+      sx={{
+        flexWrap: 'wrap',
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderRadius: '6px',
+        background: grey[100],
+        borderColor: grey[300],
+        '& + li': {
+          mt: 1
+        },
+        '& .MuiListItemSecondaryAction-root': {
+          top: '36px'
+        },
+        '&:last-child': {
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[300]
+        }
+      }}>
+      <ListItemIcon
+        sx={{
+          '&.fileIconColor': {
+            color: 'text.secondary'
+          },
+          '&.error': {
+            color: 'error.main'
+          }
+        }}>
+        <Icon path={mdiFileOutline} size={1.25} className={error ? 'errorColor' : 'fileIconColor'} />
+      </ListItemIcon>
+      <ListItemText
+        primary={file.name}
+        secondary={<Subtext file={file} status={status} progress={progress} error={error} />}
+        sx={{
+          '& .MuiListItemText-primary': {
+            fontWeight: 700
+          }
+        }}></ListItemText>
+
+      <Box
+        sx={{
+          ml: 5,
+          width: '100%',
+          '& .MuiLinearProgress-root': {
+            mb: 1
+          }
+        }}>
+        <MemoizedProgressBar status={status} progress={progress} />
       </Box>
+      {props.enableErrorDetails && (
+        <Box sx={{ mt: 1, ml: 5, width: '100%' }}>
+          <FileUploadItemErrorDetails error={error} errorDetails={errorDetails} />
+        </Box>
+      )}
     </ListItem>
   );
 };
 
 export default FileUploadItem;
-
-export const MemoizedFileUploadItem = React.memo(FileUploadItem, (prevProps, nextProps) => {
-  return prevProps.file.name === nextProps.file.name;
-});
-
-interface IActionButtonProps {
-  status: UploadFileStatus;
-  onCancel: () => void;
-}
-
-/**
- * Upload action button.
- *
- * Changes color and icon depending on the status.
- *
- * @param {*} props
- * @return {*}
- */
-const ActionButton: React.FC<IActionButtonProps> = (props) => {
-  const classes = useStyles();
-
-  if (props.status === UploadFileStatus.PENDING || props.status === UploadFileStatus.STAGED) {
-    return (
-      <IconButton title="Remove File" aria-label="remove file" onClick={() => props.onCancel()}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    );
-  }
-
-  if (props.status === UploadFileStatus.UPLOADING) {
-    return (
-      <IconButton title="Cancel Upload" aria-label="cancel upload" onClick={() => props.onCancel()}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    );
-  }
-
-  if (props.status === UploadFileStatus.COMPLETE) {
-    return (
-      <Box display="flex" alignItems="center" p={'12px'}>
-        <Icon path={mdiCheck} size={1} className={classes.completeColor} />
-      </Box>
-    );
-  }
-
-  if (props.status === UploadFileStatus.FAILED) {
-    return (
-      <IconButton
-        title="Remove File"
-        aria-label="remove file"
-        onClick={() => props.onCancel()}
-        className={classes.errorColor}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    );
-  }
-
-  // status is FINISHING_UPLOAD, show no action button
-  return <Box width="4rem" />;
-};
-
-export const MemoizedActionButton = React.memo(ActionButton, (prevProps, nextProps) => {
-  return prevProps.status === nextProps.status;
-});
-
-interface IProgressBarProps {
-  status: UploadFileStatus;
-  progress: number;
-}
-
-/**
- * Upload progress bar.
- *
- * Changes color and style depending on the status.
- *
- * @param {*} props
- * @return {*}
- */
-const ProgressBar: React.FC<IProgressBarProps> = (props) => {
-  const classes = useStyles();
-
-  if (props.status === UploadFileStatus.STAGED) {
-    return <></>;
-  }
-
-  if (props.status === UploadFileStatus.FINISHING_UPLOAD) {
-    return (
-      <LinearProgress
-        variant="indeterminate"
-        className={classes.uploadProgress}
-        classes={{ colorPrimary: classes.uploadingColor, barColorPrimary: classes.uploadingColor }}
-      />
-    );
-  }
-
-  if (props.status === UploadFileStatus.COMPLETE) {
-    return (
-      <LinearProgress
-        variant="determinate"
-        value={100}
-        className={classes.uploadProgress}
-        classes={{ colorPrimary: classes.completeBgColor, barColorPrimary: classes.completeBgColor }}
-      />
-    );
-  }
-
-  if (props.status === UploadFileStatus.FAILED) {
-    return (
-      <LinearProgress
-        variant="determinate"
-        value={0}
-        className={classes.uploadProgress}
-        classes={{ colorPrimary: classes.errorBgColor, barColorPrimary: classes.errorBgColor }}
-      />
-    );
-  }
-
-  // status is PENDING or UPLOADING
-  return (
-    <LinearProgress
-      variant="determinate"
-      value={props.progress}
-      className={classes.uploadProgress}
-      classes={{ colorPrimary: classes.uploadingColor, barColorPrimary: classes.uploadingColor }}
-    />
-  );
-};
-
-export const MemoizedProgressBar = React.memo(ProgressBar, (prevProps, nextProps) => {
-  return prevProps.status === nextProps.status && prevProps.progress === nextProps.progress;
-});

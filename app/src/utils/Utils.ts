@@ -2,7 +2,9 @@ import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
 import { Feature, Polygon } from 'geojson';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { LatLngBounds } from 'leaflet';
+import _ from 'lodash';
 import moment from 'moment';
 
 /**
@@ -33,6 +35,22 @@ export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = '
 };
 
 /**
+ * Builds a URL from multiple (possibly null or undefined) url parts, stripping any
+ * double slashes from the resulting URL.
+ *
+ * @param {(string | undefined)[]} urlParts The parts of the URL
+ * @returns The built URL
+ */
+export const buildUrl = (...urlParts: (string | undefined)[]): string => {
+  return urlParts
+    .filter((urlPart): urlPart is string => Boolean(urlPart))
+    .map((urlPart) => String(urlPart).trim()) // Trim leading and trailing whitespace
+    .filter(Boolean)
+    .join('/')
+    .replace(/([^:]\/)\/+/g, '$1'); // Trim double slashes
+};
+
+/**
  * Generates the <title> tag text for a React route
  * @param pageName The name of the page, e.g. 'Projects'
  * @returns The content to be rendered in the <title> tag
@@ -45,20 +63,20 @@ export const getTitle = (pageName?: string) => {
  * Formats a date range into a formatted string.
  *
  * @param {DATE_FORMAT} dateFormat
- * @param {string} startDate ISO 8601 date string
- * @param {string} [endDate] ISO 8601 date string
+ * @param {(string | null)} [startDate] ISO 8601 date string
+ * @param {(string | null)} [endDate] ISO 8601 date string
  * @param {string} [dateSeparator='-'] specify date range separator
  * @return {string} formatted date string, or an empty string if unable to parse the startDate and/or endDate
  */
 export const getFormattedDateRangeString = (
   dateFormat: DATE_FORMAT,
-  startDate: string,
-  endDate?: string,
+  startDate?: string | null,
+  endDate?: string | null,
   dateSeparator = '-'
 ): string => {
-  const startDateFormatted = getFormattedDate(dateFormat, startDate);
+  const startDateFormatted = getFormattedDate(dateFormat, startDate ?? '');
 
-  const endDateFormatted = getFormattedDate(dateFormat, endDate || '');
+  const endDateFormatted = getFormattedDate(dateFormat, endDate ?? '');
 
   if (!startDateFormatted || (endDate && !endDateFormatted)) {
     return '';
@@ -110,21 +128,29 @@ export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string 
 /**
  * Get a formatted amount string.
  *
- * @param {number} amount
+ * @param {number} [amount]
+ * @param {{ minimumFractionDigits: number; maximumFractionDigits: number }} [options]
  * @return {string} formatted amount string (rounded to the nearest integer), or an empty string if unable to parse the amount
  */
-export const getFormattedAmount = (amount: number): string => {
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
-
+export const getFormattedAmount = (
+  amount?: number,
+  options?: {
+    minimumFractionDigits?: number;
+    maximumFractionDigits?: number;
+  }
+): string => {
   if (!amount && amount !== 0) {
     //amount was invalid
     return '';
   }
+
+  const formatter = new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+    minimumFractionDigits: options?.minimumFractionDigits ?? 0,
+    maximumFractionDigits: options?.maximumFractionDigits ?? 0
+  });
+
   return formatter.format(amount);
 };
 
@@ -135,15 +161,13 @@ export const getFormattedAmount = (amount: number): string => {
  * @return {*}  {(string | undefined)}
  */
 export const getLogOutUrl = (config: IConfig): string | undefined => {
-  if (!config || !config.KEYCLOAK_CONFIG?.url || !config.KEYCLOAK_CONFIG?.realm || !config.SITEMINDER_LOGOUT_URL) {
-    return;
+  if (config?.KEYCLOAK_CONFIG.url && config?.KEYCLOAK_CONFIG.realm && config?.SITEMINDER_LOGOUT_URL) {
+    const localRedirectURL = `${window.location.origin}/`;
+
+    const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
+
+    return `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
   }
-
-  const localRedirectURL = `${window.location.origin}/`;
-
-  const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
-
-  return `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
 };
 
 export const getFormattedFileSize = (fileSize: number) => {
@@ -248,7 +272,199 @@ export const getFormattedIdentitySource = (identitySource: SYSTEM_IDENTITY_SOURC
     case SYSTEM_IDENTITY_SOURCE.IDIR:
       return 'IDIR';
 
+    case SYSTEM_IDENTITY_SOURCE.DATABASE:
+      return 'System';
+
     default:
       return null;
   }
+};
+
+/**
+ * For a given property, alphabetize an array of objects
+ *
+ * @param {T[]} data an array of objects to be alphabetize
+ * @param {string} property a key property to alphabetize the data array on
+ * @returns {any[]} Returns an alphabetized array of objects
+ */
+export const alphabetizeObjects = <T extends { [key: string]: any }>(data: T[], property: string) => {
+  return _.sortBy(data, property);
+};
+
+/**
+ * Coerce a potentially invalid number towards zero.
+ * @param n a potentially NaN number
+ * @returns n if a number, 0 otherwise
+ */
+export const coerceZero = (n: any): number => (isNaN(n ?? NaN) ? 0 : Number(n));
+
+/**
+ * Format a field name in a way that's appropriate for a UI label
+ * ie. format_field_name -> Format Field Name
+ * @param str format_field_name
+ * @returns Format Field Name
+ */
+export const formatLabel = (str: string): string => {
+  return str
+    .split('_')
+    .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
+    .join(' ');
+};
+
+/**
+ * Checks if two dates are the same, but safe to use against nullish values.
+ * By default moment(null).isSame(moment(null)) returns false, which is not always desirable.
+ *
+ * @param date1
+ * @param date2
+ * @returns boolean
+ */
+export const datesSameNullable = (date1: string | null | undefined, date2: string | null | undefined): boolean => {
+  if (date1 == null && date2 == null) {
+    //Note: intentionally loose equality
+    return true;
+  } else {
+    return moment(date1).isSame(moment(date2));
+  }
+};
+
+/**
+ * Pluralizes a word.
+ *
+ * @example p(2, 'apple'); // => 'apples'
+ * @example p(null, 'orange'); // => 'oranges'
+ * @example p(1, 'banana'); // => 'banana'
+ * @example p(10, 'berr', 'y', 'ies'); // => 'berries'
+ *
+ * @param quantity The quantity used to infer plural or singular
+ * @param word The word to pluralize
+ * @param {[string]} singularSuffix The suffix used for a singular item
+ * @param {[string]} pluralSuffix The suffix used for plural items
+ * @returns
+ */
+export const pluralize = (quantity: number, word: string, singularSuffix = '', pluralSuffix = 's') => {
+  return `${word}${quantity === 1 ? singularSuffix : pluralSuffix}`;
+};
+
+/**
+ * Check if two date ranges overlap. End dates are allowed to be null, which is taken to mean indefinite.
+ * Note that the order of arguments does matter here.
+ *
+ * @example dateRangesOverlap('2019-12-12', null, '2023-01-01', '2023-03-03') => true
+ * @example dateRangesOverlap('2023-01-01', '2023-01-02', '2023-01-01', '2023-03-03') => true
+ * @example dateRangesOverlap('2023-01-01', '2023-01-02', '2023-03-03', '2023-04-04') => false
+ *
+ * @param startDateA
+ * @param endDateA
+ * @param startDateB
+ * @param endDateB
+ * @returns boolean
+ */
+export const dateRangesOverlap = (
+  startDateA: string,
+  endDateA: string | null | undefined,
+  startDateB: string,
+  endDateB: string | null | undefined
+): boolean => {
+  const startA = moment(startDateA);
+  const startB = moment(startDateB);
+
+  const endA = endDateA ? moment(endDateA) : moment('2300-01-01');
+  const endB = endDateB ? moment(endDateB) : moment('2300-01-01');
+
+  return startA.isSameOrBefore(endB) && endA.isSameOrAfter(startB);
+};
+
+/**
+ * Search through the Codes Response object for a given key (type of code)
+ * for a particular codes (based on id) name.
+ *
+ * @param codes The Codes to search for
+ * @param key Key word to access a code set
+ * @param id ID of the code to find
+ * @returns Name associated with the code
+ */
+export const getCodesName = (
+  codes: IGetAllCodeSetsResponse | undefined,
+  key: keyof IGetAllCodeSetsResponse,
+  id: number
+): string | undefined => {
+  let name: string | undefined = undefined;
+  if (codes) {
+    const values: any = codes[key];
+    const code = values.find((item: any) => item.id === id);
+    name = code?.name;
+  }
+  return name;
+};
+
+/**
+ * Convert a UUID into an arbitrary color within a constrained color space.
+ *
+ * @param id uuid
+ * @returns {*} {fillColor: string, outlineColor: string}
+ */
+export const uuidToColor = (id: string): { fillColor: string; outlineColor: string } => {
+  const uuidToInt = (uuid: string): number => {
+    const noDashes = uuid.replace(/-/g, '');
+    const substring = noDashes.substring(0, 9);
+    return parseInt(substring, 16);
+  };
+
+  type HSL = { h: number; s: number; l: number };
+  // Converts an integer value to an HSL color
+  const intToHSL = (i: number): HSL => {
+    const hue = (i / 1000) % 360;
+    let saturation = (i % 50) + 50; // Ensuring saturation is between 50% and 100%
+    let lightness = (i % 60) + 20; // Ensuring lightness is between 20% and 80%
+
+    // Avoiding earthy tones for hues in the range of 20-170 by adjusting the saturation and lightness values
+    if (hue >= 20 && hue <= 170) {
+      saturation = (i % 40) + 60; // Ensuring saturation is between 60% and 100%
+      lightness = (i % 50) + 40; // Ensuring lightness is between 40% and 90%
+    }
+
+    return { h: hue, s: saturation, l: lightness };
+  };
+
+  function HSLToRGB(hsl: HSL) {
+    const { h, s, l } = hsl;
+    const scaledS = s / 100;
+    const scaledL = l / 100;
+    const c = (1 - Math.abs(2 * scaledL - 1)) * scaledS;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = scaledL - c / 2;
+
+    let r, g, b;
+    if (h >= 0 && h < 60) [r, g, b] = [c, x, 0];
+    else if (h >= 60 && h < 120) [r, g, b] = [x, c, 0];
+    else if (h >= 120 && h < 180) [r, g, b] = [0, c, x];
+    else if (h >= 180 && h < 240) [r, g, b] = [0, x, c];
+    else if (h >= 240 && h < 300) [r, g, b] = [x, 0, c];
+    else [r, g, b] = [c, 0, x];
+
+    return [(r + m) * 255, (g + m) * 255, (b + m) * 255].map((val) => Math.round(val));
+  }
+
+  function RGBToHex(rgb: number[]) {
+    return rgb.map((val) => val.toString(16).padStart(2, '0')).join('');
+  }
+
+  function generateOutlineColor(hsl: HSL) {
+    const { h, s, l } = hsl;
+    const outlineL = l >= 50 ? l - 40 : l + 40;
+    return { h, s, l: outlineL };
+  }
+
+  const intVal = uuidToInt(id);
+  const hslFillColor = intToHSL(intVal);
+  const hslOutlineColor = generateOutlineColor(hslFillColor);
+
+  const rgbFillColor = HSLToRGB(hslFillColor);
+  const rgbOutlineColor = HSLToRGB(hslOutlineColor);
+
+  const hexFillColor = RGBToHex(rgbFillColor);
+  const hexOutlineColor = RGBToHex(rgbOutlineColor);
+
+  return { fillColor: `#${hexFillColor}`, outlineColor: `#${hexOutlineColor}` };
 };

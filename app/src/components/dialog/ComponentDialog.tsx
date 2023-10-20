@@ -1,11 +1,11 @@
-import Button from '@material-ui/core/Button';
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import useTheme from '@material-ui/core/styles/useTheme';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import React from 'react';
+import Button from '@mui/material/Button';
+import Dialog, { DialogProps } from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import useTheme from '@mui/material/styles/useTheme';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import React, { PropsWithChildren } from 'react';
 
 export interface IComponentDialogProps {
   /**
@@ -29,6 +29,14 @@ export interface IComponentDialogProps {
    */
   onClose: () => void;
   /**
+   * The close button label.
+   *
+   * @default 'Ok'
+   * @type {string}
+   * @memberof IComponentDialogProps
+   */
+  closeButtonLabel?: string;
+  /**
    * `Dialog` props passthrough.
    *
    * @type {Partial<DialogProps>}
@@ -45,7 +53,7 @@ export interface IComponentDialogProps {
  * @param {*} props
  * @return {*}
  */
-const ComponentDialog: React.FC<IComponentDialogProps> = (props) => {
+const ComponentDialog: React.FC<PropsWithChildren<IComponentDialogProps>> = (props) => {
   const theme = useTheme();
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -66,7 +74,7 @@ const ComponentDialog: React.FC<IComponentDialogProps> = (props) => {
       <DialogContent>{props.children}</DialogContent>
       <DialogActions>
         <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
-          Ok
+          {props.closeButtonLabel ? props.closeButtonLabel : 'Ok'}
         </Button>
       </DialogActions>
     </Dialog>

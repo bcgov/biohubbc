@@ -1,23 +1,16 @@
-import { Box, Button, Divider, Typography } from '@material-ui/core';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IUpdateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React from 'react';
-import ProjectCoordinatorForm from '../components/ProjectCoordinatorForm';
 import ProjectDetailsForm from '../components/ProjectDetailsForm';
-import ProjectFundingForm from '../components/ProjectFundingForm';
-import ProjectIUCNForm from '../components/ProjectIUCNForm';
-import ProjectLocationForm from '../components/ProjectLocationForm';
 import ProjectObjectivesForm from '../components/ProjectObjectivesForm';
-import ProjectPartnershipsForm from '../components/ProjectPartnershipsForm';
-import {
-  getCoordinatorAgencyOptions,
-  initialProjectFieldData,
-  validationProjectYupSchema
-} from '../create/CreateProjectForm';
+import ProjectUserForm from '../components/ProjectUserForm';
+import { initialProjectFieldData, validationProjectYupSchema } from '../create/CreateProjectForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -62,36 +55,30 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
     <Box p={5}>
       <Formik
         innerRef={formikRef}
-        initialValues={(initialProjectFieldData as unknown) as IUpdateProjectRequest}
+        initialValues={initialProjectFieldData as unknown as IUpdateProjectRequest}
         validationSchema={validationProjectYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         enableReinitialize={true}
         onSubmit={handleSubmit}>
         <>
-          {/* <ScrollToFormikError fieldOrder={Object.keys(initialProjectFieldData)} /> */}
-
           <HorizontalSplitFormComponent
             title="General Information"
             summary="Enter general information, objectives and timelines for the project."
             component={
               <>
                 <ProjectDetailsForm
-                  project_type={
-                    codes?.project_type?.map((item) => {
-                      return { value: item.id, label: item.name };
-                    }) || []
-                  }
-                  activity={
-                    codes?.activity?.map((item) => {
+                  program={
+                    codes?.program?.map((item) => {
                       return { value: item.id, label: item.name };
                     }) || []
                   }
                 />
-                <Box mt={2}>
+                <Box mt={3}>
                   <ProjectObjectivesForm />
                 </Box>
-                <Box component="fieldset" mt={5}>
+                {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form temporarily, while its decided if IUCN information is desired */}
+                {/* <Box component="fieldset" mt={5}>
                   <Typography component="legend" variant="h5">
                     IUCN Conservation Actions Classification
                   </Typography>
@@ -119,80 +106,25 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
                       }
                     />
                   </Box>
-                </Box>
+                </Box> */}
               </>
             }></HorizontalSplitFormComponent>
 
           <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
-            title="Project Coordinator"
-            summary="Provide the Project Coordinator's contact and agency information."
-            component={
-              <ProjectCoordinatorForm coordinator_agency={getCoordinatorAgencyOptions(codes)} />
-            }></HorizontalSplitFormComponent>
+            title="Team Members"
+            summary="Specify team members and their associated role for this project."
+            component={<ProjectUserForm users={props.projectData.participants || []} roles={codes.project_roles} />}
+          />
 
-          <Divider className={classes.sectionDivider} />
-
-          <HorizontalSplitFormComponent
-            title="Funding and Partnerships"
-            summary="Specify project funding sources and additional partnerships."
-            component={
-              <>
-                <Box component="fieldset">
-                  <Typography component="legend" variant="h5">
-                    Funding Sources
-                  </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-                    Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
-                    be exact, please round to the nearest 100.
-                  </Typography>
-                  <Box mt={3}>
-                    <ProjectFundingForm
-                      funding_sources={
-                        codes?.funding_source?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      investment_action_category={
-                        codes?.investment_action_category?.map((item) => {
-                          return { value: item.id, fs_id: item.fs_id, label: item.name };
-                        }) || []
-                      }
-                    />
-                  </Box>
-                </Box>
-                <Box component="fieldset" mt={5}>
-                  <Typography component="legend" variant="h5">
-                    Partnerships
-                  </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '72ch' }}>
-                    Additional partnerships that have not been previously identified as a funding sources.
-                  </Typography>
-                  <Box mt={4}>
-                    <ProjectPartnershipsForm
-                      first_nations={
-                        codes?.first_nations?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      stakeholder_partnerships={
-                        codes?.funding_source?.map((item) => {
-                          return { value: item.name, label: item.name };
-                        }) || []
-                      }
-                    />
-                  </Box>
-                </Box>
-              </>
-            }></HorizontalSplitFormComponent>
-
-          <Divider className={classes.sectionDivider} />
+          {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
+          {/* <Divider className={classes.sectionDivider} />
 
           <HorizontalSplitFormComponent
             title="Location and Boundary"
             summary="Provide details about the project's location and define the project spatial boundary"
-            component={<ProjectLocationForm />}></HorizontalSplitFormComponent>
+            component={<ProjectLocationForm />}></HorizontalSplitFormComponent> */}
 
           <Divider className={classes.sectionDivider} />
         </>

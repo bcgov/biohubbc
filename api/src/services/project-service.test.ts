@@ -2,22 +2,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { PostProjectObject } from '../models/project-create';
-import {
-  GetCoordinatorData,
-  GetFundingData,
-  GetIUCNClassificationData,
-  GetLocationData,
-  GetObjectivesData,
-  GetPartnershipsData,
-  GetProjectData
-} from '../models/project-view';
-import { ProjectUserObject } from '../models/user';
-import { ProjectParticipationRepository } from '../repositories/project-participation-repository';
+import { GetIUCNClassificationData, GetLocationData, GetObjectivesData, ProjectData } from '../models/project-view';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
-import { PlatformService } from './platform-service';
 import { ProjectService } from './project-service';
 
 chai.use(sinonChai);
@@ -27,141 +15,6 @@ describe('ProjectService', () => {
     sinon.restore();
   });
 
-  describe('ensureProjectParticipant', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('does not add a new project participant if one already exists', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      const getProjectParticipantStub = sinon
-        .stub(ProjectService.prototype, 'getProjectParticipant')
-        .resolves({} as ProjectUserObject);
-
-      const addProjectParticipantStub = sinon.stub(ProjectService.prototype, 'addProjectParticipant');
-
-      const projectId = 1;
-      const systemUserId = 1;
-      const projectParticipantRoleId = 1;
-
-      const projectService = new ProjectService(mockDBConnection);
-
-      try {
-        await projectService.ensureProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-      } catch (actualError) {
-        expect.fail();
-      }
-
-      expect(getProjectParticipantStub).to.have.been.calledOnce;
-      expect(addProjectParticipantStub).not.to.have.been.called;
-    });
-
-    it('adds a new project participant if one did not already exist', async () => {
-      const mockDBConnection = getMockDBConnection();
-
-      const getProjectParticipantStub = sinon.stub(ProjectService.prototype, 'getProjectParticipant').resolves(null);
-
-      const addProjectParticipantStub = sinon.stub(ProjectService.prototype, 'addProjectParticipant');
-
-      const projectId = 1;
-      const systemUserId = 1;
-      const projectParticipantRoleId = 1;
-
-      const projectService = new ProjectService(mockDBConnection);
-
-      try {
-        await projectService.ensureProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-      } catch (actualError) {
-        expect.fail();
-      }
-
-      expect(getProjectParticipantStub).to.have.been.calledOnce;
-      expect(addProjectParticipantStub).to.have.been.calledOnce;
-    });
-  });
-
-  describe('getProjectParticipant', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ProjectService(dbConnection);
-
-      const data = { project_id: 1 } as ProjectUserObject;
-
-      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipant').resolves(data);
-
-      const response = await service.getProjectParticipant(1, 1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(data);
-    });
-  });
-
-  describe('getProjectParticipants', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ProjectService(dbConnection);
-
-      const data = [{ id: 1 }];
-
-      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'getProjectParticipants').resolves(data);
-
-      const response = await service.getProjectParticipants(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(data);
-    });
-  });
-
-  describe('addProjectParticipant', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new ProjectService(dbConnection);
-
-      const repoStub = sinon.stub(ProjectParticipationRepository.prototype, 'addProjectParticipant').resolves();
-
-      const response = await service.addProjectParticipant(1, 1, 1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(undefined);
-    });
-
-    describe('createProjectAndUploadMetadataToBioHub', () => {
-      it('returns projectId on success', async () => {
-        const dbConnection = getMockDBConnection();
-        const service = new ProjectService(dbConnection);
-
-        const repoStub1 = sinon.stub(ProjectService.prototype, 'createProject').resolves(1);
-        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub').resolves();
-
-        const response = await service.createProjectAndUploadMetadataToBioHub((null as unknown) as PostProjectObject);
-
-        expect(repoStub1).to.be.calledOnce;
-        expect(repoStub2).to.be.calledOnce;
-        expect(response).to.eql(1);
-      });
-    });
-
-    describe('updateProjectAndUploadMetadataToBioHub', () => {
-      it('successfully updates project', async () => {
-        const dbConnection = getMockDBConnection();
-        const service = new ProjectService(dbConnection);
-
-        const repoStub1 = sinon.stub(ProjectService.prototype, 'updateProject').resolves();
-        const repoStub2 = sinon.stub(PlatformService.prototype, 'submitProjectDwCMetadataToBioHub').resolves();
-
-        const response = await service.updateProjectAndUploadMetadataToBioHub(
-          1,
-          (null as unknown) as PostProjectObject
-        );
-
-        expect(repoStub1).to.be.calledOnce;
-        expect(repoStub2).to.be.calledOnce;
-        expect(response).to.eql(undefined);
-      });
-    });
-  });
-
   describe('getProjectList', () => {
     it('returns rows on success', async () => {
       const dbConnection = getMockDBConnection();
@@ -169,26 +22,28 @@ describe('ProjectService', () => {
 
       const data = [
         {
-          id: 123,
-          name: 'Project 1',
+          project_id: 123,
+          uuid: '',
+          project_name: 'Project 1',
+          project_programs: [],
+          regions: [],
           start_date: '1900-01-01',
-          end_date: '2200-10-10',
-          coordinator_agency: 'Agency 1',
-          project_type: 'Aquatic Habitat'
+          end_date: '2200-10-10'
         },
         {
-          id: 456,
-          name: 'Project 2',
+          project_id: 456,
+          uuid: '',
+          project_name: 'Project 2',
+          project_programs: [],
+          regions: [],
           start_date: '1900-01-01',
-          end_date: '2000-12-31',
-          coordinator_agency: 'Agency 2',
-          project_type: 'Terrestrial Habitat'
+          end_date: '2000-12-31'
         }
       ];
 
       const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectList').resolves(data);
 
-      const response = await service.getProjectList(true, 1, 1);
+      const response = await service.getProjectList(true, 1, {});
 
       expect(repoStub).to.be.calledOnce;
       expect(response[0].id).to.equal(123);
@@ -209,9 +64,9 @@ describe('ProjectService', () => {
       const mockProjectMetadataPublish = {
         project_metadata_publish_id: 1,
         project_id: 1,
-        event_timestamp: new Date(),
+        event_timestamp: '',
         queue_id: 1,
-        create_date: new Date(),
+        create_date: '',
         create_user: 1,
         update_date: null,
         update_user: null,
@@ -247,7 +102,7 @@ describe('getProjectData', () => {
     const dbConnection = getMockDBConnection();
     const service = new ProjectService(dbConnection);
 
-    const data = new GetProjectData({ project_id: 1 });
+    const data = ({ project_id: 1 } as unknown) as ProjectData;
 
     const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectData').resolves(data);
 
@@ -268,22 +123,6 @@ describe('getObjectivesData', () => {
     const repoStub = sinon.stub(ProjectRepository.prototype, 'getObjectivesData').resolves(data);
 
     const response = await service.getObjectivesData(1);
-
-    expect(repoStub).to.be.calledOnce;
-    expect(response).to.eql(data);
-  });
-});
-
-describe('getCoordinatorData', () => {
-  it('returns the first row on success', async () => {
-    const dbConnection = getMockDBConnection();
-    const service = new ProjectService(dbConnection);
-
-    const data = new GetCoordinatorData({ id: 1 });
-
-    const repoStub = sinon.stub(ProjectRepository.prototype, 'getCoordinatorData').resolves(data);
-
-    const response = await service.getCoordinatorData(1);
 
     expect(repoStub).to.be.calledOnce;
     expect(response).to.eql(data);
@@ -318,40 +157,6 @@ describe('getIUCNClassificationData', () => {
     const response = await service.getIUCNClassificationData(1);
 
     expect(repoStub).to.be.calledOnce;
-    expect(response).to.eql(data);
-  });
-});
-
-describe('getFundingData', () => {
-  it('returns the first row on success', async () => {
-    const dbConnection = getMockDBConnection();
-    const service = new ProjectService(dbConnection);
-
-    const data = new GetFundingData([{ id: 1 }]);
-
-    const repoStub = sinon.stub(ProjectRepository.prototype, 'getFundingData').resolves(data);
-
-    const response = await service.getFundingData(1);
-
-    expect(repoStub).to.be.calledOnce;
-    expect(response).to.eql(data);
-  });
-});
-
-describe('getPartnershipsData', () => {
-  it('returns the first row on success', async () => {
-    const dbConnection = getMockDBConnection();
-    const service = new ProjectService(dbConnection);
-
-    const data = new GetPartnershipsData([{ id: 1 }], [{ id: 1 }]);
-
-    const repoStub1 = sinon.stub(ProjectRepository.prototype, 'getIndigenousPartnershipsRows').resolves([{ id: 1 }]);
-    const repoStub2 = sinon.stub(ProjectRepository.prototype, 'getStakeholderPartnershipsRows').resolves([{ id: 1 }]);
-
-    const response = await service.getPartnershipsData(1);
-
-    expect(repoStub1).to.be.calledOnce;
-    expect(repoStub2).to.be.calledOnce;
     expect(response).to.eql(data);
   });
 });

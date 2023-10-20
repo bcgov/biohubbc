@@ -1,28 +1,32 @@
-import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
-import NumberFormat from 'react-number-format';
+import NumberFormat, { NumberFormatProps } from 'react-number-format';
 
-export interface IDollarAmountFieldProps {
+export type IDollarAmountFieldProps = TextFieldProps & {
   required?: boolean;
   id: string;
   label: string;
   name: string;
-}
+};
 
 interface NumberFormatCustomProps {
-  inputRef: (instance: NumberFormat | null) => void;
   onChange: (event: { target: { name: string; value: number } }) => void;
   name: string;
 }
 
-function NumberFormatCustom(props: NumberFormatCustomProps) {
-  const { inputRef, onChange, ...other } = props;
+const NumberFormatCustom = React.forwardRef<NumberFormatProps, NumberFormatCustomProps>(function NumericFormatCustom(
+  props,
+  ref
+) {
+  const { onChange, ...other } = props;
+
   return (
     <NumberFormat
       {...other}
-      getInputRef={inputRef}
+      getInputRef={ref}
       onValueChange={(values) => {
         onChange({
           target: {
@@ -32,33 +36,27 @@ function NumberFormatCustom(props: NumberFormatCustomProps) {
         });
       }}
       thousandSeparator
-      prefix="$"
       decimalScale={0}
     />
   );
-}
+});
 
 const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
   const { values, handleChange, touched, errors } = useFormikContext<IDollarAmountFieldProps>();
 
-  const { required, id, name, label } = props;
+  const { name, ...rest } = props;
 
   return (
     <TextField
-      fullWidth
-      required={required}
-      id={id}
+      {...rest}
       name={name}
-      label={label}
       variant="outlined"
       value={get(values, name)}
       onChange={handleChange}
       error={get(touched, name) && Boolean(get(errors, name))}
-      helperText={get(touched, name) && get(errors, name)}
-      InputLabelProps={{
-        shrink: true
-      }}
+      helperText={get(touched, name) && (get(errors, name) as string)}
       InputProps={{
+        startAdornment: <InputAdornment position="start">$</InputAdornment>,
         inputComponent: NumberFormatCustom as any
       }}
       inputProps={{ 'data-testid': name }}

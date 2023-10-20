@@ -105,7 +105,10 @@ describe('UserRepository', () => {
           identity_source: 'idir',
           record_end_date: 'data',
           role_ids: [1],
-          role_names: ['admin']
+          role_names: ['admin'],
+          email: 'email@email.com',
+          display_name: 'test name',
+          agency: null
         }
       ];
       const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
@@ -153,7 +156,10 @@ describe('UserRepository', () => {
           identity_source: 'idir',
           record_end_date: 'data',
           role_ids: [1],
-          role_names: ['admin']
+          role_names: ['admin'],
+          email: 'email@email.com',
+          display_name: 'test name',
+          agency: null
         }
       ];
       const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
@@ -188,7 +194,7 @@ describe('UserRepository', () => {
       const userRepository = new UserRepository(mockDBConnection);
 
       try {
-        await userRepository.addSystemUser('user-guid', 'user', 'idir');
+        await userRepository.addSystemUser('user-guid', 'user', 'idir', 'display', 'email');
         expect.fail();
       } catch (actualError) {
         expect((actualError as ApiExecuteSQLError).message).to.equal('Failed to insert new user');
@@ -216,7 +222,7 @@ describe('UserRepository', () => {
 
       const userRepository = new UserRepository(mockDBConnection);
 
-      const response = await userRepository.addSystemUser('aaaa', 'user', 'idir');
+      const response = await userRepository.addSystemUser('aaaa', 'user', 'idir', 'display', 'email');
 
       expect(response).to.equal(mockResponse[0]);
     });
@@ -244,7 +250,16 @@ describe('UserRepository', () => {
 
     it('should get user list', async () => {
       const mockResponse = [
-        { system_user_id: 1, user_identifier: 1, record_end_date: 'data', role_ids: [1], role_names: ['admin'] }
+        {
+          system_user_id: 1,
+          user_identifier: 1,
+          record_end_date: 'data',
+          role_ids: [1],
+          role_names: ['admin'],
+          email: 'email@email.com',
+          display_name: 'test name',
+          agency: null
+        }
       ];
       const mockQueryResponse = ({ rowCount: 1, rows: mockResponse } as any) as Promise<QueryResult<any>>;
 

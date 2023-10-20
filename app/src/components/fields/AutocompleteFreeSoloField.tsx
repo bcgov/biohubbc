@@ -1,5 +1,5 @@
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
@@ -43,7 +43,7 @@ const AutocompleteFreeSoloField: React.FC<IAutocompleteFreeSoloField> = (props) 
           variant="outlined"
           fullWidth
           error={get(touched, name) && Boolean(get(errors, name))}
-          helperText={get(touched, name) && get(errors, name)}
+          helperText={get(touched, name) && (get(errors, name) as string)}
         />
       )}
     />

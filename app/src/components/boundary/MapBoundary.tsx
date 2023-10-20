@@ -1,17 +1,16 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Alert from '@material-ui/lab/Alert';
 import { mdiRefresh, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
@@ -22,35 +21,27 @@ import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   calculateUpdatedMapBounds,
   handleGPXUpload,
   handleKMLUpload,
-  handleShapefileUpload
+  handleShapeFileUpload
 } from 'utils/mapBoundaryUploadHelpers';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    zoomToBoundaryExtentBtn: {
-      padding: '3px',
-      borderRadius: '4px',
-      background: '#ffffff',
-      color: '#000000',
-      border: '2px solid rgba(0,0,0,0.2)',
-      backgroundClip: 'padding-box',
-      '&:hover': {
-        backgroundColor: '#eeeeee'
-      }
-    },
-    mapLayerControl: {
-      width: '300px',
-      '& .MuiInputBase-root': {
-        height: '44px'
-      }
+const useStyles = makeStyles(() => ({
+  zoomToBoundaryExtentBtn: {
+    padding: '3px',
+    borderRadius: '4px',
+    background: '#ffffff',
+    color: '#000000',
+    border: '2px solid rgba(0,0,0,0.2)',
+    backgroundClip: 'padding-box',
+    '&:hover': {
+      backgroundColor: '#eeeeee'
     }
-  })
-);
+  }
+}));
 
 export interface IMapBoundaryProps {
   name: string;
@@ -61,12 +52,17 @@ export interface IMapBoundaryProps {
 }
 
 /**
- * Shared component for map boundary component
+ * Common map component.
  *
- * @param {*} props
+ * Includes support/controls for importing a boundary from a file, selecting a boundary from a layer, or drawing a
+ * boundary.
+ *
+ * Includes a section to display inferred boundary information (ex: what regions the boundary intersects, etc).
+ *
+ * @param {IMapBoundaryProps} props
  * @return {*}
  */
-const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
+const MapBoundary = (props: IMapBoundaryProps) => {
   const classes = useStyles();
 
   const { name, title, mapId, bounds, formikProps } = props;
@@ -89,16 +85,14 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   }, [updatedBounds]);
 
   const boundaryUploadHandler = (): IUploadHandler => {
-    return (file) => {
+    return async (file) => {
       if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        handleShapefileUpload(file, name, formikProps);
+        handleShapeFileUpload(file, name, formikProps);
       } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        handleGPXUpload(file, name, formikProps);
+        await handleGPXUpload(file, name, formikProps);
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        handleKMLUpload(file, name, formikProps);
+        await handleKMLUpload(file, name, formikProps);
       }
-
-      return Promise.resolve();
     };
   };
 
@@ -121,36 +115,49 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         </Box>
       </ComponentDialog>
       <Grid item xs={12}>
-        <Typography variant="h5" component="h3">
+        <Typography
+          variant="h5"
+          component="h3"
+          sx={{
+            marginBottom: '14px'
+          }}>
           {title}
         </Typography>
-        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
+        <Typography
+          variant="body1"
+          color="textSecondary"
+          sx={{
+            maxWidth: '90ch'
+          }}>
           Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below
           and click a boundary on the map.
         </Typography>
         <Box mb={3}>
           <Box mt={4} display="flex" alignItems="flex-start">
             <Button
-              size="large"
               color="primary"
-              data-testid="boundary_file-upload"
               variant="outlined"
+              data-testid="boundary_file-upload"
               startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
               onClick={() => setOpenUploadBoundary(true)}>
               Import Boundary
             </Button>
             <Box ml={2}>
-              <FormControl variant="outlined" size="small" className={classes.mapLayerControl}>
-                <InputLabel id="layer">Map Layers</InputLabel>
+              <FormControl variant="outlined" size="small">
                 <Select
+                  size="small"
                   id="layer"
                   name="layer"
-                  labelId="layer"
-                  label="Map Layers"
                   value={selectedLayer}
                   onChange={(event) => setSelectedLayer(event.target.value as string)}
                   displayEmpty
-                  inputProps={{ 'aria-label': 'Layer' }}>
+                  inputProps={{ 'aria-label': 'Choose Map Layer' }}
+                  sx={{
+                    fontSize: '14px'
+                  }}>
+                  <MenuItem disabled value="">
+                    View Layer
+                  </MenuItem>
                   <MenuItem key={1} value="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW">
                     Wildlife Management Units
                   </MenuItem>
@@ -165,7 +172,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             </Box>
             <Box ml={1}>
               {selectedLayer && (
-                <Button size="large" variant="outlined" onClick={() => setSelectedLayer('')}>
+                <Button variant="outlined" onClick={() => setSelectedLayer('')}>
                   Hide Layer
                 </Button>
               )}
@@ -173,7 +180,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
           </Box>
           {get(errors, name) && (
             <Box mt={1} mb={3} ml={2}>
-              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name)}</Typography>
+              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name) as string}</Typography>
             </Box>
           )}
         </Box>

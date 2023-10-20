@@ -1,5 +1,7 @@
+import { PublishStatus } from 'constants/attachments';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import {
+  IGetSurveyForListResponse,
   IGetSurveyForViewResponse,
   SurveySupplementaryData,
   SurveyViewObject
@@ -13,10 +15,7 @@ export const surveyObject: SurveyViewObject = {
     survey_name: 'survey name',
     start_date: '1998-10-10',
     end_date: '2021-02-26',
-    biologist_first_name: 'first',
-    biologist_last_name: 'last',
-    survey_area_name: 'study area',
-    geometry: [geoJsonFeature],
+    survey_types: [1],
     revision_count: 0
   },
   purpose_and_methodology: {
@@ -37,18 +36,6 @@ export const surveyObject: SurveyViewObject = {
     proprietor_type_id: 2,
     proprietor_type_name: 'proprietor type name'
   },
-  funding: {
-    funding_sources: [
-      {
-        pfs_id: 1,
-        funding_amount: 100,
-        funding_start_date: '2000-04-09 11:53:53',
-        funding_end_date: '2000-05-10 11:53:53',
-        agency_name: 'agency name',
-        funding_source_project_id: 'ABC123'
-      }
-    ]
-  },
   permit: {
     permits: [
       {
@@ -58,12 +45,52 @@ export const surveyObject: SurveyViewObject = {
       }
     ]
   },
+  funding_sources: [
+    {
+      funding_source_id: 1,
+      amount: 1000,
+      revision_count: 0,
+      survey_id: 1,
+      survey_funding_source_id: 1,
+      funding_source_name: 'funding source name'
+    }
+  ],
+  partnerships: {
+    indigenous_partnerships: [1, 2],
+    stakeholder_partnerships: ['partner 3', 'partner 4']
+  },
   species: {
     focal_species: [1],
     focal_species_names: ['focal species 1'],
     ancillary_species: [2],
     ancillary_species_names: ['ancillary species 2']
-  }
+  },
+  site_selection: {
+    strategies: [],
+    stratums: []
+  },
+  participants: [
+    {
+      system_user_id: 1,
+      identity_source: 'identity source',
+      email: 'email',
+      display_name: 'display name',
+      agency: 'agency',
+      survey_job_id: 1,
+      survey_job_name: 'survey job name'
+    }
+  ],
+  locations: [
+    {
+      survey_location_id: 1,
+      name: 'study area',
+      description: 'study area description',
+      geometry: [geoJsonFeature],
+      geography: null,
+      geojson: [geoJsonFeature],
+      revision_count: 0
+    }
+  ]
 };
 
 export const surveySupplementaryData: SurveySupplementaryData = {
@@ -123,3 +150,46 @@ export const getObservationSubmissionResponse: IGetObservationSubmissionResponse
     revision_count: 0
   }
 };
+
+export const getSurveyForListResponse: IGetSurveyForListResponse[] = [
+  {
+    surveyData: {
+      ...surveyObject,
+      survey_details: {
+        ...surveyObject.survey_details,
+        survey_name: 'Moose Survey 1',
+        start_date: '2021-04-09 11:53:53',
+        end_date: '2021-05-09 11:53:53'
+      },
+      species: {
+        focal_species: [1],
+        focal_species_names: ['species 1'],
+        ancillary_species: [2],
+        ancillary_species_names: ['species 2']
+      }
+    },
+    surveySupplementaryData: {
+      publishStatus: PublishStatus.NO_DATA
+    }
+  },
+  {
+    surveyData: {
+      ...surveyObject,
+      survey_details: {
+        ...surveyObject.survey_details,
+        survey_name: 'Moose Survey 2',
+        start_date: '2021-04-09 11:53:53',
+        end_date: '2021-06-10 11:53:53'
+      },
+      species: {
+        focal_species: [3],
+        focal_species_names: ['species 3'],
+        ancillary_species: [4],
+        ancillary_species_names: ['species 4']
+      }
+    },
+    surveySupplementaryData: {
+      publishStatus: PublishStatus.NO_DATA
+    }
+  }
+];

@@ -8,7 +8,6 @@ import {
   GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
-  GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData
@@ -37,14 +36,6 @@ describe('GetSurveyData', () => {
     it('sets geojson', () => {
       expect(data.geometry).to.eql([]);
     });
-
-    it('sets biologist_first_name', () => {
-      expect(data.biologist_first_name).to.equal('');
-    });
-
-    it('sets biologist_last_name', () => {
-      expect(data.biologist_last_name).to.equal('');
-    });
   });
 
   describe('All values provided', () => {
@@ -54,9 +45,7 @@ describe('GetSurveyData', () => {
       name: 'survey name',
       end_date: '2020/04/04',
       start_date: '2020/03/03',
-      lead_first_name: 'first',
       geojson: [{ data: 'data' }],
-      lead_last_name: 'last',
       revision_count: 'count'
     };
 
@@ -78,14 +67,6 @@ describe('GetSurveyData', () => {
 
     it('sets geojson', () => {
       expect(data.geometry).to.equal(obj.geojson);
-    });
-
-    it('sets biologist_first_name', () => {
-      expect(data.biologist_first_name).to.equal(obj.lead_first_name);
-    });
-
-    it('sets biologist_last_name', () => {
-      expect(data.biologist_last_name).to.equal(obj.lead_last_name);
     });
 
     it('sets revision_count', function () {
@@ -214,80 +195,6 @@ describe('GetPermitData', () => {
   });
 });
 
-describe('GetSurveyFundingSources', () => {
-  describe('No values provided', () => {
-    let data: GetSurveyFundingSources;
-
-    before(() => {
-      data = new GetSurveyFundingSources();
-    });
-
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: GetSurveyFundingSources;
-
-    const obj = [
-      {
-        project_funding_source_id: 1,
-        funding_amount: 2,
-        funding_source_id: 3,
-        funding_start_date: '2020/04/04',
-        funding_end_date: '2020/04/05',
-        investment_action_category_id: 4,
-        investment_action_category_name: 'name11',
-        agency_name: 'name1',
-        funding_source_project_id: '5'
-      },
-      {
-        project_funding_source_id: 6,
-        funding_amount: 7,
-        funding_source_id: 8,
-        funding_start_date: '2020/04/06',
-        funding_end_date: '2020/04/07',
-        investment_action_category_id: 9,
-        investment_action_category_name: 'name22',
-        agency_name: 'name2',
-        funding_source_project_id: '10'
-      }
-    ];
-
-    before(() => {
-      data = new GetSurveyFundingSources(obj);
-    });
-
-    it('sets funding_sources', () => {
-      expect(data.funding_sources).to.eql([
-        {
-          pfs_id: 1,
-          funding_amount: 2,
-          funding_source_id: 3,
-          funding_start_date: '2020/04/04',
-          funding_end_date: '2020/04/05',
-          investment_action_category_id: 4,
-          investment_action_category_name: 'name11',
-          agency_name: 'name1',
-          funding_source_project_id: '5'
-        },
-        {
-          pfs_id: 6,
-          funding_amount: 7,
-          funding_source_id: 8,
-          funding_start_date: '2020/04/06',
-          funding_end_date: '2020/04/07',
-          investment_action_category_id: 9,
-          investment_action_category_name: 'name22',
-          agency_name: 'name2',
-          funding_source_project_id: '10'
-        }
-      ]);
-    });
-  });
-});
-
 describe('GetSurveyProprietorData', () => {
   describe('No values provided', () => {
     let data: GetSurveyProprietorData;
@@ -381,12 +288,16 @@ describe('GetSurveyLocationData', () => {
       data = new GetSurveyLocationData(null);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal('');
+    it('sets name', () => {
+      expect(data.name).to.equal(null);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql([]);
+    it('sets description', () => {
+      expect(data.description).to.equal(null);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql([]);
     });
   });
 
@@ -394,20 +305,25 @@ describe('GetSurveyLocationData', () => {
     let data: GetSurveyLocationData;
 
     const obj = {
-      location_name: 'area_name',
-      geojson: [{}]
+      name: 'area name',
+      description: 'area description',
+      geojson: []
     };
 
     before(() => {
       data = new GetSurveyLocationData(obj);
     });
 
-    it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(obj.location_name);
+    it('sets name', () => {
+      expect(data.name).to.equal(obj.name);
     });
 
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql(obj.geojson);
+    it('sets description', () => {
+      expect(data.description).to.equal(obj.description);
+    });
+
+    it('sets geojson', () => {
+      expect(data.geojson).to.eql(obj.geojson);
     });
   });
 });

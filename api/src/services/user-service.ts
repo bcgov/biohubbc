@@ -1,24 +1,11 @@
 import { IDBConnection } from '../database/db';
-import { ApiBuildSQLError, ApiExecuteSQLError } from '../errors/api-error';
-import { UserObject } from '../models/user';
-import { queries } from '../queries/queries';
-import { UserRepository } from '../repositories/user-repository';
+import { ApiExecuteSQLError } from '../errors/api-error';
+import { SystemUser, UserRepository, UserSearchCriteria } from '../repositories/user-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
-export type ListSystemUsers = {
-  id: number;
-  user_identifier: string;
-  record_end_date: string;
-  role_ids: number[];
-  role_names: string[];
-};
-
 const defaultLog = getLogger('services/user-service');
 
-/**
- * @TODO Replace all implementations of `queries/users/user-queries` with appropriate UserRepository methods.
- */
 export class UserService extends DBService {
   userRepository: UserRepository;
 
@@ -32,23 +19,23 @@ export class UserService extends DBService {
    * Fetch a single system user by their system user ID.
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<UserObject>)}
+   * @return {*}  {(Promise<SystemUser>)}
    * @memberof UserService
    */
-  async getUserById(systemUserId: number): Promise<UserObject> {
+  async getUserById(systemUserId: number): Promise<SystemUser> {
     const response = await this.userRepository.getUserById(systemUserId);
 
-    return new UserObject(response);
+    return response;
   }
 
   /**
    * Get an existing system user by their GUID.
    *
    * @param {string} userGuid The user's GUID
-   * @return {*}  {(Promise<UserObject | null>)}
+   * @return {*}  {(Promise<SystemUser | null>)}
    * @memberof UserService
    */
-  async getUserByGuid(userGuid: string): Promise<UserObject | null> {
+  async getUserByGuid(userGuid: string): Promise<SystemUser | null> {
     defaultLog.debug({ label: 'getUserByGuid', userGuid });
 
     const response = await this.userRepository.getUserByGuid(userGuid);
@@ -57,7 +44,7 @@ export class UserService extends DBService {
       return null;
     }
 
-    return new UserObject(response[0]);
+    return response[0];
   }
 
   /**
@@ -65,10 +52,10 @@ export class UserService extends DBService {
    *
    * @param userIdentifier the user's identifier
    * @param identitySource the user's identity source, e.g. `'IDIR'`
-   * @return {*}  {(Promise<UserObject | null>)} Promise resolving the UserObject, or `null` if the user wasn't found.
+   * @return {*}  {(Promise<SystemUser | null>)} Promise resolving the User, or `null` if the user wasn't found.
    * @memberof UserService
    */
-  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<UserObject | null> {
+  async getUserByIdentifier(userIdentifier: string, identitySource: string): Promise<SystemUser | null> {
     defaultLog.debug({ label: 'getUserByIdentifier', userIdentifier, identitySource });
 
     const response = await this.userRepository.getUserByIdentifier(userIdentifier, identitySource);
@@ -77,7 +64,7 @@ export class UserService extends DBService {
       return null;
     }
 
-    return new UserObject(response[0]);
+    return response[0];
   }
 
   /**
@@ -88,25 +75,43 @@ export class UserService extends DBService {
    * @param {string | null} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
-   * @return {*}  {Promise<UserObject>}
+   * @param {string} displayName
+   * @param {string} email
+   * @return {*}  {Promise<SystemUser>}
    * @memberof UserService
    */
-  async addSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<UserObject> {
-    const response = await this.userRepository.addSystemUser(userGuid, userIdentifier, identitySource);
+  async addSystemUser(
+    userGuid: string | null,
+    userIdentifier: string,
+    identitySource: string,
+    displayName: string,
+    email: string,
+    givenName?: string,
+    familyName?: string
+  ): Promise<{ system_user_id: number }> {
+    const response = await this.userRepository.addSystemUser(
+      userGuid,
+      userIdentifier,
+      identitySource,
+      displayName,
+      email,
+      givenName,
+      familyName
+    );
 
-    return new UserObject(response);
+    return response;
   }
 
   /**
    * Get a list of all system users.
    *
-   * @return {*}  {Promise<UserObject[]>}
+   * @return {*}  {Promise<SystemUser[]>}
    * @memberof UserService
    */
-  async listSystemUsers(): Promise<UserObject[]> {
+  async listSystemUsers(): Promise<SystemUser[]> {
     const response = await this.userRepository.listSystemUsers();
 
-    return response.map((row) => new UserObject(row));
+    return response;
   }
 
   /**
@@ -116,16 +121,26 @@ export class UserService extends DBService {
    * @param {string | null} userGuid
    * @param {string} userIdentifier
    * @param {string} identitySource
-   * @return {*}  {Promise<UserObject>}
+   * @param {string} displayName
+   * @param {string} email
+   * @return {*}  {Promise<SystemUser>}
    * @memberof UserService
    */
-  async ensureSystemUser(userGuid: string | null, userIdentifier: string, identitySource: string): Promise<UserObject> {
+  async ensureSystemUser(
+    userGuid: string | null,
+    userIdentifier: string,
+    identitySource: string,
+    displayName: string,
+    email: string,
+    givenName?: string,
+    familyName?: string
+  ): Promise<SystemUser> {
     // Check if the user exists in SIMS
-    let userObject = userGuid
+    const existingUser = userGuid
       ? await this.getUserByGuid(userGuid)
       : await this.getUserByIdentifier(userIdentifier, identitySource);
 
-    if (!userObject) {
+    if (!existingUser) {
       // Id of the current authenticated user
       const systemUserId = this.connection.systemUserId();
 
@@ -134,83 +149,63 @@ export class UserService extends DBService {
       }
 
       // Found no existing user, add them
-      userObject = await this.addSystemUser(userGuid, userIdentifier, identitySource);
+      const newUserId = await this.addSystemUser(
+        userGuid,
+        userIdentifier,
+        identitySource,
+        displayName,
+        email,
+        givenName,
+        familyName
+      );
+
+      // fetch the new user object
+      return this.getUserById(newUserId.system_user_id);
     }
 
-    if (!userObject.record_end_date) {
+    if (!existingUser.record_end_date) {
       // system user is already active
-      return userObject;
+      return existingUser;
     }
 
     // system user is not active, re-activate them
-    await this.activateSystemUser(userObject.id);
+    await this.activateSystemUser(existingUser.system_user_id);
 
     // get the newly activated user
-    userObject = await this.getUserById(userObject.id);
-
-    if (!userObject) {
-      throw new ApiExecuteSQLError('Failed to ensure system user');
-    }
-
-    return userObject;
+    return this.getUserById(existingUser.system_user_id);
   }
 
   /**
    * Activates an existing system user that had been deactivated (soft deleted).
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<UserObject>)}
+   * @return {*}
    * @memberof UserService
    */
   async activateSystemUser(systemUserId: number) {
-    const sqlStatement = queries.users.activateSystemUserSQL(systemUserId);
-
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL update statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to activate system user');
-    }
+    return this.userRepository.activateSystemUser(systemUserId);
   }
 
   /**
    * Deactivates an existing system user (soft delete).
    *
    * @param {number} systemUserId
-   * @return {*}  {(Promise<UserObject>)}
+   * @return {*}
    * @memberof UserService
    */
   async deactivateSystemUser(systemUserId: number) {
-    const sqlStatement = queries.users.deactivateSystemUserSQL(systemUserId);
-
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL update statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to deactivate system user');
-    }
+    return this.userRepository.deactivateSystemUser(systemUserId);
   }
 
   /**
    * Delete all system roles for the user.
    *
    * @param {number} systemUserId
+   * @return {*}
    * @memberof UserService
    */
   async deleteUserSystemRoles(systemUserId: number) {
-    const sqlStatement = queries.users.deleteAllSystemRolesSQL(systemUserId);
-
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL delete statement');
-    }
-
-    await this.connection.query(sqlStatement.text, sqlStatement.values);
+    return this.userRepository.deleteUserSystemRoles(systemUserId);
   }
 
   /**
@@ -218,19 +213,37 @@ export class UserService extends DBService {
    *
    * @param {number} systemUserId
    * @param {number[]} roleIds
+   * @return {*}
    * @memberof UserService
    */
   async addUserSystemRoles(systemUserId: number, roleIds: number[]) {
-    const sqlStatement = queries.users.postSystemRolesSQL(systemUserId, roleIds);
+    return this.userRepository.addUserSystemRoles(systemUserId, roleIds);
+  }
 
-    if (!sqlStatement) {
-      throw new ApiBuildSQLError('Failed to build SQL insert statement');
-    }
+  /**
+   * Adds the specified role by name to the user.
+   *
+   * @param {number} systemUserId
+   * @param {string} roleName
+   * @return {*}
+   * @memberof UserService
+   */
+  async addUserSystemRoleByName(systemUserId: number, roleName: string) {
+    return this.userRepository.addUserSystemRoleByName(systemUserId, roleName);
+  }
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+  /**
+   * Delete all project participation roles for the specified system user.
+   *
+   * @param {number} systemUserId
+   * @return {*}
+   * @memberof UserService
+   */
+  async deleteAllProjectRoles(systemUserId: number) {
+    return this.userRepository.deleteAllProjectRoles(systemUserId);
+  }
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert user system roles');
-    }
+  async getUsers(searchCriteria: UserSearchCriteria) {
+    return this.userRepository.getUsers(searchCriteria);
   }
 }

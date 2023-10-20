@@ -57,9 +57,10 @@ clean: ## Closes and cleans (removes) all project containers
 prune: ## Deletes ALL docker artifacts (even those not associated to this project)
 	@echo -n "Delete ALL docker artifacts? [y/n] " && read ans && [ $${ans:-n} = y ]
 	@echo "==============================================="
-	@echo "Make: prune - deleting all docker artifacts
+	@echo "Make: prune - deleting all docker artifacts"
 	@echo "==============================================="
-	@docker system prune --all --volumes
+	@docker system prune --all --volumes -f
+	@docker volume prune --all -f
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Postgres DB Commands
@@ -121,7 +122,7 @@ db-container: ## Executes into database container.
 	@echo "Make: Shelling into database container"
 	@echo "==============================================="
 	@export PGPASSWORD=$(DB_ADMIN_PASS)
-	@docker-compose exec db psql -U $(DB_ADMIN) -d $(DB_DATABASE)
+	@	
 
 app-container: ## Executes into the app container.
 	@echo "==============================================="

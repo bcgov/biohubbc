@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { SUBMISSION_STATUS_TYPE } from '../../../../../../../constants/status';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
@@ -15,9 +15,13 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -242,6 +246,7 @@ export function getOccurrenceSubmission(): RequestHandler {
           SUBMISSION_STATUS_TYPE.SYSTEM_ERROR,
           SUBMISSION_STATUS_TYPE.FAILED_OCCURRENCE_PREPARATION,
           SUBMISSION_STATUS_TYPE.FAILED_VALIDATION,
+          SUBMISSION_STATUS_TYPE.INVALID_MEDIA,
           SUBMISSION_STATUS_TYPE.FAILED_TRANSFORMED,
           SUBMISSION_STATUS_TYPE.FAILED_PROCESSING_OCCURRENCE_DATA,
           SUBMISSION_STATUS_TYPE['AWAITING CURRATION'],
@@ -271,7 +276,7 @@ export function getOccurrenceSubmission(): RequestHandler {
         surveyObservationData: {
           occurrence_submission_id: occurrenceSubmission.occurrence_submission_id,
           inputFileName: occurrenceSubmission.input_file_name,
-          status: occurrenceSubmission.submission_status_type_name || null,
+          status: occurrenceSubmission.submission_status_type_name ?? null,
           isValidating: !isDoneValidating,
           messageTypes
         },

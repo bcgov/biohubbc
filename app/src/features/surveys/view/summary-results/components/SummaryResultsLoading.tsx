@@ -1,12 +1,12 @@
-import Box from '@material-ui/core/Box';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Paper from '@material-ui/core/Paper';
-import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
-import React from 'react';
+import BorderLinearProgress from '../../survey-observations/components/BorderLinearProgress';
 
 const useStyles = makeStyles((theme: Theme) => ({
   importFile: {
@@ -43,21 +43,6 @@ interface ILoadingProps {
 
 const SummaryResultsLoading = (props: ILoadingProps) => {
   const { fileLoading } = props;
-  const BorderLinearProgress = withStyles((theme: Theme) =>
-    createStyles({
-      root: {
-        height: 6,
-        borderRadius: 3
-      },
-      colorPrimary: {
-        backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 300 : 700]
-      },
-      bar: {
-        borderRadius: 3,
-        backgroundColor: '#1976D2'
-      }
-    })
-  )(LinearProgress);
   const classes = useStyles();
 
   return (

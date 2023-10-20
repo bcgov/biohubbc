@@ -53,10 +53,10 @@ export const getParentChildKeyMatchValidator = (config?: ParentChildKeyMatchVali
 
     /**
      * Encodes the column values for a worksheet at a given row into a string, which is used for comparison with another worksheet
-     * @param {object} rowObject A record reflecting a row in a tbale
+     * @param {Record<string, any>} rowObject A record reflecting a row in a tbale
      * @returns {*} {string} The row objected encoded as a string
      */
-    const serializer = (rowObject: object): string => {
+    const serializer = (rowObject: Record<string, any>): string => {
       return (
         filteredColumnNames
           // Retrieve the value from each column

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
@@ -16,9 +16,9 @@ export const DELETE: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -116,10 +116,11 @@ export function deleteSurvey(): RequestHandler {
       }
 
       try {
+        // Publish project metadata to BioHub (which needs to be updated now that the survey has been deleted)
         const platformService = new PlatformService(connection);
         await platformService.submitProjectDwCMetadataToBioHub(projectId);
       } catch (error) {
-        defaultLog.error({ label: 'deleteSurvey->submitDwCAMetadataPackage', message: 'error', error });
+        defaultLog.error({ label: 'deleteSurvey->submitProjectDwCMetadataToBioHub', message: 'error', error });
       }
 
       await connection.commit();

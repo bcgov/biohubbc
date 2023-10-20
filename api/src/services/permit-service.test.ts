@@ -2,9 +2,8 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { ApiGeneralError } from '../errors/api-error';
-import { UserObject } from '../models/user';
 import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { PermitService } from './permit-service';
 import { UserService } from './user-service';
@@ -40,14 +39,19 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: SystemUser = {
+        system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test user',
+        agency: null
       };
 
       const mockDBConnection = getMockDBConnection();
@@ -57,10 +61,10 @@ describe('PermitService', () => {
 
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
 
-      const response = await permitService.getPermitByUser(mockUserObject.id);
+      const response = await permitService.getPermitByUser(mockUserObject.system_user_id);
 
       expect(getAllPermits).to.be.calledOnce;
-      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.system_user_id);
       expect(response).to.eql(mockPermitResponse);
     });
 
@@ -79,14 +83,19 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: SystemUser = {
+        system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        role_names: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test user',
+        agency: null
       };
 
       const mockDBConnection = getMockDBConnection();
@@ -96,10 +105,10 @@ describe('PermitService', () => {
 
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
 
-      const response = await permitService.getPermitByUser(mockUserObject.id);
+      const response = await permitService.getPermitByUser(mockUserObject.system_user_id);
 
       expect(getAllPermits).to.be.calledOnce;
-      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.system_user_id);
       expect(response).to.eql(mockPermitResponse);
     });
 
@@ -118,14 +127,19 @@ describe('PermitService', () => {
         }
       ];
 
-      const mockUserObject: UserObject = {
-        id: 1,
+      const mockUserObject: SystemUser = {
+        system_user_id: 1,
         user_identifier: 'test_user',
         user_guid: 'aaaa',
         identity_source: 'idir',
         record_end_date: '',
         role_ids: [],
-        role_names: []
+        role_names: [],
+        email: 'email@email.com',
+        family_name: 'lname',
+        given_name: 'fname',
+        display_name: 'test user',
+        agency: null
       };
 
       const mockDBConnection = getMockDBConnection();
@@ -135,25 +149,11 @@ describe('PermitService', () => {
 
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(mockUserObject);
 
-      const response = await permitService.getPermitByUser(mockUserObject.id);
+      const response = await permitService.getPermitByUser(mockUserObject.system_user_id);
 
       expect(getPermitByUser).to.be.calledOnce;
-      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.id);
+      expect(getUserByIdStub).to.be.calledOnceWith(mockUserObject.system_user_id);
       expect(response).to.eql(mockPermitResponse);
-    });
-
-    it('throws api error if user not found', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const permitService = new PermitService(mockDBConnection);
-
-      sinon.stub(UserService.prototype, 'getUserById').resolves();
-
-      try {
-        await permitService.getPermitByUser(1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as ApiGeneralError).message).to.equal('Failed to acquire user');
-      }
     });
   });
 

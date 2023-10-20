@@ -6,7 +6,7 @@ import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError, HTTPErrorType } from './errors/http-error';
 import { rootAPIDoc } from './openapi/root-api-doc';
-import { authenticateRequest } from './request-handlers/security/authentication';
+import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
@@ -26,7 +26,7 @@ const app: express.Express = express();
 
 // Enable CORS
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  defaultLog.info({ label: 'req', message: `${req.method} ${req.url}` });
+  defaultLog.info(`${req.method} ${req.url}`);
 
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
@@ -75,9 +75,13 @@ const openAPIFramework = initialize({
     'application/x-www-form-urlencoded': express.urlencoded({ limit: MAX_REQ_BODY_SIZE, extended: true })
   },
   securityHandlers: {
-    // authenticates the request bearer token, for endpoints that specify `Bearer` security
     Bearer: async function (req: any) {
+      // authenticates the request bearer token, for endpoints that specify `Bearer` security
       return authenticateRequest(req);
+    },
+    OptionalBearer: async function (req: any) {
+      // authenticates the request bearer token, if one exists, for endpoints that specify `OptionalBearer` security
+      return authenticateRequestOptional(req);
     }
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
@@ -88,13 +92,13 @@ const openAPIFramework = initialize({
   // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
+    // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
+    const httpError = ensureHTTPError(error);
+
     if (res.headersSent) {
       // response has already been sent
       return;
     }
-
-    // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
-    const httpError = ensureHTTPError(error);
 
     res
       .status(httpError.status)

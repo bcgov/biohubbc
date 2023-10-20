@@ -1,12 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
-import { FieldArray, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
@@ -33,7 +33,7 @@ export const EditReportMetaFormInitialValues: IEditReportMetaForm = {
   title: '',
   authors: [EditReportMetaFormArrayItemInitialValues],
   description: '',
-  year_published: ('' as unknown) as number,
+  year_published: '' as unknown as number,
   revision_count: 0
 };
 
@@ -108,7 +108,7 @@ const EditReportMetaForm: React.FC = () => {
         </Typography>
         <FieldArray
           name="authors"
-          render={(arrayHelpers) => (
+          render={(arrayHelpers: FieldArrayRenderProps) => (
             <Box>
               <Grid container direction="row" spacing={3}>
                 {values.authors?.map((author, index) => {

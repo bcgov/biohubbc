@@ -203,7 +203,7 @@ export class SummaryService extends DBService {
       if (summarySubmissionId) {
         const { summary_template_species_id } = templateRecord;
         const count = summaryTemplateSpeciesRecords.length;
-        this.summaryRepository.insertSummarySubmissionMessage(
+        await this.summaryRepository.insertSummarySubmissionMessage(
           summarySubmissionId,
           SUMMARY_SUBMISSION_MESSAGE_TYPE.FOUND_VALIDATION,
           `Found validation having summary template species ID '${summary_template_species_id}' among ${count} record(s).`
@@ -308,7 +308,7 @@ export class SummaryService extends DBService {
 
     const media_state = file.getMediaState();
     if (!media_state.isValid) {
-      throw SummarySubmissionErrorFromMessageType(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
+      return { csv_state: [], media_state };
     }
 
     // Run CSV content validations
@@ -327,11 +327,16 @@ export class SummaryService extends DBService {
   async persistSummaryValidationResults(csvState: ICsvState[], mediaState: IMediaState): Promise<void> {
     defaultLog.debug({ label: 'persistSummaryValidationResults', message: 'validationResults' });
 
-    let parseError = false;
     const errors: MessageError<SUMMARY_SUBMISSION_MESSAGE_TYPE>[] = [];
 
     mediaState.fileErrors?.forEach((fileError) => {
-      errors.push(new MessageError(SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA, `${fileError}`, 'Miscellaneous'));
+      errors.push(
+        new MessageError(
+          SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA,
+          `${fileError}`,
+          SUMMARY_SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA
+        )
+      );
     });
 
     csvState?.forEach((csvStateItem) => {
@@ -364,14 +369,10 @@ export class SummaryService extends DBService {
           )
         );
       });
-
-      if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
-        // At least 1 error exists, skip remaining steps
-        parseError = true;
-      }
     });
 
-    if (parseError) {
+    if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
+      // At least 1 error exists, skip remaining steps
       throw new SummarySubmissionError({ messages: errors });
     }
   }

@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
+import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
@@ -14,9 +14,13 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -59,33 +63,21 @@ GET.apiDoc = {
             properties: {
               projectData: {
                 type: 'object',
-                required: ['project', 'coordinator', 'objectives', 'location', 'iucn', 'funding', 'partnerships'],
+                required: ['project', 'participants', 'objectives', 'location', 'iucn'],
                 properties: {
                   project: {
                     description: 'Basic project metadata',
                     type: 'object',
-                    required: [
-                      'id',
-                      'project_name',
-                      'project_type',
-                      'project_activities',
-                      'start_date',
-                      'end_date',
-                      'comments',
-                      'completion_status'
-                    ],
+                    required: ['project_id', 'project_name', 'project_programs', 'start_date', 'comments'],
                     properties: {
-                      id: {
+                      project_id: {
                         type: 'integer',
                         minimum: 1
                       },
                       project_name: {
                         type: 'string'
                       },
-                      project_type: {
-                        type: 'number'
-                      },
-                      project_activities: {
+                      project_programs: {
                         type: 'array',
                         items: {
                           type: 'number'
@@ -99,56 +91,66 @@ GET.apiDoc = {
                       end_date: {
                         type: 'string',
                         format: 'date',
-                        description: 'ISO 8601 date string for the project end date'
+                        description: 'ISO 8601 date string for the project end date',
+                        nullable: true
                       },
                       comments: {
                         type: 'string',
+                        nullable: true,
                         description: 'Comments'
-                      },
-                      completion_status: {
-                        description: 'Status of the project being active/completed',
-                        type: 'string'
                       }
                     }
                   },
-                  coordinator: {
-                    title: 'Project coordinator',
-                    type: 'object',
-                    required: [
-                      'first_name',
-                      'last_name',
-                      'email_address',
-                      'coordinator_agency',
-                      'share_contact_details'
-                    ],
-                    properties: {
-                      first_name: {
-                        type: 'string'
-                      },
-                      last_name: {
-                        type: 'string'
-                      },
-                      email_address: {
-                        type: 'string'
-                      },
-                      coordinator_agency: {
-                        type: 'string'
-                      },
-                      share_contact_details: {
-                        type: 'string',
-                        enum: ['true', 'false']
+                  participants: {
+                    title: 'Project participants',
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: [
+                        'project_participation_id',
+                        'project_id',
+                        'system_user_id',
+                        'project_role_ids',
+                        'project_role_names',
+                        'project_role_permissions'
+                      ],
+                      properties: {
+                        project_participation_id: {
+                          type: 'number'
+                        },
+                        project_id: {
+                          type: 'number'
+                        },
+                        system_user_id: {
+                          type: 'number'
+                        },
+                        project_role_ids: {
+                          type: 'array',
+                          items: {
+                            type: 'number'
+                          }
+                        },
+                        project_role_names: {
+                          type: 'array',
+                          items: {
+                            type: 'string'
+                          }
+                        },
+                        project_role_permissions: {
+                          type: 'array',
+                          items: {
+                            type: 'string'
+                          }
+                        }
                       }
                     }
                   },
                   objectives: {
-                    description: 'The project objectives and caveats',
+                    description: 'The project objectives',
                     type: 'object',
-                    required: ['objectives', 'caveats'],
+                    required: ['objectives'],
                     properties: {
                       objectives: {
-                        type: 'string'
-                      },
-                      caveats: {
                         type: 'string'
                       }
                     }
@@ -164,7 +166,7 @@ GET.apiDoc = {
                       geometry: {
                         type: 'array',
                         items: {
-                          ...(geoJsonFeature as object)
+                          ...(GeoJSONFeature as object)
                         }
                       }
                     }
@@ -189,75 +191,6 @@ GET.apiDoc = {
                               type: 'number'
                             }
                           }
-                        }
-                      }
-                    }
-                  },
-                  funding: {
-                    description: 'The project funding details',
-                    type: 'object',
-                    required: ['fundingSources'],
-                    properties: {
-                      fundingSources: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          properties: {
-                            id: {
-                              type: 'number'
-                            },
-                            agency_id: {
-                              type: 'number'
-                            },
-                            investment_action_category: {
-                              type: 'number'
-                            },
-                            investment_action_category_name: {
-                              type: 'string'
-                            },
-                            agency_name: {
-                              type: 'string'
-                            },
-                            funding_amount: {
-                              type: 'number'
-                            },
-                            start_date: {
-                              type: 'string',
-                              format: 'date',
-                              description: 'ISO 8601 date string for the funding start date'
-                            },
-                            end_date: {
-                              type: 'string',
-                              format: 'date',
-                              description: 'ISO 8601 date string for the funding end_date'
-                            },
-                            agency_project_id: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            revision_count: {
-                              type: 'number'
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  partnerships: {
-                    description: 'The project partners',
-                    type: 'object',
-                    required: ['indigenous_partnerships', 'stakeholder_partnerships'],
-                    properties: {
-                      indigenous_partnerships: {
-                        type: 'array',
-                        items: {
-                          type: 'number'
-                        }
-                      },
-                      stakeholder_partnerships: {
-                        type: 'array',
-                        items: {
-                          type: 'string'
                         }
                       }
                     }

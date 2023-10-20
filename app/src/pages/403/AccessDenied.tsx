@@ -1,11 +1,11 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
 import { mdiAlertCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import { AuthStateContext } from 'contexts/authStateContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Redirect, useHistory } from 'react-router';
 
 const AccessDenied = () => {
@@ -25,19 +25,17 @@ const AccessDenied = () => {
       <Box pt={6} textAlign="center">
         <Icon path={mdiAlertCircleOutline} size={2} color="#ff5252" />
         <h1>Access Denied</h1>
-        <Typography>
-          {`You do not have permission to access this ${(userHasARole && 'page') || 'application'}.`}
-        </Typography>
+        <Typography>You do not have permission to access this page.</Typography>
         <Box pt={4}>
           {!userHasARole && (
             <Button
               onClick={() => {
-                if (keycloakWrapper?.keycloak?.authenticated) {
+                if (keycloakWrapper?.keycloak.authenticated) {
                   history.push('/access-request');
                 } else {
                   // setting page to return to after login
                   history.push('/access-request');
-                  keycloakWrapper?.keycloak?.login();
+                  keycloakWrapper?.keycloak.login();
                 }
               }}
               type="submit"

@@ -1,11 +1,12 @@
-import Checkbox from '@material-ui/core/Checkbox';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import TextField from '@material-ui/core/TextField';
-import CheckBox from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
-import { FilterOptionsState } from '@material-ui/lab';
-import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@material-ui/lab/Autocomplete';
+import CheckBox from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
+import { FilterOptionsState } from '@mui/material';
+import Autocomplete, { AutocompleteInputChangeReason, createFilterOptions } from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import ListSubheader from '@mui/material/ListSubheader';
+import TextField from '@mui/material/TextField';
+import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
 import { DebouncedFunc } from 'lodash-es';
 import get from 'lodash-es/get';
@@ -74,7 +75,10 @@ function useResetCache(data: any) {
 }
 
 // Adapter for react-window
-const ListboxComponent = React.forwardRef<HTMLDivElement>(function ListboxComponent(props, ref) {
+const ListboxComponent = React.forwardRef<HTMLDivElement, React.PropsWithChildren>(function ListboxComponent(
+  props,
+  ref
+) {
   const { children, ...other } = props;
   const itemData = React.Children.toArray(children);
   const itemCount = itemData.length;
@@ -205,8 +209,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
   const handleOnChange = (_event: React.ChangeEvent<any>, selectedOptions: IMultiAutocompleteFieldOption[]) => {
     const selectedOptionsValue = selectedOptions.map((item) => item.value);
     const remainingOptions = options.filter((item) => !selectedOptionsValue.includes(item.value));
-
-    // when type is api-search and no input, dont show any options
+    // when type is api-search and no input, don't show any options
     // as options gets populated as searched by keyword.
     if (!inputValue && props.type === 'api-search') {
       setOptions(selectedOptions);
@@ -238,14 +241,14 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
     state: FilterOptionsState<IMultiAutocompleteFieldOption>
   ) => {
     // For api-search selected will be always on top and options doesn't need to be filtered
-    // as search funciton maintains both of this.
+    // as search function maintains both of this.
     return props.type === 'api-search' ? optionsList : filterOptionsKeepingSelectedOnTop(optionsList, state);
   };
 
   return (
     <Autocomplete
       multiple
-      noOptionsText="Type to start searching"
+      noOptionsText="No matching options"
       autoHighlight={true}
       value={getExistingValue(get(values, props.id))}
       ListboxComponent={ListboxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
@@ -253,7 +256,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       data-testid={props.id}
       options={options}
       getOptionLabel={(option) => option.label}
-      getOptionSelected={handleGetOptionSelected}
+      isOptionEqualToValue={handleGetOptionSelected}
       disableCloseOnSelect
       disableListWrap
       classes={classes}
@@ -261,20 +264,20 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       onInputChange={handleOnInputChange}
       onChange={handleOnChange}
       filterOptions={handleFiltering}
-      renderOption={(option, { selected }) => {
+      renderOption={(renderProps, renderOption, { selected }) => {
         return (
-          <>
+          <Box component="li" {...renderProps}>
             <Checkbox
               icon={<CheckBoxOutlineBlank fontSize="small" />}
               checkedIcon={<CheckBox fontSize="small" />}
-              style={{ marginRight: 8 }}
               checked={selected}
-              disabled={(props.options && props.options?.indexOf(option) !== -1) || false}
-              value={option.value}
+              // Always seem to be disabled
+              disabled={props.options?.includes(renderOption) || false}
+              value={renderOption.value}
               color="default"
             />
-            {option.label}
-          </>
+            {renderOption.label}
+          </Box>
         );
       }}
       renderInput={(params) => (
@@ -285,6 +288,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
           label={props.label}
           variant="outlined"
           fullWidth
+          placeholder="Type to start searching"
           error={get(touched, props.id) && Boolean(get(errors, props.id))}
           helperText={get(touched, props.id) && get(errors, props.id)}
         />

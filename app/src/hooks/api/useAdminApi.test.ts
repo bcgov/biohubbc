@@ -22,8 +22,8 @@ describe('useAdminApi', () => {
     mock.onPost('/api/gcnotify/send').reply(200);
 
     const result = await useAdminApi(axios).sendGCNotification(
-      ({ emailAddress: 'test@@email.com' } as unknown) as IgcNotifyRecipient,
-      ({ body: 'test' } as unknown) as IgcNotifyGenericMessage
+      { emailAddress: 'test@@email.com' } as unknown as IgcNotifyRecipient,
+      { body: 'test' } as unknown as IgcNotifyGenericMessage
     );
 
     expect(result).toEqual(true);
@@ -57,9 +57,9 @@ describe('useAdminApi', () => {
       date: '2020/04/04'
     });
 
-    const result = await useAdminApi(axios).createAdministrativeActivity(({
+    const result = await useAdminApi(axios).createAdministrativeActivity({
       key: 'value'
-    } as unknown) as IAccessRequestDataObject);
+    } as unknown as IAccessRequestDataObject);
 
     expect(result).toEqual({
       id: 2,
@@ -67,18 +67,30 @@ describe('useAdminApi', () => {
     });
   });
 
-  it('hasPendingAdministrativeActivities works as expected', async () => {
-    mock.onGet('/api/administrative-activity').reply(200, 10);
+  it('getAdministrativeActivityStanding works as expected', async () => {
+    mock.onGet('/api/administrative-activity').reply(200, {
+      has_pending_acccess_request: true,
+      has_one_or_more_project_roles: true
+    });
 
-    const result = await useAdminApi(axios).hasPendingAdministrativeActivities();
+    const result = await useAdminApi(axios).getAdministrativeActivityStanding();
 
-    expect(result).toEqual(10);
+    expect(result).toEqual({
+      has_pending_acccess_request: true,
+      has_one_or_more_project_roles: true
+    });
   });
 
   it('addSystemUser works as expected', async () => {
     mock.onPost(`/api/user/add`).reply(200, true);
 
-    const result = await useAdminApi(axios).addSystemUser('userGuid', 'userIdentifier', 'identitySource', 1);
+    const result = await useAdminApi(axios).addSystemUser(
+      'userIdentifier',
+      'identitySource',
+      'displayName',
+      'email',
+      1
+    );
 
     expect(result).toEqual(true);
   });

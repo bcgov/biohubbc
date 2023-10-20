@@ -1,14 +1,16 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
+import { createMemoryHistory } from 'history';
+import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
+import { Router } from 'react-router';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { AttachmentType } from '../../../constants/attachments';
 import AttachmentsList from './AttachmentsList';
 
-describe('AttachmentsList', () => {
-  beforeEach(() => {
-    // clear mocks before each test
-  });
+jest.mock('../../../hooks/useBioHubApi');
 
+describe('AttachmentsList', () => {
   afterEach(() => {
     cleanup();
   });
@@ -42,28 +44,75 @@ describe('AttachmentsList', () => {
       supplementaryAttachmentData: null
     }
   ];
+  const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 
   it('renders correctly with no Documents', () => {
+    const mockSurveyContext: ISurveyContext = {
+      projectId: 1,
+      surveyDataLoader: {
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as ISurveyContext;
+
+    const mockProjectContext: IProjectContext = {
+      projectId: 1,
+      projectDataLoader: {
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
+
     const { getByText } = render(
-      <AttachmentsList
-        attachments={[]}
-        handleDownload={jest.fn()}
-        handleDelete={jest.fn()}
-        handleViewDetails={jest.fn()}
-      />
+      <Router history={history}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AttachmentsList
+              attachments={[]}
+              handleDownload={jest.fn()}
+              handleDelete={jest.fn()}
+              handleViewDetails={jest.fn()}
+              handleRemoveOrResubmit={jest.fn()}
+            />
+          </SurveyContext.Provider>
+        </ProjectContext.Provider>
+      </Router>
     );
 
     expect(getByText('No Documents')).toBeInTheDocument();
   });
 
   it('renders correctly with attachments (of various sizes)', async () => {
+    const mockSurveyContext: ISurveyContext = {
+      projectId: 1,
+      surveyDataLoader: {
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as ISurveyContext;
+
+    const mockProjectContext: IProjectContext = {
+      projectId: 1,
+      projectDataLoader: {
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
+
     const { getByText } = render(
-      <AttachmentsList
-        attachments={attachmentsList}
-        handleDownload={jest.fn()}
-        handleDelete={jest.fn()}
-        handleViewDetails={jest.fn()}
-      />
+      <Router history={history}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AttachmentsList
+              attachments={attachmentsList}
+              handleDownload={jest.fn()}
+              handleDelete={jest.fn()}
+              handleViewDetails={jest.fn()}
+              handleRemoveOrResubmit={jest.fn()}
+            />
+          </SurveyContext.Provider>
+        </ProjectContext.Provider>
+      </Router>
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();
@@ -74,14 +123,37 @@ describe('AttachmentsList', () => {
   it('viewing file contents in new tab works as expected for project attachments', async () => {
     window.open = jest.fn();
 
+    const mockSurveyContext: ISurveyContext = {
+      projectId: 1,
+      surveyDataLoader: {
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as ISurveyContext;
+
+    const mockProjectContext: IProjectContext = {
+      projectId: 1,
+      projectDataLoader: {
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
+
     const handleDownload = jest.fn();
     const { getByText } = render(
-      <AttachmentsList
-        attachments={attachmentsList}
-        handleDownload={handleDownload}
-        handleDelete={jest.fn()}
-        handleViewDetails={jest.fn()}
-      />
+      <Router history={history}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AttachmentsList
+              attachments={attachmentsList}
+              handleDownload={handleDownload}
+              handleDelete={jest.fn()}
+              handleViewDetails={jest.fn()}
+              handleRemoveOrResubmit={jest.fn()}
+            />
+          </SurveyContext.Provider>
+        </ProjectContext.Provider>
+      </Router>
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();
@@ -94,15 +166,38 @@ describe('AttachmentsList', () => {
   });
 
   it('viewing file contents in new tab works as expected for survey attachments', async () => {
+    const mockSurveyContext: ISurveyContext = {
+      projectId: 1,
+      surveyDataLoader: {
+        data: { surveyData: { survey_details: { survey_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as ISurveyContext;
+
+    const mockProjectContext: IProjectContext = {
+      projectId: 1,
+      projectDataLoader: {
+        data: { projectData: { project: { project_name: 'name' } } },
+        load: jest.fn()
+      } as unknown as DataLoader<any, any, any>
+    } as unknown as IProjectContext;
+
     window.open = jest.fn();
     const handleDownload = jest.fn();
     const { getByText } = render(
-      <AttachmentsList
-        attachments={attachmentsList}
-        handleDownload={handleDownload}
-        handleDelete={jest.fn()}
-        handleViewDetails={jest.fn()}
-      />
+      <Router history={history}>
+        <ProjectContext.Provider value={mockProjectContext}>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <AttachmentsList
+              attachments={attachmentsList}
+              handleDownload={handleDownload}
+              handleDelete={jest.fn()}
+              handleViewDetails={jest.fn()}
+              handleRemoveOrResubmit={jest.fn()}
+            />
+          </SurveyContext.Provider>
+        </ProjectContext.Provider>
+      </Router>
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();

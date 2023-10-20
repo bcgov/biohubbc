@@ -7,7 +7,6 @@ import { Feature } from 'geojson';
 import { EmptyObject, ISpatialData, ITaxaData } from 'interfaces/useObservationApi.interface';
 import { LatLngTuple } from 'leaflet';
 import { isObject } from 'lodash-es';
-import React from 'react';
 
 export interface IDataResult {
   key: string;

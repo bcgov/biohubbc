@@ -51,7 +51,7 @@ export const authenticateRequest = async function (req: Request): Promise<true> 
     }
 
     // Get token header kid (key id)
-    const kid = decodedToken.header && decodedToken.header.kid;
+    const kid = decodedToken.header.kid;
 
     if (!kid) {
       defaultLog.warn({ label: 'authenticate', message: 'decoded token header kid was null' });
@@ -75,6 +75,7 @@ export const authenticateRequest = async function (req: Request): Promise<true> 
     const verifiedToken = verify(tokenString, signingKey, { issuer: [KEYCLOAK_ISSUER] });
 
     if (!verifiedToken) {
+      defaultLog.warn({ label: 'authenticate', message: 'verified token was null' });
       throw new HTTP401('Access Denied');
     }
 

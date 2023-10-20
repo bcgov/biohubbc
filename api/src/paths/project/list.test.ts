@@ -6,6 +6,7 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
+import { PublishStatus } from '../../repositories/history-publish-repository';
 import * as authorization from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getMockDBConnection } from '../../__mocks__/db';
@@ -79,12 +80,12 @@ describe('list', () => {
           projectData: {
             id: 1,
             name: 'myproject',
-            project_type: 'project_type',
+            project_programs: [1],
             start_date: '2022-02-02',
             end_date: null,
             completion_status: 'done'
           },
-          projectSupplementaryData: { has_unpublished_content: true }
+          projectSupplementaryData: { publishStatus: 'SUBMITTED' }
         }
       ];
 
@@ -92,8 +93,8 @@ describe('list', () => {
         .stub(ProjectService.prototype, 'getProjectList')
         .resolves([expectedResponse1[0].projectData]);
       const getSurveyHasUnpublishedContentStub = sinon
-        .stub(ProjectService.prototype, 'doesProjectHaveUnpublishedContent')
-        .resolves(expectedResponse1[0].projectSupplementaryData.has_unpublished_content);
+        .stub(ProjectService.prototype, 'projectPublishStatus')
+        .resolves(PublishStatus.SUBMITTED);
 
       const result = list.getProjectList();
 

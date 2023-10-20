@@ -1,28 +1,27 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { createMemoryHistory } from 'history';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import {
-  ICreateSurveyResponse,
-  ISurveyAvailableFundingSources,
-  ISurveyPermits
-} from 'interfaces/useSurveyApi.interface';
-import React from 'react';
+import { ICreateSurveyResponse, ISurveyPermits } from 'interfaces/useSurveyApi.interface';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import CreateSurveyPage from './CreateSurveyPage';
 
 const history = createMemoryHistory();
 
 jest.mock('../../hooks/useBioHubApi');
 
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>()
   },
@@ -31,29 +30,16 @@ const mockUseBiohubApi = {
   },
   survey: {
     getSurveyPermits: jest.fn<Promise<ISurveyPermits>, []>(),
-    getAvailableSurveyFundingSources: jest.fn<Promise<ISurveyAvailableFundingSources[]>, []>(),
     createSurvey: jest.fn<Promise<ICreateSurveyResponse>, []>()
   },
   taxonomy: {
     searchSpecies: jest.fn().mockResolvedValue({ searchResponse: [] }),
     getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
   },
-  external: {
-    post: jest.fn().mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    })
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 const renderContainer = () => {
   const mockCodesContext: ICodesContext = {
@@ -66,6 +52,7 @@ const renderContainer = () => {
       data: getProjectForViewResponse
     } as DataLoader<any, any, any>,
     artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+    surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
     projectId: 1
   };
 
@@ -84,14 +71,18 @@ const renderContainer = () => {
 
 describe.skip('CreateSurveyPage', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.getProjectForView.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
-    mockBiohubApi().survey.getSurveyPermits.mockClear();
-    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockClear();
-    mockBiohubApi().survey.createSurvey.mockClear();
-    mockBiohubApi().taxonomy.getSpeciesFromIds.mockClear();
-    mockBiohubApi().taxonomy.searchSpecies.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getProjectForView.mockClear();
+    mockUseApi.codes.getAllCodeSets.mockClear();
+    mockUseApi.survey.getSurveyPermits.mockClear();
+    mockUseApi.survey.createSurvey.mockClear();
+    mockUseApi.taxonomy.getSpeciesFromIds.mockClear();
+    mockUseApi.taxonomy.searchSpecies.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -100,17 +91,14 @@ describe.skip('CreateSurveyPage', () => {
     cleanup();
   });
 
-  it('renders the initial default page correctly', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+  it.skip('renders the initial default page correctly', async () => {
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
+    mockUseApi.survey.getSurveyPermits.mockResolvedValue({
       permits: [{ id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
     });
-    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue(
-      getProjectForViewResponse.projectData.funding.fundingSources
-    );
 
-    const { getByText } = renderContainer();
+    const { getByText, getAllByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
@@ -122,6 +110,8 @@ describe.skip('CreateSurveyPage', () => {
       expect(getByText('Proprietary Data')).toBeVisible();
 
       expect(getByText('Agreements')).toBeVisible();
+
+      expect(getAllByText('Partnerships')[0]).toBeVisible();
     });
   });
 
@@ -137,40 +127,30 @@ describe.skip('CreateSurveyPage', () => {
     });
   });
 
-  it('renders correctly when codes and project data are loaded', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+  it.skip('renders correctly when codes and project data are loaded', async () => {
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
 
-    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+    mockUseApi.survey.getSurveyPermits.mockResolvedValue({
       permits: [
         { id: 1, permit_number: '123', permit_type: 'Scientific' },
         { id: 2, permit_number: '456', permit_type: 'Wildlife' }
       ]
     });
 
-    mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
+    mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
       searchResponse: [
         { id: '1', label: 'species 1' },
         { id: '2', label: 'species 2' }
       ]
     });
-    mockBiohubApi().taxonomy.searchSpecies({
+    mockUseApi.taxonomy.searchSpecies({
       searchResponse: [
         { id: '1', label: 'species 1' },
         { id: '2', label: 'species 2' }
       ]
     });
-
-    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
-      {
-        ...getProjectForViewResponse.projectData.funding.fundingSources[0],
-        funding_amount: 100,
-        start_date: '2000-04-09 11:53:53',
-        end_date: '2000-05-10 11:53:53',
-        agency_project_id: 'agency'
-      }
-    ]);
 
     const { asFragment, getAllByText } = render(
       <MemoryRouter initialEntries={['?id=1']}>
@@ -186,30 +166,21 @@ describe.skip('CreateSurveyPage', () => {
 
   describe('Are you sure? Dialog', () => {
     it('calls history.push() if the user clicks `Yes`', async () => {
-      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+      mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
+      mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [
           { id: 1, permit_number: '123', permit_type: 'Scientific' },
           { id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
-      mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
-        {
-          ...getProjectForViewResponse.projectData.funding.fundingSources[0],
-          funding_amount: 100,
-          start_date: '2000-04-09 11:53:53',
-          end_date: '2000-05-10 11:53:53',
-          agency_project_id: 'agency'
-        }
-      ]);
-      mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
+      mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
         searchResponse: [
           { id: '1', label: 'species 1' },
           { id: '2', label: 'species 2' }
         ]
       });
-      mockBiohubApi().taxonomy.searchSpecies({
+      mockUseApi.taxonomy.searchSpecies({
         searchResponse: [
           { id: '1', label: 'species 1' },
           { id: '2', label: 'species 2' }
@@ -230,40 +201,33 @@ describe.skip('CreateSurveyPage', () => {
       });
       fireEvent.click(getByText('Cancel'));
       await waitFor(() => {
-        expect(getByText('Cancel Survey Creation')).toBeInTheDocument();
-        expect(getByText('Are you sure you want to cancel?', { exact: false })).toBeInTheDocument();
+        expect(getByText('Discard changes and exit?')).toBeInTheDocument();
+        expect(
+          getByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false })
+        ).toBeInTheDocument();
       });
       fireEvent.click(getByTestId('yes-button'));
       await waitFor(() => {
-        expect(history.location.pathname).toEqual('/admin/projects/1/surveys');
+        expect(history.location.pathname).toEqual('/admin/projects/1');
       });
     });
 
     it('does nothing if the user clicks `No` or away from the dialog', async () => {
-      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue({
+      mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
+      mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [
           { id: 1, permit_number: '123', permit_type: 'Scientific' },
           { id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
-      mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
-        {
-          ...getProjectForViewResponse.projectData.funding.fundingSources[0],
-          funding_amount: 100,
-          start_date: '2000-04-09 11:53:53',
-          end_date: '2000-05-10 11:53:53',
-          agency_project_id: 'agency'
-        }
-      ]);
-      mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
+      mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
         searchResponse: [
           { id: '1', label: 'species 1' },
           { id: '2', label: 'species 2' }
         ]
       });
-      mockBiohubApi().taxonomy.searchSpecies({
+      mockUseApi.taxonomy.searchSpecies({
         searchResponse: [
           { id: '1', label: 'species 1' },
           { id: '2', label: 'species 2' }
@@ -282,8 +246,10 @@ describe.skip('CreateSurveyPage', () => {
       });
       fireEvent.click(getByText('Cancel'));
       await waitFor(() => {
-        expect(getByText('Cancel Survey Creation')).toBeInTheDocument();
-        expect(getByText('Are you sure you want to cancel?', { exact: false })).toBeInTheDocument();
+        expect(getByText('Discard changes and exit?')).toBeInTheDocument();
+        expect(
+          getByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false })
+        ).toBeInTheDocument();
       });
       fireEvent.click(getByTestId('no-button'));
       await waitFor(() => {
@@ -291,8 +257,10 @@ describe.skip('CreateSurveyPage', () => {
       });
       fireEvent.click(getByText('Cancel'));
       await waitFor(() => {
-        expect(getByText('Cancel Survey Creation')).toBeInTheDocument();
-        expect(getByText('Are you sure you want to cancel?', { exact: false })).toBeInTheDocument();
+        expect(getByText('Discard changes and exit')).toBeInTheDocument();
+        expect(
+          getByText('Any changes you have made will not be saved. Do you want to proceed?', { exact: false })
+        ).toBeInTheDocument();
       });
       // Get the backdrop, then get the firstChild because this is where the event listener is attached
       //@ts-ignore

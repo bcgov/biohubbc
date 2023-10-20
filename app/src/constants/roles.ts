@@ -10,14 +10,28 @@ export enum SYSTEM_ROLE {
   DATA_ADMINISTRATOR = 'Data Administrator'
 }
 
+export const getAllSystemRoles = () => Object.values(SYSTEM_ROLE);
+
 /**
  * Project level roles.
  *
  * @export
- * @enum {number}
+ * @enum {string}
  */
 export enum PROJECT_ROLE {
-  PROJECT_LEAD = 'Project Lead',
-  PROJECT_EDITOR = 'Editor',
-  PROJECT_VIEWER = 'Viewer'
+  COORDINATOR = 'Coordinator',
+  COLLABORATOR = 'Collaborator',
+  OBSERVER = 'Observer'
+}
+
+/**
+ * Role permissions.
+ *
+ * @export
+ * @enum {string}
+ */
+export enum PROJECT_PERMISSION {
+  COORDINATOR = 'Coordinator',
+  COLLABORATOR = 'Collaborator',
+  OBSERVER = 'Observer'
 }

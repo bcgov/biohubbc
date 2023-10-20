@@ -81,7 +81,7 @@ describe('ValidationRepository', () => {
     it('should throw an error', async () => {
       const mockResponse = (null as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: async () => mockResponse
+        sql: async () => mockResponse
       });
 
       const repo = new ValidationRepository(dbConnection);
@@ -97,7 +97,7 @@ describe('ValidationRepository', () => {
     it('should succeed with valid data', async () => {
       const mockResponse = ({ rows: [{ template_id: 1 }] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: async () => mockResponse
+        sql: async () => mockResponse
       });
 
       const repo = new ValidationRepository(dbConnection);

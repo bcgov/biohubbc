@@ -1,14 +1,14 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -96,15 +96,8 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
   const [openDialog, setOpenDialog] = useState(false);
   const classes = useStyles();
 
-  const {
-    values,
-    touched,
-    errors,
-    handleChange,
-    setFieldValue,
-    setFieldTouched,
-    setFieldError
-  } = useFormikContext<IProprietaryDataForm>();
+  const { values, touched, errors, handleChange, setFieldValue, setFieldTouched, setFieldError } =
+    useFormikContext<IProprietaryDataForm>();
 
   const resetField = (name: string) => {
     setFieldValue(name, get(ProprietaryDataInitialValues, name));

@@ -1,13 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import useTheme from '@material-ui/core/styles/useTheme';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { LoadingButton } from '@mui/lab';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import useTheme from '@mui/material/styles/useTheme';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Formik, FormikProps } from 'formik';
 import { IGetReportDetails } from 'interfaces/useProjectApi.interface';
 import React, { useRef, useState } from 'react';
@@ -16,20 +15,6 @@ import EditReportMetaForm, {
   EditReportMetaFormYupSchema,
   IEditReportMetaForm
 } from '../../attachments/EditReportMetaForm';
-
-const useStyles = makeStyles((theme) => ({
-  wrapper: {
-    position: 'relative'
-  },
-  buttonProgress: {
-    color: theme.palette.primary.main,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12
-  }
-}));
 
 /**
  *
@@ -90,8 +75,6 @@ export interface IEditFileWithMetaDialogProps {
 const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) => {
   const theme = useTheme();
 
-  const classes = useStyles();
-
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
@@ -137,12 +120,9 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
               </Box>
             </DialogContent>
             <DialogActions>
-              <Box className={classes.wrapper}>
-                <Button onClick={formikProps.submitForm} color="primary" variant="contained" disabled={isSaving}>
-                  <strong>Save</strong>
-                </Button>
-                {isSaving && <CircularProgress size={24} className={classes.buttonProgress} />}
-              </Box>
+              <LoadingButton loading={isSaving} onClick={formikProps.submitForm} color="primary" variant="contained">
+                <strong>Save</strong>
+              </LoadingButton>
               <Button onClick={props.onClose} color="primary" variant="outlined" disabled={isSaving}>
                 Cancel
               </Button>

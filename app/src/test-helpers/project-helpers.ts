@@ -3,12 +3,11 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 export const getProjectForViewResponse: IGetProjectForViewResponse = {
   projectData: {
     project: {
-      id: 1,
+      project_id: 1,
       project_name: 'Test Project Name',
-      project_type: 1,
+      project_programs: [],
       start_date: '1998-10-10',
       end_date: '2021-02-26',
-      project_activities: [1],
       completion_status: 'Active'
     },
     location: {
@@ -17,13 +16,6 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     },
     objectives: {
       objectives: 'Et ad et in culpa si'
-    },
-    coordinator: {
-      first_name: 'Amanda',
-      last_name: 'Christensen',
-      email_address: 'amanda@christensen.com',
-      coordinator_agency: 'Amanda and associates',
-      share_contact_details: 'true'
     },
     iucn: {
       classificationDetails: [
@@ -39,26 +31,34 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
         }
       ]
     },
-    funding: {
-      fundingSources: [
-        {
-          id: 0,
-          agency_id: 1,
-          agency_name: 'agency name',
-          agency_project_id: 'ABC123',
-          investment_action_category: 1,
-          investment_action_category_name: 'investment action',
-          funding_amount: 333,
-          start_date: '2000-04-14',
-          end_date: '2021-04-13',
-          revision_count: 1
-        }
-      ]
-    },
-    partnerships: {
-      indigenous_partnerships: [1, 2],
-      stakeholder_partnerships: ['partner 3', 'partner 4']
-    }
+    participants: [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 1,
+        project_role_ids: [1],
+        project_role_names: ['Role 1'],
+        project_role_permissions: ['Permission 1', 'Permission 2'],
+        identity_source: '',
+        email: 'email@email.com',
+        display_name: 'Tim Taster',
+        agency: '',
+        user_identifier: ''
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_ids: [1],
+        project_role_names: ['Role 1'],
+        project_role_permissions: ['Permission 1', 'Permission 2'],
+        identity_source: '',
+        email: 'email@email.com',
+        display_name: 'Tom Tester',
+        agency: '',
+        user_identifier: ''
+      }
+    ]
   },
   projectSupplementaryData: {
     project_metadata_publish: {

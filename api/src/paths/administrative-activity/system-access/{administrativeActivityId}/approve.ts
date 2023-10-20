@@ -1,15 +1,15 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../../constants/administrative-activity';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { AdministrativeActivityService } from '../../../../services/administrative-activity-service';
 import { UserService } from '../../../../services/user-service';
 import { coerceUserIdentitySource } from '../../../../utils/keycloak-utils';
 import { getLogger } from '../../../../utils/logger';
-import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
-import { updateAdministrativeActivity } from '../../../administrative-activity';
 
 const defaultLog = getLogger('paths/administrative-activity/system-access/{administrativeActivityId}/approve');
 
@@ -61,7 +61,7 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['userGuid', 'userIdentifier', 'identitySource'],
+          required: ['userGuid', 'userIdentifier', 'identitySource', 'displayName', 'email'],
           properties: {
             userGuid: {
               type: 'string',
@@ -74,6 +74,14 @@ PUT.apiDoc = {
             identitySource: {
               type: 'string',
               enum: AllUserIdentitySources
+            },
+            displayName: {
+              type: 'string',
+              description: 'The display name for the user.'
+            },
+            email: {
+              type: 'string',
+              description: 'The email for the user.'
             },
             roleIds: {
               type: 'array',
@@ -116,6 +124,8 @@ export function approveAccessRequest(): RequestHandler {
 
     const userGuid = req.body.userGuid;
     const userIdentifier = req.body.userIdentifier;
+    const displayName = req.body.displayName;
+    const email = req.body.email;
 
     // Convert identity sources that have multiple variations (ie: BCEID) into a single value supported by this app
     const identitySource = req.body.identitySource && coerceUserIdentitySource(req.body.identitySource);
@@ -134,23 +144,29 @@ export function approveAccessRequest(): RequestHandler {
       await connection.open();
 
       const userService = new UserService(connection);
+      const administrativeActivityService = new AdministrativeActivityService(connection);
 
       // Get the system user (adding or activating them if they already existed).
-      const systemUserObject = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
+      const systemUserObject = await userService.ensureSystemUser(
+        userGuid,
+        userIdentifier,
+        identitySource,
+        displayName,
+        email
+      );
 
       // Filter out any system roles that have already been added to the user
       const rolesIdsToAdd = roleIds.filter((roleId) => !systemUserObject.role_ids.includes(roleId));
 
       if (rolesIdsToAdd?.length) {
         // Add any missing roles (if any)
-        await userService.addUserSystemRoles(systemUserObject.id, rolesIdsToAdd);
+        await userService.addUserSystemRoles(systemUserObject.system_user_id, rolesIdsToAdd);
       }
 
       // Update the access request record status
-      await updateAdministrativeActivity(
+      await administrativeActivityService.putAdministrativeActivity(
         administrativeActivityId,
-        ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.ACTIONED,
-        connection
+        ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.ACTIONED
       );
 
       await connection.commit();

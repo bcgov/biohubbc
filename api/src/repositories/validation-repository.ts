@@ -109,7 +109,7 @@ export class ValidationRepository extends BaseRepository {
       ;
     `;
 
-    const response = await this.connection.query<{ template_id: number }>(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql<{ template_id: number }>(sqlStatement);
 
     if (!response) {
       throw new HTTP400('Failed to query template table');

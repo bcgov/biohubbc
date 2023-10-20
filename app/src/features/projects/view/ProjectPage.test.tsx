@@ -1,21 +1,22 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { Feature } from 'geojson';
 import { createMemoryHistory } from 'history';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
 import { Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import ProjectPage from './ProjectPage';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 
 jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>(),
     deleteProject: jest.fn(),
@@ -27,44 +28,24 @@ const mockUseBiohubApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
-  external: {
-    post: jest.fn<Promise<{ features?: Feature[] }>, []>()
-  }
-};
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
-const defaultAuthState = {
-  keycloakWrapper: {
-    keycloak: {
-      authenticated: true
-    },
-    hasLoadedAllUserInfo: true,
-    systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-    getUserIdentifier: () => 'testuser',
-    hasAccessRequest: false,
-    hasSystemRole: () => true,
-    getIdentitySource: () => 'idir',
-    username: 'testusername',
-    displayName: 'testdisplayname',
-    email: 'test@email.com',
-    firstName: 'testfirst',
-    lastName: 'testlast',
-    refresh: () => {}
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
 describe.skip('ProjectPage', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.deleteProject.mockClear();
-    mockBiohubApi().project.getProjectForView.mockClear();
-    mockBiohubApi().survey.getSurveysList.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
-    mockBiohubApi().project.publishProject.mockClear();
-    mockBiohubApi().external.post.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.deleteProject.mockClear();
+    mockUseApi.project.getProjectForView.mockClear();
+    mockUseApi.survey.getSurveysList.mockClear();
+    mockUseApi.codes.getAllCodeSets.mockClear();
+    mockUseApi.project.publishProject.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -73,7 +54,7 @@ describe.skip('ProjectPage', () => {
     cleanup();
   });
 
-  it('renders a spinner if no project is loaded', () => {
+  it.skip('renders a spinner if no project is loaded', () => {
     const { asFragment } = render(
       <DialogContextProvider>
         <Router history={history}>
@@ -85,20 +66,11 @@ describe.skip('ProjectPage', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders project page when project is loaded (project is active)', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  it.skip('renders project page when project is loaded (project is active)', async () => {
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const { asFragment, findByText } = render(
       <DialogContextProvider>
@@ -116,26 +88,17 @@ describe.skip('ProjectPage', () => {
     });
   });
 
-  it('renders project page when project is loaded (project is completed)', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  it.skip('renders project page when project is loaded (project is completed)', async () => {
+    mockUseApi.project.getProjectForView.mockResolvedValue({
       ...getProjectForViewResponse,
       projectData: {
         ...getProjectForViewResponse.projectData,
         project: { ...getProjectForViewResponse.projectData.project, completion_status: 'Completed' }
       }
     });
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const { asFragment, findByText } = render(
       <DialogContextProvider>
@@ -153,32 +116,17 @@ describe.skip('ProjectPage', () => {
     });
   });
 
-  it('deletes project and takes user to the projects list page when user is a system administrator', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  it.skip('deletes project and takes user to the projects list page when user is a system administrator', async () => {
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().project.deleteProject.mockResolvedValue(true);
-    mockBiohubApi().external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.project.deleteProject.mockResolvedValue(true);
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getByTestId, findByText, getByText } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -206,31 +154,16 @@ describe.skip('ProjectPage', () => {
   });
 
   it('shows basic error dialog when deleting project call has no response', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().project.deleteProject.mockResolvedValue(null);
-    mockBiohubApi().external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.project.deleteProject.mockResolvedValue(null);
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getAllByRole, queryByText, getByText, findByText, getByTestId } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -266,31 +199,16 @@ describe.skip('ProjectPage', () => {
   });
 
   it('shows error dialog with API error message when deleting project fails', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().project.deleteProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
-    mockBiohubApi().external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.project.deleteProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getAllByRole, queryByText, getByText, findByText, getByTestId } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -326,31 +244,16 @@ describe.skip('ProjectPage', () => {
   });
 
   it('sees delete project button as enabled when accessing a project as a project administrator', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().project.deleteProject.mockResolvedValue(true);
-    mockBiohubApi().external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockUseApi.project.deleteProject.mockResolvedValue(true);
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     const { getByTestId, findByText } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -366,30 +269,15 @@ describe.skip('ProjectPage', () => {
   });
 
   it('does not see the delete button when accessing project as non admin user', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
+    mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: ['Non Admin User'] as string[],
-        hasSystemRole: () => false
-      }
-    };
+    const authState = getMockAuthState({ base: SystemUserAuthState });
 
     const { queryByTestId, findByText } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={authState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -405,28 +293,19 @@ describe.skip('ProjectPage', () => {
   });
 
   it('renders correctly with no end date', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+    mockUseApi.project.getProjectForView.mockResolvedValue({
       ...getProjectForViewResponse,
       projectData: {
         ...getProjectForViewResponse.projectData,
         project: {
           ...getProjectForViewResponse.projectData.project,
-          end_date: (null as unknown) as string
+          end_date: null as unknown as string
         }
       }
     });
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().external.post.mockResolvedValue({
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [0, 0] },
-          properties: {}
-        }
-      ]
-    });
 
     const { asFragment, findByText } = render(
       <Router history={history}>

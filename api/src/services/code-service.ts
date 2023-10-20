@@ -1,50 +1,18 @@
-import { coordinator_agency, region, regional_offices } from '../constants/codes';
-import { queries } from '../queries/queries';
+import { IDBConnection } from '../database/db';
+import { CodeRepository, IAllCodeSets } from '../repositories/code-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/code-queries');
 
-/**
- * A single code value.
- *
- * @export
- * @interface ICode
- */
-export interface ICode {
-  id: number;
-  name: string;
-}
-
-/**
- * A code set (an array of ICode values).
- */
-export type CodeSet<T extends ICode = ICode> = T[];
-
-export interface IAllCodeSets {
-  management_action_type: CodeSet;
-  first_nations: CodeSet;
-  funding_source: CodeSet;
-  investment_action_category: CodeSet<{ id: number; fs_id: number; name: string }>;
-  activity: CodeSet;
-  project_type: CodeSet;
-  coordinator_agency: CodeSet;
-  region: CodeSet;
-  proprietor_type: CodeSet<{ id: number; name: string; is_first_nation: boolean }>;
-  iucn_conservation_action_level_1_classification: CodeSet;
-  iucn_conservation_action_level_2_subclassification: CodeSet<{ id: number; iucn1_id: number; name: string }>;
-  iucn_conservation_action_level_3_subclassification: CodeSet<{ id: number; iucn2_id: number; name: string }>;
-  system_roles: CodeSet;
-  project_roles: CodeSet;
-  regional_offices: CodeSet;
-  administrative_activity_status_type: CodeSet;
-  field_methods: CodeSet<{ id: number; name: string; description: string }>;
-  ecological_seasons: CodeSet<{ id: number; name: string; description: string }>;
-  intended_outcomes: CodeSet<{ id: number; name: string; description: string }>;
-  vantage_codes: CodeSet;
-}
-
 export class CodeService extends DBService {
+  codeRepository: CodeRepository;
+
+  constructor(connection: IDBConnection) {
+    super(connection);
+
+    this.codeRepository = new CodeRepository(connection);
+  }
   /**
    * Function that fetches all code sets.
    *
@@ -57,72 +25,68 @@ export class CodeService extends DBService {
     const [
       management_action_type,
       first_nations,
-      funding_source,
+      agency,
       investment_action_category,
-      activity,
+      type,
       iucn_conservation_action_level_1_classification,
       iucn_conservation_action_level_2_subclassification,
       iucn_conservation_action_level_3_subclassification,
       proprietor_type,
-      project_type,
+      program,
       system_roles,
       project_roles,
       administrative_activity_status_type,
       field_methods,
       ecological_seasons,
       intended_outcomes,
-      vantage_codes
+      vantage_codes,
+      survey_jobs,
+      site_selection_strategies,
+      sample_methods
     ] = await Promise.all([
-      await this.connection.query(queries.codes.getManagementActionTypeSQL().text),
-      await this.connection.query(queries.codes.getFirstNationsSQL().text),
-      await this.connection.query(queries.codes.getFundingSourceSQL().text),
-      await this.connection.query(queries.codes.getInvestmentActionCategorySQL().text),
-      await this.connection.query(queries.codes.getActivitySQL().text),
-      await this.connection.query(queries.codes.getIUCNConservationActionLevel1ClassificationSQL().text),
-      await this.connection.query(queries.codes.getIUCNConservationActionLevel2SubclassificationSQL().text),
-      await this.connection.query(queries.codes.getIUCNConservationActionLevel3SubclassificationSQL().text),
-      await this.connection.query(queries.codes.getProprietorTypeSQL().text),
-      await this.connection.query(queries.codes.getProjectTypeSQL().text),
-      await this.connection.query(queries.codes.getSystemRolesSQL().text),
-      await this.connection.query(queries.codes.getProjectRolesSQL().text),
-      await this.connection.query(queries.codes.getAdministrativeActivityStatusTypeSQL().text),
-      await this.connection.query(queries.codes.getFieldMethodsSQL().text),
-      await this.connection.query(queries.codes.getEcologicalSeasonsSQL().text),
-      await this.connection.query(queries.codes.getIntendedOutcomesSQL().text),
-      await this.connection.query(queries.codes.getVantageCodesSQL().text)
+      await this.codeRepository.getManagementActionType(),
+      await this.codeRepository.getFirstNations(),
+      await this.codeRepository.getAgency(),
+      await this.codeRepository.getInvestmentActionCategory(),
+      await this.codeRepository.getType(),
+      await this.codeRepository.getIUCNConservationActionLevel1Classification(),
+      await this.codeRepository.getIUCNConservationActionLevel2Subclassification(),
+      await this.codeRepository.getIUCNConservationActionLevel3Subclassification(),
+      await this.codeRepository.getProprietorType(),
+      await this.codeRepository.getProgram(),
+      await this.codeRepository.getSystemRoles(),
+      await this.codeRepository.getProjectRoles(),
+      await this.codeRepository.getAdministrativeActivityStatusType(),
+      await this.codeRepository.getFieldMethods(),
+      await this.codeRepository.getEcologicalSeasons(),
+      await this.codeRepository.getIntendedOutcomes(),
+      await this.codeRepository.getVantageCodes(),
+      await this.codeRepository.getSurveyJobs(),
+      await this.codeRepository.getSiteSelectionStrategies(),
+      await this.codeRepository.getSampleMethods()
     ]);
 
     return {
-      management_action_type: (management_action_type && management_action_type.rows) || [],
-      first_nations: (first_nations && first_nations.rows) || [],
-      funding_source: (funding_source && funding_source.rows) || [],
-      investment_action_category: (investment_action_category && investment_action_category.rows) || [],
-      activity: (activity && activity.rows) || [],
-      iucn_conservation_action_level_1_classification:
-        (iucn_conservation_action_level_1_classification && iucn_conservation_action_level_1_classification.rows) || [],
-      iucn_conservation_action_level_2_subclassification:
-        (iucn_conservation_action_level_2_subclassification &&
-          iucn_conservation_action_level_2_subclassification.rows) ||
-        [],
-      iucn_conservation_action_level_3_subclassification:
-        (iucn_conservation_action_level_3_subclassification &&
-          iucn_conservation_action_level_3_subclassification.rows) ||
-        [],
-      proprietor_type: (proprietor_type && proprietor_type.rows) || [],
-      project_type: (project_type && project_type.rows) || [],
-      system_roles: (system_roles && system_roles.rows) || [],
-      project_roles: (project_roles && project_roles.rows) || [],
-      administrative_activity_status_type:
-        (administrative_activity_status_type && administrative_activity_status_type.rows) || [],
-      field_methods: (field_methods && field_methods.rows) || [],
-      ecological_seasons: (ecological_seasons && ecological_seasons.rows) || [],
-      intended_outcomes: (intended_outcomes && intended_outcomes.rows) || [],
-      vantage_codes: (vantage_codes && vantage_codes.rows) || [],
-
-      // TODO Temporarily hard coded list of code values below
-      coordinator_agency,
-      region,
-      regional_offices
+      management_action_type,
+      first_nations,
+      agency,
+      investment_action_category,
+      type,
+      iucn_conservation_action_level_1_classification,
+      iucn_conservation_action_level_2_subclassification,
+      iucn_conservation_action_level_3_subclassification,
+      program,
+      proprietor_type,
+      system_roles,
+      project_roles,
+      administrative_activity_status_type,
+      field_methods,
+      ecological_seasons,
+      intended_outcomes,
+      vantage_codes,
+      survey_jobs,
+      site_selection_strategies,
+      sample_methods
     };
   }
 }

@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { PostSurveyObject } from '../../../../models/survey-create';
-import { geoJsonFeature } from '../../../../openapi/schemas/geoJson';
+import { GeoJSONFeature } from '../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../services/survey-service';
 import { getLogger } from '../../../../utils/logger';
@@ -15,9 +15,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -59,15 +59,19 @@ POST.apiDoc = {
             'survey_details',
             'species',
             'permit',
-            'funding',
+            'funding_sources',
+            'partnerships',
             'proprietor',
             'purpose_and_methodology',
-            'location',
-            'agreements'
+            'locations',
+            'site_selection',
+            'agreements',
+            'participants'
           ],
           properties: {
             survey_details: {
               type: 'object',
+              required: ['survey_name', 'start_date'],
               properties: {
                 survey_name: {
                   type: 'string'
@@ -78,13 +82,15 @@ POST.apiDoc = {
                 },
                 end_date: {
                   type: 'string',
-                  description: 'ISO 8601 date string'
+                  description: 'ISO 8601 date string',
+                  nullable: true
                 },
-                biologist_first_name: {
-                  type: 'string'
-                },
-                biologist_last_name: {
-                  type: 'string'
+                survey_types: {
+                  type: 'array',
+                  items: {
+                    type: 'integer',
+                    minimum: 1
+                  }
                 }
               }
             },
@@ -127,13 +133,38 @@ POST.apiDoc = {
                 }
               }
             },
-            funding: {
+            funding_sources: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['funding_source_id', 'amount'],
+                properties: {
+                  funding_source_id: {
+                    type: 'number',
+                    minimum: 1
+                  },
+                  amount: {
+                    type: 'number'
+                  }
+                }
+              }
+            },
+            partnerships: {
+              title: 'Survey partnerships',
               type: 'object',
+              required: [],
               properties: {
-                funding_sources: {
+                indigenous_partnerships: {
                   type: 'array',
                   items: {
-                    type: 'integer'
+                    type: 'integer',
+                    minimum: 1
+                  }
+                },
+                stakeholder_partnerships: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
                   }
                 }
               }
@@ -184,16 +215,84 @@ POST.apiDoc = {
                 }
               }
             },
-            location: {
+            locations: {
+              description: 'Survey location data',
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['name', 'description', 'geojson'],
+                properties: {
+                  name: {
+                    type: 'string',
+                    maxLength: 100
+                  },
+                  description: {
+                    type: 'string',
+                    maxLength: 250
+                  },
+                  geojson: {
+                    type: 'array',
+                    items: {
+                      ...(GeoJSONFeature as object)
+                    }
+                  }
+                }
+              }
+            },
+            site_selection: {
               type: 'object',
+              required: ['strategies', 'stratums'],
               properties: {
-                survey_area_name: {
-                  type: 'string'
-                },
-                geometry: {
+                strategies: {
                   type: 'array',
                   items: {
-                    ...(geoJsonFeature as object)
+                    type: 'string'
+                  }
+                },
+                stratums: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['name', 'description'],
+                    properties: {
+                      name: {
+                        type: 'string'
+                      },
+                      description: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            participants: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['system_user_id', 'survey_job_name'],
+                properties: {
+                  system_user_id: {
+                    type: 'number',
+                    minimum: 1
+                  },
+                  survey_job_name: {
+                    type: 'string'
+                  }
+                }
+              }
+            },
+            blocks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['name', 'description'],
+                properties: {
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
+                    type: 'string'
                   }
                 }
               }
@@ -209,12 +308,12 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Survey Response Object',
             type: 'object',
             required: ['id'],
             properties: {
               id: {
-                type: 'number'
+                type: 'integer',
+                minimum: 1
               }
             }
           }
@@ -251,7 +350,6 @@ export function createSurvey(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyService(connection);
-
       const surveyId = await surveyService.createSurveyAndUploadMetadataToBioHub(projectId, sanitizedPostSurveyData);
 
       await connection.commit();

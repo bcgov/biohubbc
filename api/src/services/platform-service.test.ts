@@ -196,6 +196,59 @@ describe('PlatformService', () => {
     });
   });
 
+  describe('submitProjectDataToBioHub', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('throws an error if BioHub intake is not enabled', async () => {
+      process.env.BACKBONE_INTAKE_ENABLED = 'false';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      try {
+        await platformService.submitProjectDataToBioHub(1, {
+          reports: [],
+          attachments: []
+        });
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('BioHub intake is not enabled');
+      }
+    });
+
+    it('builds eml and submits data', async () => {
+      process.env.BACKBONE_INTAKE_ENABLED = 'true';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const emlPackageMock = new EmlPackage({ packageId: '123-456-789' });
+      const buildProjectEmlPackageStub = sinon
+        .stub(EmlService.prototype, 'buildProjectEmlPackage')
+        .resolves(emlPackageMock);
+
+      const submitProjectReportAttachmentsToBioHubStub = sinon
+        .stub(PlatformService.prototype, 'submitProjectReportAttachmentsToBioHub')
+        .resolves();
+
+      const submitProjectAttachmentsToBioHubStub = sinon
+        .stub(PlatformService.prototype, 'submitProjectAttachmentsToBioHub')
+        .resolves();
+
+      const response = await platformService.submitProjectDataToBioHub(1, {
+        reports: ([{ id: 3 }, { id: 4 }] as unknown) as IGetSurveyReportAttachment[],
+        attachments: ([{ id: 5 }, { id: 6 }] as unknown) as IGetSurveyAttachment[]
+      });
+
+      expect(buildProjectEmlPackageStub).to.have.been.calledOnceWith({ projectId: 1 });
+      expect(submitProjectReportAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1, [3, 4]);
+      expect(submitProjectAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1, [5, 6]);
+      expect(response).to.eql({ uuid: '123-456-789' });
+    });
+  });
+
   describe('submitSurveyDataToBioHub', () => {
     afterEach(() => {
       sinon.restore();
@@ -235,6 +288,10 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, 'submitSurveyDwCArchiveToBioHub')
         .resolves();
 
+      const submitSurveyObservationInputDataToBiohubStub = sinon
+        .stub(PlatformService.prototype, 'submitSurveyObservationInputDataToBiohub')
+        .resolves();
+
       const submitSurveySummarySubmissionToBioHubStub = sinon
         .stub(PlatformService.prototype, 'submitSurveySummarySubmissionToBioHub')
         .resolves();
@@ -256,6 +313,7 @@ describe('PlatformService', () => {
 
       expect(buildSurveyEmlPackageStub).to.have.been.calledOnceWith({ surveyId: 1 });
       expect(submitSurveyDwCArchiveToBioHubStub).to.have.been.calledOnceWith(1, emlPackageMock);
+      expect(submitSurveyObservationInputDataToBiohubStub).to.have.been.calledOnceWith(1, emlPackageMock.packageId);
       expect(submitSurveySummarySubmissionToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1);
       expect(submitSurveyReportAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1, [3, 4]);
       expect(submitSurveyAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', 1, [5, 6]);
@@ -442,7 +500,9 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      const getKeycloakTokenStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+      const getKeycloakServiceTokenStub = sinon
+        .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
+        .resolves('token');
 
       const axiosStub = sinon.stub(axios, 'post').resolves({ data: { queue_id: 1 } });
 
@@ -465,7 +525,7 @@ describe('PlatformService', () => {
 
       const response = await platformService._submitDwCADatasetToBioHub(dwcaDatasetMock);
 
-      expect(getKeycloakTokenStub).to.have.been.calledOnce;
+      expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
       expect(axiosStub).to.have.been.calledOnceWith(sinon.match.string, sinon.match.any, sinon.match.object);
       expect(response).to.eql({ queue_id: 1 });
     });
@@ -902,6 +962,99 @@ describe('PlatformService', () => {
     });
   });
 
+  describe('submitSurveyObservationInputDataToBiohub', () => {
+    it('should upload the input data for a survey observation submission to biohub successfully', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const surveyOccurrenceSubmissionMock = ({
+        occurrence_submission_id: 2,
+        input_key: '/key/test.csv'
+      } as unknown) as IGetLatestSurveyOccurrenceSubmission;
+
+      sinon
+        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
+        .resolves(surveyOccurrenceSubmissionMock);
+
+      const observationArtifactMock = { dataPackageId: 'test' } as IArtifact;
+
+      const _makeArtifactFromObservationInputDataStub = sinon
+        .stub(PlatformService.prototype, '_makeArtifactFromObservationInputData')
+        .resolves(observationArtifactMock);
+
+      const _submitArtifactToBioHubStub = sinon
+        .stub(PlatformService.prototype, '_submitArtifactToBioHub')
+        .resolves({ artifact_id: 3 });
+
+      const insertOccurrenceSubmissionPublishRecordStub = sinon
+        .stub(HistoryPublishService.prototype, 'insertOccurrenceSubmissionPublishRecord')
+        .resolves();
+
+      await platformService.submitSurveyObservationInputDataToBiohub(1, '123-456-789');
+
+      expect(_makeArtifactFromObservationInputDataStub).to.be.calledWith('123-456-789', surveyOccurrenceSubmissionMock);
+      expect(_submitArtifactToBioHubStub).to.be.calledWith(observationArtifactMock);
+      expect(insertOccurrenceSubmissionPublishRecordStub).to.be.calledWith({
+        occurrence_submission_id: 2,
+        queue_id: 3
+      });
+    });
+    it('should throw an error if occurrenceSubmissionData is incorrect', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const surveyOccurrenceSubmissionMock = ({
+        occurrence_submission_id: 2,
+        input_key: null
+      } as unknown) as IGetLatestSurveyOccurrenceSubmission;
+
+      sinon
+        .stub(SurveyService.prototype, 'getLatestSurveyOccurrenceSubmission')
+        .resolves(surveyOccurrenceSubmissionMock);
+
+      try {
+        await platformService.submitSurveyObservationInputDataToBiohub(1, '123-456-789');
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to submit survey to BioHub');
+      }
+    });
+  });
+
+  describe('_makeArtifactFromObservationInputData', () => {
+    it('should make an artifact from the given data', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const platformService = new PlatformService(mockDBConnection);
+
+      const testData = {
+        occurrence_submission_id: 1,
+        input_file_name: 'test-filename.txt',
+        input_key: 'input-test-key',
+        output_key: 'output-test-key',
+        message: 'message'
+      } as IGetLatestSurveyOccurrenceSubmission;
+
+      const testArtifactZip = new AdmZip();
+      testArtifactZip.addFile('test-filename.txt', Buffer.from('hello-world'));
+
+      const s3FileStub = sinon.stub(file_utils, 'getFileFromS3').resolves({
+        Body: 'hello-world'
+      });
+
+      const artifact = await platformService._makeArtifactFromObservationInputData('aaaa', testData);
+
+      expect(s3FileStub).to.be.calledWith(testData.input_key);
+      expect(artifact.dataPackageId).to.eql('aaaa');
+      expect(artifact.metadata).to.eql({
+        file_name: 'test-filename.txt',
+        file_size: 'undefined',
+        file_type: 'Observations',
+        title: 'test-filename.txt',
+        description: 'message'
+      });
+    });
+  });
+
   describe('submitSurveySummarySubmissionToBioHub', () => {
     it('should upload survey summary submission to biohub successfully', async () => {
       const mockDBConnection = getMockDBConnection();
@@ -983,7 +1136,7 @@ describe('PlatformService', () => {
         metadata: {
           file_name: testData.file_name,
           file_size: 'undefined',
-          file_type: 'Summary',
+          file_type: 'Summary Results',
           title: testData.file_name,
           description: testData.message
         }
@@ -1003,7 +1156,9 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      const keycloakServiceStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
+      const getKeycloakServiceTokenStub = sinon
+        .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
+        .resolves('token');
 
       const axiosStub = sinon.stub(axios, 'post').resolves({
         data: {
@@ -1032,7 +1187,7 @@ describe('PlatformService', () => {
 
       await platformService._submitArtifactToBioHub(testArtifact);
 
-      expect(keycloakServiceStub).to.have.been.calledOnce;
+      expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
 
       expect(axiosStub).to.have.been.calledOnceWith(
         'http://backbone-host.dev/api/artifact/intake',
@@ -1041,6 +1196,45 @@ describe('PlatformService', () => {
           headers: {
             authorization: `Bearer token`,
             'content-type': sinon.match(new RegExp(/^multipart\/form-data; boundary=[-]*[0-9]*$/))
+          }
+        }
+      );
+    });
+  });
+
+  describe('deleteAttachmentFromBiohub', () => {
+    beforeEach(() => {
+      process.env.BACKBONE_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_ARTIFACT_DELETE_PATH = 'api/artifact/delete';
+      process.env.BACKBONE_INTAKE_ENABLED = 'true';
+      sinon.restore();
+    });
+
+    it('should delete an attachment from biohub successfully', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const getKeycloakServiceTokenStub = sinon
+        .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
+        .resolves('token');
+
+      const axiosStub = sinon.stub(axios, 'post').resolves({
+        data: {
+          success: true
+        }
+      });
+
+      await platformService.deleteAttachmentFromBiohub('uuid');
+
+      expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
+      expect(axiosStub).to.have.been.calledOnceWith(
+        'http://backbone-host.dev/api/artifact/delete',
+        {
+          artifactUUIDs: ['uuid']
+        },
+        {
+          headers: {
+            authorization: `Bearer token`
           }
         }
       );

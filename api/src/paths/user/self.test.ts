@@ -33,55 +33,44 @@ describe('getUser', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement produced', async () => {
-    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(UserService.prototype, 'getUserById').resolves(undefined);
-
-    try {
-      const requestHandler = self.getUser();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to get system user');
-    }
-  });
-
   it('should return the user row on success', async () => {
-    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
+    const dbConnectionObj = getMockDBConnection({
+      systemUserId: () => 1
+    });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
-      user_identifier: 'identifier',
-      user_guid: 'aaaa',
+      system_user_id: 1,
+      user_identifier: 'testuser',
+      user_guid: '123456789',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: null,
       role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
+      role_names: ['role 1', 'role 2'],
+      email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
+      display_name: 'test name',
+      agency: null
     });
 
     const requestHandler = self.getUser();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockRes.jsonValue.id).to.equal(1);
-    expect(mockRes.jsonValue.user_identifier).to.equal('identifier');
+    expect(mockRes.jsonValue.system_user_id).to.equal(1);
+    expect(mockRes.jsonValue.user_identifier).to.equal('testuser');
     expect(mockRes.jsonValue.role_ids).to.eql([1, 2]);
     expect(mockRes.jsonValue.role_names).to.eql(['role 1', 'role 2']);
   });
 
   it('should throw an error when a failure occurs', async () => {
-    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
+    const dbConnectionObj = getMockDBConnection({
+      systemUserId: () => 1
+    });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

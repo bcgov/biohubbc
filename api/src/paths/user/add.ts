@@ -1,11 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
+import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/http-error';
+import { getDBConnection, getServiceClientDBConnection } from '../../database/db';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
+import { getKeycloakSource } from '../../utils/keycloak-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/user/add');
@@ -13,10 +13,14 @@ const defaultLog = getLogger('paths/user/add');
 export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {
-      and: [
+      or: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
+        },
+        {
+          validServiceClientIDs: [SOURCE_SYSTEM['SIMS-SVC-4464']],
+          discriminator: 'ServiceClient'
         }
       ]
     };
@@ -39,7 +43,7 @@ POST.apiDoc = {
         schema: {
           title: 'User Response Object',
           type: 'object',
-          required: ['userIdentifier', 'identitySource', 'roleId'],
+          required: ['userIdentifier', 'identitySource', 'displayName', 'email'],
           properties: {
             userGuid: {
               type: 'string',
@@ -54,12 +58,32 @@ POST.apiDoc = {
               enum: [
                 SYSTEM_IDENTITY_SOURCE.IDIR,
                 SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
-                SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS
+                SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS,
+                SYSTEM_IDENTITY_SOURCE.UNVERIFIED
               ]
+            },
+            displayName: {
+              type: 'string',
+              description: 'The display name for the user.'
+            },
+            email: {
+              type: 'string',
+              description: 'The email for the user.'
             },
             roleId: {
               type: 'number',
               minimum: 1
+            },
+            given_name: {
+              type: 'string',
+              description: 'The given name for the user.'
+            },
+            family_name: {
+              type: 'string',
+              description: 'The family name for the user.'
+            },
+            role_name: {
+              type: 'string'
             }
           }
         }
@@ -95,35 +119,45 @@ POST.apiDoc = {
  */
 export function addSystemRoleUser(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
-
     const userGuid: string | null = req.body?.userGuid || null;
-    const userIdentifier: string | null = req.body?.userIdentifier || null;
-    const identitySource: string | null = req.body?.identitySource || null;
+    const userIdentifier: string = req.body?.userIdentifier || '';
+    const identitySource: string = req.body?.identitySource || '';
+    const displayName: string = req.body?.displayName || '';
+    const email: string = req.body?.email || '';
 
     const roleId = req.body?.roleId || null;
 
-    if (!userIdentifier) {
-      throw new HTTP400('Missing required body param: userIdentifier');
-    }
+    const given_name: string = req.body?.given_name;
+    const family_name: string = req.body?.family_name;
+    const role_name: string = req.body?.role_name;
 
-    if (!identitySource) {
-      throw new HTTP400('Missing required body param: identitySource');
-    }
+    const sourceSystem = getKeycloakSource(req['keycloak_token']);
 
-    if (!roleId) {
-      throw new HTTP400('Missing required body param: roleId');
-    }
+    const connection = sourceSystem
+      ? getServiceClientDBConnection(sourceSystem)
+      : getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
       const userService = new UserService(connection);
 
-      const userObject = await userService.ensureSystemUser(userGuid, userIdentifier, identitySource);
+      const userObject = await userService.ensureSystemUser(
+        userGuid,
+        userIdentifier,
+        identitySource,
+        displayName,
+        email,
+        given_name,
+        family_name
+      );
 
       if (userObject) {
-        await userService.addUserSystemRoles(userObject.id, [roleId]);
+        if (role_name) {
+          await userService.addUserSystemRoleByName(userObject.system_user_id, role_name);
+        } else {
+          await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
+        }
       }
 
       await connection.commit();

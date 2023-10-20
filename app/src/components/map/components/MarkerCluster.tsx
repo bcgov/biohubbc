@@ -1,11 +1,10 @@
 import { createLayerComponent } from '@react-leaflet/core';
-import L, { LatLngExpression } from 'leaflet';
-import 'leaflet.markercluster';
+import L, { LatLngTuple } from 'leaflet';
 import React, { ReactElement } from 'react';
 import { FeatureGroup, LayersControl, MarkerProps, Popup, PopupProps, Tooltip, TooltipProps } from 'react-leaflet';
 
 export interface IMarker {
-  position: LatLngExpression;
+  position: LatLngTuple;
   count: number;
   key: string | number;
   MarkerProps?: Partial<MarkerProps>;

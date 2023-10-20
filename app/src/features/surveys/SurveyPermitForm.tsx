@@ -1,23 +1,23 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import CustomTextField from 'components/fields/CustomTextField';
-import { FieldArray, useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
@@ -45,7 +45,7 @@ export interface ISurveyPermitForm {
 }
 
 export const SurveyPermitFormArrayItemInitialValues: ISurveyPermitFormArrayItem = {
-  permit_id: (null as unknown) as number,
+  permit_id: null as unknown as number,
   permit_number: '',
   permit_type: ''
 };
@@ -83,7 +83,7 @@ const SurveyPermitForm: React.FC = () => {
   return (
     <FieldArray
       name="permit.permits"
-      render={(arrayHelpers) => (
+      render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
           <List dense disablePadding className={classes.permitList}>
             {values.permit.permits?.map((permit, index) => {
@@ -93,7 +93,7 @@ const SurveyPermitForm: React.FC = () => {
               return (
                 <ListItem disableGutters key={index}>
                   <ListItemText>
-                    <Box mr={3}>
+                    <Box>
                       <Grid container spacing={2}>
                         <Grid item sm={6}>
                           <CustomTextField
@@ -156,7 +156,7 @@ const SurveyPermitForm: React.FC = () => {
               <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.permit.permits}</Typography>
             </Box>
           )}
-          <Box mt={1}>
+          <Box>
             <Button
               type="button"
               variant="outlined"

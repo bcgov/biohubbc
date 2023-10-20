@@ -1,13 +1,11 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import useTheme from '@material-ui/core/styles/useTheme';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { LoadingButton } from '@mui/lab';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import useTheme from '@mui/material/styles/useTheme';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
 import { IFileHandler, IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { AttachmentType } from 'constants/attachments';
@@ -18,20 +16,6 @@ import {
   ReportMetaFormInitialValues,
   ReportMetaFormYupSchema
 } from '../../attachments/ReportMetaForm';
-
-const useStyles = makeStyles((theme) => ({
-  wrapper: {
-    position: 'relative'
-  },
-  buttonProgress: {
-    color: theme.palette.primary.main,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12
-  }
-}));
 
 /**
  *
@@ -50,10 +34,10 @@ export interface IFileUploadWithMetaDialogProps {
   /**
    * The type of attachment.
    *
-   * @type {('Report' | 'Other')}
+   * @type {('Report' | 'KeyX' | 'Other')}
    * @memberof IFileUploadWithMetaDialogProps
    */
-  attachmentType: AttachmentType.REPORT | AttachmentType.OTHER;
+  attachmentType: AttachmentType.REPORT | AttachmentType.KEYX | AttachmentType.OTHER;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
@@ -99,8 +83,6 @@ export interface IFileUploadWithMetaDialogProps {
 const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (props) => {
   const theme = useTheme();
 
-  const classes = useStyles();
-
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
@@ -139,12 +121,13 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
             </DialogContent>
             <DialogActions>
               {props.attachmentType === AttachmentType.REPORT && (
-                <Box className={classes.wrapper}>
-                  <Button onClick={formikProps.submitForm} color="primary" variant="contained" disabled={isFinishing}>
-                    <strong>Finish</strong>
-                  </Button>
-                  {isFinishing && <CircularProgress size={24} className={classes.buttonProgress} />}
-                </Box>
+                <LoadingButton
+                  loading={isFinishing}
+                  onClick={formikProps.submitForm}
+                  color="primary"
+                  variant="contained">
+                  <strong>Finish</strong>
+                </LoadingButton>
               )}
               {(props.attachmentType === AttachmentType.REPORT && (
                 <Button onClick={props.onClose} color="primary" variant="outlined" disabled={isFinishing}>

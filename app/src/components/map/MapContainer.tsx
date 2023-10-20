@@ -1,13 +1,7 @@
-import {
-  createGetFeatureDetails,
-  IWFSFeatureDetails,
-  layerContentHandlers,
-  wfsInferredLayers
-} from 'components/map/wfs-utils';
+import { layerContentHandlers } from 'components/map/wfs-utils';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
-import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
@@ -15,7 +9,7 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
 import { throttle } from 'lodash-es';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FeatureGroup, GeoJSON, LayersControl, MapContainer as LeafletMapContainer, Marker } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { determineMapGeometries } from 'utils/mapLayersHelpers';
@@ -28,7 +22,7 @@ import EventHandler from './components/EventHandler';
 import FullScreenScrollingEventHandler from './components/FullScreenScrollingEventHandler';
 import MarkerCluster, { IMarkerLayer } from './components/MarkerCluster';
 import StaticLayers, { IStaticLayer } from './components/StaticLayers';
-import WFSFeatureGroup, { IWFSParams } from './WFSFeatureGroup';
+import WFSFeatureGroup from './WFSFeatureGroup';
 
 /*
   Get leaflet icons working
@@ -71,7 +65,13 @@ export interface IMapContainerProps {
   onDrawChange?: IDrawControlsOnChange;
 }
 
-const MapContainer: React.FC<IMapContainerProps> = (props) => {
+/**
+ * Renders a leaflet map.
+ *
+ * @param {IMapContainerProps} props
+ * @return {*}
+ */
+const MapContainer = (props: IMapContainerProps) => {
   const {
     classes,
     mapId,
@@ -101,7 +101,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       return;
     }
 
-    onDrawChange([...(drawControls.initialFeatures || []), preDefinedGeometry]);
+    onDrawChange([...(drawControls.initialFeatures ?? []), preDefinedGeometry]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preDefinedGeometry]);
@@ -118,7 +118,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
     }
 
-    throttledGetFeatureDetails(wfsInferredLayers);
+    throttledGetFeatureDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [drawControls?.initialFeatures, nonEditableGeometries]);
 
@@ -126,19 +126,32 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     Function to get WFS feature details based on the existing map geometries
     and layer types/filter criteria
   */
-  const throttledGetFeatureDetails = useCallback(
-    throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
-      // Get map geometries based on whether boundary is non editable or drawn/uploaded
-      const mapGeometries: Feature[] = determineMapGeometries(drawControls?.initialFeatures, nonEditableGeometries);
+  const throttledGetFeatureDetails = useMemo(
+    () =>
+      throttle(async () => {
+        // Get map geometries based on whether boundary is non editable or drawn/uploaded
+        const mapGeometries: Feature[] = determineMapGeometries(drawControls?.initialFeatures, nonEditableGeometries);
 
-      const getFeatureDetails = createGetFeatureDetails(biohubApi.external.post);
-      const inferredLayers: IWFSFeatureDetails = await getFeatureDetails(typeNames, mapGeometries, wfsParams);
+        const getFeatureDetails = await biohubApi.spatial.getRegions(mapGeometries);
 
-      if (setInferredLayersInfo) {
-        setInferredLayersInfo(inferredLayers);
-      }
-    }, 300),
-    [drawControls?.initialFeatures, nonEditableGeometries]
+        if (setInferredLayersInfo) {
+          setInferredLayersInfo({
+            parks: getFeatureDetails.regions
+              .filter((item) => item.sourceLayer === 'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW')
+              .map((item) => item.regionName),
+            nrm: getFeatureDetails.regions
+              .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG')
+              .map((item) => item.regionName),
+            env: getFeatureDetails.regions
+              .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW')
+              .map((item) => item.regionName),
+            wmu: getFeatureDetails.regions
+              .filter((item) => item.sourceLayer === 'WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW')
+              .map((item) => item.regionName)
+          });
+        }
+      }, 300),
+    [biohubApi.spatial, drawControls?.initialFeatures, nonEditableGeometries, setInferredLayersInfo]
   );
 
   return (
@@ -147,10 +160,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       style={{ height: '100%' }}
       id={mapId}
       center={[55, -128]}
-      zoom={zoom || 5}
+      zoom={zoom ?? 5}
       maxZoom={17}
       fullscreenControl={true}
-      scrollWheelZoom={scrollWheelZoom || false}>
+      scrollWheelZoom={scrollWheelZoom ?? false}>
       <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={Boolean(scrollWheelZoom)} />
 
       <SetMapBounds bounds={bounds} />
@@ -166,7 +179,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
               draw: { ...props.drawControls?.options?.draw, circle: false, circlemarker: false, polyline: false }
             }}
             onChange={onDrawChange}
-            confirmDeletion={confirmDeletion === undefined ? true : confirmDeletion}
+            confirmDeletion={confirmDeletion ?? true}
           />
         </FeatureGroup>
       )}

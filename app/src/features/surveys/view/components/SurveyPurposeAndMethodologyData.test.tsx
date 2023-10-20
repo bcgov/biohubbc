@@ -1,11 +1,10 @@
-import { cleanup, render } from '@testing-library/react';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { cleanup, render } from 'test-helpers/test-utils';
 import SurveyPurposeAndMethodologyData from './SurveyPurposeAndMethodologyData';
 
 describe('SurveyPurposeAndMethodologyData', () => {
@@ -24,6 +23,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -34,7 +34,8 @@ describe('SurveyPurposeAndMethodologyData', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyPurposeAndMethodologyData />
         </SurveyContext.Provider>
@@ -73,6 +74,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -83,7 +85,8 @@ describe('SurveyPurposeAndMethodologyData', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyPurposeAndMethodologyData />
         </SurveyContext.Provider>

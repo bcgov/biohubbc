@@ -1,29 +1,33 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import {
   mdiDotsVertical,
   mdiFileAlertOutline,
   mdiFileOutline,
   mdiInformationOutline,
+  mdiLockOutline,
   mdiTrashCanOutline,
   mdiTrayArrowDown
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
+import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
-import { BioHubSubmittedStatusType } from 'constants/misc';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PublishStatus } from 'constants/attachments';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SurveyContext } from 'contexts/surveyContext';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React from 'react';
 
-//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}> from `SubmitStatusChip` and `Remove or Resubmit` button
 
 interface IFileResultsProps {
   fileData: IGetSummaryResultsResponse;
@@ -68,14 +72,20 @@ const useStyles = makeStyles((theme: Theme) => ({
 const FileSummaryResults = (props: IFileResultsProps) => {
   const { fileData, downloadFile, showDelete } = props;
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const checkSubmissionStatus = (data: IGetSummaryResultsResponse): BioHubSubmittedStatusType => {
-    if (data.surveySummarySupplementaryData?.event_timestamp) {
-      return BioHubSubmittedStatusType.SUBMITTED;
-    }
-    return BioHubSubmittedStatusType.UNSUBMITTED;
+  const surveyContext = React.useContext(SurveyContext);
+  const surveyName = surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name;
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [openRemoveOrResubmitDialog, setOpenRemoveOrResubmitDialog] = React.useState(false);
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
+
+  const status = fileData.surveySummarySupplementaryData?.event_timestamp
+    ? PublishStatus.SUBMITTED
+    : PublishStatus.UNSUBMITTED;
 
   let icon: string = mdiFileOutline;
   let severity: 'error' | 'info' | 'success' | 'warning' = 'info';
@@ -88,10 +98,22 @@ const FileSummaryResults = (props: IFileResultsProps) => {
     severity = 'warning';
   } else if (fileData.surveySummaryData.messages.some((item) => item.class.toUpperCase() === 'INFO')) {
     icon = mdiInformationOutline;
+  } else if (status === PublishStatus.SUBMITTED) {
+    icon = mdiLockOutline;
   }
 
   return (
     <>
+      <RemoveOrResubmitDialog
+        projectId={surveyContext.projectId}
+        fileName={fileData.surveySummaryData.fileName ?? ''}
+        parentName={surveyName ?? ''}
+        status={status}
+        submittedDate={fileData.surveySummarySupplementaryData?.event_timestamp ?? ''}
+        open={openRemoveOrResubmitDialog}
+        onClose={() => setOpenRemoveOrResubmitDialog(false)}
+      />
+
       <Paper variant="outlined" className={clsx(classes.importFile, severity)}>
         <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
           <Box display="flex" alignItems="center" flex="1 1 auto" style={{ overflow: 'hidden' }}>
@@ -108,7 +130,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
           <Box flex="0 0 auto" display="flex" alignItems="center">
             <Box mr={2}>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                <SubmitStatusChip status={checkSubmissionStatus(fileData)} />
+                <SubmitStatusChip status={status} />
               </SystemRoleGuard>
             </Box>
             <Box>
@@ -126,7 +148,7 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={() => {
-                  setAnchorEl(null);
+                  handleClose();
                 }}
                 anchorOrigin={{
                   vertical: 'top',
@@ -139,27 +161,45 @@ const FileSummaryResults = (props: IFileResultsProps) => {
                 <MenuItem
                   onClick={() => {
                     downloadFile();
-                    setAnchorEl(null);
+                    handleClose();
                   }}>
                   <ListItemIcon>
                     <Icon path={mdiTrayArrowDown} size={1} />
                   </ListItemIcon>
                   Download
                 </MenuItem>
-                <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem
-                    onClick={() => {
-                      showDelete();
-                      setAnchorEl(null);
-                    }}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    Delete
-                  </MenuItem>
-                </ProjectRoleGuard>
+                {status === PublishStatus.UNSUBMITTED && (
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                    <MenuItem
+                      onClick={() => {
+                        showDelete();
+                        handleClose();
+                      }}>
+                      <ListItemIcon>
+                        <Icon path={mdiTrashCanOutline} size={1} />
+                      </ListItemIcon>
+                      Delete
+                    </MenuItem>
+                  </SystemRoleGuard>
+                )}
+                {status === PublishStatus.SUBMITTED && (
+                  <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                    <ProjectRoleGuard
+                      validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}>
+                      <MenuItem
+                        onClick={() => {
+                          setOpenRemoveOrResubmitDialog(true);
+                          handleClose();
+                        }}
+                        data-testid="attachment-action-menu-delete">
+                        <ListItemIcon>
+                          <Icon path={mdiTrashCanOutline} size={1} />
+                        </ListItemIcon>
+                        Remove or Resubmit
+                      </MenuItem>
+                    </ProjectRoleGuard>
+                  </SystemRoleGuard>
+                )}
               </Menu>
             </Box>
           </Box>

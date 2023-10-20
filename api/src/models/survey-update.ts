@@ -1,23 +1,81 @@
 import { Feature } from 'geojson';
+import { SurveyStratum, SurveyStratumRecord } from '../repositories/site-selection-strategy-repository';
+import { PostSurveyBlock } from '../repositories/survey-block-repository';
 
 export class PutSurveyObject {
   survey_details: PutSurveyDetailsData;
   species: PutSurveySpeciesData;
   permit: PutSurveyPermitData;
-  funding: PutSurveyFundingData;
+  funding_sources: PutFundingSourceData[];
   proprietor: PutSurveyProprietorData;
   purpose_and_methodology: PutSurveyPurposeAndMethodologyData;
-  location: PutSurveyLocationData;
+  locations: PutSurveyLocationData[];
+  participants: PutSurveyParticipantsData[];
+  partnerships: PutPartnershipsData;
+  site_selection: PutSiteSelectionData;
+  blocks: PostSurveyBlock[];
 
   constructor(obj?: any) {
     this.survey_details = (obj?.survey_details && new PutSurveyDetailsData(obj.survey_details)) || null;
     this.species = (obj?.species && new PutSurveySpeciesData(obj.species)) || null;
     this.permit = (obj?.permit && new PutSurveyPermitData(obj.permit)) || null;
-    this.funding = (obj?.funding && new PutSurveyFundingData(obj.funding)) || null;
+    this.funding_sources =
+      (obj?.funding_sources?.length && obj.funding_sources.map((fs: any) => new PutFundingSourceData(fs))) || [];
     this.proprietor = (obj?.proprietor && new PutSurveyProprietorData(obj.proprietor)) || null;
     this.purpose_and_methodology =
       (obj?.purpose_and_methodology && new PutSurveyPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
-    this.location = (obj?.location && new PutSurveyLocationData(obj.location)) || null;
+    this.participants =
+      (obj?.participants?.length && obj.participants.map((p: any) => new PutSurveyParticipantsData(p))) || [];
+    this.locations = (obj?.locations && obj.locations.map((p: any) => new PutSurveyLocationData(p))) || [];
+    this.partnerships = (obj?.partnerships && new PutPartnershipsData(obj.partnerships)) || null;
+    this.site_selection = (obj?.site_selection && new PutSiteSelectionData(obj)) || null;
+    this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
+  }
+}
+
+export class PutSiteSelectionData {
+  strategies: string[];
+  stratums: Array<SurveyStratum | SurveyStratumRecord>;
+
+  constructor(obj?: any) {
+    this.strategies = obj?.site_selection?.strategies ?? [];
+    this.stratums = obj?.site_selection?.stratums ?? [];
+  }
+}
+
+export class PutPartnershipsData {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+
+  constructor(obj?: any) {
+    this.indigenous_partnerships = (obj?.indigenous_partnerships?.length && obj.indigenous_partnerships) || [];
+    this.stakeholder_partnerships = (obj?.stakeholder_partnerships?.length && obj.stakeholder_partnerships) || [];
+  }
+}
+
+export class PutSurveyParticipantsData {
+  survey_participation_id?: number;
+  system_user_id: number;
+  survey_job_name: string;
+
+  constructor(obj?: any) {
+    this.survey_participation_id = obj?.survey_participation_id || null;
+    this.system_user_id = obj?.system_user_id || null;
+    this.survey_job_name = obj?.survey_job_name || null;
+  }
+}
+
+export class PutFundingSourceData {
+  survey_funding_source_id?: number;
+  funding_source_id: number;
+  amount: number;
+  revision_count?: number;
+
+  constructor(obj?: any) {
+    this.survey_funding_source_id = obj?.survey_funding_source_id || null;
+    this.funding_source_id = obj?.funding_source_id || null;
+    this.amount = obj?.amount || null;
+    this.revision_count = obj?.revision_count || 0;
   }
 }
 
@@ -25,16 +83,14 @@ export class PutSurveyDetailsData {
   name: string;
   start_date: string;
   end_date: string;
-  lead_first_name: string;
-  lead_last_name: string;
+  survey_types: number[];
   revision_count: number;
 
   constructor(obj?: any) {
     this.name = obj?.survey_name || null;
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.lead_first_name = obj?.biologist_first_name || null;
-    this.lead_last_name = obj?.biologist_last_name || null;
+    this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count ?? null;
   }
 }
@@ -54,14 +110,6 @@ export class PutSurveyPermitData {
 
   constructor(obj?: any) {
     this.permits = obj?.permits || [];
-  }
-}
-
-export class PutSurveyFundingData {
-  funding_sources: number[];
-
-  constructor(obj?: any) {
-    this.funding_sources = (obj?.funding_sources?.length && obj?.funding_sources) || [];
   }
 }
 
@@ -103,13 +151,17 @@ export class PutSurveyPurposeAndMethodologyData {
 }
 
 export class PutSurveyLocationData {
-  survey_area_name: string;
-  geometry: Feature[];
+  survey_location_id: number;
+  name: string;
+  description: string;
+  geojson: Feature[];
   revision_count: number;
 
   constructor(obj?: any) {
-    this.survey_area_name = obj?.survey_area_name || null;
-    this.geometry = (obj?.geometry?.length && obj.geometry) || [];
+    this.survey_location_id = obj?.survey_location_id || null;
+    this.name = obj?.name || null;
+    this.description = obj?.description || null;
+    this.geojson = (obj?.geojson?.length && obj.geojson) || [];
     this.revision_count = obj?.revision_count ?? null;
   }
 }

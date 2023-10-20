@@ -1,52 +1,49 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { COMPLETION_STATUS } from '../constants/status';
 import {
   GetAttachmentsData,
-  GetCoordinatorData,
-  GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
-  GetPartnershipsData,
-  GetProjectData,
-  GetReportAttachmentsData
+  GetReportAttachmentsData,
+  ProjectData
 } from './project-view';
 
-describe('GetProjectData', () => {
+describe('ProjectData', () => {
   describe('No values provided', () => {
-    let data: GetProjectData;
+    let data: ProjectData;
 
     before(() => {
-      data = new GetProjectData();
+      data = {
+        project_id: 1,
+        uuid: 'uuid',
+        project_name: '',
+        project_programs: [],
+        start_date: '2005-01-01',
+        end_date: '2006-01-01',
+        comments: '',
+        revision_count: 1
+      };
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal(null);
+      expect(data.project_id).to.equal(1);
     });
 
     it('sets name', () => {
       expect(data.project_name).to.equal('');
     });
 
-    it('sets type', () => {
-      expect(data.project_type).to.equal(-1);
-    });
-
-    it('sets project_activities', () => {
-      expect(data.project_activities).to.eql([]);
+    it('sets programs', () => {
+      expect(data.project_programs).to.eql([]);
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal('');
+      expect(data.start_date).to.eql('2005-01-01');
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal('');
-    });
-
-    it('sets completion_status', () => {
-      expect(data.completion_status).to.equal(COMPLETION_STATUS.ACTIVE);
+      expect(data.end_date).to.eql('2006-01-01');
     });
   });
 
@@ -55,21 +52,28 @@ describe('GetProjectData', () => {
       project_id: 1,
       name: 'project name',
       pt_id: 4,
-      start_date: '2020-04-20T07:00:00.000Z',
-      end_date: '2020-05-20T07:00:00.000Z',
+      start_date: new Date('2020-04-20T07:00:00.000Z'),
+      end_date: new Date('2020-05-20T07:00:00.000Z'),
       revision_count: 1
     };
 
-    const activityData = [{ activity_id: 1 }, { activity_id: 2 }];
-
-    let data: GetProjectData;
+    let data: ProjectData;
 
     before(() => {
-      data = new GetProjectData(projectData, activityData);
+      data = {
+        project_id: 1,
+        uuid: 'uuid',
+        project_name: 'project name',
+        project_programs: [1],
+        start_date: '2020-04-20T07:00:00.000Z',
+        end_date: '2020-05-20T07:00:00.000Z',
+        comments: '',
+        revision_count: 1
+      };
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal(projectData.project_id);
+      expect(data.project_id).to.equal(projectData.project_id);
     });
 
     it('sets name', () => {
@@ -77,23 +81,15 @@ describe('GetProjectData', () => {
     });
 
     it('sets type', () => {
-      expect(data.project_type).to.equal(projectData.pt_id);
-    });
-
-    it('sets project_activities', () => {
-      expect(data.project_activities).to.eql([1, 2]);
+      expect(data.project_programs).to.eql([1]);
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal('2020-04-20T07:00:00.000Z');
+      expect(data.start_date).to.eql('2020-04-20T07:00:00.000Z');
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal('2020-05-20T07:00:00.000Z');
-    });
-
-    it('sets completion_status', () => {
-      expect(data.completion_status).to.equal(COMPLETION_STATUS.COMPLETED);
+      expect(data.end_date).to.eql('2020-05-20T07:00:00.000Z');
     });
   });
 });
@@ -109,10 +105,6 @@ describe('GetObjectivesData', () => {
     it('sets objectives', function () {
       expect(projectObjectivesData.objectives).to.equal('');
     });
-
-    it('sets caveats', function () {
-      expect(projectObjectivesData.caveats).to.equal('');
-    });
   });
 
   describe('All values provided', () => {
@@ -120,7 +112,6 @@ describe('GetObjectivesData', () => {
 
     const obj = {
       objectives: 'these are the project objectives',
-      caveats: 'these are some interesting caveats',
       revision_count: 'revision'
     };
 
@@ -132,83 +123,8 @@ describe('GetObjectivesData', () => {
       expect(projectObjectivesData.objectives).to.equal(obj.objectives);
     });
 
-    it('sets caveats', function () {
-      expect(projectObjectivesData.caveats).to.equal(obj.caveats);
-    });
-
     it('sets revision_count', function () {
       expect(projectObjectivesData.revision_count).to.equal(obj.revision_count);
-    });
-  });
-});
-
-describe('GetCoordinatorData', () => {
-  describe('No values provided', () => {
-    let projectCoordinatorData: GetCoordinatorData;
-
-    before(() => {
-      projectCoordinatorData = new GetCoordinatorData(null);
-    });
-
-    it('sets first_name', function () {
-      expect(projectCoordinatorData.first_name).to.equal('');
-    });
-
-    it('sets last_name', function () {
-      expect(projectCoordinatorData.last_name).to.equal('');
-    });
-
-    it('sets email_address', function () {
-      expect(projectCoordinatorData.email_address).to.equal('');
-    });
-
-    it('sets coordinator_agency', function () {
-      expect(projectCoordinatorData.coordinator_agency).to.equal('');
-    });
-
-    it('sets share_contact_details', function () {
-      expect(projectCoordinatorData.share_contact_details).to.equal('false');
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectCoordinatorData: GetCoordinatorData;
-
-    const obj = {
-      coordinator_first_name: 'first',
-      coordinator_last_name: 'last',
-      coordinator_email_address: 'email@example.com',
-      coordinator_agency_name: 'agency',
-      coordinator_public: true,
-      revision_count: 'count'
-    };
-
-    before(() => {
-      projectCoordinatorData = new GetCoordinatorData(obj);
-    });
-
-    it('sets first_name', function () {
-      expect(projectCoordinatorData.first_name).to.equal(obj.coordinator_first_name);
-    });
-
-    it('sets last_name', function () {
-      expect(projectCoordinatorData.last_name).to.equal(obj.coordinator_last_name);
-    });
-
-    it('sets email_address', function () {
-      expect(projectCoordinatorData.email_address).to.equal(obj.coordinator_email_address);
-    });
-
-    it('sets coordinator_agency', function () {
-      expect(projectCoordinatorData.coordinator_agency).to.equal(obj.coordinator_agency_name);
-    });
-
-    it('sets share_contact_details', function () {
-      expect(projectCoordinatorData.share_contact_details).to.equal('true');
-    });
-
-    it('sets revision_count', function () {
-      expect(projectCoordinatorData.revision_count).to.equal('count');
     });
   });
 });
@@ -342,150 +258,6 @@ describe('GetIUCNClassificationData', () => {
           subClassification2: 'subclass2'
         }
       ]);
-    });
-  });
-});
-
-describe('GetFundingData', () => {
-  describe('No values provided', () => {
-    let projectFundingData: GetFundingData;
-
-    before(() => {
-      projectFundingData = new GetFundingData((null as unknown) as any[]);
-    });
-
-    it('sets funding sources', function () {
-      expect(projectFundingData.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('Empty array as values provided', () => {
-    let projectFundingData: GetFundingData;
-
-    before(() => {
-      projectFundingData = new GetFundingData([]);
-    });
-
-    it('sets funding sources', function () {
-      expect(projectFundingData.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectFundingData: GetFundingData;
-
-    const fundings = [
-      {
-        id: 1,
-        agency_id: 2,
-        investment_action_category: 3,
-        investment_action_category_name: 'Something',
-        agency_name: 'fake',
-        funding_amount: 123456,
-        start_date: Date.now().toString(),
-        end_date: Date.now().toString(),
-        agency_project_id: '12',
-        revision_count: 1
-      }
-    ];
-
-    before(() => {
-      projectFundingData = new GetFundingData(fundings);
-    });
-
-    it('sets funding sources', function () {
-      expect(projectFundingData.fundingSources).to.eql(fundings);
-    });
-  });
-});
-
-describe('GetPartnershipsData', () => {
-  describe('No values provided', () => {
-    let data: GetPartnershipsData;
-
-    before(() => {
-      data = new GetPartnershipsData((null as unknown) as any[], (null as unknown) as any[]);
-    });
-
-    it('sets indigenous_partnerships', function () {
-      expect(data.indigenous_partnerships).to.eql([]);
-    });
-
-    it('sets stakeholder_partnerships', function () {
-      expect(data.stakeholder_partnerships).to.eql([]);
-    });
-  });
-
-  describe('Empty arrays as values provided', () => {
-    let data: GetPartnershipsData;
-
-    before(() => {
-      data = new GetPartnershipsData([], []);
-    });
-
-    it('sets indigenous_partnerships', function () {
-      expect(data.indigenous_partnerships).to.eql([]);
-    });
-
-    it('sets stakeholder_partnerships', function () {
-      expect(data.stakeholder_partnerships).to.eql([]);
-    });
-  });
-
-  describe('indigenous_partnerships values provided', () => {
-    let data: GetPartnershipsData;
-
-    const indigenous_partnerships = [{ id: 1 }, { id: 2 }];
-    const stakeholder_partnerships: string[] = [];
-
-    before(() => {
-      data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
-    });
-
-    it('sets indigenous_partnerships', function () {
-      expect(data.indigenous_partnerships).to.eql([1, 2]);
-    });
-
-    it('sets stakeholder_partnerships', function () {
-      expect(data.stakeholder_partnerships).to.eql([]);
-    });
-  });
-
-  describe('stakeholder_partnerships values provided', () => {
-    let data: GetPartnershipsData;
-
-    const indigenous_partnerships: number[] = [];
-    const stakeholder_partnerships = [{ partnership_name: 'partner 1' }, { partnership_name: 'partner 2' }];
-
-    before(() => {
-      data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
-    });
-
-    it('sets indigenous_partnerships', function () {
-      expect(data.indigenous_partnerships).to.eql([]);
-    });
-
-    it('sets stakeholder_partnerships', function () {
-      expect(data.stakeholder_partnerships).to.eql(['partner 1', 'partner 2']);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: GetPartnershipsData;
-
-    const indigenous_partnerships = [{ id: 1 }, { id: 2 }];
-    const stakeholder_partnerships = [{ partnership_name: 'partner 3' }, { partnership_name: 'partner 4' }];
-
-    before(() => {
-      data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
-    });
-
-    it('sets indigenous_partnerships', function () {
-      expect(data.indigenous_partnerships).to.eql([1, 2]);
-    });
-
-    it('sets stakeholder_partnerships', function () {
-      expect(data.stakeholder_partnerships).to.eql(['partner 3', 'partner 4']);
     });
   });
 });

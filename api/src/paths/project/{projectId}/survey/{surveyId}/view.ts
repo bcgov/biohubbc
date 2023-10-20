@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
-import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
+import { GeoJSONFeature } from '../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
@@ -14,9 +14,13 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -72,22 +76,18 @@ GET.apiDoc = {
                   'survey_details',
                   'species',
                   'permit',
-                  'funding',
+                  'funding_sources',
+                  'partnerships',
                   'proprietor',
                   'purpose_and_methodology',
-                  'location'
+                  'locations',
+                  'site_selection'
                 ],
                 properties: {
                   survey_details: {
                     description: 'Survey Details',
                     type: 'object',
-                    required: [
-                      'survey_name',
-                      'start_date',
-                      'biologist_first_name',
-                      'biologist_last_name',
-                      'revision_count'
-                    ],
+                    required: ['survey_name', 'start_date', 'survey_types', 'revision_count'],
                     properties: {
                       survey_name: {
                         type: 'string'
@@ -101,11 +101,12 @@ GET.apiDoc = {
                         nullable: true,
                         description: 'ISO 8601 date string for the funding end_date'
                       },
-                      biologist_first_name: {
-                        type: 'string'
-                      },
-                      biologist_last_name: {
-                        type: 'string'
+                      survey_types: {
+                        type: 'array',
+                        items: {
+                          type: 'integer',
+                          minimum: 1
+                        }
                       },
                       revision_count: {
                         type: 'number'
@@ -170,45 +171,58 @@ GET.apiDoc = {
                       }
                     }
                   },
-                  funding: {
-                    description: 'Survey Funding Sources',
+                  funding_sources: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: [
+                        'survey_funding_source_id',
+                        'survey_id',
+                        'funding_source_id',
+                        'amount',
+                        'revision_count'
+                      ],
+                      properties: {
+                        survey_funding_source_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        survey_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        funding_source_id: {
+                          type: 'number',
+                          minimum: 1
+                        },
+                        funding_source_name: {
+                          type: 'string'
+                        },
+                        amount: {
+                          type: 'number'
+                        },
+                        revision_count: {
+                          type: 'number'
+                        }
+                      }
+                    }
+                  },
+                  partnerships: {
+                    title: 'Survey partnerships',
                     type: 'object',
+                    required: ['indigenous_partnerships', 'stakeholder_partnerships'],
                     properties: {
-                      funding_sources: {
+                      indigenous_partnerships: {
                         type: 'array',
                         items: {
-                          type: 'object',
-                          required: [
-                            'pfs_id',
-                            'agency_name',
-                            'funding_amount',
-                            'funding_start_date',
-                            'funding_end_date'
-                          ],
-                          properties: {
-                            pfs_id: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            agency_name: {
-                              type: 'string',
-                              nullable: true
-                            },
-                            funding_amount: {
-                              type: 'number',
-                              nullable: true
-                            },
-                            funding_start_date: {
-                              type: 'string',
-                              nullable: true,
-                              description: 'ISO 8601 date string'
-                            },
-                            funding_end_date: {
-                              type: 'string',
-                              nullable: true,
-                              description: 'ISO 8601 date string'
-                            }
-                          }
+                          type: 'integer',
+                          minimum: 1
+                        }
+                      },
+                      stakeholder_partnerships: {
+                        type: 'array',
+                        items: {
+                          type: 'string'
                         }
                       }
                     }
@@ -287,18 +301,77 @@ GET.apiDoc = {
                       }
                     }
                   },
-                  location: {
-                    description: 'Survey location Details',
+                  locations: {
+                    description: 'Survey location data',
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: [
+                        'survey_location_id',
+                        'name',
+                        'description',
+                        'geometry',
+                        'geography',
+                        'geojson',
+                        'revision_count'
+                      ],
+                      properties: {
+                        survey_location_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        name: {
+                          type: 'string',
+                          maxLength: 100
+                        },
+                        description: {
+                          type: 'string',
+                          maxLength: 250
+                        },
+                        geometry: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        geography: {
+                          type: 'string'
+                        },
+                        geojson: {
+                          type: 'array',
+                          items: {
+                            ...(GeoJSONFeature as object)
+                          }
+                        },
+                        revision_count: {
+                          type: 'integer',
+                          minimum: 0
+                        }
+                      }
+                    }
+                  },
+                  site_selection: {
                     type: 'object',
-                    required: ['survey_area_name', 'geometry'],
+                    required: ['strategies', 'stratums'],
                     properties: {
-                      survey_area_name: {
-                        type: 'string'
-                      },
-                      geometry: {
+                      strategies: {
                         type: 'array',
                         items: {
-                          ...(geoJsonFeature as object)
+                          type: 'string'
+                        }
+                      },
+                      stratums: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          required: ['name', 'description'],
+                          properties: {
+                            name: {
+                              type: 'string'
+                            },
+                            description: {
+                              type: 'string',
+                              nullable: true
+                            }
+                          }
                         }
                       }
                     }

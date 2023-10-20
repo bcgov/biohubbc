@@ -1,13 +1,18 @@
 import { useKeycloak } from '@react-keycloak/web';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import Keycloak from 'keycloak-js';
 import { useCallback } from 'react';
+import { buildUrl } from 'utils/Utils';
 import { useBiohubApi } from './useBioHubApi';
+import { useCritterbaseApi } from './useCritterbaseApi';
 import useDataLoader from './useDataLoader';
 
 export enum SYSTEM_IDENTITY_SOURCE {
   BCEID_BUSINESS = 'BCEIDBUSINESS',
   BCEID_BASIC = 'BCEIDBASIC',
-  IDIR = 'IDIR'
+  IDIR = 'IDIR',
+  DATABASE = 'DATABASE',
+  UNVERIFIED = 'UNVERIFIED'
 }
 
 export interface IUserInfo {
@@ -47,10 +52,10 @@ export interface IKeycloakWrapper {
   /**
    * Original raw keycloak object.
    *
-   * @type {(Keycloak | undefined)}
+   * @type {(Keycloak)}
    * @memberof IKeycloakWrapper
    */
-  keycloak: Keycloak | undefined;
+  keycloak: Keycloak;
   /**
    * Returns `true` if the user's information has finished being loaded, false otherwise.
    *
@@ -85,6 +90,13 @@ export interface IKeycloakWrapper {
    */
   hasAccessRequest: boolean;
   /**
+   * True if the user has at least 1 project participant roles.
+   *
+   * @type {boolean}
+   * @memberof IKeycloakWrapper
+   */
+  hasOneOrMoreProjectRoles: boolean;
+  /**
    * Get out the username portion of the preferred_username from the token.
    *
    * @memberof IKeycloakWrapper
@@ -96,24 +108,66 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   getIdentitySource: () => string | null;
-
   /**
    * Get the user guid
    *
    * @memberof IKeycloakWrapper
    */
   getUserGuid: () => string | null;
+  /**
+   * The user's auth username.F
+   *
+   * @type {(string | undefined)}
+   * @memberof IKeycloakWrapper
+   */
   username: string | undefined;
+  /**
+   * The user's display name.
+   *
+   * @type {(string | undefined)}
+   * @memberof IKeycloakWrapper
+   */
   displayName: string | undefined;
+  /**
+   * The user's email.
+   *
+   * @type {(string | undefined)}
+   * @memberof IKeycloakWrapper
+   */
   email: string | undefined;
   /**
-   * Force this keycloak wrapper to refresh its data.
+   * The user's system user id.
    *
-   * Note: currently this only refreshes the `hasAccessRequest` property.
+   * @type {(number | undefined)}
+   * @memberof IKeycloakWrapper
+   */
+  systemUserId: number | undefined;
+  /**
+   * Force this keycloak wrapper to refresh its data.
    *
    * @memberof IKeycloakWrapper
    */
   refresh: () => void;
+  /**
+   * Generates the URL to sign in using Keycloak.
+   *
+   * @param {string} [redirectUri] Optionally URL to redirect the user to upon logging in
+   * @memberof IKeycloakWrapper
+   */
+  getLoginUrl: (redirectUri?: string) => string;
+  /**
+   * The logged in user's data.
+   *
+   * @type {(ISystemUser | undefined)}
+   * @memberof IKeycloakWrapper
+   */
+  user: ISystemUser | undefined;
+  /**
+   * The critterbase Uuid.
+   *
+   * @memberof IKeycloakWrapper
+   */
+  critterbaseUuid: () => string | undefined;
 }
 
 /**
@@ -126,37 +180,43 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const { keycloak } = useKeycloak();
 
   const biohubApi = useBiohubApi();
+  const cbApi = useCritterbaseApi();
 
   const keycloakUserDataLoader = useDataLoader(async () => {
     return (
-      (keycloak &&
-        ((keycloak.loadUserInfo() as unknown) as IIDIRUserInfo | IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)) ||
+      (keycloak.token &&
+        (keycloak.loadUserInfo() as unknown as IIDIRUserInfo | IBCEIDBasicUserInfo | IBCEIDBusinessUserInfo)) ||
       undefined
     );
   });
 
   const userDataLoader = useDataLoader(() => biohubApi.user.getUser());
 
-  const hasPendingAdministrativeActivitiesDataLoader = useDataLoader(() =>
-    biohubApi.admin.hasPendingAdministrativeActivities()
-  );
+  const critterbaseSignupLoader = useDataLoader(async () => {
+    if (userDataLoader?.data?.system_user_id != null) {
+      return cbApi.authentication.signUp();
+    }
+  });
+
+  const administrativeActivityStandingDataLoader = useDataLoader(biohubApi.admin.getAdministrativeActivityStanding);
 
   if (keycloak) {
     // keycloak is ready, load keycloak user info
     keycloakUserDataLoader.load();
   }
 
-  if (keycloak?.authenticated) {
+  if (keycloak.authenticated) {
     // keycloak user is authenticated, load system user info
     userDataLoader.load();
 
-    if (
-      userDataLoader.isReady &&
-      (!userDataLoader.data?.role_names.length || userDataLoader.data?.user_record_end_date)
-    ) {
+    if (userDataLoader.isReady && (!userDataLoader.data?.role_names.length || userDataLoader.data?.record_end_date)) {
       // Authenticated user either has has no roles or has been deactivated
       // Check if the user has a pending access request
-      hasPendingAdministrativeActivitiesDataLoader.load();
+      administrativeActivityStandingDataLoader.load();
+    }
+
+    if (userDataLoader.isReady && !critterbaseSignupLoader.data) {
+      critterbaseSignupLoader.load();
     }
   }
 
@@ -218,7 +278,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
    */
   const getIdentitySource = useCallback((): SYSTEM_IDENTITY_SOURCE | null => {
     const userIdentitySource =
-      userDataLoader.data?.['identity_source'] ||
+      userDataLoader.data?.['identity_source'] ??
       keycloakUserDataLoader.data?.['preferred_username']?.split('@')?.[1].toUpperCase();
 
     if (!userIdentitySource) {
@@ -229,15 +289,15 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   }, [keycloakUserDataLoader.data, userDataLoader.data]);
 
   const isSystemUser = (): boolean => {
-    return Boolean(userDataLoader.data?.id);
+    return Boolean(userDataLoader.data?.system_user_id);
   };
 
   const getSystemRoles = (): string[] => {
-    return userDataLoader.data?.role_names || [];
+    return userDataLoader.data?.role_names ?? [];
   };
 
   const hasSystemRole = (validSystemRoles?: string[]) => {
-    if (!validSystemRoles || !validSystemRoles.length) {
+    if (!validSystemRoles?.length) {
       return true;
     }
 
@@ -267,23 +327,44 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const refresh = () => {
     userDataLoader.refresh();
-    hasPendingAdministrativeActivitiesDataLoader.refresh();
+    administrativeActivityStandingDataLoader.refresh();
   };
+
+  const systemUserId = (): number | undefined => {
+    return userDataLoader.data?.system_user_id;
+  };
+
+  const getLoginUrl = (redirectUri = '/admin/projects'): string => {
+    return keycloak?.createLoginUrl({ redirectUri: buildUrl(window.location.origin, redirectUri) }) || '/login';
+  };
+
+  const user = (): ISystemUser | undefined => {
+    return userDataLoader.data;
+  };
+
+  const critterbaseUuid = useCallback(() => {
+    return critterbaseSignupLoader.data?.user_id;
+  }, [critterbaseSignupLoader.data?.user_id]);
 
   return {
     keycloak,
-    hasLoadedAllUserInfo: userDataLoader.isReady || !!hasPendingAdministrativeActivitiesDataLoader.data,
+    hasLoadedAllUserInfo: userDataLoader.isReady || !!administrativeActivityStandingDataLoader.data,
     systemRoles: getSystemRoles(),
     hasSystemRole,
     isSystemUser,
-    hasAccessRequest: !!hasPendingAdministrativeActivitiesDataLoader.data,
+    hasAccessRequest: !!administrativeActivityStandingDataLoader.data?.has_pending_access_request,
+    hasOneOrMoreProjectRoles: !!administrativeActivityStandingDataLoader.data?.has_one_or_more_project_roles,
     getUserIdentifier,
     getUserGuid,
     getIdentitySource,
     username: username(),
     email: email(),
+    systemUserId: systemUserId(),
+    user: user(),
     displayName: displayName(),
-    refresh
+    refresh,
+    getLoginUrl,
+    critterbaseUuid
   };
 }
 

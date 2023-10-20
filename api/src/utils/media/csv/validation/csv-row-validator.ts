@@ -24,9 +24,10 @@ export const getRequiredFieldsValidator = (config?: RequiredFieldsValidatorConfi
     rows.forEach((row, rowIndex) => {
       const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
-      // if column does not exist, return
       if (columnIndex < 0) {
-        return csvWorksheet;
+        // If column does not exist, return
+        // It is the job of a separate validation rule to ensure required columns exist
+        return;
       }
 
       const rowValueForColumn = row[columnIndex];
@@ -83,15 +84,17 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
     rows.forEach((row, rowIndex) => {
       const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
-      // if column does not exist, return
       if (columnIndex < 0) {
-        return csvWorksheet;
+        // If column does not exist, return
+        // It is the job of a separate validation rule to ensure required columns exist
+        return;
       }
 
       const rowValueForColumn = row[columnIndex];
       if (rowValueForColumn === undefined || rowValueForColumn === null || rowValueForColumn === '') {
-        // cell is empty, use the getRequiredFieldsValidator to assert required fields
-        return csvWorksheet;
+        // If cell is empty, return
+        // It is the job of a separate validation rule to ensure non-empty (required) cells
+        return;
       }
 
       // compare allowed code values as lowercase strings
@@ -149,16 +152,18 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
     rows.forEach((row, rowIndex) => {
       const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
-      // if column does not exist, return
       if (columnIndex < 0) {
-        return csvWorksheet;
+        // If column does not exist, return
+        // It is the job of a separate validation rule to ensure required columns exist
+        return;
       }
 
       const rowValueForColumn = Number(row[columnIndex]);
 
       if (rowValueForColumn === undefined || rowValueForColumn === null) {
-        // cell is empty, use the getRequiredFieldsValidator to assert required fields
-        return csvWorksheet;
+        // If cell is empty, return
+        // It is the job of a separate validation rule to ensure non-empty (required) cells
+        return;
       }
 
       if (isNaN(rowValueForColumn) && typeof row[columnIndex] === 'string') {
@@ -250,13 +255,16 @@ export const getNumericFieldsValidator = (config?: ColumnNumericValidatorConfig)
     rows.forEach((row, rowIndex) => {
       const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
-      // if column does not exist, return
       if (columnIndex < 0) {
-        return csvWorksheet;
+        // If column does not exist, return
+        // It is the job of a separate validation rule to ensure required columns exist
+        return;
       }
 
-      if (row[columnIndex] === undefined || row[columnIndex] === null) {
-        return csvWorksheet;
+      if (row[columnIndex] === undefined || row[columnIndex] === null || row[columnIndex] === '') {
+        // If cell is empty, return
+        // It is the job of a separate validation rule to ensure non-empty (required) cells
+        return;
       }
 
       const rowValueForColumn = Number(row[columnIndex]);
@@ -313,18 +321,20 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
     rows.forEach((row, rowIndex) => {
       const columnIndex = headersLowerCase.indexOf(safeToLowerCase(config.columnName));
 
-      // if column does not exist, return
       if (columnIndex < 0) {
-        return csvWorksheet;
+        // If column does not exist, return
+        // It is the job of a separate validation rule to ensure required columns exist
       }
 
       const rowValueForColumn = row[columnIndex];
 
       if (rowValueForColumn === undefined || rowValueForColumn === null) {
-        return csvWorksheet;
+        // If cell is empty, return
+        // It is the job of a separate validation rule to ensure non-empty (required) cells
+        return;
       }
 
-      const regexFlags = config.column_format_validator.reg_exp_flags || '';
+      const regexFlags = config.column_format_validator.reg_exp_flags ?? '';
 
       const regex = new RegExp(config.column_format_validator.reg_exp, regexFlags);
 
@@ -351,6 +361,35 @@ export type FileColumnUniqueValidatorConfig = {
   };
 };
 
+/**
+ * Checks for duplicate key values between rows, an adds an error for each duplicate found.
+ *
+ * Note: A key is one or more columns combined into a single string.
+ * Note: Empty cells are ignored when performing this check.
+ *
+ * @example
+ * // Valid
+ * | Col1 | Col2 |
+ * |------|------|
+ * | A    | B    | // key = 'A, B'
+ * | A    |      | // key = 'A'
+ * | B    | A    | // key = 'B, A'
+ *
+ * // Invalid
+ * | Col1 | Col2 |
+ * |------|------|
+ * | A    | B    | // key = 'A, B'
+ * | A    | B    | // key = 'A, B'
+ *
+ * // Invalid
+ * | Col1 | Col2 |
+ * |------|------|
+ * | A    |      | // key = 'A'
+ * |      | A    | // key = 'A'
+ *
+ * @param {FileColumnUniqueValidatorConfig} [config]
+ * @return {*}  {CSVValidator}
+ */
 export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
     if (!config) {
@@ -377,8 +416,16 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
 
     rows.forEach((row, rowIndex) => {
       const key = config.file_column_unique_validator.column_names
-        .map((columnIndex) => `${row[columnIndex] || ''}`.trim().toLowerCase())
+        .map((columnName) => `${row[columnName] || ''}`.trim().toLowerCase())
+        .filter(Boolean)
         .join(', ');
+
+      if (!key) {
+        // If key is empty, ignore this check.
+        // It is the job of a separate validation rule to ensure non-empty (required) cells
+        return;
+      }
+
       // check if key exists already
       if (!keySet.has(key)) {
         keySet.add(key);
@@ -387,15 +434,18 @@ export const getUniqueColumnsValidator = (config?: FileColumnUniqueValidatorConf
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.NON_UNIQUE_KEY,
-            message: `Duplicate key(s): ${key} found in column(s): ${config.file_column_unique_validator.column_names.join(
+            message: `Row ${
+              rowIndex + 2
+            } has duplicate values ${key} to another row. The combination of values in columns: ${config.file_column_unique_validator.column_names.join(
               ', '
-            )}. Keys must be unique for proper template transformation`,
+            )} must be unique across rows. Details: `,
             col: key,
             row: rowIndex + 2
           }
         ]);
       }
     });
+
     return csvWorksheet;
   };
 };

@@ -1,7 +1,8 @@
+import { Feature } from 'geojson';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
-import { PutSurveyObject } from '../models/survey-update';
+import { PostLocationData, PostProprietorData, PostSurveyObject } from '../models/survey-create';
+import { PutPartnershipsData, PutSurveyLocationData, PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
@@ -9,14 +10,17 @@ import {
   GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
-  GetSurveyFundingSources,
-  GetSurveyLocationData,
+  GetSurveyFundingSourceData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
+  ISurveyPartnerships,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
 import { AttachmentRepository } from '../repositories/attachment-repository';
+import { PublishStatus } from '../repositories/history-publish-repository';
+import { PostSurveyBlock, SurveyBlockRecord } from '../repositories/survey-block-repository';
+import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import {
   IGetLatestSurveyOccurrenceSubmission,
   IObservationSubmissionInsertDetails,
@@ -27,9 +31,15 @@ import {
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
+import { RegionService } from './region-service';
+import { SiteSelectionStrategyService } from './site-selection-strategy-service';
+import { SurveyBlockService } from './survey-block-service';
+import { SurveyLocationService } from './survey-location-service';
+import { SurveyParticipationService } from './survey-participation-service';
 import { TaxonomyService } from './taxonomy-service';
 
 const defaultLog = getLogger('services/survey-service');
@@ -46,6 +56,9 @@ export class SurveyService extends DBService {
   surveyRepository: SurveyRepository;
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
+  fundingSourceService: FundingSourceService;
+  siteSelectionStrategyService: SiteSelectionStrategyService;
+  surveyParticipationService: SurveyParticipationService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -54,6 +67,9 @@ export class SurveyService extends DBService {
     this.surveyRepository = new SurveyRepository(connection);
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
+    this.fundingSourceService = new FundingSourceService(connection);
+    this.siteSelectionStrategyService = new SiteSelectionStrategyService(connection);
+    this.surveyParticipationService = new SurveyParticipationService(connection);
   }
 
   /**
@@ -75,33 +91,47 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSurveyById(surveyId: number): Promise<SurveyObject> {
-    const [
-      surveyData,
-      speciesData,
-      permitData,
-      fundingData,
-      purposeAndMethodologyData,
-      proprietorData,
-      locationData
-    ] = await Promise.all([
-      this.getSurveyData(surveyId),
-      this.getSpeciesData(surveyId),
-      this.getPermitData(surveyId),
-      this.getSurveyFundingSourcesData(surveyId),
-      this.getSurveyPurposeAndMethodology(surveyId),
-      this.getSurveyProprietorDataForView(surveyId),
-      this.getSurveyLocationData(surveyId)
-    ]);
+    return {
+      survey_details: await this.getSurveyData(surveyId),
+      species: await this.getSpeciesData(surveyId),
+      permit: await this.getPermitData(surveyId),
+      funding_sources: await this.getSurveyFundingSourceData(surveyId),
+      partnerships: await this.getSurveyPartnershipsData(surveyId),
+      purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
+      proprietor: await this.getSurveyProprietorDataForView(surveyId),
+      locations: await this.getSurveyLocationsData(surveyId),
+      participants: await this.surveyParticipationService.getSurveyParticipants(surveyId),
+      site_selection: await this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
+      blocks: await this.getSurveyBlocksForSurveyId(surveyId)
+    };
+  }
+
+  async getSurveyBlocksForSurveyId(surveyId: number): Promise<SurveyBlockRecord[]> {
+    const service = new SurveyBlockService(this.connection);
+    return service.getSurveyBlocksForSurveyId(surveyId);
+  }
+
+  async getSurveyPartnershipsData(surveyId: number): Promise<ISurveyPartnerships> {
+    const [indigenousPartnerships, stakeholderPartnerships] = [
+      await this.surveyRepository.getIndigenousPartnershipsBySurveyId(surveyId),
+      await this.surveyRepository.getStakeholderPartnershipsBySurveyId(surveyId)
+    ];
 
     return {
-      survey_details: surveyData,
-      species: speciesData,
-      permit: permitData,
-      purpose_and_methodology: purposeAndMethodologyData,
-      funding: fundingData,
-      proprietor: proprietorData,
-      location: locationData
+      indigenous_partnerships: indigenousPartnerships.map((partnership) => partnership.first_nations_id),
+      stakeholder_partnerships: stakeholderPartnerships.map((partnership) => partnership.name)
     };
+  }
+
+  /**
+   * Get Survey funding data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<GetSurveyFundingSourceData[]>}
+   * @memberof SurveyService
+   */
+  async getSurveyFundingSourceData(surveyId: number): Promise<GetSurveyFundingSourceData[]> {
+    return this.fundingSourceService.getSurveyFundingSources(surveyId);
   }
 
   /**
@@ -125,7 +155,14 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSurveyData(surveyId: number): Promise<GetSurveyData> {
-    return this.surveyRepository.getSurveyData(surveyId);
+    const [surveyData, surveyTypesData] = await Promise.all([
+      this.surveyRepository.getSurveyData(surveyId),
+      this.surveyRepository.getSurveyTypesData(surveyId)
+    ]);
+
+    const surveyTypeIds = surveyTypesData.map((item) => item.type_id);
+
+    return new GetSurveyData({ ...surveyData, survey_types: surveyTypeIds });
   }
 
   /**
@@ -176,17 +213,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get Survey funding sources for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyFundingSources>}
-   * @memberof SurveyService
-   */
-  async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
-    return this.surveyRepository.getSurveyFundingSourcesData(surveyId);
-  }
-
-  /**
    * Gets proprietor data for view or null for a given survey ID
    *
    * @param {number} surveyID
@@ -201,18 +227,19 @@ export class SurveyService extends DBService {
    * Get Survey location for a given survey ID
    *
    * @param {number} surveyID
-   * @returns {*} {Promise<GetSurveyLocationData>}
+   * @returns {*} {Promise<GetSurveyLocationData[]>}
    * @memberof SurveyService
    */
-  async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
-    return this.surveyRepository.getSurveyLocationData(surveyId);
+  async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
+    const service = new SurveyLocationService(this.connection);
+    return service.getSurveyLocationsData(surveyId);
   }
 
   /**
    * Get Occurrence Submission for a given survey id.
    *
    * @param {number} surveyId
-   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}F
+   * @return {*}  {(Promise<{ occurrence_submission_id: number | null }>)}
    * @memberof SurveyService
    */
   async getOccurrenceSubmission(surveyId: number): Promise<{ occurrence_submission_id: number | null }> {
@@ -312,7 +339,7 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Creates a survey and uploads the metadata to Biohub
+   * Creates a survey and uploads the affected metadata to BioHub
    *
    * @param {number} projectId
    * @param {PostSurveyObject} postSurveyData
@@ -323,7 +350,13 @@ export class SurveyService extends DBService {
     const surveyId = await this.createSurvey(projectId, postSurveyData);
 
     try {
-      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+      // Publish survey metadata
+      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+
+      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
+      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+
+      await Promise.all([publishSurveyPromise, publishProjectPromise]);
     } catch (error) {
       defaultLog.warn({ label: 'createSurveyAndUploadMetadataToBioHub', message: 'error', error });
     }
@@ -344,6 +377,9 @@ export class SurveyService extends DBService {
 
     const promises: Promise<any>[] = [];
 
+    // Handle survey types
+    promises.push(this.insertSurveyTypes(postSurveyData.survey_details.survey_types, surveyId));
+
     // Handle focal species associated to this survey
     promises.push(
       Promise.all(
@@ -360,6 +396,16 @@ export class SurveyService extends DBService {
       )
     );
 
+    // Handle indigenous partners
+    if (postSurveyData.partnerships.indigenous_partnerships) {
+      promises.push(this.insertIndigenousPartnerships(postSurveyData.partnerships.indigenous_partnerships, surveyId));
+    }
+
+    // Handle stakeholder partners
+    if (postSurveyData.partnerships.stakeholder_partnerships) {
+      promises.push(this.insertStakeholderPartnerships(postSurveyData.partnerships.stakeholder_partnerships, surveyId));
+    }
+
     // Handle inserting any permit associated to this survey
     const permitService = new PermitService(this.connection);
     promises.push(
@@ -370,10 +416,29 @@ export class SurveyService extends DBService {
       )
     );
 
-    // Handle inserting any funding sources associated to this survey
+    // Handle survey funding sources
     promises.push(
       Promise.all(
-        postSurveyData.funding.funding_sources.map((fsId: number) => this.insertSurveyFundingSource(fsId, surveyId))
+        postSurveyData.funding_sources.map((fundingSource) =>
+          this.fundingSourceService.postSurveyFundingSource(
+            surveyId,
+            fundingSource.funding_source_id,
+            fundingSource.amount
+          )
+        )
+      )
+    );
+
+    // Handle survey participants
+    promises.push(
+      Promise.all(
+        postSurveyData.participants.map((participant) =>
+          this.surveyParticipationService.insertSurveyParticipant(
+            surveyId,
+            participant.system_user_id,
+            participant.survey_job_name
+          )
+        )
       )
     );
 
@@ -389,9 +454,75 @@ export class SurveyService extends DBService {
       )
     );
 
+    if (postSurveyData.locations) {
+      promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertSurveyLocations(surveyId, item))));
+    }
+
+    // Handle site selection strategies
+
+    if (postSurveyData.site_selection.strategies.length > 0) {
+      promises.push(
+        this.siteSelectionStrategyService.insertSurveySiteSelectionStrategies(
+          surveyId,
+          postSurveyData.site_selection.strategies
+        )
+      );
+    }
+
+    // Handle stratums
+    if (postSurveyData.site_selection.stratums.length > 0) {
+      promises.push(
+        this.siteSelectionStrategyService.insertSurveyStratums(surveyId, postSurveyData.site_selection.stratums)
+      );
+    }
+
+    // Handle blocks
+    if (postSurveyData.blocks) {
+      promises.push(this.upsertBlocks(surveyId, postSurveyData.blocks));
+    }
+
     await Promise.all(promises);
 
     return surveyId;
+  }
+
+  /**
+   * Inserts location data.
+   *
+   * @param {number} surveyId
+   * @param {PostLocationData} data
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async insertSurveyLocations(surveyId: number, data: PostLocationData): Promise<void> {
+    const service = new SurveyLocationService(this.connection);
+    return service.insertSurveyLocation(surveyId, data);
+  }
+
+  /**
+   * Insert, updates and deletes Survey Blocks for a given survey id
+   *
+   * @param {number} surveyId
+   * @param {SurveyBlock[]} blocks
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
+  async upsertBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
+    const service = new SurveyBlockService(this.connection);
+    return service.upsertSurveyBlocks(surveyId, blocks);
+  }
+
+  /**
+   * Insert region data.
+   *
+   * @param {number} projectId
+   * @param {Feature[]} features
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
+    const regionService = new RegionService(this.connection);
+    return regionService.addRegionsToSurveyFromFeatures(projectId, features);
   }
 
   /**
@@ -426,6 +557,18 @@ export class SurveyService extends DBService {
    */
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
     return this.surveyRepository.insertSurveyData(projectId, surveyData);
+  }
+
+  /**
+   * Inserts new survey_type records associated to the survey.
+   *
+   * @param {number[]} typeIds
+   * @param {number} surveyID
+   * @returns {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async insertSurveyTypes(typeIds: number[], surveyId: number): Promise<void> {
+    return this.surveyRepository.insertSurveyTypes(typeIds, surveyId);
   }
 
   /**
@@ -502,52 +645,58 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Inserts new record and associates funding source to a survey
+   * Updates provided survey information and submits affected metadata to BioHub
    *
-   * @param {number} funding_source_id
-   * @param {number} surveyID
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
-    return this.surveyRepository.insertSurveyFundingSource(funding_source_id, surveyId);
-  }
-
-  /**
-   * Updates provided survey information and submits to BioHub
-   *
+   * @param {number} projectId
    * @param {number} surveyId
    * @param {PutSurveyObject} putSurveyData
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurveyAndUploadMetadataToBiohub(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
+  async updateSurveyAndUploadMetadataToBiohub(
+    projectId: number,
+    surveyId: number,
+    putSurveyData: PutSurveyObject
+  ): Promise<void> {
     await this.updateSurvey(surveyId, putSurveyData);
 
     try {
-      await this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+      // Publish survey metadata
+      const publishSurveyPromise = this.platformService.submitSurveyDwCMetadataToBioHub(surveyId);
+
+      // Publish project metadata (which needs to be updated now that the survey metadata has changed)
+      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+
+      await Promise.all([publishSurveyPromise, publishProjectPromise]);
     } catch (error) {
       defaultLog.warn({ label: 'updateSurveyAndUploadMetadataToBiohub', message: 'error', error });
     }
   }
 
   /**
-   * Updates provided survey information and submits to BioHub
-   *˝
+   * Updates provided survey information.
+   *
    * @param {number} surveyId
    * @param {PutSurveyObject} putSurveyData
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
-  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<SurveyObject> {
+  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
-
-    if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology || putSurveyData?.location) {
+    if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyDetailsData(surveyId, putSurveyData));
+    }
+
+    if (putSurveyData?.survey_details) {
+      promises.push(this.updateSurveyTypesData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyVantageCodesData(surveyId, putSurveyData));
+    }
+
+    if (putSurveyData?.partnerships) {
+      promises.push(this.updatePartnershipsData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.species) {
@@ -558,17 +707,52 @@ export class SurveyService extends DBService {
       promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
     }
 
-    if (putSurveyData?.funding) {
-      promises.push(this.updateSurveyFundingData(surveyId, putSurveyData));
+    if (putSurveyData?.funding_sources) {
+      promises.push(this.upsertSurveyFundingSourceData(surveyId, putSurveyData));
     }
-
     if (putSurveyData?.proprietor) {
       promises.push(this.updateSurveyProprietorData(surveyId, putSurveyData));
     }
 
-    await Promise.all(promises);
+    if (putSurveyData?.locations) {
+      promises.push(Promise.all(putSurveyData.locations.map((item) => this.updateSurveyLocation(item))));
+    }
 
-    return await this.getSurveyById(surveyId);
+    if (putSurveyData?.participants.length) {
+      promises.push(this.upsertSurveyParticipantData(surveyId, putSurveyData));
+    }
+
+    // Handle site selection strategies
+    if (putSurveyData?.site_selection?.strategies) {
+      promises.push(
+        this.siteSelectionStrategyService.replaceSurveySiteSelectionStrategies(
+          surveyId,
+          putSurveyData.site_selection.strategies
+        )
+      );
+    }
+
+    // Handle stratums
+    if (putSurveyData?.site_selection?.stratums) {
+      promises.push(
+        this.siteSelectionStrategyService.replaceSurveySiteSelectionStratums(
+          surveyId,
+          putSurveyData.site_selection.stratums
+        )
+      );
+    }
+
+    // Handle blocks
+    if (putSurveyData?.blocks) {
+      promises.push(this.upsertBlocks(surveyId, putSurveyData.blocks));
+    }
+
+    await Promise.all(promises);
+  }
+
+  async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
+    const surveyLocationService = new SurveyLocationService(this.connection);
+    return surveyLocationService.updateSurveyLocation(data);
   }
 
   /**
@@ -584,6 +768,22 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Updates Survey types data for a given survey ID.
+   *
+   * @param {number} surveyID
+   * @param {PutSurveyObject} surveyData
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async updateSurveyTypesData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
+    // Delete existing survey types
+    await this.surveyRepository.deleteSurveyTypesData(surveyId);
+
+    // Add new set of survey types, if any
+    return this.surveyRepository.insertSurveyTypes(surveyData.survey_details.survey_types, surveyId);
+  }
+
+  /**
    * Updates survey species data
    *
    * @param {number} surveyID
@@ -592,7 +792,7 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async updateSurveySpeciesData(surveyId: number, surveyData: PutSurveyObject) {
-    this.deleteSurveySpeciesData(surveyId);
+    await this.deleteSurveySpeciesData(surveyId);
 
     const promises: Promise<any>[] = [];
 
@@ -616,6 +816,65 @@ export class SurveyService extends DBService {
    */
   async deleteSurveySpeciesData(surveyId: number) {
     return this.surveyRepository.deleteSurveySpeciesData(surveyId);
+  }
+
+  /**
+   * Updates survey participants
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @memberof SurveyService
+   */
+  async upsertSurveyParticipantData(surveyId: number, surveyData: PutSurveyObject) {
+    // Get any existing survey participants
+    const existingParticipants = await this.surveyParticipationService.getSurveyParticipants(surveyId);
+
+    //Compare input and existing for participants to delete
+    const existingParticipantsToDelete = existingParticipants.filter((existingParticipant) => {
+      return !surveyData.participants.find(
+        (incomingParticipant) => incomingParticipant.system_user_id === existingParticipant.system_user_id
+      );
+    });
+
+    // Delete any non existing participants
+    if (existingParticipantsToDelete.length) {
+      const promises: Promise<any>[] = [];
+
+      existingParticipantsToDelete.forEach((participant: any) => {
+        promises.push(
+          this.surveyParticipationService.deleteSurveyParticipationRecord(participant.survey_participation_id)
+        );
+      });
+
+      await Promise.all(promises);
+    }
+
+    const promises: Promise<any>[] = [];
+
+    // The remaining participants with either update if they have a survey_participation_id
+    // or insert new record
+    surveyData.participants.forEach((participant) => {
+      if (participant.survey_participation_id) {
+        // Update participant
+        promises.push(
+          this.surveyParticipationService.updateSurveyParticipant(
+            participant.survey_participation_id,
+            participant.survey_job_name
+          )
+        );
+      } else {
+        // Create new participant
+        promises.push(
+          this.surveyParticipationService.insertSurveyParticipant(
+            surveyId,
+            participant.system_user_id,
+            participant.survey_job_name
+          )
+        );
+      }
+    });
+
+    await Promise.all(promises);
   }
 
   /**
@@ -669,6 +928,66 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Updates survey funding data
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @return {*}
+   * @memberof SurveyService
+   */
+  async upsertSurveyFundingSourceData(surveyId: number, surveyData: PutSurveyObject) {
+    // Get any existing survey funding sources
+    const existingSurveyFundingSources = await this.fundingSourceService.getSurveyFundingSources(surveyId);
+
+    //Compare input and existing for fundings to delete
+    const existingSurveyFundingToDelete = existingSurveyFundingSources.filter((existingSurveyFunding) => {
+      return !surveyData.funding_sources.find(
+        (incomingFunding) => incomingFunding.survey_funding_source_id === existingSurveyFunding.survey_funding_source_id
+      );
+    });
+
+    // Delete any no existing fundings
+    if (existingSurveyFundingToDelete.length) {
+      const promises: Promise<any>[] = [];
+
+      existingSurveyFundingToDelete.forEach((surveyFunding: any) => {
+        promises.push(this.fundingSourceService.deleteSurveyFundingSource(surveyId, surveyFunding.funding_source_id));
+      });
+
+      await Promise.all(promises);
+    }
+
+    const promises: Promise<any>[] = [];
+
+    // The remaining funding sources with either update if they have a survey_funding_source_id
+    // or insert new record
+    surveyData.funding_sources.forEach((fundingSource) => {
+      if (fundingSource.survey_funding_source_id) {
+        // Update funding source
+        promises.push(
+          this.fundingSourceService.putSurveyFundingSource(
+            surveyId,
+            fundingSource.funding_source_id,
+            fundingSource.amount,
+            fundingSource.revision_count || 0
+          )
+        );
+      } else {
+        // Create new funding source
+        promises.push(
+          this.fundingSourceService.postSurveyFundingSource(
+            surveyId,
+            fundingSource.funding_source_id,
+            fundingSource.amount
+          )
+        );
+      }
+    });
+
+    await Promise.all(promises);
+  }
+
+  /**
    * Breaks link between permit and survey for a given survey ID
    *
    * @param {number} surveyID
@@ -677,36 +996,6 @@ export class SurveyService extends DBService {
    */
   async unassociatePermitFromSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.unassociatePermitFromSurvey(surveyId);
-  }
-
-  /**
-   * Updates a Survey funding source for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<any[]>}
-   * @memberof SurveyService
-   */
-  async updateSurveyFundingData(surveyId: number, surveyData: PutSurveyObject) {
-    await this.deleteSurveyFundingSourcesData(surveyId);
-
-    const promises: Promise<any>[] = [];
-
-    surveyData.funding.funding_sources.forEach((fsId: number) =>
-      promises.push(this.insertSurveyFundingSource(fsId, surveyId))
-    );
-
-    return Promise.all(promises);
-  }
-
-  /**
-   * Breaks link between a funding source and a survey for a given survey ID
-   *
-   * @param {number} surveyID
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async deleteSurveyFundingSourcesData(surveyId: number): Promise<void> {
-    return this.surveyRepository.deleteSurveyFundingSourcesData(surveyId);
   }
 
   /**
@@ -737,6 +1026,63 @@ export class SurveyService extends DBService {
    */
   async deleteSurveyProprietorData(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurveyProprietorData(surveyId);
+  }
+
+  /**
+   * Updates all partnership records for the given survey, first by removing all partnership
+   * records for the survey, then inserting new partnership records according to the given
+   * survey object.
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async updatePartnershipsData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
+    const putPartnershipsData = (surveyData?.partnerships && new PutPartnershipsData(surveyData.partnerships)) || null;
+
+    // Remove existing partnership records
+    await this.surveyRepository.deleteIndigenousPartnershipsData(surveyId);
+    await this.surveyRepository.deleteStakeholderPartnershipsData(surveyId);
+
+    // Insert new partnership records
+    if (putPartnershipsData?.indigenous_partnerships) {
+      await this.insertIndigenousPartnerships(putPartnershipsData?.indigenous_partnerships, surveyId);
+    }
+
+    if (putPartnershipsData?.stakeholder_partnerships) {
+      await this.insertStakeholderPartnerships(putPartnershipsData?.stakeholder_partnerships, surveyId);
+    }
+  }
+
+  /**
+   * Inserts indigenous partnership records for the given survey
+   *
+   * @param {number[]} firstNationsIds
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ survey_first_nation_partnership_id: number }[]>}
+   * @memberof SurveyService
+   */
+  async insertIndigenousPartnerships(
+    firstNationsIds: number[],
+    surveyId: number
+  ): Promise<{ survey_first_nation_partnership_id: number }[]> {
+    return this.surveyRepository.insertIndigenousPartnerships(firstNationsIds, surveyId);
+  }
+
+  /**
+   * Inserts stakeholder partnership records for the given survey
+   *
+   * @param {string[]} stakeholderPartners
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ survey_stakeholder_partnership_id: number }[]>}
+   * @memberof SurveyService
+   */
+  async insertStakeholderPartnerships(
+    stakeholderPartners: string[],
+    surveyId: number
+  ): Promise<{ survey_stakeholder_partnership_id: number }[]> {
+    return this.surveyRepository.insertStakeholderPartnerships(stakeholderPartners, surveyId);
   }
 
   /**
@@ -818,26 +1164,39 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Returns true if the survey contains unpublished attachments or reports or observations or summary results
+   * Publish status for a given survey id
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<boolean>}
+   * @return {*}  {Promise<PublishStatus>}
    * @memberof SurveyService
    */
-  async doesSurveyHaveUnpublishedContent(surveyId: number): Promise<boolean> {
-    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedSurveyAttachments(surveyId);
+  async surveyPublishStatus(surveyId: number): Promise<PublishStatus> {
+    const surveyAttachmentsPublishStatus = await this.historyPublishService.surveyAttachmentsPublishStatus(surveyId);
 
-    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedSurveyReports(surveyId);
+    const surveyReportsPublishStatus = await this.historyPublishService.surveyReportsPublishStatus(surveyId);
 
-    const has_unpublished_observations = await this.historyPublishService.hasUnpublishedObservation(surveyId);
+    const observationPublishStatus = await this.historyPublishService.observationPublishStatus(surveyId);
 
-    const has_unpublished_summary_results = await this.historyPublishService.hasUnpublishedSummaryResults(surveyId);
+    const summaryPublishStatus = await this.historyPublishService.summaryPublishStatus(surveyId);
 
-    const surveyHasUnpublishedContent: boolean =
-      has_unpublished_attachments ||
-      has_unpublished_reports ||
-      has_unpublished_observations ||
-      has_unpublished_summary_results;
-    return surveyHasUnpublishedContent;
+    if (
+      surveyAttachmentsPublishStatus === PublishStatus.NO_DATA &&
+      surveyReportsPublishStatus === PublishStatus.NO_DATA &&
+      observationPublishStatus === PublishStatus.NO_DATA &&
+      summaryPublishStatus === PublishStatus.NO_DATA
+    ) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (
+      surveyAttachmentsPublishStatus === PublishStatus.UNSUBMITTED ||
+      surveyReportsPublishStatus === PublishStatus.UNSUBMITTED ||
+      observationPublishStatus === PublishStatus.UNSUBMITTED ||
+      summaryPublishStatus === PublishStatus.UNSUBMITTED
+    ) {
+      return PublishStatus.UNSUBMITTED;
+    }
+
+    return PublishStatus.SUBMITTED;
   }
 }

@@ -31,7 +31,7 @@ describe('project/{projectId}/view', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      const viewProjectResult = { project: { id: 1 } } as IGetProject;
+      const viewProjectResult = { project: { project_id: 1 } } as IGetProject;
       const supplementaryProjectData = { project_metadata_publish: null };
 
       sinon.stub(ProjectService.prototype, 'getProjectById').resolves(viewProjectResult);

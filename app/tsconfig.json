@@ -8,7 +8,7 @@
     ],
     "baseUrl": "src",
     "outDir": "dist",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "target": "es2018",
     "sourceMap": true,
     "allowJs": false,
@@ -16,7 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": true,
     "esModuleInterop": true,
@@ -30,7 +29,7 @@
     "strict": true,
     "typeRoots": [
       "node_modules/@types"
-    ],
+    ]
   },
   "include": [
     "src"

@@ -4,7 +4,8 @@ import {
   IAccessRequestDataObject,
   IgcNotifyGenericMessage,
   IgcNotifyRecipient,
-  IGetAccessRequestsListResponse
+  IGetAccessRequestsListResponse,
+  IGetAdministrativeActivityStanding
 } from 'interfaces/useAdminApi.interface';
 import qs from 'qs';
 
@@ -57,16 +58,17 @@ const useAdminApi = (axios: AxiosInstance) => {
 
   const approveAccessRequest = async (
     administrativeActivityId: number,
-    userGuid: string | null,
-    userIdentifier: string,
-    identitySource: string,
-    roleIds: number[] = []
+    userData: {
+      userGuid: string | null;
+      userIdentifier: string;
+      identitySource: string;
+      email: string;
+      displayName: string;
+      roleIds: number[];
+    }
   ): Promise<void> => {
     const { data } = await axios.put(`/api/administrative-activity/system-access/${administrativeActivityId}/approve`, {
-      userGuid,
-      userIdentifier,
-      identitySource,
-      roleIds: roleIds
+      ...userData
     });
 
     return data;
@@ -93,11 +95,11 @@ const useAdminApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Has pending access requests.
+   * Checks if the user has pending access requests or belongs to any projects as a participant
    *
    * @return {*} {Promise<number>}
    */
-  const hasPendingAdministrativeActivities = async (): Promise<number> => {
+  const getAdministrativeActivityStanding = async (): Promise<IGetAdministrativeActivityStanding> => {
     const { data } = await axios.get('/api/administrative-activity');
 
     return data;
@@ -110,13 +112,23 @@ const useAdminApi = (axios: AxiosInstance) => {
    *
    * @param {string} userIdentifier
    * @param {string} identitySource
+   * @param {string} displayName
+   * @param {string} email
    * @param {number} roleId
    * @return {*} {boolean} True if the user is successfully added, false otherwise.
    */
-  const addSystemUser = async (userIdentifier: string, identitySource: string, roleId: number): Promise<boolean> => {
+  const addSystemUser = async (
+    userIdentifier: string,
+    identitySource: string,
+    displayName: string,
+    email: string,
+    roleId: number
+  ): Promise<boolean> => {
     const { status } = await axios.post(`/api/user/add`, {
       identitySource,
       userIdentifier,
+      displayName,
+      email,
       roleId
     });
 
@@ -129,7 +141,7 @@ const useAdminApi = (axios: AxiosInstance) => {
     approveAccessRequest,
     denyAccessRequest,
     createAdministrativeActivity,
-    hasPendingAdministrativeActivities,
+    getAdministrativeActivityStanding,
     addSystemUser
   };
 };

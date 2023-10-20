@@ -1,6 +1,6 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
@@ -21,10 +21,10 @@ export interface IPurposeAndMethodologyForm {
 
 export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
   purpose_and_methodology: {
-    intended_outcome_id: ('' as unknown) as number,
+    intended_outcome_id: '' as unknown as number,
     additional_details: '',
-    field_method_id: ('' as unknown) as number,
-    ecological_season_id: ('' as unknown) as number,
+    field_method_id: '' as unknown as number,
+    ecological_season_id: '' as unknown as number,
     vantage_code_ids: []
   }
 };

@@ -1,16 +1,16 @@
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import React, { useEffect, useState } from 'react';
 import ActiveUsersList from './ActiveUsersList';
 
@@ -47,7 +47,7 @@ const ManageUsersPage: React.FC = () => {
   const [isLoadingAccessRequests, setIsLoadingAccessRequests] = useState(false);
   const [hasLoadedAccessRequests, setHasLoadedAccessRequests] = useState(false);
 
-  const [activeUsers, setActiveUsers] = useState<IGetUserResponse[]>([]);
+  const [activeUsers, setActiveUsers] = useState<ISystemUser[]>([]);
   const [isLoadingActiveUsers, setIsLoadingActiveUsers] = useState(false);
   const [hasLoadedActiveUsers, setHasLoadedActiveUsers] = useState(false);
 

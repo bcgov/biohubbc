@@ -2,13 +2,18 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import {
+  buildUrl,
+  dateRangesOverlap,
   ensureProtocol,
   getFormattedAmount,
   getFormattedDate,
   getFormattedDateRangeString,
   getFormattedFileSize,
   getFormattedIdentitySource,
-  getLogOutUrl
+  getKeyByValue,
+  getLogOutUrl,
+  getTitle,
+  pluralize
 } from './Utils';
 
 describe('ensureProtocol', () => {
@@ -52,6 +57,44 @@ describe('ensureProtocol', () => {
   });
 });
 
+describe('buildUrl', () => {
+  it('should build a basic URL', () => {
+    const url = buildUrl('a', 'b', 'c', 'd');
+
+    expect(url).toEqual('a/b/c/d');
+  });
+
+  it('should build a URL to the app root', () => {
+    const url = buildUrl('/');
+
+    expect(url).toEqual('/');
+  });
+
+  it('should filter out falsey url parts', () => {
+    const url = buildUrl('a', 'b', null as unknown as string, 'd', undefined, 'f');
+
+    expect(url).toEqual('a/b/d/f');
+  });
+
+  it('should filter out double slashes', () => {
+    const url = buildUrl('a', '//', 'b', '/c', '/d/', '/f/');
+
+    expect(url).toEqual('a/b/c/d/f/');
+  });
+
+  it('should filter out whitespace', () => {
+    const url = buildUrl('a', '     ', '   c  ', ' /d ', '/e/ ', ' /f');
+
+    expect(url).toEqual('a/c/d/e/f');
+  });
+
+  it('should respect HTTP(S) protocol', () => {
+    const url = buildUrl('http://a', '/b', 'c', '/d/');
+
+    expect(url).toEqual('http://a/b/c/d/');
+  });
+});
+
 describe('getFormattedAmount', () => {
   it('returns a valid amount string when amount is valid', () => {
     const amount = 10000000;
@@ -59,7 +102,7 @@ describe('getFormattedAmount', () => {
   });
 
   it('returns empty string when amount is invalid', () => {
-    expect(getFormattedAmount((null as unknown) as number)).toEqual('');
+    expect(getFormattedAmount(null as unknown as number)).toEqual('');
   });
 });
 
@@ -124,7 +167,7 @@ describe('getFormattedDateRangeString', () => {
 
 describe('getLogOutUrl', () => {
   it('returns null when config is null', () => {
-    expect(getLogOutUrl((null as unknown) as IConfig)).toBeUndefined();
+    expect(getLogOutUrl(null as unknown as IConfig)).toBeUndefined();
   });
 
   it('returns null when config is missing `KEYCLOAK_CONFIG.url`', () => {
@@ -208,7 +251,7 @@ describe('getLogOutUrl', () => {
 
 describe('getFormattedFileSize', () => {
   it('returns `0 KB` if no file size exists', async () => {
-    const formattedFileSize = getFormattedFileSize((null as unknown) as number);
+    const formattedFileSize = getFormattedFileSize(null as unknown as number);
     expect(formattedFileSize).toEqual('0 KB');
   });
 
@@ -247,6 +290,12 @@ describe('getFormattedIdentitySource', () => {
     expect(result).toEqual('IDIR');
   });
 
+  it('returns IDIR', () => {
+    const result = getFormattedIdentitySource(SYSTEM_IDENTITY_SOURCE.DATABASE);
+
+    expect(result).toEqual('System');
+  });
+
   it('returns null for unknown identity source', () => {
     const result = getFormattedIdentitySource('__default_test_string' as SYSTEM_IDENTITY_SOURCE);
 
@@ -254,8 +303,110 @@ describe('getFormattedIdentitySource', () => {
   });
 
   it('returns null for null identity source', () => {
-    const result = getFormattedIdentitySource((null as unknown) as SYSTEM_IDENTITY_SOURCE);
+    const result = getFormattedIdentitySource(null as unknown as SYSTEM_IDENTITY_SOURCE);
 
     expect(result).toEqual(null);
+  });
+});
+
+describe('getTitle', () => {
+  it('should return a title when no pageName is given', () => {
+    const title = getTitle();
+
+    expect(title).toEqual('SIMS');
+  });
+
+  it('should return a title when empty string is given', () => {
+    const title = getTitle('');
+
+    expect(title).toEqual('SIMS');
+  });
+
+  it('should return a title when a pageName is given', () => {
+    const title = getTitle('Test Page');
+
+    expect(title).toEqual('SIMS - Test Page');
+  });
+});
+
+describe('getKeyByValue', () => {
+  it('returns undefined if the object contains no keys and the value is undefined', () => {
+    const response = getKeyByValue({}, undefined);
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns undefined if the object contains no keys and the value is defined', () => {
+    const response = getKeyByValue({}, 'value');
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns undefined if the object contains some keys and the value is undefined', () => {
+    const response = getKeyByValue({ name: 'Test' }, undefined);
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns undefined if the object contains some keys and the value is defined but not in the object', () => {
+    const response = getKeyByValue({ name: 'Test' }, 'notfound');
+
+    expect(response).toEqual(undefined);
+  });
+
+  it('returns a string key if the object contains a key having the given value', () => {
+    const response = getKeyByValue({ name: 'Test' }, 'Test');
+
+    expect(response).toEqual('name');
+  });
+
+  it('returns a numeric key if the object contains a key having the given value', () => {
+    const response = getKeyByValue(['One', 'Two', 'Test'], 'Test');
+
+    expect(response).toEqual('2');
+  });
+});
+
+describe('pluralize', () => {
+  it('pluralizes a word', () => {
+    const response = pluralize(2, 'apple');
+    expect(response).toEqual('apples');
+  });
+
+  it('pluralizes a word with undefined quantity', () => {
+    const response = pluralize(null as unknown as number, 'orange');
+    expect(response).toEqual('oranges');
+  });
+
+  it('does not pluralize a single item', () => {
+    const response = pluralize(1, 'banana');
+    expect(response).toEqual('banana');
+  });
+
+  it('pluralizes a word with a custom suffix', () => {
+    const response = pluralize(10, 'berr', 'y', 'ies');
+    expect(response).toEqual('berries');
+  });
+
+  it('does not pluralize a word with a custom suffix and single quantity', () => {
+    const response = pluralize(1, 'berr', 'y', 'ies');
+    expect(response).toEqual('berry');
+  });
+});
+
+describe('dateRangesOverlap', () => {
+  it('should return false for non-overlapping dates', () => {
+    const response = dateRangesOverlap('2023-01-01', '2023-01-02', '2023-03-03', '2023-04-04');
+    expect(response).toEqual(false);
+  });
+
+  it('should return true for overlapping dates without optional params', () => {
+    const response = dateRangesOverlap('2019-12-12', null, '2023-01-01', '2023-03-03');
+    expect(response).toEqual(true);
+  });
+
+  it('should return true for overlapping dates with optional params', () => {
+    const response = dateRangesOverlap('2023-01-01', '2023-01-02', '2023-01-01', '2023-03-03');
+    expect(response).toEqual(true);
   });
 });

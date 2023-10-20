@@ -1,54 +1,51 @@
 import { Feature } from 'geojson';
-import moment from 'moment';
-import { COMPLETION_STATUS } from '../constants/status';
+import { z } from 'zod';
 import { ProjectMetadataPublish } from '../repositories/history-publish-repository';
+import { ProjectUser } from '../repositories/project-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
+
+export interface IProjectAdvancedFilters {
+  permit_number?: string;
+  project_programs?: number[];
+  start_date?: string;
+  end_date?: string;
+  keyword?: string;
+  project_name?: string;
+  species?: number[];
+}
 
 export interface IGetProject {
-  coordinator: GetCoordinatorData;
-  project: GetProjectData;
+  project: ProjectData;
   objectives: GetObjectivesData;
+  participants: (ProjectUser & SystemUser)[];
   location: GetLocationData;
   iucn: GetIUCNClassificationData;
-  funding: GetFundingData;
-  partnerships: GetPartnershipsData;
 }
 
-/**
- * Pre-processes GET /projects/{id} project data
- *
- * @export
- * @class GetProjectData
- */
-export class GetProjectData {
-  id: number;
-  uuid: string;
-  project_name: string;
-  project_type: number;
-  project_activities: number[];
-  start_date: string;
-  end_date: string;
-  comments: string;
-  completion_status: string;
-  revision_count: number;
+export const ProjectData = z.object({
+  project_id: z.number(),
+  uuid: z.string(),
+  project_name: z.string(),
+  project_programs: z.array(z.number()),
+  start_date: z.string(),
+  end_date: z.string().nullable(),
+  comments: z.string().nullable(),
+  revision_count: z.number()
+});
 
-  constructor(projectData?: any, activityData?: any[]) {
-    this.id = projectData?.project_id || null;
-    this.uuid = projectData?.uuid || '';
-    this.project_name = projectData?.name || '';
-    this.project_type = projectData?.pt_id || -1;
-    this.project_activities = (activityData?.length && activityData.map((item) => item.activity_id)) || [];
-    this.start_date = projectData?.start_date || '';
-    this.end_date = projectData?.end_date || '';
-    this.comments = projectData?.comments || '';
-    this.completion_status =
-      (projectData &&
-        projectData.end_date &&
-        moment(projectData.end_date).endOf('day').isBefore(moment()) &&
-        COMPLETION_STATUS.COMPLETED) ||
-      COMPLETION_STATUS.ACTIVE;
-    this.revision_count = projectData?.revision_count ?? null;
-  }
-}
+export type ProjectData = z.infer<typeof ProjectData>;
+
+export const ProjectListData = z.object({
+  project_id: z.number(),
+  uuid: z.string(),
+  project_name: z.string(),
+  project_programs: z.array(z.number()).default([]),
+  regions: z.array(z.string()).default([]),
+  start_date: z.string(),
+  end_date: z.string().nullable().optional()
+});
+
+export type ProjectListData = z.infer<typeof ProjectListData>;
 
 /**
  * Pre-processes GET /projects/{id} objectives data
@@ -58,37 +55,11 @@ export class GetProjectData {
  */
 export class GetObjectivesData {
   objectives: string;
-  caveats: string;
   revision_count: number;
 
   constructor(objectivesData?: any) {
     this.objectives = objectivesData?.objectives || '';
-    this.caveats = objectivesData?.caveats || '';
     this.revision_count = objectivesData?.revision_count ?? null;
-  }
-}
-
-/**
- * Pre-processes GET /projects/{id} coordinator data
- *
- * @export
- * @class GetCoordinatorData
- */
-export class GetCoordinatorData {
-  first_name: string;
-  last_name: string;
-  email_address: string;
-  coordinator_agency: string;
-  share_contact_details: string;
-  revision_count: number;
-
-  constructor(coordinatorData?: any) {
-    this.first_name = coordinatorData?.coordinator_first_name || '';
-    this.last_name = coordinatorData?.coordinator_last_name || '';
-    this.email_address = coordinatorData?.coordinator_email_address || '';
-    this.coordinator_agency = coordinatorData?.coordinator_agency_name || '';
-    this.share_contact_details = coordinatorData?.coordinator_public ? 'true' : 'false';
-    this.revision_count = coordinatorData?.revision_count ?? null;
   }
 }
 
@@ -104,7 +75,7 @@ export class GetLocationData {
   revision_count: number;
 
   constructor(locationData?: any) {
-    const locationDataItem = locationData && locationData.length && locationData[0];
+    const locationDataItem = locationData?.length && locationData[0];
 
     this.location_description = locationDataItem?.location_description || '';
     this.geometry = (locationDataItem?.geometry?.length && locationDataItem.geometry) || [];
@@ -129,70 +100,13 @@ export class GetIUCNClassificationData {
 
   constructor(iucnClassificationData?: any[]) {
     this.classificationDetails =
-      (iucnClassificationData &&
-        iucnClassificationData.map((item: any) => {
-          return {
-            classification: item.classification,
-            subClassification1: item.subclassification1,
-            subClassification2: item.subclassification2
-          };
-        })) ||
-      [];
-  }
-}
-
-interface IGetFundingSource {
-  id: number;
-  agency_id: number;
-  investment_action_category: number;
-  investment_action_category_name: string;
-  agency_name: string;
-  funding_amount: number;
-  start_date: string;
-  end_date: string;
-  agency_project_id: string;
-  revision_count: number;
-}
-
-export class GetFundingData {
-  fundingSources: IGetFundingSource[];
-
-  constructor(fundingData?: any[]) {
-    this.fundingSources =
-      (fundingData &&
-        fundingData.map((item: any) => {
-          return {
-            id: item.id,
-            agency_id: item.agency_id,
-            investment_action_category: item.investment_action_category,
-            investment_action_category_name: item.investment_action_category_name,
-            agency_name: item.agency_name,
-            funding_amount: item.funding_amount,
-            start_date: item.start_date,
-            end_date: item.end_date,
-            agency_project_id: item.agency_project_id,
-            revision_count: item.revision_count
-          };
-        })) ||
-      [];
-  }
-}
-
-/**
- * Pre-processes GET /projects/{id} partnerships data
- *
- * @export
- * @class GetPartnershipsData
- */
-export class GetPartnershipsData {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
-
-  constructor(indigenous_partnerships?: any[], stakeholder_partnerships?: any[]) {
-    this.indigenous_partnerships =
-      (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.id)) || [];
-    this.stakeholder_partnerships =
-      (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.partnership_name)) || [];
+      iucnClassificationData?.map((item: any) => {
+        return {
+          classification: item.classification,
+          subClassification1: item.subclassification1,
+          subClassification2: item.subclassification2
+        };
+      }) ?? [];
   }
 }
 

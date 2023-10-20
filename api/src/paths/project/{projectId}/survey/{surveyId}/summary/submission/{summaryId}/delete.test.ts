@@ -99,7 +99,7 @@ describe('deleteSummarySubmission', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(SummaryService.prototype, 'deleteSummarySubmission').resolves(null);
@@ -121,7 +121,7 @@ describe('deleteSummarySubmission', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(SummaryService.prototype, 'deleteSummarySubmission').resolves(1);

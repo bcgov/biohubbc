@@ -1,4 +1,5 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -7,13 +8,9 @@ import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAttachmentsData,
   GetReportAttachmentsData,
-  GetSurveyData,
-  GetSurveyFundingSources,
-  GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
-import { queries } from '../queries/queries';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
@@ -75,6 +72,56 @@ export interface ISurveyProprietorModel {
   disa_required: boolean;
 }
 
+const SurveyRecord = z.object({
+  project_id: z.number(),
+  survey_id: z.number(),
+  name: z.string().nullable(),
+  uuid: z.string().nullable(),
+  start_date: z.string(),
+  end_date: z.string().nullable(),
+  field_method_id: z.number().nullable(),
+  additional_details: z.string().nullable(),
+  ecological_season_id: z.number().nullable(),
+  intended_outcome_id: z.number().nullable(),
+  comments: z.string().nullable(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SurveyRecord = z.infer<typeof SurveyRecord>;
+
+const SurveyTypeRecord = z.object({
+  survey_type_id: z.number(),
+  survey_id: z.number(),
+  type_id: z.number(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number()
+});
+
+export type SurveyTypeRecord = z.infer<typeof SurveyTypeRecord>;
+
+export const StakeholderPartnershipRecord = z.object({
+  survey_stakeholder_partnership_id: z.number(),
+  survey_id: z.number(),
+  name: z.string()
+});
+
+export const IndigenousPartnershipRecord = z.object({
+  survey_first_nation_partnership_id: z.number(),
+  survey_id: z.number(),
+  first_nations_id: z.number()
+});
+
+export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnershipRecord>;
+
+export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
+
 const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
@@ -108,26 +155,18 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql<{ id: number }>(sqlStatement);
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get project survey ids', [
-        'SurveyRepository->getSurveyIdsByProjectId',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
 
     return response.rows;
   }
 
   /**
-   * Gets survey data for a given survey ID
+   * Gets a survey record for a given survey ID
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<GetSurveyData>}
+   * @return {*}  {Promise<SurveyRecord>}
    * @memberof SurveyRepository
    */
-  async getSurveyData(surveyId: number): Promise<GetSurveyData> {
+  async getSurveyData(surveyId: number): Promise<SurveyRecord> {
     const sqlStatement = SQL`
       SELECT
         *
@@ -137,18 +176,38 @@ export class SurveyRepository extends BaseRepository {
         survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, SurveyRecord);
 
-    const result = (response && response.rows && response.rows?.[0]) || null;
-
-    if (!result) {
+    if (!response.rows[0]) {
       throw new ApiExecuteSQLError('Failed to get project survey details data', [
         'SurveyRepository->getSurveyData',
         'response was null or undefined, expected response != null'
       ]);
     }
 
-    return new GetSurveyData(result);
+    return response.rows[0];
+  }
+
+  /**
+   * Gets survey types records for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*}  {Promise<SurveyTypeRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveyTypesData(surveyId: number): Promise<SurveyTypeRecord[]> {
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_type
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyTypeRecord);
+
+    return response.rows;
   }
 
   /**
@@ -171,16 +230,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetSpeciesData>(sqlStatement);
 
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get survey species data', [
-        'SurveyRepository->getSpeciesData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
-    return result;
+    return response.rows;
   }
 
   /**
@@ -214,7 +264,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows[0]) || null;
+    const result = response.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get survey purpose and methodology data', [
@@ -224,73 +274,6 @@ export class SurveyRepository extends BaseRepository {
     }
 
     return new GetSurveyPurposeAndMethodologyData(result);
-  }
-
-  /**
-   * Get Survey and Funding Source data for a given surveyId
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<GetSurveyFundingSources>
-   * @memberof SurveyRepository
-   */
-  async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
-    const sqlStatement = SQL`
-      SELECT
-        sfs.project_funding_source_id,
-        fs.funding_source_id,
-        pfs.funding_source_project_id,
-        pfs.funding_amount::numeric::int,
-        pfs.funding_start_date,
-        pfs.funding_end_date,
-        iac.investment_action_category_id,
-        iac.name as investment_action_category_name,
-        fs.name as agency_name
-      FROM
-        survey as s
-      RIGHT OUTER JOIN
-        survey_funding_source as sfs
-      ON
-        sfs.survey_id = s.survey_id
-      RIGHT OUTER JOIN
-        project_funding_source as pfs
-      ON
-        pfs.project_funding_source_id = sfs.project_funding_source_id
-      RIGHT OUTER JOIN
-        investment_action_category as iac
-      ON
-        pfs.investment_action_category_id = iac.investment_action_category_id
-      RIGHT OUTER JOIN
-        funding_source as fs
-      ON
-        iac.funding_source_id = fs.funding_source_id
-      WHERE
-        s.survey_id = ${surveyId}
-      GROUP BY
-        sfs.project_funding_source_id,
-        fs.funding_source_id,
-        pfs.funding_source_project_id,
-        pfs.funding_amount,
-        pfs.funding_start_date,
-        pfs.funding_end_date,
-        iac.investment_action_category_id,
-        iac.name,
-        fs.name
-      ORDER BY
-        pfs.funding_start_date;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to get survey funding sources data', [
-        'SurveyRepository->getSurveyFundingSourcesData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
-    return new GetSurveyFundingSources(result);
   }
 
   /**
@@ -309,7 +292,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<ISurveyProprietorModel>(sqlStatement);
 
-    return (response && response.rows && response.rows?.[0]) || null;
+    return response.rows[0];
   }
 
   /**
@@ -346,37 +329,13 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows && response.rows?.[0]) || null;
+    const result = response.rows?.[0];
 
     if (!result) {
-      return result;
+      return null;
     }
 
     return new GetSurveyProprietorData(result);
-  }
-
-  /**
-   * Get Survey location for a given survey ID
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<GetSurveyLocationDAta>
-   * @memberof SurveyRepository
-   */
-  async getSurveyLocationData(surveyId: number): Promise<GetSurveyLocationData> {
-    const sqlStatement = SQL`
-      SELECT
-        *
-      FROM
-        survey
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = (response && response.rows && response.rows?.[0]) || null;
-
-    return new GetSurveyLocationData(result);
   }
 
   /**
@@ -458,7 +417,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IGetLatestSurveyOccurrenceSubmission>(sqlStatement);
 
-    const result = (response && response.rows && response.rows?.[0]) || null;
+    const result = response.rows?.[0] || null;
 
     return result;
   }
@@ -508,13 +467,6 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql<IOccurrenceSubmissionMessagesResponse>(sqlStatement);
 
-    if (!response?.rows) {
-      throw new ApiExecuteSQLError('Failed to get occurrence submission messages', [
-        'SurveyRepository->getOccurrenceSubmissionMessages',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
     return response.rows;
   }
 
@@ -561,7 +513,7 @@ export class SurveyRepository extends BaseRepository {
     `;
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows) || null;
+    const result = response.rows;
 
     return new GetAttachmentsData(result);
   }
@@ -602,7 +554,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows) || null;
+    const result = response.rows;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get attachments data', [
@@ -629,59 +581,26 @@ export class SurveyRepository extends BaseRepository {
         name,
         start_date,
         end_date,
-        lead_first_name,
-        lead_last_name,
         field_method_id,
         additional_details,
         ecological_season_id,
-        intended_outcome_id,
-        location_name,
-        geojson,
-        geography
+        intended_outcome_id
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
-        ${surveyData.survey_details.biologist_first_name},
-        ${surveyData.survey_details.biologist_last_name},
         ${surveyData.purpose_and_methodology.field_method_id},
         ${surveyData.purpose_and_methodology.additional_details},
         ${surveyData.purpose_and_methodology.ecological_season_id},
-        ${surveyData.purpose_and_methodology.intended_outcome_id},
-        ${surveyData.location.survey_area_name},
-        ${JSON.stringify(surveyData.location.geometry)}
-    `;
-
-    if (surveyData.location.geometry && surveyData.location.geometry.length) {
-      const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(surveyData.location.geometry);
-
-      sqlStatement.append(SQL`
-        ,public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-      sqlStatement.append(geometryCollectionSQL);
-
-      sqlStatement.append(SQL`
-        , 4326)))
-      `);
-    } else {
-      sqlStatement.append(SQL`
-      ,null
-      `);
-    }
-
-    sqlStatement.append(SQL`
+        ${surveyData.purpose_and_methodology.intended_outcome_id}
       )
       RETURNING
         survey_id as id;
-    `);
+    `;
 
     const response = await this.connection.sql(sqlStatement);
-
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response.rows?.[0];
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to insert survey data', [
@@ -691,6 +610,34 @@ export class SurveyRepository extends BaseRepository {
     }
 
     return result.id;
+  }
+
+  /**
+   * Inserts new survey_type records.
+   *
+   * @param {number[]} typeIds
+   * @param {number} surveyId
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyRepository
+   */
+  async insertSurveyTypes(typeIds: number[], surveyId: number): Promise<void> {
+    const queryBuilder = getKnex()
+      .table('survey_type')
+      .insert(
+        typeIds.map((typeId) => ({
+          type_id: typeId,
+          survey_id: surveyId
+        }))
+      );
+
+    const response = await this.connection.knex(queryBuilder);
+
+    if (response.rowCount !== typeIds.length) {
+      throw new ApiExecuteSQLError('Failed to insert survey types data', [
+        'SurveyRepository->insertSurveyTypes',
+        `rowCount was ${response.rowCount}, expected rowCount = ${typeIds.length}`
+      ]);
+    }
   }
 
   /**
@@ -715,9 +662,9 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response.rows?.[0];
 
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert focal species data', [
         'SurveyRepository->insertSurveyData',
         'response was null or undefined, expected response != null'
@@ -749,9 +696,9 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response.rows?.[0];
 
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert ancillary species data', [
         'SurveyRepository->insertSurveyData',
         'response was null or undefined, expected response != null'
@@ -781,9 +728,9 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response.rows?.[0];
 
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert vantage codes', [
         'SurveyRepository->insertVantageCodes',
         'response was null or undefined, expected response != null'
@@ -826,9 +773,9 @@ export class SurveyRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement);
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response.rows?.[0];
 
-    if (!result || !result.id) {
+    if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert survey proprietor data', [
         'SurveyRepository->insertSurveyProprietor',
         'response was null or undefined, expected response != null'
@@ -921,27 +868,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Links a Survey and a Funding source together
-   *
-   * @param {number} funding_source_id
-   * @param {number} surveyId
-   * @returns {*} Promise<void>
-   * @memberof SurveyRepository
-   */
-  async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
-    const sqlStatement = SQL`
-      INSERT INTO survey_funding_source (
-        survey_id,
-        project_funding_source_id
-      ) VALUES (
-        ${surveyId},
-        ${funding_source_id}
-      );
-    `;
-    await this.connection.query(sqlStatement.text, sqlStatement.values);
-  }
-
-  /**
    * Updates Survey details
    *
    * @param {number} surveyId
@@ -959,10 +885,7 @@ export class SurveyRepository extends BaseRepository {
         ...fieldsToUpdate,
         name: surveyData.survey_details.name,
         start_date: surveyData.survey_details.start_date,
-        end_date: surveyData.survey_details.end_date,
-        lead_first_name: surveyData.survey_details.lead_first_name,
-        lead_last_name: surveyData.survey_details.lead_last_name,
-        revision_count: surveyData.survey_details.revision_count
+        end_date: surveyData.survey_details.end_date
       };
     }
 
@@ -972,52 +895,41 @@ export class SurveyRepository extends BaseRepository {
         field_method_id: surveyData.purpose_and_methodology.field_method_id,
         additional_details: surveyData.purpose_and_methodology.additional_details,
         ecological_season_id: surveyData.purpose_and_methodology.ecological_season_id,
-        intended_outcome_id: surveyData.purpose_and_methodology.intended_outcome_id,
-        revision_count: surveyData.purpose_and_methodology.revision_count
+        intended_outcome_id: surveyData.purpose_and_methodology.intended_outcome_id
       };
     }
 
-    if (surveyData.location) {
-      const geometrySqlStatement = SQL``;
-
-      if (surveyData.location.geometry && surveyData.location.geometry.length) {
-        geometrySqlStatement.append(SQL`
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-        const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(surveyData.location.geometry);
-        geometrySqlStatement.append(geometryCollectionSQL);
-
-        geometrySqlStatement.append(SQL`
-        , 4326)))
-      `);
-      } else {
-        geometrySqlStatement.append(SQL`
-        null
-      `);
-      }
-
-      fieldsToUpdate = {
-        ...fieldsToUpdate,
-        location_name: surveyData.location.survey_area_name,
-        geojson: JSON.stringify(surveyData.location.geometry),
-        geography: knex.raw(geometrySqlStatement.sql, geometrySqlStatement.values),
-        revision_count: surveyData.location.revision_count
-      };
-    }
-
-    const updateSurveyQueryBuilder = knex('survey').update(fieldsToUpdate).where('survey_id', surveyId);
+    const updateSurveyQueryBuilder = knex('survey')
+      .update(fieldsToUpdate)
+      .where('survey_id', surveyId)
+      .andWhere('revision_count', surveyData.survey_details.revision_count);
 
     const result = await this.connection.knex(updateSurveyQueryBuilder);
 
-    if (!result || !result.rowCount) {
+    if (!result?.rowCount) {
       throw new ApiExecuteSQLError('Failed to update survey data', [
         'SurveyRepository->updateSurveyDetailsData',
         'response was null or undefined, expected response != null'
       ]);
     }
+  }
+
+  /**
+   * Deletes Survey type data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
+  async deleteSurveyTypesData(surveyId: number) {
+    const sqlStatement = SQL`
+      DELETE
+        from survey_type
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    await this.connection.sql(sqlStatement);
   }
 
   /**
@@ -1051,24 +963,6 @@ export class SurveyRepository extends BaseRepository {
         permit
       SET
         survey_id = ${null}
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    await this.connection.sql(sqlStatement);
-  }
-
-  /**
-   * Deletes Survey vantage codes for a given survey ID
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<void>
-   * @memberof SurveyRepository
-   */
-  async deleteSurveyFundingSourcesData(surveyId: number) {
-    const sqlStatement = SQL`
-      DELETE
-        from survey_funding_source
       WHERE
         survey_id = ${surveyId};
     `;
@@ -1137,7 +1031,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
 
-    if (!response || response.rowCount !== 1) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert survey occurrence submission', [
         'ErrorRepository->insertSurveyOccurrenceSubmission',
         'rowCount was null or undefined, expected rowCount = 1'
@@ -1170,7 +1064,7 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
 
-    if (!response || response.rowCount !== 1) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to update survey occurrence submission', [
         'ErrorRepository->updateSurveyOccurrenceSubmission',
         'rowCount was null or undefined, expected rowCount = 1'
@@ -1198,12 +1092,179 @@ export class SurveyRepository extends BaseRepository {
 
     const response = await this.connection.knex<{ submissionId: number }>(queryBuilder);
 
-    if (!response || response.rowCount !== 1) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to delete survey occurrence submission', [
         'ErrorRepository->deleteOccurrenceSubmission',
         'rowCount was null or undefined, expected rowCount = 1'
       ]);
     }
+
+    return response.rowCount;
+  }
+
+  /**
+   * Gets all indigenous partnerships belonging to the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<GetPartnershipsData['indigenous_partnerships'][]>}
+   * @memberof SurveyRepository
+   */
+  async getIndigenousPartnershipsBySurveyId(surveyId: number): Promise<IndigenousPartnershipRecord[]> {
+    defaultLog.debug({ label: 'getIndigenousPartnershipsBySurveyId', surveyId });
+
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_first_nation_partnership sfnp
+      WHERE
+        sfnp.survey_id = ${surveyId}
+    `;
+
+    const response = await this.connection.sql<IndigenousPartnershipRecord>(sqlStatement);
+
+    const result = response.rows;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get survey Indigenous Partnerships data', [
+        'SurveyRepository->getIndigenousPartnershipsBySurveyId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return result;
+  }
+
+  /**
+   * Gets all stakeholder partnerships belonging to the given survey
+   * @param {number} surveyId
+   * @return {*}  {Promise<GetPartnershipsData['stakeholder_partnerships'][]>}
+   * @memberof SurveyRepository
+   */
+  async getStakeholderPartnershipsBySurveyId(surveyId: number): Promise<StakeholderPartnershipRecord[]> {
+    defaultLog.debug({ label: 'getStakeholderPartnershipsBySurveyId', surveyId });
+
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey_stakeholder_partnership
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql<StakeholderPartnershipRecord>(sqlStatement);
+
+    const result = response.rows;
+
+    if (!result) {
+      throw new ApiExecuteSQLError('Failed to get survey Stakeholder Partnerships data', [
+        'SurveyRepository->getStakeholderPartnershipsBySurveyId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return result;
+  }
+
+  /**
+   * Inserts indegenous partnership records for the given survey
+   *
+   * @param {number[]} firstNationsIds
+   * @param {number} surveyId
+   * @return {*}  {Promise<IndigenousPartnershipRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async insertIndigenousPartnerships(
+    firstNationsIds: number[],
+    surveyId: number
+  ): Promise<IndigenousPartnershipRecord[]> {
+    defaultLog.debug({ label: 'insertIndigenousPartnerships', firstNationsIds, surveyId });
+    const queryBuilder = getKnex()
+      .table('survey_first_nation_partnership')
+      .insert(
+        firstNationsIds.map((firstNationsId: number) => ({
+          first_nations_id: firstNationsId,
+          survey_id: surveyId
+        }))
+      )
+      .returning('*');
+
+    const response = await this.connection.knex<IndigenousPartnershipRecord>(queryBuilder);
+
+    if (response.rowCount === 0) {
+      throw new ApiExecuteSQLError('Failed to insert survey indigenous partnerships', [
+        'ErrorRepository->insertIndigenousPartnerships',
+        'rowCount was null or undefined, expected rowCount != 0'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * Inserts stakeholder partnership records for the given survey
+   *
+   * @param {string[]} stakeholderPartners
+   * @param {number} surveyId
+   * @return {*}  {Promise<StakeholderPartnershipRecord[]>}
+   * @memberof SurveyRepository
+   */
+  async insertStakeholderPartnerships(
+    stakeholderPartners: string[],
+    surveyId: number
+  ): Promise<StakeholderPartnershipRecord[]> {
+    defaultLog.debug({ label: 'insertStakeholderPartnerships', stakeholderPartners, surveyId });
+    const queryBuilder = getKnex()
+      .table('survey_stakeholder_partnership')
+      .insert(
+        stakeholderPartners.map((stakeholder: string) => ({
+          name: stakeholder,
+          survey_id: surveyId
+        }))
+      )
+      .returning('*');
+
+    const response = await this.connection.knex<StakeholderPartnershipRecord>(queryBuilder);
+
+    if (response.rowCount === 0) {
+      throw new ApiExecuteSQLError('Failed to insert survey stakeholder partnerships', [
+        'ErrorRepository->insertStakeholderPartnerships',
+        'rowCount was null or undefined, expected rowCount != 0'
+      ]);
+    }
+
+    return response.rows;
+  }
+
+  /**
+   * Deletes all indgenous partnership records for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>} The number of rows affected
+   * @memberof SurveyRepository
+   */
+  async deleteIndigenousPartnershipsData(surveyId: number): Promise<number> {
+    defaultLog.debug({ label: 'deleteIndigenousPartnershipsData', surveyId });
+    const queryBuilder = getKnex().table('survey_first_nation_partnership').delete().where('survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder);
+
+    return response.rowCount;
+  }
+
+  /**
+   * Deletes all stakeholder partnership records for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>} The number of rows affected
+   * @memberof SurveyRepository
+   */
+  async deleteStakeholderPartnershipsData(surveyId: number): Promise<number> {
+    defaultLog.debug({ label: 'deleteStakeholderPartnershipsData', surveyId });
+    const queryBuilder = getKnex().table('survey_stakeholder_partnership').delete().where('survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder);
 
     return response.rowCount;
   }

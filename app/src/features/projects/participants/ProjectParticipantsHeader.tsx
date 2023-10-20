@@ -1,12 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
 import { mdiArrowLeft, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -16,7 +16,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AddProjectParticipantsForm, {
   AddProjectParticipantsFormInitialValues,
@@ -86,7 +86,11 @@ const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
 
   const handleAddProjectParticipantsSave = async (values: IAddProjectParticipantsForm) => {
     try {
-      const response = await biohubApi.project.addProjectParticipants(projectContext.projectId, values.participants);
+      //TODO: update to follow new api changes
+      const response = await biohubApi.projectParticipants.addProjectParticipants(
+        projectContext.projectId,
+        values.participants
+      );
 
       if (!response) {
         openErrorDialog({
@@ -135,7 +139,7 @@ const ProjectParticipantsHeader = (props: IProjectParticipantsHeaderProps) => {
                   aria-label={'Add Team Members'}
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   onClick={() => setOpenAddParticipantsDialog(true)}>
-                  <strong>Add Team Members</strong>
+                  Add Team Members
                 </Button>
               </Box>
             </Box>

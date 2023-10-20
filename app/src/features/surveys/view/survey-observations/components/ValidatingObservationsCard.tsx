@@ -1,13 +1,13 @@
-import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import { mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
-import React from 'react';
 import BorderLinearProgress from './BorderLinearProgress';
 
 const useStyles = makeStyles((theme: Theme) => ({

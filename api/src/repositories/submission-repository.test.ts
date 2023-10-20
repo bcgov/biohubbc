@@ -24,7 +24,7 @@ describe('SubmissionRepository', () => {
         ]
       } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SubmissionRepository(dbConnection);
@@ -36,7 +36,7 @@ describe('SubmissionRepository', () => {
     it('should throw `Failed to update` error', async () => {
       const mockResponse = ({} as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
 
       const repo = new SubmissionRepository(dbConnection);

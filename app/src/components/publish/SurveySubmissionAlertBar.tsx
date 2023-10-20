@@ -1,14 +1,14 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiClose, mdiInformationOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import { IGetSurveyAttachmentsResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 const SurveySubmissionAlertBar = () => {
   const surveyContext = useContext(SurveyContext);
@@ -39,7 +39,7 @@ const SurveySubmissionAlertBar = () => {
 
   const hasUnsubmittedData = submissionStatuses.some((status) => status === 'UNSUBMITTED');
 
-  const alertSeverity = hasUnsubmittedData ? 'info' : 'success';
+  const alertSeverity = hasUnsubmittedData ? 'error' : 'success';
   const alertTitle = hasUnsubmittedData
     ? 'This survey contains unsubmitted information'
     : 'All survey information submitted';
@@ -51,12 +51,12 @@ const SurveySubmissionAlertBar = () => {
   return (
     <Box mb={3}>
       <Alert
-        variant="outlined"
+        variant="filled"
         severity={alertSeverity}
         icon={<Icon path={mdiInformationOutline} size={1} />}
         onClose={() => setForceAlertClose(true)}
         action={
-          <IconButton color="primary" onClick={() => setForceAlertClose(true)}>
+          <IconButton color="inherit" onClick={() => setForceAlertClose(true)}>
             <Icon path={mdiClose} size={1} />
           </IconButton>
         }>

@@ -13,6 +13,7 @@ import {
   ProjectAttachmentPublish,
   ProjectMetadataPublish,
   ProjectReportPublish,
+  PublishStatus,
   SurveyAttachmentPublish,
   SurveyMetadataPublish,
   SurveyReportPublish,
@@ -273,107 +274,136 @@ export class HistoryPublishService extends DBService {
   }
 
   /**
-   *  Returns true if a given survey has any unpublished attachments and false if no unpublished attachments are found
+   * Returns the publish status of a given survey's attachments metadata
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<boolean>}
-   */
-  async hasUnpublishedSurveyAttachments(surveyId: number): Promise<boolean> {
-    const count_unpublished_attachments = (await this.historyRepository.getCountSurveyUnpublishedAttachments(surveyId))
-      .rows[0]?.count;
-
-    return count_unpublished_attachments > 0;
-  }
-
-  /**
-   *  Returns true if a given survey has any unpublished reports and false if no unpublished reports are found
-   *
-   * @param {number} surveyId
-   * @returns {*} {Promise<boolean>}
-   */
-  async hasUnpublishedSurveyReports(surveyId: number): Promise<boolean> {
-    const count_unpublished_reports = (await this.historyRepository.getCountSurveyUnpublishedReports(surveyId)).rows[0]
-      ?.count;
-
-    return count_unpublished_reports > 0;
-  }
-
-  /**
-   * Determines if a survey has unsubmitted observations
-   * 1) Gets the latest observation occurrence record that may be unpublished
-   * 2) Determines if a publishing record exists
-   * Returns true if survey has unsubmitted observations
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<boolean>}
+   * @return {*}  {Promise<PublishStatus>}
    * @memberof HistoryPublishService
    */
-  async hasUnpublishedObservation(surveyId: number): Promise<boolean> {
+  async surveyAttachmentsPublishStatus(surveyId: number): Promise<PublishStatus> {
+    const attachmentsPublishData = await this.historyRepository.getSurveyAttachmentsWithPublishData(surveyId);
+
+    if (attachmentsPublishData.length === 0) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (attachmentsPublishData.some((attachment) => attachment.survey_attachment_publish_id !== null)) {
+      return PublishStatus.SUBMITTED;
+    }
+
+    return PublishStatus.UNSUBMITTED;
+  }
+
+  /**
+   * Returns the publish status of a given survey's reports metadata
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<PublishStatus>}
+   * @memberof HistoryPublishService
+   */
+  async surveyReportsPublishStatus(surveyId: number): Promise<PublishStatus> {
+    const reportsPublishData = await this.historyRepository.getSurveyReportsWithPublishData(surveyId);
+
+    if (reportsPublishData.length === 0) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (reportsPublishData.some((attachment) => attachment.survey_report_publish_id !== null)) {
+      return PublishStatus.SUBMITTED;
+    }
+
+    return PublishStatus.UNSUBMITTED;
+  }
+
+  /**
+   * Returns the publish status of a given survey's observations
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<PublishStatus>}
+   * @memberof HistoryPublishService
+   */
+  async observationPublishStatus(surveyId: number): Promise<PublishStatus> {
     const latestUndeletedObservationRecordId = (
       await this.historyRepository.getLatestUndeletedObservationRecordId(surveyId)
     ).rows[0]?.occurrence_submission_id;
 
     if (!latestUndeletedObservationRecordId) {
-      return false;
+      return PublishStatus.NO_DATA;
     }
 
     const publish_record = await this.historyRepository.getOccurrenceSubmissionPublishRecord(
       latestUndeletedObservationRecordId
     );
-    if (publish_record !== null) {
-      return false;
+    if (publish_record?.occurrence_submission_publish_id) {
+      return PublishStatus.SUBMITTED;
     }
 
-    return true;
+    return PublishStatus.UNSUBMITTED;
   }
 
   /**
-   *  Returns true if a given survey has any unpublished summary results and false if no unpublished summary results are found
+   * Return PublishStatus of a given survey's summary results
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<boolean>}
+   * @return {*}  {Promise<PublishStatus>}
+   * @memberof HistoryPublishService
    */
-  async hasUnpublishedSummaryResults(surveyId: number): Promise<boolean> {
+  async summaryPublishStatus(surveyId: number): Promise<PublishStatus> {
     const service = new SummaryService(this.connection);
     const latest_summary = await service.getLatestSurveySummarySubmission(surveyId);
 
     if (!latest_summary) {
-      return false;
+      return PublishStatus.NO_DATA;
     }
     const publish_record = await this.historyRepository.getSurveySummarySubmissionPublishRecord(
       latest_summary.survey_summary_submission_id
     );
-    if (publish_record !== null) {
-      return false;
+    if (publish_record?.survey_summary_submission_publish_id) {
+      return PublishStatus.SUBMITTED;
     }
 
-    return true;
+    return PublishStatus.UNSUBMITTED;
   }
 
   /**
-   *  Returns true if a given project has any unpublished attachments and false if no unpublished attachments are found
+   * Returns the publish status of a given project's attachments metadata
    *
    * @param {number} projectId
-   * @returns {*} {Promise<boolean>}
+   * @return {*}  {Promise<PublishStatus>}
+   * @memberof HistoryPublishService
    */
-  async hasUnpublishedProjectAttachments(projectId: number): Promise<boolean> {
-    const count_unpublished_attachments = (
-      await this.historyRepository.getCountProjectUnpublishedAttachments(projectId)
-    ).rows[0]?.count;
+  async projectAttachmentsPublishStatus(projectId: number): Promise<PublishStatus> {
+    const attachmentsPublishData = await this.historyRepository.getProjectAttachmentsWithPublishData(projectId);
 
-    return count_unpublished_attachments > 0;
+    if (attachmentsPublishData.length === 0) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (attachmentsPublishData.some((attachment) => attachment.project_attachment_publish_id !== null)) {
+      return PublishStatus.SUBMITTED;
+    }
+
+    return PublishStatus.UNSUBMITTED;
   }
 
   /**
-   *  Returns true if a given project has any unpublished reports and false if no unpublished reports are found
+   * Returns the publish status of a given project's reports metadata
    *
    * @param {number} projectId
-   * @returns {*} {Promise<boolean>}
+   * @return {*}  {Promise<PublishStatus>}
+   * @memberof HistoryPublishService
    */
-  async hasUnpublishedProjectReports(projectId: number): Promise<boolean> {
-    const count_unpublished_reports = (await this.historyRepository.getCountProjectUnpublishedReports(projectId))
-      .rows[0]?.count;
+  async projectReportsPublishStatus(projectId: number): Promise<PublishStatus> {
+    const attachmentsPublishData = await this.historyRepository.getProjectReportsWithPublishData(projectId);
 
-    return count_unpublished_reports > 0;
+    if (attachmentsPublishData.length === 0) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (attachmentsPublishData.some((attachment) => attachment.project_report_publish_id !== null)) {
+      return PublishStatus.SUBMITTED;
+    }
+
+    return PublishStatus.UNSUBMITTED;
   }
 }

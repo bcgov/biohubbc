@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../../constants/administrative-activity';
 import * as db from '../../../../database/db';
-import { UserObject } from '../../../../models/user';
+import { SystemUser } from '../../../../repositories/user-repository';
+import { AdministrativeActivityService } from '../../../../services/administrative-activity-service';
 import { UserService } from '../../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
-import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../administrative-activities';
-import * as administrative_activity from '../../../administrative-activity';
 import * as approve_request from './approve';
 
 chai.use(sinonChai);
@@ -65,20 +65,28 @@ describe('approveAccessRequest', () => {
 
     const systemUserId = 4;
     const existingRoleIds = [1, 2];
-    const mockSystemUser: UserObject = {
-      id: systemUserId,
+    const mockSystemUser: SystemUser = {
+      system_user_id: systemUserId,
       user_identifier: '',
-      user_guid: 'aaaa',
+      user_guid: '',
       identity_source: 'idir',
       record_end_date: '',
       role_ids: existingRoleIds,
-      role_names: []
+      role_names: [],
+      email: '',
+      family_name: 'lname',
+      given_name: 'fname',
+      display_name: '',
+      agency: null
     };
     const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockSystemUser);
 
     const addSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
 
-    const updateAdministrativeActivityStub = sinon.stub(administrative_activity, 'updateAdministrativeActivity');
+    const updateAdministrativeActivityStub = sinon.stub(
+      AdministrativeActivityService.prototype,
+      'putAdministrativeActivity'
+    );
 
     const requestHandler = approve_request.approveAccessRequest();
 
@@ -88,10 +96,6 @@ describe('approveAccessRequest', () => {
 
     expect(ensureSystemUserStub).to.have.been.calledOnce;
     expect(addSystemRolesStub).to.have.been.calledWith(systemUserId, expectedRoleIdsToAdd);
-    expect(updateAdministrativeActivityStub).to.have.been.calledWith(
-      1,
-      ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.ACTIONED,
-      mockDBConnection
-    );
+    expect(updateAdministrativeActivityStub).to.have.been.calledWith(1, ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.ACTIONED);
   });
 });

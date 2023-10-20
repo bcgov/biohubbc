@@ -1,16 +1,30 @@
 import { Feature } from 'geojson';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
+import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
+import { SurveyBlockRecord } from '../repositories/survey-block-repository';
+import { SurveyLocationRecord } from '../repositories/survey-location-repository';
+import { SurveyUser } from '../repositories/survey-participation-repository';
+import { SystemUser } from '../repositories/user-repository';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
   species: GetFocalSpeciesData & GetAncillarySpeciesData;
   permit: GetPermitData;
+  funding_sources: GetSurveyFundingSourceData[];
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
-  funding: GetSurveyFundingSources;
   proprietor: GetSurveyProprietorData | null;
-  location: GetSurveyLocationData;
+  locations: SurveyLocationRecord[];
+  participants: (SurveyUser & SystemUser)[];
+  partnerships: ISurveyPartnerships;
+  site_selection: SiteSelectionData;
+  blocks: SurveyBlockRecord[];
 };
+
+export interface ISurveyPartnerships {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+}
 
 export class GetSurveyData {
   id: number;
@@ -19,11 +33,9 @@ export class GetSurveyData {
   survey_name: string;
   start_date: string;
   end_date: string;
-  biologist_first_name: string;
-  biologist_last_name: string;
-  survey_area_name: string;
-  geometry: Feature[];
+  survey_types: number[];
   revision_count: number;
+  geometry: Feature[];
 
   constructor(obj?: any) {
     this.id = obj?.survey_id || null;
@@ -33,10 +45,32 @@ export class GetSurveyData {
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.geometry = (obj?.geojson?.length && obj.geojson) || [];
-    this.biologist_first_name = obj?.lead_first_name || '';
-    this.biologist_last_name = obj?.lead_last_name || '';
-    this.survey_area_name = obj?.location_name || '';
+    this.survey_types = (obj?.survey_types?.length && obj.survey_types) || [];
     this.revision_count = obj?.revision_count || 0;
+  }
+}
+
+export class GetSurveyFundingSourceData {
+  survey_funding_source_id: number;
+  survey_id: number;
+  funding_source_id: number;
+  amount: number;
+  revision_count?: number;
+  funding_source_name?: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  description?: string;
+
+  constructor(obj?: any) {
+    this.survey_funding_source_id = obj?.survey_funding_source_id || null;
+    this.funding_source_id = obj?.funding_source_id || null;
+    this.survey_id = obj?.survey_id || null;
+    this.amount = obj?.amount || null;
+    this.revision_count = obj?.revision_count || 0;
+    this.funding_source_name = obj?.funding_source_name || null;
+    this.start_date = obj?.start_date || null;
+    this.end_date = obj?.end_date || null;
+    this.description = obj?.description || null;
   }
 }
 
@@ -84,7 +118,7 @@ export class GetPermitData {
         permit_id: item.permit_id,
         permit_number: item.number,
         permit_type: item.type
-      })) || [];
+      })) ?? [];
   }
 }
 
@@ -103,41 +137,6 @@ export class GetSurveyPurposeAndMethodologyData {
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
     this.revision_count = obj?.revision_count ?? 0;
-  }
-}
-
-interface IGetSurveyFundingSource {
-  pfs_id: number;
-  funding_amount: number;
-  funding_source_id: number;
-  funding_start_date: string;
-  funding_end_date: string;
-  investment_action_category_id: number;
-  investment_action_category_name: string;
-  agency_name: string;
-  funding_source_project_id: string;
-}
-
-export class GetSurveyFundingSources {
-  funding_sources: IGetSurveyFundingSource[];
-
-  constructor(obj?: any[]) {
-    this.funding_sources =
-      (obj &&
-        obj.map((item: any) => {
-          return {
-            pfs_id: item.project_funding_source_id,
-            funding_amount: item.funding_amount,
-            funding_source_id: item.funding_source_id,
-            funding_start_date: item.funding_start_date,
-            funding_end_date: item.funding_end_date,
-            investment_action_category_id: item.investment_action_category_id,
-            investment_action_category_name: item.investment_action_category_name,
-            agency_name: item.agency_name,
-            funding_source_project_id: item.funding_source_project_id
-          };
-        })) ||
-      [];
   }
 }
 
@@ -166,12 +165,18 @@ export type SurveySupplementaryData = {
 };
 
 export class GetSurveyLocationData {
-  survey_area_name: string;
-  geometry: Feature[];
+  survey_spatial_component_id: number;
+  name: string;
+  description: string;
+  geojson: Feature[];
+  revision_count: number;
 
   constructor(obj?: any) {
-    this.survey_area_name = obj?.location_name || '';
-    this.geometry = (obj?.geojson?.length && obj.geojson) || [];
+    this.survey_spatial_component_id = obj?.survey_spatial_component_id || null;
+    this.name = obj?.name || null;
+    this.description = obj?.description || null;
+    this.geojson = (obj?.geojson?.length && obj.geojson) || [];
+    this.revision_count = obj?.revision_count || 0;
   }
 }
 

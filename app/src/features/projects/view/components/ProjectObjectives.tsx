@@ -1,7 +1,7 @@
 import assert from 'assert';
 import ReadMoreField from 'components/fields/ReadMoreField';
 import { ProjectContext } from 'contexts/projectContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 /**
  * Project objectives content for a project.

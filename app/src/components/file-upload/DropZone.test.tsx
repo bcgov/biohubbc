@@ -1,5 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
-import React from 'react';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import DropZone from './DropZone';
 
 const onFiles = jest.fn();
@@ -18,10 +17,10 @@ describe('DropZone', () => {
   it('renders default maximum file size text', () => {
     const { getByTestId } = renderContainer();
 
-    expect(getByTestId('dropzone-max-size-text').textContent).toEqual('Maximum file size: 50 MB');
+    expect(getByTestId('dropzone-max-size-text').textContent).toEqual('Maximum size: 50 MB');
   });
 
-  it('renders default maximum file cunt text', () => {
+  it('renders default maximum file count text', () => {
     const { getByTestId } = renderContainer();
 
     expect(getByTestId('dropzone-max-files-text').textContent).toEqual('Maximum files: 10');

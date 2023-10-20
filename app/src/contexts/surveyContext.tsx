@@ -2,8 +2,12 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
-import { IGetSurveyAttachmentsResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React, { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
+import {
+  IGetSampleSiteResponse,
+  IGetSurveyAttachmentsResponse,
+  IGetSurveyForViewResponse
+} from 'interfaces/useSurveyApi.interface';
+import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 
 /**
@@ -50,6 +54,14 @@ export interface ISurveyContext {
   artifactDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>;
 
   /**
+   * The Data Loader used to load survey sample site data
+   *
+   * @type {DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>}
+   * @memberof ISurveyContext
+   */
+  sampleSiteDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>;
+
+  /**
    * The project ID belonging to the current project
    *
    * @type {number}
@@ -75,6 +87,7 @@ export const SurveyContext = createContext<ISurveyContext>({
   >,
   summaryDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSummaryResultsResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
+  sampleSiteDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>,
   projectId: -1,
   surveyId: -1
 });
@@ -85,7 +98,9 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const observationDataLoader = useDataLoader(biohubApi.observation.getObservationSubmission);
   const summaryDataLoader = useDataLoader(biohubApi.survey.getSurveySummarySubmission);
   const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
-  const urlParams = useParams();
+  const sampleSiteDataLoader = useDataLoader(biohubApi.samplingSite.getSampleSites);
+
+  const urlParams: Record<string, string | number | undefined> = useParams();
 
   if (!urlParams['id']) {
     throw new Error(
@@ -106,6 +121,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   observationDataLoader.load(projectId, surveyId);
   summaryDataLoader.load(projectId, surveyId);
   artifactDataLoader.load(projectId, surveyId);
+  sampleSiteDataLoader.load(projectId, surveyId);
 
   /**
    * Refreshes the current survey object whenever the current survey ID changes from the currently loaded survey.
@@ -121,6 +137,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
       observationDataLoader.refresh(projectId, surveyId);
       summaryDataLoader.refresh(projectId, surveyId);
       artifactDataLoader.refresh(projectId, surveyId);
+      sampleSiteDataLoader.refresh(projectId, surveyId);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,10 +149,19 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
       observationDataLoader,
       summaryDataLoader,
       artifactDataLoader,
+      sampleSiteDataLoader,
       projectId,
       surveyId
     };
-  }, [surveyDataLoader, observationDataLoader, summaryDataLoader, artifactDataLoader, projectId, surveyId]);
+  }, [
+    surveyDataLoader,
+    observationDataLoader,
+    summaryDataLoader,
+    artifactDataLoader,
+    sampleSiteDataLoader,
+    projectId,
+    surveyId
+  ]);
 
   return <SurveyContext.Provider value={surveyContext}>{props.children}</SurveyContext.Provider>;
 };

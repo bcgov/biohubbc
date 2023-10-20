@@ -1,27 +1,39 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import useTheme from '@material-ui/core/styles/useTheme';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { LoadingButton } from '@mui/lab';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import useTheme from '@mui/material/styles/useTheme';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Formik, FormikValues } from 'formik';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 export interface IEditDialogComponentProps<T> {
   element: any;
   initialValues: T;
   validationSchema: any;
+  validateOnBlur?: boolean;
+  validateOnChange?: boolean;
 }
 
 export interface IEditDialogProps<T> {
   /**
    * The dialog window title text.
    *
+   * @type {string | JSX.Element}
+   * @memberof IEditDialogProps
+   */
+  dialogTitle: string | JSX.Element;
+
+  /**
+   * The dialog window content text.
+   *
    * @type {string}
    * @memberof IEditDialogProps
    */
-  dialogTitle: string;
+  dialogText?: string;
 
   /**
    * The label of the `onSave` button.
@@ -50,6 +62,11 @@ export interface IEditDialogProps<T> {
    * Error message to display when an error exists
    */
   dialogError?: string;
+
+  /**
+   * Boolean to track to show a spinner
+   */
+  dialogLoading?: boolean;
 
   /**
    * Callback fired if the 'No' button is clicked.
@@ -87,29 +104,35 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
       initialValues={props.component.initialValues}
       enableReinitialize={true}
       validationSchema={props.component.validationSchema}
-      validateOnBlur={true}
-      validateOnChange={false}
+      validateOnBlur={props.component.validateOnBlur ?? true}
+      validateOnChange={props.component.validateOnChange ?? false}
       onSubmit={(values) => {
         props.onSave(values);
       }}>
       {(formikProps) => (
         <Dialog
+          data-testid="edit-dialog"
           fullScreen={fullScreen}
           maxWidth="xl"
           open={props.open}
           aria-labelledby="edit-dialog-title"
           aria-describedby="edit-dialog-description">
           <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
-          <DialogContent>{props.component.element}</DialogContent>
+          <DialogContent>
+            {props.dialogText && <DialogContentText sx={{ mb: 4 }}>{props.dialogText}</DialogContentText>}
+            {props.component.element}
+          </DialogContent>
           <DialogActions>
-            <Button
+            <LoadingButton
+              loading={props.dialogLoading || formikProps.isValidating || false}
+              disabled={formikProps.status?.forceDisable}
               onClick={formikProps.submitForm}
               color="primary"
               variant="contained"
               autoFocus
               data-testid="edit-dialog-save">
               {props.dialogSaveButtonLabel || 'Save Changes'}
-            </Button>
+            </LoadingButton>
             <Button onClick={props.onCancel} color="primary" variant="outlined" data-testid="edit-dialog-cancel">
               Cancel
             </Button>

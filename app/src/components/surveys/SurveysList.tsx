@@ -1,41 +1,24 @@
-import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
-import { BioHubSubmittedStatusType } from 'constants/misc';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-
-const useStyles = makeStyles((theme) => ({
-  surveyTable: {
-    tableLayout: 'fixed'
-  },
-  importFile: {
-    display: 'flex',
-    minHeight: '66px',
-    fontWeight: 700,
-    color: theme.palette.text.secondary
-  }
-}));
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
 const SurveysList: React.FC = () => {
-  const classes = useStyles();
-
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
@@ -48,13 +31,6 @@ const SurveysList: React.FC = () => {
   const [rowsPerPage] = useState(30);
   const [page] = useState(0);
 
-  function getSurveySubmissionStatus(survey: IGetSurveyForListResponse): BioHubSubmittedStatusType {
-    if (survey.surveySupplementaryData.has_unpublished_content) {
-      return BioHubSubmittedStatusType.UNSUBMITTED;
-    }
-    return BioHubSubmittedStatusType.SUBMITTED;
-  }
-
   if (!surveys.length) {
     return <NoSurveys />;
   }
@@ -62,11 +38,18 @@ const SurveysList: React.FC = () => {
   return (
     <>
       <TableContainer>
-        <Table aria-label="surveys-list-table" className={classes.surveyTable}>
+        <Table
+          aria-label="surveys-list-table"
+          sx={{
+            tableLayout: 'fixed',
+            '& td': {
+              verticalAlign: 'top'
+            }
+          }}>
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
-              <TableCell>Species</TableCell>
+              <TableCell>Focal Species</TableCell>
               <TableCell>Purpose</TableCell>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
                 <TableCell width="200">Status</TableCell>
@@ -86,12 +69,7 @@ const SurveysList: React.FC = () => {
                       {row.surveyData.survey_details.survey_name}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    {[
-                      ...row.surveyData.species.focal_species_names,
-                      ...row.surveyData.species.ancillary_species_names
-                    ].join(', ')}
-                  </TableCell>
+                  <TableCell>{row.surveyData.species.focal_species_names.join('; ')}</TableCell>
                   <TableCell>
                     {row.surveyData.purpose_and_methodology.intended_outcome_id &&
                       codes?.intended_outcomes?.find(
@@ -100,7 +78,7 @@ const SurveysList: React.FC = () => {
                   </TableCell>
                   <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
                     <TableCell>
-                      <SubmitStatusChip status={getSurveySubmissionStatus(row)} />
+                      <SubmitStatusChip status={row.surveySupplementaryData.publishStatus} />
                     </TableCell>
                   </SystemRoleGuard>
                 </TableRow>
@@ -123,16 +101,11 @@ const SurveysList: React.FC = () => {
 };
 
 function NoSurveys() {
-  const classes = useStyles();
   return (
-    <Box
-      display="flex"
-      flex="1 1 auto"
-      alignItems="center"
-      justifyContent="center"
-      p={2}
-      className={classes.importFile}>
-      <span data-testid="observations-nodata">No Surveys</span>
+    <Box display="flex" flex="1 1 auto" alignItems="center" justifyContent="center" p={2} minHeight={66}>
+      <Typography component="span" variant="body2" color="textSecondary" data-testid="observations-nodata">
+        No Surveys
+      </Typography>
     </Box>
   );
 }

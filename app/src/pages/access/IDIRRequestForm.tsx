@@ -1,11 +1,11 @@
-import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { IIDIRAccessRequestDataObject } from 'interfaces/useAdminApi.interface';
@@ -14,7 +14,7 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export const IDIRRequestFormInitialValues: IIDIRAccessRequestDataObject = {
-  role: ('' as unknown) as number,
+  role: '' as unknown as number,
   reason: ''
 };
 
@@ -50,7 +50,6 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
                 labelId="role-label"
                 label="Role"
                 value={values.role}
-                labelWidth={300}
                 onChange={handleChange}
                 error={touched.role && Boolean(errors.role)}
                 displayEmpty

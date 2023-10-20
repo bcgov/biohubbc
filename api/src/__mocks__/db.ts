@@ -1,7 +1,22 @@
 import { Request, Response } from 'express';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
+import * as db from '../database/db';
 import { IDBConnection } from '../database/db';
+
+/**
+ * Registers and returns a mock `IDBConnection` with empty methods.
+ *
+ * @param {Partial<IDBConnection>} [config] Initial method overrides
+ * @return {*}  {IDBConnection}
+ */
+export const registerMockDBConnection = (config?: Partial<IDBConnection>): IDBConnection => {
+  const mockDBConnection = getMockDBConnection(config);
+
+  sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+  return mockDBConnection;
+};
 
 /**
  * Returns a mock `IDBConnection` with empty methods.

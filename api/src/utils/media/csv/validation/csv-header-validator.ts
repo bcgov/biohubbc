@@ -1,9 +1,12 @@
 import { SUBMISSION_MESSAGE_TYPE } from '../../../../constants/status';
-import { safeToLowerCase, safeTrim } from '../../../string-utils';
+import { safeToLowerCase } from '../../../string-utils';
 import { CSVValidator } from '../csv-file';
 
 /**
  * Adds an error for each header that is not unique.
+ *
+ * Note: This check is case insensitive. In order to avoid confusion, its best not to allow headers with the same
+ * spelling and different casing.
  *
  * @return {*}  {CSVValidator}
  */
@@ -18,7 +21,8 @@ export const getDuplicateHeadersValidator = (): CSVValidator => {
     const seenHeaders: string[] = [];
 
     for (const header of headers) {
-      if (seenHeaders.includes(header)) {
+      if (seenHeaders.includes(safeToLowerCase(header))) {
+        // This header was already seen, therefore there is a duplicate header, add an error message
         csvWorksheet.csvValidation.addHeaderErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.DUPLICATE_HEADER,
@@ -27,7 +31,7 @@ export const getDuplicateHeadersValidator = (): CSVValidator => {
           }
         ]);
       } else {
-        seenHeaders.push(header);
+        seenHeaders.push(safeToLowerCase(header));
       }
     }
 
@@ -63,7 +67,9 @@ export const hasRequiredHeadersValidator = (config?: FileRequiredHeaderValidator
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
     for (const requiredHeader of config.file_required_columns_validator.required_columns) {
+      // For each required header, check if there exists a matching header
       if (!headersLowerCase.includes(safeToLowerCase(requiredHeader))) {
+        // The array of headers does not include this required header, add an error
         csvWorksheet.csvValidation.addHeaderErrors([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_REQUIRED_HEADER,
@@ -87,7 +93,7 @@ export type FileRecommendedHeaderValidatorConfig = {
 };
 
 /**
- * For a specified set of recommended columns, adds a warning if the column is not present in the csv.
+ * For a specified set of recommended columns, adds an error if the column is not present in the csv.
  *
  * @param {FileRecommendedHeaderValidatorConfig} [config]
  * @return {*}  {CSVValidator}
@@ -99,12 +105,14 @@ export const hasRecommendedHeadersValidator = (config?: FileRecommendedHeaderVal
     }
 
     if (!config.file_recommended_columns_validator.recommended_columns.length) {
+      // No recommended columns
       return csvWorksheet;
     }
 
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
     if (!headersLowerCase?.length) {
+      // There are no headers at all, add warnings for all recommended headers
       csvWorksheet.csvValidation.addHeaderWarnings(
         config.file_recommended_columns_validator.recommended_columns.map((recommendedHeader) => {
           return {
@@ -119,7 +127,9 @@ export const hasRecommendedHeadersValidator = (config?: FileRecommendedHeaderVal
     }
 
     for (const recommendedHeader of config.file_recommended_columns_validator.recommended_columns) {
+      // For each recommended header, check if there exists a matching header
       if (!headersLowerCase.includes(safeToLowerCase(recommendedHeader))) {
+        // The array of headers does not include this recommended header, add an error
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.MISSING_RECOMMENDED_HEADER,
@@ -143,7 +153,7 @@ export type FileValidHeadersValidatorConfig = {
 };
 
 /**
- * Adds a warning if a column in the csv does not match a value in a specified set of valid columns.
+ * Adds a error if a column in the csv does not match a value in a specified set of valid columns.
  *
  * @param {FileValidHeadersValidatorConfig} [config]
  * @return {*}  {CSVValidator}
@@ -155,17 +165,16 @@ export const getValidHeadersValidator = (config?: FileValidHeadersValidatorConfi
     }
 
     if (!config.file_valid_columns_validator.valid_columns.length) {
+      // No valid columns to compare against
       return csvWorksheet;
     }
 
     const headers = csvWorksheet.getHeaders();
 
     for (const header of headers) {
-      if (
-        !config.file_valid_columns_validator.valid_columns
-          .map(safeToLowerCase)
-          .includes(safeToLowerCase(safeTrim(header)))
-      ) {
+      // For each header, check if it exists in the array of valid column headers
+      if (!config.file_valid_columns_validator.valid_columns.map(safeToLowerCase).includes(safeToLowerCase(header))) {
+        // This header does not exist in the array of valid headers, add an error
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
             errorCode: SUBMISSION_MESSAGE_TYPE.UNKNOWN_HEADER,

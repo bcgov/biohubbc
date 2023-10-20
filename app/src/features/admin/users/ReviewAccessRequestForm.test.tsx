@@ -1,4 +1,3 @@
-import { render, waitFor } from '@testing-library/react';
 import ReviewAccessRequestForm, {
   ReviewAccessRequestFormInitialValues,
   ReviewAccessRequestFormYupSchema
@@ -6,8 +5,8 @@ import ReviewAccessRequestForm, {
 import { Formik } from 'formik';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
-import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
+import { render, waitFor } from 'test-helpers/test-utils';
 
 describe('ReviewAccessRequestForm', () => {
   describe('IDIR Request', () => {
@@ -27,6 +26,7 @@ describe('ReviewAccessRequestForm', () => {
           userGuid: 'aaaa',
           email: 'test data email',
           identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+          displayName: 'test user',
           role: 2,
           reason: 'reason for request'
         }
@@ -77,6 +77,7 @@ describe('ReviewAccessRequestForm', () => {
           userGuid: 'aaaa',
           email: 'test data email',
           identitySource: SYSTEM_IDENTITY_SOURCE.BCEID_BASIC,
+          displayName: 'test user',
           company: 'test company',
           reason: 'reason for request'
         }

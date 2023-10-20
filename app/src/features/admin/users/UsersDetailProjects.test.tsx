@@ -1,9 +1,9 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React from 'react';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import UsersDetailProjects from './UsersDetailProjects';
@@ -12,9 +12,13 @@ const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
 
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
-    getAllUserProjectsForView: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>(),
+    getAllUserProjectsForView: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>()
+  },
+  projectParticipants: {
     removeProjectParticipant: jest.fn<Promise<boolean>, []>(),
     updateProjectParticipantRole: jest.fn<Promise<boolean>, []>()
   },
@@ -23,22 +27,24 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
-const mockUser = {
-  id: 1,
-  user_record_end_date: 'ending',
+const mockUser: ISystemUser = {
+  system_user_id: 1,
+  record_end_date: 'ending',
   user_identifier: 'testUser',
-  role_names: ['system']
+  role_names: ['system'],
+  user_guid: '1111',
+  identity_source: 'idir',
+  role_ids: [],
+  email: '',
+  display_name: '',
+  agency: ''
 };
 
 describe('UsersDetailProjects', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.getAllUserProjectsForView.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getAllUserProjectsForView.mockClear();
+    mockUseApi.codes.getAllCodeSets.mockClear();
   });
 
   afterEach(() => {
@@ -62,24 +68,20 @@ describe('UsersDetailProjects', () => {
   it('renders empty list correctly when assignedProjects empty and loaded', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }]
     } as any);
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue({
-      assignedProjects: []
-    } as any);
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([]);
 
-    const { getAllByTestId, getAllByText } = render(
+    const { getByTestId, getAllByText } = render(
       <Router history={history}>
         <UsersDetailProjects userDetails={mockUser} />
       </Router>
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('projects_header').length).toEqual(1);
-      expect(getAllByText('Assigned Projects').length).toEqual(1);
-      expect(getAllByText('()').length).toEqual(1);
+      expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(0\)/);
       expect(getAllByText('No Projects').length).toEqual(1);
     });
   });
@@ -87,31 +89,31 @@ describe('UsersDetailProjects', () => {
   it('renders list of a single project correctly when assignedProjects are loaded', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
-      project_roles: [{ id: 1, name: 'Project Lead' }]
+      project_roles: [{ id: 1, name: 'Coordinator' }]
     } as any);
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
       {
+        project_participation_id: 4,
         project_id: 2,
-        name: 'projectName',
+        project_name: 'projectName',
         system_user_id: 1,
-        project_role_id: 3,
-        project_participation_id: 4
+        project_role_ids: [3],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
       }
     ]);
 
-    const { getAllByTestId, getAllByText } = render(
+    const { getAllByText, getByTestId } = render(
       <Router history={history}>
         <UsersDetailProjects userDetails={mockUser} />
       </Router>
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('projects_header').length).toEqual(1);
-      expect(getAllByText('Assigned Projects').length).toEqual(1);
-      expect(getAllByText('(1)').length).toEqual(1);
+      expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
       expect(getAllByText('projectName').length).toEqual(1);
     });
   });
@@ -119,38 +121,40 @@ describe('UsersDetailProjects', () => {
   it('renders list of a multiple projects correctly when assignedProjects are loaded', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
-      project_roles: [{ id: 1, name: 'Project Lead' }]
+      project_roles: [{ id: 1, name: 'Coordinator' }]
     } as any);
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
       {
+        project_participation_id: 4,
         project_id: 1,
-        name: 'projectName',
+        project_name: 'projectName',
         system_user_id: 2,
-        project_role_id: 3,
-        project_participation_id: 4
+        project_role_ids: [3],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
       },
       {
+        project_participation_id: 8,
         project_id: 5,
-        name: 'secondProjectName',
+        project_name: 'secondProjectName',
         system_user_id: 6,
-        project_role_id: 7,
-        project_participation_id: 8
+        project_role_ids: [7],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
       }
     ]);
 
-    const { getAllByTestId, getAllByText } = render(
+    const { getByTestId, getAllByText } = render(
       <Router history={history}>
         <UsersDetailProjects userDetails={mockUser} />
       </Router>
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('projects_header').length).toEqual(1);
-      expect(getAllByText('Assigned Projects').length).toEqual(1);
-      expect(getAllByText('(2)').length).toEqual(1);
+      expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(2\)/);
       expect(getAllByText('projectName').length).toEqual(1);
       expect(getAllByText('secondProjectName').length).toEqual(1);
     });
@@ -159,18 +163,20 @@ describe('UsersDetailProjects', () => {
   it('routes to project id details on click', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
-      project_roles: [{ id: 1, name: 'Project Lead' }]
+      project_roles: [{ id: 1, name: 'Coordinator' }]
     } as any);
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
       {
+        project_participation_id: 4,
         project_id: 1,
-        name: 'projectName',
+        project_name: 'projectName',
         system_user_id: 2,
-        project_role_id: 3,
-        project_participation_id: 4
+        project_role_ids: [3],
+        project_role_names: ['Role1'],
+        project_role_permissions: ['Permission1']
       }
     ]);
 
@@ -192,21 +198,23 @@ describe('UsersDetailProjects', () => {
   });
 
   describe('Are you sure? Dialog', () => {
-    it('does nothing if the user clicks `No` or away from the dialog', async () => {
+    it('does nothing if the user clicks `Cancel` or away from the dialog', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
-        project_roles: [{ id: 1, name: 'Project Lead' }]
+        project_roles: [{ id: 1, name: 'Coordinator' }]
       } as any);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
+          project_participation_id: 4,
           project_id: 1,
-          name: 'projectName',
+          project_name: 'projectName',
           system_user_id: 2,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1']
         }
       ]);
 
@@ -225,44 +233,48 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getByTestId('remove-project-participant-button'));
 
       await waitFor(() => {
-        expect(getAllByText('Remove User From Project').length).toEqual(1);
+        expect(getAllByText('Remove user from project?').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('No'));
+      fireEvent.click(getByText('Cancel'));
 
       await waitFor(() => {
         expect(history.location.pathname).toEqual('/admin/users/1');
       });
     });
 
-    it('deletes User from project if the user clicks on `Yes` ', async () => {
+    it('deletes User from project if the user clicks on `Remove` ', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
-        project_roles: [{ id: 1, name: 'Project Lead' }]
+        project_roles: [{ id: 1, name: 'Coordinator' }]
       } as any);
 
-      mockBiohubApi().project.removeProjectParticipant.mockResolvedValue(true);
+      mockUseApi.projectParticipants.removeProjectParticipant.mockResolvedValue(true);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
+          project_participation_id: 4,
           project_id: 1,
-          name: 'projectName',
+          project_name: 'projectName',
           system_user_id: 2,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1']
         },
         {
+          project_participation_id: 8,
           project_id: 5,
-          name: 'secondProjectName',
+          project_name: 'secondProjectName',
           system_user_id: 6,
-          project_role_id: 7,
-          project_participation_id: 8
+          project_role_ids: [7],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1']
         }
       ]);
 
-      const { getAllByText, getByText, getAllByTestId } = render(
+      const { getByTestId, getAllByText, getByText, getAllByTestId } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailProjects userDetails={mockUser} />
@@ -271,33 +283,33 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(2)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(2\)/);
         expect(getAllByText('projectName').length).toEqual(1);
         expect(getAllByText('secondProjectName').length).toEqual(1);
       });
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
+          project_participation_id: 8,
           project_id: 5,
-          name: 'secondProjectName',
+          project_name: 'secondProjectName',
           system_user_id: 6,
-          project_role_id: 7,
-          project_participation_id: 8
+          project_role_ids: [7],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Permission1']
         }
       ]);
 
       fireEvent.click(getAllByTestId('remove-project-participant-button')[0]);
 
       await waitFor(() => {
-        expect(getAllByText('Remove User From Project').length).toEqual(1);
+        expect(getAllByText('Remove user from project?').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Yes'));
+      fireEvent.click(getByText('Remove'));
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(1)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
         expect(getAllByText('secondProjectName').length).toEqual(1);
       });
     });
@@ -307,69 +319,72 @@ describe('UsersDetailProjects', () => {
     it('renders list of roles to change per project', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [
-          { id: 1, name: 'Project Lead' },
-          { id: 2, name: 'Editor' },
-          { id: 3, name: 'Viewer' }
+          { id: 1, name: 'Coordinator' },
+          { id: 2, name: 'Collaborator' },
+          { id: 3, name: 'Observer' }
         ]
       } as any);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
-          project_id: 2,
-          name: 'projectName',
-          system_user_id: 1,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_participation_id: 4,
+          project_id: 1,
+          project_name: 'projectName',
+          system_user_id: 2,
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Observer']
         }
       ]);
 
-      const { getAllByText, getByText } = render(
+      const { getByTestId, getAllByText, getByText } = render(
         <Router history={history}>
           <UsersDetailProjects userDetails={mockUser} />
         </Router>
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(1)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Viewer'));
+      fireEvent.click(getByText('Observer'));
 
       await waitFor(() => {
-        expect(getAllByText('Project Lead').length).toEqual(1);
-        expect(getAllByText('Editor').length).toEqual(1);
-        expect(getAllByText('Viewer').length).toEqual(2);
+        expect(getAllByText('Coordinator').length).toEqual(1);
+        expect(getAllByText('Collaborator').length).toEqual(1);
+        expect(getAllByText('Observer').length).toEqual(2);
       });
     });
 
     it('renders dialog pop on role selection, does nothing if user clicks `Cancel` ', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [
-          { id: 1, name: 'Project Lead' },
-          { id: 2, name: 'Editor' },
-          { id: 3, name: 'Viewer' }
+          { id: 1, name: 'Coordinator' },
+          { id: 2, name: 'Collaborator' },
+          { id: 3, name: 'Observer' }
         ]
       } as any);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
-          project_id: 2,
-          name: 'projectName',
-          system_user_id: 1,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_participation_id: 4,
+          project_id: 1,
+          project_name: 'projectName',
+          system_user_id: 2,
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Observer']
         }
       ]);
 
-      const { getAllByText, getByText } = render(
+      const { getByTestId, getAllByText, getByText } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailProjects userDetails={mockUser} />
@@ -378,23 +393,22 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(1)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Viewer'));
+      fireEvent.click(getByText('Observer'));
 
       await waitFor(() => {
-        expect(getAllByText('Project Lead').length).toEqual(1);
-        expect(getAllByText('Editor').length).toEqual(1);
-        expect(getAllByText('Viewer').length).toEqual(2);
+        expect(getAllByText('Coordinator').length).toEqual(1);
+        expect(getAllByText('Collaborator').length).toEqual(1);
+        expect(getAllByText('Observer').length).toEqual(2);
       });
 
-      fireEvent.click(getByText('Editor'));
+      fireEvent.click(getByText('Collaborator'));
 
       await waitFor(() => {
-        expect(getAllByText('Change Project Role?').length).toEqual(1);
+        expect(getAllByText('Change project role?').length).toEqual(1);
       });
 
       fireEvent.click(getByText('Cancel'));
@@ -407,28 +421,30 @@ describe('UsersDetailProjects', () => {
     it('renders dialog pop on role selection, Changes role on click of `Change Role` ', async () => {
       history.push('/admin/users/1');
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
         project_roles: [
-          { id: 1, name: 'Project Lead' },
-          { id: 2, name: 'Editor' },
-          { id: 3, name: 'Viewer' }
+          { id: 1, name: 'Coordinator' },
+          { id: 2, name: 'Collaborator' },
+          { id: 3, name: 'Observer' }
         ]
       } as any);
 
-      mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
         {
-          project_id: 2,
-          name: 'projectName',
-          system_user_id: 1,
-          project_role_id: 3,
-          project_participation_id: 4
+          project_participation_id: 4,
+          project_id: 1,
+          project_name: 'projectName',
+          system_user_id: 2,
+          project_role_ids: [3],
+          project_role_names: ['Role1'],
+          project_role_permissions: ['Observer']
         }
       ]);
 
-      mockBiohubApi().project.updateProjectParticipantRole.mockResolvedValue(true);
+      mockUseApi.projectParticipants.updateProjectParticipantRole.mockResolvedValue(true);
 
-      const { getAllByText, getByText } = render(
+      const { getByTestId, getAllByText, getByText } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailProjects userDetails={mockUser} />
@@ -437,29 +453,28 @@ describe('UsersDetailProjects', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText('Assigned Projects').length).toEqual(1);
-        expect(getAllByText('(1)').length).toEqual(1);
+        expect(getByTestId('projects_header').textContent).toMatch(/Assigned Projects.*\(1\)/);
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Viewer'));
+      fireEvent.click(getByText('Observer'));
 
       await waitFor(() => {
-        expect(getAllByText('Project Lead').length).toEqual(1);
-        expect(getAllByText('Editor').length).toEqual(1);
-        expect(getAllByText('Viewer').length).toEqual(2);
+        expect(getAllByText('Coordinator').length).toEqual(1);
+        expect(getAllByText('Collaborator').length).toEqual(1);
+        expect(getAllByText('Observer').length).toEqual(2);
       });
 
-      fireEvent.click(getByText('Editor'));
+      fireEvent.click(getByText('Collaborator'));
 
       await waitFor(() => {
-        expect(getAllByText('Change Project Role?').length).toEqual(1);
+        expect(getAllByText('Change project role?').length).toEqual(1);
       });
 
       fireEvent.click(getByText('Change Role'));
 
       await waitFor(() => {
-        expect(getAllByText('Editor').length).toEqual(1);
+        expect(getAllByText('Collaborator').length).toEqual(1);
       });
     });
   });

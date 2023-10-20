@@ -1,13 +1,13 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { ProjectContext } from 'contexts/projectContext';
 import { IGetProjectAttachmentsResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForListResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 const ProjectSubmissionAlertBar = () => {
   const projectContext = useContext(ProjectContext);
@@ -36,7 +36,7 @@ const ProjectSubmissionAlertBar = () => {
 
   const hasUnsubmittedData = submissionStatuses.some((status) => status === 'UNSUBMITTED');
 
-  const alertSeverity = hasUnsubmittedData ? 'info' : 'success';
+  const alertSeverity = hasUnsubmittedData ? 'error' : 'success';
   const alertTitle = hasUnsubmittedData
     ? 'This project contains unsubmitted information'
     : 'All project information submitted';
@@ -48,7 +48,7 @@ const ProjectSubmissionAlertBar = () => {
   return (
     <Box mb={3}>
       <Alert
-        variant="outlined"
+        variant="filled"
         severity={alertSeverity}
         onClose={() => setForceAlertClose(true)}
         action={
@@ -64,15 +64,15 @@ const ProjectSubmissionAlertBar = () => {
 };
 
 function getSurveyDataSubmissionStatus(surveyData?: IGetSurveyForListResponse[]) {
-  if (!surveyData?.length) {
+  if (!surveyData?.length || surveyData.every((item) => item.surveySupplementaryData.publishStatus === 'NO_DATA')) {
     return 'NO_DATA';
   }
 
-  if (surveyData.every((item) => !item.surveySupplementaryData?.has_unpublished_content)) {
-    return 'SUBMITTED';
+  if (surveyData.some((item) => item.surveySupplementaryData?.publishStatus === 'UNSUBMITTED')) {
+    return 'UNSUBMITTED';
   }
 
-  return 'UNSUBMITTED';
+  return 'SUBMITTED';
 }
 
 function getAttachmentDataSubmissionStatus(projectAttachmentsData?: IGetProjectAttachmentsResponse) {

@@ -1,14 +1,3 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
 import {
   mdiArrowLeft,
   mdiCalendarRangeOutline,
@@ -18,21 +7,32 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import PublishSurveyButton from 'components/publish/PublishSurveyButton';
+import PublishSurveyDialog from 'components/publish/PublishSurveyDialog';
 import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
-import { BrowserRouter, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -100,7 +100,7 @@ const SurveyHeader = () => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
-      yesButtonProps: { color: 'secondary' },
+      yesButtonProps: { color: 'error' },
       yesButtonLabel: 'Delete',
       noButtonProps: { color: 'primary', variant: 'outlined' },
       noButtonLabel: 'Cancel',
@@ -109,7 +109,7 @@ const SurveyHeader = () => {
         dialogContext.setYesNoDialog({ open: false });
       }
     });
-    setAnchorEl(null);
+    setMenuAnchorEl(null);
   };
 
   const deleteSurvey = async () => {
@@ -129,7 +129,7 @@ const SurveyHeader = () => {
       }
       projectContext.surveysListDataLoader.refresh(projectContext.projectId);
 
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys`);
+      history.push(`/admin/projects/${surveyContext.projectId}`);
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogText: apiError.message, open: true });
@@ -148,16 +148,8 @@ const SurveyHeader = () => {
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
 
-  // Show/Hide Project Settings Menu
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const openSurveyMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const closeSurveyMenu = () => {
-    setAnchorEl(null);
-  };
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [publishSurveyDialogOpen, setPublishSurveyDialogOpen] = useState<boolean>(false);
 
   if (!surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -169,15 +161,13 @@ const SurveyHeader = () => {
         <Container maxWidth="xl">
           <Box py={4}>
             <Box mt={-1} ml={-0.5} mb={0.5}>
-              <BrowserRouter forceRefresh={true}>
-                <Button
-                  component={Link}
-                  to={`/admin/projects/${surveyContext.projectId}/details`}
-                  color="primary"
-                  startIcon={<Icon path={mdiArrowLeft} size={0.8} />}>
-                  <strong>Back to Project</strong>
-                </Button>
-              </BrowserRouter>
+              <Button
+                component={Link}
+                to={`/admin/projects/${surveyContext.projectId}/details`}
+                color="primary"
+                startIcon={<Icon path={mdiArrowLeft} size={0.8} />}>
+                <strong>Back to Project</strong>
+              </Button>
             </Box>
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
@@ -202,10 +192,19 @@ const SurveyHeader = () => {
               </Box>
               <Box display="flex" alignItems="flex-start" flex="0 0 auto" className={classes.pageTitleActions}>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <PublishSurveyButton />
+                  <Button
+                    title="Submit Survey Data and Documents"
+                    color="primary"
+                    variant="contained"
+                    onClick={() => setPublishSurveyDialogOpen(true)}
+                    sx={{
+                      minWidth: '7rem'
+                    }}>
+                    Submit
+                  </Button>
                 </SystemRoleGuard>
                 <ProjectRoleGuard
-                  validProjectRoles={[PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_LEAD]}
+                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <Button
                     id="survey_settings_button"
@@ -216,7 +215,7 @@ const SurveyHeader = () => {
                     color="primary"
                     startIcon={<Icon path={mdiCogOutline} size={1} />}
                     endIcon={<Icon path={mdiChevronDown} size={1} />}
-                    onClick={openSurveyMenu}
+                    onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}
                     style={{ marginLeft: '0.5rem' }}>
                     Settings
                   </Button>
@@ -234,10 +233,9 @@ const SurveyHeader = () => {
                     horizontal: 'right'
                   }}
                   keepMounted
-                  anchorEl={anchorEl}
-                  getContentAnchorEl={null}
-                  open={Boolean(anchorEl)}
-                  onClose={closeSurveyMenu}>
+                  anchorEl={menuAnchorEl}
+                  open={Boolean(menuAnchorEl)}
+                  onClose={() => setMenuAnchorEl(null)}>
                   <MenuItem onClick={() => history.push('edit')}>
                     <ListItemIcon>
                       <Icon path={mdiPencilOutline} size={1} />
@@ -261,6 +259,8 @@ const SurveyHeader = () => {
           </Box>
         </Container>
       </Paper>
+
+      <PublishSurveyDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)} />
     </>
   );
 };

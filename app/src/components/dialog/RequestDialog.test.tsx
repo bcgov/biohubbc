@@ -1,6 +1,6 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
 import { useFormikContext } from 'formik';
 import React from 'react';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import RequestDialog from './RequestDialog';
 
 const TestComponent: React.FC = () => {

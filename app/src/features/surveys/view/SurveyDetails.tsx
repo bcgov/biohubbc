@@ -1,14 +1,15 @@
-import Box from '@material-ui/core/Box';
-import { grey } from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
-import React from 'react';
+import SurveyFundingSources from './components/SurveyFundingSources';
 import SurveyGeneralInformation from './components/SurveyGeneralInformation';
+import Partnerships from './Partnerships';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyMetadataContainer: {
@@ -63,6 +64,16 @@ const SurveyDetails = () => {
       <Divider></Divider>
       <Box p={3}>
         <SurveyGeneralInformation />
+        <Box component="section">
+          <Typography component="h4">Funding Sources</Typography>
+          <Divider></Divider>
+          <SurveyFundingSources />
+        </Box>
+        <Box component="section">
+          <Typography component="h4">Partnerships</Typography>
+          <Divider></Divider>
+          <Partnerships />
+        </Box>
         <Box component="section">
           <Typography component="h4">Purpose and Methodology</Typography>
           <Divider></Divider>

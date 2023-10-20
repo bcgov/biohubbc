@@ -1,311 +1,188 @@
+import Ajv from 'ajv';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../database/db';
 import { HTTPError } from '../errors/http-error';
-import administrative_queries from '../queries/administrative-activity';
-import * as keycloak_utils from '../utils/keycloak-utils';
-import { getMockDBConnection } from '../__mocks__/db';
-import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from './administrative-activities';
-import * as administrative_activity from './administrative-activity';
+import {
+  IAdministrativeActivityStanding,
+  ICreateAdministrativeActivity
+} from '../repositories/administrative-activity-repository';
+import { AdministrativeActivityService } from '../services/administrative-activity-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
+import { createAdministrativeActivity, GET, getAdministrativeActivityStanding, POST } from './administrative-activity';
 
 chai.use(sinonChai);
 
-describe('updateAccessRequest', () => {
-  afterEach(() => {
-    sinon.restore();
+describe('openapi schema', () => {
+  const ajv = new Ajv();
+
+  describe('POST', () => {
+    it('is valid openapi v3 schema', () => {
+      expect(ajv.validateSchema((POST.apiDoc as unknown) as object)).to.be.true;
+    });
   });
 
-  const dbConnectionObj = getMockDBConnection();
-
-  const sampleReq = {
-    keycloak_token: {}
-  } as any;
-
-  let actualResult: any = null;
-
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    }
-  };
-
-  it('should throw a 400 error when no system user id', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return (null as unknown) as number;
-      }
-    });
-
-    try {
-      const result = administrative_activity.createAdministrativeActivity();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(500);
-      expect((actualError as HTTPError).message).to.equal('Failed to identify system user ID');
-    }
-  });
-
-  it('should throw a 400 error when failed to build postAdministrativeActivitySQL statement', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-    sinon.stub(administrative_queries, 'postAdministrativeActivitySQL').returns(null);
-
-    try {
-      const result = administrative_activity.createAdministrativeActivity();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(500);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
-    }
-  });
-
-  it('should throw a 400 error when failed to submit administrative activity due to rows being null', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({
-      rows: [null]
-    });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-    sinon.stub(administrative_queries, 'postAdministrativeActivitySQL').returns(SQL`some`);
-
-    try {
-      const result = administrative_activity.createAdministrativeActivity();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(500);
-      expect((actualError as HTTPError).message).to.equal('Failed to submit administrative activity');
-    }
-  });
-
-  it('should throw a 400 error when failed to submit administrative activity due to row id being null', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({
-      rows: [
-        {
-          id: null,
-          create_date: null
-        }
-      ]
-    });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-    sinon.stub(administrative_queries, 'postAdministrativeActivitySQL').returns(SQL`some`);
-
-    try {
-      const result = administrative_activity.createAdministrativeActivity();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(500);
-      expect((actualError as HTTPError).message).to.equal('Failed to submit administrative activity');
-    }
-  });
-
-  it('should throw a 400 error when failed to submit administrative activity due to row id being null', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({
-      rows: [
-        {
-          id: 1,
-          create_date: '2020/04/04'
-        }
-      ]
-    });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-    sinon.stub(administrative_queries, 'postAdministrativeActivitySQL').returns(SQL`some`);
-
-    const result = administrative_activity.createAdministrativeActivity();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.eql({
-      id: 1,
-      date: '2020/04/04'
+  describe('GET', () => {
+    it('is valid openapi v3 schema', () => {
+      expect(ajv.validateSchema((GET.apiDoc as unknown) as object)).to.be.true;
     });
   });
 });
 
-describe('getPendingAccessRequestsCount', () => {
+describe('createAdministrativeActivity', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  const dbConnectionObj = getMockDBConnection();
+  it('fetches a project', async () => {
+    const systemUserId = 1;
 
-  const sampleReq = {
-    keycloak_token: {}
-  } as any;
+    const dbConnectionObj = getMockDBConnection({ systemUserId: () => systemUserId, commit: sinon.stub() });
+    sinon.stub(db, 'getAPIUserDBConnection').returns(dbConnectionObj);
 
-  let actualResult: any = null;
+    const mockResponse: ICreateAdministrativeActivity = { id: 2, date: '2023-01-01' };
 
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    }
-  };
+    sinon.stub(AdministrativeActivityService.prototype, 'createPendingAccessRequest').resolves(mockResponse);
+    sinon.stub(AdministrativeActivityService.prototype, 'sendAccessRequestNotificationEmailToAdmin').resolves();
 
-  it('should throw a 400 error when no user identifier', async () => {
-    sinon.stub(keycloak_utils, 'getUserIdentifier').returns(null);
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+    mockReq.body = {
+      myData: 'the data'
+    };
 
+    const requestHandler = createAdministrativeActivity();
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(dbConnectionObj.commit).to.have.been.calledOnce;
+
+    expect(mockRes.statusValue).to.equal(200);
+    expect(mockRes.jsonValue).to.eql(mockResponse);
+  });
+
+  it('catches and re-throws error', async () => {
+    const systemUserId = 1;
+
+    const dbConnectionObj = getMockDBConnection({
+      systemUserId: () => systemUserId,
+      release: sinon.stub(),
+      rollback: sinon.stub()
+    });
+
+    sinon.stub(db, 'getAPIUserDBConnection').returns(dbConnectionObj);
+
+    sinon
+      .stub(AdministrativeActivityService.prototype, 'createPendingAccessRequest')
+      .rejects(new Error('a test error'));
+    sinon.stub(AdministrativeActivityService.prototype, 'sendAccessRequestNotificationEmailToAdmin').resolves();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.body = {
+      myData: 'the data'
+    };
     try {
-      const result = administrative_activity.getPendingAccessRequestsCount();
+      const requestHandler = createAdministrativeActivity();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required userIdentifier');
+      expect(dbConnectionObj.rollback).to.have.been.calledOnce;
+      expect(dbConnectionObj.release).to.have.been.calledOnce;
+
+      expect((actualError as HTTPError).message).to.equal('a test error');
     }
-  });
-
-  it('should throw a 400 error when failed to build countPendingAdministrativeActivitiesSQL statement', async () => {
-    sinon.stub(keycloak_utils, 'getUserIdentifier').returns('identifier');
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-    sinon.stub(administrative_queries, 'countPendingAdministrativeActivitiesSQL').returns(null);
-
-    try {
-      const result = administrative_activity.getPendingAccessRequestsCount();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
-
-  it('should return 0 on success (no rowCount)', async () => {
-    sinon.stub(keycloak_utils, 'getUserIdentifier').returns('identifier');
-
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({
-      rowCount: null
-    });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-    sinon.stub(administrative_queries, 'countPendingAdministrativeActivitiesSQL').returns(SQL`something`);
-
-    const result = administrative_activity.getPendingAccessRequestsCount();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.equal(0);
-  });
-
-  it('should return rowCount on success', async () => {
-    sinon.stub(keycloak_utils, 'getUserIdentifier').returns('identifier');
-
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({
-      rowCount: 23
-    });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-    sinon.stub(administrative_queries, 'countPendingAdministrativeActivitiesSQL').returns(SQL`something`);
-
-    const result = administrative_activity.getPendingAccessRequestsCount();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.equal(23);
   });
 });
 
-describe('updateAdministrativeActivity', () => {
+describe('getAdministrativeActivityStanding', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  const dbConnectionObj = getMockDBConnection();
+  it('fetches administrative activities', async () => {
+    const systemUserId = 1;
 
-  it('should throw a 500 error when failed to update administrative activity', async () => {
-    sinon.stub(administrative_queries, 'putAdministrativeActivitySQL').returns(SQL`some`);
+    const dbConnectionObj = getMockDBConnection({ systemUserId: () => systemUserId, commit: sinon.stub() });
+    sinon.stub(db, 'getAPIUserDBConnection').returns(dbConnectionObj);
 
-    const mockQuery = sinon.stub();
+    const mockResponse: IAdministrativeActivityStanding = {
+      has_pending_access_request: true,
+      has_one_or_more_project_roles: true
+    };
 
-    mockQuery.resolves({
-      rowCount: null
+    sinon.stub(AdministrativeActivityService.prototype, 'getAdministrativeActivityStanding').resolves(mockResponse);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq['keycloak_token'] = {
+      idir_user_guid: 'testguid',
+      identity_provider: 'idir',
+      idir_username: 'testuser',
+      email_verified: false,
+      name: 'test user',
+      preferred_username: 'testguid@idir',
+      display_name: 'test user',
+      given_name: 'test',
+      family_name: 'user',
+      email: 'email@email.com'
+    };
+    mockReq.body = {
+      myData: 'the data'
+    };
+
+    const requestHandler = getAdministrativeActivityStanding();
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(dbConnectionObj.commit).to.have.been.calledOnce;
+
+    expect(mockRes.statusValue).to.equal(200);
+    expect(mockRes.jsonValue).to.eql(mockResponse);
+  });
+
+  it('catches and re-throws error', async () => {
+    const systemUserId = 1;
+
+    const dbConnectionObj = getMockDBConnection({
+      systemUserId: () => systemUserId,
+      release: sinon.stub()
     });
 
-    try {
-      await administrative_activity.updateAdministrativeActivity(1, ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.ACTIONED, {
-        ...dbConnectionObj,
-        systemUserId: () => {
-          return 20;
-        },
-        query: mockQuery
-      });
+    sinon.stub(db, 'getAPIUserDBConnection').returns(dbConnectionObj);
 
+    sinon
+      .stub(AdministrativeActivityService.prototype, 'getAdministrativeActivityStanding')
+      .rejects(new Error('a test error'));
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq['keycloak_token'] = {
+      idir_user_guid: 'testguid',
+      identity_provider: 'idir',
+      idir_username: 'testuser',
+      email_verified: false,
+      name: 'test user',
+      preferred_username: 'testguid@idir',
+      display_name: 'test user',
+      given_name: 'test',
+      family_name: 'user',
+      email: 'email@email.com'
+    };
+    mockReq.body = {
+      myData: 'the data'
+    };
+
+    try {
+      const requestHandler = getAdministrativeActivityStanding();
+
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(500);
-      expect((actualError as HTTPError).message).to.equal('Failed to update administrative activity');
+      expect(dbConnectionObj.release).to.have.been.calledOnce;
+
+      expect((actualError as HTTPError).message).to.equal('a test error');
     }
   });
 });

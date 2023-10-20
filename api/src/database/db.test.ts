@@ -3,11 +3,19 @@ import { describe } from 'mocha';
 import * as pg from 'pg';
 import Sinon from 'sinon';
 import SQL from 'sql-template-strings';
-import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTPError } from '../errors/http-error';
 import * as db from './db';
-import { getAPIUserDBConnection, getDBConnection, getDBPool, getKnex, IDBConnection, initDBPool } from './db';
+import {
+  getAPIUserDBConnection,
+  getDBConnection,
+  getDBPool,
+  getKnex,
+  getServiceClientDBConnection,
+  IDBConnection,
+  initDBPool
+} from './db';
 
 describe('db', () => {
   beforeEach(() => {
@@ -52,9 +60,16 @@ describe('db', () => {
       const sinonSandbox = Sinon.createSandbox();
 
       const mockKeycloakToken = {
-        preferred_username: 'testguid@idir',
+        idir_user_guid: 'testguid',
+        identity_provider: 'idir',
         idir_username: 'testuser',
-        identity_provider: SYSTEM_IDENTITY_SOURCE.IDIR
+        email_verified: false,
+        name: 'test user',
+        preferred_username: 'testguid@idir',
+        display_name: 'test user',
+        given_name: 'test',
+        family_name: 'user',
+        email: 'email@email.com'
       };
 
       const queryStub = sinonSandbox.stub().resolves();
@@ -369,20 +384,37 @@ describe('db', () => {
       getAPIUserDBConnection();
 
       const DB_USERNAME = process.env.DB_USER_API;
-
       expect(getDBConnectionStub).to.have.been.calledWith({
-        preferred_username: `${DB_USERNAME}@database`,
-        sims_system_username: DB_USERNAME,
-        identity_provider: 'database'
+        database_user_guid: DB_USERNAME,
+        identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
+        username: DB_USERNAME
       });
     });
   });
 
-  describe('getKnexQueryBuilder', () => {
-    it('returns a Knex query builder', () => {
-      const queryBuilder = db.getKnexQueryBuilder();
+  describe('getServiceClientDBConnection', () => {
+    beforeEach(() => {
+      process.env.DB_USER_API = 'example_db_username';
+    });
 
-      expect(queryBuilder.client.config).to.eql({ client: db.DB_CLIENT });
+    afterEach(() => {
+      Sinon.restore();
+    });
+
+    it('calls getDBConnection for the biohub_api user', () => {
+      const getDBConnectionStub = Sinon.stub(db, 'getDBConnection').returns(
+        ('stubbed DBConnection object' as unknown) as IDBConnection
+      );
+
+      const sourceSystem = SOURCE_SYSTEM['SIMS-SVC-4464'];
+
+      getServiceClientDBConnection(sourceSystem);
+
+      expect(getDBConnectionStub).to.have.been.calledWith({
+        database_user_guid: sourceSystem,
+        identity_provider: SYSTEM_IDENTITY_SOURCE.SYSTEM.toLowerCase(),
+        username: `service-account-${sourceSystem}`
+      });
     });
   });
 

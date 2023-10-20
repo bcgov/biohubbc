@@ -1,5 +1,5 @@
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import ReportMetaForm, { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUpload, { IReplaceHandler } from 'components/file-upload/FileUpload';
 import {
@@ -13,7 +13,7 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 
 export interface IFileUploadWithMetaProps {
-  attachmentType: AttachmentType.REPORT | AttachmentType.OTHER;
+  attachmentType: AttachmentType.REPORT | AttachmentType.KEYX | AttachmentType.OTHER;
   uploadHandler: IUploadHandler;
   fileHandler?: IFileHandler;
   onSuccess?: IOnUploadSuccess;
@@ -39,7 +39,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
           <ReportMetaForm />
         </Box>
       )}
-      {(props.attachmentType === AttachmentType.REPORT && (
+      {props.attachmentType === AttachmentType.REPORT && (
         <Box component="fieldset">
           <Typography component="legend" variant="body1" id="report_upload">
             Attach File
@@ -59,11 +59,26 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
           />
           {errors?.attachmentFile && (
             <Box>
-              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentFile}</Typography>
+              {/* TODO is errors.attachmentFile correct here? (added `as string` to appease compile warning) */}
+              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentFile as string}</Typography>
             </Box>
           )}
         </Box>
-      )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
+      )}
+      {props.attachmentType === AttachmentType.KEYX && (
+        <FileUpload
+          uploadHandler={props.uploadHandler}
+          fileHandler={fileHandler}
+          onSuccess={props.onSuccess}
+          dropZoneProps={{
+            acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.KEYX
+          }}
+          enableErrorDetails={true}
+        />
+      )}
+      {props.attachmentType === AttachmentType.OTHER && (
+        <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />
+      )}
     </form>
   );
 };

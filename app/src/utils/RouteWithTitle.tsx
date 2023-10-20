@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Route, RouteProps } from 'react-router-dom';
 
 export type IRouteWithTitleProps = RouteProps & {
@@ -19,9 +19,11 @@ export type IRouteWithTitleProps = RouteProps & {
 const RouteWithTitle = (props: IRouteWithTitleProps) => {
   const { title, children, ...rest } = props;
 
-  if (title) {
-    document.title = title;
-  }
+  useEffect(() => {
+    if (title) {
+      document.title = title;
+    }
+  }, [title]);
 
   return <Route {...rest}>{children}</Route>;
 };

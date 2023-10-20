@@ -1,4 +1,8 @@
-import { Box, Button, Divider, makeStyles, Theme } from '@material-ui/core';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import ProjectAdvancedFilters, {
   IProjectAdvancedFilters,
@@ -12,9 +16,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
     marginLeft: theme.spacing(1),
     minWidth: '6rem'
-  },
-  filtersBox: {
-    background: '#f7f8fa'
   }
 }));
 
@@ -34,30 +35,19 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
   const [formikRef] = useState(useRef<FormikProps<IProjectAdvancedFilters>>(null));
 
   return (
-    <Box className={classes.filtersBox}>
-      <Box px={2} py={4}>
+    <Box>
+      <Box p={3}>
         <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
           <>
-            <ProjectAdvancedFilters
-              coordinator_agency={
-                codesContext.codesDataLoader.data.coordinator_agency?.map((item) => {
-                  return item.name;
-                }) || []
-              }
-              funding_sources={
-                codesContext.codesDataLoader.data.funding_source?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
-            <Box mt={4} display="flex" alignItems="center" justifyContent="flex-end">
+            <ProjectAdvancedFilters />
+            <Box mt={3} display="flex" alignItems="center" justifyContent="flex-end">
               <Button
                 className={classes.actionButton}
                 type="submit"
                 variant="contained"
                 color="primary"
                 onClick={() => formikRef.current?.handleSubmit()}>
-                Search
+                Apply Filters
               </Button>
               <Button
                 className={classes.actionButton}

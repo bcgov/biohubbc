@@ -6,19 +6,14 @@ import sinonChai from 'sinon-chai';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
-import {
-  GetAttachmentsData,
-  GetSurveyData,
-  GetSurveyFundingSources,
-  GetSurveyLocationData,
-  GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
-} from '../models/survey-view';
+import { GetAttachmentsData, GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../models/survey-view';
 import { getMockDBConnection } from '../__mocks__/db';
 import {
   IObservationSubmissionInsertDetails,
   IObservationSubmissionUpdateDetails,
-  SurveyRepository
+  SurveyRecord,
+  SurveyRepository,
+  SurveyTypeRecord
 } from './survey-repository';
 
 chai.use(sinonChai);
@@ -52,35 +47,34 @@ describe('SurveyRepository', () => {
       expect(response).to.eql([{ id: 1 }]);
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+    it('should return empty rows', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      try {
-        await repository.getSurveyIdsByProjectId(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get project survey ids');
-      }
+      const response = await repository.getSurveyIdsByProjectId(1);
+
+      expect(response).to.eql([]);
     });
   });
 
   describe('getSurveyData', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockRow = ({ survey_id: 1 } as unknown) as SurveyRecord;
+
+      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
       const response = await repository.getSurveyData(1);
 
-      expect(response).to.eql(new GetSurveyData({ id: 1 }));
+      expect(response).to.eql(mockRow);
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -91,6 +85,35 @@ describe('SurveyRepository', () => {
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get project survey details data');
       }
+    });
+  });
+
+  describe('getSurveyTypesData', () => {
+    it('returns rows', async () => {
+      const mockRows = ([
+        { survey_id: 1, type_id: 1 },
+        { survey_id: 1, type_id: 2 }
+      ] as unknown) as SurveyTypeRecord[];
+
+      const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.getSurveyTypesData(1);
+
+      expect(response).to.eql(mockRows);
+    });
+
+    it('returns empty rows', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.getSurveyTypesData(1);
+
+      expect(response).to.eql([]);
     });
   });
 
@@ -106,18 +129,16 @@ describe('SurveyRepository', () => {
       expect(response).to.eql([{ id: 1 }]);
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+    it('should return empty rows', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      try {
-        await repository.getSpeciesData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get survey species data');
-      }
+      const response = await repository.getSpeciesData(1);
+
+      expect(response).to.not.be.null;
+      expect(response).to.eql([]);
     });
   });
 
@@ -134,7 +155,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -144,33 +165,6 @@ describe('SurveyRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get survey purpose and methodology data');
-      }
-    });
-  });
-
-  describe('getSurveyFundingSourcesData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveyFundingSourcesData(1);
-
-      expect(response).to.eql(new GetSurveyFundingSources([{ id: 1 }]));
-    });
-
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      try {
-        await repository.getSurveyFundingSourcesData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get survey funding sources data');
       }
     });
   });
@@ -188,7 +182,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should return Null', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -199,16 +193,137 @@ describe('SurveyRepository', () => {
     });
   });
 
-  describe('getSurveyLocationData', () => {
-    it('should return result', async () => {
+  describe('getStakeholderPartnershipsBySurveyId', () => {
+    it('should return stakeholder partnerships', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      const response = await repository.getSurveyLocationData(1);
+      const response = await repository.getStakeholderPartnershipsBySurveyId(1);
 
-      expect(response).to.eql(new GetSurveyLocationData({ id: 1 }));
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should throw an error when rows == null', async () => {
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      try {
+        await repository.getStakeholderPartnershipsBySurveyId(1);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to get survey Stakeholder Partnerships data');
+      }
+    });
+  });
+
+  describe('getIndigenousPartnershipsBySurveyId', () => {
+    it('should return indigenous partnerships', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.getIndigenousPartnershipsBySurveyId(1);
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should throw an error when rows == null', async () => {
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      try {
+        await repository.getIndigenousPartnershipsBySurveyId(1);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to get survey Indigenous Partnerships data');
+      }
+    });
+  });
+
+  describe('insertIndigenousPartnerships', () => {
+    it('should return indigenous partnerships upon insertion', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.insertIndigenousPartnerships([1], 1);
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should throw an error when rowCount = 0', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      try {
+        await repository.insertIndigenousPartnerships([1], 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to insert survey indigenous partnerships');
+      }
+    });
+  });
+
+  describe('insertStakeholderPartnerships', () => {
+    it('should return stakeholder partnerships upon insertion', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.insertStakeholderPartnerships(['Stakeholder1'], 1);
+
+      expect(response).to.eql([{ id: 1 }]);
+    });
+
+    it('should throw an error when rowCount = 0', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      try {
+        await repository.insertStakeholderPartnerships(['Stakeholder1'], 1);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to insert survey stakeholder partnerships');
+      }
+    });
+  });
+
+  describe('deleteIndigenousPartnershipsData', () => {
+    it('should return row count upon deleting indigenous partnerships data', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.deleteIndigenousPartnershipsData(1);
+
+      expect(response).to.equal(1);
+    });
+  });
+
+  describe('deleteStakeholderPartnershipsData', () => {
+    it('should return row count upon deleting stakeholder partnerships data', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const response = await repository.deleteStakeholderPartnershipsData(1);
+
+      expect(response).to.equal(1);
     });
   });
 
@@ -251,7 +366,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should return Null', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -301,7 +416,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should return Null', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -324,18 +439,15 @@ describe('SurveyRepository', () => {
       expect(response).to.eql(new GetReportAttachmentsData([{ id: 1 }]));
     });
 
-    it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+    it('should return empty rows', async () => {
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      try {
-        await repository.getReportAttachmentsData(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to get attachments data');
-      }
+      const response = await repository.getReportAttachmentsData(1);
+
+      expect(response).to.eql(new GetReportAttachmentsData([]));
     });
   });
 
@@ -351,8 +463,7 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
-          biologist_first_name: 'first',
-          biologist_last_name: 'last'
+          survey_types: [1, 2]
         },
         purpose_and_methodology: {
           field_method_id: 1,
@@ -361,7 +472,7 @@ describe('SurveyRepository', () => {
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
-        location: { geometry: [{ id: 1 }] }
+        locations: [{ geometry: [{ id: 1 }] }]
       } as unknown) as PostSurveyObject;
 
       const response = await repository.insertSurveyData(1, input);
@@ -380,8 +491,7 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
-          biologist_first_name: 'first',
-          biologist_last_name: 'last'
+          survey_types: [1, 2]
         },
         purpose_and_methodology: {
           field_method_id: 1,
@@ -390,7 +500,7 @@ describe('SurveyRepository', () => {
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
-        location: { geometry: [] }
+        locations: [{ geometry: [] }]
       } as unknown) as PostSurveyObject;
 
       const response = await repository.insertSurveyData(1, input);
@@ -399,7 +509,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -409,8 +519,7 @@ describe('SurveyRepository', () => {
           survey_name: 'name',
           start_date: 'start',
           end_date: 'end',
-          biologist_first_name: 'first',
-          biologist_last_name: 'last'
+          survey_types: [1, 2]
         },
         purpose_and_methodology: {
           field_method_id: 1,
@@ -419,7 +528,7 @@ describe('SurveyRepository', () => {
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
-        location: { geometry: [{ id: 1 }] }
+        locations: [{ geometry: [{ id: 1 }] }]
       } as unknown) as PostSurveyObject;
 
       try {
@@ -427,6 +536,39 @@ describe('SurveyRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to insert survey data');
+      }
+    });
+  });
+
+  describe('insertSurveyTypes', () => {
+    it('should insert records', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const typeIds = [1, 2];
+      const surveyId = 2;
+
+      const response = await repository.insertSurveyTypes(typeIds, surveyId);
+
+      expect(response).to.be.undefined;
+    });
+
+    it('should throw an error if fewer records inserted then expected', async () => {
+      const mockResponse = ({ rows: [{ id: 1 }, { id: 2 }], rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+
+      const typeIds = [1, 2, 3]; // expecting 3, but rowCount is 2
+      const surveyId = 2;
+
+      try {
+        await repository.insertSurveyTypes(typeIds, surveyId);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to insert survey types data');
       }
     });
   });
@@ -444,7 +586,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -471,7 +613,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -498,7 +640,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -549,7 +691,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -626,14 +768,14 @@ describe('SurveyRepository', () => {
     });
   });
 
-  describe('insertSurveyFundingSource', () => {
+  describe('deleteSurveyTypesData', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
 
-      const response = await repository.insertSurveyFundingSource(1, 1);
+      const response = await repository.deleteSurveyTypesData(1);
 
       expect(response).to.eql(undefined);
     });
@@ -660,19 +802,6 @@ describe('SurveyRepository', () => {
       const repository = new SurveyRepository(dbConnection);
 
       const response = await repository.unassociatePermitFromSurvey(1);
-
-      expect(response).to.eql(undefined);
-    });
-  });
-
-  describe('deleteSurveyFundingSourcesData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.deleteSurveyFundingSourcesData(1);
 
       expect(response).to.eql(undefined);
     });
@@ -716,8 +845,6 @@ describe('SurveyRepository', () => {
           name: 'name',
           start_date: 'start',
           end_date: 'end',
-          lead_first_name: 'first',
-          lead_last_name: 'last',
           revision_count: 1
         },
         purpose_and_methodology: {
@@ -728,7 +855,7 @@ describe('SurveyRepository', () => {
           surveyed_all_areas: 'Y',
           revision_count: 1
         },
-        location: { geometry: [{ id: 1 }] }
+        locations: [{ geometry: [{ id: 1 }] }]
       } as unknown) as PutSurveyObject;
 
       const response = await repository.updateSurveyDetailsData(1, input);
@@ -747,8 +874,6 @@ describe('SurveyRepository', () => {
           name: 'name',
           start_date: 'start',
           end_date: 'end',
-          lead_first_name: 'first',
-          lead_last_name: 'last',
           revision_count: 1
         },
         purpose_and_methodology: {
@@ -759,7 +884,7 @@ describe('SurveyRepository', () => {
           surveyed_all_areas: 'Y',
           revision_count: 1
         },
-        location: { geometry: [] }
+        locations: [{ geometry: [] }]
       } as unknown) as PutSurveyObject;
 
       const response = await repository.updateSurveyDetailsData(1, input);
@@ -778,8 +903,6 @@ describe('SurveyRepository', () => {
           name: 'name',
           start_date: 'start',
           end_date: 'end',
-          lead_first_name: 'first',
-          lead_last_name: 'last',
           revision_count: 1
         },
         purpose_and_methodology: {
@@ -790,7 +913,7 @@ describe('SurveyRepository', () => {
           surveyed_all_areas: 'Y',
           revision_count: 1
         },
-        location: { geometry: [] }
+        locations: [{ geometry: [] }]
       } as unknown) as PutSurveyObject;
 
       try {
@@ -861,7 +984,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);
@@ -890,7 +1013,7 @@ describe('SurveyRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: undefined, rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new SurveyRepository(dbConnection);

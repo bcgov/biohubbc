@@ -20,19 +20,18 @@ describe('OccurrenceRepository', () => {
     it('should return a submission', async () => {
       const mockResponse = ({ rows: [{ occurrence_submission_id: 1 }] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: async () => {
+        sql: async () => {
           return mockResponse;
         }
       });
       const repo = new OccurrenceRepository(dbConnection);
       const response = await repo.getOccurrenceSubmission(1);
 
-      expect(response).to.not.be.null;
       expect(response).to.eql({ occurrence_submission_id: 1 });
     });
 
     it('should throw Failed to get occurrence submission error', async () => {
-      const mockResponse = ({ rows: [] } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: async () => {
           return mockResponse;
@@ -71,7 +70,7 @@ describe('OccurrenceRepository', () => {
     it('should succeed with valid data', async () => {
       const mockResponse = ({ rowCount: 1, rows: [{ id: 1 }] } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: () => mockResponse
+        sql: () => mockResponse
       });
       const repo = new OccurrenceRepository(dbConnection);
       const response = await repo.updateSurveyOccurrenceSubmissionWithOutputKey(1, 'fileName', 'outputkey');
@@ -81,7 +80,7 @@ describe('OccurrenceRepository', () => {
     it('should throw `Failed to update` error', async () => {
       const mockResponse = ({} as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
-        query: async () => {
+        sql: async () => {
           return mockResponse;
         }
       });
@@ -112,7 +111,7 @@ describe('OccurrenceRepository', () => {
     });
 
     it('should throw Failed to update occurrence submission error', async () => {
-      const mockResponse = ({ rows: [] } as any) as Promise<QueryResult<any>>;
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: async () => {
           return mockResponse;

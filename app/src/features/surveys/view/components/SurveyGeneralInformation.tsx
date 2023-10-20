@@ -1,13 +1,14 @@
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import React, { useContext } from 'react';
-import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
+import { useContext } from 'react';
+import { getFormattedDateRangeString } from 'utils/Utils';
 
 /**
  * General information content for a survey.
@@ -15,16 +16,25 @@ import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
  * @return {*}
  */
 const SurveyGeneralInformation = () => {
+  const codesContext = useContext(CodesContext);
   const surveyContext = useContext(SurveyContext);
   const surveyForViewData = surveyContext.surveyDataLoader.data;
 
-  if (!surveyForViewData) {
+  if (!surveyForViewData || !codesContext.codesDataLoader.data) {
     return <></>;
   }
 
   const {
-    surveyData: { survey_details, species, funding, permit }
+    surveyData: { survey_details, species, permit }
   } = surveyForViewData;
+
+  const codes = codesContext.codesDataLoader.data;
+
+  const surveyTypes =
+    codes.type
+      .filter((code) => survey_details.survey_types.includes(code.id))
+      .map((code) => code.name)
+      .join(', ') || '';
 
   return (
     <>
@@ -33,13 +43,11 @@ const SurveyGeneralInformation = () => {
         <Divider></Divider>
         <Box component="dl" my={0}>
           <Grid container spacing={1}>
-            <Grid item sm={6}>
+            <Grid item sm={12}>
               <Typography component="dt" color="textSecondary" variant="subtitle2">
-                Survey Lead
+                Types
               </Typography>
-              <Typography component="dd">
-                {survey_details.biologist_first_name} {survey_details.biologist_last_name}
-              </Typography>
+              <Typography component="dd">{surveyTypes ? <>{surveyTypes}</> : 'No Types'}</Typography>
             </Grid>
             <Grid item sm={6}>
               <Typography component="dt" color="textSecondary" variant="subtitle2">
@@ -76,7 +84,7 @@ const SurveyGeneralInformation = () => {
             </Grid>
             <Grid item sm={6}>
               <Typography component="dt" color="textSecondary" variant="subtitle2">
-                Anciliary Species
+                Ancillary Species
               </Typography>
               {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
                 return (
@@ -87,7 +95,7 @@ const SurveyGeneralInformation = () => {
               })}
               {species.ancillary_species_names?.length <= 0 && (
                 <Typography component="dd" variant="body1">
-                  No Ancilliary Species
+                  No Ancillary Species
                 </Typography>
               )}
             </Grid>
@@ -112,59 +120,6 @@ const SurveyGeneralInformation = () => {
                 <Typography variant="body1">
                   {item.permit_type} - {item.permit_number}
                 </Typography>
-              </ListItem>
-            );
-          })}
-        </List>
-      </Box>
-
-      <Box component="section">
-        <Typography component="h4">Funding Sources</Typography>
-        <Divider></Divider>
-        {!funding.funding_sources.length && (
-          <List disablePadding>
-            <ListItem divider disableGutters>
-              <Typography variant="body1">No Funding Sources</Typography>
-            </ListItem>
-          </List>
-        )}
-        <List disablePadding>
-          {funding.funding_sources?.map((item, index: number) => {
-            return (
-              <ListItem divider disableGutters key={index}>
-                <Box flex="1 1 auto">
-                  <Box pb={1.25}>
-                    <Typography component="span">{item.agency_name}</Typography>
-                  </Box>
-                  <Box component="dl" m={0}>
-                    <Grid container spacing={1}>
-                      <Grid item sm={6}>
-                        <Typography component="dt" variant="subtitle2" color="textSecondary">
-                          Project ID
-                        </Typography>
-                        <Typography component="dd">{item.funding_source_project_id}</Typography>
-                      </Grid>
-                      <Grid item sm={6}>
-                        <Typography component="dt" variant="subtitle2" color="textSecondary">
-                          Timeline
-                        </Typography>
-                        <Typography component="dd">
-                          {getFormattedDateRangeString(
-                            DATE_FORMAT.ShortMediumDateFormat,
-                            item.funding_start_date,
-                            item.funding_end_date
-                          )}
-                        </Typography>
-                      </Grid>
-                      <Grid item sm={12}>
-                        <Typography component="dt" variant="subtitle2" color="textSecondary">
-                          Funding Amount
-                        </Typography>
-                        <Typography component="dd">{getFormattedAmount(item.funding_amount)}</Typography>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Box>
               </ListItem>
             );
           })}

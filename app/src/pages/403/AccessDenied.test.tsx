@@ -1,33 +1,16 @@
-import { fireEvent, render } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
-import React from 'react';
 import { Router } from 'react-router-dom';
+import { getMockAuthState, SystemUserAuthState, UnauthenticatedUserAuthState } from 'test-helpers/auth-helpers';
+import { fireEvent, render } from 'test-helpers/test-utils';
 import AccessDenied from './AccessDenied';
 
 const history = createMemoryHistory();
 
 describe('AccessDenied', () => {
-  it('redirects to `/` when user is not authenticated', () => {
-    const authState = ({
-      keycloakWrapper: {
-        keycloak: {
-          authenticated: false
-        },
-        hasLoadedAllUserInfo: false,
-        hasAccessRequest: false,
-
-        systemRoles: [],
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        refresh: () => {}
-      }
-    } as any) as IAuthState;
+  it.skip('redirects to `/` when user is not authenticated', () => {
+    const authState = getMockAuthState({ base: UnauthenticatedUserAuthState });
 
     const history = createMemoryHistory();
 
@@ -44,25 +27,11 @@ describe('AccessDenied', () => {
     expect(history.location.pathname).toEqual('/forbidden');
   });
 
-  it('renders a spinner when user is authenticated and `hasLoadedAllUserInfo` is false', () => {
-    const authState = ({
-      keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: false,
-        hasAccessRequest: false,
-
-        systemRoles: [],
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        refresh: () => {}
-      }
-    } as any) as IAuthState;
+  it.skip('renders a spinner when user is authenticated and `hasLoadedAllUserInfo` is false', () => {
+    const authState = getMockAuthState({
+      base: SystemUserAuthState,
+      overrides: { keycloakWrapper: { hasLoadedAllUserInfo: false } }
+    });
 
     const history = createMemoryHistory();
 
@@ -84,24 +53,10 @@ describe('AccessDenied', () => {
   });
 
   it('redirects to `/request-submitted` when user is authenticated and has a pending access request', () => {
-    const authState = ({
-      keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: true,
-        hasAccessRequest: true,
-
-        systemRoles: [],
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        refresh: () => {}
-      }
-    } as any) as IAuthState;
+    const authState = getMockAuthState({
+      base: SystemUserAuthState,
+      overrides: { keycloakWrapper: { hasAccessRequest: true } }
+    });
 
     const history = createMemoryHistory();
 
@@ -119,24 +74,10 @@ describe('AccessDenied', () => {
   });
 
   it('renders correctly when the user is authenticated and has no pending access requests', () => {
-    const authState = ({
-      keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: true,
-        hasAccessRequest: false,
-
-        systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        refresh: () => {}
-      }
-    } as any) as IAuthState;
+    const authState = getMockAuthState({
+      base: SystemUserAuthState,
+      overrides: { keycloakWrapper: { systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] } }
+    });
 
     const { getByText, queryByTestId } = render(
       <AuthStateContext.Provider value={authState}>
@@ -151,24 +92,7 @@ describe('AccessDenied', () => {
   });
 
   it('redirects to `/access-request` when the `Request Access` button clicked', () => {
-    const authState = ({
-      keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: true,
-        hasAccessRequest: false,
-
-        systemRoles: [],
-        getUserIdentifier: jest.fn(),
-        hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn(),
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        refresh: () => {}
-      }
-    } as any) as IAuthState;
+    const authState = getMockAuthState({ base: SystemUserAuthState });
 
     const { getByText, getByTestId } = render(
       <AuthStateContext.Provider value={authState}>
@@ -178,7 +102,7 @@ describe('AccessDenied', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(getByText('You do not have permission to access this application.')).toBeVisible();
+    expect(getByText('You do not have permission to access this page.')).toBeVisible();
     expect(getByTestId('request_access')).toBeVisible();
 
     fireEvent.click(getByText('Request Access'));

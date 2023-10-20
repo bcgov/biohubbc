@@ -1,15 +1,14 @@
-import { grey } from '@material-ui/core/colors';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { FieldArray, useFormikContext } from 'formik';
+import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import { makeStyles } from '@mui/styles';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { get } from 'lodash-es';
-import React from 'react';
 
 const useStyles = makeStyles({
   list: {
@@ -52,9 +51,7 @@ export interface CustomFieldArrayProps<ValueType = unknown> {
    *
    * @memberof CustomFieldArrayProps
    */
-  getLabelForValue: (
-    value: ValueType
-  ) => {
+  getLabelForValue: (value: ValueType) => {
     primaryLabel: string;
     secondaryLabel?: string;
   };
@@ -69,7 +66,7 @@ export interface CustomFieldArrayProps<ValueType = unknown> {
  * @param {*} props
  * @return {*}
  */
-const CustomFieldArray = <ValueType extends any>(props: CustomFieldArrayProps<ValueType>) => {
+const CustomFieldArray = <ValueType extends Record<string, any>>(props: CustomFieldArrayProps<ValueType>) => {
   const classes = useStyles();
 
   const formikProps = useFormikContext();
@@ -83,7 +80,7 @@ const CustomFieldArray = <ValueType extends any>(props: CustomFieldArrayProps<Va
   return (
     <FieldArray
       name={props.name}
-      render={(arrayHelpers) => (
+      render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
           <List disablePadding className={classes.list}>
             {values.map((value: ValueType, index: number) => {

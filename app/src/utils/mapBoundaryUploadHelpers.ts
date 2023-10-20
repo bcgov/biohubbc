@@ -3,9 +3,83 @@ import bbox from '@turf/bbox';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import get from 'lodash-es/get';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
+
+export const isZipFile = (file: File): boolean => {
+  if (!file?.type.match(/zip/) || !file?.name.includes('.zip')) {
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * Parses a spatial shape file into an array of GeoJSON Feature objects.
+ *
+ * If the file is not a valid shape file, or
+ *
+ * @param {File} file
+ * @return {*}  {Promise<Feature[]>}
+ */
+export const parseShapeFile = async (file: File): Promise<Feature[]> => {
+  return new Promise((resolve, reject) => {
+    if (!isZipFile(file)) {
+      reject(new Error('Not a .zip file.'));
+    }
+
+    // Create a file reader to extract the binary data
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      // The converter wants a buffer
+      const zip: Buffer = event?.target?.result as Buffer;
+
+      // Exit out if no zip
+      if (!zip) {
+        reject(new Error('Failed to parse shape file.'));
+      }
+
+      // Parse the geojson features from the shape file
+      shp(zip)
+        .then((geojson) => {
+          let features: Feature[] = [];
+
+          if (Array.isArray(geojson)) {
+            geojson.forEach((item) => {
+              features = features.concat(item.features);
+            });
+          } else {
+            features = geojson.features;
+          }
+
+          // Ensure each Feature has a non-null ID
+          // This will allow the map to re render newly uploaded features properly
+          features.forEach((feature) => {
+            if (feature.id) {
+              // Feature already specifies an id (safe to assume it is unique?)
+              return;
+            }
+
+            // No feature id is present, create a UUID
+            feature.id = uuidv4();
+          });
+
+          resolve(features);
+        })
+        .catch((error) => {
+          reject(new Error(`Failed to parse shape file: ${(error as Error).message}`));
+        });
+    };
+
+    reader.onerror = () => {
+      reject(new Error('Failed to parse shape file.'));
+    };
+
+    // Start reading file
+    reader.readAsArrayBuffer(file);
+  });
+};
 
 /**
  * Function to handle zipped shapefile spatial boundary uploads
@@ -14,45 +88,17 @@ import { v4 as uuidv4 } from 'uuid';
  * @param {File} file The file to upload
  * @param {string} name The name of the formik field that the parsed geometry will be saved to
  * @param {FormikContextType<T>} formikProps The formik props
- * @return {*}
  */
-export const handleShapefileUpload = <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { values, setFieldValue, setFieldError } = formikProps;
+export const handleShapeFileUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
+  const { setFieldValue, setFieldError } = formikProps;
 
-  // Back out if not a zipped file
-  if (!file?.type.match(/zip/) || !file?.name.includes('.zip')) {
+  try {
+    const features = await parseShapeFile(file);
+
+    setFieldValue(name, [...features]);
+  } catch (error) {
     setFieldError(name, 'You must upload a valid shapefile (.zip format). Please try again.');
-    return;
   }
-
-  // Create a file reader to extract the binary data
-  const reader = new FileReader();
-  reader.readAsArrayBuffer(file);
-
-  // When the file is loaded run the conversion
-  reader.onload = async (event: any) => {
-    // The converter wants a buffer
-    const zip: Buffer = event?.target?.result as Buffer;
-
-    // Exit out if no zip
-    if (!zip) {
-      return;
-    }
-
-    // Run the conversion
-    const geojson = await shp(zip);
-
-    let features: Feature[] = [];
-    if (Array.isArray(geojson)) {
-      geojson.forEach((item) => {
-        features = features.concat(item.features);
-      });
-    } else {
-      features = geojson.features;
-    }
-
-    setFieldValue(name, [...features, ...get(values, name)]);
-  };
 };
 
 /**
@@ -65,7 +111,7 @@ export const handleShapefileUpload = <T>(file: File, name: string, formikProps: 
  * @return {*}
  */
 export const handleGPXUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { values, setFieldValue, setFieldError } = formikProps;
+  const { setFieldValue, setFieldError } = formikProps;
 
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
@@ -87,7 +133,7 @@ export const handleGPXUpload = async <T>(file: File, name: string, formikProps: 
       }
     });
 
-    setFieldValue(name, [...sanitizedGeoJSON, ...get(values, name)]);
+    setFieldValue(name, [...sanitizedGeoJSON]);
   } catch (error) {
     setFieldError(name, 'Error uploading your GPX file, please check the file and try again.');
   }
@@ -103,7 +149,7 @@ export const handleGPXUpload = async <T>(file: File, name: string, formikProps: 
  * @return {*}
  */
 export const handleKMLUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { values, setFieldValue, setFieldError } = formikProps;
+  const { setFieldValue, setFieldError } = formikProps;
 
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
@@ -124,8 +170,9 @@ export const handleKMLUpload = async <T>(file: File, name: string, formikProps: 
     }
   });
 
-  setFieldValue(name, [...sanitizedGeoJSON, ...get(values, name)]);
+  setFieldValue(name, [...sanitizedGeoJSON]);
 };
+
 /**
  * @param geometries geometry values on map
  */
@@ -154,14 +201,18 @@ export const calculateUpdatedMapBounds = (geometries: Feature[]): LatLngBoundsEx
   ];
 };
 
-/*
-  Leaflet does not know how to draw Multipolygons or GeometryCollections
-  that are not in proper GeoJSON format so we manually convert to a Feature[]
-  of GeoJSON objects which it can draw using the <GeoJSON /> tag for
-  non-editable geometries
-
-  We also set the bounds based on those geometries so the extent is set
-*/
+/**
+ * Leaflet does not know how to draw Multipolygons or GeometryCollections
+ * that are not in proper GeoJSON format so we manually convert to a Feature[]
+ * of GeoJSON objects which it can draw using the <GeoJSON /> tag for
+ * non-editable geometries
+ *
+ * We also set the bounds based on those geometries so the extent is set
+ *
+ * @param {*} geometry
+ * @param {string} [id]
+ * @return {*}
+ */
 export const generateValidGeometryCollection = (geometry: any, id?: string) => {
   const geometryCollection: Feature[] = [];
   const bounds: any[] = [];

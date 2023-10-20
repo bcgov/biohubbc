@@ -36,20 +36,20 @@ describe('TaxonomyService', () => {
     });
 
     it('should query elasticsearch and return []', async () => {
-      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_3.0.0';
 
       const taxonomyService = new TaxonomyService();
 
-      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves(undefined);
+      const elasticSearchStub = sinon.stub(taxonomyService, 'elasticSearch').resolves(undefined);
 
-      const response = await taxonomyService.getTaxonomyFromIds(['1']);
+      const response = await taxonomyService.getTaxonomyFromIds([1]);
 
       expect(elasticSearchStub).to.be.calledOnce;
       expect(response).to.eql([]);
     });
 
     it('should query elasticsearch and return taxonomy', async () => {
-      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_3.0.0';
 
       const taxonomyService = new TaxonomyService();
 
@@ -62,10 +62,12 @@ describe('TaxonomyService', () => {
         tty_kingdom: 'kingdom',
         tty_name: 'name',
         english_name: 'animal',
-        note: null
+        note: null,
+        parent_id: 1,
+        parent_hierarchy: []
       };
 
-      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves({
+      const elasticSearchStub = sinon.stub(taxonomyService, 'elasticSearch').resolves({
         ...mockElasticResponse,
         hits: {
           hits: [
@@ -104,11 +106,11 @@ describe('TaxonomyService', () => {
     });
 
     it('should query elasticsearch and return []', async () => {
-      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_3.0.0';
 
       const taxonomyService = new TaxonomyService();
 
-      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves(undefined);
+      const elasticSearchStub = sinon.stub(taxonomyService, 'elasticSearch').resolves(undefined);
 
       const response = await taxonomyService.getSpeciesFromIds(['1']);
 
@@ -117,7 +119,7 @@ describe('TaxonomyService', () => {
     });
 
     it('should query elasticsearch and return sanitized data', async () => {
-      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_3.0.0';
 
       const taxonomyService = new TaxonomyService();
 
@@ -130,10 +132,12 @@ describe('TaxonomyService', () => {
         tty_kingdom: 'kingdom',
         tty_name: 'name',
         english_name: 'animal',
-        note: null
+        note: null,
+        parent_id: 1,
+        parent_hierarchy: []
       };
 
-      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves({
+      const elasticSearchStub = sinon.stub(taxonomyService, 'elasticSearch').resolves({
         ...mockElasticResponse,
         hits: {
           hits: [
@@ -149,21 +153,19 @@ describe('TaxonomyService', () => {
         }
       });
 
-      const sanitizeSpeciesDataStub = sinon
-        .stub(taxonomyService, '_sanitizeSpeciesData')
-        .returns([{ id: '1', label: 'string' }]);
+      const sanitizeSpeciesDataStub = sinon.spy(taxonomyService, '_sanitizeSpeciesData');
 
-      const response = await taxonomyService.getSpeciesFromIds([1]);
+      const response = await taxonomyService.getSpeciesFromIds(['1']);
 
       expect(elasticSearchStub).to.be.calledOnce;
       expect(sanitizeSpeciesDataStub).to.be.calledOnce;
-      expect(response).to.eql([{ id: '1', label: 'string' }]);
+      expect(response).to.eql([{ id: '1', label: 'animal, A B C' }]);
     });
   });
 
   describe('searchSpecies', async () => {
     it('should query elasticsearch', async () => {
-      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
+      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_3.0.0';
 
       const taxonomyService = new TaxonomyService();
 
@@ -176,10 +178,12 @@ describe('TaxonomyService', () => {
         tty_kingdom: 'kingdom',
         tty_name: 'name',
         english_name: 'animal',
-        note: null
+        note: null,
+        parent_id: 1,
+        parent_hierarchy: []
       };
 
-      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves({
+      const elasticSearchStub = sinon.stub(taxonomyService, 'elasticSearch').resolves({
         ...mockElasticResponse,
         hits: {
           hits: [
@@ -212,46 +216,6 @@ describe('TaxonomyService', () => {
       });
 
       taxonomyService.searchSpecies('search term');
-
-      expect(elasticSearchStub).to.be.calledOnce;
-    });
-  });
-
-  describe('getEnrichedDataForSpeciesCode', async () => {
-    it('should query elasticsearch', async () => {
-      process.env.ELASTICSEARCH_TAXONOMY_INDEX = 'taxonomy_test_2.0.0';
-
-      const taxonomyService = new TaxonomyService();
-
-      const taxonDetails: Omit<ITaxonomySource, 'end_date'> = {
-        unit_name1: 'A',
-        unit_name2: 'B',
-        unit_name3: 'C',
-        taxon_authority: 'taxon_authority',
-        code: 'D',
-        tty_kingdom: 'kingdom',
-        tty_name: 'name',
-        english_name: 'animal',
-        note: null
-      };
-
-      const elasticSearchStub = sinon.stub(taxonomyService, '_elasticSearch').resolves({
-        ...mockElasticResponse,
-        hits: {
-          hits: [
-            {
-              _index: process.env.ELASTICSEARCH_TAXONOMY_INDEX,
-              _id: '1',
-              _source: {
-                ...taxonDetails,
-                end_date: null
-              }
-            }
-          ]
-        }
-      });
-
-      taxonomyService.getEnrichedDataForSpeciesCode('code');
 
       expect(elasticSearchStub).to.be.calledOnce;
     });

@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   projectCreatePostRequestObject,
-  projectIdResponseObject,
   projectUpdateGetResponseObject,
   projectUpdatePutRequestObject
 } from './project';
@@ -13,14 +12,6 @@ describe('projectCreatePostRequestObject', () => {
 
   it('is valid openapi v3 schema', () => {
     expect(ajv.validateSchema(projectCreatePostRequestObject)).to.be.true;
-  });
-});
-
-describe('projectIdResponseObject', () => {
-  const ajv = new Ajv();
-
-  it('is valid openapi v3 schema', () => {
-    expect(ajv.validateSchema(projectIdResponseObject)).to.be.true;
   });
 });
 

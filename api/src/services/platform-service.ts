@@ -2,8 +2,9 @@ import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
+import { v4 as uuidv4 } from 'uuid';
 import { IDBConnection } from '../database/db';
-import { ApiGeneralError } from '../errors/api-error';
+import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import {
   IProjectAttachment,
   IProjectReportAttachment,
@@ -11,7 +12,7 @@ import {
   ISurveyReportAttachment
 } from '../repositories/attachment-repository';
 import { ISurveySummaryDetails } from '../repositories/summary-repository';
-import { ISurveyProprietorModel } from '../repositories/survey-repository';
+import { IGetLatestSurveyOccurrenceSubmission, ISurveyProprietorModel } from '../repositories/survey-repository';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -109,8 +110,9 @@ export type IGetSurveyReportAttachment = IGetSurveyAttachment & { fileType: 'Rep
 
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneApiHost = () => process.env.BACKBONE_API_HOST || '';
-const getBackboneIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '/api/artifact/intake';
+const getBackboneArtifactDeletePath = () => process.env.BACKBONE_ARTIFACT_DELETE_PATH || '/api/artifact/delete';
+const getBackboneIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '/api/dwc/submission/queue';
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -293,6 +295,7 @@ export class PlatformService extends DBService {
      */
     if (data.observations.length) {
       await this.submitSurveyDwCArchiveToBioHub(surveyId, emlPackage);
+      await this.submitSurveyObservationInputDataToBiohub(surveyId, emlPackage.packageId);
     }
 
     /**
@@ -396,7 +399,7 @@ export class PlatformService extends DBService {
   async _submitDwCADatasetToBioHub(dwcaDataset: IDwCADataset): Promise<{ queue_id: number }> {
     const keycloakService = new KeycloakService();
 
-    const token = await keycloakService.getKeycloakToken();
+    const token = await keycloakService.getKeycloakServiceToken();
 
     const formData = new FormData();
 
@@ -634,6 +637,74 @@ export class PlatformService extends DBService {
   }
 
   /**
+   * Uploads the given survey occurrence input file to BioHub
+   *
+   * @param {number} surveyId
+   * @param {string} dataPackageId
+   * @memberof PlatformService
+   */
+  async submitSurveyObservationInputDataToBiohub(surveyId: number, dataPackageId: string) {
+    const surveyService = new SurveyService(this.connection);
+    const occurrenceSubmissionData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
+
+    if (!occurrenceSubmissionData?.input_key) {
+      throw new ApiGeneralError('Failed to submit survey to BioHub', ['Occurrence record has invalid s3 output key']);
+    }
+
+    // Build artifact object
+    const observationArtifact = await this._makeArtifactFromObservationInputData(
+      dataPackageId,
+      occurrenceSubmissionData
+    );
+
+    //Submit artifact to BioHub
+    const { artifact_id } = await this._submitArtifactToBioHub(observationArtifact);
+
+    //Insert publish history record
+    // TODO: this table isn't meant to track the input template (we don't have a spot for tracking it currently, if needed)
+    await this.historyPublishService.insertOccurrenceSubmissionPublishRecord({
+      occurrence_submission_id: occurrenceSubmissionData.occurrence_submission_id,
+      queue_id: artifact_id
+    });
+  }
+
+  /**
+   *  Makes artifact objects from the given survey occurrence submission input data.
+   *
+   * @param {string} dataPackageId
+   * @param {IGetLatestSurveyOccurrenceSubmission} observationSubmissionData
+   * @return {*}  {Promise<IArtifact>}
+   * @memberof PlatformService
+   */
+  async _makeArtifactFromObservationInputData(
+    dataPackageId: string,
+    observationSubmissionData: IGetLatestSurveyOccurrenceSubmission
+  ): Promise<IArtifact> {
+    const s3File = await getFileFromS3(observationSubmissionData.input_key);
+
+    const artifactZip = new AdmZip();
+    artifactZip.addFile(observationSubmissionData.input_file_name, s3File.Body as Buffer);
+
+    const artifact: IArtifact = {
+      dataPackageId,
+      archiveFile: {
+        data: artifactZip.toBuffer(),
+        fileName: `${uuidv4()}.zip`,
+        mimeType: 'application/zip'
+      },
+      metadata: {
+        file_name: observationSubmissionData.input_file_name,
+        file_size: String(s3File.ContentLength),
+        file_type: 'Observations',
+        title: observationSubmissionData.input_file_name,
+        description: observationSubmissionData.message
+      }
+    };
+
+    return artifact;
+  }
+
+  /**
    * Uploads the given survey summary submission to BioHub.
    *
    * @param {string} dataPackageId The dataPackageId for the artifact submission
@@ -698,7 +769,7 @@ export class PlatformService extends DBService {
       metadata: {
         file_name: surveySummarySubmissionData.file_name,
         file_size: String(s3File.ContentLength),
-        file_type: 'Summary',
+        file_type: 'Summary Results',
         title: surveySummarySubmissionData.file_name,
         description: surveySummarySubmissionData.message
       }
@@ -720,7 +791,7 @@ export class PlatformService extends DBService {
 
     const keycloakService = new KeycloakService();
 
-    const token = await keycloakService.getKeycloakToken();
+    const token = await keycloakService.getKeycloakServiceToken();
 
     const formData = new FormData();
 
@@ -747,5 +818,38 @@ export class PlatformService extends DBService {
     });
 
     return data;
+  }
+
+  /**
+   * Deletes the given attachment from BioHub.
+   *
+   * @param {string} artifactUUID
+   * @return {*}  {Promise<void>}
+   * @memberof PlatformService
+   */
+  async deleteAttachmentFromBiohub(artifactUUID: string): Promise<void> {
+    defaultLog.debug({ label: 'deleteAttachmentFromBiohub', message: 'params', artifactUUID });
+
+    const keycloakService = new KeycloakService();
+
+    const token = await keycloakService.getKeycloakServiceToken();
+
+    const backboneArtifactIntakeUrl = new URL(getBackboneArtifactDeletePath(), getBackboneApiHost()).href;
+
+    const response = await axios.post<boolean>(
+      backboneArtifactIntakeUrl,
+      {
+        artifactUUIDs: [artifactUUID]
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.data) {
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to delete attachment from Biohub');
+    }
   }
 }

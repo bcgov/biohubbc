@@ -9,7 +9,7 @@ export const AuthStateContext = React.createContext<IAuthState>({
   keycloakWrapper: undefined
 });
 
-export const AuthStateContextProvider: React.FC = (props) => {
+export const AuthStateContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const keycloakWrapper = useKeycloakWrapper();
 
   return (

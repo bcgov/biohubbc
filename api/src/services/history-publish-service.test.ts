@@ -7,11 +7,16 @@ import {
   HistoryPublishRepository,
   OccurrenceSubmissionPublish,
   ProjectAttachmentPublish,
+  ProjectAttachmentWithPublishData,
   ProjectMetadataPublish,
   ProjectReportPublish,
+  ProjectReportWithPublishData,
+  PublishStatus,
   SurveyAttachmentPublish,
+  SurveyAttachmentWithPublishData,
   SurveyMetadataPublish,
   SurveyReportPublish,
+  SurveyReportWithPublishData,
   SurveySummarySubmissionPublish
 } from '../repositories/history-publish-repository';
 import { ISurveySummaryDetails } from '../repositories/summary-repository';
@@ -334,268 +339,309 @@ describe('HistoryPublishService', () => {
     });
   });
 
-  describe('hasUnpublishedSurveyAttachments', () => {
-    it('returns true for unpublished records', async () => {
+  describe('surveyAttachmentsPublishStatus', () => {
+    it('returns NO_DATA when no attachments are found', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
       const repositoryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getCountSurveyUnpublishedAttachments')
-        .resolves(({ rows: [{ count: 2 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getSurveyAttachmentsWithPublishData')
+        .resolves([]);
 
-      const response = await service.hasUnpublishedSurveyAttachments(20);
+      const response = await service.surveyAttachmentsPublishStatus(20);
 
       expect(repositoryStub).to.be.calledOnce;
       expect(repositoryStub).to.be.calledWith(20);
-      expect(response).to.eql(true);
+      expect(response).to.eql(PublishStatus.NO_DATA);
     });
 
-    it('returns false for published records', async () => {
+    it('returns SUBMITTED when all attachments are submitted', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
       const repositoryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getCountSurveyUnpublishedAttachments')
-        .resolves(({ rows: [{ count: 0 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getSurveyAttachmentsWithPublishData')
+        .resolves([({ survey_attachment_publish_id: 1 } as unknown) as SurveyAttachmentWithPublishData]);
 
-      const response = await service.hasUnpublishedSurveyAttachments(20);
+      const response = await service.surveyAttachmentsPublishStatus(20);
 
       expect(repositoryStub).to.be.calledOnce;
       expect(repositoryStub).to.be.calledWith(20);
-      expect(response).to.eql(false);
+      expect(response).to.eql(PublishStatus.SUBMITTED);
+    });
+
+    it('returns UNSUBMITTED when some attachments are unsubmitted', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getSurveyAttachmentsWithPublishData')
+        .resolves([({ survey_attachment_publish_id: null } as unknown) as SurveyAttachmentWithPublishData]);
+
+      const response = await service.surveyAttachmentsPublishStatus(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(PublishStatus.UNSUBMITTED);
     });
   });
 
-  describe('hasUnpublishedSurveyReports', () => {
-    it('returns true for unpublished records', async () => {
+  describe('surveyReportsPublishStatus', () => {
+    it('returns NO_DATA when no report attachments are found', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
       const repositoryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getCountSurveyUnpublishedReports')
-        .resolves(({ rows: [{ count: 2 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getSurveyReportsWithPublishData')
+        .resolves([]);
 
-      const response = await service.hasUnpublishedSurveyReports(20);
+      const response = await service.surveyReportsPublishStatus(20);
 
       expect(repositoryStub).to.be.calledOnce;
       expect(repositoryStub).to.be.calledWith(20);
-      expect(response).to.eql(true);
+      expect(response).to.eql(PublishStatus.NO_DATA);
     });
 
-    it('returns false for published records', async () => {
+    it('returns SUBMITTED when all report attachments are submitted', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
       const repositoryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getCountSurveyUnpublishedReports')
-        .resolves(({ rows: [{ count: 0 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getSurveyReportsWithPublishData')
+        .resolves([({ survey_report_publish_id: 1 } as unknown) as SurveyReportWithPublishData]);
 
-      const response = await service.hasUnpublishedSurveyReports(20);
+      const response = await service.surveyReportsPublishStatus(20);
 
       expect(repositoryStub).to.be.calledOnce;
       expect(repositoryStub).to.be.calledWith(20);
-      expect(response).to.eql(false);
+      expect(response).to.eql(PublishStatus.SUBMITTED);
+    });
+
+    it('returns UNSUBMITTED when some report attachments are unsubmitted', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getSurveyReportsWithPublishData')
+        .resolves([({ survey_report_publish_id: null } as unknown) as SurveyReportWithPublishData]);
+
+      const response = await service.surveyReportsPublishStatus(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(PublishStatus.UNSUBMITTED);
     });
   });
 
-  describe('hasUnpublishedObservation', () => {
-    it('returns false for published occurrence records', async () => {
+  describe('observationPublishStatus', () => {
+    it('returns NO_DATA when no observations are found', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const observationStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedObservationRecordId')
-        .resolves(({ rows: [{ occurrence_submission_id: 2 }], rowCount: 1 } as unknown) as QueryResult);
-
-      const observationPublishStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
-        .resolves(({
-          rows: [{ occurrence_submission_publish_id: 4 }],
-          rowCount: 1
-        } as unknown) as OccurrenceSubmissionPublish);
-
-      const response = await service.hasUnpublishedObservation(20);
-
-      expect(observationStub).to.be.calledOnce;
-      expect(observationStub).to.be.calledWith(20);
-      expect(observationPublishStub).to.be.calledOnce;
-      expect(observationPublishStub).to.be.calledWith(2);
-      expect(response).to.eql(false);
-    });
-
-    it('returns false for no occurrence records', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new HistoryPublishService(dbConnection);
-
-      const observationStub = sinon
+      const repositoryStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedObservationRecordId')
         .resolves(({ rows: [], rowCount: 0 } as unknown) as QueryResult);
 
-      const response = await service.hasUnpublishedObservation(20);
+      const response = await service.observationPublishStatus(20);
 
-      expect(observationStub).to.be.calledOnce;
-      expect(observationStub).to.be.calledWith(20);
-      expect(response).to.eql(false);
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(PublishStatus.NO_DATA);
     });
 
-    it('returns true for unpublished occurrence record', async () => {
+    it('returns SUBMITTED when all observations are submitted', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const observationStub = sinon
+      const repositoryStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedObservationRecordId')
-        .resolves(({ rows: [{ occurrence_submission_id: 2 }], rowCount: 1 } as unknown) as QueryResult);
+        .resolves(({ rows: [{ occurrence_submission_id: 1 }] } as unknown) as QueryResult);
 
-      const observationPublishStub = sinon
+      const publishRecordStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
-        .resolves(null);
+        .resolves(({ occurrence_submission_publish_id: 1 } as unknown) as OccurrenceSubmissionPublish);
 
-      const response = await service.hasUnpublishedObservation(20);
+      const response = await service.observationPublishStatus(20);
 
-      expect(observationStub).to.be.calledOnce;
-      expect(observationStub).to.be.calledWith(20);
-      expect(observationPublishStub).to.be.calledOnce;
-      expect(observationPublishStub).to.be.calledWith(2);
-      expect(response).to.eql(true);
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(publishRecordStub).to.be.calledOnce;
+      expect(publishRecordStub).to.be.calledWith(1);
+      expect(response).to.eql(PublishStatus.SUBMITTED);
     });
-  });
 
-  describe('hasUnpublishedSummaryResults', () => {
-    it('returns false for published summary results records', async () => {
+    it('returns UNSUBMITTED when some observations are unsubmitted', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(({
-        survey_summary_submission_id: 4,
-        key: '1',
-        uuid: '',
-        file_name: '',
-        delete_timestamp: null,
-        submission_message_type_id: 1,
-        message: '',
-        submission_message_type_name: '',
-        summary_submission_message_class_id: 1,
-        submission_message_class_name: ''
-      } as unknown) as ISurveySummaryDetails);
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getLatestUndeletedObservationRecordId')
+        .resolves(({ rows: [{ occurrence_submission_id: 1 }] } as unknown) as QueryResult);
 
-      const summaryPublishStub = sinon
+      const publishRecordStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getOccurrenceSubmissionPublishRecord')
+        .resolves(({ occurrence_submission_publish_id: null } as unknown) as OccurrenceSubmissionPublish);
+
+      const response = await service.observationPublishStatus(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(publishRecordStub).to.be.calledOnce;
+      expect(publishRecordStub).to.be.calledWith(1);
+      expect(response).to.eql(PublishStatus.UNSUBMITTED);
+    });
+  });
+
+  describe('summaryPublishStatus', () => {
+    it('returns NO_DATA when no summary are found', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const summaryServiceStub = sinon
+        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
+        .resolves(undefined);
+
+      const response = await service.summaryPublishStatus(20);
+
+      expect(summaryServiceStub).to.be.calledOnce;
+      expect(summaryServiceStub).to.be.calledWith(20);
+      expect(response).to.eql(PublishStatus.NO_DATA);
+    });
+
+    it('returns SUBMITTED when all summary are submitted', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const summaryServiceStub = sinon
+        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
+        .resolves(({ survey_summary_submission_id: 1 } as unknown) as ISurveySummaryDetails);
+
+      const publishRecordStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(({ survey_summary_submission_publish_id: 4 } as unknown) as SurveySummarySubmissionPublish);
+        .resolves(({ survey_summary_submission_publish_id: 1 } as unknown) as SurveySummarySubmissionPublish);
 
-      const response = await service.hasUnpublishedSummaryResults(20);
+      const response = await service.summaryPublishStatus(20);
 
-      expect(summaryStub).to.be.calledOnce;
-      expect(summaryStub).to.be.calledWith(20);
-      expect(summaryPublishStub).to.be.calledOnce;
-      expect(summaryPublishStub).to.be.calledWith(4);
-      expect(response).to.eql(false);
+      expect(summaryServiceStub).to.be.calledOnce;
+      expect(summaryServiceStub).to.be.calledWith(20);
+      expect(publishRecordStub).to.be.calledOnce;
+      expect(publishRecordStub).to.be.calledWith(1);
+      expect(response).to.eql(PublishStatus.SUBMITTED);
     });
 
-    it('returns false for no summary results records', async () => {
+    it('returns UNSUBMITTED when some summary are unsubmitted', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
-      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(undefined);
+      const summaryServiceStub = sinon
+        .stub(SummaryService.prototype, 'getLatestSurveySummarySubmission')
+        .resolves(({ survey_summary_submission_id: 1 } as unknown) as ISurveySummaryDetails);
 
-      const response = await service.hasUnpublishedSummaryResults(20);
-
-      expect(summaryStub).to.be.calledOnce;
-      expect(summaryStub).to.be.calledWith(20);
-      expect(response).to.eql(false);
-    });
-
-    it('returns true for unpublished summary results records', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new HistoryPublishService(dbConnection);
-
-      const summaryStub = sinon.stub(SummaryService.prototype, 'getLatestSurveySummarySubmission').resolves(({
-        survey_summary_submission_id: 1,
-        key: 1,
-        uuid: 1,
-        file_name: '',
-        delete_timestamp: null,
-        submission_message_type_id: 1,
-        message: '',
-        submission_message_type_name: '',
-        summary_submission_message_class_id: 1,
-        submission_message_class_name: ''
-      } as unknown) as ISurveySummaryDetails);
-
-      const summaryPublishStub = sinon
+      const publishRecordStub = sinon
         .stub(HistoryPublishRepository.prototype, 'getSurveySummarySubmissionPublishRecord')
-        .resolves(null);
+        .resolves(({} as unknown) as SurveySummarySubmissionPublish);
 
-      const response = await service.hasUnpublishedSummaryResults(20);
+      const response = await service.summaryPublishStatus(20);
 
-      expect(summaryStub).to.be.calledOnce;
-      expect(summaryStub).to.be.calledWith(20);
-      expect(summaryPublishStub).to.be.calledOnce;
-      expect(summaryPublishStub).to.be.calledWith(1);
-      expect(response).to.eql(true);
+      expect(summaryServiceStub).to.be.calledOnce;
+      expect(summaryServiceStub).to.be.calledWith(20);
+      expect(publishRecordStub).to.be.calledOnce;
+      expect(publishRecordStub).to.be.calledWith(1);
+      expect(response).to.eql(PublishStatus.UNSUBMITTED);
     });
   });
 
-  describe('hasUnpublishedProjectAttachments', () => {
-    it('returns true for unpublished records', async () => {
+  describe('projectAttachmentsPublishStatus', () => {
+    it('returns NO_DATA when no attachments are found', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
       const repositoryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getCountProjectUnpublishedAttachments')
-        .resolves(({ rows: [{ count: 2 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getProjectAttachmentsWithPublishData')
+        .resolves([]);
 
-      const response = await service.hasUnpublishedProjectAttachments(20);
+      const response = await service.projectAttachmentsPublishStatus(20);
 
       expect(repositoryStub).to.be.calledOnce;
       expect(repositoryStub).to.be.calledWith(20);
-      expect(response).to.eql(true);
+      expect(response).to.eql(PublishStatus.NO_DATA);
     });
 
-    it('returns false for published records', async () => {
+    it('returns SUBMITTED when all attachments are submitted', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
       const repositoryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getCountProjectUnpublishedAttachments')
-        .resolves(({ rows: [{ count: 0 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getProjectAttachmentsWithPublishData')
+        .resolves([({ project_attachment_publish_id: 1 } as unknown) as ProjectAttachmentWithPublishData]);
 
-      const response = await service.hasUnpublishedProjectAttachments(20);
+      const response = await service.projectAttachmentsPublishStatus(20);
 
       expect(repositoryStub).to.be.calledOnce;
       expect(repositoryStub).to.be.calledWith(20);
-      expect(response).to.eql(false);
+      expect(response).to.eql(PublishStatus.SUBMITTED);
+    });
+
+    it('returns UNSUBMITTED when some attachments are unsubmitted', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getProjectAttachmentsWithPublishData')
+        .resolves([({ project_attachment_publish_id: null } as unknown) as ProjectAttachmentWithPublishData]);
+
+      const response = await service.projectAttachmentsPublishStatus(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(PublishStatus.UNSUBMITTED);
     });
   });
 
-  describe('hasUnpublishedProjectReports', () => {
-    it('returns true for unpublished records', async () => {
+  describe('projectReportsPublishStatus', () => {
+    it('returns NO_DATA when no report attachments are found', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
       const repositoryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getCountProjectUnpublishedReports')
-        .resolves(({ rows: [{ count: 2 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getProjectReportsWithPublishData')
+        .resolves([]);
 
-      const response = await service.hasUnpublishedProjectReports(20);
+      const response = await service.projectReportsPublishStatus(20);
 
       expect(repositoryStub).to.be.calledOnce;
       expect(repositoryStub).to.be.calledWith(20);
-      expect(response).to.eql(true);
+      expect(response).to.eql(PublishStatus.NO_DATA);
     });
 
-    it('returns false for published records', async () => {
+    it('returns SUBMITTED when all report attachments are submitted', async () => {
       const dbConnection = getMockDBConnection();
       const service = new HistoryPublishService(dbConnection);
 
       const repositoryStub = sinon
-        .stub(HistoryPublishRepository.prototype, 'getCountProjectUnpublishedReports')
-        .resolves(({ rows: [{ count: 0 }], rowCount: 1 } as unknown) as QueryResult);
+        .stub(HistoryPublishRepository.prototype, 'getProjectReportsWithPublishData')
+        .resolves([({ project_report_publish_id: 1 } as unknown) as ProjectReportWithPublishData]);
 
-      const response = await service.hasUnpublishedProjectReports(20);
+      const response = await service.projectReportsPublishStatus(20);
 
       expect(repositoryStub).to.be.calledOnce;
       expect(repositoryStub).to.be.calledWith(20);
-      expect(response).to.eql(false);
+      expect(response).to.eql(PublishStatus.SUBMITTED);
+    });
+
+    it('returns UNSUBMITTED when some report attachments are unsubmitted', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getProjectReportsWithPublishData')
+        .resolves([({ project_report_publish_id: null } as unknown) as ProjectReportWithPublishData]);
+
+      const response = await service.projectReportsPublishStatus(20);
+
+      expect(repositoryStub).to.be.calledOnce;
+      expect(repositoryStub).to.be.calledWith(20);
+      expect(response).to.eql(PublishStatus.UNSUBMITTED);
     });
   });
 });

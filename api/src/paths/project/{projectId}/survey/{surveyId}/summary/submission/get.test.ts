@@ -77,7 +77,7 @@ describe('getSummarySubmission', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     const messages: ISummarySubmissionMessagesResponse[] = [
@@ -132,14 +132,14 @@ describe('getSummarySubmission', () => {
   it('should return null if the survey has no summary submission, on success', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: undefined });
+    mockQuery.resolves({ rows: [], rowCount: 0 });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     const result = summarySubmission.getSurveySummarySubmission();

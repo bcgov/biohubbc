@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { UserService } from '../../../services/user-service';
 import { getLogger } from '../../../utils/logger';
@@ -36,7 +35,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'userId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -49,10 +49,22 @@ GET.apiDoc = {
           schema: {
             title: 'User Response Object',
             type: 'object',
+            required: [
+              'system_user_id',
+              'user_identifier',
+              'user_guid',
+              'record_end_date',
+              'role_ids',
+              'role_names',
+              'email',
+              'display_name',
+              'agency'
+            ],
             properties: {
-              id: {
+              system_user_id: {
                 description: 'user id',
-                type: 'number'
+                type: 'integer',
+                minimum: 1
               },
               user_identifier: {
                 description: 'The unique user identifier',
@@ -60,7 +72,8 @@ GET.apiDoc = {
               },
               user_guid: {
                 type: 'string',
-                description: 'The GUID for the user.'
+                description: 'The GUID for the user.',
+                nullable: true
               },
               record_end_date: {
                 oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -71,7 +84,8 @@ GET.apiDoc = {
                 description: 'list of role ids for the user',
                 type: 'array',
                 items: {
-                  type: 'number'
+                  type: 'integer',
+                  minimum: 1
                 }
               },
               role_names: {
@@ -80,6 +94,16 @@ GET.apiDoc = {
                 items: {
                   type: 'string'
                 }
+              },
+              email: {
+                type: 'string'
+              },
+              display_name: {
+                type: 'string'
+              },
+              agency: {
+                type: 'string',
+                nullable: true
               }
             }
           }
@@ -111,10 +135,6 @@ GET.apiDoc = {
  */
 export function getUserById(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.userId) {
-      throw new HTTP400('Missing required param: userId');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -125,10 +145,6 @@ export function getUserById(): RequestHandler {
       const userService = new UserService(connection);
 
       const userObject = await userService.getUserById(userId);
-
-      if (!userObject) {
-        throw new HTTP400('Failed to get system user');
-      }
 
       await connection.commit();
 

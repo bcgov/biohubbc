@@ -1,10 +1,10 @@
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
+import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 import UsersDetailHeader from './UsersDetailHeader';
 import UsersDetailProjects from './UsersDetailProjects';
 
@@ -13,11 +13,11 @@ import UsersDetailProjects from './UsersDetailProjects';
  *
  * @return {*}
  */
-const UsersDetailPage: React.FC = (props) => {
-  const urlParams = useParams();
+const UsersDetailPage: React.FC = () => {
+  const urlParams: Record<string, string | number | undefined> = useParams();
   const biohubApi = useBiohubApi();
 
-  const [selectedUser, setSelectedUser] = useState<IGetUserResponse | null>(null);
+  const [selectedUser, setSelectedUser] = useState<ISystemUser | null>(null);
 
   useEffect(() => {
     if (selectedUser) {

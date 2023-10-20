@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { IProjectAdvancedFilters } from '../../models/project-view';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
@@ -35,14 +36,6 @@ GET.apiDoc = {
       'application/json': {
         schema: {
           properties: {
-            coordinator_agency: {
-              type: 'string',
-              nullable: true
-            },
-            project_type: {
-              type: 'string',
-              nullable: true
-            },
             start_date: {
               type: 'string',
               nullable: true
@@ -51,27 +44,18 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
+            project_programs: {
+              type: 'array',
+              items: {
+                type: 'number'
+              },
+              nullable: true
+            },
             keyword: {
               type: 'string',
               nullable: true
             },
             project_name: {
-              type: 'string',
-              nullable: true
-            },
-            agency_id: {
-              anyOf: [
-                {
-                  type: 'number'
-                },
-                {
-                  type: 'string',
-                  maxLength: 0
-                }
-              ],
-              nullable: true
-            },
-            agency_project_id: {
               type: 'string',
               nullable: true
             },
@@ -100,7 +84,15 @@ GET.apiDoc = {
               properties: {
                 projectData: {
                   type: 'object',
-                  required: ['id', 'name', 'project_type', 'start_date', 'end_date', 'completion_status'],
+                  required: [
+                    'id',
+                    'name',
+                    'project_programs',
+                    'start_date',
+                    'end_date',
+                    'completion_status',
+                    'regions'
+                  ],
                   properties: {
                     id: {
                       type: 'number'
@@ -108,8 +100,11 @@ GET.apiDoc = {
                     name: {
                       type: 'string'
                     },
-                    project_type: {
-                      type: 'string'
+                    project_programs: {
+                      type: 'array',
+                      items: {
+                        type: 'number'
+                      }
                     },
                     start_date: {
                       oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -120,17 +115,21 @@ GET.apiDoc = {
                       nullable: true,
                       description: 'ISO 8601 date string for the funding end_date'
                     },
-                    completion_status: {
-                      type: 'string'
+                    regions: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
                     }
                   }
                 },
                 projectSupplementaryData: {
                   type: 'object',
-                  required: ['has_unpublished_content'],
+                  required: ['publishStatus'],
                   properties: {
-                    has_unpublished_content: {
-                      type: 'boolean'
+                    publishStatus: {
+                      type: 'string',
+                      enum: ['NO_DATA', 'UNSUBMITTED', 'SUBMITTED']
                     }
                   }
                 }
@@ -175,7 +174,7 @@ export function getProjectList(): RequestHandler {
         req['system_user']['role_names']
       );
       const systemUserId = connection.systemUserId();
-      const filterFields = req.query || {};
+      const filterFields: IProjectAdvancedFilters = req.query || {};
 
       const projectService = new ProjectService(connection);
 
@@ -183,11 +182,10 @@ export function getProjectList(): RequestHandler {
 
       const projectListWithStatus = await Promise.all(
         projects.map(async (project: any) => {
-          const status = await projectService.doesProjectHaveUnpublishedContent(project.id);
-
+          const status = await projectService.projectPublishStatus(project.id);
           return {
             projectData: project,
-            projectSupplementaryData: { has_unpublished_content: status }
+            projectSupplementaryData: { publishStatus: status }
           };
         })
       );

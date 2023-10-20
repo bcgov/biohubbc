@@ -2,13 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/http-error';
-import { ProjectUserObject } from '../../../../models/user';
-import { ProjectService } from '../../../../services/project-service';
+import { ProjectParticipationService } from '../../../../services/project-participation-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/self');
 
-export const GET: Operation = [getUserRolesForProject()];
+export const GET: Operation = [getSelf()];
 
 GET.apiDoc = {
   description: "Get the user's participant record for the given project.",
@@ -31,38 +30,49 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Project particpant roles.',
+      description: 'Project participant roles.',
       content: {
         'application/json': {
           schema: {
             type: 'object',
+            nullable: true,
+            required: [
+              'project_participation_id',
+              'project_id',
+              'system_user_id',
+              'project_role_ids',
+              'project_role_names',
+              'project_role_permissions'
+            ],
             properties: {
-              participant: {
-                type: 'object',
-                nullable: true,
-                required: ['project_id', 'system_user_id', 'project_role_ids', 'project_role_names'],
-                properties: {
-                  project_id: {
-                    type: 'integer',
-                    minimum: 1
-                  },
-                  system_user_id: {
-                    type: 'integer',
-                    minimum: 1
-                  },
-                  project_role_ids: {
-                    type: 'array',
-                    items: {
-                      type: 'integer',
-                      minimum: 1
-                    }
-                  },
-                  project_role_names: {
-                    type: 'array',
-                    items: {
-                      type: 'string'
-                    }
-                  }
+              project_participation_id: {
+                type: 'number'
+              },
+              project_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              system_user_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              project_role_ids: {
+                type: 'array',
+                items: {
+                  type: 'integer',
+                  minimum: 1
+                }
+              },
+              project_role_names: {
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
+              },
+              project_role_permissions: {
+                type: 'array',
+                items: {
+                  type: 'string'
                 }
               }
             }
@@ -93,7 +103,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getUserRolesForProject(): RequestHandler {
+export function getSelf(): RequestHandler {
   return async (req, res) => {
     if (!req.params.projectId) {
       throw new HTTP400("Missing required param 'projectId'");
@@ -111,14 +121,13 @@ export function getUserRolesForProject(): RequestHandler {
         throw new HTTP400("Failed to get the user's system user ID");
       }
 
-      const projectService = new ProjectService(connection);
-      const result = await projectService.getProjectParticipant(projectId, systemUserId);
+      const projectParticipationService = new ProjectParticipationService(connection);
+
+      const result = await projectParticipationService.getProjectParticipant(projectId, systemUserId);
 
       await connection.commit();
 
-      return res.status(200).json({
-        participant: result ? new ProjectUserObject(result) : null
-      });
+      return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getAllProjectParticipantsSQL', message: 'error', error });
       throw error;

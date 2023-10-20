@@ -2,7 +2,7 @@ import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import throttle from 'lodash-es/throttle';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FeatureGroup, GeoJSON, useMap, useMapEvents } from 'react-leaflet';
 import WFSFeaturePopup, { WFSFeatureKeyHandler, WFSFeaturePopupContentHandler } from './WFSFeaturePopup';
 
@@ -66,15 +66,16 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
   const [features, setFeatures] = useState<Feature[]>();
   const [bounds, setBounds] = useState<any>(null);
 
-  const throttledSetBounds = useCallback(
-    throttle((newBounds) => {
-      if (!isMounted) {
-        return;
-      }
+  const throttledSetBounds = useMemo(
+    () =>
+      throttle((newBounds) => {
+        if (!isMounted()) {
+          return;
+        }
 
-      setBounds(newBounds);
-    }, 300),
-    []
+        setBounds(newBounds);
+      }, 300),
+    [isMounted]
   );
 
   useMapEvents({
@@ -94,15 +95,18 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
     }
   });
 
-  const throttledGetFeatures = useCallback(
-    throttle(async (typeName: string, bbox: string, wfsParams?: IWFSParams) => {
-      const url = buildWFSURLByBoundingBox(typeName, bbox, wfsParams);
+  const throttledGetFeatures = useMemo(
+    () =>
+      throttle(async (typeName: string, bbox: string, wfsParams?: IWFSParams) => {
+        const url = buildWFSURLByBoundingBox(typeName, bbox, wfsParams);
 
-      const data = await biohubApi.external.get(url).catch(/* catch and ignore errors */);
+        const data = await biohubApi.external.get(url).catch(/* catch and ignore errors */);
 
-      return data.features;
-    }, 300),
-    []
+        return data.features;
+      }, 300),
+
+    // TODO
+    [biohubApi.external]
   );
 
   const updateFeatures = useCallback(async () => {

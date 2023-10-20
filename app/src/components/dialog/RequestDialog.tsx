@@ -1,11 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { mdiCheck, mdiWindowClose } from '@mdi/js';
-import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import { Formik } from 'formik';
 import React from 'react';
 
@@ -76,32 +74,22 @@ const RequestDialog: React.FC<IRequestDialog> = (props) => {
         {(formikProps) => (
           <Dialog open={props.open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
             <DialogTitle id="access-request-dialog-title">{props.dialogTitle}</DialogTitle>
-            <DialogContent>
-              <Box py={2}>{props.component.element}</Box>
-            </DialogContent>
+            <DialogContent>{props.component.element}</DialogContent>
             <DialogActions>
               <Button
-                data-testid="request_approve_button"
-                startIcon={<Icon path={mdiCheck} size={1} />}
-                onClick={formikProps.submitForm}
                 color="primary"
                 variant="contained"
+                data-testid="request_approve_button"
+                onClick={formikProps.submitForm}
                 autoFocus>
                 Approve
               </Button>
-              <Button
-                data-testid="request_deny_button"
-                startIcon={<Icon path={mdiWindowClose} size={1} />}
-                onClick={props.onDeny}
-                color="primary"
-                variant="outlined">
+              <Button color="primary" variant="contained" data-testid="request_deny_button" onClick={props.onDeny}>
                 Deny
               </Button>
-              <Box pl={3}>
-                <Button onClick={props.onClose} color="primary" variant="outlined">
-                  Cancel
-                </Button>
-              </Box>
+              <Button onClick={props.onClose} color="primary" variant="outlined">
+                Cancel
+              </Button>
             </DialogActions>
           </Dialog>
         )}

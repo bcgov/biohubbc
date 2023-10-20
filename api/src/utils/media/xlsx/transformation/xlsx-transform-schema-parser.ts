@@ -7,20 +7,49 @@ export type DWCSheetName = string;
 export type DWCColumnName = string;
 
 export type JSONPathString = string;
-
 export type ConditionSchema = {
   type: 'and' | 'or';
+  /**
+   * One or more checks.
+   *
+   * @type {IfNotEmptyCheck[]}
+   */
   checks: IfNotEmptyCheck[];
+  /**
+   * Logically `not` the result of the condition.
+   *
+   * @type {boolean}
+   */
+  not?: boolean;
 };
 
 export type IfNotEmptyCheck = {
+  /**
+   * `true` if the `JSONPathString` value, when processed, results in a non-empty non-null value.
+   *
+   * @type {JSONPathString}
+   */
   ifNotEmpty: JSONPathString;
+  /**
+   * Logically `not` the result of this check.
+   *
+   * @type {boolean}
+   */
+  not?: boolean;
 };
 
 export type TemplateMetaForeignKeySchema = {
   sheetName: string;
   primaryKey: string[];
 };
+
+/**
+ * - `root`: indicates the node is the top level root node (only 1 node can be type `root`).
+ * - `leaf`: indicates the node is a leaf node. A node that is type `leaf` will prevent the hierarchical
+ * parsing from progressing further, into this nodes children (if any).
+ * - `<empty>`: indicates a regular node, with no particular special considerations.
+ */
+export type TemplateMetaSchemaType = 'root' | 'leaf' | '';
 
 export type TemplateMetaSchema = {
   /**
@@ -35,8 +64,23 @@ export type TemplateMetaSchema = {
    * @type {string[]}
    */
   primaryKey: string[];
+  /**
+   * An array of json path query strings.
+   *
+   * @type {string[]}
+   */
   parentKey: string[];
-  type: 'root' | 'leaf' | '';
+  /**
+   * The type of the node.
+   *
+   * @type {TemplateMetaSchemaType}
+   */
+  type: TemplateMetaSchemaType;
+  /**
+   * An array of linked child nodes.
+   *
+   * @type {TemplateMetaForeignKeySchema[]}
+   */
   foreignKeys: TemplateMetaForeignKeySchema[];
 };
 
@@ -47,8 +91,9 @@ export type MapColumnValuePostfixSchema = {
    * If multiple query strings are provided, they will be fetched in order, and the first one that returns a non-empty
    * value will be used.
    *
-   * A single query string may return one value, or an array of values.
+   * A single JSON path string may return one value, or an array of values.
    *
+   * @see {@link RowObject} for special known fields that may be used in these `JSONPathString` values.
    * @type {JSONPathString[]}
    */
   paths?: JSONPathString[];
@@ -69,16 +114,17 @@ export type MapColumnValuePostfixSchema = {
 
 export type MapColumnValueSchema = {
   /**
-   * An array of json path query strings.
+   * An array of json path strings.
    *
-   * If multiple query strings are provided, they will be fetched in order, and the first one that returns a non-empty
-   * value will be used.
+   * If multiple JSON path strings are provided, they will be fetched in order, and the first one that returns a
+   * non-empty value will be used.
    *
-   * A single query string may return one value, or an array of values.
+   * A single JSON path string may return one value, or an array of values.
    *
    * If an array of values is returned, they will be joined using the specified `join` string.
    * If `join` string is not specified, a colon `:` will be used as the default `join` string.
    *
+   * @see {@link RowObject} for special known fields that may be used in these `JSONPathString` values.
    * @type {JSONPathString[]}
    */
   paths?: JSONPathString[];

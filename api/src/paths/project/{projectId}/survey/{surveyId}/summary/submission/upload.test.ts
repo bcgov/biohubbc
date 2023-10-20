@@ -195,7 +195,7 @@ describe('uploadSummarySubmission', () => {
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
@@ -240,7 +240,7 @@ describe('uploadSummarySubmission', () => {
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
@@ -284,7 +284,7 @@ describe('uploadSummarySubmission', () => {
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
@@ -329,7 +329,7 @@ describe('uploadSummarySubmission', () => {
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);

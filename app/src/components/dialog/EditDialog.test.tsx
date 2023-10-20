@@ -1,8 +1,7 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
 import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import yup from 'utils/YupSchema';
 
 export interface ISampleFormikFormProps {
@@ -59,32 +58,14 @@ const renderContainer = ({
 };
 
 describe('EditDialog', () => {
-  it('matches the snapshot when not open', () => {
-    const { baseElement } = renderContainer({ testFieldValue: 'this is a test', open: false });
-
-    expect(baseElement).toMatchSnapshot();
-  });
-
-  it('matches the snapshot when open, with no error message', () => {
-    const { baseElement } = renderContainer({ testFieldValue: 'this is a test' });
-
-    expect(baseElement).toMatchSnapshot();
-  });
-
-  it('matches snapshot when open, with error message', () => {
-    const { baseElement } = renderContainer({ testFieldValue: 'this is a test', dialogError: 'This is an error' });
-
-    expect(baseElement).toMatchSnapshot();
-  });
-
   it('calls the onSave prop when `Save Changes` button is clicked', async () => {
-    const { findByText, getByLabelText } = renderContainer({ testFieldValue: 'initial value' });
+    const { findByTestId, getByLabelText } = renderContainer({ testFieldValue: 'initial value' });
 
-    const textField = await getByLabelText('Test Field', { exact: false });
+    const textField = getByLabelText('Test Field', { exact: false });
 
     fireEvent.change(textField, { target: { value: 'updated value' } });
 
-    const saveChangesButton = await findByText('Save Changes', { exact: false });
+    const saveChangesButton = await findByTestId('edit-dialog-save');
 
     fireEvent.click(saveChangesButton);
 
@@ -97,9 +78,9 @@ describe('EditDialog', () => {
   });
 
   it('calls the onCancel prop when `Cancel` button is clicked', async () => {
-    const { findByText } = renderContainer({ testFieldValue: 'this is a test' });
+    const { findByTestId } = renderContainer({ testFieldValue: 'this is a test' });
 
-    const cancelButton = await findByText('Cancel', { exact: false });
+    const cancelButton = await findByTestId('edit-dialog-cancel');
 
     fireEvent.click(cancelButton);
 

@@ -97,7 +97,7 @@ const isDevelopment = (): boolean => {
  * @param {*} props
  * @return {*}
  */
-export const ConfigContextProvider: React.FC = (props) => {
+export const ConfigContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const [config, setConfig] = useState<IConfig>();
 
   useEffect(() => {

@@ -1,4 +1,6 @@
 import { Feature } from 'geojson';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { PROJECT_ROLE } from '../constants/roles';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-create');
@@ -10,48 +12,20 @@ const defaultLog = getLogger('models/project-create');
  * @class PostProjectObject
  */
 export class PostProjectObject {
-  coordinator: PostCoordinatorData;
   project: PostProjectData;
   objectives: PostObjectivesData;
   location: PostLocationData;
   iucn: PostIUCNData;
-  funding: PostFundingData;
-  partnerships: PostPartnershipsData;
+  participants: PostParticipantData[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
 
-    this.coordinator = (obj?.coordinator && new PostCoordinatorData(obj.coordinator)) || null;
     this.project = (obj?.project && new PostProjectData(obj.project)) || null;
     this.objectives = (obj?.project && new PostObjectivesData(obj.objectives)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
-    this.funding = (obj?.funding && new PostFundingData(obj.funding)) || null;
     this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
-    this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
-  }
-}
-
-/**
- * Processes POST /project contact data
- *
- * @export
- * @class PostCoordinatorData
- */
-export class PostCoordinatorData {
-  first_name: string;
-  last_name: string;
-  email_address: string;
-  coordinator_agency: string;
-  share_contact_details: boolean;
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostCoordinatorData', message: 'params', obj });
-
-    this.first_name = obj?.first_name || null;
-    this.last_name = obj?.last_name || null;
-    this.email_address = obj?.email_address || null;
-    this.coordinator_agency = obj?.coordinator_agency || null;
-    this.share_contact_details = (obj?.share_contact_details === 'true' && true) || false;
+    this.participants = obj?.participants || [];
   }
 }
 
@@ -63,8 +37,7 @@ export class PostCoordinatorData {
  */
 export class PostProjectData {
   name: string;
-  type: number;
-  project_activities: number[];
+  project_programs: number[];
   start_date: string;
   end_date: string;
   comments: string;
@@ -73,8 +46,7 @@ export class PostProjectData {
     defaultLog.debug({ label: 'PostProjectData', message: 'params', obj });
 
     this.name = obj?.project_name || null;
-    this.type = obj?.project_type || null;
-    this.project_activities = (obj?.project_activities?.length && obj.project_activities) || [];
+    this.project_programs = obj?.project_programs || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.comments = obj?.comments || null;
@@ -89,13 +61,11 @@ export class PostProjectData {
  */
 export class PostObjectivesData {
   objectives: string;
-  caveats: string;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || '';
   }
 }
 
@@ -121,7 +91,7 @@ export class PostLocationData {
       }
     });
 
-    this.location_description = (obj && obj.location_description) || null;
+    this.location_description = obj?.location_description;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
   }
 }
@@ -157,65 +127,40 @@ export class PostIUCNData {
   }
 }
 
-/**
- * A single project funding agency.
- *
- * @See PostFundingData
- *
- * @export
- * @class PostFundingSource
- */
-export class PostFundingSource {
-  agency_id: number;
-  investment_action_category: number;
-  agency_project_id: string;
-  funding_amount: number;
-  start_date: string;
-  end_date: string;
+export class PostParticipantsData {
+  systemUserId: number;
+  userIdentifier: string;
+  identitySource: SYSTEM_IDENTITY_SOURCE;
+  displayName: string;
+  email: string;
+  roleId: number;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostFundingSource', message: 'params', obj });
+    defaultLog.debug({ label: 'PostParticipantsData', message: 'params', obj });
 
-    this.agency_id = obj?.agency_id || null;
-    this.investment_action_category = obj?.investment_action_category || null;
-    this.agency_project_id = obj?.agency_project_id || null;
-    this.funding_amount = obj?.funding_amount || null;
-    this.start_date = obj?.start_date || null;
-    this.end_date = obj?.end_date || null;
+    this.systemUserId = obj?.systemUserId || null;
+    this.userIdentifier = obj?.userIdentifier || null;
+    this.identitySource = obj?.identitySource || null;
+    this.displayName = obj?.displayName || null;
+    this.email = obj?.email || null;
+    this.roleId = obj?.roleId || null;
   }
 }
 
-/**
- * Processes POST /project funding data
- *
- * @export
- * @class PostFundingData
- */
-export class PostFundingData {
-  fundingSources: PostFundingSource[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostFundingData', message: 'params', obj });
-
-    this.fundingSources =
-      (obj?.fundingSources?.length && obj.fundingSources.map((item: any) => new PostFundingSource(item))) || [];
-  }
+export interface PostParticipantData {
+  project_participation_id?: number;
+  system_user_id: number;
+  project_role_names: PROJECT_ROLE[];
 }
 
-/**
- * Processes POST /project partnerships data
- *
- * @export
- * @class PostPartnershipsData
- */
-export class PostPartnershipsData {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
+export class PostDraftData {
+  name: string;
+  data: object;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostPartnershipsData', message: 'params', obj });
+    defaultLog.debug({ label: 'PostDraftData', message: 'params', obj });
 
-    this.indigenous_partnerships = (obj?.indigenous_partnerships.length && obj.indigenous_partnerships) || [];
-    this.stakeholder_partnerships = (obj?.stakeholder_partnerships.length && obj.stakeholder_partnerships) || [];
+    this.name = obj?.name || null;
+    this.data = (obj?.data && obj.data) || {};
   }
 }

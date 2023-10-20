@@ -68,7 +68,7 @@ export class OccurrenceRepository extends BaseRepository {
    * @return {*}  {Promise<IOccurrenceSubmission | null>}
    */
   async getOccurrenceSubmission(submissionId: number): Promise<IOccurrenceSubmission> {
-    const sql = SQL`
+    const sqlStatement = SQL`
       SELECT
         *
       FROM
@@ -77,7 +77,7 @@ export class OccurrenceRepository extends BaseRepository {
         occurrence_submission_id = ${submissionId};
     `;
 
-    const response = await this.connection.query<IOccurrenceSubmission>(sql.text, sql.values);
+    const response = await this.connection.sql<IOccurrenceSubmission>(sqlStatement);
 
     const result = (response && response.rows && response.rows[0]) || null;
 
@@ -202,7 +202,7 @@ export class OccurrenceRepository extends BaseRepository {
       RETURNING occurrence_submission_id as id;
     `);
 
-    const updateResponse = await await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const updateResponse = await await this.connection.sql(sqlStatement);
 
     if (!updateResponse || !updateResponse.rowCount) {
       throw SubmissionErrorFromMessageType(SUBMISSION_MESSAGE_TYPE.FAILED_UPDATE_OCCURRENCE_SUBMISSION);

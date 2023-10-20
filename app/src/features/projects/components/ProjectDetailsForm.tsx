@@ -1,9 +1,5 @@
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
@@ -17,8 +13,7 @@ import yup from 'utils/YupSchema';
 export interface IProjectDetailsForm {
   project: {
     project_name: string;
-    project_type: number;
-    project_activities: number[];
+    project_programs: number[];
     start_date: string;
     end_date: string;
   };
@@ -27,8 +22,7 @@ export interface IProjectDetailsForm {
 export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
   project: {
     project_name: '',
-    project_type: ('' as unknown) as number,
-    project_activities: [],
+    project_programs: [],
     start_date: '',
     end_date: ''
   }
@@ -37,15 +31,17 @@ export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
 export const ProjectDetailsFormYupSchema = yup.object().shape({
   project: yup.object().shape({
     project_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Project Name is Required'),
-    project_type: yup.number().required('Project Type is Required'),
+    project_programs: yup
+      .array(yup.number())
+      .min(1, 'At least 1 Project Program is Required')
+      .required('Project Program is Required'),
     start_date: yup.string().isValidDateString().required('Start Date is Required'),
-    end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
+    end_date: yup.string().nullable().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
   })
 });
 
 export interface IProjectDetailsFormProps {
-  project_type: IMultiAutocompleteFieldOption[];
-  activity: IMultiAutocompleteFieldOption[];
+  program: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -56,7 +52,7 @@ export interface IProjectDetailsFormProps {
 const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
   const formikProps = useFormikContext<ICreateProjectRequest>();
 
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { touched, errors, handleSubmit } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -75,38 +71,16 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             fullWidth
             variant="outlined"
             required={true}
-            error={touched.project?.project_type && Boolean(errors.project?.project_type)}>
-            <InputLabel id="project_type-label">Project Type</InputLabel>
-            <Select
-              id="project_type"
-              name="project.project_type"
-              labelId="project_type-label"
-              label="Project Type"
-              value={values.project.project_type || ''}
-              labelWidth={300}
-              onChange={handleChange}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Project Type' }}>
-              {props.project_type.map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-            {errors.project?.project_type && (
-              <FormHelperText>{touched.project?.project_type && errors.project?.project_type}</FormHelperText>
-            )}
+            error={touched.project?.project_programs && Boolean(errors.project?.project_programs)}>
+            <MultiAutocompleteFieldVariableSize
+              id={'project.project_programs'}
+              label={'Project Programs'}
+              options={props.program}
+              required
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id={'project.project_activities'}
-            label={'Project Activities'}
-            options={props.activity}
-            required={false}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
           <StartEndDateFields
             formikProps={formikProps}
             startName="project.start_date"

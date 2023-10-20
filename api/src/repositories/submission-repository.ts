@@ -33,7 +33,7 @@ export class SubmissionRepository extends BaseRepository {
         submission_status_id as id;
     `;
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const response = await this.connection.sql(sqlStatement);
 
     const result = (response && response.rows && response.rows[0]) || null;
 

@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
 import { SurveyObject } from '../../../../models/survey-view';
+import { PublishStatus } from '../../../../repositories/history-publish-repository';
 import { SurveyService } from '../../../../services/survey-service';
 import { getMockDBConnection } from '../../../../__mocks__/db';
 import * as surveys from './list';
@@ -74,8 +75,8 @@ describe('survey list', () => {
       .resolves(({ survey_details: { id: 1 } } as unknown) as SurveyObject);
 
     const getSurveysPublishStub = sinon
-      .stub(SurveyService.prototype, 'doesSurveyHaveUnpublishedContent')
-      .resolves(true);
+      .stub(SurveyService.prototype, 'surveyPublishStatus')
+      .resolves(PublishStatus.SUBMITTED);
 
     const sampleReq = {
       keycloak_token: {},
@@ -88,7 +89,7 @@ describe('survey list', () => {
     const expectedResponse = [
       {
         surveyData: { survey_details: { id: 1 } },
-        surveySupplementaryData: { has_unpublished_content: true }
+        surveySupplementaryData: { publishStatus: 'SUBMITTED' }
       }
     ];
 

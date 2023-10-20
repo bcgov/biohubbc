@@ -1,38 +1,20 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { HTTPError } from '../errors/http-error';
+import { getRequestHandlerMocks } from '../__mocks__/db';
 import * as logger from './logger';
 
 describe('logger', () => {
-  let actualStatus: any = null;
-  let actualResult: any = null;
-
-  const sampleRes = {
-    status: (status: any) => {
-      actualStatus = status;
-
-      return {
-        send: (response: any) => {
-          actualResult = response;
-        }
-      };
-    }
-  } as any;
-
-  const sampleNext = () => {
-    // do nothing
-  };
-
   describe('updateLoggerLevel', () => {
     it('should throw a 400 error when `level` query param is missing', async () => {
-      const operation = logger.updateLoggerLevel();
+      const requestHandler = logger.updateLoggerLevel();
 
-      const sampleReq = {
-        query: {}
-      } as any;
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.query = {};
 
       try {
-        await operation(sampleReq, sampleRes, sampleNext);
+        await requestHandler(mockReq, mockRes, mockNext);
 
         expect.fail();
       } catch (error) {
@@ -42,18 +24,16 @@ describe('logger', () => {
     });
 
     it('should return 200 on success', async () => {
-      const operation = logger.updateLoggerLevel();
+      const requestHandler = logger.updateLoggerLevel();
 
-      const sampleReq = {
-        query: {
-          level: 'info'
-        }
-      } as any;
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      await operation(sampleReq, sampleRes, sampleNext);
+      mockReq.query = { level: 'info' };
 
-      expect(actualStatus).to.eql(200);
-      expect(actualResult).to.eql(undefined);
+      await requestHandler(mockReq, mockRes, mockNext);
+
+      expect(mockRes.statusValue).to.eql(200);
+      expect(mockRes.sendValue).to.eql(undefined);
     });
   });
 });

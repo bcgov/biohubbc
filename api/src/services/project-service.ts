@@ -1,36 +1,26 @@
+import { Feature } from 'geojson';
 import moment from 'moment';
-import { QueryResult } from 'pg';
-import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
-import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
-import {
-  IPutIUCN,
-  PutCoordinatorData,
-  PutFundingData,
-  PutIUCNData,
-  PutLocationData,
-  PutObjectivesData,
-  PutPartnershipsData,
-  PutProjectData
-} from '../models/project-update';
+import { IPostIUCN, PostProjectObject } from '../models/project-create';
+import { IPutIUCN, PutIUCNData, PutLocationData, PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
   GetAttachmentsData,
-  GetCoordinatorData,
-  GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
-  GetPartnershipsData,
-  GetProjectData,
   GetReportAttachmentsData,
   IGetProject,
+  IProjectAdvancedFilters,
+  ProjectData,
   ProjectSupplementaryData
 } from '../models/project-view';
-import { ProjectUserObject } from '../models/user';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
+import { PublishStatus } from '../repositories/history-publish-repository';
+import { ProjectUser } from '../repositories/project-participation-repository';
 import { ProjectRepository } from '../repositories/project-repository';
+import { SystemUser } from '../repositories/user-repository';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -38,6 +28,7 @@ import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
+import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
 
 const defaultLog = getLogger('services/project-service');
@@ -60,115 +51,41 @@ export class ProjectService extends DBService {
     this.surveyService = new SurveyService(connection);
   }
 
-  /**
-   * Gets the project participant, adding them if they do not already exist.
-   *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @return {*}  {Promise<any>}
-   * @memberof ProjectService
-   */
-  async ensureProjectParticipant(
-    projectId: number,
-    systemUserId: number,
-    projectParticipantRoleId: number
-  ): Promise<void> {
-    const projectParticipantRecord = await this.getProjectParticipant(projectId, systemUserId);
-
-    if (projectParticipantRecord) {
-      // project participant already exists, do nothing
-      return;
-    }
-
-    // add new project participant record
-    await this.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-  }
-
-  /**
-   * Get an existing project participant.
-   *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @return {*}  {Promise<any>}
-   * @memberof ProjectService
-   */
-  async getProjectParticipant(projectId: number, systemUserId: number): Promise<ProjectUserObject | null> {
-    return this.projectParticipationService.getProjectParticipant(projectId, systemUserId);
-  }
-
-  /**
-   * Get all project participants for a project.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<object[]>}
-   * @memberof ProjectService
-   */
-  async getProjectParticipants(projectId: number): Promise<object[]> {
-    return this.projectParticipationService.getProjectParticipants(projectId);
-  }
-
-  /**
-   * Adds a new project participant.
-   *
-   * Note: Will fail if the project participant already exists.
-   *
-   * @param {number} projectId
-   * @param {number} systemUserId
-   * @param {number} projectParticipantRoleId
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async addProjectParticipant(
-    projectId: number,
-    systemUserId: number,
-    projectParticipantRoleId: number
-  ): Promise<void> {
-    return this.projectParticipationService.addProjectParticipant(projectId, systemUserId, projectParticipantRoleId);
-  }
-
-  async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any> {
+  async getProjectList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
+  ): Promise<any> {
     const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields);
 
     return response.map((row) => ({
-      id: row.id,
-      name: row.name,
+      id: row.project_id,
+      name: row.project_name,
       start_date: row.start_date,
       end_date: row.end_date,
-      coordinator_agency: row.coordinator_agency_name,
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
-      project_type: row.project_type
+      project_programs: row.project_programs,
+      regions: row.regions
     }));
   }
 
   async getProjectById(projectId: number): Promise<IGetProject> {
-    const [
-      projectData,
-      objectiveData,
-      coordinatorData,
-      locationData,
-      iucnData,
-      fundingData,
-      partnershipsData
-    ] = await Promise.all([
+    const [projectData, objectiveData, projectParticipantsData, locationData, iucnData] = await Promise.all([
       this.getProjectData(projectId),
       this.getObjectivesData(projectId),
-      this.getCoordinatorData(projectId),
+      this.getProjectParticipantsData(projectId),
       this.getLocationData(projectId),
-      this.getIUCNClassificationData(projectId),
-      this.getFundingData(projectId),
-      this.getPartnershipsData(projectId)
+      this.getIUCNClassificationData(projectId)
     ]);
 
     return {
       project: projectData,
       objectives: objectiveData,
-      coordinator: coordinatorData,
+      participants: projectParticipantsData,
       location: locationData,
-      iucn: iucnData,
-      funding: fundingData,
-      partnerships: partnershipsData
+      iucn: iucnData
     };
   }
 
@@ -187,32 +104,13 @@ export class ProjectService extends DBService {
 
   async getProjectEntitiesById(projectId: number, entities: string[]): Promise<Partial<IGetProject>> {
     const results: Partial<IGetProject> = {
-      coordinator: undefined,
       project: undefined,
       objectives: undefined,
       location: undefined,
-      iucn: undefined,
-      funding: undefined,
-      partnerships: undefined
+      iucn: undefined
     };
 
     const promises: Promise<any>[] = [];
-
-    if (entities.includes(GET_ENTITIES.coordinator)) {
-      promises.push(
-        this.getCoordinatorData(projectId).then((value) => {
-          results.coordinator = value;
-        })
-      );
-    }
-
-    if (entities.includes(GET_ENTITIES.partnerships)) {
-      promises.push(
-        this.getPartnershipsData(projectId).then((value) => {
-          results.partnerships = value;
-        })
-      );
-    }
 
     if (entities.includes(GET_ENTITIES.location)) {
       promises.push(
@@ -245,10 +143,11 @@ export class ProjectService extends DBService {
         })
       );
     }
-    if (entities.includes(GET_ENTITIES.funding)) {
+
+    if (entities.includes(GET_ENTITIES.participants)) {
       promises.push(
-        this.getFundingData(projectId).then((value) => {
-          results.funding = value;
+        this.getProjectParticipantsData(projectId).then((value) => {
+          results.participants = value;
         })
       );
     }
@@ -258,7 +157,7 @@ export class ProjectService extends DBService {
     return results;
   }
 
-  async getProjectData(projectId: number): Promise<GetProjectData> {
+  async getProjectData(projectId: number): Promise<ProjectData> {
     return this.projectRepository.getProjectData(projectId);
   }
 
@@ -266,8 +165,8 @@ export class ProjectService extends DBService {
     return this.projectRepository.getObjectivesData(projectId);
   }
 
-  async getCoordinatorData(projectId: number): Promise<GetCoordinatorData> {
-    return this.projectRepository.getCoordinatorData(projectId);
+  async getProjectParticipantsData(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
+    return this.projectParticipationService.getProjectParticipants(projectId);
   }
 
   async getLocationData(projectId: number): Promise<GetLocationData> {
@@ -276,27 +175,6 @@ export class ProjectService extends DBService {
 
   async getIUCNClassificationData(projectId: number): Promise<GetIUCNClassificationData> {
     return this.projectRepository.getIUCNClassificationData(projectId);
-  }
-
-  async getFundingData(projectId: number): Promise<GetFundingData> {
-    return this.projectRepository.getFundingData(projectId);
-  }
-
-  async getPartnershipsData(projectId: number): Promise<GetPartnershipsData> {
-    const [indigenousPartnershipsRows, stakegholderPartnershipsRows] = await Promise.all([
-      this.projectRepository.getIndigenousPartnershipsRows(projectId),
-      this.projectRepository.getStakeholderPartnershipsRows(projectId)
-    ]);
-
-    return new GetPartnershipsData(indigenousPartnershipsRows, stakegholderPartnershipsRows);
-  }
-
-  async getIndigenousPartnershipsRows(projectId: number): Promise<any[]> {
-    return this.projectRepository.getIndigenousPartnershipsRows(projectId);
-  }
-
-  async getStakeholderPartnershipsRows(projectId: number): Promise<any[]> {
-    return this.projectRepository.getStakeholderPartnershipsRows(projectId);
   }
 
   async getAttachmentsData(projectId: number): Promise<GetAttachmentsData> {
@@ -338,33 +216,6 @@ export class ProjectService extends DBService {
 
     const promises: Promise<any>[] = [];
 
-    // Handle funding sources
-    promises.push(
-      Promise.all(
-        postProjectData.funding.fundingSources.map((fundingSource: PostFundingSource) =>
-          this.insertFundingSource(fundingSource, projectId)
-        )
-      )
-    );
-
-    // Handle indigenous partners
-    promises.push(
-      Promise.all(
-        postProjectData.partnerships.indigenous_partnerships.map((indigenousNationId: number) =>
-          this.insertIndigenousNation(indigenousNationId, projectId)
-        )
-      )
-    );
-
-    // Handle stakeholder partners
-    promises.push(
-      Promise.all(
-        postProjectData.partnerships.stakeholder_partnerships.map((stakeholderPartner: string) =>
-          this.insertStakeholderPartnership(stakeholderPartner, projectId)
-        )
-      )
-    );
-
     // Handle project IUCN classifications
     promises.push(
       Promise.all(
@@ -374,53 +225,84 @@ export class ProjectService extends DBService {
       )
     );
 
-    // Handle project activities
-    promises.push(
-      Promise.all(
-        postProjectData.project.project_activities.map((activityId: number) =>
-          this.insertActivity(activityId, projectId)
-        )
-      )
-    );
+    // Handle project regions
+    promises.push(this.insertRegion(projectId, postProjectData.location.geometry));
+
+    // Handle project programs
+    promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
+
+    //Handle project participants
+    promises.push(this.projectParticipationService.postProjectParticipants(projectId, postProjectData.participants));
 
     await Promise.all(promises);
-
-    // The user that creates a project is automatically assigned a project lead role, for this project
-    await this.insertParticipantRole(projectId, PROJECT_ROLE.PROJECT_LEAD);
 
     return projectId;
   }
 
+  /**
+   * Insert project data.
+   *
+   * @param {PostProjectObject} postProjectData
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
   async insertProject(postProjectData: PostProjectObject): Promise<number> {
     return this.projectRepository.insertProject(postProjectData);
   }
 
-  async insertFundingSource(fundingSource: PostFundingSource, project_id: number): Promise<number> {
-    return this.projectRepository.insertFundingSource(fundingSource, project_id);
-  }
-
-  async insertIndigenousNation(indigenousNationsId: number, project_id: number): Promise<number> {
-    return this.projectRepository.insertIndigenousNation(indigenousNationsId, project_id);
-  }
-
-  async insertStakeholderPartnership(stakeholderPartner: string, project_id: number): Promise<number> {
-    return this.projectRepository.insertStakeholderPartnership(stakeholderPartner, project_id);
-  }
-
+  /**
+   * Insert IUCN classification data.
+   *
+   * @param {number} iucn3_id
+   * @param {number} project_id
+   * @return {*}  {Promise<number>}
+   * @memberof ProjectService
+   */
   async insertClassificationDetail(iucn3_id: number, project_id: number): Promise<number> {
     return this.projectRepository.insertClassificationDetail(iucn3_id, project_id);
   }
 
-  async insertActivity(activityId: number, projectId: number): Promise<number> {
-    return this.projectRepository.insertActivity(activityId, projectId);
-  }
-
-  async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
-    return this.projectParticipationService.insertParticipantRole(projectId, projectParticipantRole);
+  /**
+   * Insert participation data.
+   *
+   * @param {number} projectId
+   * @param {number} systemUserId
+   * @param {string} projectParticipantRole
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectService
+   */
+  async postProjectParticipant(projectId: number, systemUserId: number, projectParticipantRole: string): Promise<void> {
+    return this.projectParticipationService.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
   }
 
   /**
-   * Updates the project and uploads to BioHub
+   * Insert region data.
+   *
+   * @param {number} projectId
+   * @param {Feature[]} features
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectService
+   */
+  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
+    const regionService = new RegionService(this.connection);
+    return regionService.addRegionsToProjectFromFeatures(projectId, features);
+  }
+
+  /**
+   * Insert programs data.
+   *
+   * @param {number} projectId
+   * @param {number[]} projectPrograms
+   * @return {*}  {Promise<void>}
+   * @memberof ProjectService
+   */
+  async insertPrograms(projectId: number, projectPrograms: number[]): Promise<void> {
+    await this.projectRepository.deletePrograms(projectId);
+    await this.projectRepository.insertProgram(projectId, projectPrograms);
+  }
+
+  /**
+   * Updates the project and uploads affected metadata to BioHub
    *
    * @param {number} projectId
    * @param {IUpdateProject} entities
@@ -431,7 +313,15 @@ export class ProjectService extends DBService {
     await this.updateProject(projectId, entities);
 
     try {
-      await this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+      // Publish project metadata
+      const publishProjectPromise = this.platformService.submitProjectDwCMetadataToBioHub(projectId);
+
+      // Publish all survey metadata (which needs to be updated now that the project metadata has changed)
+      const publishSurveysPromise = this.surveyService.getSurveyIdsByProjectId(projectId).then((surveyIds) => {
+        return surveyIds.map((item) => this.platformService.submitSurveyDwCMetadataToBioHub(item.id));
+      });
+
+      await Promise.all([publishProjectPromise, publishSurveysPromise]);
     } catch (error) {
       defaultLog.warn({ label: 'updateProjectAndUploadMetadataToBioHub', message: 'error', error });
     }
@@ -442,16 +332,13 @@ export class ProjectService extends DBService {
    *
    * @param {number} projectId
    * @param {IUpdateProject} entities
+   * @return {*}  {Promise<void>}
    * @memberof ProjectService
    */
-  async updateProject(projectId: number, entities: IUpdateProject) {
+  async updateProject(projectId: number, entities: IUpdateProject): Promise<void> {
     const promises: Promise<any>[] = [];
 
-    if (entities?.partnerships) {
-      promises.push(this.updatePartnershipsData(projectId, entities));
-    }
-
-    if (entities?.project || entities?.location || entities?.objectives || entities?.coordinator) {
+    if (entities?.project || entities?.location || entities?.objectives) {
       promises.push(this.updateProjectData(projectId, entities));
     }
 
@@ -459,8 +346,12 @@ export class ProjectService extends DBService {
       promises.push(this.updateIUCNData(projectId, entities));
     }
 
-    if (entities?.funding) {
-      promises.push(this.updateFundingData(projectId, entities));
+    if (entities?.project?.project_programs) {
+      promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
+    }
+
+    if (entities?.participants) {
+      promises.push(this.projectParticipationService.upsertProjectParticipantData(projectId, entities.participants));
     }
 
     await Promise.all(promises);
@@ -474,43 +365,19 @@ export class ProjectService extends DBService {
     const insertIUCNPromises =
       putIUCNData?.classificationDetails?.map((iucnClassification: IPutIUCN) =>
         this.insertClassificationDetail(iucnClassification.subClassification2, projectId)
-      ) || [];
+      ) ?? [];
 
     await Promise.all(insertIUCNPromises);
-  }
-
-  async updatePartnershipsData(projectId: number, entities: IUpdateProject): Promise<void> {
-    const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
-
-    await this.projectRepository.deleteIndigenousPartnershipsData(projectId);
-    await this.projectRepository.deleteStakeholderPartnershipsData(projectId);
-
-    const insertIndigenousPartnershipsPromises =
-      putPartnershipsData?.indigenous_partnerships?.map((indigenousPartnership: number) =>
-        this.insertIndigenousNation(indigenousPartnership, projectId)
-      ) || [];
-
-    const insertStakeholderPartnershipsPromises =
-      putPartnershipsData?.stakeholder_partnerships?.map((stakeholderPartnership: string) =>
-        this.insertStakeholderPartnership(stakeholderPartnership, projectId)
-      ) || [];
-
-    await Promise.all([...insertIndigenousPartnershipsPromises, ...insertStakeholderPartnershipsPromises]);
   }
 
   async updateProjectData(projectId: number, entities: IUpdateProject): Promise<void> {
     const putProjectData = (entities?.project && new PutProjectData(entities.project)) || null;
     const putLocationData = (entities?.location && new PutLocationData(entities.location)) || null;
     const putObjectivesData = (entities?.objectives && new PutObjectivesData(entities.objectives)) || null;
-    const putCoordinatorData = (entities?.coordinator && new PutCoordinatorData(entities.coordinator)) || null;
 
     // Update project table
     const revision_count =
-      putProjectData?.revision_count ??
-      putLocationData?.revision_count ??
-      putObjectivesData?.revision_count ??
-      putCoordinatorData?.revision_count ??
-      null;
+      putProjectData?.revision_count ?? putLocationData?.revision_count ?? putObjectivesData?.revision_count ?? null;
 
     if (!revision_count && revision_count !== 0) {
       throw new HTTP400('Failed to parse request body');
@@ -521,82 +388,8 @@ export class ProjectService extends DBService {
       putProjectData,
       putLocationData,
       putObjectivesData,
-      putCoordinatorData,
       revision_count
     );
-
-    if (putProjectData?.project_activities.length) {
-      await this.updateActivityData(projectId, putProjectData);
-    }
-  }
-
-  async updateActivityData(projectId: number, projectData: PutProjectData) {
-    await this.projectRepository.deleteActivityData(projectId);
-
-    const insertActivityPromises =
-      projectData?.project_activities?.map((activityId: number) => this.insertActivity(activityId, projectId)) || [];
-
-    await Promise.all([...insertActivityPromises]);
-  }
-
-  /**
-   * Compares incoming project funding data against the existing funding data, if any, and determines which need to be
-   * deleted, added, or updated.
-   *
-   * @param {number} projectId
-   * @param {IUpdateProject} entities
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async updateFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
-    const projectRepository = new ProjectRepository(this.connection);
-
-    const putFundingData = entities?.funding && new PutFundingData(entities.funding);
-    if (!putFundingData) {
-      throw new HTTP400('Failed to create funding data object');
-    }
-    // Get any existing funding for this project
-    const existingProjectFundingSources = await projectRepository.getProjectFundingSourceIds(projectId);
-
-    // Compare the array of existing funding to the array of incoming funding (by project_funding_source_id) and collect any
-    // existing funding that are not in the incoming funding array.
-    const existingFundingSourcesToDelete = existingProjectFundingSources.filter((existingFunding) => {
-      // Find all existing funding (by project_funding_source_id) that have no matching incoming project_funding_source_id
-      return !putFundingData.fundingSources.find(
-        (incomingFunding) => incomingFunding.id === existingFunding.project_funding_source_id
-      );
-    });
-
-    // Delete from the database all existing project and survey funding that have been removed
-    if (existingFundingSourcesToDelete.length) {
-      const promises: Promise<any>[] = [];
-
-      existingFundingSourcesToDelete.forEach((funding) => {
-        // Delete funding connection to survey first
-        promises.push(
-          projectRepository.deleteSurveyFundingSourceConnectionToProject(funding.project_funding_source_id)
-        );
-        // Delete project funding after
-        promises.push(projectRepository.deleteProjectFundingSource(funding.project_funding_source_id));
-      });
-
-      await Promise.all(promises);
-    }
-
-    // The remaining funding are either new, and can be created, or updates to existing funding
-    const promises: Promise<any>[] = [];
-
-    putFundingData.fundingSources.forEach((funding) => {
-      if (funding.id) {
-        // Has a project_funding_source_id, indicating this is an update to an existing funding
-        promises.push(projectRepository.updateProjectFundingSource(funding, projectId));
-      } else {
-        // No project_funding_source_id, indicating this is a new funding which needs to be created
-        promises.push(projectRepository.insertProjectFundingSource(funding, projectId));
-      }
-    });
-
-    await Promise.all(promises);
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {
@@ -608,7 +401,7 @@ export class ProjectService extends DBService {
 
     const projectResult = await this.getProjectData(projectId);
 
-    if (!projectResult || !projectResult.uuid) {
+    if (!projectResult?.uuid) {
       throw new HTTP400('Failed to get the project');
     }
 
@@ -661,54 +454,63 @@ export class ProjectService extends DBService {
     return true;
   }
 
-  async deleteDraft(draftId: number): Promise<QueryResult> {
-    return this.projectRepository.deleteDraft(draftId);
-  }
-
-  async getSingleDraft(draftId: number): Promise<{ id: number; name: string; data: any }> {
-    return this.projectRepository.getSingleDraft(draftId);
-  }
-
-  async deleteProjectParticipationRecord(projectParticipationId: number): Promise<any> {
-    return this.projectParticipationService.deleteProjectParticipationRecord(projectParticipationId);
-  }
-
   /**
-   * Returns true if a given project has unpublished content or false if everything in the project is published
+   * Returns publish status of a given project
    *
    * @param {number} projectId
-   * @returns {*} {Promise<boolean>}
+   * @return {*}  {Promise<PublishStatus>}
+   * @memberof ProjectService
    */
-  async doesProjectHaveUnpublishedContent(projectId: number): Promise<boolean> {
-    const has_unpublished_attachments = await this.historyPublishService.hasUnpublishedProjectAttachments(projectId);
+  async projectPublishStatus(projectId: number): Promise<PublishStatus> {
+    const attachmentsPublishStatus = await this.historyPublishService.projectAttachmentsPublishStatus(projectId);
 
-    const has_unpublished_reports = await this.historyPublishService.hasUnpublishedProjectReports(projectId);
+    const reportsPublishStatus = await this.historyPublishService.projectReportsPublishStatus(projectId);
 
-    const has_unpublished_surveys = await this.hasUnpublishedSurveys(projectId);
+    const surveysPublishStatus = await this.hasUnpublishedSurveys(projectId);
 
-    // Returns true when one or more surveys have unpublished attachments, reports, observations or summary results
-    const surveyHasUnpublishedContent: boolean =
-      has_unpublished_attachments || has_unpublished_reports || has_unpublished_surveys;
-    return surveyHasUnpublishedContent;
+    if (
+      attachmentsPublishStatus === PublishStatus.NO_DATA &&
+      reportsPublishStatus === PublishStatus.NO_DATA &&
+      surveysPublishStatus === PublishStatus.NO_DATA
+    ) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (
+      attachmentsPublishStatus === PublishStatus.UNSUBMITTED ||
+      reportsPublishStatus === PublishStatus.UNSUBMITTED ||
+      surveysPublishStatus === PublishStatus.UNSUBMITTED
+    ) {
+      return PublishStatus.UNSUBMITTED;
+    }
+
+    return PublishStatus.SUBMITTED;
   }
 
   /**
-   * Returns true if any surveys for a given project have unpublished data or false if all survey under a project are published
+   * Returns publish status of all surveys for a project
    *
-   * @param projectId
-   * @returns {*} {Promise<boolean>}
+   * @param {number} projectId
+   * @return {*}  {Promise<PublishStatus>}
+   * @memberof ProjectService
    */
-  async hasUnpublishedSurveys(projectId: number): Promise<boolean> {
+  async hasUnpublishedSurveys(projectId: number): Promise<PublishStatus> {
     const surveyIds = (await this.surveyService.getSurveyIdsByProjectId(projectId)).map((item: { id: any }) => item.id);
 
     const surveyStatusArray = await Promise.all(
       surveyIds.map(async (surveyId) => {
-        const surveyPublishStatus = await this.surveyService.doesSurveyHaveUnpublishedContent(surveyId);
-
-        return surveyPublishStatus;
+        return this.surveyService.surveyPublishStatus(surveyId);
       })
     );
 
-    return surveyStatusArray.some(Boolean);
+    if (surveyStatusArray.length === 0 || surveyStatusArray.every((status) => status === PublishStatus.NO_DATA)) {
+      return PublishStatus.NO_DATA;
+    }
+
+    if (surveyStatusArray.some((status) => status === PublishStatus.UNSUBMITTED)) {
+      return PublishStatus.UNSUBMITTED;
+    }
+
+    return PublishStatus.SUBMITTED;
   }
 }

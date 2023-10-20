@@ -1,13 +1,13 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { grey } from '@material-ui/core/colors';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import assert from 'assert';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
@@ -19,12 +19,12 @@ import MapContainer from 'components/map/MapContainer';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import StudyAreaForm, {
-  IStudyAreaForm,
-  StudyAreaInitialValues,
-  StudyAreaYupSchema
+  ISurveyLocationForm,
+  SurveyLocationInitialValues,
+  SurveyLocationYupSchema
 } from 'features/surveys/components/StudyAreaForm';
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
@@ -32,37 +32,35 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { LatLngBoundsExpression } from 'leaflet';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { parseSpatialDataByType } from 'utils/spatial-utils';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    zoomToBoundaryExtentBtn: {
-      padding: '3px',
-      borderRadius: '4px',
-      background: '#ffffff',
-      color: '#000000',
-      border: '2px solid rgba(0,0,0,0.2)',
-      backgroundClip: 'padding-box',
-      '&:hover': {
-        backgroundColor: '#eeeeee'
-      }
-    },
-    metaSectionHeader: {
-      color: grey[600],
-      fontWeight: 700,
-      textTransform: 'uppercase',
-      '& + hr': {
-        marginTop: theme.spacing(0.75),
-        marginBottom: theme.spacing(0.75)
-      }
+const useStyles = makeStyles((theme: Theme) => ({
+  zoomToBoundaryExtentBtn: {
+    padding: '3px',
+    borderRadius: '4px',
+    background: '#ffffff',
+    color: '#000000',
+    border: '2px solid rgba(0,0,0,0.2)',
+    backgroundClip: 'padding-box',
+    '&:hover': {
+      backgroundColor: '#eeeeee'
     }
-  })
-);
+  },
+  metaSectionHeader: {
+    color: grey[600],
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    '& + hr': {
+      marginTop: theme.spacing(0.75),
+      marginBottom: theme.spacing(0.75)
+    }
+  }
+}));
 
 /**
- * Study area content for a survey.
+ * View survey - Study area section
  *
  * @return {*}
  */
@@ -81,11 +79,12 @@ const SurveyStudyArea = () => {
   const [markerLayers, setMarkerLayers] = useState<IMarkerLayer[]>([]);
   const [staticLayers, setStaticLayers] = useState<IStaticLayer[]>([]);
 
-  const survey_details = surveyContext.surveyDataLoader.data?.surveyData?.survey_details;
-  const surveyGeometry = survey_details?.geometry || [];
+  const surveyLocations = surveyContext.surveyDataLoader.data?.surveyData?.locations;
+  const surveyLocation = surveyLocations[0] || null;
+  const surveyGeometry = useMemo(() => surveyLocation?.geojson || [], [surveyLocation]);
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
+  const [studyAreaFormData, setStudyAreaFormData] = useState<ISurveyLocationForm>(SurveyLocationInitialValues);
 
   const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
@@ -139,6 +138,7 @@ const SurveyStudyArea = () => {
     zoomToBoundaryExtent();
   }, [surveyGeometry, occurrence_submission_id, setNonEditableGeometries, zoomToBoundaryExtent]);
 
+  // TODO: This component should not define error dialog props in state and should instead consume the dialog context.
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
     dialogText: EditSurveyStudyAreaI18N.editErrorText,
@@ -156,32 +156,41 @@ const SurveyStudyArea = () => {
   };
 
   const handleDialogEditOpen = () => {
-    if (!survey_details) {
+    if (!surveyLocation) {
       return;
     }
 
     setStudyAreaFormData({
-      location: {
-        survey_area_name: survey_details.survey_area_name,
-        geometry: survey_details.geometry
-      }
+      locations: [
+        {
+          survey_location_id: surveyLocation.survey_location_id,
+          name: surveyLocation.name,
+          description: surveyLocation.description,
+          geojson: surveyLocation.geojson,
+          revision_count: surveyLocation.revision_count
+        }
+      ]
     });
 
     setOpenEditDialog(true);
   };
 
-  const handleDialogEditSave = async (values: IStudyAreaForm) => {
-    if (!survey_details) {
+  const handleDialogEditSave = async (values: ISurveyLocationForm) => {
+    if (!surveyLocation) {
       return;
     }
 
     try {
       const surveyData = {
-        location: {
-          survey_area_name: values.location.survey_area_name,
-          geometry: values.location.geometry,
-          revision_count: survey_details.revision_count
-        }
+        locations: values.locations.map((item) => {
+          return {
+            survey_location_id: item.survey_location_id,
+            name: item.name,
+            description: item.description,
+            geojson: item.geojson,
+            revision_count: surveyLocation.revision_count
+          };
+        })
       };
 
       await biohubApi.survey.updateSurvey(surveyContext.projectId, surveyContext.surveyId, surveyData);
@@ -212,7 +221,7 @@ const SurveyStudyArea = () => {
         component={{
           element: <StudyAreaForm />,
           initialValues: studyAreaFormData,
-          validationSchema: StudyAreaYupSchema
+          validationSchema: SurveyLocationYupSchema
         }}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
@@ -232,11 +241,12 @@ const SurveyStudyArea = () => {
             staticLayers={staticLayers}
           />
         }
-        description={survey_details?.survey_area_name}
+        description={surveyLocation?.name}
         layers={<InferredLocationDetails layers={inferredLayersInfo} />}
         backButtonTitle={'Back To Survey'}
         mapTitle={'Study Area'}
       />
+
       <ErrorDialog {...errorDialogProps} />
 
       <H2ButtonToolbar
@@ -248,7 +258,7 @@ const SurveyStudyArea = () => {
         buttonProps={{ variant: 'text' }}
         renderButton={(buttonProps) => (
           <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Button {...buttonProps} />
           </ProjectRoleGuard>
@@ -283,7 +293,7 @@ const SurveyStudyArea = () => {
             Study Area Name
           </Typography>
           <Divider></Divider>
-          <Typography variant="body1">{survey_details?.survey_area_name}</Typography>
+          <Typography variant="body1">{surveyLocation?.name}</Typography>
           <Box mt={3}>
             <InferredLocationDetails layers={inferredLayersInfo} />
           </Box>

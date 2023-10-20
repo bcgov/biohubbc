@@ -11,7 +11,7 @@ describe('isAuthenticated', () => {
   it('returns false when keycloakWrapper.keycloak is undefined', () => {
     const keycloakWrapper = {
       keycloak: undefined
-    } as IKeycloakWrapper;
+    } as unknown as IKeycloakWrapper;
 
     expect(isAuthenticated(keycloakWrapper)).toBe(false);
   });

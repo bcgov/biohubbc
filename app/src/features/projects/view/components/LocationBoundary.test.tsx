@@ -1,41 +1,49 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { geoJsonFeature } from 'test-helpers/spatial-helpers';
+import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import LocationBoundary from './LocationBoundary';
 
 jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   project: {
     getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
   },
   external: {
-    get: jest.fn(),
-    post: jest.fn()
+    get: jest.fn()
+  },
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 const mockRefresh = jest.fn();
 
 describe.skip('LocationBoundary', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.getProjectForUpdate.mockClear();
-    mockBiohubApi().project.updateProject.mockClear();
-    mockBiohubApi().external.get.mockClear();
-    mockBiohubApi().external.post.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.project.getProjectForUpdate.mockClear();
+    mockUseApi.project.updateProject.mockClear();
+    mockUseApi.external.get.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.external.get.mockResolvedValue({
+      features: []
+    });
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -44,14 +52,7 @@ describe.skip('LocationBoundary', () => {
     cleanup();
   });
 
-  mockBiohubApi().external.get.mockResolvedValue({
-    features: []
-  });
-  mockBiohubApi().external.post.mockResolvedValue({
-    features: []
-  });
-
-  it('matches the snapshot when there is no location description', async () => {
+  it.skip('matches the snapshot when there is no location description', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -63,11 +64,12 @@ describe.skip('LocationBoundary', () => {
           ...getProjectForViewResponse.projectData,
           location: {
             ...getProjectForViewResponse.projectData.location,
-            location_description: (null as unknown) as string
+            location_description: null as unknown as string
           }
         }
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
@@ -84,7 +86,7 @@ describe.skip('LocationBoundary', () => {
     });
   });
 
-  it('matches the snapshot when there is no geometry', async () => {
+  it.skip('matches the snapshot when there is no geometry', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -100,6 +102,7 @@ describe.skip('LocationBoundary', () => {
           }
         }
       } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -117,7 +120,7 @@ describe.skip('LocationBoundary', () => {
     });
   });
 
-  it('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
+  it.skip('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes
@@ -134,6 +137,7 @@ describe.skip('LocationBoundary', () => {
         }
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
@@ -161,10 +165,11 @@ describe.skip('LocationBoundary', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+    mockUseApi.project.getProjectForUpdate.mockResolvedValue({
       location: {
         location_description: 'description',
         geometry: geoJsonFeature,
@@ -187,8 +192,8 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(
-        getProjectForViewResponse.projectData.project.id,
+      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.project_id,
         [UPDATE_GET_ENTITIES.location]
       );
     });
@@ -212,14 +217,17 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.projectData.project.id, {
-        location: {
-          location_description: 'description',
-          geometry: geoJsonFeature,
-          revision_count: 1
+      expect(mockUseApi.project.updateProject).toHaveBeenCalledTimes(1);
+      expect(mockUseApi.project.updateProject).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.project_id,
+        {
+          location: {
+            location_description: 'description',
+            geometry: geoJsonFeature,
+            revision_count: 1
+          }
         }
-      });
+      );
 
       expect(mockRefresh).toBeCalledTimes(1);
     });
@@ -236,10 +244,11 @@ describe.skip('LocationBoundary', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+    mockUseApi.project.getProjectForUpdate.mockResolvedValue({
       location: null
     });
 
@@ -281,10 +290,11 @@ describe.skip('LocationBoundary', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
-    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockUseApi.project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText } = render(
       <DialogContextProvider>
@@ -324,17 +334,18 @@ describe.skip('LocationBoundary', () => {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: getSurveyForListResponse } as DataLoader<any, any, any>,
       projectId: 1
     };
 
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+    mockUseApi.project.getProjectForUpdate.mockResolvedValue({
       location: {
         location_description: 'description',
         geometry: geoJsonFeature,
         revision_count: 1
       }
     });
-    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockUseApi.project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getAllByRole } = render(
       <DialogContextProvider>
@@ -353,8 +364,8 @@ describe.skip('LocationBoundary', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(
-        getProjectForViewResponse.projectData.project.id,
+      expect(mockUseApi.project.getProjectForUpdate).toBeCalledWith(
+        getProjectForViewResponse.projectData.project.project_id,
         [UPDATE_GET_ENTITIES.location]
       );
     });

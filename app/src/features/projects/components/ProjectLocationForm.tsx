@@ -1,10 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import MapBoundary from 'components/boundary/MapBoundary';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectLocationForm {
@@ -47,8 +46,13 @@ const ProjectLocationForm = () => {
         bounds={undefined}
         formikProps={formikProps}
       />
-      <Box mt={4}>
-        <Typography variant="h5" component="h3" style={{ marginBottom: '20px' }}>
+      <Box mt={5}>
+        <Typography
+          variant="h5"
+          component="h3"
+          sx={{
+            marginBottom: '20px'
+          }}>
           Describe the location of this project
         </Typography>
         <CustomTextField

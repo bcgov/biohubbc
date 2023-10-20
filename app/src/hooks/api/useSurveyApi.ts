@@ -1,6 +1,13 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { Critter } from 'features/surveys/view/survey-animals/animal';
+import {
+  IAnimalDeployment,
+  IAnimalTelemetryDevice,
+  IDeploymentTimespan,
+  ITelemetryPointCollection
+} from 'features/surveys/view/survey-animals/device';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,
@@ -10,11 +17,11 @@ import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'inter
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
+  IDetailedCritterWithInternalId,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForListResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
-  ISurveyAvailableFundingSources,
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
@@ -121,6 +128,39 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Upload survey keyx files.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<IUploadAttachmentResponse>}
+   */
+  const uploadSurveyKeyx = async (
+    projectId: number,
+    surveyId: number,
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<IUploadAttachmentResponse> => {
+    const req_message = new FormData();
+
+    req_message.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`,
+      req_message,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
    * Upload survey reports.
    *
    * @param {number} projectId
@@ -212,18 +252,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyAttachments = async (projectId: number, surveyId: number): Promise<IGetSurveyAttachmentsResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/attachments/list`);
-
-    return data;
-  };
-
-  /**
-   * Get funding sources for a survey by project ID
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<ISurveyAvailableFundingSources[]>}
-   */
-  const getAvailableSurveyFundingSources = async (projectId: number): Promise<ISurveyAvailableFundingSources[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/funding-sources/list`);
 
     return data;
   };
@@ -418,6 +446,205 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Retrieve a list of critters associated with the given survey with details taken from critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {ICritterDetailedResponse[]}
+   */
+  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<IDetailedCritterWithInternalId[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters`);
+    return data;
+  };
+
+  type CritterBulkCreationResponse = {
+    create: {
+      critters: number;
+      collections: number;
+      markings: number;
+      locations: number;
+      captures: number;
+      mortalities: number;
+      qualitative_measurements: number;
+      quantitative_measurements: number;
+      families: number;
+      family_children: number;
+      family_parents: number;
+    };
+  };
+
+  const critterToPayloadTransform = (critter: Critter, ignoreTopLevel = false) => {
+    return {
+      critters: ignoreTopLevel
+        ? []
+        : [
+            {
+              critter_id: critter.critter_id,
+              animal_id: critter.animal_id,
+              sex: critter.sex,
+              taxon_id: critter.taxon_id,
+              wlh_id: critter.wlh_id
+            }
+          ],
+      qualitative_measurements: critter.measurements.qualitative,
+      quantitative_measurements: critter.measurements.quantitative,
+      ...critter
+    };
+  };
+
+  /**
+   * Create a critter and add it to the list of critters associated with this survey. This will create a new critter in Critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {Critter} critter Critter payload type
+   * @returns Count of affected rows
+   */
+  const createCritterAndAddToSurvey = async (
+    projectId: number,
+    surveyId: number,
+    critter: Critter
+  ): Promise<CritterBulkCreationResponse> => {
+    const payload = critterToPayloadTransform(critter);
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, payload);
+    return data;
+  };
+
+  /**
+   * Update a survey critter. Allows you to create, update, and delete associated rows like captures, mortalities etc in one request.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {Critter} updateSection
+   * @param {Critter | undefined} createSection
+   * @returns {*}
+   */
+  const updateSurveyCritter = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    updateSection: Critter,
+    createSection: Critter | undefined
+  ) => {
+    const payload = {
+      update: critterToPayloadTransform(updateSection),
+      create: createSection ? critterToPayloadTransform(createSection, true) : undefined
+    };
+    const { data } = await axios.patch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`, payload);
+    return data;
+  };
+
+  /**
+   * Remove a critter from the survey. Will not delete critter in critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @returns {*}
+   */
+  const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: number): Promise<number> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
+    return data;
+  };
+
+  /**
+   * Add a new deployment with associated device hardware metadata. Must include critterbase critter id.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {IAnimalTelemetryDevice & {critter_id: string}} body
+   * @returns {*}
+   */
+  const addDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    body: IAnimalTelemetryDevice & { critter_id: string }
+  ): Promise<number> => {
+    body.device_id = Number(body.device_id); //Turn this into validation class soon
+    body.frequency = Number(body.frequency);
+    body.frequency_unit = body.frequency_unit?.length ? body.frequency_unit : undefined;
+    if (!body.deployments || body.deployments.length !== 1) {
+      throw Error('Calling this with any amount other than 1 deployments currently unsupported.');
+    }
+    const flattened = { ...body, ...body.deployments[0] };
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
+      flattened
+    );
+    return data;
+  };
+
+  /**
+   * Update a deployment with a new timespan.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {IDeploymentTimespan} body
+   * @returns {*}
+   */
+  const updateDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    body: IDeploymentTimespan
+  ): Promise<number> => {
+    const { data } = await axios.patch(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
+      body
+    );
+    return data;
+  };
+
+  /**
+   * Get all deployments associated with the given survey ID.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {*}
+   */
+  const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
+    return data;
+  };
+
+  const getCritterTelemetry = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    startDate: string,
+    endDate: string
+  ): Promise<ITelemetryPointCollection> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/telemetry?startDate=${startDate}&endDate=${endDate}`
+    );
+    return data;
+  };
+  /**
+   * Removes a deployment. Will trigger removal in both SIMS and BCTW.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {string} deploymentId
+   * @returns {*}
+   */
+  const removeDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    deploymentId: string
+  ): Promise<string> => {
+    const { data } = await axios.delete(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments/${deploymentId}`
+    );
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -425,6 +652,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
+    uploadSurveyKeyx,
     uploadSurveyReports,
     updateSurveyReportMetadata,
     getSurveyReportDetails,
@@ -435,9 +663,17 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
     deleteSurvey,
-    getAvailableSurveyFundingSources,
     getSummarySubmissionSignedURL,
-    deleteSummarySubmission
+    deleteSummarySubmission,
+    getSurveyCritters,
+    createCritterAndAddToSurvey,
+    removeCritterFromSurvey,
+    addDeployment,
+    getDeploymentsInSurvey,
+    updateDeployment,
+    getCritterTelemetry,
+    removeDeployment,
+    updateSurveyCritter
   };
 };
 

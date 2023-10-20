@@ -1,10 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
+import { Feature } from 'geojson';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
-import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
-import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
+import { PostParticipantData } from '../../../models/project-create';
+import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
+import { projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
@@ -16,9 +18,9 @@ export const GET: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -31,13 +33,11 @@ export const GET: Operation = [
 ];
 
 export enum GET_ENTITIES {
-  coordinator = 'coordinator',
   project = 'project',
   objectives = 'objectives',
   location = 'location',
   iucn = 'iucn',
-  funding = 'funding',
-  partnerships = 'partnerships'
+  participants = 'participants'
 }
 
 export const getAllEntities = (): string[] => Object.values(GET_ENTITIES);
@@ -83,23 +83,13 @@ GET.apiDoc = {
               project: {
                 description: 'Basic project metadata',
                 type: 'object',
-                required: [
-                  'project_name',
-                  'project_type',
-                  'project_activities',
-                  'start_date',
-                  'end_date',
-                  'revision_count'
-                ],
+                required: ['project_name', 'project_programs', 'start_date', 'end_date', 'revision_count'],
                 nullable: true,
                 properties: {
                   project_name: {
                     type: 'string'
                   },
-                  project_type: {
-                    type: 'number'
-                  },
-                  project_activities: {
+                  project_programs: {
                     type: 'array',
                     items: {
                       type: 'number'
@@ -113,41 +103,8 @@ GET.apiDoc = {
                   end_date: {
                     type: 'string',
                     format: 'date',
-                    description: 'ISO 8601 date string for the project end date'
-                  },
-                  revision_count: {
-                    type: 'number'
-                  }
-                }
-              },
-              coordinator: {
-                title: 'Project coordinator',
-                type: 'object',
-                nullable: true,
-                required: [
-                  'first_name',
-                  'last_name',
-                  'email_address',
-                  'coordinator_agency',
-                  'share_contact_details',
-                  'revision_count'
-                ],
-                properties: {
-                  first_name: {
-                    type: 'string'
-                  },
-                  last_name: {
-                    type: 'string'
-                  },
-                  email_address: {
-                    type: 'string'
-                  },
-                  coordinator_agency: {
-                    type: 'string'
-                  },
-                  share_contact_details: {
-                    type: 'string',
-                    enum: ['true', 'false']
+                    description: 'ISO 8601 date string for the project end date',
+                    nullable: true
                   },
                   revision_count: {
                     type: 'number'
@@ -155,15 +112,12 @@ GET.apiDoc = {
                 }
               },
               objectives: {
-                description: 'The project objectives and caveats',
+                description: 'The project objectives',
                 type: 'object',
-                required: ['objectives', 'caveats'],
+                required: ['objectives'],
                 nullable: true,
                 properties: {
                   objectives: {
-                    type: 'string'
-                  },
-                  caveats: {
                     type: 'string'
                   }
                 }
@@ -180,7 +134,7 @@ GET.apiDoc = {
                   geometry: {
                     type: 'array',
                     items: {
-                      ...(geoJsonFeature as object)
+                      ...(GeoJSONFeature as object)
                     }
                   }
                 }
@@ -210,72 +164,62 @@ GET.apiDoc = {
                   }
                 }
               },
-              funding: {
-                description: 'The project funding details',
-                type: 'object',
-                required: ['fundingSources'],
-                nullable: true,
-                properties: {
-                  fundingSources: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        id: {
-                          type: 'number'
-                        },
-                        agency_id: {
-                          type: 'number'
-                        },
-                        investment_action_category: {
-                          type: 'number'
-                        },
-                        investment_action_category_name: {
-                          type: 'string'
-                        },
-                        agency_name: {
-                          type: 'string'
-                        },
-                        funding_amount: {
-                          type: 'number'
-                        },
-                        start_date: {
-                          type: 'string',
-                          format: 'date',
-                          description: 'ISO 8601 date string for the funding start date'
-                        },
-                        end_date: {
-                          type: 'string',
-                          format: 'date',
-                          description: 'ISO 8601 date string for the funding end_date'
-                        },
-                        agency_project_id: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        revision_count: {
-                          type: 'number'
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              partnerships: {
-                description: 'The project partners',
-                type: 'object',
-                required: ['indigenous_partnerships', 'stakeholder_partnerships'],
-                nullable: true,
-                properties: {
-                  indigenous_partnerships: {
-                    type: 'array',
-                    items: {
+              participants: {
+                title: 'Project participants',
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'project_participation_id',
+                    'project_id',
+                    'system_user_id',
+                    'project_role_ids',
+                    'project_role_names',
+                    'project_role_permissions',
+                    'display_name',
+                    'email',
+                    'agency',
+                    'identity_source'
+                  ],
+                  properties: {
+                    project_participation_id: {
                       type: 'number'
-                    }
-                  },
-                  stakeholder_partnerships: {
-                    type: 'array',
-                    items: {
+                    },
+                    project_id: {
+                      type: 'number'
+                    },
+                    system_user_id: {
+                      type: 'number'
+                    },
+                    project_role_ids: {
+                      type: 'array',
+                      items: {
+                        type: 'number'
+                      }
+                    },
+                    project_role_names: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
+                    },
+                    project_role_permissions: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
+                    },
+                    display_name: {
+                      type: 'string'
+                    },
+                    email: {
+                      type: 'string'
+                    },
+                    agency: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    identity_source: {
                       type: 'string'
                     }
                   }
@@ -327,7 +271,6 @@ export function getProjectForUpdate(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       const results = await projectService.getProjectEntitiesById(projectId, entities);
-
       await connection.commit();
 
       return res.status(200).send(results);
@@ -345,9 +288,9 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -380,12 +323,18 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project with matching projectId.',
+      description: 'Project response object.',
       content: {
         'application/json': {
           schema: {
-            // TODO is there any return value? or is it just an HTTP status with no content?
-            ...(projectIdResponseObject as object)
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'integer',
+                minimum: 1
+              }
+            }
           }
         }
       }
@@ -409,13 +358,11 @@ PUT.apiDoc = {
 };
 
 export interface IUpdateProject {
-  coordinator: object | null;
-  project: object | null;
-  objectives: object | null;
-  location: object | null;
-  iucn: object | null;
-  funding: object | null;
-  partnerships: object | null;
+  project: any | null;
+  objectives: any | null;
+  location: { geometry: Feature[]; location_description: string } | null;
+  iucn: any | null;
+  participants: PostParticipantData[] | null;
 }
 
 /**
@@ -443,7 +390,6 @@ export function updateProject(): RequestHandler {
       await connection.open();
 
       const projectService = new ProjectService(connection);
-
       await projectService.updateProjectAndUploadMetadataToBioHub(projectId, entities);
 
       await connection.commit();

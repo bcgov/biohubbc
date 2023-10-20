@@ -66,7 +66,7 @@ const dbSetupDeploy = async (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         CHANGE_ID: changeId,
-        NODE_ENV: phases[phase].env || 'dev',
+        NODE_ENV: phases[phase].env,
         DB_SERVICE_NAME: dbName,
         DB_SCHEMA: 'biohub',
         DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
@@ -91,7 +91,7 @@ const dbSetupDeploy = async (settings) => {
 
   // Deploy the db setup pod
   oc.applyRecommendedLabels(objects, isName, phase, `${changeId}`, instance);
-  oc.applyAndDeploy(objects, phases[phase].instance);
+  await oc.applyAndDeploy(objects, phases[phase].instance);
 
   // Wait to confirm if the db setup pod deployed successfully
   await waitForResourceToMeetCondition(() => getResourceByName(`pod/${name}`, oc), isResourceComplete, 30, 5, 0);

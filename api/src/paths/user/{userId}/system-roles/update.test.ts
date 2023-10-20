@@ -15,83 +15,6 @@ describe('updateSystemRolesHandler', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when missing required path param: userId', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      userId: ''
-    };
-    mockReq.body = {
-      roles: [1]
-    };
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const requestHandler = system_roles.updateSystemRolesHandler();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param: userId');
-    }
-  });
-
-  it('should throw a 400 error when missing roles in request body', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      userId: '1'
-    };
-    mockReq.body = {
-      roles: null
-    };
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const requestHandler = system_roles.updateSystemRolesHandler();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required body param: roles');
-    }
-  });
-
-  it('should throw a 400 error when no system user found', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      userId: '1'
-    };
-    mockReq.body = {
-      roles: [1]
-    };
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(UserService.prototype, 'getUserById').resolves(undefined);
-
-    try {
-      const requestHandler = system_roles.updateSystemRolesHandler();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to get system user');
-    }
-  });
-
   it('re-throws the error thrown by UserService.deleteUserSystemRoles', async () => {
     const dbConnectionObj = getMockDBConnection();
 
@@ -107,13 +30,18 @@ describe('updateSystemRolesHandler', () => {
     };
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
-      user_identifier: 'test name',
-      user_guid: 'aaaa',
+      system_user_id: 1,
+      user_identifier: 'testname',
+      user_guid: '123-456-789',
       identity_source: 'idir',
-      record_end_date: '',
-      role_ids: [11, 22],
-      role_names: ['role 11', 'role 22']
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
+      display_name: 'test name',
+      agency: null
     });
 
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').rejects(new Error('a delete error'));
@@ -142,7 +70,7 @@ describe('updateSystemRolesHandler', () => {
 
     const mockQuery = sinon.stub();
 
-    mockQuery.onCall(0).resolves({ rows: [], rowCount: 1 });
+    mockQuery.onCall(0).resolves({ rows: [], rowCount: 0 });
     mockQuery.onCall(1).resolves(null);
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -150,17 +78,22 @@ describe('updateSystemRolesHandler', () => {
       systemUserId: () => {
         return 20;
       },
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
-      user_identifier: 'test name',
-      user_guid: 'aaaa',
+      system_user_id: 1,
+      user_identifier: 'testname',
+      user_guid: '123-456-789',
       identity_source: 'idir',
-      record_end_date: '',
-      role_ids: [11, 22],
-      role_names: ['role 11', 'role 22']
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
+      display_name: 'test name',
+      agency: null
     });
 
     sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
@@ -191,13 +124,18 @@ describe('updateSystemRolesHandler', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
-      user_identifier: 'test name',
-      user_guid: 'aaaa',
+      system_user_id: 1,
+      user_identifier: 'testname',
+      user_guid: '123-456-789',
       identity_source: 'idir',
-      record_end_date: '',
-      role_ids: [11, 22],
-      role_names: ['role 1', 'role 2']
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['System Admin', 'Coordinator'],
+      email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
+      display_name: 'test name',
+      agency: null
     });
 
     const deleteUserSystemRolesStub = sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
@@ -231,17 +169,22 @@ describe('updateSystemRolesHandler', () => {
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      query: mockQuery
+      sql: mockQuery
     });
 
     sinon.stub(UserService.prototype, 'getUserById').resolves({
-      id: 1,
-      user_identifier: 'test name',
-      user_guid: 'aaaa',
+      system_user_id: 1,
+      user_identifier: 'testname',
+      user_guid: '123-456-789',
       identity_source: 'idir',
-      record_end_date: '',
+      record_end_date: null,
       role_ids: [],
-      role_names: []
+      role_names: [],
+      email: 'email@email.com',
+      family_name: 'lname',
+      given_name: 'fname',
+      display_name: 'test name',
+      agency: null
     });
 
     const deleteUserSystemRolesStub = sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();

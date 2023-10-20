@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { Deferred } from 'test-helpers/promises';
 import { useAsync } from './useAsync';
 
-describe.skip('useAsync', () => {
+describe('useAsync', () => {
   it('should mount and return a wrapped async function', () => {
     const deferred = new Deferred();
     const asyncFunction = () => deferred.promise;

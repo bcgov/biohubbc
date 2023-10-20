@@ -1,47 +1,58 @@
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import MapBoundary from 'components/boundary/MapBoundary';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import React from 'react';
 import yup from 'utils/YupSchema';
 
-export interface IStudyAreaForm {
-  location: {
-    survey_area_name: string;
-    geometry: Feature[];
-  };
+export interface ISurveyLocationForm {
+  locations: {
+    survey_location_id?: number;
+    name: string;
+    description: string;
+    geojson: Feature[];
+    revision_count?: number;
+  }[];
 }
 
-export const StudyAreaInitialValues: IStudyAreaForm = {
-  location: {
-    survey_area_name: '',
-    geometry: []
-  }
+export const SurveyLocationInitialValues: ISurveyLocationForm = {
+  locations: [
+    {
+      survey_location_id: null as unknown as number,
+      name: '',
+      // TODO description is temporarily hardcoded until the new UI to populate this field is implemented in
+      // https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-219
+      description: 'Insert description here',
+      geojson: [],
+      revision_count: 0
+    }
+  ]
 };
 
-export const StudyAreaYupSchema = yup.object().shape({
-  location: yup.object().shape({
-    survey_area_name: yup.string().required('Survey Area Name is Required'),
-    geometry: yup.mixed()
-  })
+export const SurveyLocationYupSchema = yup.object({
+  locations: yup.array(
+    yup.object({
+      name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
+      description: yup.string().max(250, 'Description cannot exceed 250 characters'),
+      geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
+    })
+  )
 });
 
 /**
- * Create survey - study area fields
+ * Create survey - Study area section
  *
  * @return {*}
  */
 const StudyAreaForm = () => {
-  const formikProps = useFormikContext<IStudyAreaForm>();
+  const formikProps = useFormikContext<ISurveyLocationForm>();
 
   const { handleSubmit } = formikProps;
-
   return (
     <form onSubmit={handleSubmit}>
       <Box mb={4}>
         <CustomTextField
-          name="location.survey_area_name"
+          name={`locations[0].name`}
           label="Survey Area Name"
           other={{
             required: true
@@ -49,7 +60,7 @@ const StudyAreaForm = () => {
         />
       </Box>
       <MapBoundary
-        name="location.geometry"
+        name={`locations[0].geojson`}
         title="Study Area Boundary"
         mapId="study_area_form_map"
         bounds={undefined}

@@ -1,13 +1,9 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  PostCoordinatorData,
-  PostFundingData,
-  PostFundingSource,
   PostIUCNData,
   PostLocationData,
   PostObjectivesData,
-  PostPartnershipsData,
   PostProjectData,
   PostProjectObject
 } from './project-create';
@@ -18,10 +14,6 @@ describe('PostProjectObject', () => {
 
     before(() => {
       projectPostObject = new PostProjectObject(null);
-    });
-
-    it('sets coordinator', function () {
-      expect(projectPostObject.coordinator).to.equal(null);
     });
 
     it('sets project', function () {
@@ -39,93 +31,6 @@ describe('PostProjectObject', () => {
     it('sets iucn', function () {
       expect(projectPostObject.iucn).to.equal(null);
     });
-
-    it('sets funding', function () {
-      expect(projectPostObject.funding).to.equal(null);
-    });
-
-    it('sets partnerships', function () {
-      expect(projectPostObject.partnerships).to.equal(null);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectPostObject: PostProjectObject;
-
-    const obj = {
-      coordinator: {
-        first_name: 'first',
-        last_name: 'last',
-        email_address: 'email@example.com',
-        coordinator_agency: 'agency',
-        share_contact_details: 'true'
-      },
-      project: {
-        project_name: 'name_test_data',
-        project_type: 'test_type',
-        project_activities: [1, 2],
-        start_date: 'start_date_test_data',
-        end_date: 'end_date_test_data',
-        comments: 'comments_test_data'
-      },
-      objectives: {
-        objectives: 'these are the project objectives',
-        caveats: 'these are some interesting caveats'
-      },
-      location: {
-        location_description: 'a location description',
-        geometry: [
-          {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [-128, 55],
-                [-128, 55.5],
-                [-128, 56],
-                [-126, 58],
-                [-128, 55]
-              ]
-            ],
-            properties: {
-              name: 'Biohub Islands'
-            }
-          }
-        ]
-      },
-      funding: {
-        fundingSources: [
-          {
-            agency_id: 1,
-            investment_action_category: 1,
-            agency_project_id: 'agency project id',
-            funding_amount: 12,
-            start_date: '2020/04/03',
-            end_date: '2020/05/05'
-          }
-        ]
-      },
-      iucn: {
-        classificationDetails: [
-          {
-            classification: 1,
-            subClassification1: 2,
-            subClassification2: 3
-          }
-        ]
-      },
-      partnerships: {
-        indigenous_partnerships: [1, 2],
-        stakeholder_partnerships: ['partner1, partner2']
-      }
-    };
-
-    before(() => {
-      projectPostObject = new PostProjectObject(obj);
-    });
-
-    it('sets coordinator', function () {
-      expect(projectPostObject.coordinator.first_name).to.equal(obj.coordinator.first_name);
-    });
   });
 });
 
@@ -141,12 +46,8 @@ describe('PostProjectData', () => {
       expect(projectPostData.name).to.equal(null);
     });
 
-    it('sets type', function () {
-      expect(projectPostData.type).to.equal(null);
-    });
-
-    it('sets activities', function () {
-      expect(projectPostData.project_activities).to.have.length(0);
+    it('sets programs', function () {
+      expect(projectPostData.project_programs).to.have.length(0);
     });
 
     it('sets start_date', function () {
@@ -167,8 +68,7 @@ describe('PostProjectData', () => {
 
     const obj = {
       project_name: 'name_test_data',
-      project_type: 'test_type',
-      project_activities: [1, 2],
+      project_programs: [1],
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
       comments: 'comments_test_data'
@@ -183,11 +83,7 @@ describe('PostProjectData', () => {
     });
 
     it('sets type', function () {
-      expect(projectPostData.type).to.equal('test_type');
-    });
-
-    it('sets activities', function () {
-      expect(projectPostData.project_activities).to.eql([1, 2]);
+      expect(projectPostData.project_programs).to.eql([1]);
     });
 
     it('sets start_date', function () {
@@ -215,18 +111,13 @@ describe('PostObjectivesData', () => {
     it('sets objectives', function () {
       expect(projectObjectivesData.objectives).to.equal('');
     });
-
-    it('sets caveats', function () {
-      expect(projectObjectivesData.caveats).to.equal('');
-    });
   });
 
   describe('All values provided', () => {
     let projectObjectivesData: PostObjectivesData;
 
     const obj = {
-      objectives: 'these are the project objectives',
-      caveats: 'these are some interesting caveats'
+      objectives: 'these are the project objectives'
     };
 
     before(() => {
@@ -235,190 +126,6 @@ describe('PostObjectivesData', () => {
 
     it('sets objectives', function () {
       expect(projectObjectivesData.objectives).to.equal(obj.objectives);
-    });
-
-    it('sets caveats', function () {
-      expect(projectObjectivesData.caveats).to.equal(obj.caveats);
-    });
-  });
-});
-
-describe('PostCoordinatorData', () => {
-  describe('No values provided', () => {
-    let projectCoordinatorData: PostCoordinatorData;
-
-    before(() => {
-      projectCoordinatorData = new PostCoordinatorData(null);
-    });
-
-    it('sets first_name', function () {
-      expect(projectCoordinatorData.first_name).to.eql(null);
-    });
-
-    it('sets last_name', function () {
-      expect(projectCoordinatorData.last_name).to.eql(null);
-    });
-
-    it('sets email_address', function () {
-      expect(projectCoordinatorData.email_address).to.eql(null);
-    });
-
-    it('sets coordinator_agency', function () {
-      expect(projectCoordinatorData.coordinator_agency).to.eql(null);
-    });
-
-    it('sets share_contact_details', function () {
-      expect(projectCoordinatorData.share_contact_details).to.eql(false);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectCoordinatorData: PostCoordinatorData;
-
-    const obj = {
-      first_name: 'first',
-      last_name: 'last',
-      email_address: 'email@example.com',
-      coordinator_agency: 'agency',
-      share_contact_details: 'true'
-    };
-
-    before(() => {
-      projectCoordinatorData = new PostCoordinatorData(obj);
-    });
-
-    it('sets first_name', function () {
-      expect(projectCoordinatorData.first_name).to.eql(obj.first_name);
-    });
-
-    it('sets last_name', function () {
-      expect(projectCoordinatorData.last_name).to.eql(obj.last_name);
-    });
-
-    it('sets email_address', function () {
-      expect(projectCoordinatorData.email_address).to.eql(obj.email_address);
-    });
-
-    it('sets coordinator_agency', function () {
-      expect(projectCoordinatorData.coordinator_agency).to.eql(obj.coordinator_agency);
-    });
-
-    it('sets share_contact_details', function () {
-      expect(projectCoordinatorData.share_contact_details).to.eql(true);
-    });
-  });
-});
-
-describe('PostPartnershipsData', () => {
-  describe('No values provided', () => {
-    let projectPartnershipsData: PostPartnershipsData;
-
-    before(() => {
-      projectPartnershipsData = new PostPartnershipsData(null);
-    });
-
-    it('sets indigenous_partnerships', function () {
-      expect(projectPartnershipsData.indigenous_partnerships).to.eql([]);
-    });
-
-    it('sets stakeholder_partnerships', function () {
-      expect(projectPartnershipsData.stakeholder_partnerships).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectPartnershipsData: PostPartnershipsData;
-
-    const obj = {
-      indigenous_partnerships: [1, 2],
-      stakeholder_partnerships: ['partner1, partner2']
-    };
-
-    before(() => {
-      projectPartnershipsData = new PostPartnershipsData(obj);
-    });
-
-    it('sets indigenous_partnerships', function () {
-      expect(projectPartnershipsData.indigenous_partnerships).to.eql(obj.indigenous_partnerships);
-    });
-
-    it('sets stakeholder_partnerships', function () {
-      expect(projectPartnershipsData.stakeholder_partnerships).to.eql(obj.stakeholder_partnerships);
-    });
-  });
-});
-
-describe('PostFundingSource', () => {
-  describe('No values provided', () => {
-    let projectFundingData: PostFundingSource;
-
-    before(() => {
-      projectFundingData = new PostFundingSource(null);
-    });
-
-    it('sets agency_id', () => {
-      expect(projectFundingData.agency_id).to.equal(null);
-    });
-
-    it('sets investment_action_category', () => {
-      expect(projectFundingData.investment_action_category).to.equal(null);
-    });
-
-    it('sets agency_project_id', () => {
-      expect(projectFundingData.agency_project_id).to.equal(null);
-    });
-
-    it('sets funding_amount', () => {
-      expect(projectFundingData.funding_amount).to.equal(null);
-    });
-
-    it('sets start_date', () => {
-      expect(projectFundingData.start_date).to.equal(null);
-    });
-
-    it('sets end_date', () => {
-      expect(projectFundingData.end_date).to.equal(null);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectFundingData: PostFundingSource;
-
-    const obj = {
-      agency_id: 1,
-      investment_action_category: 1,
-      agency_project_id: 'agency project id',
-      funding_amount: 20,
-      start_date: '2020/04/04',
-      end_date: '2020/05/05'
-    };
-
-    before(() => {
-      projectFundingData = new PostFundingSource(obj);
-    });
-
-    it('sets agency_id', () => {
-      expect(projectFundingData.agency_id).to.equal(obj.agency_id);
-    });
-
-    it('sets investment_action_category', () => {
-      expect(projectFundingData.investment_action_category).to.equal(obj.investment_action_category);
-    });
-
-    it('sets agency_project_id', () => {
-      expect(projectFundingData.agency_project_id).to.equal(obj.agency_project_id);
-    });
-
-    it('sets funding_amount', () => {
-      expect(projectFundingData.funding_amount).to.equal(obj.funding_amount);
-    });
-
-    it('sets start_date', () => {
-      expect(projectFundingData.start_date).to.equal(obj.start_date);
-    });
-
-    it('sets end_date', () => {
-      expect(projectFundingData.end_date).to.equal(obj.end_date);
     });
   });
 });
@@ -468,7 +175,7 @@ describe('PostLocationData', () => {
     });
 
     it('sets location_description', function () {
-      expect(projectLocationData.location_description).to.equal(null);
+      expect(projectLocationData.location_description).to.be.undefined;
     });
 
     it('sets geometry', function () {
@@ -510,77 +217,6 @@ describe('PostLocationData', () => {
 
     it('sets the geometry', function () {
       expect(projectLocationData.geometry).to.eql(obj.geometry);
-    });
-  });
-});
-
-describe('PostFundingData', () => {
-  describe('No values provided', () => {
-    let data: PostFundingData;
-
-    before(() => {
-      data = new PostFundingData(null);
-    });
-
-    it('sets fundingSources', () => {
-      expect(data.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('Values provided but not valid arrays', () => {
-    let data: PostFundingData;
-
-    const obj = {
-      fundingSources: null
-    };
-
-    before(() => {
-      data = new PostFundingData(obj);
-    });
-
-    it('sets fundingSources', () => {
-      expect(data.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('Values provided but with no length', () => {
-    let data: PostFundingData;
-
-    const obj = {
-      fundingSources: []
-    };
-
-    before(() => {
-      data = new PostFundingData(obj);
-    });
-
-    it('sets fundingSources', () => {
-      expect(data.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: PostFundingData;
-
-    const obj = {
-      fundingSources: [
-        {
-          agency_id: 1,
-          investment_action_category: 1,
-          agency_project_id: 'agency project id',
-          funding_amount: 12,
-          start_date: '2020/04/03',
-          end_date: '2020/05/05'
-        }
-      ]
-    };
-
-    before(() => {
-      data = new PostFundingData(obj);
-    });
-
-    it('sets fundingSources', () => {
-      expect(data.fundingSources).to.eql(obj.fundingSources);
     });
   });
 });

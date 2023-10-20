@@ -47,11 +47,11 @@ export interface ISurveyReportPublish {
 export const ProjectMetadataPublish = z.object({
   project_metadata_publish_id: z.number(),
   project_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   queue_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -61,11 +61,11 @@ export type ProjectMetadataPublish = z.infer<typeof ProjectMetadataPublish>;
 export const SurveyMetadataPublish = z.object({
   survey_metadata_publish_id: z.number(),
   survey_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   queue_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -75,11 +75,11 @@ export type SurveyMetadataPublish = z.infer<typeof SurveyMetadataPublish>;
 export const OccurrenceSubmissionPublish = z.object({
   occurrence_submission_publish_id: z.number(),
   occurrence_submission_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   queue_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -89,11 +89,11 @@ export type OccurrenceSubmissionPublish = z.infer<typeof OccurrenceSubmissionPub
 export const ProjectReportPublish = z.object({
   project_report_publish_id: z.number(),
   project_report_attachment_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -103,11 +103,11 @@ export type ProjectReportPublish = z.infer<typeof ProjectReportPublish>;
 export const ProjectAttachmentPublish = z.object({
   project_attachment_publish_id: z.number(),
   project_attachment_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -117,11 +117,11 @@ export type ProjectAttachmentPublish = z.infer<typeof ProjectAttachmentPublish>;
 export const SurveyReportPublish = z.object({
   survey_report_publish_id: z.number(),
   survey_report_attachment_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -131,11 +131,11 @@ export type SurveyReportPublish = z.infer<typeof SurveyReportPublish>;
 export const SurveyAttachmentPublish = z.object({
   survey_attachment_publish_id: z.number(),
   survey_attachment_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
@@ -145,16 +145,110 @@ export type SurveyAttachmentPublish = z.infer<typeof SurveyAttachmentPublish>;
 export const SurveySummarySubmissionPublish = z.object({
   survey_summary_submission_publish_id: z.number(),
   survey_summary_submission_id: z.number(),
-  event_timestamp: z.date(),
+  event_timestamp: z.string(),
   artifact_revision_id: z.number(),
-  create_date: z.date(),
+  create_date: z.string(),
   create_user: z.number(),
-  update_date: z.date().nullable(),
+  update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number()
 });
 
 export type SurveySummarySubmissionPublish = z.infer<typeof SurveySummarySubmissionPublish>;
+
+export const SurveyAttachmentWithPublishData = z.object({
+  survey_attachment_publish_id: z.number(),
+  survey_attachment_id: z.number(),
+  survey_id: z.number(),
+  file_type: z.string(),
+  file_name: z.string(),
+  title: z.string(),
+  description: z.string(),
+  key: z.string(),
+  file_size: z.number(),
+  create_date: z.string().nullable(),
+  create_user: z.number().nullable(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number(),
+  uuid: z.string(),
+  event_timestamp: z.string(),
+  artifact_revision_id: z.number()
+});
+
+export type SurveyAttachmentWithPublishData = z.infer<typeof SurveyAttachmentWithPublishData>;
+
+export const SurveyReportWithPublishData = z.object({
+  survey_report_publish_id: z.number(),
+  survey_report_attachment_id: z.number(),
+  survey_id: z.number(),
+  file_name: z.string(),
+  title: z.string(),
+  description: z.string(),
+  year: z.number(),
+  key: z.string(),
+  file_size: z.number(),
+  create_date: z.string().nullable(),
+  create_user: z.number().nullable(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number(),
+  uuid: z.string(),
+  event_timestamp: z.string(),
+  artifact_revision_id: z.number()
+});
+
+export type SurveyReportWithPublishData = z.infer<typeof SurveyReportWithPublishData>;
+
+export const ProjectAttachmentWithPublishData = z.object({
+  project_attachment_publish_id: z.number(),
+  project_attachment_id: z.number(),
+  survey_id: z.number(),
+  file_type: z.string(),
+  file_name: z.string(),
+  title: z.string(),
+  description: z.string(),
+  key: z.string(),
+  file_size: z.number(),
+  create_date: z.string().nullable(),
+  create_user: z.number().nullable(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number(),
+  uuid: z.string(),
+  event_timestamp: z.string(),
+  artifact_revision_id: z.number()
+});
+
+export type ProjectAttachmentWithPublishData = z.infer<typeof ProjectAttachmentWithPublishData>;
+
+export const ProjectReportWithPublishData = z.object({
+  project_report_publish_id: z.number(),
+  project_report_attachment_id: z.number(),
+  survey_id: z.number(),
+  file_name: z.string(),
+  title: z.string(),
+  description: z.string(),
+  year: z.number(),
+  key: z.string(),
+  file_size: z.number(),
+  create_date: z.string().nullable(),
+  create_user: z.number().nullable(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable(),
+  revision_count: z.number(),
+  uuid: z.string(),
+  event_timestamp: z.string(),
+  artifact_revision_id: z.number()
+});
+
+export type ProjectReportWithPublishData = z.infer<typeof ProjectReportWithPublishData>;
+
+export enum PublishStatus {
+  NO_DATA = 'NO_DATA',
+  UNSUBMITTED = 'UNSUBMITTED',
+  SUBMITTED = 'SUBMITTED'
+}
 
 export class HistoryPublishRepository extends BaseRepository {
   /**
@@ -662,16 +756,16 @@ export class HistoryPublishRepository extends BaseRepository {
   }
 
   /**
-   * Gets the count of unpublished survey attachments
+   * Get Survey Attachments with Publish Data
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<QueryResult>}
+   * @return {*}  {Promise<SurveyAttachmentWithPublishData[]>}
    * @memberof HistoryPublishRepository
    */
-  async getCountSurveyUnpublishedAttachments(surveyId: number): Promise<QueryResult> {
+  async getSurveyAttachmentsWithPublishData(surveyId: number): Promise<SurveyAttachmentWithPublishData[]> {
     const sqlStatement = SQL`
     SELECT
-      count(*)
+      *
     from
       survey_attachment sa
     left join
@@ -679,27 +773,25 @@ export class HistoryPublishRepository extends BaseRepository {
     on
       sa.survey_attachment_id = sap.survey_attachment_id
     where
-      sa.survey_id =${surveyId}
-    and
-      sap.survey_attachment_publish_id is null;
+      sa.survey_id =${surveyId};
   `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<SurveyAttachmentWithPublishData>(sqlStatement);
 
-    return response;
+    return response.rows;
   }
 
   /**
-   * Gets the count of unpublished survey reports
+   * Get Survey Reports with Publish Data
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<QueryResult>}
+   * @return {*}  {Promise<SurveyReportWithPublishData[]>}
    * @memberof HistoryPublishRepository
    */
-  async getCountSurveyUnpublishedReports(surveyId: number): Promise<QueryResult> {
+  async getSurveyReportsWithPublishData(surveyId: number): Promise<SurveyReportWithPublishData[]> {
     const sqlStatement = SQL`
     SELECT
-      count(*)
+      *
     from
       survey_report_attachment sra
     left join
@@ -707,14 +799,12 @@ export class HistoryPublishRepository extends BaseRepository {
     on
       sra.survey_report_attachment_id = srp.survey_report_attachment_id
     where
-      sra.survey_id =${surveyId}
-    and
-      srp.survey_report_publish_id is null;
+      sra.survey_id =${surveyId};
   `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<SurveyReportWithPublishData>(sqlStatement);
 
-    return response;
+    return response.rows;
   }
 
   /**
@@ -743,16 +833,16 @@ export class HistoryPublishRepository extends BaseRepository {
   }
 
   /**
-   * Gets the count of unpublished project attachments
+   * Get Project Attachments with Publish Data
    *
    * @param {number} projectId
-   * @return {*}  {Promise<QueryResult>}
+   * @return {*}  {Promise<ProjectAttachmentWithPublishData[]>}
    * @memberof HistoryPublishRepository
    */
-  async getCountProjectUnpublishedAttachments(projectId: number): Promise<QueryResult> {
+  async getProjectAttachmentsWithPublishData(projectId: number): Promise<ProjectAttachmentWithPublishData[]> {
     const sqlStatement = SQL`
     SELECT
-      count(*)
+      *
     from
       project_attachment pa
     left join
@@ -760,27 +850,25 @@ export class HistoryPublishRepository extends BaseRepository {
     on
       pa.project_attachment_id = pap.project_attachment_id
     where
-      pa.project_id =${projectId}
-    and
-      pap.project_attachment_publish_id is null;
+      pa.project_id =${projectId};
   `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<ProjectAttachmentWithPublishData>(sqlStatement);
 
-    return response;
+    return response.rows;
   }
 
   /**
-   * Gets the count of unpublished project reports
+   * Get Project Reports with Publish Data
    *
    * @param {number} projectId
-   * @return {*}  {Promise<QueryResult>}
+   * @return {*}  {Promise<ProjectReportWithPublishData>}
    * @memberof HistoryPublishRepository
    */
-  async getCountProjectUnpublishedReports(projectId: number): Promise<QueryResult> {
+  async getProjectReportsWithPublishData(projectId: number): Promise<ProjectReportWithPublishData[]> {
     const sqlStatement = SQL`
     SELECT
-      count(*)
+      *
     from
       project_report_attachment pra
     left join
@@ -788,13 +876,11 @@ export class HistoryPublishRepository extends BaseRepository {
     on
       pra.project_report_attachment_id = prp.project_report_attachment_id
     where
-      pra.project_id =${projectId}
-    and
-      prp.project_report_publish_id is null;
+      pra.project_id =${projectId};
   `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql<ProjectReportWithPublishData>(sqlStatement);
 
-    return response;
+    return response.rows;
   }
 }

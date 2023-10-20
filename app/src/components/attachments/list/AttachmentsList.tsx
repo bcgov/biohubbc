@@ -1,19 +1,21 @@
-import Box from '@material-ui/core/Box';
-import { grey } from '@material-ui/core/colors';
-import Link from '@material-ui/core/Link';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import { mdiFileOutline } from '@mdi/js';
+import { mdiFileOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
+import Link from '@mui/material/Link';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import { makeStyles } from '@mui/styles';
 import { SubmitStatusChip } from 'components/chips/SubmitStatusChip';
 import { SystemRoleGuard } from 'components/security/Guards';
-import { BioHubSubmittedStatusType } from 'constants/misc';
+import { PublishStatus } from 'constants/attachments';
 import { SYSTEM_ROLE } from 'constants/roles';
+import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
@@ -42,12 +44,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '66px',
     color: theme.palette.text.secondary,
     fontWeight: 700
-  },
-  importFile: {
-    display: 'flex',
-    minHeight: '66px',
-    fontWeight: 700,
-    color: theme.palette.text.secondary
   }
 }));
 
@@ -56,18 +52,19 @@ export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSur
   handleDownload: (attachment: T) => void;
   handleDelete: (attachment: T) => void;
   handleViewDetails: (attachment: T) => void;
+  handleRemoveOrResubmit: (attachment: T) => void;
 }
 
 const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
   const classes = useStyles();
 
-  const { attachments, handleDownload, handleDelete, handleViewDetails } = props;
+  const { attachments, handleDownload, handleDelete, handleViewDetails, handleRemoveOrResubmit } = props;
 
   const [rowsPerPage] = useState(10);
   const [page] = useState(0);
 
   if (!attachments.length) {
-    return <NoAttachments />;
+    return <NoSurveySectionData text={'No Documents'} />;
   }
 
   return (
@@ -78,21 +75,55 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
             <TableCell>Name</TableCell>
             <TableCell width="130">Type</TableCell>
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-              <TableCell width="130">Status</TableCell>
+              <TableCell width="150">Status</TableCell>
             </SystemRoleGuard>
             <TableCell width="75"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+          {attachments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((attachment) => {
+            const attachmentStatus = attachment.supplementaryAttachmentData?.event_timestamp
+              ? PublishStatus.SUBMITTED
+              : PublishStatus.UNSUBMITTED;
+
+            const icon: string = attachmentStatus === PublishStatus.SUBMITTED ? mdiLockOutline : mdiFileOutline;
+
             return (
-              <AttachmentsTableRow
-                key={`${row.fileType}-${row.id}`}
-                attachment={row}
-                handleDownload={handleDownload}
-                handleDelete={handleDelete}
-                handleViewDetails={handleViewDetails}
-              />
+              <TableRow key={`${attachment.fileName}-${attachment.id}`}>
+                <TableCell scope="row" className={classes.attachmentNameCol}>
+                  <Box display="flex" alignItems="center">
+                    <Icon
+                      path={icon}
+                      size={1}
+                      className={classes.fileIcon}
+                      style={{ marginRight: '16px', marginLeft: '4px' }}
+                    />
+                    <Link
+                      style={{ fontWeight: 'bold' }}
+                      underline="always"
+                      onClick={() => handleDownload(attachment)}
+                      tabIndex={0}>
+                      {attachment.fileName}
+                    </Link>
+                  </Box>
+                </TableCell>
+                <TableCell>{attachment.fileType}</TableCell>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                  <TableCell>
+                    <SubmitStatusChip status={attachmentStatus} />
+                  </TableCell>
+                </SystemRoleGuard>
+                <TableCell align="right">
+                  <AttachmentsListItemMenuButton
+                    attachmentFileType={attachment.fileType}
+                    attachmentStatus={attachmentStatus}
+                    onDownloadFile={() => handleDownload(attachment)}
+                    onDeleteFile={() => handleDelete(attachment)}
+                    onViewDetails={() => handleViewDetails(attachment)}
+                    onRemoveOrResubmit={() => handleRemoveOrResubmit(attachment)}
+                  />
+                </TableCell>
+              </TableRow>
             );
           })}
         </TableBody>
@@ -100,73 +131,5 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
     </TableContainer>
   );
 };
-
-function AttachmentsTableRow<T extends IGetProjectAttachment | IGetSurveyAttachment>(props: {
-  attachment: T;
-  handleDownload: (attachment: T) => void;
-  handleDelete: (attachment: T) => void;
-  handleViewDetails: (attachment: T) => void;
-}) {
-  const classes = useStyles();
-  const { attachment, handleDownload, handleDelete, handleViewDetails } = props;
-
-  function getArtifactSubmissionStatus(attachment: T): BioHubSubmittedStatusType {
-    if (attachment.supplementaryAttachmentData?.event_timestamp) {
-      return BioHubSubmittedStatusType.SUBMITTED;
-    }
-    return BioHubSubmittedStatusType.UNSUBMITTED;
-  }
-
-  return (
-    <TableRow key={`${attachment.fileName}-${attachment.id}`}>
-      <TableCell scope="row" className={classes.attachmentNameCol}>
-        <Box display="flex" alignItems="center">
-          <Icon
-            path={mdiFileOutline}
-            size={1}
-            className={classes.fileIcon}
-            style={{ marginRight: '16px', marginLeft: '4px' }}
-          />
-          <Link
-            style={{ fontWeight: 'bold' }}
-            underline="always"
-            onClick={() => handleDownload(attachment)}
-            tabIndex={0}>
-            {attachment.fileName}
-          </Link>
-        </Box>
-      </TableCell>
-      <TableCell>{attachment.fileType}</TableCell>
-      <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-        <TableCell>
-          <SubmitStatusChip status={getArtifactSubmissionStatus(attachment)} />
-        </TableCell>
-      </SystemRoleGuard>
-      <TableCell align="right">
-        <AttachmentsListItemMenuButton
-          attachment={attachment}
-          handleDownloadFile={() => handleDownload(attachment)}
-          handleDeleteFile={() => handleDelete(attachment)}
-          handleViewDetails={() => handleViewDetails(attachment)}
-        />
-      </TableCell>
-    </TableRow>
-  );
-}
-
-function NoAttachments() {
-  const classes = useStyles();
-  return (
-    <Box
-      display="flex"
-      flex="1 1 auto"
-      alignItems="center"
-      justifyContent="center"
-      p={2}
-      className={classes.importFile}>
-      <span data-testid="observations-nodata">No Documents</span>
-    </Box>
-  );
-}
 
 export default AttachmentsList;

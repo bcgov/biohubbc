@@ -5,8 +5,7 @@ const defaultLog = getLogger('models/project-update');
 
 export class PutProjectData {
   name: string;
-  type: number;
-  project_activities: number[];
+  project_programs: number[];
   start_date: string;
   end_date: string;
   revision_count: number;
@@ -15,8 +14,7 @@ export class PutProjectData {
     defaultLog.debug({ label: 'PutProjectData', message: 'params', obj });
 
     this.name = obj?.project_name || null;
-    this.type = obj?.project_type || null;
-    this.project_activities = (obj?.project_activities?.length && obj.project_activities) || [];
+    this.project_programs = obj?.project_programs || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.revision_count = obj?.revision_count ?? null;
@@ -25,34 +23,12 @@ export class PutProjectData {
 
 export class PutObjectivesData {
   objectives: string;
-  caveats: string;
   revision_count: number;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PutObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || '';
-    this.revision_count = obj?.revision_count ?? null;
-  }
-}
-
-export class PutCoordinatorData {
-  first_name: string;
-  last_name: string;
-  email_address: string;
-  coordinator_agency: string;
-  share_contact_details: boolean;
-  revision_count: number;
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutCoordinatorData', message: 'params', obj });
-
-    this.first_name = obj?.first_name || null;
-    this.last_name = obj?.last_name || null;
-    this.email_address = obj?.email_address || null;
-    this.coordinator_agency = obj?.coordinator_agency || null;
-    this.share_contact_details = (obj?.share_contact_details === 'true' && true) || false;
     this.revision_count = obj?.revision_count ?? null;
   }
 }
@@ -74,7 +50,7 @@ export class PutLocationData {
       }
     });
 
-    this.location_description = (obj && obj.location_description) || null;
+    this.location_description = obj?.location_description;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.revision_count = obj?.revision_count ?? null;
   }
@@ -102,56 +78,5 @@ export class PutIUCNData {
           };
         })) ||
       [];
-  }
-}
-
-export class PutFundingSource {
-  id: number;
-  investment_action_category: number;
-  agency_project_id: string;
-  funding_amount: number;
-  start_date: string;
-  end_date: string;
-  revision_count: number;
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutFundingSource', message: 'params', obj });
-
-    this.id = obj?.id || null;
-    this.investment_action_category = obj?.investment_action_category || null;
-    this.agency_project_id = obj?.agency_project_id || null;
-    this.funding_amount = obj?.funding_amount || null;
-    this.start_date = obj?.start_date || null;
-    this.end_date = obj?.end_date || null;
-    this.revision_count = obj?.revision_count ?? null;
-  }
-}
-
-/**
- * Processes PUT /project funding data
- *
- * @export
- * @class PostFundingData
- */
-export class PutFundingData {
-  fundingSources: PutFundingSource[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostFundingData', message: 'params', obj });
-
-    this.fundingSources =
-      (obj?.fundingSources?.length && obj.fundingSources.map((item: any) => new PutFundingSource(item))) || [];
-  }
-}
-
-export class PutPartnershipsData {
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutPartnershipsData', message: 'params', obj });
-
-    this.indigenous_partnerships = (obj?.indigenous_partnerships?.length && obj.indigenous_partnerships) || [];
-    this.stakeholder_partnerships = (obj?.stakeholder_partnerships?.length && obj.stakeholder_partnerships) || [];
   }
 }

@@ -1,10 +1,11 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
+import { LoadingButton } from '@mui/lab';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { AccessRequestI18N } from 'constants/i18n';
 import { AuthStateContext } from 'contexts/authStateContext';
@@ -21,6 +22,7 @@ import {
 } from 'interfaces/useAdminApi.interface';
 import React, { ReactElement, useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import BCeIDRequestForm, {
   BCeIDBasicRequestFormInitialValues,
   BCeIDBasicRequestFormYupSchema,
@@ -89,7 +91,8 @@ export const AccessRequestPage: React.FC = () => {
         name: keycloakWrapper?.displayName as string,
         username: keycloakWrapper?.getUserIdentifier() as string,
         email: keycloakWrapper?.email as string,
-        identitySource: keycloakWrapper?.getIdentitySource() as string
+        identitySource: keycloakWrapper?.getIdentitySource() as string,
+        displayName: keycloakWrapper?.displayName as string
       });
 
       if (!response?.id) {
@@ -115,7 +118,7 @@ export const AccessRequestPage: React.FC = () => {
     }
   };
 
-  if (!keycloakWrapper?.keycloak?.authenticated) {
+  if (!keycloakWrapper?.keycloak.authenticated) {
     // User is not logged in
     return <Redirect to={{ pathname: '/' }} />;
   }
@@ -170,9 +173,9 @@ export const AccessRequestPage: React.FC = () => {
           validationSchema={validationSchema}
           validateOnBlur={true}
           validateOnChange={false}
-          onSubmit={(values) => {
+          onSubmit={async (values) => {
             setIsSubmittingRequest(true);
-            handleSubmitAccessRequest(values);
+            await handleSubmitAccessRequest(values);
           }}>
           {({ handleSubmit }) => (
             <Box component={Paper} p={3}>
@@ -186,30 +189,19 @@ export const AccessRequestPage: React.FC = () => {
                 <form onSubmit={handleSubmit}>
                   {requestForm}
                   <Box mt={4} display="flex" justifyContent="flex-end">
-                    <Box className="buttonWrapper" mr={1}>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        className={classes.actionButton}
-                        disabled={isSubmittingRequest}>
-                        <strong>Submit Request</strong>
-                      </Button>
-                      {isSubmittingRequest && (
-                        <CircularProgress
-                          className="buttonProgress"
-                          variant="indeterminate"
-                          size={20}
-                          color="primary"
-                        />
-                      )}
-                    </Box>
+                    <LoadingButton
+                      loading={isSubmittingRequest}
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      className={classes.actionButton}>
+                      <strong>Submit Request</strong>
+                    </LoadingButton>
                     <Button
                       variant="outlined"
                       color="primary"
-                      onClick={() => {
-                        history.push('/logout');
-                      }}
+                      component={Link}
+                      to="/logout"
                       className={classes.actionButton}
                       data-testid="logout-button">
                       Log out

@@ -1,6 +1,6 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
@@ -15,7 +15,7 @@ export interface IReviewAccessRequestForm {
 }
 
 export const ReviewAccessRequestFormInitialValues: IReviewAccessRequestForm = {
-  system_role: ('' as unknown) as number
+  system_role: '' as unknown as number
 };
 
 export const ReviewAccessRequestFormYupSchema = yup.object().shape({
@@ -44,10 +44,10 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
 
   return (
     <Box>
-      <Box mb={5}>
-        <Box mb={2}>
-          <Typography variant="h3">User Details</Typography>
-        </Box>
+      <Box>
+        <Typography component="h3" variant="h5">
+          User Details
+        </Typography>
         <dl>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
@@ -60,31 +60,28 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Email Address
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {props.request.data.email}
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Username
               </Typography>
               <Typography component="dd" variant="body1">
                 {formattedUsername}
               </Typography>
             </Grid>
-
             <Grid item xs={12} md={6}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Request Date
+                Email Address
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {props.request.data.email}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Date of Request
               </Typography>
               <Typography component="dd" variant="body1">
                 {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, props.request.create_date)}
               </Typography>
             </Grid>
-
             <Grid item xs={12} md={6}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Company
@@ -96,7 +93,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
 
             <Grid item xs={12}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Reason
+                Reason for Request
               </Typography>
               <Typography component="dd" variant="body1">
                 {props.request.data.reason}
@@ -105,21 +102,17 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
           </Grid>
         </dl>
       </Box>
-      <Box mb={5}>
-        <Box mb={2}>
-          <Typography variant="h3">Review / Update Requested System Role</Typography>
-        </Box>
+      <Box mt={5}>
+        <Typography
+          component="h3"
+          variant="h5"
+          sx={{
+            marginBottom: '18px'
+          }}>
+          Requested System Role
+        </Typography>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <AutocompleteField
-                id="system_role"
-                name="system_role"
-                label={'System Role'}
-                options={props.system_roles}
-              />
-            </Grid>
-          </Grid>
+          <AutocompleteField id="system_role" name="system_role" label={'System Role'} options={props.system_roles} />
         </form>
       </Box>
     </Box>

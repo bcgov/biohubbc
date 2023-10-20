@@ -5,12 +5,6 @@ metadata:
   labels:
     build: biohubbc-api
 parameters:
-  - name: ENABLE_FILE_VIRUS_SCAN
-    value: 'true'
-  - name: CLAMAV_HOST
-    value: 'clamav'
-  - name: CLAMAV_PORT
-    value: '3310'
   - name: NAME
     value: biohubbc-api
   - name: SUFFIX
@@ -24,6 +18,27 @@ parameters:
   - name: APP_HOST
     description: APP host for application frontend
     value: ''
+  - name: CHANGE_ID
+    description: Change id of the project. This will help to pull image stream
+    required: true
+    value: '0'
+  - name: NODE_ENV
+    description: Application Environment type variable
+    required: true
+    value: 'dev'
+  - name: API_PORT_DEFAULT
+    value: '6100'
+  - name: API_PORT_DEFAULT_NAME
+    description: Api default port name
+    value: '6100-tcp'
+  # Clamav
+  - name: ENABLE_FILE_VIRUS_SCAN
+    value: 'true'
+  - name: CLAMAV_HOST
+    value: 'clamav'
+  - name: CLAMAV_PORT
+    value: '3310'
+  # BioHub Platform (aka: Backbone)
   - name: BACKBONE_API_HOST
     required: true
     description: API host for BioHub Platform Backbone. Example "https://platform.com".
@@ -36,17 +51,14 @@ parameters:
   - name: BACKBONE_INTAKE_ENABLED
     required: true
     description: Controls whether or not SIMS will submit DwCA datasets to the BioHub Platform Backbone. Set to "true" to enable it, will be disabled by default otherwise.
-  - name: CHANGE_ID
-    description: Change id of the project. This will help to pull image stream
+  # BCTW / Critterbase
+  - name: CB_API_HOST
+    description: API host for the Critterbase service, SIMS API will hit this to retrieve critter metadata. Example "https://critterbase.com".
     required: true
-    value: '0'
-  - name: DB_SERVICE_NAME
-    description: 'Database service name associated with deployment'
+  - name: BCTW_API_HOST
+    description: API host for the BC Telemetry Warehouse service. SIMS API will hit this for device deployments and other telemetry operations.  Example "https://bctw.com".
     required: true
-  - name: NODE_ENV
-    description: Application Environment type variable
-    required: true
-    value: 'dev'
+  # Elastic Search
   - name: ELASTICSEARCH_URL
     description: Platform Elasticsearch URL
     required: true
@@ -55,48 +67,63 @@ parameters:
     description: Platform Elasticsearch Taxonomy Index
     required: true
     value: 'taxonomy_3.0.0'
-  - name: S3_KEY_PREFIX
-    description: S3 key optional prefix
-    required: false
-    value: 'sims'
+  # Database
   - name: TZ
     description: Application timezone
     required: false
     value: 'America/Vancouver'
+  - name: DB_SERVICE_NAME
+    description: 'Database service name associated with deployment'
+    required: true
+  # Keycloak
   - name: KEYCLOAK_HOST
     description: Key clock login url
     required: true
   - name: KEYCLOAK_REALM
     description: Realm identifier or name
     required: true
-  - name: KEYCLOAK_INTEGRATION_ID
-    description: keycloak integration id
-    required: true
-  - name: KEYCLOAK_API_HOST
-    description: keycloak API host
-    required: true
   - name: KEYCLOAK_CLIENT_ID
     description: Client Id for application
     required: true
-  - name: KEYCLOAK_ADMIN_USERNAME
-    description: keycloak host admin username
-    required: true
+  # Keycloak secret
   - name: KEYCLOAK_SECRET
     description: The name of the keycloak secret
     required: true
-  - name: KEYCLOAK_SECRET_ADMIN_PASSWORD
+  # Keycloak Service Client
+  - name: KEYCLOAK_ADMIN_USERNAME
+    description: keycloak host admin username
+    required: true
+  - name: KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY
     description: The key of the admin password in the keycloak secret
     required: true
-  - name: API_PORT_DEFAULT
-    value: '6100'
-  - name: API_PORT_DEFAULT_NAME
-    description: Api default port name
-    value: '6100-tcp'
+  # Keycloak CSS API
+  - name: KEYCLOAK_API_TOKEN_URL
+    description: The url to fetch a css api access token, which is needed to call the css rest api
+    required: true
+  - name: KEYCLOAK_API_CLIENT_ID
+    description: The css api client id
+    required: true
+  - name: KEYCLOAK_API_CLIENT_SECRET_KEY
+    description: The css api client secret
+    required: true
+  - name: KEYCLOAK_API_HOST
+    description: The url of the css rest api
+    required: true
+  - name: KEYCLOAK_API_ENVIRONMENT
+    description: The css api environment to query (dev, test, prod)
+    required: true
+  # Object Store (S3)
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
     value: 'biohubbc-object-store'
+  - name: S3_KEY_PREFIX
+    description: S3 key optional prefix
+    required: false
+    value: 'sims'
+  # Log level
   - name: LOG_LEVEL
     value: 'info'
+  # GCNotify
   - name: GCNOTIFY_API_SECRET
     description: Secret for gcnotify api key
     value: 'gcnotify-api-key'
@@ -109,10 +136,14 @@ parameters:
   - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
     description: gcnotify sms template id
     value: af2f1e40-bd72-4612-9c5a-567ee5b26ca5
+  - name: GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE
+    description: gcnotify request resubmit email template
+    value: c973da33-1f2b-435a-9429-d8ab4fd273c5
   - name: GCNOTIFY_EMAIL_URL
     value: https://api.notification.canada.ca/v2/notifications/email
   - name: GCNOTIFY_SMS_URL
     value: https://api.notification.canada.ca/v2/notifications/sms
+  # Openshift Resources
   - name: CPU_REQUEST
     value: '100m'
   - name: CPU_LIMIT
@@ -185,6 +216,13 @@ objects:
                   value: ${API_PORT_DEFAULT}
                 - name: APP_HOST
                   value: ${APP_HOST}
+                - name: VERSION
+                  value: ${VERSION}
+                - name: CHANGE_VERSION
+                  value: ${CHANGE_ID}
+                - name: NODE_ENV
+                  value: ${NODE_ENV}
+                # BioHub Platform (aka: Backbone)
                 - name: BACKBONE_API_HOST
                   value: ${BACKBONE_API_HOST}
                 - name: BACKBONE_INTAKE_PATH
@@ -193,12 +231,21 @@ objects:
                   value: ${BACKBONE_ARTIFACT_INTAKE_PATH}
                 - name: BACKBONE_INTAKE_ENABLED
                   value: ${BACKBONE_INTAKE_ENABLED}
+                # BCTW / Critterbase
+                - name: CB_API_HOST
+                  value: ${CB_API_HOST}
+                - name: BCTW_API_HOST
+                  value: ${BCTW_API_HOST}
+                # Clamav
                 - name: ENABLE_FILE_VIRUS_SCAN
                   value: ${ENABLE_FILE_VIRUS_SCAN}
                 - name: CLAMAV_HOST
                   value: ${CLAMAV_HOST}
                 - name: CLAMAV_PORT
                   value: ${CLAMAV_PORT}
+                # Database
+                - name: TZ
+                  value: ${TZ}
                 - name: DB_HOST
                   value: ${DB_SERVICE_NAME}
                 - name: DB_USER_API
@@ -220,37 +267,43 @@ objects:
                   value: '5432'
                 - name: PROJECT_SEEDER_USER_IDENTIFIER
                   value: ${PROJECT_SEEDER_USER_IDENTIFIER}
+                # Keycloak
                 - name: KEYCLOAK_HOST
                   value: ${KEYCLOAK_HOST}
-                - name: KEYCLOAK_API_HOST
-                  value: ${KEYCLOAK_API_HOST}
                 - name: KEYCLOAK_REALM
                   value: ${KEYCLOAK_REALM}
                 - name: KEYCLOAK_CLIENT_ID
                   value: ${KEYCLOAK_CLIENT_ID}
-                - name: KEYCLOAK_INTEGRATION_ID
-                  value: ${KEYCLOAK_INTEGRATION_ID}
+                # Keycloak Service Client
                 - name: KEYCLOAK_ADMIN_USERNAME
                   value: ${KEYCLOAK_ADMIN_USERNAME}
                 - name: KEYCLOAK_ADMIN_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${KEYCLOAK_SECRET}
-                      key: ${KEYCLOAK_SECRET_ADMIN_PASSWORD}
-                - name: CHANGE_VERSION
-                  value: ${CHANGE_ID}
-                - name: NODE_ENV
-                  value: ${NODE_ENV}
+                      key: ${KEYCLOAK_SECRET_ADMIN_PASSWORD_KEY}
+                # Keycloak CSS API
+                - name: KEYCLOAK_API_TOKEN_URL
+                  value: ${KEYCLOAK_API_TOKEN_URL}
+                - name: KEYCLOAK_API_CLIENT_ID
+                  value: ${KEYCLOAK_API_CLIENT_ID}
+                - name: KEYCLOAK_API_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${KEYCLOAK_SECRET}
+                      key: ${KEYCLOAK_API_CLIENT_SECRET_KEY}
+                - name: KEYCLOAK_API_HOST
+                  value: ${KEYCLOAK_API_HOST}
+                - name: KEYCLOAK_API_ENVIRONMENT
+                  value: ${KEYCLOAK_API_ENVIRONMENT}
+                # Elastic Search
                 - name: ELASTICSEARCH_URL
                   value: ${ELASTICSEARCH_URL}
                 - name: ELASTICSEARCH_TAXONOMY_INDEX
                   value: ${ELASTICSEARCH_TAXONOMY_INDEX}
                 - name: S3_KEY_PREFIX
                   value: ${S3_KEY_PREFIX}
-                - name: TZ
-                  value: ${TZ}
-                - name: VERSION
-                  value: ${VERSION}
+                # Object Store (S3)
                 - name: OBJECT_STORE_URL
                   valueFrom:
                     secretKeyRef:
@@ -271,8 +324,10 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
+                # Log level
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                # GCNotify
                 - name: GCNOTIFY_SECRET_API_KEY
                   valueFrom:
                     secretKeyRef:

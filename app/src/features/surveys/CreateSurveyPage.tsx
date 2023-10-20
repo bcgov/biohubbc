@@ -1,16 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
-import { mdiChevronRight } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
@@ -19,17 +15,19 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
+import SurveyPartnershipsForm, {
+  SurveyPartnershipsFormInitialValues,
+  SurveyPartnershipsFormYupSchema
+} from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
 import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
-import { Link as RouterLink } from 'react-router-dom';
-import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
 import GeneralInformationForm, {
@@ -44,7 +42,15 @@ import PurposeAndMethodologyForm, {
   PurposeAndMethodologyInitialValues,
   PurposeAndMethodologyYupSchema
 } from './components/PurposeAndMethodologyForm';
-import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
+import SamplingMethodsForm from './components/SamplingMethodsForm';
+import StudyAreaForm, { SurveyLocationInitialValues, SurveyLocationYupSchema } from './components/StudyAreaForm';
+import { SurveyBlockInitialValues } from './components/SurveyBlockSection';
+import SurveyFundingSourceForm, {
+  SurveyFundingSourceFormInitialValues,
+  SurveyFundingSourceFormYupSchema
+} from './components/SurveyFundingSourceForm';
+import { SurveySiteSelectionInitialValues, SurveySiteSelectionYupSchema } from './components/SurveySiteSelectionForm';
+import SurveyUserForm, { SurveyUserJobFormInitialValues, SurveyUserJobYupSchema } from './components/SurveyUserForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -52,14 +58,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& + button': {
       marginLeft: '0.5rem'
     }
-  },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
   },
   sectionDivider: {
     height: '1px',
@@ -99,28 +97,21 @@ const CreateSurveyPage = () => {
   const history = useHistory();
 
   const codesContext = useContext(CodesContext);
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
   const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
-  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
-    projectContext.projectDataLoader,
-    projectContext.projectId
-  ]);
-  const projectData = projectContext.projectDataLoader.data?.projectData;
-
-  const getSurveyFundingSourcesDataLoader = useDataLoader(() =>
-    biohubApi.survey.getAvailableSurveyFundingSources(projectContext.projectId)
-  );
   useEffect(() => {
-    getSurveyFundingSourcesDataLoader.load();
-  }, [getSurveyFundingSourcesDataLoader, projectContext.projectId]);
-  const fundingSourcesData = getSurveyFundingSourcesDataLoader.data || [];
+    projectContext.projectDataLoader.load(projectContext.projectId);
+  }, [projectContext.projectDataLoader, projectContext.projectId]);
+  const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
 
   const dialogContext = useContext(DialogContext);
 
@@ -136,7 +127,7 @@ const CreateSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectData?.project.id}/surveys`);
+      history.push(`/admin/projects/${projectData?.project.project_id}`);
     }
   };
 
@@ -144,9 +135,14 @@ const CreateSurveyPage = () => {
   const [surveyInitialValues] = useState<ICreateSurveyRequest>({
     ...GeneralInformationInitialValues,
     ...PurposeAndMethodologyInitialValues,
-    ...StudyAreaInitialValues,
+    ...SurveyFundingSourceFormInitialValues,
+    ...SurveyPartnershipsFormInitialValues,
     ...ProprietaryDataInitialValues,
-    ...AgreementsInitialValues
+    ...AgreementsInitialValues,
+    ...SurveyLocationInitialValues,
+    ...SurveySiteSelectionInitialValues,
+    ...SurveyUserJobFormInitialValues,
+    ...SurveyBlockInitialValues
   });
 
   // Yup schemas for the survey form sections
@@ -183,15 +179,21 @@ const CreateSurveyPage = () => {
         DATE_FORMAT.ShortDateFormat,
         `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
       )
+      .nullable()
+      .optional()
   })
-    .concat(StudyAreaYupSchema)
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
-    .concat(AgreementsYupSchema);
+    .concat(SurveyFundingSourceFormYupSchema)
+    .concat(AgreementsYupSchema)
+    .concat(SurveyUserJobYupSchema)
+    .concat(SurveyLocationYupSchema)
+    .concat(SurveySiteSelectionYupSchema)
+    .concat(SurveyPartnershipsFormYupSchema);
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectData?.project.id}/surveys`);
+    history.push(`/admin/projects/${projectData?.project.project_id}`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -216,7 +218,7 @@ const CreateSurveyPage = () => {
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
     try {
-      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.id), values);
+      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), values);
 
       if (!response?.id) {
         showCreateErrorDialog({
@@ -227,7 +229,7 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/admin/projects/${projectData?.project.id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -267,35 +269,16 @@ const CreateSurveyPage = () => {
   if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <Paper square={true} elevation={0}>
         <Container maxWidth="xl">
           <Box py={4}>
-            <Box mb={2}>
-              <Breadcrumbs separator={<Icon path={mdiChevronRight} size={0.8} />}>
-                <Link color="primary" component={RouterLink} to={'/admin/projects'} aria-current="page">
-                  <Typography variant="body1" component="span">
-                    Projects
-                  </Typography>
-                </Link>
-                <Link color="primary" onClick={handleCancel} aria-current="page">
-                  <Typography variant="body1" component="span">
-                    {projectData.project.project_name}
-                  </Typography>
-                </Link>
-                <Typography variant="body1" component="span">
-                  Create Survey
-                </Typography>
-              </Breadcrumbs>
-            </Box>
-
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
-                  Create Survey
+                  Create New Survey
                 </Typography>
               </Box>
               <Box flex="0 0 auto" className={classes.pageTitleActions}>
@@ -329,18 +312,9 @@ const CreateSurveyPage = () => {
                   summary=""
                   component={
                     <GeneralInformationForm
-                      funding_sources={
-                        fundingSourcesData?.map((item) => {
-                          return {
-                            value: item.id,
-                            label: `${
-                              codes.funding_source.find((fundingCode) => fundingCode.id === item.agency_id)?.name
-                            } | ${getFormattedAmount(item.funding_amount)} | ${getFormattedDateRangeString(
-                              DATE_FORMAT.ShortMediumDateFormat,
-                              item.start_date,
-                              item.end_date
-                            )}`
-                          };
+                      type={
+                        codes?.type?.map((item) => {
+                          return { value: item.id, label: item.name };
                         }) || []
                       }
                       projectStartDate={projectData.project.start_date}
@@ -381,6 +355,45 @@ const CreateSurveyPage = () => {
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
+                  title="Survey Participants"
+                  summary="Specify the people who participated in this survey."
+                  component={<SurveyUserForm users={[]} jobs={codes.survey_jobs} />}
+                />
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Funding Sources"
+                  summary="Specify funding sources for this survey."
+                  component={
+                    <Box>
+                      <Box component="fieldset">
+                        <Typography component="legend">Add Funding Sources</Typography>
+                        <Box mt={1}>
+                          <SurveyFundingSourceForm />
+                        </Box>
+                      </Box>
+                      <Box component="fieldset" mt={5}>
+                        <Typography component="legend">Additional Partnerships</Typography>
+                        <Box mt={1}>
+                          <SurveyPartnershipsForm />
+                        </Box>
+                      </Box>
+                    </Box>
+                  }
+                />
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Sampling Methods"
+                  summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
+                  component={<SamplingMethodsForm />}
+                />
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
                   title="Study Area"
                   summary=""
                   component={<StudyAreaForm />}></HorizontalSplitFormComponent>
@@ -411,14 +424,17 @@ const CreateSurveyPage = () => {
                   title="Agreements"
                   summary=""
                   component={<AgreementsForm />}></HorizontalSplitFormComponent>
+
                 <Divider className={classes.sectionDivider} />
 
-                <Box p={3} display="flex" justifyContent="flex-end">
+                <Box display="flex" justifyContent="flex-end">
                   <Button
                     type="submit"
                     variant="contained"
                     color="primary"
-                    onClick={() => formikRef.current?.submitForm()}
+                    onClick={() => {
+                      formikRef.current?.submitForm();
+                    }}
                     className={classes.actionButton}>
                     Save and Exit
                   </Button>

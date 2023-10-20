@@ -1,6 +1,5 @@
-import { render } from '@testing-library/react';
 import { Formik } from 'formik';
-import React from 'react';
+import { render } from 'test-helpers/test-utils';
 import ProjectObjectivesForm, {
   IProjectObjectivesForm,
   ProjectObjectivesFormInitialValues,

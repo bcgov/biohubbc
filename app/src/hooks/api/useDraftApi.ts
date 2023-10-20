@@ -16,7 +16,7 @@ const useDraftApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IDraftResponse>}
    */
   const createDraft = async (draftName: string, draftData: unknown): Promise<IDraftResponse> => {
-    const { data } = await axios.post('/api/draft', { name: draftName, data: draftData });
+    const { data } = await axios.post('/api/draft/create', { name: draftName, data: draftData });
 
     return data;
   };
@@ -29,9 +29,8 @@ const useDraftApi = (axios: AxiosInstance) => {
    * @param {unknown} draftData
    * @return {*}  {Promise<IDraftResponse>}
    */
-  const updateDraft = async (id: number, draftName: string, draftData: unknown): Promise<IDraftResponse> => {
-    const { data } = await axios.put('/api/draft', {
-      id: id,
+  const updateDraft = async (draftId: number, draftName: string, draftData: unknown): Promise<IDraftResponse> => {
+    const { data } = await axios.put(`/api/draft/${draftId}/update`, {
       name: draftName,
       data: draftData
     });
@@ -45,7 +44,7 @@ const useDraftApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetDraftsListResponse[]>}
    */
   const getDraftsList = async (): Promise<IGetDraftsListResponse[]> => {
-    const { data } = await axios.get(`/api/drafts`);
+    const { data } = await axios.get(`/api/draft/list`);
 
     return data;
   };

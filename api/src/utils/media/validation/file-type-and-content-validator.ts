@@ -3,6 +3,11 @@ import { DWCArchive, DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { MediaValidator } from '../media-file';
 import { XLSXCSV, XLSXCSVValidator } from '../xlsx/xlsx-file';
 
+/**
+ * Return a validator function that checks if the file is empty.
+ *
+ * @return {*}  {MediaValidator}
+ */
 export const getFileEmptyValidator = (): MediaValidator => {
   return (mediaFile) => {
     if (!mediaFile.buffer || !mediaFile.buffer.byteLength) {
@@ -21,6 +26,12 @@ export type MimetypeValidatorConfig = {
   };
 };
 
+/**
+ * Return a validator function that checks the mimetype of the file.
+ *
+ * @param {MimetypeValidatorConfig} [config]
+ * @return {*}  {(DWCArchiveValidator | XLSXCSVValidator)}
+ */
 export const getFileMimeTypeValidator = (config?: MimetypeValidatorConfig): DWCArchiveValidator | XLSXCSVValidator => {
   return (file: any) => {
     if (!config) {
@@ -55,6 +66,12 @@ export type SubmissionRequiredFilesValidatorConfig = {
   };
 };
 
+/**
+ * Return a validator function that checks that the file contains all required files.
+ *
+ * @param {SubmissionRequiredFilesValidatorConfig} [config]
+ * @return {*}  {(DWCArchiveValidator | XLSXCSVValidator)}
+ */
 export const getRequiredFilesValidator = (
   config?: SubmissionRequiredFilesValidatorConfig
 ): DWCArchiveValidator | XLSXCSVValidator => {
@@ -79,6 +96,13 @@ export const getRequiredFilesValidator = (
   };
 };
 
+/**
+ * Check that the DWCArchive contains all required files.
+ *
+ * @param {DWCArchive} dwcArchive
+ * @param {SubmissionRequiredFilesValidatorConfig} config
+ * @return {*}
+ */
 const checkRequiredFieldsInDWCArchive = (dwcArchive: DWCArchive, config: SubmissionRequiredFilesValidatorConfig) => {
   // If there are no files in the archive, then add errors for all required files
   if (!dwcArchive.rawFile.mediaFiles || !dwcArchive.rawFile.mediaFiles.length) {
@@ -100,6 +124,13 @@ const checkRequiredFieldsInDWCArchive = (dwcArchive: DWCArchive, config: Submiss
   });
 };
 
+/**
+ * Check that the XLSX workbook contains all required sheets.
+ *
+ * @param {XLSXCSV} xlsxCsv
+ * @param {SubmissionRequiredFilesValidatorConfig} config
+ * @return {*}
+ */
 const checkRequiredFieldsInXLSXCSV = (xlsxCsv: XLSXCSV, config: SubmissionRequiredFilesValidatorConfig) => {
   // If there are no sheets in the excel file, then add errors for all required sheets
 

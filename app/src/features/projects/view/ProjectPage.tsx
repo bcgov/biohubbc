@@ -1,8 +1,8 @@
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import ProjectSubmissionAlertBar from 'components/publish/ProjectSubmissionAlertBar';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -10,8 +10,7 @@ import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
-import React, { useContext, useEffect } from 'react';
-import LocationBoundary from './components/LocationBoundary';
+import { useContext, useEffect } from 'react';
 import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
 
@@ -26,12 +25,13 @@ const ProjectPage = () => {
   const codesContext = useContext(CodesContext);
   const projectContext = useContext(ProjectContext);
 
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
-  useEffect(() => projectContext.projectDataLoader.load(projectContext.projectId), [
-    projectContext.projectDataLoader,
-    projectContext.projectId
-  ]);
+  useEffect(() => {
+    projectContext.projectDataLoader.load(projectContext.projectId);
+  }, [projectContext.projectDataLoader, projectContext.projectId]);
 
   if (
     !codesContext.codesDataLoader.data ||
@@ -66,11 +66,12 @@ const ProjectPage = () => {
                   <ProjectAttachments />
                 </Paper>
               </Box>
-              <Box>
+              {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (map) temporarily, while its decided where exactly project/survey locations should be defined */}
+              {/* <Box>
                 <Paper elevation={0}>
                   <LocationBoundary />
                 </Paper>
-              </Box>
+              </Box> */}
             </Grid>
           </Grid>
         </Box>

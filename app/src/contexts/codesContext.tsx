@@ -1,7 +1,7 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { createContext, PropsWithChildren, useMemo } from 'react';
+import { createContext, PropsWithChildren, useMemo } from 'react';
 
 /**
  * Context object that stores information about codes

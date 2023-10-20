@@ -1,12 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
+import { SystemUser } from '../../../../../../../repositories/user-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
-import { HistoryPublishService } from '../../../../../../../services/history-publish-service';
-import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
 
@@ -17,9 +15,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'ProjectPermission'
         },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
@@ -110,26 +108,20 @@ export function deleteAttachment(): RequestHandler {
       await connection.open();
 
       const attachmentService = new AttachmentService(connection);
-      const historyPublishService = new HistoryPublishService(connection);
 
-      let deleteResult: { key: string };
-      if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
-        await historyPublishService.deleteSurveyReportAttachmentPublishRecord(Number(req.params.attachmentId));
-        await attachmentService.deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId));
+      const systemUserObject: SystemUser = req['system_user'];
+      const isAdmin =
+        systemUserObject.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
+        systemUserObject.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR);
 
-        deleteResult = await attachmentService.deleteSurveyReportAttachment(Number(req.params.attachmentId));
-      } else {
-        await historyPublishService.deleteSurveyAttachmentPublishRecord(Number(req.params.attachmentId));
-        deleteResult = await attachmentService.deleteSurveyAttachment(Number(req.params.attachmentId));
-      }
+      await attachmentService.handleDeleteSurveyAttachment(
+        Number(req.params.surveyId),
+        Number(req.params.attachmentId),
+        req.body.attachmentType,
+        isAdmin
+      );
 
       await connection.commit();
-
-      const deleteFileResult = await deleteFileFromS3(deleteResult.key);
-
-      if (!deleteFileResult) {
-        return res.status(200).json(null);
-      }
 
       return res.status(200).send();
     } catch (error) {

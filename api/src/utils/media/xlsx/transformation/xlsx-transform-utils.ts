@@ -76,10 +76,10 @@ export function getCombinations<O extends Record<string | number, any[]>>(obj: O
  *
  * @param {Record<string, any>[]} arrayOfObjects
  * @param {string[]} keys
- * @return {*}  {object[]}
+ * @return {*}  {Record<string, any>[]}
  * @memberof XLSXTransform
  */
-export function filterDuplicateKeys(arrayOfObjects: Record<string, any>[], keys: string[]): object[] {
+export function filterDuplicateKeys(arrayOfObjects: Record<string, any>[], keys: string[]): Record<string, any>[] {
   const keyValues: [string, any][] = arrayOfObjects.map((value) => {
     const key = keys.map((k) => value[k]).join('|');
     return [key, value];

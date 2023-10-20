@@ -112,7 +112,7 @@ yup.addMethod(
       }
 
       // compare valid start and end dates
-      return moment(this.parent.start_date, dateFormat, true).isBefore(moment(value, dateFormat, true));
+      return moment(this.parent[startDateName], dateFormat, true).isBefore(moment(value, dateFormat, true));
     });
   }
 );
@@ -137,7 +137,7 @@ yup.addMethod(
       }
 
       // compare valid start and end dates
-      return moment(this.parent.start_date, dateFormat, true).isSameOrBefore(moment(value, dateFormat, true));
+      return moment(this.parent[startDateName], dateFormat, true).isSameOrBefore(moment(value, dateFormat, true));
     });
   }
 );
@@ -193,6 +193,52 @@ yup.addMethod(yup.array, 'isUniqueAuthor', function (message: string) {
     });
 
     return !hasDuplicates;
+  });
+});
+
+yup.addMethod(yup.array, 'hasAtLeastOneValue', function (message: string, key: string, valueToFind: any) {
+  return this.test('has-at-least-one-value', message, (values) => {
+    if (!values || !values.length) {
+      return true;
+    }
+    const found = values.filter((item) => item[key][0] === valueToFind);
+    return found.length > 0 || false;
+  });
+});
+
+yup.addMethod(yup.array, 'hasUniqueDateRanges', function (message: string, startKey: string, endKey: string) {
+  return this.test('has-unique-date-ranges', message, (values) => {
+    // no need to validate empty or single item arrays
+    if (!values || !values.length || values.length === 1) {
+      return true;
+    }
+
+    // convert values to object of timestamps
+    // sort based on start date
+    const sortedValues = values
+      .map((item) => ({ start: moment(item[startKey]).unix(), end: moment(item[endKey]).unix() }))
+      .sort((a, b) => a.start - b.start);
+
+    // loop through sorted values
+    for (let i = 0; i < sortedValues.length; i++) {
+      // collect two dates to check
+      const currentRange = sortedValues[i];
+      let newRange;
+
+      if (i + 1 <= sortedValues.length) {
+        newRange = sortedValues[i + 1];
+      }
+
+      // compare if the 2nd start date is smaller than the current dates end date
+      // if so the dates overlap and data is invalid
+      if (newRange) {
+        if (currentRange.end > newRange.start) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   });
 });
 

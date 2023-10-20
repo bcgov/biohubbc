@@ -1,19 +1,16 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IListResourcesResponse } from 'interfaces/useResourcesApi.interface';
-import React from 'react';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import ResourcesPage from './ResourcesPage';
 
 jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   resources: {
     listResources: jest.fn<Promise<IListResourcesResponse>, []>()
   }
 };
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 const renderContainer = () => {
   return render(<ResourcesPage />);
@@ -21,8 +18,8 @@ const renderContainer = () => {
 
 describe('ResourcesPage', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().resources.listResources.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.resources.listResources.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -32,9 +29,9 @@ describe('ResourcesPage', () => {
   });
 
   it("shows 'No Resources Available' when there are no active users", async () => {
-    mockBiohubApi().resources.listResources.mockResolvedValue(({
+    mockUseApi.resources.listResources.mockResolvedValue({
       files: []
-    } as unknown) as IListResourcesResponse);
+    } as unknown as IListResourcesResponse);
 
     const { getByText } = renderContainer();
 
@@ -46,7 +43,7 @@ describe('ResourcesPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockBiohubApi().resources.listResources.mockResolvedValue(({
+    mockUseApi.resources.listResources.mockResolvedValue({
       files: [
         {
           fileName: 'key1',
@@ -71,7 +68,7 @@ describe('ResourcesPage', () => {
           }
         }
       ]
-    } as unknown) as IListResourcesResponse);
+    } as unknown as IListResourcesResponse);
 
     const { getByText, queryByText, getAllByText, getByTestId } = renderContainer();
 
@@ -92,7 +89,7 @@ describe('ResourcesPage', () => {
   });
 
   it('renders templates with missing metadata', async () => {
-    mockBiohubApi().resources.listResources.mockResolvedValue(({
+    mockUseApi.resources.listResources.mockResolvedValue({
       files: [
         {
           fileName: 'key1',
@@ -109,7 +106,7 @@ describe('ResourcesPage', () => {
           metadata: {}
         }
       ]
-    } as unknown) as IListResourcesResponse);
+    } as unknown as IListResourcesResponse);
 
     const { getByText, getAllByText, getByTestId } = renderContainer();
 

@@ -158,7 +158,7 @@ describe('ValidationService', () => {
       const getValidation = sinon.stub(ValidationService.prototype, 'getValidationSchema').resolves('');
       const getRules = sinon.stub(ValidationService.prototype, 'getValidationRules').resolves('');
       const validate = sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
-      const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+      const persistResults = sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves();
 
       const service = mockService();
       await service.templateValidation(xlsxCsv, 1);
@@ -177,7 +177,7 @@ describe('ValidationService', () => {
       sinon.stub(ValidationService.prototype, 'getValidationSchema').throws(new SubmissionError({}));
       sinon.stub(ValidationService.prototype, 'getValidationRules').resolves({});
       sinon.stub(ValidationService.prototype, 'validateXLSX').resolves({});
-      sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves(true);
+      sinon.stub(ValidationService.prototype, 'persistValidationResults').resolves();
 
       try {
         const dbConnection = getMockDBConnection();
@@ -389,16 +389,24 @@ describe('ValidationService', () => {
       }
     });
 
-    it('should return false if no errors are present', async () => {
+    it('should pass if no errors are thrown', async () => {
       const service = mockService();
-      const csvState: ICsvState[] = [];
+      const csvState: ICsvState[] = [
+        {
+          fileName: '',
+          isValid: true,
+          keyErrors: [],
+          headerErrors: [],
+          rowErrors: []
+        }
+      ];
       const mediaState: IMediaState = {
         fileName: 'Test.xlsx',
         isValid: true
       };
+
       const response = await service.persistValidationResults(csvState, mediaState);
-      // no errors found, data is valid
-      expect(response).to.be.false;
+      expect(response).to.be.undefined;
     });
   });
 
@@ -1032,7 +1040,7 @@ describe('ValidationService', () => {
       expect(response.media_state.fileErrors).is.empty;
     });
 
-    it('should throw Media is invalid error', async () => {
+    it('should return early if media_state is invalid', async () => {
       const service = mockService();
       const mockMediaState = {
         fileName: 'test file',
@@ -1043,13 +1051,11 @@ describe('ValidationService', () => {
 
       sinon.stub(XLSXCSV.prototype, 'getMediaState').returns(mockMediaState);
 
-      try {
-        await service.validateXLSX(xlsx, parser);
-        expect.fail();
-      } catch (error) {
-        expect(error).to.be.instanceOf(SubmissionError);
-        expect((error as SubmissionError).submissionMessages[0].type).to.be.eql(SUBMISSION_MESSAGE_TYPE.INVALID_MEDIA);
-      }
+      const result = await service.validateXLSX(xlsx, parser);
+
+      expect(result.csv_state).to.be.eql([]);
+      expect(result.media_state.fileName).to.be.eql(mockMediaState.fileName);
+      expect(result.media_state.isValid).to.be.eql(false);
     });
 
     it('should return valid state object with content errors', async () => {

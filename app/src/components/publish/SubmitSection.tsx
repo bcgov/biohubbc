@@ -1,11 +1,14 @@
-import { Box, makeStyles, Theme, Typography } from '@material-ui/core';
-import Checkbox from '@material-ui/core/Checkbox';
-import { grey } from '@material-ui/core/colors';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { FieldArray, useFormikContext } from 'formik';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import { grey } from '@mui/material/colors';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -66,7 +69,7 @@ const DisplayFiles: React.FC<IDisplayFilesProps> = (props) => {
     <List disablePadding>
       <FieldArray
         name={formikName}
-        render={(arrayHelpers) => (
+        render={(arrayHelpers: FieldArrayRenderProps) => (
           <>
             {data.map((item: any, index: number) => (
               <ListItem

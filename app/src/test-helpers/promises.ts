@@ -21,7 +21,7 @@
  * @template R The type of the Promise.
  * @template Q The type of the reject reason.
  */
-export class Deferred<R = void, Q extends any = void> {
+export class Deferred<R = void, Q = void> {
   /**
    * Resolves the deferred promise with the given value.
    *

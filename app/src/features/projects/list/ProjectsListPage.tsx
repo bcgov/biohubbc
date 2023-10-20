@@ -1,15 +1,15 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { mdiFilterOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import ProjectsSubmissionAlertBar from 'components/publish/ProjectListSubmissionAlertBar';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -66,7 +66,9 @@ const ProjectsListPage: React.FC = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const codesContext = useContext(CodesContext);
-  useEffect(() => codesContext.codesDataLoader.load(), [codesContext.codesDataLoader]);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const projectsDataLoader = useDataLoader((filter?: IProjectAdvancedFilters) =>
     biohubApi.project.getProjectsList(filter)
@@ -134,7 +136,7 @@ const ProjectsListPage: React.FC = () => {
           <Paper elevation={0}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography variant="h4" component="h2">
-                Projects found{' '}
+                Records Found &zwnj;
                 <Typography className={classes.toolbarCount} component="span" variant="inherit" color="textSecondary">
                   ({projectsDataLoader.data?.length || 0})
                 </Typography>
@@ -149,8 +151,12 @@ const ProjectsListPage: React.FC = () => {
             </Toolbar>
             <Divider></Divider>
             {isFiltersOpen && <ProjectsListFilterForm handleSubmit={handleSubmit} handleReset={handleReset} />}
-            <Box px={1}>
-              <ProjectsListTable projects={projectsDataLoader.data} drafts={draftsDataLoader.data} />
+            <Box py={1} pb={2} px={3}>
+              <ProjectsListTable
+                projects={projectsDataLoader.data}
+                drafts={draftsDataLoader.data}
+                codes={codesContext.codesDataLoader.data}
+              />
             </Box>
           </Paper>
         </Box>

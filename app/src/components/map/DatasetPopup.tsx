@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Collapse from '@material-ui/core/Collapse';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Collapse from '@mui/material/Collapse';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { SPATIAL_COMPONENT_TYPE } from 'constants/spatial';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -62,7 +62,9 @@ const DatasetPopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
   const { isLoading, isReady } = dataLoader;
   const data = (dataLoader.data || []) as BoundaryCentroidFeatureProperties[];
 
-  const ModalContentWrapper: React.FC<any> = ({ children }) => <div className={classes.modalContent}>{children}</div>;
+  const ModalContentWrapper: React.FC<React.PropsWithChildren<Record<never, any>>> = ({ children }) => (
+    <div className={classes.modalContent}>{children}</div>
+  );
 
   const MetadataHeader: React.FC<React.PropsWithChildren<{ title: string }>> = (props) => (
     <Box mb={1}>

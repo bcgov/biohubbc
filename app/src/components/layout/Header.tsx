@@ -1,135 +1,56 @@
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { mdiAccountCircle, mdiLoginVariant } from '@mdi/js';
+import { mdiAccountCircle, mdiLoginVariant, mdiMenu } from '@mdi/js';
 import Icon from '@mdi/react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  govHeader: {
-    backgroundColor: '#003366'
-  },
-  govHeaderToolbar: {
-    height: '80px',
-    '& a:focus': {
-      outline: '3px solid #3B99FC'
-    }
-  },
-  brand: {
-    display: 'flex',
-    flex: '0 0 auto',
-    alignItems: 'center',
-    color: 'inherit',
-    textDecoration: 'none',
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    borderRadius: '2px',
-    '& img': {
-      verticalAlign: 'middle',
-      marginBottom: '4px'
-    },
-    '& picture': {
-      marginRight: '1.5rem'
-    },
-    '&:hover': {
-      textDecoration: 'none'
-    },
-    '&:focus': {
-      outlineOffset: '3px'
-    }
-  },
-  '@media (max-width: 1000px)': {
-    brand: {
-      fontSize: '14px',
-      '& picture': {
-        marginRight: '1rem'
-      },
-      '& span': {
-        marginTop: '-4px'
-      }
-    },
-    wrapText: {
-      display: 'block'
-    }
-  },
-  appPhaseTag: {
-    marginLeft: theme.spacing(0.75),
-    color: '#fcba19',
-    textTransform: 'uppercase',
-    fontSize: '0.75rem',
-    fontWeight: 400
-  },
-  userProfile: {
-    color: theme.palette.primary.contrastText,
-    '& hr': {
-      backgroundColor: '#ffffff',
-      height: '1.25rem'
-    },
-    '& a': {
-      padding: '8px',
-      color: 'inherit',
-      textDecoration: 'none',
-      borderRadius: '6px'
-    },
-    '& a:hover': {
-      textDecoration: 'underline'
-    },
-    '& a:focus': {
-      outlineOffset: '-1px'
-    }
-  },
-  supportButton: {
-    color: '#ffffff',
-    fontSize: '14px'
-  },
-  mainNav: {
-    backgroundColor: '#38598a'
-  },
-  mainNavToolbar: {
-    '& a': {
-      display: 'block',
-      padding: theme.spacing(2),
-      color: 'inherit',
-      fontSize: '1rem',
-      textDecoration: 'none',
-      borderRadius: '4px'
-    },
-    '& a:hover': {
-      textDecoration: 'underline'
-    },
-    '& a:focus': {
-      outline: '3px solid #3B99FC',
-      outlineOffset: '-3px'
-    },
-    '& a:first-child': {
-      marginLeft: theme.spacing(-2)
-    }
-  }
-}));
-
 const Header: React.FC = () => {
-  const classes = useStyles();
-  // const config = useContext(ConfigContext);
-
   const { keycloakWrapper } = useContext(AuthStateContext);
+  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const [open, setOpen] = React.useState(false);
+  const menuOpen = Boolean(anchorEl);
+
+  // Support Dialog
+  const showSupportDialog = () => {
+    setOpen(true);
+    hideMobileMenu();
+  };
+
+  const hideSupportDialog = () => {
+    setOpen(false);
+  };
+
+  // Responsive Menu
+  const showMobileMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const hideMobileMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const BetaLabel = () => {
+    return <span aria-label="This application is currently in beta phase of development">Beta</span>;
+  };
 
   // Authenticated view
   const LoggedInUser = () => {
@@ -140,80 +61,305 @@ const Header: React.FC = () => {
       .join('/');
 
     return (
-      <Box display="flex" alignItems="center">
-        <Button aria-label="need help" className={classes.supportButton} onClick={showSupportDialog}>
-          Contact Support
-        </Button>
-        <Box display="flex" alignItems="center" my="auto" ml={2} className={classes.userProfile}>
-          <Box className={classes.userProfile} display="flex" alignItems="center">
-            <Icon path={mdiAccountCircle} size={1.12} />
+      <>
+        <Box
+          display={{ xs: 'none', lg: 'flex' }}
+          alignItems="center"
+          sx={{
+            fontSize: '16px',
+            fontWeight: 700
+          }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            sx={{
+              padding: '6px 14px',
+              lineHeight: '1.75'
+            }}>
+            <Icon path={mdiAccountCircle} size={1} />
             <Box ml={1}>{formattedUsername}</Box>
           </Box>
-          <Box pl={1.5} pr={0.5}>
-            <Divider orientation="vertical" />
-          </Box>
-          <RouterLink to="/logout" data-testid="menu_log_out">
+          <Divider
+            orientation="vertical"
+            sx={{
+              marginRight: '6px',
+              height: '20px',
+              borderColor: '#fff'
+            }}
+          />
+          <Button
+            component="a"
+            variant="text"
+            href="/logout"
+            data-testid="menu_log_out"
+            sx={{
+              color: 'inherit',
+              fontSize: '16px',
+              fontWeight: 700,
+              textTransform: 'none'
+            }}>
             Log Out
-          </RouterLink>
+          </Button>
         </Box>
-      </Box>
+        <MenuItem
+          component="a"
+          color="#1a5a96"
+          href="/logout"
+          sx={{
+            display: { xs: 'block', lg: 'none' }
+          }}>
+          Log out
+        </MenuItem>
+      </>
     );
   };
 
   // Unauthenticated public view
   const PublicViewUser = () => {
     return (
-      <Box display="flex" className={classes.userProfile} alignItems="center" my="auto">
-        <Button className={classes.supportButton} onClick={showSupportDialog}>
-          Contact Support
-        </Button>
+      <>
         <Button
-          onClick={() => keycloakWrapper?.keycloak?.login()}
-          type="submit"
-          variant="contained"
-          color="primary"
+          component="a"
+          color="inherit"
+          variant="text"
+          href={loginUrl}
           disableElevation
-          startIcon={<Icon path={mdiLoginVariant} size={1.12} />}
-          data-testid="login">
+          startIcon={<Icon path={mdiLoginVariant} size={1} />}
+          data-testid="login"
+          sx={{
+            p: 1,
+            fontSize: '16px',
+            fontWeight: 700,
+            textTransform: 'none'
+          }}>
           Log In
         </Button>
+      </>
+    );
+  };
+
+  // Unauthenticated public view
+  const AppBrand = () => {
+    return (
+      <Box
+        sx={{
+          '& a': {
+            display: 'flex',
+            alignItems: 'center',
+            overflow: 'hidden',
+            color: '#fff',
+            fontSize: { xs: '16px', lg: '18px' },
+            fontWeight: '400',
+            textDecoration: 'none'
+          },
+          '& img': {
+            mr: 2
+          }
+        }}>
+        <RouterLink to="/" aria-label="Go to SIMS Home">
+          <picture>
+            <source srcSet={headerImageLarge} media="(min-width: 960px)"></source>
+            <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+            <img src={headerImageSmall} alt={'Government of British Columbia'} />
+          </picture>
+          <span>
+            Species Inventory Management System
+            <Box
+              component="sup"
+              sx={{
+                marginLeft: '4px',
+                color: '#fcba19',
+                fontSize: '0.75rem',
+                fontWeight: 400,
+                textTransform: 'uppercase'
+              }}>
+              <BetaLabel />
+            </Box>
+          </span>
+        </RouterLink>
       </Box>
     );
   };
 
-  const [open, setOpen] = React.useState(false);
-
-  const showSupportDialog = () => {
-    setOpen(true);
-  };
-
-  const hideSupportDialog = () => {
-    setOpen(false);
-  };
-
-  const BetaLabel = () => {
-    return <span aria-label="This application is currently in beta phase of development">Beta</span>;
-  };
-
   return (
     <>
-      <AppBar position="relative" elevation={0} className={classes.govHeader}>
-        <Toolbar disableGutters className={classes.govHeaderToolbar}>
-          <Container maxWidth="xl">
-            <Box display="flex" justifyContent="space-between" width="100%">
-              <RouterLink to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
-                <picture>
-                  <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
-                  <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-                  <img src={headerImageSmall} alt={'Government of British Columbia'} />
-                </picture>
-                <span>
-                  Species Inventory Management System
-                  <sup className={classes.appPhaseTag}>
-                    <BetaLabel />
-                  </sup>
-                </span>
-              </RouterLink>
+      <AppBar
+        position="relative"
+        elevation={0}
+        sx={{
+          fontFamily: 'BCSans, Verdana, Arial, sans-serif',
+          backgroundColor: '#003366',
+          borderBottom: '3px solid #fcba19'
+        }}>
+        <Toolbar
+          sx={{
+            height: { xs: '60px', lg: '80px' }
+          }}>
+          {/* Responsive Menu */}
+          <Box display={{ sm: 'flex', lg: 'none' }} justifyContent="space-between" alignItems="center" flex="1 1 auto">
+            <Box
+              sx={{
+                '& a': {
+                  display: 'flex',
+                  color: '#fff',
+                  fontSize: '18px',
+                  fontWeight: '400'
+                }
+              }}>
+              <AppBrand></AppBrand>
+            </Box>
+
+            <Box>
+              <UnAuthGuard>
+                <PublicViewUser />
+              </UnAuthGuard>
+              <Button
+                color="inherit"
+                startIcon={<Icon path={mdiMenu} size={1.25}></Icon>}
+                sx={{
+                  ml: 2,
+                  fontSize: '16px',
+                  fontWeight: 700,
+                  textTransform: 'none'
+                }}
+                aria-controls={menuOpen ? 'mobileMenu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={menuOpen ? 'true' : undefined}
+                onClick={showMobileMenu}>
+                Menu
+              </Button>
+              <Menu
+                id="mobileMenu"
+                anchorEl={anchorEl}
+                open={menuOpen}
+                onClose={hideMobileMenu}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button'
+                }}
+                sx={{
+                  '& a': {
+                    color: '#1a5a96',
+                    borderRadius: 0,
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    outline: 'none'
+                  },
+                  '& button': {
+                    color: '#1a5a96',
+                    fontWeight: 700
+                  }
+                }}>
+                <MenuItem tabIndex={1} component={RouterLink} to="/" id="menu_home_sm">
+                  Home
+                </MenuItem>
+                <AuthGuard>
+                  <MenuItem
+                    tabIndex={1}
+                    component={RouterLink}
+                    to="/admin/projects"
+                    id="menu_projects_sm"
+                    onClick={hideMobileMenu}>
+                    Projects
+                  </MenuItem>
+                </AuthGuard>
+                <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
+                  Support
+                </MenuItem>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <MenuItem id="menu_admin_users" component={RouterLink} to="/admin/users" onClick={hideMobileMenu}>
+                    Manage Users
+                  </MenuItem>
+                  <MenuItem
+                    id="menu_admin_funding_sources_sm"
+                    component={RouterLink}
+                    to="/admin/funding-sources"
+                    onClick={hideMobileMenu}>
+                    Funding Sources
+                  </MenuItem>
+                </SystemRoleGuard>
+                <AuthGuard>
+                  <LoggedInUser />
+                </AuthGuard>
+              </Menu>
+            </Box>
+          </Box>
+
+          {/* Desktop Menu */}
+          <Box
+            display={{ xs: 'none', lg: 'flex' }}
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+            width="100%">
+            <Box display="flex" flexDirection="row" alignItems="center">
+              <Box
+                sx={{
+                  '& a': {
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: '#fff',
+                    fontSize: '18px',
+                    fontWeight: '400',
+                    textDecoration: 'none'
+                  }
+                }}>
+                <AppBrand></AppBrand>
+              </Box>
+              <Box
+                ml={8}
+                display="flex"
+                alignItems="center"
+                sx={{
+                  '& a': {
+                    p: 1,
+                    color: 'inherit',
+                    fontWeight: 700,
+                    lineHeight: 1.75,
+                    textDecoration: 'none'
+                  },
+                  '& a + a': {
+                    ml: 1
+                  },
+                  '& button': {
+                    fontSize: '16px',
+                    fontWeight: 700,
+                    textTransform: 'none'
+                  }
+                }}>
+                <UnAuthGuard>
+                  <RouterLink to="/" id="menu_home">
+                    Home
+                  </RouterLink>
+                </UnAuthGuard>
+                <AuthGuard>
+                  <RouterLink to="/admin/projects" id="menu_projects">
+                    Projects
+                  </RouterLink>
+                </AuthGuard>
+                <Button
+                  color="inherit"
+                  variant="text"
+                  disableElevation
+                  onClick={showSupportDialog}
+                  sx={{
+                    m: '8px',
+                    p: 1
+                  }}>
+                  Support
+                </Button>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/admin/users" id="menu_admin_users">
+                    Manage Users
+                  </RouterLink>
+                </SystemRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
+                    Funding Sources
+                  </RouterLink>
+                </SystemRoleGuard>
+              </Box>
+            </Box>
+            <Box flex="0 0 auto">
               <UnAuthGuard>
                 <PublicViewUser />
               </UnAuthGuard>
@@ -221,50 +367,18 @@ const Header: React.FC = () => {
                 <LoggedInUser />
               </AuthGuard>
             </Box>
-          </Container>
-        </Toolbar>
-
-        <AuthGuard>
-          <Box className={classes.mainNav}>
-            <Container maxWidth="xl">
-              <Toolbar
-                variant="dense"
-                disableGutters
-                className={classes.mainNavToolbar}
-                role="navigation"
-                aria-label="Main Navigation">
-                <RouterLink to="/admin/projects" id="menu_projects">
-                  Projects
-                </RouterLink>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                  <RouterLink to="/admin/search" id="menu_search">
-                    Map
-                  </RouterLink>
-                </SystemRoleGuard>
-                <RouterLink to="/admin/resources" id="menu_resources">
-                  Resources
-                </RouterLink>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/users" id="menu_admin_users">
-                    Manage Users
-                  </RouterLink>
-                </SystemRoleGuard>
-              </Toolbar>
-            </Container>
           </Box>
-        </AuthGuard>
+        </Toolbar>
       </AppBar>
 
       <Dialog open={open}>
         <DialogTitle>Contact Support</DialogTitle>
         <DialogContent>
           <Typography variant="body1" component="div" color="textSecondary">
-            For technical support or questions about this application, please email&nbsp;
+            For technical support or questions about this application, please email &zwnj;
             <a href="mailto:biohub@gov.bc.ca?subject=Support Request - Species Inventory Management System">
-              {' '}
               biohub@gov.bc.ca
             </a>
-            .
           </Typography>
         </DialogContent>
         <DialogActions>

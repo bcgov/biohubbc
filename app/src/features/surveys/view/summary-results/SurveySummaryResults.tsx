@@ -1,20 +1,16 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import { mdiImport } from '@mdi/js';
-import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { ProjectRoleGuard } from 'components/security/Guards';
-import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-import { PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import FileSummaryResults from './components/FileSummaryResults';
-import NoSummaryResults from './components/NoSummaryResults';
 import SummaryResultsErrors from './components/SummaryResultsErrors';
 import SummaryResultsLoading from './components/SummaryResultsLoading';
 
@@ -53,33 +49,13 @@ const SurveySummaryResults = () => {
     };
   };
 
-  const showUploadDialog = () => {
-    if (summaryData) {
-      // already have summary data, prompt user to confirm override
-      dialogContext.setYesNoDialog({
-        dialogTitle: 'Import New Summary Results Data',
-        dialogText:
-          'Importing a new file will overwrite the existing summary results data. Are you sure you want to proceed?',
-        onClose: () => dialogContext.setYesNoDialog({ open: false }),
-        onNo: () => dialogContext.setYesNoDialog({ open: false }),
-        open: true,
-        onYes: () => {
-          setOpenImportSummaryResults(true);
-          dialogContext.setYesNoDialog({ open: false });
-        }
-      });
-    } else {
-      setOpenImportSummaryResults(true);
-    }
-  };
-
   const showDeleteDialog = () => {
     if (summaryData) {
       dialogContext.setYesNoDialog({
         dialogTitle: 'Delete Summary Results Data?',
         dialogText:
           'Are you sure you want to delete the summary results data for this survey? This action cannot be undone.',
-        yesButtonProps: { color: 'secondary' },
+        yesButtonProps: { color: 'error' },
         yesButtonLabel: 'Delete',
         noButtonProps: { color: 'primary' },
         noButtonLabel: 'Cancel',
@@ -121,21 +97,9 @@ const SurveySummaryResults = () => {
 
   return (
     <>
-      <H2ButtonToolbar
-        label="Summary Results"
-        buttonProps={{ variant: 'contained', color: 'primary' }}
-        buttonLabel="Import"
-        buttonTitle="Import Summary Results"
-        buttonStartIcon={<Icon path={mdiImport} size={1} />}
-        buttonOnClick={() => showUploadDialog()}
-        renderButton={(buttonProps) => (
-          <ProjectRoleGuard
-            validProjectRoles={[PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR]}
-            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Button {...buttonProps} />
-          </ProjectRoleGuard>
-        )}
-      />
+      <Toolbar>
+        <Typography variant="h2">Summary Results</Typography>
+      </Toolbar>
 
       <Divider />
 
@@ -144,7 +108,9 @@ const SurveySummaryResults = () => {
         {!summaryData && !surveyContext.summaryDataLoader.isReady && <SummaryResultsLoading fileLoading={fileName} />}
 
         {/* No summary */}
-        {!surveyContext.summaryDataLoader.data && surveyContext.summaryDataLoader.isReady && <NoSummaryResults />}
+        {!surveyContext.summaryDataLoader.data && surveyContext.summaryDataLoader.isReady && (
+          <NoSurveySectionData text={'Currently Unavailable'} paperVariant="outlined" />
+        )}
 
         {/* Got a summary with errors */}
         {summaryData && !surveyContext.summaryDataLoader.isLoading && summaryData.messages.length > 0 && (

@@ -1,11 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
+import { LoadingButton } from '@mui/lab';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -23,7 +24,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import CreateProjectForm from './CreateProjectForm';
@@ -77,12 +78,15 @@ const CreateProjectPage: React.FC = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
 
   const codes = codesContext.codesDataLoader.data;
-  codesContext.codesDataLoader.load();
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const draftId = Number(queryParams.draftId);
 
@@ -161,6 +165,7 @@ const CreateProjectPage: React.FC = () => {
   const handleSubmitDraft = async (values: IProjectDraftForm) => {
     try {
       let response;
+      setIsLoading(true);
 
       // Get the form data for all steps
       // Fetch the data from the formikRef for whichever step is the active step
@@ -174,16 +179,16 @@ const CreateProjectPage: React.FC = () => {
 
       setOpenDraftDialog(false);
 
-      if (!response?.id) {
+      if (!response?.webform_draft_id) {
         showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a draft project ID.'
         });
-
+        setIsLoading(false);
         return;
       }
 
       setEnableCancelCheck(false);
-
+      setIsLoading(false);
       history.push(`/admin/projects`);
     } catch (error) {
       setOpenDraftDialog(false);
@@ -193,6 +198,8 @@ const CreateProjectPage: React.FC = () => {
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -222,6 +229,7 @@ const CreateProjectPage: React.FC = () => {
    * @return {*}
    */
   const createProject = async (projectPostObject: ICreateProjectRequest) => {
+    setIsLoading(true);
     const response = await biohubApi.project.createProject(projectPostObject);
 
     if (!response?.id) {
@@ -232,7 +240,7 @@ const CreateProjectPage: React.FC = () => {
     await deleteDraft();
 
     setEnableCancelCheck(false);
-
+    setIsLoading(false);
     history.push(`/admin/projects/${response.id}`);
   };
 
@@ -293,9 +301,12 @@ const CreateProjectPage: React.FC = () => {
       />
 
       <YesNoDialog
-        dialogTitle="Delete Draft"
-        dialogText="Are you sure you want to delete this draft?"
+        dialogTitle="Delete Draft Project?"
+        dialogText="Are you sure you want to permanently delete this draft project? This action cannot be undone."
         open={openDeleteDraftDialog}
+        yesButtonLabel="Delete Draft"
+        yesButtonProps={{ color: 'error' }}
+        noButtonLabel="Cancel"
         onClose={() => setOpenDeleteDraftDialog(false)}
         onNo={() => setOpenDeleteDraftDialog(false)}
         onYes={() => handleDeleteDraft()}
@@ -307,13 +318,8 @@ const CreateProjectPage: React.FC = () => {
             <Box display="flex" justifyContent="space-between">
               <Box className={classes.pageTitleContainer}>
                 <Typography variant="h1" className={classes.pageTitle}>
-                  Create Project
+                  Create New Project
                 </Typography>
-                <Box mt={0.75} mb={0.5} display="flex" alignItems="center">
-                  <Typography component="span" variant="subtitle1" color="textSecondary">
-                    Configure and submit a new species inventory project
-                  </Typography>
-                </Box>
               </Box>
             </Box>
             <Box flex="0 0 auto" className={classes.pageTitleActions}>
@@ -344,7 +350,8 @@ const CreateProjectPage: React.FC = () => {
                 initialValues={draftDataLoader.data?.data}
               />
               <Box mt={4} display="flex" justifyContent="flex-end">
-                <Button
+                <LoadingButton
+                  loading={isLoading}
                   type="submit"
                   color="primary"
                   variant="contained"
@@ -352,7 +359,7 @@ const CreateProjectPage: React.FC = () => {
                   className={classes.actionButton}
                   data-testid="submit-project-button">
                   Submit Project
-                </Button>
+                </LoadingButton>
                 <Button
                   color="primary"
                   variant="contained"
@@ -363,7 +370,7 @@ const CreateProjectPage: React.FC = () => {
                 </Button>
 
                 <Button
-                  color="secondary"
+                  color="primary"
                   variant="outlined"
                   onClick={() => setOpenDeleteDraftDialog(true)}
                   className={classes.actionButton}

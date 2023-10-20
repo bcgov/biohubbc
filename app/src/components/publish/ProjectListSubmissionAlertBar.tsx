@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 
@@ -31,7 +31,7 @@ const ProjectListSubmissionAlertBar: React.FC<IProjectsSubmissionAlertBarProps> 
 
   const hasUnsubmittedData = submissionStatuses.some((status) => status === 'UNSUBMITTED');
 
-  const alertSeverity = hasUnsubmittedData ? 'info' : 'success';
+  const alertSeverity = hasUnsubmittedData ? 'error' : 'success';
   const alertTitle = hasUnsubmittedData
     ? 'One or more projects contain unsubmitted information'
     : 'All projects information submitted';
@@ -43,11 +43,11 @@ const ProjectListSubmissionAlertBar: React.FC<IProjectsSubmissionAlertBarProps> 
   return (
     <Box mb={3}>
       <Alert
-        variant="outlined"
+        variant="filled"
         severity={alertSeverity}
         onClose={() => setForceAlertClose(true)}
         action={
-          <IconButton color="primary" onClick={() => setForceAlertClose(true)}>
+          <IconButton color="inherit" onClick={() => setForceAlertClose(true)}>
             <Icon path={mdiClose} size={1} />
           </IconButton>
         }>
@@ -59,15 +59,18 @@ const ProjectListSubmissionAlertBar: React.FC<IProjectsSubmissionAlertBarProps> 
 };
 
 function getProjectsDataSubmissionStatus(projectsData?: IGetProjectsListResponse[]) {
-  if (!projectsData?.length) {
+  if (
+    !projectsData?.length ||
+    projectsData.every((item) => item.projectSupplementaryData.publishStatus === 'NO_DATA')
+  ) {
     return 'NO_DATA';
   }
 
-  if (projectsData.every((item) => !item.projectSupplementaryData.has_unpublished_content)) {
-    return 'SUBMITTED';
+  if (projectsData.some((item) => item.projectSupplementaryData.publishStatus === 'UNSUBMITTED')) {
+    return 'UNSUBMITTED';
   }
 
-  return 'UNSUBMITTED';
+  return 'SUBMITTED';
 }
 
 export default ProjectListSubmissionAlertBar;

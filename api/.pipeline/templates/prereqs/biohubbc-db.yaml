@@ -1,11 +1,13 @@
 kind: Secret
 apiVersion: v1
 metadata:
-  name: biohubbc-db-secret
+  name: biohubbc-creds
 data:
-  database-admin-password: <fill in values>
-  database-admin-user: <fill in values>
-  database-name: <fill in values>
-  database-password: <fill in values>
-  database-user: <fill in values>
+  database-admin: <fill in value>
+  database-admin-password: <fill in value>
+  database-name: <fill in value>
+  database-user: <fill in value>
+  database-user-api: <fill in value>
+  database-user-api-password: <fill in value>
+  database-user-password: <fill in value>
 type: Opaque

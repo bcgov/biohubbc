@@ -1,11 +1,11 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 /**
@@ -25,9 +25,9 @@ const GeneralInformation = () => {
   const codes = codesContext.codesDataLoader.data;
   const projectData = projectContext.projectDataLoader.data.projectData;
 
-  const projectActivities =
-    codes.activity
-      .filter((code) => projectData.project.project_activities.includes(code.id))
+  const projectPrograms =
+    codes.program
+      .filter((code) => projectData.project.project_programs.includes(code.id))
       .map((code) => code.name)
       .join(', ') || '';
 
@@ -36,11 +36,9 @@ const GeneralInformation = () => {
       <Grid container spacing={1}>
         <Grid item sm={6}>
           <Typography component="dt" color="textSecondary" variant="subtitle2">
-            Type
+            Program
           </Typography>
-          <Typography component="dd">
-            {codes.project_type.find((item: any) => item.id === projectData.project.project_type)?.name}
-          </Typography>
+          <Typography component="dd">{projectPrograms ? <>{projectPrograms}</> : 'No Programs'}</Typography>
         </Grid>
         <Grid item sm={6}>
           <Typography component="dt" color="textSecondary" variant="subtitle2">
@@ -62,12 +60,6 @@ const GeneralInformation = () => {
               </>
             )}
           </Typography>
-        </Grid>
-        <Grid item sm={12}>
-          <Typography component="dt" color="textSecondary" variant="subtitle2">
-            Activities
-          </Typography>
-          <Typography component="dd">{projectActivities ? <>{projectActivities}</> : 'No Activities'}</Typography>
         </Grid>
       </Grid>
     </Box>

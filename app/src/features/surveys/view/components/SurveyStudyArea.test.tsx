@@ -1,35 +1,36 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React from 'react';
-import { geoJsonFeature } from 'test-helpers/spatial-helpers';
 import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
+import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import SurveyStudyArea from './SurveyStudyArea';
 
 jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+const mockBiohubApi = useBiohubApi as jest.Mock;
+
+const mockUseApi = {
   survey: {
     getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, []>(),
     updateSurvey: jest.fn()
   },
-  external: {
-    post: jest.fn()
+  spatial: {
+    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
 describe('SurveyStudyArea', () => {
   beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().survey.getSurveyForView.mockClear();
-    mockBiohubApi().survey.updateSurvey.mockClear();
-    mockBiohubApi().external.post.mockClear();
+    mockBiohubApi.mockImplementation(() => mockUseApi);
+    mockUseApi.survey.getSurveyForView.mockClear();
+    mockUseApi.survey.updateSurvey.mockClear();
+    mockUseApi.spatial.getRegions.mockClear();
+
+    mockUseApi.spatial.getRegions.mockResolvedValue({
+      regions: []
+    });
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -38,15 +39,12 @@ describe('SurveyStudyArea', () => {
     cleanup();
   });
 
-  mockBiohubApi().external.post.mockResolvedValue({
-    features: []
-  });
-
   it('renders correctly with no data', async () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const { container } = render(
       <SurveyContext.Provider
@@ -56,7 +54,8 @@ describe('SurveyStudyArea', () => {
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           observationDataLoader: mockObservationsDataLoader,
-          summaryDataLoader: mockSummaryDataLoader
+          summaryDataLoader: mockSummaryDataLoader,
+          sampleSiteDataLoader: mockSampleSiteDataLoader
         }}>
         <SurveyStudyArea />
       </SurveyContext.Provider>
@@ -74,13 +73,14 @@ describe('SurveyStudyArea', () => {
           ...getSurveyForViewResponse,
           surveyData: {
             ...getSurveyForViewResponse.surveyData,
-            survey_details: { ...getSurveyForViewResponse.surveyData.survey_details, geometry: [] }
+            survey_details: { ...getSurveyForViewResponse.surveyData.survey_details, geojson: [] }
           }
         }
       } as DataLoader<any, any, any>;
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
       const { container, queryByTestId } = render(
         <SurveyContext.Provider
@@ -90,7 +90,8 @@ describe('SurveyStudyArea', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
@@ -98,7 +99,7 @@ describe('SurveyStudyArea', () => {
 
       await waitFor(() => {
         expect(container).toBeVisible();
-        expect(queryByTestId('survey_map_center_button')).not.toBeInTheDocument();
+        expect(queryByTestId('survey_map_center_button')).toBeInTheDocument();
       });
     });
 
@@ -107,6 +108,7 @@ describe('SurveyStudyArea', () => {
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+      const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
       const { container, getByTestId } = render(
         <SurveyContext.Provider
@@ -116,7 +118,8 @@ describe('SurveyStudyArea', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
@@ -132,15 +135,17 @@ describe('SurveyStudyArea', () => {
   it('does not display the zoom to initial extent button if there are not geometries', async () => {
     const mockSurveyDataLoader = {
       data: getSurveyForViewResponse,
-      refresh: (jest.fn() as unknown) as any
+      refresh: jest.fn() as unknown as any
     } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
@@ -155,7 +160,8 @@ describe('SurveyStudyArea', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
@@ -187,12 +193,11 @@ describe('SurveyStudyArea', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.updateSurvey).toBeCalledWith(
-        1,
-        getSurveyForViewResponse.surveyData.survey_details.id,
-        {
-          location: {
-            geometry: [
+      expect(mockUseApi.survey.updateSurvey).toBeCalledWith(1, getSurveyForViewResponse.surveyData.survey_details.id, {
+        locations: [
+          {
+            survey_location_id: 1,
+            geojson: [
               {
                 geometry: {
                   coordinates: [
@@ -214,10 +219,11 @@ describe('SurveyStudyArea', () => {
               }
             ],
             revision_count: 0,
-            survey_area_name: 'study area'
+            name: 'study area',
+            description: 'study area description'
           }
-        }
-      );
+        ]
+      });
     });
   });
 
@@ -226,8 +232,9 @@ describe('SurveyStudyArea', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockObservationsDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSummaryDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
 
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
+    mockUseApi.survey.getSurveyForView.mockResolvedValue({
       surveyData: {
         ...surveyObject,
         survey_details: {
@@ -236,20 +243,18 @@ describe('SurveyStudyArea', () => {
           survey_name: 'survey name is this',
           start_date: '1999-09-09',
           end_date: '2021-01-25',
-          biologist_first_name: 'firstttt',
-          biologist_last_name: 'lastttt',
-          survey_area_name: 'study area is this',
-          geometry: [geoJsonFeature],
+          survey_types: [1],
           revision_count: 0
         }
       },
       surveySupplementaryData: surveySupplementaryData
     });
-    mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockUseApi.survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,
       hasProjectRole: () => true,
+      hasProjectPermission: () => true,
       hasSystemRole: () => true,
       getProjectId: () => 1,
       hasLoadedParticipantInfo: true
@@ -264,7 +269,8 @@ describe('SurveyStudyArea', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             observationDataLoader: mockObservationsDataLoader,
-            summaryDataLoader: mockSummaryDataLoader
+            summaryDataLoader: mockSummaryDataLoader,
+            sampleSiteDataLoader: mockSampleSiteDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
