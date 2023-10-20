@@ -23,7 +23,15 @@ export class ObservationService extends DBService {
     this.observationRepository = new ObservationRepository(connection);
   }
 
-  static validateCsvFile(file: MediaFile): boolean {
+  /**
+   * Checks if the given media file is valid for importing observations. Returns
+   * `true` if the given file is valid, `false` otherwise.
+   *
+   * @param {MediaFile} file
+   * @return {*}  {boolean}
+   * @memberof ObservationService
+   */
+  validateCsvFile(file: MediaFile): boolean {
     if (file.mimetype !== 'text/csv') {
       return false;
     }
@@ -115,8 +123,7 @@ export class ObservationService extends DBService {
   }
 
   async processObservationCsvSubmission(submissionId: number) {
-    console.log('submissionId', submissionId);
-    defaultLog.debug({ label: 'processObservationCsvSubmission' });
+    defaultLog.debug({ label: 'processObservationCsvSubmission', submissionId });
 
     // Step 1. Retrieve the observation submission record
     const submission = await this.getObservationSubmissionById(submissionId);
@@ -130,9 +137,10 @@ export class ObservationService extends DBService {
     const csvFile = parseS3File(s3Object);
     console.log('csvFile', csvFile);
 
-    if (!ObservationService.validateCsvFile(csvFile)) {
-      throw new Error('Invalid CSV file');
+    if (!this.validateCsvFile(csvFile)) {
+      throw new Error('Failed to process file for importing observations. Invalid CSV file.');
     }
+
     // Step 4. Validate the CSV
 
     // Step 5. Merge all the table rows into an array of ObservationInsert[]
