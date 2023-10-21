@@ -1,113 +1,105 @@
-import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Card, CardHeader, Collapse, IconButton } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { Collapse } from '@mui/material';
 import { SurveyAnimalsI18N } from 'constants/i18n';
+import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React from 'react';
+import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import moment from 'moment';
+import React, { useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
-interface AnimalDataCardProps {
-  header: string;
-  subHeaderData: Record<string, string | number | undefined>;
-  disableTrashIcon?: boolean;
-  onClickEdit: () => void;
-  onClickDelete: () => void;
-}
-export const AnimalDataCard = ({
-  header,
-  subHeaderData,
-  onClickEdit,
-  onClickDelete,
-  disableTrashIcon
-}: AnimalDataCardProps) => {
-  return (
-    <Card
-      variant="outlined"
-      sx={{
-        background: grey[100],
-        '& .MuiCardHeader-subheader': {
-          display: '-webkit-box',
-          WebkitLineClamp: '2',
-          WebkitBoxOrient: 'vertical',
-          maxWidth: '92ch',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          fontSize: '14px'
-        },
-        mt: 1,
-        '& .MuiCardHeader-title': {
-          mb: 0.5
-        }
-      }}>
-      <CardHeader
-        action={
-          <>
-            <IconButton aria-label="settings" onClick={onClickEdit}>
-              <Icon path={mdiPencilOutline} size={1} />
-            </IconButton>
-            {!disableTrashIcon && (
-              <IconButton aria-label="settings" onClick={onClickDelete}>
-                <Icon path={mdiTrashCanOutline} size={1} />
-              </IconButton>
-            )}
-          </>
-        }
-        title={header}
-        // TODO Handle undefined value
-        subheader={Object.entries(subHeaderData)
-          .map(([key, value]) => `${key} • ${value}`)
-          .join(' | ')}
-      />
-    </Card>
-  );
-};
-
 interface AnimalSectionDataCardsProps {
   section: IAnimalSections;
-  disableTrashIcon?: boolean;
+  critter: IDetailedCritterWithInternalId;
   onEditClick: (idx: number) => void;
+  disableTrashIcon?: boolean;
 }
-export const AnimalSectionDataCards = ({ section, onEditClick, disableTrashIcon }: AnimalSectionDataCardsProps) => {
+export const AnimalSectionDataCards = ({
+  section,
+  critter,
+  onEditClick,
+  disableTrashIcon
+}: AnimalSectionDataCardsProps) => {
   const { values } = useFormikContext<IAnimal>();
-  const sectionDataCardMap: Record<
-    IAnimalSections,
-    Array<{ header: string; subHeaderData: Record<string, string | number | undefined> }>
-  > = {
-    [SurveyAnimalsI18N.animalGeneralTitle]: [{ header: 'General', subHeaderData: {} }],
-    [SurveyAnimalsI18N.animalMarkingTitle]: values.markings.map((marking) => ({
-      header: `Marking`,
-      subHeaderData: { a: 'test' }
-    })),
-    [SurveyAnimalsI18N.animalMeasurementTitle]: [{ header: 'Measurement', subHeaderData: {} }],
-    [SurveyAnimalsI18N.animalCaptureTitle]: values.captures.map((capture) => ({
-      header: `Animal Captured: ${capture.capture_timestamp}`,
-      subHeaderData: { Latitude: capture.capture_latitude, Longitude: capture.capture_longitude }
-    })),
-    [SurveyAnimalsI18N.animalMortalityTitle]: [{ header: 'Mortality', subHeaderData: {} }],
-    [SurveyAnimalsI18N.animalFamilyTitle]: [{ header: 'Family', subHeaderData: {} }],
-    [SurveyAnimalsI18N.animalCollectionUnitTitle]: [{ header: 'Ecological Unit', subHeaderData: {} }],
-    Telemetry: values.device.map((a) => ({
-      header: 'Device',
-      subHeaderData: { DeviceID: a.device_id, Deployments: a.deployments?.length }
-    }))
-  };
+  const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
 
-  const sectionData = sectionDataCardMap[section];
+  const sectionCardData = useMemo(() => {
+    const sectionData: Record<
+      IAnimalSections,
+      Array<{ header: string; key: string; subHeaderData: Record<string, string | number | undefined> }>
+    > = {
+      [SurveyAnimalsI18N.animalGeneralTitle]: [{ header: 'General', subHeaderData: {}, key: 'GENERAL_SECTION' }],
+      // Decided to loop through critter or formik values
+      [SurveyAnimalsI18N.animalMarkingTitle]: critter.marking.map((marking) => ({
+        header: `Marking: ${marking.marking_type}`,
+        subHeaderData: { a: 'test' },
+        key: marking.marking_id
+      })),
+      [SurveyAnimalsI18N.animalMeasurementTitle]: values.measurements.map((measurement) => ({
+        header: `Measurement: ${formatDate(measurement.measured_timestamp)}`,
+        subHeaderData: {},
+        key: measurement._id
+      })),
+      [SurveyAnimalsI18N.animalCaptureTitle]: values.captures.map((capture) => ({
+        header: `Animal Captured: ${formatDate(capture.capture_timestamp)}`,
+        subHeaderData: { Latitude: capture.capture_latitude, Longitude: capture.capture_longitude },
+        key: capture._id
+      })),
+      [SurveyAnimalsI18N.animalMortalityTitle]: values.mortality.map((mortality) => ({
+        header: `Animal Mortality: ${formatDate(mortality.mortality_timestamp)}`,
+        subHeaderData: { Latitude: mortality.mortality_latitude, Longitude: mortality.mortality_longitude },
+        key: mortality._id
+      })),
+      [SurveyAnimalsI18N.animalFamilyTitle]: values.family.map((family) => ({
+        header: `Animal Relationship: ${family.relationship}`,
+        subHeaderData: {},
+        key: family._id
+      })),
+      [SurveyAnimalsI18N.animalCollectionUnitTitle]: values.collectionUnits.map((collectionUnit) => ({
+        header: `Ecological Unit: ${
+          critter.collection_units.find(
+            (critter_collection_unit) => critter_collection_unit.critter_collection_unit_id === collectionUnit._id
+          )?.unit_name
+        }`,
+        subHeaderData: {},
+        key: 'TEMP'
+      })),
+      Telemetry: values.device.map((device) => ({
+        header: `Device: ${device.device_id}`,
+        subHeaderData: {
+          Make: device.device_make,
+          Model: device.device_model,
+          Deployments: device.deployments?.length ?? 0
+        },
+        key: `${device.device_id}`
+      }))
+    };
+    return sectionData[section];
+  }, [
+    section,
+    values.collectionUnits,
+    values.captures,
+    values.mortality,
+    values.measurements,
+    values.family,
+    values.device,
+    critter.marking,
+    critter.collection_units
+  ]);
+
   return (
     <TransitionGroup>
-      {sectionData.map((cardData, index) => (
-        <Collapse>
+      {sectionCardData.map((cardData, index) => (
+        <Collapse key={cardData.key}>
           <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
             {({ remove }: FieldArrayRenderProps) => (
-              <AnimalDataCard
-                disableTrashIcon={disableTrashIcon}
+              <EditDeleteStubCard
                 header={cardData.header}
                 subHeaderData={cardData.subHeaderData}
                 onClickEdit={() => onEditClick(index)}
                 onClickDelete={() => remove(index)}
+                disableTrashIcon={disableTrashIcon}
               />
             )}
           </FieldArray>

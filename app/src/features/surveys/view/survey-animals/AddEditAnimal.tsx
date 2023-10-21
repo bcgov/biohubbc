@@ -36,11 +36,13 @@ interface AddEditAnimalProps {
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
-  const { section, isLoading, telemetrySaveAction, deploymentRemoveAction } = props;
+  const { section, isLoading, critterData, telemetrySaveAction, deploymentRemoveAction } = props;
   const surveyContext = useContext(SurveyContext);
   const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
   const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
+
+  const critter = critterData?.find((cData) => cData.survey_critter_id === parseInt(survey_critter_id));
 
   const [showDialog, setShowDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -255,14 +257,17 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Grid>
         ) : null}
         <Form>
-          <AnimalSectionDataCards
-            onEditClick={(idx) => {
-              setSelectedIndex(idx);
-              setShowDialog(true);
-            }}
-            disableTrashIcon={section === 'Telemetry'}
-            section={section}
-          />
+          {critter ? (
+            <AnimalSectionDataCards
+              onEditClick={(idx) => {
+                setSelectedIndex(idx);
+                setShowDialog(true);
+              }}
+              disableTrashIcon={section === 'Telemetry'}
+              section={section}
+              critter={critter}
+            />
+          ) : null}
         </Form>
       </Box>
     </>
