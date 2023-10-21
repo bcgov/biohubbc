@@ -12,10 +12,17 @@ import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 interface AnimalDataCardProps {
   header: string;
   subHeaderData: Record<string, string | number | undefined>;
+  disableTrashIcon?: boolean;
   onClickEdit: () => void;
   onClickDelete: () => void;
 }
-export const AnimalDataCard = ({ header, subHeaderData, onClickEdit, onClickDelete }: AnimalDataCardProps) => {
+export const AnimalDataCard = ({
+  header,
+  subHeaderData,
+  onClickEdit,
+  onClickDelete,
+  disableTrashIcon
+}: AnimalDataCardProps) => {
   return (
     <Card
       variant="outlined"
@@ -41,9 +48,11 @@ export const AnimalDataCard = ({ header, subHeaderData, onClickEdit, onClickDele
             <IconButton aria-label="settings" onClick={onClickEdit}>
               <Icon path={mdiPencilOutline} size={1} />
             </IconButton>
-            <IconButton aria-label="settings" onClick={onClickDelete}>
-              <Icon path={mdiTrashCanOutline} size={1} />
-            </IconButton>
+            {!disableTrashIcon && (
+              <IconButton aria-label="settings" onClick={onClickDelete}>
+                <Icon path={mdiTrashCanOutline} size={1} />
+              </IconButton>
+            )}
           </>
         }
         title={header}
@@ -56,11 +65,12 @@ export const AnimalDataCard = ({ header, subHeaderData, onClickEdit, onClickDele
   );
 };
 
-interface AnimalSectionDataCards {
+interface AnimalSectionDataCardsProps {
   section: IAnimalSections;
+  disableTrashIcon?: boolean;
   onEditClick: (idx: number) => void;
 }
-export const AnimalSectionDataCards = ({ section, onEditClick }: AnimalSectionDataCards) => {
+export const AnimalSectionDataCards = ({ section, onEditClick, disableTrashIcon }: AnimalSectionDataCardsProps) => {
   const { values } = useFormikContext<IAnimal>();
   const sectionDataCardMap: Record<
     IAnimalSections,
@@ -93,6 +103,7 @@ export const AnimalSectionDataCards = ({ section, onEditClick }: AnimalSectionDa
           <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
             {({ remove }: FieldArrayRenderProps) => (
               <AnimalDataCard
+                disableTrashIcon={disableTrashIcon}
                 header={cardData.header}
                 subHeaderData={cardData.subHeaderData}
                 onClickEdit={() => onEditClick(index)}

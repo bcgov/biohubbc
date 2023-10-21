@@ -24,17 +24,19 @@ import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitA
 import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
-import { DeviceFormSection, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
+import { DeviceFormSection, IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
   critterData?: IDetailedCritterWithInternalId[];
   deploymentData?: IAnimalDeployment[];
   isLoading?: boolean;
+  telemetrySaveAction: (data: IAnimalTelemetryDeviceFile[], formMode: TELEMETRY_DEVICE_FORM_MODE) => Promise<void>;
+  deploymentRemoveAction: (deploymentId: string) => void;
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
-  const { section, isLoading } = props;
+  const { section, isLoading, telemetrySaveAction, deploymentRemoveAction } = props;
   const surveyContext = useContext(SurveyContext);
   const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
   const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
@@ -84,7 +86,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           values={values.device}
           mode={openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT}
           index={selectedIndex}
-          removeAction={() => {}}
+          removeAction={deploymentRemoveAction}
         />
       )
     };
@@ -96,7 +98,16 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         {displayArea}
       </Grid>
     );
-  }, [measurements, openedFromAddButton, section, selectedIndex, values.captures, values.device, values.mortality]);
+  }, [
+    deploymentRemoveAction,
+    measurements,
+    openedFromAddButton,
+    section,
+    selectedIndex,
+    values.captures,
+    values.device,
+    values.mortality
+  ]);
 
   const setPopup = (message: string) => {
     dialogContext.setSnackbar({
@@ -163,9 +174,17 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         setOpenedFromAddButton(false);
                         setShowDialog(false);
                       }}
-                      onSave={(saveVals) => {
+                      onSave={async (saveVals) => {
                         if (section === 'Telemetry') {
-                          console.log('Take some custom action here!');
+                          const vals = openedFromAddButton ? [saveVals.device[selectedIndex]] : saveVals.device;
+                          try {
+                            await telemetrySaveAction(
+                              vals,
+                              openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
+                            );
+                          } catch (err) {
+                            setPopup('Telemetry save failed!');
+                          }
                         }
                         setOpenedFromAddButton(false);
                         setShowDialog(false);
@@ -195,7 +214,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 )}
               </FieldArray>
             ) : null}
-            <Collapse in={!isEqual(initialValues, values)} orientation="horizontal">
+            <Collapse in={!isEqual(initialValues, values) && section !== 'Telemetry'} orientation="horizontal">
               <Box ml={1} whiteSpace="nowrap">
                 <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
                   Save
@@ -241,6 +260,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               setSelectedIndex(idx);
               setShowDialog(true);
             }}
+            disableTrashIcon={section === 'Telemetry'}
             section={section}
           />
         </Form>
