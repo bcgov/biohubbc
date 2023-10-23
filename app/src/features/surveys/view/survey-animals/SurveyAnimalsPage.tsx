@@ -9,6 +9,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { isEqual as _deepEquals } from 'lodash';
 import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { datesSameNullable } from 'utils/Utils';
@@ -21,7 +22,6 @@ import { Device, IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { ANIMAL_FORM_MODE } from './IndividualAnimalForm';
 import { IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
-import { isEqual as _deepEquals } from 'lodash';
 
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>('General');
@@ -115,7 +115,7 @@ export const SurveyAnimalsPage = () => {
   const handleRemoveDeployment = async (deployment_id: string) => {
     try {
       if (survey_critter_id === undefined) {
-        setPopup('No critter set!')
+        setPopup('No critter set!');
       }
       await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
     } catch (e) {
@@ -222,7 +222,7 @@ export const SurveyAnimalsPage = () => {
     const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
     if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
       try {
-        console.log(`WOuld upsert collar in edit mode: ${JSON.stringify(formDevice, null, 2)}`)
+        console.log(`WOuld upsert collar in edit mode: ${JSON.stringify(formDevice, null, 2)}`);
         await telemetryApi.devices.upsertCollar(formDevice);
       } catch (error) {
         throw new Error(`Failed to update collar ${formDevice.collar_id}`);
@@ -240,7 +240,7 @@ export const SurveyAnimalsPage = () => {
         !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
       ) {
         try {
-          console.log(`Would update deployment in edit mode ${JSON.stringify(formDeployment, null, 2)}`)
+          console.log(`Would update deployment in edit mode ${JSON.stringify(formDeployment, null, 2)}`);
           await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
         } catch (error) {
           throw new Error(`Failed to update deployment ${formDeployment.deployment_id}`);

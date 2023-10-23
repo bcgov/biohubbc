@@ -11,6 +11,7 @@ import {
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { v4 } from 'uuid';
 import {
+  AnimalSex,
   IAnimal,
   IAnimalCapture,
   IAnimalCollectionUnit,
@@ -90,7 +91,14 @@ interface IAnimalSectionsMap
 export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
   [SurveyAnimalsI18N.animalGeneralTitle]: {
     animalKeyName: 'general',
-    defaultFormValue: () => ({}),
+    defaultFormValue: () => ({
+      wlh_id: '',
+      taxon_id: '',
+      taxon_name: '',
+      animal_id: '',
+      sex: AnimalSex.UNKNOWN,
+      critter_id: ''
+    }),
     mdiIcon: mdiPencil
   },
   [SurveyAnimalsI18N.animalCollectionUnitTitle]: {
