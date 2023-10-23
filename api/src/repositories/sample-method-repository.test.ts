@@ -132,7 +132,6 @@ describe('SampleMethodRepository', () => {
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to insert sample method');
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
       }
     });
   });
@@ -163,7 +162,6 @@ describe('SampleMethodRepository', () => {
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete sample method');
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
       }
     });
   });

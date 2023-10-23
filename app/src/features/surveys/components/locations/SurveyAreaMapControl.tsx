@@ -6,6 +6,7 @@ import Paper from '@mui/material/Paper';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import DrawControls2, { IDrawControlsRef } from 'components/map/components/DrawControls2';
+import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import { ImportBoundaryDialog } from 'components/map/components/ImportBoundaryDialog';
 import { IRegionOption, RegionSelector } from 'components/map/components/RegionSelector';
 import StaticLayers from 'components/map/components/StaticLayers';
@@ -22,7 +23,6 @@ import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
   map_id: string;
-  title: string;
   formik_key: string;
   formik_props: FormikContextType<ISurveyLocationForm>;
   draw_controls_ref: React.RefObject<IDrawControlsRef>;
@@ -90,6 +90,9 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           maxZoom={17}
           fullscreenControl={true}
           scrollWheelZoom={false}>
+          {/* Allow scroll wheel zoom when in full screen mode */}
+          <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
+
           {/* Programmatically set map bounds */}
           <SetMapBounds bounds={updatedBounds} />
 

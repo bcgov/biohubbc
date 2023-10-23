@@ -43,9 +43,9 @@ const SamplingMethods = () => {
               content: '","'
             }
           }}>
-          {site_selection.strategies?.map((strategy: string, index: number) => {
+          {site_selection.strategies?.map((strategy: string) => {
             return (
-              <Typography component="dd" key={`${strategy}-${index}`}>
+              <Typography component="dd" key={strategy}>
                 {strategy}
               </Typography>
             );
@@ -57,10 +57,10 @@ const SamplingMethods = () => {
         <Box className="row" component="section">
           <Typography component="h4">Stratums</Typography>
           <List disablePadding>
-            {site_selection.stratums?.map((stratum: IStratum, index: number) => {
+            {site_selection.stratums?.map((stratum: IStratum) => {
               return (
                 <ListItem
-                  key={`${stratum.name}-${index}`}
+                  key={`${stratum.name}-${stratum.description}`}
                   sx={{
                     p: 0,
                     '& + .MuiListItem-root': {
@@ -85,10 +85,10 @@ const SamplingMethods = () => {
         <Box component="section" className="row">
           <Typography component="h4">Blocks</Typography>
           <List disablePadding>
-            {blocks?.map((block: IGetSurveyBlock, index: number) => {
+            {blocks?.map((block: IGetSurveyBlock) => {
               return (
                 <ListItem
-                  key={`${block.name}-${index}`}
+                  key={`${block.name}-${block.description}`}
                   sx={{
                     p: 0,
                     '& + .MuiListItem-root': {
