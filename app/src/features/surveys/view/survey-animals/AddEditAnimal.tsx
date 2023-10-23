@@ -262,6 +262,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               }}
               section={section}
               critter={critter}
+              isAddingNew={openedFromAddButton}
             />
           )}
         </Form>
