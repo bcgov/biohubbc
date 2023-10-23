@@ -15,7 +15,7 @@ import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
-import { AnimalSectionDataCards } from './AnimalDataCard';
+import { AnimalSectionDataCards } from './AnimalSectionDataCards';
 import { IAnimalDeployment } from './device';
 import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
 

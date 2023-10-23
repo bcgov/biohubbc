@@ -1,3 +1,13 @@
+import {
+  mdiAccessPoint,
+  mdiFamilyTree,
+  mdiHomeGroup,
+  mdiPencil,
+  mdiRuler,
+  mdiSkull,
+  mdiSpiderWeb,
+  mdiTag
+} from '@mdi/js';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { v4 } from 'uuid';
 import {
@@ -29,6 +39,7 @@ interface IAnimalSectionsMap
       animalKeyName: keyof IAnimal;
       defaultFormValue: () => object;
       addBtnText?: string;
+      mdiIcon: string;
     }
   > {
   [SurveyAnimalsI18N.animalGeneralTitle]: {
@@ -36,43 +47,51 @@ interface IAnimalSectionsMap
     //This probably needs to change to the correct object, general does not use the formikArray pattern
     defaultFormValue: () => object;
     addBtnText?: string;
+    mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalCollectionUnitTitle]: {
     animalKeyName: 'collectionUnits';
     defaultFormValue: () => IAnimalCollectionUnit;
     addBtnText: string;
+    mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalMarkingTitle]: {
     animalKeyName: 'markings';
     defaultFormValue: () => IAnimalMarking;
     addBtnText: string;
+    mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalMeasurementTitle]: {
     animalKeyName: 'measurements';
     defaultFormValue: () => IAnimalMeasurement;
     addBtnText: string;
+    mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalCaptureTitle]: {
     animalKeyName: 'captures';
     defaultFormValue: () => IAnimalCapture;
     addBtnText: string;
+    mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalMortalityTitle]: {
     animalKeyName: 'mortality';
     defaultFormValue: () => IAnimalMortality;
     addBtnText: string;
+    mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalFamilyTitle]: {
     animalKeyName: 'family';
     defaultFormValue: () => IAnimalRelationship;
     addBtnText: string;
+    mdiIcon: string;
   };
 }
 
 export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
   [SurveyAnimalsI18N.animalGeneralTitle]: {
     animalKeyName: 'general',
-    defaultFormValue: () => ({})
+    defaultFormValue: () => ({}),
+    mdiIcon: mdiPencil
   },
   [SurveyAnimalsI18N.animalCollectionUnitTitle]: {
     animalKeyName: 'collectionUnits',
@@ -82,7 +101,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       collection_unit_id: '',
       collection_category_id: '',
       critter_collection_unit_id: undefined
-    })
+    }),
+    mdiIcon: mdiHomeGroup
   },
   [SurveyAnimalsI18N.animalMarkingTitle]: {
     animalKeyName: 'markings',
@@ -96,7 +116,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       secondary_colour_id: '',
       marking_comment: '',
       marking_id: undefined
-    })
+    }),
+    mdiIcon: mdiTag
   },
   [SurveyAnimalsI18N.animalMeasurementTitle]: {
     animalKeyName: 'measurements',
@@ -110,7 +131,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       qualitative_option_id: '',
       measured_timestamp: '' as unknown as Date,
       measurement_comment: ''
-    })
+    }),
+    mdiIcon: mdiRuler
   },
   [SurveyAnimalsI18N.animalMortalityTitle]: {
     animalKeyName: 'mortality',
@@ -134,7 +156,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       projection_mode: 'wgs' as ProjectionMode,
       mortality_id: undefined,
       location_id: undefined
-    })
+    }),
+    mdiIcon: mdiSkull
   },
   [SurveyAnimalsI18N.animalFamilyTitle]: {
     animalKeyName: 'family',
@@ -144,7 +167,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
 
       family_id: '',
       relationship: undefined
-    })
+    }),
+    mdiIcon: mdiFamilyTree
   },
   [SurveyAnimalsI18N.animalCaptureTitle]: {
     animalKeyName: 'captures',
@@ -171,12 +195,14 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       capture_id: undefined,
       capture_location_id: undefined,
       release_location_id: undefined
-    })
+    }),
+    mdiIcon: mdiSpiderWeb
   },
-  ['Telemetry']: {
+  Telemetry: {
     animalKeyName: 'device',
     addBtnText: 'Add Device / Deployment',
     // Graham add the default value here
-    defaultFormValue: () => ({})
+    defaultFormValue: () => ({}),
+    mdiIcon: mdiAccessPoint
   }
 };

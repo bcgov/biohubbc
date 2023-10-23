@@ -7,6 +7,7 @@ import {
   Button,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
   Toolbar,
   Tooltip,
@@ -52,6 +53,7 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
       },
       onYes: () => {
         dialogContext.setYesNoDialog({ open: false });
+        onSelectSection('General');
         history.push(surveyCritterID);
       },
       onNo: () => {
@@ -67,8 +69,12 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
     if (survey_critter_id === id) {
       critterParamID = MANAGE_ANIMALS_DEFAULT_URL_PARAM;
     }
-    onSelectSection('General');
-    formHasChanges ? showCreateYesNoDialog(critterParamID) : history.push(critterParamID);
+    if (formHasChanges) {
+      showCreateYesNoDialog(critterParamID);
+    } else {
+      onSelectSection('General');
+      history.push(critterParamID);
+    }
   };
 
   return (
@@ -107,7 +113,7 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
           <Accordion
             disableGutters
             key={critter.critter_id}
-            expanded={critter.survey_critter_id.toString() == survey_critter_id}
+            expanded={critter.survey_critter_id.toString() === survey_critter_id}
             sx={{
               boxShadow: 'none',
               '&.Mui-expanded': {},
@@ -148,7 +154,7 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
                     fontSize: '0.875rem'
                   }
                 }}>
-                {Object.keys(ANIMAL_SECTIONS_FORM_MAP).map((section) => (
+                {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
                   <ListItem
                     key={section}
                     dense
@@ -156,8 +162,11 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
                     button
                     selected={section === selectedSection}
                     onClick={() => {
-                      onSelectSection(section as IAnimalSections);
+                      onSelectSection(section);
                     }}>
+                    <ListItemIcon>
+                      <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
+                    </ListItemIcon>
                     <ListItemText>{section}</ListItemText>
                     {Object.keys(errors).find((key) => key.toLowerCase() === section.toLowerCase()) !== undefined && (
                       <Tooltip
