@@ -20,7 +20,8 @@
   "staticUrls": {
     "dev": "dev-biohubbc.apps.silver.devops.gov.bc.ca",
     "test": "test-biohubbc.apps.silver.devops.gov.bc.ca",
-    "prod": "sims.nrs.gov.bc.ca"
+    "prod": "biohubbc.apps.silver.devops.gov.bc.ca",
+    "prodVanityUrl": "sims.nrs.gov.bc.ca"
   },
   "staticUrlsAPI": {
     "dev": "api-dev-biohubbc.apps.silver.devops.gov.bc.ca",
