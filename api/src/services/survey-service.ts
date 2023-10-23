@@ -715,7 +715,7 @@ export class SurveyService extends DBService {
     }
 
     if (putSurveyData?.locations) {
-      promises.push(Promise.all(putSurveyData.locations.map((item) => this.updateSurveyLocation(item))));
+      promises.push(this.insertOrUpdateSurveyLocation(surveyId, putSurveyData.locations));
     }
 
     if (putSurveyData?.participants.length) {
@@ -751,10 +751,13 @@ export class SurveyService extends DBService {
   }
 
   async insertOrUpdateSurveyLocation(surveyId: number, data: PostSurveyLocationData[]) {
-    
-    const insert = data.filter((item) => !item.survey_location_id);
+    const inserts = data.filter((item) => !item.survey_location_id);
+    const insertPromises = inserts.map((item) => this.insertSurveyLocations(surveyId, item));
 
-    const update = data.filter((item) => item.survey_location_id);
+    const updates = data.filter((item) => item.survey_location_id);
+    const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
+
+    return [...insertPromises, ...updatePromises];
   }
 
   async updateSurveyLocation(data: PostSurveyLocationData): Promise<void> {
