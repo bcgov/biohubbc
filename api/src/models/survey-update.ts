@@ -161,7 +161,7 @@ export class PostSurveyLocationData {
   constructor(obj?: any) {
     this.survey_location_id = obj?.survey_location_id || null;
     this.name = obj?.name || null;
-    this.description = obj?.description || null;
+    this.description = obj?.description || '';
     this.geojson = (obj?.geojson?.length && obj.geojson) || [];
     this.revision_count = obj?.revision_count ?? null;
   }

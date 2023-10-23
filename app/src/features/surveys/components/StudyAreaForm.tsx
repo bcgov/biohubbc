@@ -29,14 +29,14 @@ export const SurveyLocationInitialValues: ISurveyLocationForm = {
 
 export const SurveyLocationDetailsYupSchema = yup.object({
   name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
-  description: yup.string().max(250, 'Description cannot exceed 250 characters')
+  description: yup.string().max(250, 'Description cannot exceed 250 characters').default('')
 });
 
 export const SurveyLocationYupSchema = yup.object({
   locations: yup.array(
     yup.object({
       name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
-      description: yup.string().max(250, 'Description cannot exceed 250 characters'),
+      description: yup.string().max(250, 'Description cannot exceed 250 characters').default(''),
       geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
     })
   )
