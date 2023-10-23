@@ -9,8 +9,8 @@ type ISubHeaderData = Record<string, string | number | undefined>;
 interface EditDeleteStubCardProps {
   header: string;
   subHeaderData: ISubHeaderData;
-  onClickEdit: () => void;
-  onClickDelete: () => void;
+  onClickEdit?: () => void;
+  onClickDelete?: () => void;
 }
 export const EditDeleteStubCard = ({ header, subHeaderData, onClickEdit, onClickDelete }: EditDeleteStubCardProps) => {
   const formatSubHeaderString = (subHeaderData: ISubHeaderData) => {
@@ -46,12 +46,16 @@ export const EditDeleteStubCard = ({ header, subHeaderData, onClickEdit, onClick
       <CardHeader
         action={
           <>
-            <IconButton aria-label="settings" onClick={onClickEdit}>
-              <Icon path={mdiPencilOutline} size={1} />
-            </IconButton>
-            <IconButton aria-label="settings" onClick={onClickDelete}>
-              <Icon path={mdiTrashCanOutline} size={1} />
-            </IconButton>
+            {onClickEdit && (
+              <IconButton aria-label="settings" onClick={onClickEdit}>
+                <Icon path={mdiPencilOutline} size={1} />
+              </IconButton>
+            )}
+            {onClickDelete && (
+              <IconButton aria-label="settings" onClick={onClickDelete}>
+                <Icon path={mdiTrashCanOutline} size={1} />
+              </IconButton>
+            )}
           </>
         }
         title={header}

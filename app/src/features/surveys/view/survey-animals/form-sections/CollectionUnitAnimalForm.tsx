@@ -16,6 +16,55 @@ import {
 import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 import FormSectionWrapper from './FormSectionWrapper';
 
+interface ICollectionUnitAnimalFormContentProps {
+  name: keyof IAnimal;
+  index: number;
+}
+
+export const CollectionUnitAnimalFormContent = ({ name, index }: ICollectionUnitAnimalFormContentProps) => {
+  const { values } = useFormikContext<IAnimal>();
+  //Animals may have multiple collection units, but only one instance of each category.
+  //We use this and pass to the select component to ensure categories already used in the form can't be selected again.
+  const disabledCategories = values.collectionUnits.reduce((acc: Record<string, boolean>, curr) => {
+    if (curr.collection_category_id) {
+      acc[curr.collection_category_id] = true;
+    }
+    return acc;
+  }, {});
+
+  return (
+    <Fragment>
+      <Grid item xs={6}>
+        <CbSelectField
+          label="Unit Category"
+          name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_category_id', index)}
+          id={'collection_category_id'}
+          disabledValues={disabledCategories}
+          query={`taxon_id=${values.general.taxon_id}`}
+          route={'lookups/taxon-collection-categories'}
+          controlProps={{
+            size: 'medium',
+            required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_category_id')
+          }}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <CbSelectField
+          label="Unit Name"
+          id={'collection_unit_id'}
+          route={'lookups/collection-units'}
+          query={`category_id=${values.collectionUnits[index].collection_category_id}`}
+          name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_unit_id', index)}
+          controlProps={{
+            size: 'medium',
+            required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_unit_id')
+          }}
+        />
+      </Grid>
+    </Fragment>
+  );
+};
+
 const CollectionUnitAnimalForm = () => {
   const api = useCritterbaseApi();
   const { values } = useFormikContext<IAnimal>();

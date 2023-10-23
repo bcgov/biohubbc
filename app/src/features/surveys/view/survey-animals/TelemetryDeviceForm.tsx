@@ -417,7 +417,7 @@ const TelemetryDeviceForm = ({
         component={{
           element: (
             <DeviceFormSection
-              values={values.device}
+              values={deviceInitialValues.device}
               index={selectedIndex ?? 0}
               mode={telemetryFormMode}
               removeAction={() => {}}
@@ -480,8 +480,11 @@ const TelemetryDeviceForm = ({
           </CardContent>
         </Card>
       ))}
-      <pre>{JSON.stringify(values)}</pre>
-      <pre>{`selectedIndex: ${selectedIndex}`}</pre>
+      <Box>
+        {' '}
+        <pre>{JSON.stringify(values, null, 2)}</pre>
+        <pre>{`selectedIndex: ${selectedIndex}`}</pre>
+      </Box>
     </>
   );
 };

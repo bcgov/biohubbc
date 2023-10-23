@@ -1,22 +1,21 @@
 import { Collapse } from '@mui/material';
-import EditDialog from 'components/dialog/EditDialog';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { AnimalSchema, IAnimal } from './animal';
+import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
 interface AnimalSectionDataCardsProps {
   section: IAnimalSections;
   critter: IDetailedCritterWithInternalId;
+  onEditClick: (idx: number) => void;
 }
-export const AnimalSectionDataCards = ({ section, critter }: AnimalSectionDataCardsProps) => {
+export const AnimalSectionDataCards = ({ section, critter, onEditClick }: AnimalSectionDataCardsProps) => {
   const { values } = useFormikContext<IAnimal>();
-  const [openDialog, setOpenDialog] = useState(false);
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
 
   const sectionCardData = useMemo(() => {
@@ -73,8 +72,12 @@ export const AnimalSectionDataCards = ({ section, critter }: AnimalSectionDataCa
         key: 'TEMP'
       })),
       Telemetry: values.device.map((device) => ({
-        header: `Device: ${device.device_id ?? ''}`,
-        subHeaderData: { Make: device.device_make, Model: device.device_model },
+        header: `Device: ${device.device_id}`,
+        subHeaderData: {
+          Make: device.device_make,
+          Model: device.device_model,
+          Deployments: device.deployments?.length ?? 0
+        },
         key: `${device.device_id}`
       }))
     };
@@ -92,34 +95,25 @@ export const AnimalSectionDataCards = ({ section, critter }: AnimalSectionDataCa
   ]);
 
   return (
-    <>
-      <EditDialog
-        dialogTitle={`Editing ${section}`}
-        open={openDialog}
-        component={{
-          initialValues: values,
-          element: <div>{section}</div>,
-          validationSchema: AnimalSchema
-        }}
-        onCancel={() => setOpenDialog(false)}
-        onSave={() => setOpenDialog(false)}
-      />
-      <TransitionGroup>
-        {sectionCardData.map((cardData, index) => (
-          <Collapse key={cardData.key}>
-            <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
-              {({ remove }: FieldArrayRenderProps) => (
-                <EditDeleteStubCard
-                  header={cardData.header}
-                  subHeaderData={cardData.subHeaderData}
-                  onClickEdit={() => setOpenDialog(true)}
-                  onClickDelete={() => remove(index)}
-                />
-              )}
-            </FieldArray>
-          </Collapse>
-        ))}
-      </TransitionGroup>
-    </>
+    <TransitionGroup>
+      {sectionCardData.map((cardData, index) => (
+        <Collapse key={cardData.key}>
+          <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
+            {({ remove }: FieldArrayRenderProps) => (
+              <EditDeleteStubCard
+                header={cardData.header}
+                subHeaderData={cardData.subHeaderData}
+                onClickEdit={() => onEditClick(index)}
+                onClickDelete={
+                  section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
+                    ? undefined
+                    : () => remove(index)
+                }
+              />
+            )}
+          </FieldArray>
+        </Collapse>
+      ))}
+    </TransitionGroup>
   );
 };

@@ -86,7 +86,7 @@ interface MeasurementFormContentProps {
   measurements?: IMeasurementStub[];
 }
 
-const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
+export const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
   const { values, handleChange, setFieldValue, handleBlur } = useFormikContext<IAnimal>();
   const { animalKeyName } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalMeasurementTitle];
   const taxonMeasurementId = values.measurements[index].taxon_measurement_id;
