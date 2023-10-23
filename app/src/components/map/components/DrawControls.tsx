@@ -78,6 +78,9 @@ export interface IDrawControlsProps {
   confirmDeletion?: boolean;
 }
 
+/**
+ * @deprecated Prefer using `DrawControls2` moving forward.
+ */
 const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (props) => {
   const context = useLeafletContext();
   const [deleteEvent, setDeleteEvent] = useState<L.LeafletEvent | null>(null);
