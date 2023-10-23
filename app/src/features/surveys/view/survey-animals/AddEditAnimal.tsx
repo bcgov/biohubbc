@@ -14,7 +14,6 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual } from 'lodash-es';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import { AnimalSectionDataCards } from './AnimalSectionDataCards';
@@ -40,7 +39,6 @@ interface AddEditAnimalProps {
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, isLoading, critterData, telemetrySaveAction, deploymentRemoveAction } = props;
   const surveyContext = useContext(SurveyContext);
-  const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
   const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
