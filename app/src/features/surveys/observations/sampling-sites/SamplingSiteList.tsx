@@ -232,7 +232,6 @@ const SamplingSiteList = () => {
                         return (
                           <ListItem
                             disableGutters
-                            divider
                             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                             sx={{
                               display: 'block',
