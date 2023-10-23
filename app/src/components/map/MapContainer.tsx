@@ -197,8 +197,10 @@ const MapContainer = (props: IMapContainerProps) => {
 
       {clusteredPointGeometries && clusteredPointGeometries.length > 0 && (
         <MarkerClusterGroup chunkedLoading>
-          {clusteredPointGeometries.map((pointGeo: IClusteredPointGeometries, index: number) => (
-            <Marker key={index} position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]}>
+          {clusteredPointGeometries.map((pointGeo: IClusteredPointGeometries) => (
+            <Marker
+              key={`marker-cluster-${pointGeo.coordinates.join('-')}`}
+              position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]}>
               {pointGeo.popupComponent}
             </Marker>
           ))}
