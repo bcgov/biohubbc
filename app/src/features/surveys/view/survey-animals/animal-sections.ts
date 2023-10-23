@@ -40,6 +40,8 @@ interface IAnimalSectionsMap
       animalKeyName: keyof IAnimal;
       defaultFormValue: () => object;
       addBtnText?: string;
+      dialogTitle: string;
+      infoText: string;
       mdiIcon: string;
     }
   > {
@@ -48,42 +50,56 @@ interface IAnimalSectionsMap
     //This probably needs to change to the correct object, general does not use the formikArray pattern
     defaultFormValue: () => object;
     addBtnText?: string;
+    dialogTitle: string;
+    infoText: string;
     mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalCollectionUnitTitle]: {
     animalKeyName: 'collectionUnits';
     defaultFormValue: () => IAnimalCollectionUnit;
     addBtnText: string;
+    dialogTitle: string;
+    infoText: string;
     mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalMarkingTitle]: {
     animalKeyName: 'markings';
     defaultFormValue: () => IAnimalMarking;
     addBtnText: string;
+    dialogTitle: string;
+    infoText: string;
     mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalMeasurementTitle]: {
     animalKeyName: 'measurements';
     defaultFormValue: () => IAnimalMeasurement;
     addBtnText: string;
+    dialogTitle: string;
+    infoText: string;
     mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalCaptureTitle]: {
     animalKeyName: 'captures';
     defaultFormValue: () => IAnimalCapture;
     addBtnText: string;
+    dialogTitle: string;
+    infoText: string;
     mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalMortalityTitle]: {
     animalKeyName: 'mortality';
     defaultFormValue: () => IAnimalMortality;
     addBtnText: string;
+    dialogTitle: string;
+    infoText: string;
     mdiIcon: string;
   };
   [SurveyAnimalsI18N.animalFamilyTitle]: {
     animalKeyName: 'family';
     defaultFormValue: () => IAnimalRelationship;
     addBtnText: string;
+    dialogTitle: string;
+    infoText: string;
     mdiIcon: string;
   };
 }
@@ -99,6 +115,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       sex: AnimalSex.UNKNOWN,
       critter_id: ''
     }),
+    dialogTitle: 'General Information',
+    infoText: SurveyAnimalsI18N.animalGeneralHelp,
     mdiIcon: mdiPencil
   },
   [SurveyAnimalsI18N.animalCollectionUnitTitle]: {
@@ -110,6 +128,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       collection_category_id: '',
       critter_collection_unit_id: undefined
     }),
+    dialogTitle: 'Ecological Unit',
+    infoText: SurveyAnimalsI18N.animalCollectionUnitHelp,
     mdiIcon: mdiHomeGroup
   },
   [SurveyAnimalsI18N.animalMarkingTitle]: {
@@ -125,6 +145,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       marking_comment: '',
       marking_id: undefined
     }),
+    dialogTitle: 'Marking',
+    infoText: SurveyAnimalsI18N.animalMarkingHelp,
     mdiIcon: mdiTag
   },
   [SurveyAnimalsI18N.animalMeasurementTitle]: {
@@ -140,6 +162,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       measured_timestamp: '' as unknown as Date,
       measurement_comment: ''
     }),
+    dialogTitle: 'Measurement',
+    infoText: SurveyAnimalsI18N.animalMeasurementHelp,
     mdiIcon: mdiRuler
   },
   [SurveyAnimalsI18N.animalMortalityTitle]: {
@@ -165,6 +189,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       mortality_id: undefined,
       location_id: undefined
     }),
+    dialogTitle: 'Mortality',
+    infoText: SurveyAnimalsI18N.animalMortalityHelp,
     mdiIcon: mdiSkull
   },
   [SurveyAnimalsI18N.animalFamilyTitle]: {
@@ -176,6 +202,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       family_id: '',
       relationship: undefined
     }),
+    dialogTitle: 'Family Relationship',
+    infoText: SurveyAnimalsI18N.animalFamilyHelp,
     mdiIcon: mdiFamilyTree
   },
   [SurveyAnimalsI18N.animalCaptureTitle]: {
@@ -204,6 +232,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       capture_location_id: undefined,
       release_location_id: undefined
     }),
+    dialogTitle: 'Capture',
+    infoText: SurveyAnimalsI18N.animalCaptureHelp,
     mdiIcon: mdiSpiderWeb
   },
   Telemetry: {
@@ -223,6 +253,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
         }
       ]
     }),
+    dialogTitle: 'Device / Deployment',
+    infoText: 'Placeholder text for telemetry section',
     mdiIcon: mdiAccessPoint
   }
 };
