@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostSurveyLocationData } from '../models/survey-update';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { shallowJsonSchema } from '../zod-schema/json';
@@ -92,5 +93,27 @@ export class SurveyLocationRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, SurveyLocationRecord);
     return response.rows;
+  }
+
+  /**
+   * Deletes a survey location for a given survey location id
+   *
+   * @param surveyLocationId
+   * @returns {*} Promise<GetSurveyLocationData[]>
+   * @memberof SurveyLocationRepository
+   */
+  async deleteSurveyLocation(surveyLocationId: number): Promise<SurveyLocationRecord> {
+    const sql = SQL`
+    DELETE FROM survey_location WHERE survey_location_id = ${surveyLocationId} RETURNING *;`;
+    const response = await this.connection.sql(sql, SurveyLocationRecord);
+
+    if (!response?.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete survey location record', [
+        'SurveyLocationRepository->deleteSurveyLocation',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
   }
 }

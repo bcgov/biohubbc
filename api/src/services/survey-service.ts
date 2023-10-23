@@ -715,7 +715,7 @@ export class SurveyService extends DBService {
     }
 
     if (putSurveyData?.locations) {
-      promises.push(this.insertOrUpdateSurveyLocation(surveyId, putSurveyData.locations));
+      promises.push(this.insertUpdateDeleteSurveyLocation(surveyId, putSurveyData.locations));
     }
 
     if (putSurveyData?.participants.length) {
@@ -750,14 +750,27 @@ export class SurveyService extends DBService {
     await Promise.all(promises);
   }
 
-  async insertOrUpdateSurveyLocation(surveyId: number, data: PostSurveyLocationData[]) {
+  async insertUpdateDeleteSurveyLocation(surveyId: number, data: PostSurveyLocationData[]) {
+    const existingLocations = await this.getSurveyLocationsData(surveyId);
+    // compare existing locations with passed in locations
+    // any locations not found in both arrays will be deleted
+    const deletes = existingLocations.filter(
+      (existing) => !data.find((incoming) => incoming?.survey_location_id === existing.survey_location_id)
+    );
+    const deletePromises = deletes.map((item) => this.deleteSurveyLocation(item.survey_location_id));
+
     const inserts = data.filter((item) => !item.survey_location_id);
     const insertPromises = inserts.map((item) => this.insertSurveyLocations(surveyId, item));
 
     const updates = data.filter((item) => item.survey_location_id);
     const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
 
-    return [...insertPromises, ...updatePromises];
+    return [...insertPromises, ...updatePromises, ...deletePromises];
+  }
+
+  async deleteSurveyLocation(surveyLocationId: number): Promise<SurveyLocationRecord> {
+    const surveyLocationService = new SurveyLocationService(this.connection);
+    return surveyLocationService.deleteSurveyLocation(surveyLocationId);
   }
 
   async updateSurveyLocation(data: PostSurveyLocationData): Promise<void> {

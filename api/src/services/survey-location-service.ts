@@ -57,4 +57,15 @@ export class SurveyLocationService extends DBService {
   async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
     return this.surveyLocationRepository.getSurveyLocationsData(surveyId);
   }
+
+  /**
+   * Deletes a survey location for a given survey location id
+   *
+   * @param surveyLocationId
+   * @returns {*} Promise<GetSurveyLocationData[]>
+   * @memberof SurveyLocationService
+   */
+  async deleteSurveyLocation(surveyLocationId: number): Promise<SurveyLocationRecord> {
+    return this.surveyLocationRepository.deleteSurveyLocation(surveyLocationId);
+  }
 }
