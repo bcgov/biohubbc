@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
+import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import ObservationComponent from './ObservationComponent';
@@ -15,38 +16,27 @@ export const SurveyObservationPage = () => {
   }
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      height="100%"
-      overflow="hidden"
-      position="relative"
-      sx={{
-        background: '#fff'
-      }}>
-      <Box
-        zIndex={999}
-        sx={{
-          borderBottomStyle: 'solid',
-          borderBottomWidth: '1px',
-          borderBottomColor: grey[300]
-        }}>
-        <SurveyObservationHeader
-          project_id={surveyContext.projectId}
-          survey_id={surveyContext.surveyId}
-          survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-        />
-      </Box>
+    <Box display="flex" flexDirection="column" height="100%" overflow="hidden" position="relative">
+      <SurveyObservationHeader
+        project_id={surveyContext.projectId}
+        survey_id={surveyContext.surveyId}
+        survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+      />
 
-      <Box display="flex" flex="1 1 auto" overflow="hidden">
+      <Paper
+        elevation={0}
+        sx={{
+          display: 'flex',
+          flex: '1 1 auto',
+          overflow: 'hidden',
+          m: 1
+        }}>
         {/* Sampling Site List */}
         <Box
           flex="0 0 auto"
-          width={400}
+          width="400px"
           sx={{
-            borderRightStyle: 'solid',
-            borderRightWidth: '1px',
-            borderRightColor: grey[300]
+            borderRight: '1px solid ' + grey[300]
           }}>
           <SamplingSiteList />
         </Box>
@@ -55,7 +45,7 @@ export const SurveyObservationPage = () => {
         <Box flex="1 1 auto" overflow="hidden">
           <ObservationComponent />
         </Box>
-      </Box>
+      </Paper>
     </Box>
   );
 };

@@ -16,6 +16,8 @@ import {
   GET_DEPLOYMENTS_ENDPOINT,
   GET_DEVICE_DETAILS,
   GET_KEYX_STATUS_ENDPOINT,
+  GET_TELEMETRY_POINTS_ENDPOINT,
+  GET_TELEMETRY_TRACKS_ENDPOINT,
   HEALTH_ENDPOINT,
   IDeployDevice,
   IDeploymentUpdate,
@@ -272,6 +274,40 @@ describe('BctwService', () => {
           collar_id: ''
         };
         await bctwService.updateDevice(body).catch((e) => expect(e.message).to.equal('[{"device_id":"error"}]'));
+      });
+    });
+
+    describe('getCritterTelemetryPoints', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        const startDate = new Date();
+        const endDate = new Date();
+
+        await bctwService.getCritterTelemetryPoints('asdf', startDate, endDate);
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(GET_TELEMETRY_POINTS_ENDPOINT, {
+          critter_id: 'asdf',
+          start: startDate.toISOString(),
+          end: endDate.toISOString()
+        });
+      });
+    });
+
+    describe('getCritterTelemetryTracks', () => {
+      it('should send a get request', async () => {
+        const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
+
+        const startDate = new Date();
+        const endDate = new Date();
+
+        await bctwService.getCritterTelemetryTracks('asdf', startDate, endDate);
+
+        expect(mockGetRequest).to.have.been.calledOnceWith(GET_TELEMETRY_TRACKS_ENDPOINT, {
+          critter_id: 'asdf',
+          start: startDate.toISOString(),
+          end: endDate.toISOString()
+        });
       });
     });
 

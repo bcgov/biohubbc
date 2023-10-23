@@ -5,7 +5,6 @@ import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { IIDIRAccessRequestDataObject } from 'interfaces/useAdminApi.interface';
@@ -40,10 +39,9 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
     <Box>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography variant="h3">What role do you want to be assigned?</Typography>
           <Box mt={2}>
             <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-              <InputLabel id="role-label">Role</InputLabel>
+              <InputLabel id="role-label">Requested Role</InputLabel>
               <Select
                 id="role"
                 name="role"
@@ -67,11 +65,8 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
       </Grid>
 
       <Box mt={3}>
-        <Typography variant="h3">
-          Why are you requesting access to Species Inventory Management System (SIMS)?
-        </Typography>
         <Box mt={2}>
-          <CustomTextField name="reason" label="Reason" other={{ multiline: true, rows: 4 }} />
+          <CustomTextField name="reason" label="Reason for Request" other={{ multiline: true, rows: 4 }} />
         </Box>
       </Box>
     </Box>

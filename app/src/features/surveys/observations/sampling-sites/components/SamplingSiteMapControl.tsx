@@ -122,6 +122,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           <Paper variant="outlined">
             <Box position="relative" height={500}>
               <MapContainer
+                scrollWheelZoom={true}
                 mapId={mapId}
                 staticLayers={[
                   {

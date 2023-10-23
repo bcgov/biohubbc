@@ -179,6 +179,8 @@ const CreateSurveyPage = () => {
         DATE_FORMAT.ShortDateFormat,
         `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
       )
+      .nullable()
+      .optional()
   })
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)

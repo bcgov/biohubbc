@@ -2,24 +2,15 @@ import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
+import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
-import { Theme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import { useFormikContext } from 'formik';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { ICreateSamplingSiteRequest } from './SamplingSitePage';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  }
-}));
 
 export interface ISamplingSiteHeaderProps {
   project_id: number;
@@ -30,7 +21,6 @@ export interface ISamplingSiteHeaderProps {
   breadcrumb: string;
 }
 export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) => {
-  const classes = useStyles();
   const history = useHistory();
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
 
@@ -41,63 +31,70 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
         square
         elevation={0}
         sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1002,
           pt: 3,
-          pb: 3,
-          px: 3
+          pb: 3.75,
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[300]
         }}>
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link
-            component={RouterLink}
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
-            underline="none">
-            <Typography component="span" variant="body2">
-              {survey_name}
+        <Container maxWidth="xl">
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link
+              component={RouterLink}
+              to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
+              underline="none">
+              <Typography component="span">{survey_name}</Typography>
+            </Link>
+            <Link
+              component={RouterLink}
+              to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
+              underline="none">
+              <Typography component="span">Manage Survey Observations</Typography>
+            </Link>
+            <Typography component="span">{breadcrumb}</Typography>
+          </Breadcrumbs>
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <Typography
+              component="h1"
+              variant="h2"
+              sx={{
+                ml: '-2px'
+              }}>
+              {title}
             </Typography>
-          </Link>
-          <Link
-            component={RouterLink}
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
-            underline="none">
-            <Typography component="span" variant="body2">
-              Manage Survey Observations
-            </Typography>
-          </Link>
-          <Typography component="span" color="text.secondary" variant="body2">
-            {breadcrumb}
-          </Typography>
-        </Breadcrumbs>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography
-            variant="h3"
-            component="h1"
-            sx={{
-              ml: '-2px'
-            }}>
-            {title}
-          </Typography>
-          <Box>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              color="primary"
-              loading={is_submitting}
-              onClick={() => {
-                formikProps.submitForm();
-              }}
-              className={classes.actionButton}>
-              Save and Exit
-            </LoadingButton>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => {
-                history.push(`/admin/projects/${project_id}/surveys/${survey_id}/observations`);
-              }}
-              className={classes.actionButton}>
-              Cancel
-            </Button>
+            <Box
+              sx={{
+                '& button': {
+                  minWidth: '6rem'
+                },
+                '& button + button': {
+                  ml: 1
+                }
+              }}>
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                color="primary"
+                loading={is_submitting}
+                onClick={() => {
+                  formikProps.submitForm();
+                }}>
+                Save and Exit
+              </LoadingButton>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  history.push(`/admin/projects/${project_id}/surveys/${survey_id}/observations`);
+                }}>
+                Cancel
+              </Button>
+            </Box>
           </Box>
-        </Box>
+        </Container>
       </Paper>
     </>
   );

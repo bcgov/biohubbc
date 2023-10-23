@@ -7,10 +7,12 @@ import CardHeader from '@mui/material/CardHeader';
 import { grey } from '@mui/material/colors';
 import Grid from '@mui/material/Grid';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import CustomNumberField from 'components/fields/CustomNumberField';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import { AttachmentType } from 'constants/attachments';
+import { PG_MAX_INT } from 'constants/misc';
 import { Form, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
@@ -156,7 +158,13 @@ const DeviceFormSection = ({ values, index, mode, removeAction }: IDeviceFormSec
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={6}>
-            <CustomTextField label="Device ID" name={`${index}.device_id`} other={{ disabled: mode === 'edit' }} />
+            <CustomNumberField
+              label="Device ID"
+              name={`${index}.device_id`}
+              disabled={mode === 'edit'}
+              min={1}
+              max={PG_MAX_INT}
+            />
           </Grid>
           <Grid item xs={6}>
             <Grid container>
@@ -265,7 +273,7 @@ const TelemetryDeviceForm = ({ mode, removeAction }: ITelemetryDeviceFormProps) 
               title={`Device ID: ${device.device_id}`}
               sx={{
                 background: grey[100],
-                borderBottom: '1px solid' + grey[300],
+                borderBottom: '1px solid ' + grey[300],
                 '& .MuiCardHeader-title': {
                   fontSize: '1.125rem'
                 }

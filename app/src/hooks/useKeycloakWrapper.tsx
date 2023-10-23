@@ -108,16 +108,39 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   getIdentitySource: () => string | null;
-
   /**
    * Get the user guid
    *
    * @memberof IKeycloakWrapper
    */
   getUserGuid: () => string | null;
+  /**
+   * The user's auth username.F
+   *
+   * @type {(string | undefined)}
+   * @memberof IKeycloakWrapper
+   */
   username: string | undefined;
+  /**
+   * The user's display name.
+   *
+   * @type {(string | undefined)}
+   * @memberof IKeycloakWrapper
+   */
   displayName: string | undefined;
+  /**
+   * The user's email.
+   *
+   * @type {(string | undefined)}
+   * @memberof IKeycloakWrapper
+   */
   email: string | undefined;
+  /**
+   * The user's system user id.
+   *
+   * @type {(number | undefined)}
+   * @memberof IKeycloakWrapper
+   */
   systemUserId: number | undefined;
   /**
    * Force this keycloak wrapper to refresh its data.
@@ -132,8 +155,18 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   getLoginUrl: (redirectUri?: string) => string;
-
+  /**
+   * The logged in user's data.
+   *
+   * @type {(ISystemUser | undefined)}
+   * @memberof IKeycloakWrapper
+   */
   user: ISystemUser | undefined;
+  /**
+   * The critterbase Uuid.
+   *
+   * @memberof IKeycloakWrapper
+   */
   critterbaseUuid: () => string | undefined;
 }
 
@@ -306,7 +339,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   };
 
   const user = (): ISystemUser | undefined => {
-    return userDataLoader?.data;
+    return userDataLoader.data;
   };
 
   const critterbaseUuid = useCallback(() => {

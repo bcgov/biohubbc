@@ -1,15 +1,10 @@
-import { mdiImport } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { HasProjectOrSystemRole } from 'components/security/Guards';
-import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-import { PublishStatus } from 'constants/attachments';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
@@ -37,11 +32,6 @@ const SurveyObservations: React.FC = () => {
   }, [surveyContext.observationDataLoader, projectId, surveyId]);
 
   const occurrenceSubmission = surveyContext.observationDataLoader.data?.surveyObservationData;
-  const occurrenceSubmissionPublishStatus = surveyContext.observationDataLoader.data?.surveyObservationSupplementaryData
-    ?.event_timestamp
-    ? PublishStatus.SUBMITTED
-    : PublishStatus.UNSUBMITTED;
-
   const submissionPollingInterval = useInterval(
     () => surveyContext.observationDataLoader.refresh(projectId, surveyId),
     5000,
@@ -81,33 +71,8 @@ const SurveyObservations: React.FC = () => {
     };
   };
 
-  function handleOpenImportObservations() {
-    setOpenImportObservations(true);
-  }
-
   function handleCloseImportObservations() {
     setOpenImportObservations(false);
-  }
-
-  function showUploadDialog() {
-    if (occurrenceSubmission) {
-      // An observation submission already exists, warn user about overriding existing submission
-      dialogContext.setYesNoDialog({
-        dialogTitle: 'Import New Observation Data',
-        dialogText:
-          'Importing a new file will overwrite the existing observations data. Are you sure you want to proceed?',
-        open: true,
-        onYes: () => {
-          handleOpenImportObservations();
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onClose: () => dialogContext.setYesNoDialog({ open: false }),
-        onNo: () => dialogContext.setYesNoDialog({ open: false })
-      });
-    } else {
-      // Observation submission does not exist, prompt user to import an observation file
-      handleOpenImportObservations();
-    }
   }
 
   function handleDelete() {
@@ -164,30 +129,9 @@ const SurveyObservations: React.FC = () => {
         />
       </ComponentDialog>
 
-      <H2ButtonToolbar
-        label="Observations"
-        buttonLabel="Import"
-        buttonTitle="Import Observations"
-        buttonProps={{ variant: 'contained', color: 'primary' }}
-        buttonStartIcon={<Icon path={mdiImport} size={1} />}
-        buttonOnClick={() => showUploadDialog()}
-        renderButton={(buttonProps) => {
-          const { disabled, ...rest } = buttonProps;
-
-          // admins should always see this button
-          // button should only be visible if the data has not been published
-          if (
-            HasProjectOrSystemRole({
-              validProjectRoles: [],
-              validProjectPermissions: [],
-              validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
-            }) ||
-            occurrenceSubmissionPublishStatus !== PublishStatus.SUBMITTED
-          ) {
-            return <Button {...rest} />;
-          }
-        }}
-      />
+      <Toolbar>
+        <Typography variant="h2">Observations</Typography>
+      </Toolbar>
 
       <Divider />
 
@@ -197,7 +141,7 @@ const SurveyObservations: React.FC = () => {
 
         {/* Submission data has finished loading, but is null, no submission to display */}
         {!surveyContext.observationDataLoader.data && surveyContext.observationDataLoader.isReady && (
-          <NoSurveySectionData text={'No Observations'} paperVariant={'outlined'} />
+          <NoSurveySectionData text={'Currently Unavailable'} paperVariant={'outlined'} />
         )}
 
         {/* Submission data exists, validation is running */}

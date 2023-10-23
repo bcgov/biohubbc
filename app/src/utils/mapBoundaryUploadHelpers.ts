@@ -1,7 +1,7 @@
 import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
 import { IUploadHandler } from 'components/file-upload/FileUploadItem';
-import { Feature, GeoJsonProperties, Geometry } from 'geojson';
+import { BBox, Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -167,31 +167,67 @@ export const boundaryUploadHelper = (params: {
 };
 
 /**
- * @param geometries geometry values on map
+ * Calculates the bounding box that encompasses all of the given features
+ *
+ * @param features The features used to calculate the bounding box
+ * @returns The bounding box, or undefined if a bounding box cannot be calculated.
  */
-export const calculateUpdatedMapBounds = (geometries: Feature[]): LatLngBoundsExpression | undefined => {
-  /*
-    If no geometries, we do not need to set bounds
-
-    If there is only one geometry and it is a point, we cannot do the bound setting
-    because leaflet does not know how to handle that and tries to zoom in way too much
-
-    If there are multiple points or a polygon and a point, this is not an issue
-  */
-  if (!geometries || !geometries.length || (geometries.length === 1 && geometries[0]?.geometry?.type === 'Point')) {
+export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefined => {
+  // If no geometries, we do not need to set bounds
+  if (!features.length) {
     return;
   }
 
+  /**
+   * If there is only one geometry and it is a point, we cannot automatically calculate
+   * a bounding box, because leaflet does not know how to handle the scale, and tries
+   * to zoom in way too much. In this case, we manually create a bounding box.
+   */
+  if (features.length === 1 && features[0]?.geometry?.type === 'Point') {
+    const singlePoint = features[0]?.geometry;
+    const [longitude, latitude] = singlePoint.coordinates;
+
+    return [longitude + 1, latitude + 1, longitude - 1, latitude - 1];
+  }
+
+  /**
+   * If there are multiple points or a polygon and a point, we can automatically
+   * create a bouding box using Turf.
+   */
   const allGeosFeatureCollection = {
     type: 'FeatureCollection',
-    features: [...geometries]
+    features: [...features]
   };
-  const bboxCoords = bbox(allGeosFeatureCollection);
 
+  return bbox(allGeosFeatureCollection);
+};
+
+/**
+ * Converts a bounding box to a lat/long bounds expression
+ * @param boundingBox
+ * @returns
+ */
+export const latLngBoundsFromBoundingBox = (boundingBox: BBox): LatLngBoundsExpression => {
   return [
-    [bboxCoords[1], bboxCoords[0]],
-    [bboxCoords[3], bboxCoords[2]]
+    [boundingBox[1], boundingBox[0]],
+    [boundingBox[3], boundingBox[2]]
   ];
+};
+
+/**
+ * Calculates the bounding box that encompasses all of the given features
+ *
+ * @param features The features used to calculate the map bounds
+ * @returns The Lat/Long bounding box, or undefined if a bounding box cannot be calculated.
+ */
+export const calculateUpdatedMapBounds = (features: Feature[]): LatLngBoundsExpression | undefined => {
+  const bboxCoords = calculateFeatureBoundingBox(features);
+
+  if (!bboxCoords) {
+    return;
+  }
+
+  return latLngBoundsFromBoundingBox(bboxCoords);
 };
 
 /**

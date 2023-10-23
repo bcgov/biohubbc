@@ -49,6 +49,10 @@ export class ProjectRepository extends BaseRepository {
         ON s.project_id = p.project_id
       LEFT OUTER JOIN study_species as sp
         ON sp.survey_id = s.survey_id
+      LEFT JOIN survey_funding_source as sfs
+        ON s.survey_id = sfs.survey_id
+      LEFT JOIN funding_source as fs
+        ON sfs.funding_source_id = fs.funding_source_id
       LEFT JOIN project_region pr
         ON p.project_id = pr.project_id
       LEFT JOIN region_lookup rl
@@ -88,10 +92,6 @@ export class ProjectRepository extends BaseRepository {
         sqlStatement.append(SQL` AND p.name = ${filterFields.project_name}`);
       }
 
-      if (filterFields.agency_id) {
-        sqlStatement.append(SQL` AND a.agency_id = ${filterFields.agency_id}`);
-      }
-
       if (filterFields?.species && filterFields?.species?.length > 0) {
         sqlStatement.append(SQL` AND sp.wldtaxonomic_units_id =${filterFields.species[0]}`);
       }
@@ -99,7 +99,7 @@ export class ProjectRepository extends BaseRepository {
       if (filterFields.keyword) {
         const keyword_string = '%'.concat(filterFields.keyword).concat('%');
         sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
-        sqlStatement.append(SQL` OR a.name ilike ${keyword_string}`);
+        sqlStatement.append(SQL` AND fs.name ilike ${keyword_string}`);
         sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
       }
     }

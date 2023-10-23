@@ -1,4 +1,4 @@
-import { IObservationTableRow } from 'contexts/observationsContext';
+import { IObservationRecord } from 'contexts/observationsContext';
 import { Feature, FeatureCollection } from 'geojson';
 
 export interface IGetSubmissionCSVForViewItem {
@@ -88,5 +88,5 @@ export interface ISpatialData {
 }
 
 export interface IGetSurveyObservationsResponse {
-  surveyObservations: IObservationTableRow[];
+  surveyObservations: IObservationRecord[];
 }

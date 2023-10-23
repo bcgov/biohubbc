@@ -5,7 +5,8 @@ import { Critter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
   IAnimalTelemetryDevice,
-  IDeploymentTimespan
+  IDeploymentTimespan,
+  ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/device';
 import {
   IGetAttachmentDetails,
@@ -611,6 +612,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const getCritterTelemetry = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    startDate: string,
+    endDate: string
+  ): Promise<ITelemetryPointCollection> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/telemetry?startDate=${startDate}&endDate=${endDate}`
+    );
+    return data;
+  };
   /**
    * Removes a deployment. Will trigger removal in both SIMS and BCTW.
    *
@@ -658,6 +671,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     addDeployment,
     getDeploymentsInSurvey,
     updateDeployment,
+    getCritterTelemetry,
     removeDeployment,
     updateSurveyCritter
   };

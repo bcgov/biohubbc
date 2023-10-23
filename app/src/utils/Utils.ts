@@ -397,3 +397,74 @@ export const getCodesName = (
   }
   return name;
 };
+
+/**
+ * Convert a UUID into an arbitrary color within a constrained color space.
+ *
+ * @param id uuid
+ * @returns {*} {fillColor: string, outlineColor: string}
+ */
+export const uuidToColor = (id: string): { fillColor: string; outlineColor: string } => {
+  const uuidToInt = (uuid: string): number => {
+    const noDashes = uuid.replace(/-/g, '');
+    const substring = noDashes.substring(0, 9);
+    return parseInt(substring, 16);
+  };
+
+  type HSL = { h: number; s: number; l: number };
+  // Converts an integer value to an HSL color
+  const intToHSL = (i: number): HSL => {
+    const hue = (i / 1000) % 360;
+    let saturation = (i % 50) + 50; // Ensuring saturation is between 50% and 100%
+    let lightness = (i % 60) + 20; // Ensuring lightness is between 20% and 80%
+
+    // Avoiding earthy tones for hues in the range of 20-170 by adjusting the saturation and lightness values
+    if (hue >= 20 && hue <= 170) {
+      saturation = (i % 40) + 60; // Ensuring saturation is between 60% and 100%
+      lightness = (i % 50) + 40; // Ensuring lightness is between 40% and 90%
+    }
+
+    return { h: hue, s: saturation, l: lightness };
+  };
+
+  function HSLToRGB(hsl: HSL) {
+    const { h, s, l } = hsl;
+    const scaledS = s / 100;
+    const scaledL = l / 100;
+    const c = (1 - Math.abs(2 * scaledL - 1)) * scaledS;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = scaledL - c / 2;
+
+    let r, g, b;
+    if (h >= 0 && h < 60) [r, g, b] = [c, x, 0];
+    else if (h >= 60 && h < 120) [r, g, b] = [x, c, 0];
+    else if (h >= 120 && h < 180) [r, g, b] = [0, c, x];
+    else if (h >= 180 && h < 240) [r, g, b] = [0, x, c];
+    else if (h >= 240 && h < 300) [r, g, b] = [x, 0, c];
+    else [r, g, b] = [c, 0, x];
+
+    return [(r + m) * 255, (g + m) * 255, (b + m) * 255].map((val) => Math.round(val));
+  }
+
+  function RGBToHex(rgb: number[]) {
+    return rgb.map((val) => val.toString(16).padStart(2, '0')).join('');
+  }
+
+  function generateOutlineColor(hsl: HSL) {
+    const { h, s, l } = hsl;
+    const outlineL = l >= 50 ? l - 40 : l + 40;
+    return { h, s, l: outlineL };
+  }
+
+  const intVal = uuidToInt(id);
+  const hslFillColor = intToHSL(intVal);
+  const hslOutlineColor = generateOutlineColor(hslFillColor);
+
+  const rgbFillColor = HSLToRGB(hslFillColor);
+  const rgbOutlineColor = HSLToRGB(hslOutlineColor);
+
+  const hexFillColor = RGBToHex(rgbFillColor);
+  const hexOutlineColor = RGBToHex(rgbOutlineColor);
+
+  return { fillColor: `#${hexFillColor}`, outlineColor: `#${hexOutlineColor}` };
+};

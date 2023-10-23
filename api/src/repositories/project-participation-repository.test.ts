@@ -66,6 +66,43 @@ describe('ProjectParticipationRepository', () => {
     });
   });
 
+  describe('getProjectParticipantByUserGuid', () => {
+    it('should return result', async () => {
+      const mockResponse = ({
+        rows: [
+          {
+            user_guid: '123-456-789'
+          }
+        ],
+        rowCount: 1
+      } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new ProjectParticipationRepository(dbConnection);
+
+      const projectId = 1;
+      const userGuid = '123-456-789';
+
+      const response = await repository.getProjectParticipantByUserGuid(projectId, userGuid);
+
+      expect(response).to.eql({ user_guid: '123-456-789' });
+    });
+
+    it('should return null', async () => {
+      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new ProjectParticipationRepository(dbConnection);
+
+      const projectId = 1;
+      const userGuid = '123-456-789';
+
+      const response = await repository.getProjectParticipantByUserGuid(projectId, userGuid);
+
+      expect(response).to.eql(null);
+    });
+  });
+
   describe('getProjectParticipants', () => {
     it('should return result', async () => {
       const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;

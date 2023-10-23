@@ -1,7 +1,17 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
-import { DataGrid, GridColDef, GridEditInputCell, GridEventListener, GridRowModelUpdate } from '@mui/x-data-grid';
+import Skeleton from '@mui/material/Skeleton';
+import TextField from '@mui/material/TextField';
+import {
+  DataGrid,
+  GridColDef,
+  GridEventListener,
+  GridInputRowSelectionModel,
+  GridRowModelUpdate
+} from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
@@ -12,9 +22,10 @@ import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyData
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
-import { IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import moment from 'moment';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router';
 
 export interface ISampleSiteSelectProps {
   survey_sample_site_id: number;
@@ -49,11 +60,43 @@ export interface ISpeciesObservationTableProps {
   }[];
 }
 
+const SampleSiteSkeleton = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      gap: '16px',
+      alignItemx: 'center',
+      p: 1,
+      height: 58,
+      background: '#fff',
+      borderBottom: '1px solid ' + grey[300]
+    }}>
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+    <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
+  </Box>
+);
+
+const LoadingOverlay = () => {
+  return (
+    <Box display="flex" flexDirection="column">
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+    </Box>
+  );
+};
+
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const { sample_sites, sample_methods, sample_periods } = props;
+  const location = useLocation();
+
   const observationsContext = useContext(ObservationsContext);
   const { observationsDataLoader } = observationsContext;
-
   const apiRef = observationsContext._muiDataGridApiRef;
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
@@ -66,6 +109,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
+      valueSetter: (params) => {
+        return { ...params.row, wldtaxonomic_units_id: Number(params.value) };
+      },
       renderCell: (params) => {
         return <TaxonomyDataGridViewCell dataGridProps={params} />;
       },
@@ -78,7 +124,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Sampling Site',
       editable: true,
       flex: 1,
-      minWidth: 200,
+      minWidth: 250,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -110,7 +156,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Sampling Method',
       editable: true,
       flex: 1,
-      minWidth: 200,
+      minWidth: 250,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -145,8 +191,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'survey_sample_period_id',
       headerName: 'Sampling Period',
       editable: true,
-      flex: 1,
-      minWidth: 200,
+      flex: 0,
+      width: 240,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
@@ -182,19 +228,32 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Count',
       editable: true,
       type: 'number',
-      minWidth: 100,
+      minWidth: 110,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderEditCell: (params) => (
-        <GridEditInputCell
-          {...params}
-          inputProps={{
-            min: 0,
-            max: 99999
-          }}
-        />
-      )
+      headerAlign: 'right',
+      align: 'right',
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^\d{0,7}$/.test(event.target.value)) {
+                // If the value is not a number
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={params.value ?? ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'observation_date',
@@ -214,24 +273,33 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'string',
       width: 150,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        return { ...params.row, observation_time: params.value };
+      },
+      valueParser: (value) => {
+        if (!value) {
+          return null;
+        }
+
+        if (moment.isMoment(value)) {
+          return value.format('HH:mm');
+        }
+
+        return moment(value, 'HH:mm:ss').format('HH:mm');
+      },
       renderCell: (params) => {
         if (!params.value) {
           return null;
         }
 
-        if (moment.isMoment(params.value)) {
-          return <>{params.value.format('HH:mm')}</>;
-        }
-
-        return <>{moment(params.value, 'HH:mm:ss').format('HH:mm')}</>;
+        return <>{params.value}</>;
       },
       renderEditCell: (params) => {
         return (
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <TimePicker
-              timeSteps={{ hours: 1, minutes: 1 }}
               value={(params.value && moment(params.value, 'HH:mm:ss')) || null}
               onChange={(value) => {
                 apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
@@ -243,6 +311,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: value?.format('HH:mm:ss')
                 });
               }}
+              timeSteps={{ hours: 1, minutes: 1 }}
               ampm={false}
             />
           </LocalizationProvider>
@@ -252,32 +321,94 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     {
       field: 'latitude',
       headerName: 'Lat',
-      type: 'number',
       editable: true,
-      width: 150,
+      width: 120,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderCell: (params) => String(params.row.latitude)
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
+          // If the value is a legal latitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, latitude: Number(params.value) };
+        }
+
+        const value = parseFloat(params.value);
+        return { ...params.row, longitude: isNaN(value) ? null : value };
+      },
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
+                // If the value is not a subset of a legal latitude value, prevent the value from being applied
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={params.value ?? ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'longitude',
       headerName: 'Long',
-      type: 'number',
       editable: true,
-      width: 150,
+      width: 120,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderCell: (params) => String(params.row.longitude)
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
+          // If the value is a legal longitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, longitude: Number(params.value) };
+        }
+
+        const value = parseFloat(params.value);
+        return { ...params.row, longitude: isNaN(value) ? null : value };
+      },
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
+                // If the value is not a subset of a legal longitude value, prevent the value from being applied
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={params.value ?? ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'actions',
       headerName: '',
       type: 'actions',
-      width: 96,
+      width: 70,
       disableColumnMenu: true,
       resizable: false,
+      headerClassName: 'pinnedColumn',
+      cellClassName: 'pinnedColumn',
       getActions: (params) => [
         <IconButton
           onClick={(event) => {
@@ -294,10 +425,19 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
   const showConfirmDeleteDialog = Boolean(deletingObservation);
 
+  const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
+    if (location.hash.startsWith('#view-')) {
+      const selectedId = location.hash.split('-')[1];
+      return [selectedId];
+    }
+
+    return undefined;
+  }, []);
+
   useEffect(() => {
     if (observationsDataLoader.data?.surveyObservations) {
       const rows: IObservationTableRow[] = observationsDataLoader.data.surveyObservations.map(
-        (row: IObservationTableRow) => ({
+        (row: IObservationRecord) => ({
           ...row,
           id: String(row.survey_observation_id)
         })
@@ -336,11 +476,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     observationsContext.markRecordWithUnsavedChanges(id);
   };
 
-  const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
-    const updatedRow = { ...newRow, wldtaxonomic_units_id: Number(newRow.wldtaxonomic_units_id) };
-    return updatedRow;
-  };
-
   return (
     <>
       <YesNoDialog
@@ -361,40 +496,118 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onNo={() => handleCancelDeleteRow()}
       />
       <DataGrid
+        loading={observationsDataLoader.isLoading}
+        rowHeight={56}
         apiRef={apiRef}
         editMode="row"
         onCellClick={handleCellClick}
         onRowEditStop={handleRowEditStop}
-        processRowUpdate={handleProcessRowUpdate}
         columns={observationColumns}
         rows={observationsContext.initialRows}
         disableRowSelectionOnClick
         localeText={{
           noRowsLabel: 'No Records'
         }}
+        rowSelectionModel={rowSelectionModel}
+        getRowHeight={() => 'auto'}
+        slots={{
+          loadingOverlay: LoadingOverlay
+        }}
         sx={{
-          background: '#fff',
+          background: grey[50],
           border: 'none',
-          '& .MuiDataGrid-pinnedColumns, .MuiDataGrid-pinnedColumnHeaders': {
-            background: '#fff'
+          '& .pinnedColumn': {
+            position: 'sticky',
+            right: 0,
+            top: 0,
+            borderLeft: '1px solid' + grey[300]
+          },
+          '& .MuiDataGrid-columnHeaders': {
+            background: '#fff',
+            position: 'relative',
+            '&:after': {
+              content: "''",
+              position: 'absolute',
+              top: '0',
+              right: 0,
+              width: '70px',
+              height: '60px',
+              background: '#fff',
+              borderLeft: '1px solid' + grey[300]
+            }
+          },
+          '& .MuiDataGrid-columnHeader': {
+            px: 3,
+            py: 1,
+            '&:focus': {
+              outline: 'none'
+            }
           },
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 700,
             textTransform: 'uppercase',
-            color: '#999'
+            color: 'text.secondary'
           },
-          '& .test': {
-            position: 'sticky',
-            right: 0,
-            top: 0,
-            borderLeft: '1px solid #ccc',
+          '& .MuiDataGrid-cell': {
+            px: 3,
+            py: 1,
+            background: '#fff',
+            '&.MuiDataGrid-cell--editing:focus-within': {
+              outline: 'none'
+            },
+            '&.MuiDataGrid-cell--editing': {
+              p: 1,
+              backgroundColor: cyan[100]
+            }
+          },
+          '& .MuiDataGrid-row--editing': {
+            boxShadow: 'none',
+            backgroundColor: cyan[50],
+            '& .MuiDataGrid-cell': {
+              backgroundColor: cyan[50]
+            }
+          },
+          '& .MuiDataGrid-editInputCell': {
+            border: '1px solid #ccc',
+            '&:hover': {
+              borderColor: 'primary.main'
+            },
+            '&.Mui-focused': {
+              borderColor: 'primary.main',
+              outlineWidth: '2px',
+              outlineStyle: 'solid',
+              outlineColor: 'primary.main',
+              outlineOffset: '-2px'
+            }
+          },
+          '& .MuiInputBase-root': {
+            height: '40px',
+            borderRadius: '4px',
+            background: '#fff',
+            fontSize: '0.875rem',
+            '&.MuiDataGrid-editInputCell': {
+              padding: 0
+            }
+          },
+          '& .MuiOutlinedInput-root': {
+            borderRadius: '4px',
+            background: '#fff',
+            border: 'none',
+            '&:hover': {
+              borderColor: 'primary.main'
+            },
+            '&:hover > fieldset': {
+              border: '1px solid primary.main'
+            }
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            border: '1px solid ' + grey[300],
+            '&.Mui-focused': {
+              borderColor: 'primary.main'
+            }
+          },
+          '& .MuiDataGrid-footerContainer': {
             background: '#fff'
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            position: 'relative'
-          },
-          '& .MuiDataGrid-actionsCell': {
-            gap: 0
           }
         }}
       />

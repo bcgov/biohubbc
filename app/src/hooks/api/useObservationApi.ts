@@ -1,5 +1,5 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
-import { IObservationTableRow } from 'contexts/observationsContext';
+import { IObservationRecord, IObservationTableRow } from 'contexts/observationsContext';
 import { GeoJsonProperties } from 'geojson';
 import {
   IGetObservationSubmissionResponse,
@@ -186,7 +186,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     surveyObservations: IObservationTableRow[]
-  ): Promise<IObservationTableRow[]> => {
+  ): Promise<IObservationRecord[]> => {
     const { data } = await axios.put<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observation`,
       { surveyObservations }

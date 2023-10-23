@@ -1,7 +1,7 @@
 import { layerContentHandlers } from 'components/map/wfs-utils';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
+import L, { LatLng, LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
@@ -23,6 +23,10 @@ import FullScreenScrollingEventHandler from './components/FullScreenScrollingEve
 import MarkerCluster, { IMarkerLayer } from './components/MarkerCluster';
 import StaticLayers, { IStaticLayer } from './components/StaticLayers';
 import WFSFeatureGroup from './WFSFeatureGroup';
+
+const point = (feature: Feature, latlng: LatLng) => {
+  return new L.CircleMarker(latlng, { radius: 6, fillOpacity: 1, fillColor: '#006edc', color: '#ffffff', weight: 1 });
+};
 
 /*
   Get leaflet icons working
@@ -60,6 +64,7 @@ export interface IMapContainerProps {
   additionalLayers?: IAdditionalLayers;
   clusteredPointGeometries?: IClusteredPointGeometries[];
   confirmDeletion?: boolean;
+  hideLayerControls?: boolean;
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   onBoundsChange?: IMapBoundsOnChange;
   onDrawChange?: IDrawControlsOnChange;
@@ -202,7 +207,7 @@ const MapContainer = (props: IMapContainerProps) => {
       )}
 
       {nonEditableGeometries?.map((nonEditableGeo: INonEditableGeometries) => (
-        <GeoJSON key={uuidv4()} data={nonEditableGeo.feature}>
+        <GeoJSON key={uuidv4()} data={nonEditableGeo.feature} pointToLayer={point}>
           {nonEditableGeo.popupComponent}
         </GeoJSON>
       ))}
@@ -220,12 +225,15 @@ const MapContainer = (props: IMapContainerProps) => {
 
       {additionalLayers && <AdditionalLayers layers={additionalLayers} />}
 
-      <StaticLayers layers={staticLayers} />
-      <LayersControl position="bottomright">
-        <MarkerCluster layers={markerLayers} />
+      {props.hideLayerControls !== true && (
+        <LayersControl position="bottomright">
+          <StaticLayers layers={staticLayers} />
 
-        <BaseLayerControls />
-      </LayersControl>
+          <MarkerCluster layers={markerLayers} />
+
+          <BaseLayerControls />
+        </LayersControl>
+      )}
     </LeafletMapContainer>
   );
 };

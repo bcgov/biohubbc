@@ -65,7 +65,7 @@ export const authorizeRequest = async (req: Request): Promise<boolean> => {
       (await authorizationService.executeAuthorizationScheme(authorizationScheme));
 
     // Add the system_user to the request for future use, if needed
-    req['system_user'] = authorizationService.systemUser;
+    req['system_user'] = authorizationService._systemUser;
 
     await connection.commit();
 
