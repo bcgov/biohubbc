@@ -16,7 +16,7 @@ describe('SurveyLocationRepository', () => {
   describe('insertSurveyLocation', () => {
     it('should insert a survey location', async () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);
 
@@ -40,13 +40,14 @@ describe('SurveyLocationRepository', () => {
       const data = new PostSurveyLocationData(dataObj);
 
       await repository.insertSurveyLocation(1, data);
+      expect(dbConnection.sql).to.have.been.calledOnce;
     });
   });
 
   describe('updateSurveyLocation', () => {
     it('should update a survey location', async () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);
 
@@ -70,6 +71,7 @@ describe('SurveyLocationRepository', () => {
       const data = new PostSurveyLocationData(dataObj);
 
       await repository.updateSurveyLocation(data);
+      expect(dbConnection.sql).to.have.been.calledOnce;
     });
   });
 
@@ -77,13 +79,14 @@ describe('SurveyLocationRepository', () => {
     it('should return a list of survey locations', async () => {
       const mockSurveyLocation = { survey_location_id: 1, name: 'Test Location', description: 'Test Description' };
       const mockResponse = ({ rows: [mockSurveyLocation], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);
 
       const response = await repository.getSurveyLocationsData(1);
 
       expect(response).to.eql([mockSurveyLocation]);
+      expect(dbConnection.sql).to.have.been.calledOnce;
     });
   });
 
@@ -91,17 +94,18 @@ describe('SurveyLocationRepository', () => {
     it('should delete a survey location', async () => {
       const mockSurveyLocation = { survey_location_id: 1, name: 'Test Location', description: 'Test Description' };
       const mockResponse = ({ rows: [mockSurveyLocation], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);
       const response = await repository.deleteSurveyLocation(1);
 
       expect(response).to.eql(mockSurveyLocation);
+      expect(dbConnection.sql).to.have.been.calledOnce;
     });
 
     it('should throw an error when unable to delete the survey location', async () => {
       const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
+      const dbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const repository = new SurveyLocationRepository(dbConnection);
 
