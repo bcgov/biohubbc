@@ -87,11 +87,8 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
             <Box display="flex" justifyContent="flex-end">
               <Box
                 sx={{
-                  '& button': {
+                  '& [class^="MuiButton"]': {
                     minWidth: '6rem'
-                  },
-                  '& button + button': {
-                    ml: 1
                   }
                 }}>
                 <LoadingButton
@@ -106,7 +103,10 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
                   variant="outlined"
                   color="primary"
                   component={RouterLink}
-                  to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}>
+                  to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}
+                  sx={{
+                    ml: 1
+                  }}>
                   Cancel
                 </Button>
               </Box>

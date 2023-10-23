@@ -606,6 +606,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               borderColor: 'primary.main'
             }
           },
+          '& .MuiDataGrid-virtualScrollerContent': {
+            background: grey[100]
+          },
           '& .MuiDataGrid-footerContainer': {
             background: '#fff'
           }

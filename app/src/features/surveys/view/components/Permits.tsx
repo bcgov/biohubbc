@@ -5,7 +5,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 
 /**
- * General information content for a survey.
+ * Permit content for a survey.
  *
  * @return {*}
  */
@@ -24,11 +24,11 @@ const Permits = () => {
 
   return (
     <Box component="dl">
-      {permit.permits?.map((permit) => {
+      {permit.permits?.map((item) => {
         return (
-          <Box className="row" key={permit.id}>
-            <Typography component="dt">{`#${permit.permit_number}`}</Typography>
-            <Typography component="dd">{permit.permit_type}</Typography>
+          <Box className="row" key={item.permit_id}>
+            <Typography component="dt">{`#${item.permit_number}`}</Typography>
+            <Typography component="dd">{item.permit_type}</Typography>
           </Box>
         );
       })}

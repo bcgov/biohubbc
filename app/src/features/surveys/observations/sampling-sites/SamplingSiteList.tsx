@@ -232,7 +232,6 @@ const SamplingSiteList = () => {
                         return (
                           <ListItem
                             disableGutters
-                            divider
                             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                             sx={{
                               display: 'block',
@@ -257,7 +256,7 @@ const SamplingSiteList = () => {
                                     divider
                                     key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
                                     <ListItemIcon>
-                                      <Icon path={mdiCalendarRange} size={0.9}></Icon>
+                                      <Icon path={mdiCalendarRange} size={1}></Icon>
                                     </ListItemIcon>
                                     <ListItemText
                                       primary={`${samplePeriod.start_date} to ${samplePeriod.end_date}`}></ListItemText>
