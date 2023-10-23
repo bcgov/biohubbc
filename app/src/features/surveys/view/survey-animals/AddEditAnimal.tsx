@@ -21,6 +21,7 @@ import { AnimalSectionDataCards } from './AnimalSectionDataCards';
 import { IAnimalDeployment } from './device';
 import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
 import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitAnimalForm';
+import { FamilyAnimalFormContent } from './form-sections/FamilyAnimalForm';
 import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
@@ -50,11 +51,12 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
 
   const cbApi = useCritterbaseApi();
 
-  //const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
+  const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
 
-  /*if (!allFamilies) {
+  useEffect(() => {
     refreshFamilies();
-  }*/
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.general.critter_id]);
 
   const { data: measurements, refresh: refreshMeasurements } = useDataLoader(cbApi.lookup.getTaxonMeasurements);
   useEffect(() => {
@@ -76,9 +78,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         <MortalityAnimalFormContent name={'mortality'} index={selectedIndex} value={values.mortality[selectedIndex]} />
       ),
       [SurveyAnimalsI18N.animalFamilyTitle]: (
-        /*<FamilyAnimalFormContent name={'family'} index={selectedIndex} allFamilies={allFamilies} />*/ <Typography>
-          Unimplemented
-        </Typography>
+        <FamilyAnimalFormContent name={'family'} index={selectedIndex} allFamilies={allFamilies} />
       ),
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: (
         <CollectionUnitAnimalFormContent name={'collectionUnits'} index={selectedIndex} />
@@ -101,6 +101,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       </Grid>
     );
   }, [
+    allFamilies,
     deploymentRemoveAction,
     measurements,
     openedFromAddButton,
@@ -267,6 +268,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               critter={critter}
             />
           ) : null}
+          <pre>{JSON.stringify(values, null, 2)}</pre>
         </Form>
       </Box>
     </>
