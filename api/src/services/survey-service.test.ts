@@ -7,7 +7,7 @@ import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } f
 import { ApiExecuteSQLError, ApiGeneralError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
-import { PutSurveyObject, PutSurveyPermitData } from '../models/survey-update';
+import { PostSurveyLocationData, PutSurveyObject, PutSurveyPermitData } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
@@ -35,6 +35,7 @@ import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
+import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
@@ -1353,6 +1354,82 @@ describe('SurveyService', () => {
       expect(observationPublishStatusStub).to.be.calledOnce;
       expect(summaryPublishStatusStub).to.be.calledOnce;
       expect(response).to.eql(PublishStatus.UNSUBMITTED);
+    });
+  });
+
+  describe('insertUpdateDeleteSurveyLocation', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('passes correct data to insert, update, and delete methods', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+      const existingLocations = [
+        { survey_location_id: 30, name: 'Location 1' },
+        { survey_location_id: 31, name: 'Location 2' }
+      ] as SurveyLocationRecord[];
+
+      const getSurveyLocationsDataStub = sinon.stub(service, 'getSurveyLocationsData').resolves(existingLocations);
+
+      const inputData = [
+        { survey_location_id: 30, name: 'Updated Location 1' },
+        { name: 'New Location' }
+      ] as PostSurveyLocationData[];
+
+      const insertSurveyLocationsStub = sinon.stub(service, 'insertSurveyLocations').resolves();
+      const updateSurveyLocationStub = sinon.stub(service, 'updateSurveyLocation').resolves();
+      const deleteSurveyLocationStub = sinon.stub(service, 'deleteSurveyLocation').resolves(existingLocations[1]);
+
+      await service.insertUpdateDeleteSurveyLocation(20, inputData);
+
+      expect(getSurveyLocationsDataStub).to.be.calledOnceWith(20);
+
+      expect(insertSurveyLocationsStub).to.be.calledOnceWith(20, { name: 'New Location' });
+
+      expect(updateSurveyLocationStub).to.be.calledOnceWith({
+        survey_location_id: 30,
+        name: 'Updated Location 1'
+      });
+
+      expect(deleteSurveyLocationStub).to.be.calledOnceWith(31);
+    });
+  });
+
+  describe('deleteSurveyLocation', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('calls the deleteSurveyLocation method of SurveyLocationService with correct arguments', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+      const surveyLocationServiceStub = sinon
+        .stub(SurveyLocationService.prototype, 'deleteSurveyLocation')
+        .resolves({ survey_location_id: 30, name: 'Location 1' } as SurveyLocationRecord);
+
+      const response = await service.deleteSurveyLocation(30);
+
+      expect(surveyLocationServiceStub).to.be.calledOnceWith(30);
+      expect(response).to.eql({ survey_location_id: 30, name: 'Location 1' });
+    });
+  });
+
+  describe('updateSurveyLocation', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('calls the updateSurveyLocation method of SurveyLocationService with correct arguments', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+      const surveyLocationServiceStub = sinon.stub(SurveyLocationService.prototype, 'updateSurveyLocation').resolves();
+
+      const input = { survey_location_id: 30, name: 'Updated Location 1' } as PostSurveyLocationData;
+
+      await service.updateSurveyLocation(input);
+
+      expect(surveyLocationServiceStub).to.be.calledOnceWith(input);
     });
   });
 });
