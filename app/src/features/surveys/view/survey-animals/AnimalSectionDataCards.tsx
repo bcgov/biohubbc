@@ -84,6 +84,10 @@ export const AnimalSectionDataCards = ({ section, critter, onEditClick }: Animal
     return sectionData[section];
   }, [
     section,
+    values.general.animal_id,
+    values.general.wlh_id,
+    values.general.taxon_name,
+    values.general.sex,
     values.collectionUnits,
     values.captures,
     values.mortality,

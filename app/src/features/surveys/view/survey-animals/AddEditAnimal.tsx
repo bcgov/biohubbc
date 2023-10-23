@@ -22,6 +22,7 @@ import { IAnimalDeployment } from './device';
 import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
 import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitAnimalForm';
 import { FamilyAnimalFormContent } from './form-sections/FamilyAnimalForm';
+import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
@@ -66,7 +67,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
 
   const renderSingleForm = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
-      [SurveyAnimalsI18N.animalGeneralTitle]: <Typography>Unimplemented</Typography>,
+      [SurveyAnimalsI18N.animalGeneralTitle]: <GeneralAnimalForm />,
       [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalFormContent name={'markings'} index={selectedIndex} />,
       [SurveyAnimalsI18N.animalMeasurementTitle]: (
         <MeasurementFormContent index={selectedIndex} measurements={measurements} />
@@ -84,22 +85,18 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         <CollectionUnitAnimalFormContent name={'collectionUnits'} index={selectedIndex} />
       ),
       Telemetry: (
-        <DeviceFormSection
-          values={values.device}
-          mode={openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT}
-          index={selectedIndex}
-          removeAction={deploymentRemoveAction}
-        />
+        <Grid spacing={2}>
+          <DeviceFormSection
+            values={values.device}
+            mode={openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT}
+            index={selectedIndex}
+            removeAction={deploymentRemoveAction}
+          />
+        </Grid>
       )
     };
     const displayArea = sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
-    return section === 'Telemetry' ? (
-      displayArea
-    ) : (
-      <Grid spacing={2} container>
-        {displayArea}
-      </Grid>
-    );
+    return displayArea;
   }, [
     allFamilies,
     deploymentRemoveAction,
@@ -147,7 +144,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             fontSize: '1.125rem',
             fontWeight: 700
           }}>
-          {initialValues?.general?.animal_id ? `Animal Details > ${section}` : 'Animal Details'}
+          {values?.general?.animal_id ? `Animal Details > ${section}` : 'Animal Details'}
         </Typography>
         <Box
           sx={{
@@ -158,52 +155,50 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             }
           }}>
           <Box display="flex" overflow="hidden">
-            {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
-              <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
-                {({ push, remove }: FieldArrayRenderProps) => (
-                  <>
-                    <EditDialog
-                      dialogTitle={`Add ${ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}`}
-                      open={showDialog}
-                      component={{
-                        initialValues: values,
-                        element: renderSingleForm,
-                        validationSchema: AnimalSchema
-                      }}
-                      onCancel={() => {
-                        if (openedFromAddButton) {
-                          remove(selectedIndex);
+            <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
+              {({ push, remove }: FieldArrayRenderProps) => (
+                <>
+                  <EditDialog
+                    dialogTitle={ANIMAL_SECTIONS_FORM_MAP[section].addBtnText ?? 'Add'}
+                    open={showDialog}
+                    component={{
+                      initialValues: values,
+                      element: renderSingleForm,
+                      validationSchema: AnimalSchema
+                    }}
+                    onCancel={() => {
+                      if (openedFromAddButton) {
+                        remove(selectedIndex);
+                      }
+                      setOpenedFromAddButton(false);
+                      setShowDialog(false);
+                    }}
+                    onSave={async (saveVals) => {
+                      if (section === 'Telemetry') {
+                        const vals = openedFromAddButton ? [saveVals.device[selectedIndex]] : saveVals.device;
+                        try {
+                          await telemetrySaveAction(
+                            vals,
+                            openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
+                          );
+                        } catch (err) {
+                          setPopup('Telemetry save failed!');
                         }
-                        setOpenedFromAddButton(false);
-                        setShowDialog(false);
-                      }}
-                      onSave={async (saveVals) => {
-                        if (section === 'Telemetry') {
-                          const vals = openedFromAddButton ? [saveVals.device[selectedIndex]] : saveVals.device;
-                          try {
-                            await telemetrySaveAction(
-                              vals,
-                              openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
-                            );
-                          } catch (err) {
-                            setPopup('Telemetry save failed!');
-                          }
-                        }
-                        setOpenedFromAddButton(false);
-                        setShowDialog(false);
-                        setFieldValue(
-                          ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
-                          saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
-                        );
-                      }}
-                    />
+                      }
+                      setOpenedFromAddButton(false);
+                      setShowDialog(false);
+                      setFieldValue(
+                        ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
+                        saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
+                      );
+                    }}
+                  />
+                  {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
                     <Button
                       startIcon={<Icon path={mdiPlus} size={1} />}
                       variant="contained"
                       color="primary"
                       onClick={() => {
-                        //Remove this before handling the modal section
-                        // This is where we will open the modal from
                         setOpenedFromAddButton(true);
                         push(ANIMAL_SECTIONS_FORM_MAP[section]?.defaultFormValue());
                         setSelectedIndex(
@@ -213,10 +208,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                       }}>
                       {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
                     </Button>
-                  </>
-                )}
-              </FieldArray>
-            ) : null}
+                  ) : null}
+                </>
+              )}
+            </FieldArray>
             <Collapse in={!isEqual(initialValues, values) && section !== 'Telemetry'} orientation="horizontal">
               <Box ml={1} whiteSpace="nowrap">
                 <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
@@ -231,7 +226,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         </Box>
       </Toolbar>
       <Box p={2}>
-        {initialValues.general.critter_id ? (
+        {values.general.critter_id ? (
           <Grid container>
             <Grid item mb={2} lg={4} sm={12} md={8}>
               <CustomTextField
@@ -258,7 +253,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Grid>
         ) : null}
         <Form>
-          {critter ? (
+          {critter && (
             <AnimalSectionDataCards
               onEditClick={(idx) => {
                 setSelectedIndex(idx);
@@ -267,8 +262,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               section={section}
               critter={critter}
             />
-          ) : null}
-          <pre>{JSON.stringify(values, null, 2)}</pre>
+          )}
         </Form>
       </Box>
     </>
