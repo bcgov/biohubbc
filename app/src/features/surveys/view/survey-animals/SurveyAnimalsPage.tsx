@@ -12,16 +12,17 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import { isEqual as _deepEquals } from 'lodash';
 import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
-import { datesSameNullable } from 'utils/Utils';
+import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
 import { AddEditAnimal } from './AddEditAnimal';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import { IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
-import { Device, IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
+import { AnimalDeploymentTimespanSchema, AnimalTelemetryDeviceSchema, Device, IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { ANIMAL_FORM_MODE } from './IndividualAnimalForm';
 import { IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
+import yup from 'utils/YupSchema';
 
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>('General');
