@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { cyan } from '@mui/material/colors';
 import { Box } from '@mui/system';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { useFormikContext } from 'formik';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
@@ -53,7 +54,7 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
       },
       onYes: () => {
         dialogContext.setYesNoDialog({ open: false });
-        onSelectSection('General');
+        onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
         history.push(surveyCritterID);
       },
       onNo: () => {
@@ -72,7 +73,7 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
     if (formHasChanges) {
       showCreateYesNoDialog(critterParamID);
     } else {
-      onSelectSection('General');
+      onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
       history.push(critterParamID);
     }
   };
@@ -104,90 +105,79 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
         </Button>
       </Toolbar>
 
-      {isLoading ? (
-        // Skeleton Load
-        <div>LOADING</div>
-      ) : critterData ? (
-        // Animal List
-        sortedCritterData?.map((critter) => (
-          <Accordion
-            disableGutters
-            key={critter.critter_id}
-            expanded={critter.survey_critter_id.toString() === survey_critter_id}
-            sx={{
-              boxShadow: 'none',
-              '&.Mui-expanded': {},
-              '&.Mui-expanded .sampleSiteHeader': {
-                background: cyan[50]
-              }
-            }}>
-            <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="sampleSiteHeader">
-              <AccordionSummary
-                expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                onClick={() => handleCritterSelect(critter.survey_critter_id.toString())}
-                aria-controls="panel1bh-content"
-                sx={{
+      {sortedCritterData.map((critter) => (
+        <Accordion
+          disableGutters
+          key={critter.critter_id}
+          expanded={critter.survey_critter_id.toString() === survey_critter_id}
+          sx={{
+            boxShadow: 'none',
+            '&.Mui-expanded': {},
+            '&.Mui-expanded .sampleSiteHeader': {
+              background: cyan[50]
+            }
+          }}>
+          <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="sampleSiteHeader">
+            <AccordionSummary
+              expandIcon={<Icon path={mdiChevronDown} size={1} />}
+              onClick={() => handleCritterSelect(critter.survey_critter_id.toString())}
+              aria-controls="panel1bh-content"
+              sx={{
+                flex: '1 1 auto',
+                overflow: 'hidden',
+                py: 0.25,
+                pr: 1.5,
+                gap: '16px',
+                '& .MuiAccordionSummary-content': {
                   flex: '1 1 auto',
                   overflow: 'hidden',
-                  py: 0.25,
-                  pr: 1.5,
-                  gap: '16px',
-                  '& .MuiAccordionSummary-content': {
-                    flex: '1 1 auto',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap'
-                  }
-                }}>
-                <Typography fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {critter.animal_id}
-                </Typography>
-              </AccordionSummary>
-            </Box>
-            <AccordionDetails
-              sx={{
-                py: 0
+                  whiteSpace: 'nowrap'
+                }
               }}>
-              <List
-                disablePadding
-                sx={{
-                  '& .MuiListItemText-primary': {
-                    fontSize: '0.875rem'
-                  }
-                }}>
-                {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
-                  <ListItem
-                    key={section}
-                    dense
-                    divider
-                    button
-                    selected={section === selectedSection}
-                    onClick={() => {
-                      onSelectSection(section);
-                    }}>
-                    <ListItemIcon>
-                      <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
-                    </ListItemIcon>
-                    <ListItemText>{section}</ListItemText>
-                    {Object.keys(errors).find((key) => key.toLowerCase() === section.toLowerCase()) !== undefined && (
-                      <Tooltip
-                        placement="top"
-                        arrow
-                        title={'There are errors in this section that must be resolved before submitting the form.'}>
-                        <Icon size={1} color="#D8292F" path={mdiAlert}></Icon>
-                      </Tooltip>
-                    )}
-                  </ListItem>
-                ))}
-              </List>
-            </AccordionDetails>
-          </Accordion>
-        ))
-      ) : (
-        // No Animals to render
-        <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
-          <Typography variant="body2">No Animals</Typography>
-        </Box>
-      )}
+              <Typography fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {critter.animal_id}
+              </Typography>
+            </AccordionSummary>
+          </Box>
+          <AccordionDetails
+            sx={{
+              py: 0
+            }}>
+            <List
+              disablePadding
+              sx={{
+                '& .MuiListItemText-primary': {
+                  fontSize: '0.875rem'
+                }
+              }}>
+              {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
+                <ListItem
+                  key={section}
+                  dense
+                  divider
+                  button
+                  selected={section === selectedSection}
+                  onClick={() => {
+                    onSelectSection(section);
+                  }}>
+                  <ListItemIcon>
+                    <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
+                  </ListItemIcon>
+                  <ListItemText>{section}</ListItemText>
+                  {Object.keys(errors).find((key) => key.toLowerCase() === section.toLowerCase()) !== undefined && (
+                    <Tooltip
+                      placement="top"
+                      arrow
+                      title={'There are errors in this section that must be resolved before submitting the form.'}>
+                      <Icon size={1} color="#D8292F" path={mdiAlert}></Icon>
+                    </Tooltip>
+                  )}
+                </ListItem>
+              ))}
+            </List>
+          </AccordionDetails>
+        </Accordion>
+      ))}
     </Box>
   );
 };

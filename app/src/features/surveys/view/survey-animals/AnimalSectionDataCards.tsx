@@ -13,8 +13,9 @@ import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 interface AnimalSectionDataCardsProps {
   section: IAnimalSections;
   onEditClick: (idx: number) => void;
+  isAddingNew: boolean;
 }
-export const AnimalSectionDataCards = ({ section, onEditClick }: AnimalSectionDataCardsProps) => {
+export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: AnimalSectionDataCardsProps) => {
   const { values } = useFormikContext<IAnimal>();
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
   const cbApi = useCritterbaseApi();
@@ -104,24 +105,26 @@ export const AnimalSectionDataCards = ({ section, onEditClick }: AnimalSectionDa
 
   return (
     <TransitionGroup>
-      {sectionCardData.map((cardData, index) => (
-        <Collapse key={cardData.key}>
-          <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
-            {({ remove }: FieldArrayRenderProps) => (
-              <EditDeleteStubCard
-                header={cardData.header}
-                subHeaderData={cardData.subHeaderData}
-                onClickEdit={() => onEditClick(index)}
-                onClickDelete={
-                  section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
-                    ? undefined
-                    : () => remove(index)
-                }
-              />
-            )}
-          </FieldArray>
-        </Collapse>
-      ))}
+      {sectionCardData.map((cardData, index) =>
+        isAddingNew && index === sectionCardData.length - 1 ? null : (
+          <Collapse key={cardData.key}>
+            <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
+              {({ remove }: FieldArrayRenderProps) => (
+                <EditDeleteStubCard
+                  header={cardData.header}
+                  subHeaderData={cardData.subHeaderData}
+                  onClickEdit={() => onEditClick(index)}
+                  onClickDelete={
+                    section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
+                      ? undefined
+                      : () => remove(index)
+                  }
+                />
+              )}
+            </FieldArray>
+          </Collapse>
+        )
+      )}
     </TransitionGroup>
   );
 };

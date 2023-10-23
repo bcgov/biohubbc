@@ -12,6 +12,7 @@ interface EditDeleteStubCardProps {
   onClickEdit?: () => void;
   onClickDelete?: () => void;
 }
+
 export const EditDeleteStubCard = ({ header, subHeaderData, onClickEdit, onClickDelete }: EditDeleteStubCardProps) => {
   const formatSubHeaderString = (subHeaderData: ISubHeaderData) => {
     const formatArr: string[] = [];

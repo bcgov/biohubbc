@@ -48,7 +48,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
 
-  const dialogTitle = openedFromAddButton ? `Adding ${section}` : `Editing ${section}`;
+  const dialogTitle = openedFromAddButton
+    ? `Add ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`
+    : `Edit ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`;
 
   const cbApi = useCritterbaseApi();
 
@@ -151,123 +153,126 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           }}>
           {values?.general?.animal_id ? `Animal Details > ${section}` : 'Animal Details'}
         </Typography>
-        <Box
-          sx={{
-            '& div:first-of-type': {
-              display: 'flex',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap'
-            }
-          }}>
-          <Box display="flex" overflow="hidden">
-            <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
-              {({ push, remove }: FieldArrayRenderProps) => (
-                <>
-                  <EditDialog
-                    dialogTitle={dialogTitle}
-                    open={showDialog}
-                    component={{
-                      initialValues: values,
-                      element: renderSingleForm,
-                      validationSchema: AnimalSchema
-                    }}
-                    onCancel={() => {
-                      if (openedFromAddButton) {
-                        remove(selectedIndex);
-                      }
-                      setOpenedFromAddButton(false);
-                      setShowDialog(false);
-                    }}
-                    onSave={async (saveVals) => {
-                      if (section === 'Telemetry') {
-                        const vals = openedFromAddButton ? [saveVals.device[selectedIndex]] : saveVals.device;
-                        try {
-                          await telemetrySaveAction(
-                            vals,
-                            openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
-                          );
-                        } catch (err) {
-                          setPopup('Telemetry save failed!');
-                        }
-                      }
-                      setOpenedFromAddButton(false);
-                      setShowDialog(false);
-                      setFieldValue(
-                        ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
-                        saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
+        <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
+          {({ push, remove }: FieldArrayRenderProps) => (
+            <>
+              <EditDialog
+                dialogTitle={dialogTitle}
+                open={showDialog}
+                dialogSaveButtonLabel={openedFromAddButton ? 'Add' : 'Update'}
+                component={{
+                  initialValues: values,
+                  element: renderSingleForm,
+                  validationSchema: AnimalSchema
+                }}
+                onCancel={() => {
+                  if (openedFromAddButton) {
+                    remove(selectedIndex);
+                  }
+                  setOpenedFromAddButton(false);
+                  setShowDialog(false);
+                }}
+                onSave={async (saveVals) => {
+                  if (section === 'Telemetry') {
+                    const vals = openedFromAddButton ? [saveVals.device[selectedIndex]] : saveVals.device;
+                    try {
+                      await telemetrySaveAction(
+                        vals,
+                        openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
                       );
-                    }}
-                  />
-                  {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
-                    <Button
-                      startIcon={<Icon path={mdiPlus} size={1} />}
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        setOpenedFromAddButton(true);
-                        push(ANIMAL_SECTIONS_FORM_MAP[section]?.defaultFormValue());
-                        setSelectedIndex(
-                          (values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any)['length'] ?? 0
-                        );
-                        setShowDialog(true);
-                      }}>
-                      {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
-                    </Button>
-                  ) : null}
-                </>
-              )}
-            </FieldArray>
-            <Collapse in={!isEqual(initialValues, values) && section !== 'Telemetry'} orientation="horizontal">
-              <Box ml={1} whiteSpace="nowrap">
-                <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
-                  Save
-                </LoadingButton>
-                <Button variant="outlined" color="primary" onClick={() => resetForm()}>
-                  Discard Changes
-                </Button>
-              </Box>
-            </Collapse>
-          </Box>
-        </Box>
-      </Toolbar>
-      <Box p={2}>
-        {values.general.critter_id ? (
-          <Grid container>
-            <Grid item mb={2} lg={4} sm={12} md={8}>
-              <CustomTextField
-                label="Critter ID"
-                name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
-                other={{
-                  InputProps: {
-                    endAdornment: (
-                      <IconButton
-                        aria-label={`Copy Critter ID`}
-                        onClick={() => {
-                          navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
-                          setPopup('Copied Critter ID');
-                        }}>
-                        <Icon path={mdiContentCopy} size={0.8} />
-                      </IconButton>
-                    )
-                  },
-                  disabled: true,
-                  variant: 'filled'
+                    } catch (err) {
+                      setPopup('Telemetry save failed!');
+                    }
+                  }
+                  setOpenedFromAddButton(false);
+                  setShowDialog(false);
+                  setFieldValue(
+                    ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
+                    saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
+                  );
                 }}
               />
+              {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
+                <Button
+                  startIcon={<Icon path={mdiPlus} size={1} />}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setOpenedFromAddButton(true);
+                    push(ANIMAL_SECTIONS_FORM_MAP[section]?.defaultFormValue());
+                    setSelectedIndex((values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any)['length'] ?? 0);
+                    setShowDialog(true);
+                  }}>
+                  {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
+                </Button>
+              ) : null}
+            </>
+          )}
+        </FieldArray>
+        <Collapse in={!isEqual(initialValues, values) && section !== 'Telemetry'} orientation="horizontal">
+          <Box ml={1} whiteSpace="nowrap">
+            <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
+              Save
+            </LoadingButton>
+            <Button variant="outlined" color="primary" onClick={() => resetForm()}>
+              Discard Changes
+            </Button>
+          </Box>
+        </Collapse>
+      </Toolbar>
+      <Box p={2}>
+        {values.general.animal_id ? (
+          <Grid container spacing={1} alignItems="center" mb={2}>
+            <Grid item lg={9} md={6}>
+              <Typography variant="body1" color="textSecondary">
+                {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
+              </Typography>
+            </Grid>
+            <Grid item lg={3} md={6}>
+              {values.general.critter_id ? (
+                <CustomTextField
+                  label="Critter ID"
+                  name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
+                  other={{
+                    size: 'small',
+                    InputProps: {
+                      endAdornment: (
+                        <IconButton
+                          aria-label={`Copy Critter ID`}
+                          onClick={() => {
+                            navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
+                            setPopup('Copied Critter ID');
+                          }}>
+                          <Icon path={mdiContentCopy} size={0.8} />
+                        </IconButton>
+                      )
+                    },
+                    disabled: true,
+                    variant: 'filled'
+                  }}
+                />
+              ) : null}
             </Grid>
           </Grid>
         ) : null}
-        <Form>
-          {(
+        {values.general.animal_id ? (
+          <Form>
             <AnimalSectionDataCards
               onEditClick={(idx) => {
                 setSelectedIndex(idx);
                 setShowDialog(true);
               }}
               section={section}
+              isAddingNew={openedFromAddButton}
             />
-          )}
-        </Form>
+          </Form>
+        ) : (
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Typography component="span" variant="body2" color="textSecondary">
+              No Critter Selected
+            </Typography>
+          </Box>
+        )}
       </Box>
     </>
   );
