@@ -157,7 +157,6 @@ const MapContainer = (props: IMapContainerProps) => {
             });
           }
         } catch (error) {
-          //TODO: is there a better way to handle this?
           console.log(error);
         }
       }, 300),

@@ -29,23 +29,21 @@ export const SurveyLocationPage = () => {
           borderBottomWidth: '1px',
           borderBottomColor: grey[300]
         }}>
-        <>
-          <Paper
-            square
-            elevation={0}
-            sx={{
-              pt: 3,
-              pb: 3.5,
-              px: 3
-            }}>
-            <Box display="flex" justifyContent="space-between">
-              <Typography variant="h2">Survey Area Boundaries</Typography>
-              <Button color="primary" variant="outlined" onClick={() => console.log('Close Survey Area Page')}>
-                Close
-              </Button>
-            </Box>
-          </Paper>
-        </>
+        <Paper
+          square
+          elevation={0}
+          sx={{
+            pt: 3,
+            pb: 3.5,
+            px: 3
+          }}>
+          <Box display="flex" justifyContent="space-between">
+            <Typography variant="h2">Survey Area Boundaries</Typography>
+            <Button color="primary" variant="outlined" onClick={() => console.log('Close Survey Area Page')}>
+              Close
+            </Button>
+          </Box>
+        </Paper>
       </Box>
 
       <Box display="flex" flex="1 1 auto" overflow="hidden">

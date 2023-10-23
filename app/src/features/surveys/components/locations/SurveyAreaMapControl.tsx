@@ -31,12 +31,12 @@ export interface ISurveyAreMapControlProps {
 export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const { map_id, formik_key, formik_props, draw_controls_ref } = props;
   const { setFieldValue, setFieldError, values } = formik_props;
-  const [updatedBounds, setUpdateBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
+  const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
 
   useEffect(() => {
-    setUpdateBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
+    setUpdatedBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
   }, [formik_props.values.locations]);
 
   return (
@@ -54,7 +54,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
               revision_count: 0
             };
           });
-          setUpdateBounds(calculateUpdatedMapBounds(features));
+          setUpdatedBounds(calculateUpdatedMapBounds(features));
           setFieldValue(formik_key, [...values.locations, ...formData]);
         }}
         onFailure={(message) => {
