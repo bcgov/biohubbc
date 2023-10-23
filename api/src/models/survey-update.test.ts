@@ -421,7 +421,7 @@ describe('PutLocationData', () => {
     });
 
     it('sets description', () => {
-      expect(data.description).to.equal(null);
+      expect(data.description).to.equal('');
     });
 
     it('sets geojson', () => {
