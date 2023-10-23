@@ -160,6 +160,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               <EditDialog
                 dialogTitle={dialogTitle}
                 open={showDialog}
+                dialogSaveButtonLabel={openedFromAddButton ? 'Add' : 'Update'}
                 component={{
                   initialValues: values,
                   element: renderSingleForm,
@@ -221,40 +222,42 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         </Collapse>
       </Toolbar>
       <Box p={2}>
-        <Grid container spacing={1} alignItems="center" mb={2}>
-          <Grid item lg={9} md={6}>
-            <Typography variant="body1" color="textSecondary">
-              {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
-            </Typography>
+        {critter ? (
+          <Grid container spacing={1} alignItems="center" mb={2}>
+            <Grid item lg={9} md={6}>
+              <Typography variant="body1" color="textSecondary">
+                {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
+              </Typography>
+            </Grid>
+            <Grid item lg={3} md={6}>
+              {values.general.critter_id ? (
+                <CustomTextField
+                  label="Critter ID"
+                  name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
+                  other={{
+                    size: 'small',
+                    InputProps: {
+                      endAdornment: (
+                        <IconButton
+                          aria-label={`Copy Critter ID`}
+                          onClick={() => {
+                            navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
+                            setPopup('Copied Critter ID');
+                          }}>
+                          <Icon path={mdiContentCopy} size={0.8} />
+                        </IconButton>
+                      )
+                    },
+                    disabled: true,
+                    variant: 'filled'
+                  }}
+                />
+              ) : null}
+            </Grid>
           </Grid>
-          <Grid item lg={3} md={6}>
-            {values.general.critter_id ? (
-              <CustomTextField
-                label="Critter ID"
-                name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
-                other={{
-                  size: 'small',
-                  InputProps: {
-                    endAdornment: (
-                      <IconButton
-                        aria-label={`Copy Critter ID`}
-                        onClick={() => {
-                          navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
-                          setPopup('Copied Critter ID');
-                        }}>
-                        <Icon path={mdiContentCopy} size={0.8} />
-                      </IconButton>
-                    )
-                  },
-                  disabled: true,
-                  variant: 'filled'
-                }}
-              />
-            ) : null}
-          </Grid>
-        </Grid>
-        <Form>
-          {critter && (
+        ) : null}
+        {critter ? (
+          <Form>
             <AnimalSectionDataCards
               onEditClick={(idx) => {
                 setSelectedIndex(idx);
@@ -264,8 +267,14 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               critter={critter}
               isAddingNew={openedFromAddButton}
             />
-          )}
-        </Form>
+          </Form>
+        ) : (
+          <Box display="flex" alignItems="center" justifyContent="center">
+            <Typography component="span" variant="body2" color="textSecondary">
+              No Critter Selected
+            </Typography>
+          </Box>
+        )}
       </Box>
     </>
   );
