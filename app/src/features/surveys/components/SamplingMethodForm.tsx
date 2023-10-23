@@ -202,7 +202,7 @@ const SamplingMethodForm = () => {
             sx={{
               mt: 1
             }}
-            data-testid="sample-method-add-button"
+            data-testid="create-sample-method-add-button"
             variant="outlined"
             color="primary"
             title="Add Sample Method"

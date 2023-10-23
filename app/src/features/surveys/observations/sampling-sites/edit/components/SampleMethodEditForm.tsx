@@ -208,7 +208,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
             sx={{
               mt: 1
             }}
-            data-testid="sample-method-add-button"
+            data-testid="edit-sample-method-add-button"
             variant="outlined"
             color="primary"
             title="Add Sample Method"
