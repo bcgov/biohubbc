@@ -176,13 +176,20 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                   />
                   <CardContent
                     sx={{
-                      pt: 0,
-                      pb: '0 !important'
+                      pt: 1,
+                      pb: '12px !important'
                     }}>
-                    <Typography variant="body1" gutterBottom>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        m: 0,
+                        px: 2,
+                        py: 1,
+                        backgroundColor: grey[200]
+                      }}>
                       Time Periods
                     </Typography>
-                    <List>
+                    <List dense disablePadding>
                       {item.periods.map((period) => (
                         <ListItem key={`sample_period_${period.survey_sample_period_id}`} divider>
                           <ListItemIcon>
