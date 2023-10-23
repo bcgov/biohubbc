@@ -149,6 +149,9 @@ describe('SurveyService', () => {
       const updateSurveyStratumsStub = sinon
         .stub(SiteSelectionStrategyService.prototype, 'updateSurveyStratums')
         .resolves();
+      const insertUpdateDeleteSurveyLocationStub = sinon
+        .stub(SurveyService.prototype, 'insertUpdateDeleteSurveyLocation')
+        .resolves();
 
       const surveyService = new SurveyService(dbConnectionObj);
 
@@ -166,6 +169,7 @@ describe('SurveyService', () => {
       expect(insertRegionStub).not.to.have.been.called;
       expect(upsertSurveyParticipantDataStub).not.to.have.been.called;
       expect(updateSurveyStratumsStub).not.to.have.been.called;
+      expect(insertUpdateDeleteSurveyLocationStub).not.to.have.been.called;
     });
 
     it('updates everything when all data provided', async () => {
@@ -194,6 +198,9 @@ describe('SurveyService', () => {
       const replaceSiteStrategiesStub = sinon
         .stub(SiteSelectionStrategyService.prototype, 'replaceSurveySiteSelectionStrategies')
         .resolves();
+      const insertUpdateDeleteSurveyLocationStub = sinon
+        .stub(SurveyService.prototype, 'insertUpdateDeleteSurveyLocation')
+        .resolves();
 
       const surveyService = new SurveyService(dbConnectionObj);
 
@@ -205,7 +212,7 @@ describe('SurveyService', () => {
         funding_sources: [{}],
         proprietor: {},
         purpose_and_methodology: {},
-        locations: [],
+        locations: [{}],
         participants: [{}],
         site_selection: { stratums: [], strategies: [] },
         blocks: [{}]
@@ -224,6 +231,7 @@ describe('SurveyService', () => {
       expect(upsertBlocks).to.have.been.calledOnce;
       expect(replaceSurveyStratumsStub).to.have.been.calledOnce;
       expect(replaceSiteStrategiesStub).to.have.been.calledOnce;
+      expect(insertUpdateDeleteSurveyLocationStub).to.have.been.calledOnce;
     });
   });
 

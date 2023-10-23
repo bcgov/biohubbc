@@ -714,7 +714,7 @@ export class SurveyService extends DBService {
       promises.push(this.updateSurveyProprietorData(surveyId, putSurveyData));
     }
 
-    if (putSurveyData?.locations) {
+    if (putSurveyData?.locations.length) {
       promises.push(this.insertUpdateDeleteSurveyLocation(surveyId, putSurveyData.locations));
     }
 
