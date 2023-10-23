@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import EditDialog from 'components/dialog/EditDialog';
 import { IDrawControlsRef } from 'components/map/components/DrawControls2';
 import { useFormikContext } from 'formik';
@@ -30,14 +29,14 @@ export const SurveyLocationInitialValues: ISurveyLocationForm = {
 
 export const SurveyLocationDetailsYupSchema = yup.object({
   name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
-  description: yup.string().max(250, 'Description cannot exceed 250 characters')
+  description: yup.string().max(250, 'Description cannot exceed 250 characters').default('')
 });
 
 export const SurveyLocationYupSchema = yup.object({
   locations: yup.array(
     yup.object({
       name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
-      description: yup.string().max(250, 'Description cannot exceed 250 characters'),
+      description: yup.string().max(250, 'Description cannot exceed 250 characters').default(''),
       geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
     })
   )
@@ -99,33 +98,33 @@ const StudyAreaForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Box height={500}>
-        <EditDialog
-          dialogTitle={'Edit Location Details'}
-          open={isOpen}
-          dialogLoading={false}
-          component={{
-            element: <SurveyAreaLocationForm />,
-            initialValues: getDialogData(),
-            validationSchema: SurveyLocationDetailsYupSchema
-          }}
-          dialogSaveButtonLabel="Update Location"
-          onCancel={() => {
-            onClose();
-          }}
-          onSave={(formValues) => {
-            onSave(formValues);
-            onClose();
-          }}
-        />
-        <SurveyAreaMapControl
-          map_id={'study_area_map'}
-          title="Study Area Boundary"
-          formik_key="locations"
-          formik_props={formikProps}
-          draw_controls_ref={drawRef}
-        />
-      </Box>
+      <EditDialog
+        dialogTitle={'Edit Location Details'}
+        open={isOpen}
+        dialogLoading={false}
+        component={{
+          element: <SurveyAreaLocationForm />,
+          initialValues: getDialogData(),
+          validationSchema: SurveyLocationDetailsYupSchema
+        }}
+        dialogSaveButtonLabel="Save"
+        onCancel={() => {
+          onClose();
+        }}
+        onSave={(formValues) => {
+          onSave(formValues);
+          onClose();
+        }}
+      />
+
+      <SurveyAreaMapControl
+        map_id={'study_area_map'}
+        title="Study Area Boundary"
+        formik_key="locations"
+        formik_props={formikProps}
+        draw_controls_ref={drawRef}
+      />
+
       <SurveyAreaList
         title="Survey Study Area"
         isLoading={false}

@@ -4,14 +4,14 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import { useState } from 'react';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
 import { ISurveyLocation } from '../StudyAreaForm';
 
 export interface ISurveyAreaListProps {
@@ -23,7 +23,7 @@ export interface ISurveyAreaListProps {
 }
 
 export const SurveyAreaList = (props: ISurveyAreaListProps) => {
-  const { title, data, openEdit, openDelete } = props;
+  const { data, openEdit, openDelete } = props;
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [currentItemIndex, setCurrentItemIndex] = useState<number | null>(-1);
 
@@ -73,54 +73,46 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
         </MenuItem>
       </Menu>
       <Box display="flex" flexDirection="column" height="100%">
-        <Toolbar
-          sx={{
-            flex: '0 0 auto',
-            borderBottom: '1px solid #ccc'
-          }}>
-          <Typography
-            sx={{
-              flexGrow: '1'
-            }}>
-            <strong>{title}</strong>
-          </Typography>
-        </Toolbar>
-        <Box
-          position="relative"
-          display="flex"
-          flexDirection="column"
-          flex="1 1 auto"
-          p={1}
-          sx={{
-            // overflowY: 'scroll',
-            background: grey[50],
-            '& .MuiAccordion-root + .MuiAccordion-root': {
-              borderTopStyle: 'solid',
-              borderTopWidth: '1px',
-              borderTopColor: grey[300]
-            }
-          }}>
+        <TransitionGroup>
           {data.map((item: ISurveyLocation, index: number) => {
             return (
-              <Card key={`${item.name}-${item.description}-${index}`} sx={{ marginBottom: 1 }} variant="outlined">
-                <CardHeader
-                  title={item.name}
-                  subheader={item.description}
-                  action={
-                    <IconButton
-                      edge="end"
-                      onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                        handleMenuClick(event, index)
-                      }
-                      aria-label="settings">
-                      <MoreVertIcon />
-                    </IconButton>
-                  }
-                />
-              </Card>
+              <Collapse key={`${item.name}-${item.description}-${index}`}>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    mt: 1,
+                    background: grey[100],
+                    '& .MuiCardHeader-subheader': {
+                      display: '-webkit-box',
+                      WebkitLineClamp: '2',
+                      WebkitBoxOrient: 'vertical',
+                      maxWidth: '92ch',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      fontSize: '14px'
+                    },
+                    '& .MuiCardHeader-title': {
+                      mb: 0.5
+                    }
+                  }}>
+                  <CardHeader
+                    title={item.name}
+                    subheader={item.description}
+                    action={
+                      <IconButton
+                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                          handleMenuClick(event, index)
+                        }
+                        aria-label="settings">
+                        <MoreVertIcon />
+                      </IconButton>
+                    }
+                  />
+                </Card>
+              </Collapse>
             );
           })}
-        </Box>
+        </TransitionGroup>
       </Box>
     </>
   );
