@@ -54,8 +54,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             };
           });
           setUpdateBounds(calculateUpdatedMapBounds(features));
-          //TODO: need to make this additive
-          setFieldValue(formik_key, formData);
+          setFieldValue(formik_key, [...values.locations, ...formData]);
         }}
         onFailure={(message) => {
           setFieldError(formik_key, message);
@@ -162,7 +161,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             layers={values.locations
               .filter((item) => !item?.leaflet_id) // filter out user drawn locations
               .map((item) => {
-                // Map Features into layer objects for leaflet
+                // Map geojson features into layer objects for leaflet
                 return { layerName: item.name, features: item.geojson.map((geo) => ({ geoJSON: geo })) };
               })}
           />
