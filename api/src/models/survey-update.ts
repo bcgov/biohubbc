@@ -9,7 +9,7 @@ export class PutSurveyObject {
   funding_sources: PutFundingSourceData[];
   proprietor: PutSurveyProprietorData;
   purpose_and_methodology: PutSurveyPurposeAndMethodologyData;
-  locations: PutSurveyLocationData[];
+  locations: PostSurveyLocationData[];
   participants: PutSurveyParticipantsData[];
   partnerships: PutPartnershipsData;
   site_selection: PutSiteSelectionData;
@@ -26,7 +26,7 @@ export class PutSurveyObject {
       (obj?.purpose_and_methodology && new PutSurveyPurposeAndMethodologyData(obj.purpose_and_methodology)) || null;
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PutSurveyParticipantsData(p))) || [];
-    this.locations = (obj?.locations && obj.locations.map((p: any) => new PutSurveyLocationData(p))) || [];
+    this.locations = (obj?.locations && obj.locations.map((p: any) => new PostSurveyLocationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PutPartnershipsData(obj.partnerships)) || null;
     this.site_selection = (obj?.site_selection && new PutSiteSelectionData(obj)) || null;
     this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
@@ -150,12 +150,13 @@ export class PutSurveyPurposeAndMethodologyData {
   }
 }
 
-export class PutSurveyLocationData {
-  survey_location_id: number;
+// This class is used for both insert and updating a survey location
+export class PostSurveyLocationData {
+  survey_location_id: number | undefined;
   name: string;
   description: string;
   geojson: Feature[];
-  revision_count: number;
+  revision_count: number | undefined;
 
   constructor(obj?: any) {
     this.survey_location_id = obj?.survey_location_id || null;

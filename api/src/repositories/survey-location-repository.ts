@@ -1,7 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
-import { PostLocationData } from '../models/survey-create';
-import { PutSurveyLocationData } from '../models/survey-update';
+import { PostSurveyLocationData } from '../models/survey-update';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { shallowJsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
@@ -22,10 +21,10 @@ export class SurveyLocationRepository extends BaseRepository {
    * Creates a survey location for a given survey
    *
    * @param {number} surveyId
-   * @param {PostLocationData} data
+   * @param {PostSurveyLocationData} data
    * @memberof SurveyLocationRepository
    */
-  async insertSurveyLocation(surveyId: number, data: PostLocationData): Promise<void> {
+  async insertSurveyLocation(surveyId: number, data: PostSurveyLocationData): Promise<void> {
     const sqlStatement = SQL`
       INSERT INTO survey_location (
         survey_id,
@@ -51,10 +50,10 @@ export class SurveyLocationRepository extends BaseRepository {
   /**
    * Updates survey location data
    *
-   * @param {PutSurveyLocationData} data
+   * @param {PostSurveyLocationData} data
    * @memberof SurveyLocationRepository
    */
-  async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
+  async updateSurveyLocation(data: PostSurveyLocationData): Promise<void> {
     const sqlStatement = SQL`
       UPDATE 
         survey_location

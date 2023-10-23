@@ -91,6 +91,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<any>}
    */
   const updateSurvey = async (projectId: number, surveyId: number, surveyData: SurveyUpdateObject): Promise<any> => {
+    console.log('API PAYLOAD');
+    console.log(surveyData.locations);
     const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/update`, surveyData);
 
     return data;

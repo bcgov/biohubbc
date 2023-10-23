@@ -11,8 +11,8 @@ import StaticLayers from 'components/map/components/StaticLayers';
 import { layerContentHandlers, layerNameHandler } from 'components/map/wfs-utils';
 import WFSFeatureGroup from 'components/map/WFSFeatureGroup';
 import { FormikContextType } from 'formik';
-import { Feature } from 'geojson';
-import { DrawEvents, LatLngBoundsExpression, LeafletEvent } from 'leaflet';
+import { Feature, FeatureCollection } from 'geojson';
+import L, { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import { createRef, useEffect, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
@@ -54,6 +54,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             };
           });
           setUpdateBounds(calculateUpdatedMapBounds(features));
+          //TODO: need to make this additive
           setFieldValue(formik_key, formData);
         }}
         onFailure={(message) => {
@@ -105,20 +106,27 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
               if (feature.properties) {
                 feature.properties.layer_id = id;
               }
-
               const location: ISurveyLocation = {
                 name: `Drawn Location ${id}`,
                 description: '',
                 geojson: [feature],
                 revision_count: 0,
-                isDrawn: true
+                leaflet_id: id
               };
               setFieldValue(formik_key, [...values.locations, location]);
             }}
-            onLayerEdit={(event: LeafletEvent, id: number) => {
-              // console.log('onLayerEdit', event);
-              console.log('edit layer id', id);
-              // console.log(event.propagatedFrom.toGeoJSON());
+            onLayerEdit={(event: DrawEvents.Edited) => {
+              event.layers.getLayers().forEach((item) => {
+                const layer_id = L.stamp(item);
+                const featureCollection = L.layerGroup([item]).toGeoJSON() as FeatureCollection;
+                const updatedLocations = values.locations.map((location) => {
+                  if (location.leaflet_id === layer_id) {
+                    location.geojson = [...featureCollection.features];
+                  }
+                  return location;
+                });
+                setFieldValue(formik_key, [...updatedLocations]);
+              });
             }}
             onLayerDelete={(event, id: number) => {
               console.log('onLayerDelete', event);
@@ -139,8 +147,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 name: layerName,
                 description: '',
                 geojson: [geo],
-                revision_count: 0,
-                isDrawn: false
+                revision_count: 0
               };
               setFieldValue(formik_key, [...values.locations, region]);
             }}
@@ -149,7 +156,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         <LayersControl position="bottomright">
           <StaticLayers
             layers={values.locations
-              .filter((item) => !item.isDrawn)
+              .filter((item) => !item?.leaflet_id) // filter out user drawn locations
               .map((item) => {
                 // Features will be split at upload to each be a single item so it is safe to access the first item
                 return { layerName: item.name, features: [{ geoJSON: item.geojson[0] }] };

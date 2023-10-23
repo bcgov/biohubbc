@@ -1,8 +1,8 @@
 import { Feature } from 'geojson';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { PostLocationData, PostProprietorData, PostSurveyObject } from '../models/survey-create';
-import { PutPartnershipsData, PutSurveyLocationData, PutSurveyObject } from '../models/survey-update';
+import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
+import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
@@ -494,7 +494,7 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof SurveyService
    */
-  async insertSurveyLocations(surveyId: number, data: PostLocationData): Promise<void> {
+  async insertSurveyLocations(surveyId: number, data: PostSurveyLocationData): Promise<void> {
     const service = new SurveyLocationService(this.connection);
     return service.insertSurveyLocation(surveyId, data);
   }
@@ -750,7 +750,14 @@ export class SurveyService extends DBService {
     await Promise.all(promises);
   }
 
-  async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
+  async insertOrUpdateSurveyLocation(surveyId: number, data: PostSurveyLocationData[]) {
+    
+    const insert = data.filter((item) => !item.survey_location_id);
+
+    const update = data.filter((item) => item.survey_location_id);
+  }
+
+  async updateSurveyLocation(data: PostSurveyLocationData): Promise<void> {
     const surveyLocationService = new SurveyLocationService(this.connection);
     return surveyLocationService.updateSurveyLocation(data);
   }

@@ -37,13 +37,13 @@ export interface IDrawControlsProps {
    *
    * @memberof IDrawControlsProps
    */
-  onLayerEdit: (event: L.LeafletEvent, leaflet_id: number) => void;
+  onLayerEdit: (event: L.DrawEvents.Edited) => void;
   /**
    * Fired each time an item (layer) is deleted.
    *
    * @memberof IDrawControlsProps
    */
-  onLayerDelete: (event: L.LeafletEvent, leaflet_id: number) => void;
+  onLayerDelete: (event: L.DrawEvents.Deleted, leaflet_id: number) => void;
 }
 
 export interface IDrawControlsRef {
@@ -115,13 +115,7 @@ const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProp
    */
   const onDrawEdit = useCallback(
     (event: L.DrawEvents.Edited) => {
-      console.log('______________________');
-      console.log(
-        event.layers.getLayers().forEach((item: L.Layer) => {
-          console.log(L.stamp(item));
-        })
-      );
-      onLayerEdit(event, -1);
+      onLayerEdit(event);
     },
     [onLayerEdit]
   );
