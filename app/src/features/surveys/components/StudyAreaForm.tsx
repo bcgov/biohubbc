@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import EditDialog from 'components/dialog/EditDialog';
 import { IDrawControlsRef } from 'components/map/components/DrawControls2';
 import { useFormikContext } from 'formik';
@@ -99,33 +98,33 @@ const StudyAreaForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Box height={500}>
-        <EditDialog
-          dialogTitle={'Edit Location Details'}
-          open={isOpen}
-          dialogLoading={false}
-          component={{
-            element: <SurveyAreaLocationForm />,
-            initialValues: getDialogData(),
-            validationSchema: SurveyLocationDetailsYupSchema
-          }}
-          dialogSaveButtonLabel="Update Location"
-          onCancel={() => {
-            onClose();
-          }}
-          onSave={(formValues) => {
-            onSave(formValues);
-            onClose();
-          }}
-        />
-        <SurveyAreaMapControl
-          map_id={'study_area_map'}
-          title="Study Area Boundary"
-          formik_key="locations"
-          formik_props={formikProps}
-          draw_controls_ref={drawRef}
-        />
-      </Box>
+      <EditDialog
+        dialogTitle={'Edit Location Details'}
+        open={isOpen}
+        dialogLoading={false}
+        component={{
+          element: <SurveyAreaLocationForm />,
+          initialValues: getDialogData(),
+          validationSchema: SurveyLocationDetailsYupSchema
+        }}
+        dialogSaveButtonLabel="Save"
+        onCancel={() => {
+          onClose();
+        }}
+        onSave={(formValues) => {
+          onSave(formValues);
+          onClose();
+        }}
+      />
+
+      <SurveyAreaMapControl
+        map_id={'study_area_map'}
+        title="Study Area Boundary"
+        formik_key="locations"
+        formik_props={formikProps}
+        draw_controls_ref={drawRef}
+      />
+
       <SurveyAreaList
         title="Survey Study Area"
         isLoading={false}
