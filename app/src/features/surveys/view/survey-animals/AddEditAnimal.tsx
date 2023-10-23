@@ -50,6 +50,8 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
 
+  const dialogTitle = openedFromAddButton ? `Adding ${section}` : `Editing ${section}`;
+
   const cbApi = useCritterbaseApi();
 
   const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
@@ -85,18 +87,23 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         <CollectionUnitAnimalFormContent name={'collectionUnits'} index={selectedIndex} />
       ),
       Telemetry: (
-        <Grid spacing={2}>
-          <DeviceFormSection
-            values={values.device}
-            mode={openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT}
-            index={selectedIndex}
-            removeAction={deploymentRemoveAction}
-          />
-        </Grid>
+        <DeviceFormSection
+          values={values.device}
+          mode={openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT}
+          index={selectedIndex}
+          removeAction={deploymentRemoveAction}
+        />
       )
     };
-    const displayArea = sectionMap[section] ? sectionMap[section] : <Typography>Unimplemented</Typography>;
-    return displayArea;
+    const gridWrappedComp =
+      section === 'Telemetry' ? (
+        sectionMap[section]
+      ) : (
+        <Grid container spacing={2}>
+          {sectionMap[section]}
+        </Grid>
+      );
+    return gridWrappedComp ?? <Typography>Unimplemented</Typography>;
   }, [
     allFamilies,
     deploymentRemoveAction,
@@ -159,7 +166,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               {({ push, remove }: FieldArrayRenderProps) => (
                 <>
                   <EditDialog
-                    dialogTitle={ANIMAL_SECTIONS_FORM_MAP[section].addBtnText ?? 'Add'}
+                    dialogTitle={dialogTitle}
                     open={showDialog}
                     component={{
                       initialValues: values,
