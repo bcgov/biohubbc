@@ -36,34 +36,32 @@ export const RegionSelector = (props: IRegionSelectorProps) => {
   };
 
   return (
-    <>
-      <Autocomplete
-        id="layer"
-        size="small"
-        options={regions}
-        value={props.selectedRegion}
-        getOptionLabel={(option) => option.name}
-        isOptionEqualToValue={handleCheckOptionEquality}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            size="small"
-            aria-label="Select a layer"
-            label=""
-            placeholder="Select a layer"
-          />
-        )}
-        onChange={(_, option) => {
-          handleOnChange(option);
-        }}
-        sx={{
-          width: 250,
-          '& .MuiInputBase-root': {
-            fontSize: '0.875rem'
-          }
-        }}
-      />
-    </>
+    <Autocomplete
+      id="layer"
+      size="small"
+      options={regions}
+      value={props.selectedRegion}
+      getOptionLabel={(option) => option.name}
+      isOptionEqualToValue={handleCheckOptionEquality}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          size="small"
+          aria-label="Select a layer"
+          label=""
+          placeholder="Select a layer"
+        />
+      )}
+      onChange={(_, option) => {
+        handleOnChange(option);
+      }}
+      sx={{
+        width: 250,
+        '& .MuiInputBase-root': {
+          fontSize: '0.875rem'
+        }
+      }}
+    />
   );
 };

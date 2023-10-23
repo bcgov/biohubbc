@@ -126,8 +126,6 @@ const StudyAreaForm = () => {
       />
 
       <SurveyAreaList
-        title="Survey Study Area"
-        isLoading={false}
         openEdit={(index) => {
           setCurrentIndex(index);
           onOpen();

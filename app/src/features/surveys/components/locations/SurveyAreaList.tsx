@@ -15,8 +15,6 @@ import TransitionGroup from 'react-transition-group/TransitionGroup';
 import { ISurveyLocation } from '../StudyAreaForm';
 
 export interface ISurveyAreaListProps {
-  title: string;
-  isLoading: boolean;
   data: ISurveyLocation[];
   openEdit: (index: number) => void;
   openDelete: (index: number) => void;
@@ -76,7 +74,7 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
         <TransitionGroup>
           {data.map((item: ISurveyLocation, index: number) => {
             return (
-              <Collapse key={`${item.name}-${item.description}-${index}`}>
+              <Collapse key={`${item.name}-${item.description}`}>
                 <Card
                   variant="outlined"
                   sx={{

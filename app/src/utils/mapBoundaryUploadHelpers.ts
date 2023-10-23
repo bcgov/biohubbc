@@ -88,11 +88,9 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
  * @return {*}  {Promise<Feature[]>}
  */
 export const handleShapeFileUpload = (file: File): Promise<Feature[]> => {
-  try {
-    return parseShapeFile(file);
-  } catch (error) {
+  return parseShapeFile(file).catch(() => {
     throw Error('You must upload a valid shapefile (.zip format). Please try again.');
-  }
+  });
 };
 
 export const handleGPXUpload = async (file: File) => {
