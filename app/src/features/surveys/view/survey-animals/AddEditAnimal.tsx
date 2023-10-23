@@ -56,7 +56,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   useEffect(() => {
     refreshFamilies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.general.critter_id]);
+  }, [critterData]);
 
   const { data: measurements, refresh: refreshMeasurements } = useDataLoader(cbApi.lookup.getTaxonMeasurements);
   useEffect(() => {
