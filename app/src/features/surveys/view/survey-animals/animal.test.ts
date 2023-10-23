@@ -53,7 +53,10 @@ const animal: IAnimal = {
       primary_colour_id: '4aa3cce7-94d0-42d0-a183-078db5fbdd34',
       secondary_colour_id: '0b0dbfaa-fcc9-443f-8ac9-a22106663cba',
       marking_comment: 'asdf',
-      marking_id: v4()
+      marking_id: v4(),
+      marking_type: 'tag',
+      body_location: 'head',
+      primary_colour: 'blue'
     }
   ],
   mortality: [],
@@ -62,7 +65,14 @@ const animal: IAnimal = {
   images: [],
   device: [],
   collectionUnits: [
-    { collection_category_id: 'a', collection_unit_id: 'b', _id: v4(), critter_collection_unit_id: v4() }
+    {
+      collection_category_id: 'a',
+      collection_unit_id: 'b',
+      _id: v4(),
+      critter_collection_unit_id: v4(),
+      category_name: 'Population Unit',
+      unit_name: 'pop'
+    }
   ]
 };
 

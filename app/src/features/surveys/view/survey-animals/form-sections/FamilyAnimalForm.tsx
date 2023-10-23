@@ -1,4 +1,4 @@
-import { Box, Button, Grid, MenuItem, Paper, SelectChangeEvent, Theme, Typography } from '@mui/material';
+import { Box, Button, Grid, MenuItem, Paper, Theme, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -49,7 +49,7 @@ interface IFamilyAnimalFormContentProps {
 }
 
 export const FamilyAnimalFormContent = ({ name, index, allFamilies }: IFamilyAnimalFormContentProps) => {
-  const { values, errors, handleChange } = useFormikContext<IAnimal>();
+  const { values, handleChange } = useFormikContext<IAnimal>();
   const disabledFamilyIds = values.family.reduce((acc: Record<string, boolean>, curr) => {
     if (curr.family_id) {
       acc[curr.family_id] = true;

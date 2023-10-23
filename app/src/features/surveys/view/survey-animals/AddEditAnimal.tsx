@@ -43,7 +43,6 @@ interface AddEditAnimalProps {
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, isLoading, critterData, telemetrySaveAction, deploymentRemoveAction } = props;
   const surveyContext = useContext(SurveyContext);
-  const { survey_critter_id } = useParams<{ survey_critter_id: string }>();
   const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 

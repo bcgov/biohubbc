@@ -125,6 +125,8 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     defaultFormValue: () => ({
       _id: v4(),
       collection_unit_id: '',
+      category_name: '',
+      unit_name: '',
       collection_category_id: '',
       critter_collection_unit_id: undefined
     }),
@@ -143,7 +145,11 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       primary_colour_id: '',
       secondary_colour_id: '',
       marking_comment: '',
-      marking_id: undefined
+      marking_id: undefined,
+      primary_colour: '',
+      secondary_colour: '',
+      marking_type: '',
+      body_location: ''
     }),
     dialogTitle: 'Marking',
     infoText: SurveyAnimalsI18N.animalMarkingHelp,
@@ -160,7 +166,9 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       value: '' as unknown as number,
       qualitative_option_id: '',
       measured_timestamp: '' as unknown as Date,
-      measurement_comment: ''
+      measurement_comment: '',
+      measurement_name: '',
+      option_label: ''
     }),
     dialogTitle: 'Measurement',
     infoText: SurveyAnimalsI18N.animalMeasurementHelp,

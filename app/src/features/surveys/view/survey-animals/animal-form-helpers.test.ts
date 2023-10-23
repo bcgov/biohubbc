@@ -216,6 +216,9 @@ describe('animal form helpers', () => {
         taxon_marking_body_location_id: '46e6b939-3485-4c45-9f26-607489e50def',
         primary_colour_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         secondary_colour_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
+        primary_colour: 'red',
+        body_location: 'Rear Leg',
+        marking_type: 'tag',
         marking_comment: ''
       };
 
@@ -227,7 +230,9 @@ describe('animal form helpers', () => {
         qualitative_option_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         value: undefined,
         measured_timestamp: new Date(),
-        measurement_comment: 'a'
+        measurement_comment: 'a',
+        measurement_name: 'weight',
+        option_label: 'test'
       };
 
       const mortality: IAnimalMortality = {
@@ -253,6 +258,8 @@ describe('animal form helpers', () => {
       const collectionUnits: IAnimalCollectionUnit = {
         _id: '',
         collection_unit_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
+        unit_name: 'Pop',
+        category_name: 'Population Unit',
         collection_category_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097',
         critter_collection_unit_id: 'eaf6b7a0-c47c-4dba-83b4-88e9331ee097'
       };
