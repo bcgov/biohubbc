@@ -218,7 +218,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Box>
         </Collapse>
       </Toolbar>
-      <Box p={2}>
+      <Box pt={3} px={36}>
         {values.general.animal_id ? (
           <Grid container spacing={1} alignItems="center" mb={2}>
             <Grid item lg={9} md={6}>

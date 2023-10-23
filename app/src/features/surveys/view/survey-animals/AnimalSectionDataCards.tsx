@@ -1,11 +1,12 @@
 import { Collapse } from '@mui/material';
 import { SurveyAnimalsI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import moment from 'moment';
-import { useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
@@ -17,6 +18,7 @@ interface AnimalSectionDataCardsProps {
 }
 export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: AnimalSectionDataCardsProps) => {
   const { values } = useFormikContext<IAnimal>();
+  const dialogContext = useContext(DialogContext);
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
   const cbApi = useCritterbaseApi();
   const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(() => cbApi.family.getAllFamilies());
@@ -25,6 +27,20 @@ export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: An
     refreshFamilies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.family.length]);
+
+  const showDeleteDialog = () => {
+    const close = () => dialogContext.setYesNoDialog({ open: false });
+    dialogContext.setYesNoDialog({
+      dialogTitle: `Delete ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`,
+      dialogText: 'Are you sure you want to delete this record?',
+      open: true,
+      onYes: async () => {
+        close();
+      },
+      onNo: () => close(),
+      onClose: () => close()
+    });
+  };
 
   const sectionCardData = useMemo(() => {
     const sectionData: Record<
@@ -45,21 +61,17 @@ export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: An
         key: marking._id
       })),
       [SurveyAnimalsI18N.animalMeasurementTitle]: values.measurements.map((measurement) => ({
-        header: `Measurement: ${measurement.measurement_name}`,
-        subHeaderData: { Value: measurement.option_label ?? measurement.value },
+        header: `Measurement: ${formatDate(measurement.measured_timestamp)}`,
+        subHeaderData: { [`${measurement.measurement_name}`]: measurement.option_label ?? measurement.value },
         key: measurement._id
       })),
       [SurveyAnimalsI18N.animalCaptureTitle]: values.captures.map((capture) => ({
-        header: capture.capture_timestamp
-          ? `Animal Captured: ${formatDate(capture.capture_timestamp)}`
-          : 'Animal Captured',
+        header: `Animal Captured: ${formatDate(capture.capture_timestamp)}`,
         subHeaderData: { Latitude: capture.capture_latitude, Longitude: capture.capture_longitude },
         key: capture._id
       })),
       [SurveyAnimalsI18N.animalMortalityTitle]: values.mortality.map((mortality) => ({
-        header: mortality.mortality_timestamp
-          ? `Animal Mortality: ${formatDate(mortality.mortality_timestamp)}`
-          : `Animal Mortality`,
+        header: `Animal Mortality: ${formatDate(mortality.mortality_timestamp)}`,
         subHeaderData: { Latitude: mortality.mortality_latitude, Longitude: mortality.mortality_longitude },
         key: mortality._id
       })),
@@ -117,7 +129,7 @@ export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: An
                   onClickDelete={
                     section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
                       ? undefined
-                      : () => remove(index)
+                      : showDeleteDialog
                   }
                 />
               )}
