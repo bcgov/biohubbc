@@ -119,7 +119,6 @@ const StudyAreaForm = () => {
 
       <SurveyAreaMapControl
         map_id={'study_area_map'}
-        title="Study Area Boundary"
         formik_key="locations"
         formik_props={formikProps}
         draw_controls_ref={drawRef}

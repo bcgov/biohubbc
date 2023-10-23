@@ -22,7 +22,6 @@ import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
   map_id: string;
-  title: string;
   formik_key: string;
   formik_props: FormikContextType<ISurveyLocationForm>;
   draw_controls_ref: React.RefObject<IDrawControlsRef>;
