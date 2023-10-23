@@ -2,21 +2,28 @@ import { Collapse } from '@mui/material';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import useDataLoader from 'hooks/useDataLoader';
 import moment from 'moment';
-import React, { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
 interface AnimalSectionDataCardsProps {
   section: IAnimalSections;
-  critter: IDetailedCritterWithInternalId;
   onEditClick: (idx: number) => void;
 }
-export const AnimalSectionDataCards = ({ section, critter, onEditClick }: AnimalSectionDataCardsProps) => {
+export const AnimalSectionDataCards = ({ section, onEditClick }: AnimalSectionDataCardsProps) => {
   const { values } = useFormikContext<IAnimal>();
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
+  const cbApi = useCritterbaseApi();
+  const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(() => cbApi.family.getAllFamilies());
+
+  useEffect(() => {
+    refreshFamilies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.family.length]);
 
   const sectionCardData = useMemo(() => {
     const sectionData: Record<
@@ -31,16 +38,14 @@ export const AnimalSectionDataCards = ({ section, critter, onEditClick }: Animal
         }
       ],
       // Decided to loop through critter or formik values
-      [SurveyAnimalsI18N.animalMarkingTitle]: critter.marking.map((marking) => ({
-        header: `Marking: ${marking.marking_type ?? ''}`,
-        subHeaderData: { a: 'test' },
-        key: marking.marking_id
+      [SurveyAnimalsI18N.animalMarkingTitle]: values.markings.map((marking) => ({
+        header: `Marking: ${marking.marking_type}`,
+        subHeaderData: { Location: marking.body_location, Colour: marking.primary_colour },
+        key: marking._id
       })),
       [SurveyAnimalsI18N.animalMeasurementTitle]: values.measurements.map((measurement) => ({
-        header: measurement.measured_timestamp
-          ? `Measurement: ${formatDate(measurement.measured_timestamp)}`
-          : 'Measurement',
-        subHeaderData: {},
+        header: `Measurement: ${measurement.measurement_name}`,
+        subHeaderData: { Value: measurement.option_label ?? measurement.value },
         key: measurement._id
       })),
       [SurveyAnimalsI18N.animalCaptureTitle]: values.captures.map((capture) => ({
@@ -57,19 +62,18 @@ export const AnimalSectionDataCards = ({ section, critter, onEditClick }: Animal
         subHeaderData: { Latitude: mortality.mortality_latitude, Longitude: mortality.mortality_longitude },
         key: mortality._id
       })),
-      [SurveyAnimalsI18N.animalFamilyTitle]: values.family.map((family) => ({
-        header: `Animal Relationship: ${family.relationship ?? ''}`,
-        subHeaderData: {},
-        key: family._id
-      })),
+      [SurveyAnimalsI18N.animalFamilyTitle]: values.family.map((family) => {
+        const family_label = allFamilies?.find((a) => a.family_id === family.family_id)?.family_label;
+        return {
+          header: `Animal Relationship: ${family_label ?? family.family_id}`,
+          subHeaderData: { Status: family.relationship },
+          key: family._id
+        };
+      }),
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: values.collectionUnits.map((collectionUnit) => ({
-        header: `Ecological Unit: ${
-          critter.collection_units.find(
-            (critter_collection_unit) => critter_collection_unit.critter_collection_unit_id === collectionUnit._id
-          )?.unit_name ?? ''
-        }`,
+        header: `Ecological Unit: ${collectionUnit.unit_name}`,
         subHeaderData: {},
-        key: 'TEMP'
+        key: collectionUnit._id
       })),
       Telemetry: values.device.map((device) => ({
         header: `Device: ${device.device_id}`,
@@ -83,19 +87,19 @@ export const AnimalSectionDataCards = ({ section, critter, onEditClick }: Animal
     };
     return sectionData[section];
   }, [
-    section,
     values.general.animal_id,
-    values.general.wlh_id,
     values.general.taxon_name,
     values.general.sex,
-    values.collectionUnits,
+    values.general.wlh_id,
+    values.markings,
+    values.measurements,
     values.captures,
     values.mortality,
-    values.measurements,
     values.family,
+    values.collectionUnits,
     values.device,
-    critter.marking,
-    critter.collection_units
+    section,
+    allFamilies
   ]);
 
   return (

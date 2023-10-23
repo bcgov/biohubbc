@@ -116,14 +116,19 @@ export const AnimalMarkingSchema = yup.object({}).shape({
   taxon_marking_body_location_id: yup.string().required(req),
   primary_colour_id: yup.string().optional(),
   secondary_colour_id: yup.string().optional(),
-  marking_comment: yup.string()
+  marking_comment: yup.string(),
+  primary_colour: yup.string().optional(),
+  marking_type: yup.string().optional(),
+  body_location: yup.string().optional()
 });
 
 export const AnimalCollectionUnitSchema = yup.object({}).shape({
   _id: yup.string().required(),
   collection_unit_id: yup.string().required(),
   collection_category_id: yup.string().required(),
-  critter_collection_unit_id: yup.string()
+  critter_collection_unit_id: yup.string(),
+  unit_name: yup.string().optional(),
+  category_name: yup.string().optional()
 });
 
 export const AnimalMeasurementSchema = yup.object({}).shape(
@@ -143,7 +148,9 @@ export const AnimalMeasurementSchema = yup.object({}).shape(
       otherwise: numSchema
     }),
     measured_timestamp: dateSchema.required(req),
-    measurement_comment: yup.string()
+    measurement_comment: yup.string(),
+    option_label: yup.string().optional(),
+    measurement_name: yup.string().optional()
   },
   [['value', 'qualitative_option_id']]
 );
@@ -446,7 +453,9 @@ export class Critter {
       taxon_measurement_id: qual_measurement.taxon_measurement_id,
       qualitative_option_id: qual_measurement.qualitative_option_id,
       measured_timestamp: qual_measurement.measured_timestamp || undefined,
-      measurement_comment: qual_measurement.measurement_comment || undefined
+      measurement_comment: qual_measurement.measurement_comment || undefined,
+      option_label: qual_measurement.option_label || undefined,
+      measurement_name: qual_measurement.measurement_name || undefined
     }));
   }
 
@@ -465,7 +474,9 @@ export class Critter {
         taxon_measurement_id: quant_measurement.taxon_measurement_id,
         value: Number(quant_measurement.value),
         measured_timestamp: quant_measurement.measured_timestamp || undefined,
-        measurement_comment: quant_measurement.measurement_comment || undefined
+        measurement_comment: quant_measurement.measurement_comment || undefined,
+        option_label: quant_measurement.option_label || undefined,
+        measurement_name: quant_measurement.measurement_name || undefined
       };
     });
   }
@@ -475,6 +486,7 @@ export class Critter {
     const families: ICritterFamily[] = [];
     for (const fam of animal_family) {
       //If animal form had the newFamilyIdPlaceholder used at some point, make a real uuid for the new family and add it for creation.
+      console.log(`Comparing ${fam.family_id} to ${newFamilyIdPlaceholder}`)
       if (fam.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };

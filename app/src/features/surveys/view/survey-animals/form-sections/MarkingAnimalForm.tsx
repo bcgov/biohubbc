@@ -30,7 +30,19 @@ interface IMarkingAnimalFormContentProps {
 }
 
 export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormContentProps) => {
-  const { values, errors, handleBlur } = useFormikContext<IAnimal>();
+  const { values, handleBlur, setFieldValue } = useFormikContext<IAnimal>();
+
+  const handlePrimaryColourName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalMarking>(name, 'primary_colour', index), label);
+  };
+
+  const handleMarkingTypeName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalMarking>(name, 'marking_type', index), label);
+  };
+
+  const handleMarkingLocationName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalMarking>(name, 'body_location', index), label);
+  };
 
   return (
     <Fragment>
@@ -44,6 +56,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
             size: 'medium',
             required: isRequiredInSchema(AnimalMarkingSchema, 'marking_type_id')
           }}
+          handleChangeSideEffect={handleMarkingTypeName}
         />
       </Grid>
       <Grid item xs={12} md={6}>
@@ -57,6 +70,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
             size: 'medium',
             required: isRequiredInSchema(AnimalMarkingSchema, 'taxon_marking_body_location_id')
           }}
+          handleChangeSideEffect={handleMarkingLocationName}
         />
       </Grid>
       <Grid item xs={12} md={6}>
@@ -69,6 +83,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
             size: 'medium',
             required: isRequiredInSchema(AnimalMarkingSchema, 'primary_colour_id')
           }}
+          handleChangeSideEffect={handlePrimaryColourName}
         />
       </Grid>
       <Grid item xs={12} md={6}>
@@ -93,7 +108,6 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
           />
         </TextInputToggle>
       </Grid>
-      <pre>{JSON.stringify(errors, null, 2)}</pre>
     </Fragment>
   );
 };
@@ -121,7 +135,10 @@ const MarkingAnimalForm = () => {
     primary_colour_id: '',
     secondary_colour_id: '',
     marking_comment: '',
-    marking_id: undefined
+    marking_id: undefined,
+    marking_type: undefined,
+    body_location: undefined,
+    primary_colour: undefined
   };
 
   return (

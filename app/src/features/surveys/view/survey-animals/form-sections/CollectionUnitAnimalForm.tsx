@@ -22,7 +22,7 @@ interface ICollectionUnitAnimalFormContentProps {
 }
 
 export const CollectionUnitAnimalFormContent = ({ name, index }: ICollectionUnitAnimalFormContentProps) => {
-  const { values } = useFormikContext<IAnimal>();
+  const { values, setFieldValue } = useFormikContext<IAnimal>();
   //Animals may have multiple collection units, but only one instance of each category.
   //We use this and pass to the select component to ensure categories already used in the form can't be selected again.
   const disabledCategories = values.collectionUnits.reduce((acc: Record<string, boolean>, curr) => {
@@ -31,6 +31,14 @@ export const CollectionUnitAnimalFormContent = ({ name, index }: ICollectionUnit
     }
     return acc;
   }, {});
+
+  const handleCategoryName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalCollectionUnit>(name, 'category_name', index), label);
+  };
+
+  const handleUnitName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalCollectionUnit>(name, 'unit_name', index), label);
+  };
 
   return (
     <Fragment>
@@ -46,6 +54,7 @@ export const CollectionUnitAnimalFormContent = ({ name, index }: ICollectionUnit
             size: 'medium',
             required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_category_id')
           }}
+          handleChangeSideEffect={handleCategoryName}
         />
       </Grid>
       <Grid item xs={6}>
@@ -59,6 +68,7 @@ export const CollectionUnitAnimalFormContent = ({ name, index }: ICollectionUnit
             size: 'medium',
             required: isRequiredInSchema(AnimalCollectionUnitSchema, 'collection_unit_id')
           }}
+          handleChangeSideEffect={handleUnitName}
         />
       </Grid>
     </Fragment>

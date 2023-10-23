@@ -1,6 +1,6 @@
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { v4 } from 'uuid';
-import { AnimalSex, Critter, IAnimal } from './animal';
+import { AnimalSex, Critter, IAnimal, newFamilyIdPlaceholder } from './animal';
 
 /**
  * Takes the 'detailed' format response from the Critterbase DB and transforms the response into an object that is usable
@@ -50,6 +50,9 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       primary_colour_id: mark.primary_colour_id ?? '',
       secondary_colour_id: mark.secondary_colour_id ?? '',
       marking_comment: mark.comment ?? '',
+      primary_colour: mark.primary_colour ?? undefined,
+      marking_type: mark.marking_type ?? undefined,
+      body_location: mark.body_location ?? undefined,
       _id: v4()
     })),
     mortality: existingCritter?.mortality.map((mor) => ({
@@ -82,7 +85,9 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
         _id: v4(),
         value: undefined,
         measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
-        measurement_comment: meas.measurement_comment ?? ''
+        measurement_comment: meas.measurement_comment ?? '',
+        measurement_name: meas.measurement_name ?? undefined,
+        option_label: meas.option_label
       })),
       ...existingCritter.measurement.quantitative.map((meas) => ({
         ...meas,
@@ -90,7 +95,9 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
         measurement_qualitative_id: undefined,
         qualitative_option_id: undefined,
         measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
-        measurement_comment: meas.measurement_comment ?? ''
+        measurement_comment: meas.measurement_comment ?? '',
+        measurement_name: meas.measurement_name ?? undefined,
+        option_label: undefined
       }))
     ],
     family: [
@@ -204,13 +211,21 @@ export const createCritterUpdatePayload = (
         (prevFam) => currFam.family_id === prevFam.family_id && currFam.relationship === prevFam.relationship
       )
     ) {
+      let familyId = currFam.family_id;
+      if (currFam.family_id === newFamilyIdPlaceholder) {
+        familyId = v4();
+        createCritter.families.families.push({
+          family_id: familyId,
+          family_label: `${currentFormValues.general.animal_id}-${currentFormValues.general.taxon_name}_family`
+        });
+      }
       currFam.relationship === 'parent'
         ? createCritter.families.parents.push({
-            family_id: currFam.family_id,
+            family_id: familyId,
             parent_critter_id: initialCritter.critter_id
           })
         : createCritter.families.children.push({
-            family_id: currFam.family_id,
+            family_id: familyId,
             child_critter_id: initialCritter.critter_id
           });
     }

@@ -110,6 +110,7 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
     setFieldValue(optionName, '');
     const m = measurements?.find((m) => m.taxon_measurement_id === event.target.value);
     setMeasurement(m);
+    handleMeasurementName('', m?.measurement_name ?? '');
   };
 
   const validateValue = async (val: '' | number) => {
@@ -125,6 +126,14 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
     if (max && val > max) {
       return `Measurement must be less than ${max}${unit}`;
     }
+  };
+
+  const handleMeasurementName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalMeasurement>('measurements', 'measurement_name', index), label);
+  };
+
+  const handleQualOptionName = (_value: string, label: string) => {
+    setFieldValue(getAnimalFieldName<IAnimalMeasurement>('measurements', 'option_label', index), label);
   };
 
   return (
@@ -159,6 +168,7 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
               required: true,
               disabled: !taxonMeasurementId
             }}
+            handleChangeSideEffect={handleQualOptionName}
           />
         ) : (
           <Field
