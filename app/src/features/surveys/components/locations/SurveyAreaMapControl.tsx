@@ -13,7 +13,8 @@ import WFSFeatureGroup from 'components/map/WFSFeatureGroup';
 import { FormikContextType } from 'formik';
 import { Feature, FeatureCollection } from 'geojson';
 import L, { DrawEvents, LatLngBoundsExpression } from 'leaflet';
-import { createRef, useEffect, useState } from 'react';
+import 'leaflet/dist/leaflet.css';
+import { useEffect, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
@@ -23,16 +24,15 @@ export interface ISurveyAreMapControlProps {
   title: string;
   formik_key: string;
   formik_props: FormikContextType<ISurveyLocationForm>;
+  draw_controls_ref: React.RefObject<IDrawControlsRef>;
 }
 
 export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
-  const { map_id, formik_key, formik_props } = props;
+  const { map_id, formik_key, formik_props, draw_controls_ref } = props;
   const { setFieldValue, setFieldError, values } = formik_props;
   const [updatedBounds, setUpdateBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
-
-  const drawRef = createRef<IDrawControlsRef>();
 
   useEffect(() => {
     setUpdateBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
@@ -95,7 +95,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
 
         <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
           <DrawControls2
-            ref={drawRef}
+            ref={draw_controls_ref}
             options={{
               // Always disable circle, circlemarker and line
               draw: { circle: false, circlemarker: false, polyline: false }
@@ -128,8 +128,12 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 setFieldValue(formik_key, [...updatedLocations]);
               });
             }}
-            onLayerDelete={(event, id: number) => {
-              console.log('onLayerDelete', event);
+            onLayerDelete={(event: DrawEvents.Deleted) => {
+              event.layers.getLayers().forEach((item) => {
+                const layer_id = L.stamp(item);
+                const updatedLocations = values.locations.filter((location) => location.leaflet_id !== layer_id);
+                setFieldValue(formik_key, [...updatedLocations]);
+              });
             }}
           />
         </FeatureGroup>
@@ -158,8 +162,8 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             layers={values.locations
               .filter((item) => !item?.leaflet_id) // filter out user drawn locations
               .map((item) => {
-                // Features will be split at upload to each be a single item so it is safe to access the first item
-                return { layerName: item.name, features: [{ geoJSON: item.geojson[0] }] };
+                // Map Features into layer objects for leaflet
+                return { layerName: item.name, features: item.geojson.map((geo) => ({ geoJSON: geo })) };
               })}
           />
           <BaseLayerControls />

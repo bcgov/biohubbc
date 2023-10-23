@@ -43,7 +43,7 @@ export interface IDrawControlsProps {
    *
    * @memberof IDrawControlsProps
    */
-  onLayerDelete: (event: L.DrawEvents.Deleted, leaflet_id: number) => void;
+  onLayerDelete: (event: L.DrawEvents.Deleted) => void;
 }
 
 export interface IDrawControlsRef {
@@ -53,6 +53,8 @@ export interface IDrawControlsRef {
    * @memberof IDrawControlsRef
    */
   addLayer: (feature: Feature, layerId: (id: number) => void) => void;
+
+  deleteLayer: (layerId: number) => void;
 }
 
 const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps>((props, ref) => {
@@ -125,7 +127,7 @@ const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProp
    */
   const onDrawDelete = useCallback(
     (event: L.DrawEvents.Deleted) => {
-      onLayerDelete(event, L.stamp(event.propagatedFrom));
+      onLayerDelete(event);
     },
     [onLayerDelete]
   );
@@ -165,10 +167,13 @@ const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProp
             return new L.Marker([latlng.lat, latlng.lng]);
           },
           onEachFeature: function (_feature, layer) {
-            console.log('ON EACH FEATURE');
             featureGroup.addLayer(layer);
           }
         });
+      },
+      deleteLayer: (layerId: number) => {
+        const featureGroup = getFeatureGroup();
+        featureGroup.removeLayer(layerId);
       }
     }),
     [getFeatureGroup]

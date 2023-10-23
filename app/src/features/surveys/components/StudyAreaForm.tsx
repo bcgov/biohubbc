@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box';
 import EditDialog from 'components/dialog/EditDialog';
+import { IDrawControlsRef } from 'components/map/components/DrawControls2';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { useState } from 'react';
+import { createRef, useState } from 'react';
 import yup from 'utils/YupSchema';
 import { SurveyAreaList } from './locations/SurveyAreaList';
 import SurveyAreaLocationForm from './locations/SurveyAreaLocationForm';
@@ -52,6 +53,8 @@ const StudyAreaForm = () => {
   const { handleSubmit, values, setFieldValue } = formikProps;
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | undefined>(undefined);
+  const drawRef = createRef<IDrawControlsRef>();
+
   const onOpen = () => {
     setIsOpen(true);
   };
@@ -67,7 +70,14 @@ const StudyAreaForm = () => {
   const onDelete = (index: number) => {
     // remove the item at index
     const data = values.locations;
-    data.splice(index, 1);
+    const locationData = data.splice(index, 1);
+
+    // Use Draw Ref to remove editable layer form the map
+    locationData.forEach((item) => {
+      if (item.leaflet_id) {
+        drawRef.current?.deleteLayer(item.leaflet_id);
+      }
+    });
 
     // set values
     setFieldValue('locations', data);
@@ -113,6 +123,7 @@ const StudyAreaForm = () => {
           title="Study Area Boundary"
           formik_key="locations"
           formik_props={formikProps}
+          draw_controls_ref={drawRef}
         />
       </Box>
       <SurveyAreaList
