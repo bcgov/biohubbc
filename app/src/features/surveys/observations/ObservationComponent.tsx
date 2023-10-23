@@ -1,8 +1,10 @@
-import { mdiCogOutline, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import { grey } from '@mui/material/colors';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -26,16 +28,7 @@ const ObservationComponent = () => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
 
-  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
-
-  const handleSaveChanges = async () => {
-    setIsSaving(true);
-
-    return observationsContext.saveRecords().finally(() => {
-      setIsSaving(false);
-    });
-  };
 
   const showSaveButton = observationsContext.hasUnsavedChanges();
 
@@ -96,45 +89,70 @@ const ObservationComponent = () => {
         <Toolbar
           sx={{
             flex: '0 0 auto',
-            borderBottom: '1px solid #ccc',
-            '& Button + Button': {
+            '& button': {
+              minWidth: '6rem'
+            },
+            '& button + button': {
               ml: 1
             }
           }}>
           <Typography
             sx={{
-              flexGrow: '1'
+              flexGrow: '1',
+              fontSize: '1.125rem',
+              fontWeight: 700
             }}>
-            <strong>Observations</strong>
+            Observations
           </Typography>
-          {showSaveButton && (
-            <>
-              <LoadingButton loading={isSaving} variant="contained" color="primary" onClick={() => handleSaveChanges()}>
-                Save
-              </LoadingButton>
-              <Button variant="contained" color="primary" onClick={() => setShowConfirmRemoveAllDialog(true)}>
-                Discard Changes
-              </Button>
-            </>
-          )}
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => observationsContext.createNewRecord()}>
-            Add Record
-          </Button>
-          <Button
-            variant="outlined"
+
+          <Box
             sx={{
-              mr: -1
-            }}
-            startIcon={<Icon path={mdiCogOutline} size={1} />}>
-            Configure
-          </Button>
+              '& div:first-of-type': {
+                display: 'flex',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap'
+              }
+            }}>
+            <Box display="flex" overflow="hidden">
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Icon path={mdiPlus} size={1} />}
+                onClick={() => observationsContext.createNewRecord()}
+                disabled={observationsContext.isSaving}>
+                Add Record
+              </Button>
+              <Collapse in={showSaveButton} orientation="horizontal">
+                <Box ml={1} whiteSpace="nowrap">
+                  <LoadingButton
+                    loading={observationsContext.isSaving}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => observationsContext.stopEditAndSaveRows()}
+                    disabled={observationsContext.isSaving}>
+                    Save
+                  </LoadingButton>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => setShowConfirmRemoveAllDialog(true)}
+                    disabled={observationsContext.isSaving}>
+                    Discard Changes
+                  </Button>
+                </Box>
+              </Collapse>
+            </Box>
+          </Box>
         </Toolbar>
-        <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
-          <Box position="absolute" width="100%" height="100%">
+        <Box
+          display="flex"
+          flexDirection="column"
+          flex="1 1 auto"
+          position="relative"
+          sx={{
+            background: grey[100]
+          }}>
+          <Box position="absolute" width="100%" height="100%" p={1}>
             <ObservationsTable
               sample_sites={sampleSites}
               sample_methods={sampleMethods}

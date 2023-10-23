@@ -114,9 +114,6 @@ const ProjectAdvancedFilters = () => {
         <Grid item xs={12} md={3}>
           <CustomTextField name="permit_number" label="Permit Number" />
         </Grid>
-        <Grid item xs={12} md={3}>
-          <CustomTextField name="agency_project_id" label="Funding Agency Project ID" />
-        </Grid>
         <Grid item xs={6}>
           <MultiAutocompleteFieldVariableSize
             id="species"

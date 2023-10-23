@@ -1,7 +1,9 @@
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { grey } from '@mui/material/colors';
+import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 export interface SurveyObservationHeaderProps {
   project_id: number;
@@ -18,30 +20,30 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
         elevation={0}
         sx={{
           pt: 3,
-          pb: 3.5,
-          px: 3
+          pb: 3.75,
+          px: 3,
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: grey[300]
         }}>
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          sx={{
-            mb: 1
-          }}>
-          <Link to={`/admin/projects/${project_id}/surveys/${survey_id}/details`} style={{ textDecoration: 'none' }}>
-            <Typography component="span" variant="body2">
-              {survey_name}
-            </Typography>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link
+            component={RouterLink}
+            underline="hover"
+            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+            {survey_name}
           </Link>
-          <Typography component="span" variant="body2" color="text.secondary">
-            Manage Survey Observations
+          <Typography component="span" color="textSecondary">
+            Manage Observations
           </Typography>
         </Breadcrumbs>
         <Typography
-          variant="h3"
           component="h1"
+          variant="h2"
           sx={{
             ml: '-2px'
           }}>
-          Manage Survey Observations
+          Manage Observations
         </Typography>
       </Paper>
     </>

@@ -142,7 +142,7 @@ const phases = {
     version: `${version}`,
     tag: `prod-${version}`,
     host: staticUrlsAPI.prod,
-    appHost: staticUrls.prod,
+    appHost: staticUrls.prodVanityUrl,
     backboneApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
     backboneIntakePath: '/api/dwc/submission/queue',
     backboneArtifactIntakePath: '/api/artifact/intake',

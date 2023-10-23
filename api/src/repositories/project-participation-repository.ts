@@ -1,6 +1,7 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { PROJECT_ROLE } from '../constants/roles';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 import { SystemUser } from './user-repository';
@@ -43,6 +44,18 @@ export interface IInsertProjectParticipant {
   system_user_id: number;
   role: PROJECT_ROLE;
 }
+
+export const UserProjectParticipation = z.object({
+  project_id: z.number(),
+  project_name: z.string(),
+  project_participation_id: z.number(),
+  system_user_id: z.number(),
+  project_role_ids: z.array(z.number()),
+  project_role_names: z.array(z.string()),
+  project_role_permissions: z.array(z.string())
+});
+
+export type UserProjectParticipation = z.infer<typeof UserProjectParticipation>;
 
 /**
  * A repository class for accessing project participants data.
@@ -168,6 +181,75 @@ export class ProjectParticipationRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, ProjectUser.merge(SystemUser));
+
+    return response.rows?.[0] || null;
+  }
+
+  /**
+   * Get a project user by project and system user guid. Returns null if the system user is not a participant of the
+   * project.
+   *
+   * @param {number} projectId
+   * @param {string} userGuid
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @memberof ProjectParticipationRepository
+   */
+  async getProjectParticipantByUserGuid(
+    projectId: number,
+    userGuid: string
+  ): Promise<(ProjectUser & SystemUser) | null> {
+    const knex = getKnex();
+    const queryBuilder = knex.queryBuilder().select().from('region_lookup');
+
+    queryBuilder
+      .select(
+        knex.raw(`
+          su.system_user_id,
+          su.user_identifier,
+          su.user_guid,
+          su.record_end_date,
+          uis.name AS identity_source,
+          array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+          array_remove(array_agg(sr.name), NULL) AS role_names,
+          su.email,
+          su.display_name,
+          su.given_name,
+          su.family_name,
+          su.agency,
+          pp.project_participation_id,
+          pp.project_id,
+          array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
+          array_remove(array_agg(pr.name), NULL) AS project_role_names,
+          array_remove(array_agg(pp2.name), NULL) as project_role_permissions
+        `)
+      )
+      .from('project_participation as pp')
+      .leftJoin('project_role as pr', 'pp.project_role_id', 'pr.project_role_id')
+      .leftJoin('project_role_permission as prp', 'pp.project_role_id', 'prp.project_role_id')
+      .leftJoin('project_permission as pp2', 'pp2.project_permission_id', 'prp.project_permission_id')
+      .leftJoin('system_user as su', 'pp.system_user_id', 'su.system_user_id')
+      .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+      .where('su.record_end_date', null)
+      .where('pp.project_id', projectId)
+      .where('su.user_guid', userGuid)
+      .groupBy('su.system_user_id')
+      .groupBy('su.record_end_date')
+      .groupBy('su.user_identifier')
+      .groupBy('su.user_guid')
+      .groupBy('uis.name')
+      .groupBy('su.email')
+      .groupBy('su.display_name')
+      .groupBy('su.given_name')
+      .groupBy('su.family_name')
+      .groupBy('su.agency')
+      .groupBy('pp.project_participation_id')
+      .groupBy('pp.project_id')
+      .groupBy('pp.create_date')
+      .orderBy('pp.create_date', 'desc');
+
+    const response = await this.connection.knex(queryBuilder, ProjectUser.merge(SystemUser));
 
     return response.rows?.[0] || null;
   }
@@ -387,32 +469,10 @@ export class ProjectParticipationRepository extends BaseRepository {
    * Fetches all projects for the given system user.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<
-   *     {
-   *       project_participation_id: number;
-   *       project_id: number;
-   *       project_name: string;
-   *       system_user_id: number;
-   *       project_role_ids: number[];
-   *       project_role_names: string[];
-   *       project_role_permissions: string[];
-   *     }[]
-   *   >}
+   * @return {*}  {Promise<UserProjectParticipation[]>}
    * @memberof ProjectParticipationRepository
    */
-  async getProjectsBySystemUserId(
-    systemUserId: number
-  ): Promise<
-    {
-      project_participation_id: number;
-      project_id: number;
-      project_name: string;
-      system_user_id: number;
-      project_role_ids: number[];
-      project_role_names: string[];
-      project_role_permissions: string[];
-    }[]
-  > {
+  async getProjectsBySystemUserId(systemUserId: number): Promise<UserProjectParticipation[]> {
     const sqlStatement = SQL`
       SELECT
         p.project_id,
@@ -445,18 +505,7 @@ export class ProjectParticipationRepository extends BaseRepository {
         pp.system_user_id;
     `;
 
-    const response = await this.connection.sql(
-      sqlStatement,
-      z.object({
-        project_id: z.number(),
-        project_name: z.string(),
-        project_participation_id: z.number(),
-        system_user_id: z.number(),
-        project_role_ids: z.array(z.number()),
-        project_role_names: z.array(z.string()),
-        project_role_permissions: z.array(z.string())
-      })
-    );
+    const response = await this.connection.sql(sqlStatement, UserProjectParticipation);
 
     return response.rows;
   }

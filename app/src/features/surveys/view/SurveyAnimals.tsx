@@ -2,6 +2,7 @@ import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Divider, Typography } from '@mui/material';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
@@ -14,7 +15,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
@@ -36,6 +37,7 @@ import TelemetryDeviceForm, {
   IAnimalTelemetryDeviceFile,
   TELEMETRY_DEVICE_FORM_MODE
 } from './survey-animals/TelemetryDeviceForm';
+import TelemetryMap from './survey-animals/TelemetryMap';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
@@ -46,6 +48,7 @@ const SurveyAnimals: React.FC = () => {
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
   const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
+  const [openViewTelemetryDialog, setOpenViewTelemetryDialog] = useState(false);
   const [isSubmittingTelemetry, setIsSubmittingTelemetry] = useState(false);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
@@ -70,11 +73,35 @@ const SurveyAnimals: React.FC = () => {
     loadCritters();
   }
 
-  const currentCritterbaseCritterId = critterData?.find((a) => a.survey_critter_id === selectedCritterId)?.critter_id;
+  const currentCritterbaseCritterId = useMemo(
+    () => critterData?.find((a) => a.survey_critter_id === selectedCritterId)?.critter_id,
+    [critterData, selectedCritterId]
+  );
 
   if (!deploymentData) {
     loadDeployments();
   }
+
+  const {
+    refresh: refreshTelemetry,
+    data: telemetryData,
+    isLoading: telemetryLoading
+  } = useDataLoader(() =>
+    bhApi.survey.getCritterTelemetry(
+      projectId,
+      surveyId,
+      selectedCritterId ?? 0,
+      '1970-01-01',
+      new Date().toISOString()
+    )
+  );
+
+  useEffect(() => {
+    if (currentCritterbaseCritterId) {
+      refreshTelemetry();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCritterbaseCritterId]);
 
   const toggleDialog = () => {
     setAnimalFormMode(ANIMAL_FORM_MODE.ADD);
@@ -148,6 +175,10 @@ const SurveyAnimals: React.FC = () => {
       .string()
       .required('Required')
       .test('checkDeviceMakeIsNotChanged', '', async (value, context) => {
+        // Bypass to avoid an api call when invalid device_id
+        if (!context.parent.device_id) {
+          return true;
+        }
         const deviceDetails = await telemetryApi.devices.getDeviceDetails(Number(context.parent.device_id));
         if (deviceDetails.device?.device_make && deviceDetails.device?.device_make !== value) {
           return context.createError({
@@ -166,12 +197,14 @@ const SurveyAnimals: React.FC = () => {
           .test('checkDeploymentRange', '', async (value, context) => {
             const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
             const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
-            const errStr = await deploymentOverlapTest(
-              deviceId,
-              context.parent.deployment_id,
-              value,
-              context.parent.attachment_end
-            );
+            const errStr = deviceId
+              ? await deploymentOverlapTest(
+                  deviceId,
+                  context.parent.deployment_id,
+                  value,
+                  context.parent.attachment_end
+                )
+              : '';
             if (errStr.length) {
               return context.createError({ message: errStr });
             } else {
@@ -186,12 +219,14 @@ const SurveyAnimals: React.FC = () => {
           .test('checkDeploymentRangeEnd', '', async (value, context) => {
             const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
             const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
-            const errStr = await deploymentOverlapTest(
-              deviceId,
-              context.parent.deployment_id,
-              context.parent.attachment_start,
-              value
-            );
+            const errStr = deviceId
+              ? await deploymentOverlapTest(
+                  deviceId,
+                  context.parent.deployment_id,
+                  context.parent.attachment_start,
+                  value
+                )
+              : '';
             if (errStr.length) {
               return context.createError({ message: errStr });
             } else {
@@ -530,11 +565,32 @@ const SurveyAnimals: React.FC = () => {
               setAnimalFormMode(ANIMAL_FORM_MODE.EDIT);
               setOpenAddCritterDialog(true);
             }}
+            onMapOpen={() => {
+              setOpenViewTelemetryDialog(true);
+            }}
           />
         ) : (
-          <NoSurveySectionData text={'No Individual Animals'} paperVariant={'outlined'} />
+          <NoSurveySectionData text={'No Marked or Known Animals'} paperVariant={'outlined'} />
         )}
       </Box>
+      <ComponentDialog
+        dialogProps={{ fullScreen: !!telemetryData?.points?.features?.length, maxWidth: false }}
+        dialogTitle={'View Telemetry'}
+        open={openViewTelemetryDialog}
+        onClose={() => setOpenViewTelemetryDialog(false)}>
+        {telemetryData?.points.features.length ? (
+          <TelemetryMap
+            telemetryData={telemetryData}
+            deploymentData={deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId)}
+          />
+        ) : (
+          <Typography>
+            {telemetryLoading
+              ? 'Loading telemetry...'
+              : "No telemetry has been collected for this animal's deployments."}
+          </Typography>
+        )}
+      </ComponentDialog>
     </Box>
   );
 };

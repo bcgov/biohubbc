@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiMapMarker, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -16,6 +16,7 @@ export interface ITableActionsMenuProps {
   onEditDevice: (critter_id: number) => void;
   onEditCritter: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
+  onMapOpen: () => void;
 }
 
 const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
@@ -100,6 +101,19 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             <Typography variant="inherit">Remove Animal</Typography>
           </MenuItem>
         )}
+        {props.devices?.length ? (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              props.onMapOpen();
+            }}
+            data-testid="animal-table-row-view-telemetry">
+            <ListItemIcon>
+              <Icon path={mdiMapMarker} size={1} />
+            </ListItemIcon>
+            <Typography variant="inherit">View Telemetry</Typography>
+          </MenuItem>
+        ) : null}
       </Menu>
     </>
   );
