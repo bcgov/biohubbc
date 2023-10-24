@@ -70,7 +70,6 @@ objects:
         description: Nodejs Runtime Image
       labels:
         shared: 'true'
-      creationTimestamp: null
       generation: 0
       name: ${NAME}
     spec:
@@ -84,7 +83,6 @@ objects:
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftWebConsole
-      creationTimestamp: null
       generation: 0
       labels:
         role: app
@@ -109,7 +107,6 @@ objects:
       template:
         metadata:
           annotations: null
-          creationTimestamp: null
           labels:
             deploymentConfig: ${NAME}${SUFFIX}
             role: app
@@ -214,7 +211,6 @@ objects:
     apiVersion: v1
     metadata:
       annotations: null
-      creationTimestamp: null
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
@@ -234,7 +230,6 @@ objects:
     apiVersion: route.openshift.io/v1
     metadata:
       annotations: {}
-      creationTimestamp: null
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
@@ -256,7 +251,6 @@ objects:
     apiVersion: autoscaling/v2
     metadata:
       annotations: {}
-      creationTimestamp: null
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:

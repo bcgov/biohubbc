@@ -4,6 +4,8 @@ name: Add Comments
 on:
   pull_request:
     types: [opened, ready_for_review]
+    branches-ignore:
+      - prod
 
 jobs:
   addOpenshiftURLComment:

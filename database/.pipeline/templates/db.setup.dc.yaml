@@ -45,7 +45,6 @@ objects:
     apiVersion: v1
     metadata:
       name: '${NAME}'
-      creationTimestamp:
       labels:
         role: setup
     spec:

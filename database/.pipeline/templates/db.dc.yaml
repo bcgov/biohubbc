@@ -135,7 +135,6 @@ objects:
     apiVersion: image.openshift.io/v1
     metadata:
       name: '${IMAGE_STREAM_NAME}'
-      creationTimestamp:
       labels:
         shared: 'true'
       annotations: {}

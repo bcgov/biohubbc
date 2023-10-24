@@ -164,7 +164,6 @@ objects:
         description: Nodejs Runtime Image
       labels:
         shared: 'true'
-      creationTimestamp: null
       generation: 0
       name: ${NAME}
     spec:
@@ -178,7 +177,6 @@ objects:
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftWebConsole
-      creationTimestamp: null
       generation: 0
       labels:
         role: api
@@ -203,7 +201,6 @@ objects:
       template:
         metadata:
           annotations: null
-          creationTimestamp: null
           labels:
             deploymentConfig: ${NAME}${SUFFIX}
             role: api
@@ -417,7 +414,6 @@ objects:
     metadata:
       annotations:
         as-copy-of: ${DB_SERVICE_NAME}
-      creationTimestamp: null
       name: ${NAME}${SUFFIX}
     type: Opaque
 
@@ -425,7 +421,6 @@ objects:
     kind: Service
     metadata:
       annotations: null
-      creationTimestamp: null
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
@@ -449,7 +444,6 @@ objects:
         # 'sticky sessions': If an API pod is busy fullfilling a request, subsequent requests will go to other API pods rather than wait for the same pod (when pod replicas is > 1)
         haproxy.router.openshift.io/balance: 'leastconn'
         haproxy.router.openshift.io/disable_cookies: 'true'
-      creationTimestamp: null
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
@@ -471,7 +465,6 @@ objects:
     apiVersion: autoscaling/v2
     metadata:
       annotations: {}
-      creationTimestamp: null
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:

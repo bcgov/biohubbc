@@ -52,7 +52,6 @@ objects:
     apiVersion: image.openshift.io/v1
     metadata:
       name: ${SOURCE_IMAGE_NAME}
-      creationTimestamp: null
       annotations:
         description: Nodejs Base Image
       labels:
@@ -73,7 +72,6 @@ objects:
     apiVersion: image.openshift.io/v1
     metadata:
       name: '${NAME}'
-      creationTimestamp:
       annotations:
         description: Nodejs Runtime Image
       labels:
@@ -85,7 +83,6 @@ objects:
     kind: BuildConfig
     metadata:
       name: '${NAME}${SUFFIX}'
-      creationTimestamp:
       labels: {}
       annotations: {}
     spec:
