@@ -37,11 +37,11 @@ parameters:
     required: true
     value: 14-ubi8
   - name: CPU_REQUEST
-    value: '100m'
+    value: '50m'
   - name: CPU_LIMIT
-    value: '1250m'
+    value: '1000m'
   - name: MEMORY_REQUEST
-    value: '512Mi'
+    value: '100Mi'
   - name: MEMORY_LIMIT
     value: '3Gi'
 objects:

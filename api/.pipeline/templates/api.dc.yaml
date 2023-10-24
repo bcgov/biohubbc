@@ -145,11 +145,11 @@ parameters:
     value: https://api.notification.canada.ca/v2/notifications/sms
   # Openshift Resources
   - name: CPU_REQUEST
-    value: '100m'
+    value: '50m'
   - name: CPU_LIMIT
     value: '500m'
   - name: MEMORY_REQUEST
-    value: '512Mi'
+    value: '100Mi'
   - name: MEMORY_LIMIT
     value: '2Gi'
   - name: REPLICAS

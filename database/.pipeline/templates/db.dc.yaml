@@ -79,7 +79,7 @@ parameters:
   - name: CPU_LIMIT
     value: '200m'
   - name: MEMORY_REQUEST
-    value: '512Mi'
+    value: '100Mi'
   - name: MEMORY_LIMIT
     value: '2Gi'
   - name: REPLICAS

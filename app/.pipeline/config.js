@@ -65,7 +65,7 @@ const phases = {
     cpuRequest: '50m',
     cpuLimit: '1000m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi'
+    memoryLimit: '4Gi'
   },
   dev: {
     namespace: 'af2668-dev',
