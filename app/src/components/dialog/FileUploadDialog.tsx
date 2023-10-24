@@ -7,8 +7,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import FileUpload, { IFileUploadProps } from 'components/file-upload/FileUpload';
-import { IFileHandler } from 'components/file-upload/FileUploadItem';
+import { IFileHandler, ISubtextProps, UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { useState } from 'react';
+import { getFormattedFileSize } from 'utils/Utils';
 import { IComponentDialogProps } from './ComponentDialog';
 
 interface IFileUploadDialogProps extends IComponentDialogProps {
@@ -16,6 +17,14 @@ interface IFileUploadDialogProps extends IComponentDialogProps {
   onUpload: (file: File) => Promise<void>;
   FileUploadProps: Partial<IFileUploadProps>;
 }
+
+const SubtextComponent = (props: ISubtextProps) => (
+  <>
+    {props.status === UploadFileStatus.STAGED
+      ? getFormattedFileSize(props.file.size)
+      : props.error ?? props.status}
+  </>
+);
 
 const FileUploadDialog = (props: IFileUploadDialogProps) => {
   const theme = useTheme();
@@ -47,7 +56,13 @@ const FileUploadDialog = (props: IFileUploadDialogProps) => {
       <DialogTitle id="file-upload-dialog-title">{props.dialogTitle}</DialogTitle>
       <DialogContent>
         {props.children}
-        <FileUpload {...props.FileUploadProps} fileHandler={fileHandler} />
+        <FileUpload
+          {...props.FileUploadProps}
+          FileUploadItemComponentProps={{
+            SubtextComponent
+          }}
+          fileHandler={fileHandler}
+        />
       </DialogContent>
       <DialogActions>
         <LoadingButton

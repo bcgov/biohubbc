@@ -1,9 +1,9 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
-import { ApiExecuteSQLError } from '../errors/api-error';
 
 /**
  * Interface reflecting survey observations retrieved from the database
