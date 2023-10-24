@@ -31,18 +31,18 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
 import { getCodesName } from 'utils/Utils';
 
-interface ISampleSiteOption {
+type ISampleSiteOption = {
   survey_sample_site_id: number;
   sample_site_name: string;
 }
 
-interface ISampleMethodOption {
+type ISampleMethodOption = {
   survey_sample_method_id: number;
   survey_sample_site_id: number;
   sample_method_name: string;
-}
+};
 
-interface ISamplePeriodOption {
+type ISamplePeriodOption = {
   survey_sample_period_id: number;
   survey_sample_method_id: number;
   sample_period_name: string;
@@ -155,7 +155,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       align: 'left',
       renderCell: (params) => {
         return (
-          <AutocompleteDataGridViewCell
+          <AutocompleteDataGridViewCell<IObservationTableRow, number>
             dataGridProps={params}
             options={sampleSiteOptions.map((item) => ({
               label: item.sample_site_name,
@@ -166,7 +166,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       },
       renderEditCell: (params) => {
         return (
-          <AutocompleteDataGridEditCell
+          <AutocompleteDataGridEditCell<IObservationTableRow, number>
             dataGridProps={params}
             options={sampleSiteOptions.map((item) => ({
               label: item.sample_site_name,
@@ -187,7 +187,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       align: 'left',
       renderCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridViewCell
+          <ConditionalAutocompleteDataGridViewCell<IObservationTableRow, ISampleMethodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
@@ -200,7 +200,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       },
       renderEditCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridEditCell
+          <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, ISampleMethodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
@@ -223,7 +223,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       align: 'left',
       renderCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridViewCell
+          <ConditionalAutocompleteDataGridViewCell<IObservationTableRow, ISamplePeriodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
@@ -236,7 +236,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       },
       renderEditCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridEditCell
+          <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, ISamplePeriodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
