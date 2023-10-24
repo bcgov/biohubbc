@@ -89,17 +89,10 @@ const StudyAreaMap = (props: IMapContainerProps) => {
               ...drawControls?.options,
               // Always disable circle, circlemarker and line
               draw: { ...drawControls?.options?.draw, circle: false, circlemarker: false, polyline: false }
-              // edit: { remove: false }
             }}
-            onLayerAdd={(event) => {
-              console.log('onLayerAdd', event);
-            }}
-            onLayerEdit={(event) => {
-              console.log('onLayerEdit', event);
-            }}
-            onLayerDelete={(event) => {
-              console.log('onLayerDelete', event);
-            }}
+            onLayerAdd={(_) => {}}
+            onLayerEdit={(_) => {}}
+            onLayerDelete={(_) => {}}
           />
         </FeatureGroup>
 
