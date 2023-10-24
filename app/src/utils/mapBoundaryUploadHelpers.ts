@@ -6,6 +6,12 @@ import { LatLngBoundsExpression } from 'leaflet';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * Returns true if the file is a zip and false if it is not
+ *
+ * @param {File} file
+ * @returns {*} boolean
+ */
 export const isZipFile = (file: File): boolean => {
   if (!file?.type.match(/zip/) || !file?.name.includes('.zip')) {
     return false;
