@@ -19,11 +19,7 @@ interface IFileUploadDialogProps extends IComponentDialogProps {
 }
 
 const SubtextComponent = (props: ISubtextProps) => (
-  <>
-    {props.status === UploadFileStatus.STAGED
-      ? getFormattedFileSize(props.file.size)
-      : props.error ?? props.status}
-  </>
+  <>{props.status === UploadFileStatus.STAGED ? getFormattedFileSize(props.file.size) : props.error ?? props.status}</>
 );
 
 const FileUploadDialog = (props: IFileUploadDialogProps) => {
