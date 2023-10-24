@@ -4,11 +4,10 @@ name: Clean Closed PR Artifacts
 
 on:
   pull_request:
-    branches:
-      - "*"
-      - "!test"
-      - "!prod"
     types: [closed]
+    branches-ignore:
+      - test
+      - prod
 
 jobs:
   clean:
