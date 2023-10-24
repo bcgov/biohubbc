@@ -17,7 +17,7 @@ describe('useDwcaApi', () => {
   const surveyId = 2;
 
   it('getObservationSubmission works as expected', async () => {
-    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`).reply(200, {
+    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/get`).reply(200, {
       surveyObservationData: { occurrence_submission_id: 1, inputFileName: 'file.txt' },
       surveyObservationSupplementaryData: null
     });
@@ -32,7 +32,7 @@ describe('useDwcaApi', () => {
     const submissionId = 1;
 
     mock
-      .onDelete(`/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`)
+      .onDelete(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/${submissionId}/delete`)
       .reply(200, 1);
 
     const result = await useDwcaApi(axios).deleteObservationSubmission(projectId, surveyId, submissionId);
@@ -46,7 +46,7 @@ describe('useDwcaApi', () => {
     });
 
     mock
-      .onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`)
+      .onPost(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/upload`)
       .reply(200, { submissionId: 1 });
     mock.onPost('/api/dwc/validate').reply(200);
 
@@ -61,7 +61,7 @@ describe('useDwcaApi', () => {
     });
 
     mock
-      .onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`)
+      .onPost(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/upload`)
       .reply(200, { submissionId: 1 });
     mock.onPost('/api/xlsx/validate').reply(200);
 
@@ -75,7 +75,7 @@ describe('useDwcaApi', () => {
       type: 'xlsx'
     });
 
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`).reply(200, {});
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/upload`).reply(200, {});
 
     const result = await useDwcaApi(axios).uploadObservationSubmission(projectId, surveyId, file);
 
