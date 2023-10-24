@@ -6,7 +6,9 @@ import { authorizeRequestHandler } from '../../../../../../../../../request-hand
 import { OccurrenceService } from '../../../../../../../../../services/occurrence-service';
 import { getLogger } from '../../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/dwca/observations/submission/{submissionId}/delete');
+const defaultLog = getLogger(
+  '/api/project/{projectId}/survey/{surveyId}/dwca/observations/submission/{submissionId}/delete'
+);
 
 export const DELETE: Operation = [
   authorizeRequestHandler((req) => {

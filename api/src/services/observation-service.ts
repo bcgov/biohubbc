@@ -137,7 +137,7 @@ export class ObservationService extends DBService {
 
     // Step 1. Retrieve the observation submission record
     const submission = await this.getObservationSubmissionById(submissionId);
-    const surveyId = submission.survey_id
+    const surveyId = submission.survey_id;
 
     // Step 2. Retrieve the S3 object containing the uploaded CSV file
     const s3Object = await getFileFromS3(submission.key);
@@ -166,8 +166,8 @@ export class ObservationService extends DBService {
       observation_time: row['TIME'],
       observation_date: row['DATE']
     }));
-    
+
     // Step 6. Insert new rows and return them
-    return this.insertUpdateDeleteSurveyObservations(surveyId, insertRows)
+    return this.insertUpdateDeleteSurveyObservations(surveyId, insertRows);
   }
 }

@@ -25,7 +25,11 @@ import { ObservationsTableI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IGetSampleLocationRecord, IGetSampleMethodRecord, IGetSamplePeriodRecord } from 'interfaces/useSurveyApi.interface';
+import {
+  IGetSampleLocationRecord,
+  IGetSampleMethodRecord,
+  IGetSamplePeriodRecord
+} from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
@@ -34,7 +38,7 @@ import { getCodesName } from 'utils/Utils';
 type ISampleSiteOption = {
   survey_sample_site_id: number;
   sample_site_name: string;
-}
+};
 
 type ISampleMethodOption = {
   survey_sample_method_id: number;
@@ -46,7 +50,7 @@ type ISamplePeriodOption = {
   survey_sample_period_id: number;
   survey_sample_method_id: number;
   sample_period_name: string;
-}
+};
 export interface ISpeciesObservationTableProps {
   isLoading?: boolean;
 }
@@ -95,11 +99,12 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
-  const sampleSiteOptions: ISampleSiteOption[] = surveySampleSites.map((site) => ({
-    survey_sample_site_id: site.survey_sample_site_id,
-    sample_site_name: site.name
-  })) ?? [];
-  
+  const sampleSiteOptions: ISampleSiteOption[] =
+    surveySampleSites.map((site) => ({
+      survey_sample_site_id: site.survey_sample_site_id,
+      sample_site_name: site.name
+    })) ?? [];
+
   // Collect sample methods
   const surveySampleMethods: IGetSampleMethodRecord[] = surveySampleSites
     .filter((sampleSite) => Boolean(sampleSite.sample_methods))
@@ -109,7 +114,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     ? surveySampleMethods.map((method) => ({
         survey_sample_method_id: method.survey_sample_method_id,
         survey_sample_site_id: method.survey_sample_site_id,
-        sample_method_name: getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
+        sample_method_name:
+          getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
       }))
     : [];
 

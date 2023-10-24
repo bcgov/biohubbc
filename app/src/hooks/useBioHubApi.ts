@@ -5,6 +5,7 @@ import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
+import useDwcaApi from './api/useDwcaApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
 import useObservationApi from './api/useObservationApi';
@@ -18,7 +19,6 @@ import useSpatialApi from './api/useSpatialApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
-import useDwcaApi from './api/useDwcaApi';
 
 /**
  * Returns a set of supported api methods.
@@ -48,7 +48,7 @@ export const useBiohubApi = () => {
   const admin = useAdminApi(apiAxios);
 
   const observation = useObservationApi(apiAxios);
-  
+
   const dwca = useDwcaApi(apiAxios);
 
   const resources = useResourcesApi(apiAxios);

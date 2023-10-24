@@ -1,6 +1,10 @@
-import { AxiosInstance, CancelTokenSource } from "axios";
-import { GeoJsonProperties } from "geojson";
-import { IGetObservationSubmissionResponse, ISpatialData, IUploadObservationSubmissionResponse } from "interfaces/useDwcaApi.interface";
+import { AxiosInstance, CancelTokenSource } from 'axios';
+import { GeoJsonProperties } from 'geojson';
+import {
+  IGetObservationSubmissionResponse,
+  ISpatialData,
+  IUploadObservationSubmissionResponse
+} from 'interfaces/useDwcaApi.interface';
 
 /**
  * Returns a set of supported api methods for working with DarwinCore observations.
@@ -177,8 +181,8 @@ const useDwcaApi = (axios: AxiosInstance) => {
     getOccurrencesForView,
     processOccurrences,
     processDWCFile,
-    getSpatialMetadata,
+    getSpatialMetadata
   };
-}
+};
 
 export default useDwcaApi;

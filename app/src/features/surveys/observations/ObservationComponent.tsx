@@ -27,21 +27,20 @@ const ObservationComponent = () => {
   const { projectId, surveyId } = surveyContext;
 
   const handleImportObservations = async (file: File) => {
-    return biohubApi.observation
-      .uploadCsvForImport(projectId, surveyId, file)
-      .then((response) => {
-        setShowImportDiaolog(false);
-        setProcessingRecords(true)
-        biohubApi.observation.processCsvSubmission(projectId, surveyId, response.submissionId)
-          .then(() => {
-            observationsContext.refreshRecords().then(() => {
-              setProcessingRecords(false);
-            });
-          })
-          .catch(() => {
+    return biohubApi.observation.uploadCsvForImport(projectId, surveyId, file).then((response) => {
+      setShowImportDiaolog(false);
+      setProcessingRecords(true);
+      biohubApi.observation
+        .processCsvSubmission(projectId, surveyId, response.submissionId)
+        .then(() => {
+          observationsContext.refreshRecords().then(() => {
             setProcessingRecords(false);
-          })
-      });
+          });
+        })
+        .catch(() => {
+          setProcessingRecords(false);
+        });
+    });
   };
 
   const hasUnsavedChanges = observationsContext.hasUnsavedChanges();
@@ -54,13 +53,13 @@ const ObservationComponent = () => {
         dialogTitle="Import Observation CSV"
         onClose={() => setShowImportDiaolog(false)}
         onUpload={handleImportObservations}
-        FileUploadProps={{ 
-          fileHandler: (file) => { console.log(file) },
+        FileUploadProps={{
+          fileHandler: (file) => {
+            console.log(file);
+          },
           dropZoneProps: { maxNumFiles: 2, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED
-        }}
-        >
-      </FileUploadDialog>
+        }}></FileUploadDialog>
       <YesNoDialog
         dialogTitle={ObservationsTableI18N.removeAllDialogTitle}
         dialogText={ObservationsTableI18N.removeAllDialogText}
