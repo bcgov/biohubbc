@@ -43,7 +43,7 @@ parameters:
   - name: MEMORY_REQUEST
     value: '100Mi'
   - name: MEMORY_LIMIT
-    value: '4Gi'
+    value: '5Gi'
 objects:
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
