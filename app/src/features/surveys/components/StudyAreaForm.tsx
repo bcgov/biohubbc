@@ -2,7 +2,7 @@ import EditDialog from 'components/dialog/EditDialog';
 import { IDrawControlsRef } from 'components/map/components/DrawControls2';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { createRef, useState } from 'react';
+import { createRef, useMemo, useState } from 'react';
 import yup from 'utils/YupSchema';
 import { SurveyAreaList } from './locations/SurveyAreaList';
 import SurveyAreaLocationForm from './locations/SurveyAreaLocationForm';
@@ -54,6 +54,20 @@ const StudyAreaForm = () => {
   const [currentIndex, setCurrentIndex] = useState<number | undefined>(undefined);
   const drawRef = createRef<IDrawControlsRef>();
 
+  const locationDialogFormData = useMemo(() => {
+    // Initial Dialog Data
+    const dialogData = {
+      name: '',
+      description: ''
+    };
+
+    if (currentIndex !== undefined) {
+      dialogData.name = values.locations[currentIndex]?.name;
+      dialogData.description = values.locations[currentIndex]?.description;
+    }
+    return dialogData;
+  }, [currentIndex, values.locations]);
+
   const onOpen = () => {
     setIsOpen(true);
   };
@@ -82,20 +96,6 @@ const StudyAreaForm = () => {
     setFieldValue('locations', data);
   };
 
-  const getDialogData = () => {
-    // Initial Dialog Data
-    const dialogData = {
-      name: '',
-      description: ''
-    };
-
-    if (currentIndex !== undefined) {
-      dialogData.name = values.locations[currentIndex]?.name;
-      dialogData.description = values.locations[currentIndex]?.description;
-    }
-    return dialogData;
-  };
-
   return (
     <form onSubmit={handleSubmit}>
       <EditDialog
@@ -104,7 +104,7 @@ const StudyAreaForm = () => {
         dialogLoading={false}
         component={{
           element: <SurveyAreaLocationForm />,
-          initialValues: getDialogData(),
+          initialValues: locationDialogFormData,
           validationSchema: SurveyLocationDetailsYupSchema
         }}
         dialogSaveButtonLabel="Save"
