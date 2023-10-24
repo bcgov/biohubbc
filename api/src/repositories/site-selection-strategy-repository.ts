@@ -10,6 +10,8 @@ export const SurveyStratum = z.object({
   description: z.string()
 });
 
+export type SurveyStratum = z.infer<typeof SurveyStratum>;
+
 export const SurveyStratumRecord = z.object({
   name: z.string(),
   description: z.string().nullable(),
@@ -20,8 +22,6 @@ export const SurveyStratumRecord = z.object({
 });
 
 export type SurveyStratumRecord = z.infer<typeof SurveyStratumRecord>;
-
-export type SurveyStratum = z.infer<typeof SurveyStratum>;
 
 export const SiteSelectionData = z.object({
   strategies: z.array(z.string()),
@@ -56,12 +56,15 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .where('sss.survey_id', surveyId)
       .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id');
 
-    const strategiesResponse = await this.connection.knex<{ name: string }>(strategiesQuery);
-    const strategies = strategiesResponse.rows.map((row) => row.name);
-
     const stratumsQuery = getKnex().select().from('survey_stratum').where('survey_id', surveyId);
 
-    const stratumsResponse = await this.connection.knex<SurveyStratumRecord>(stratumsQuery);
+    const [strategiesResponse, stratumsResponse] = await Promise.all([
+      this.connection.knex(strategiesQuery, z.object({ name: z.string() })),
+      this.connection.knex(stratumsQuery, SurveyStratumRecord)
+    ]);
+
+    const strategies = strategiesResponse.rows.map((row) => row.name);
+
     const stratums = stratumsResponse.rows;
 
     return { strategies, stratums };
@@ -81,7 +84,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       DELETE FROM 
         survey_site_strategy
       WHERE
-      survey_id = ${surveyId}
+        survey_id = ${surveyId}
       RETURNING *;
     `;
 
@@ -151,10 +154,10 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
    * Deletes the given survey stratums by ID
    *
    * @param {number[]} stratumIds
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<number>}
    * @memberof SurveyRepository
    */
-  async deleteSurveyStratums(stratumIds: number[]): Promise<void> {
+  async deleteSurveyStratums(stratumIds: number[]): Promise<number> {
     defaultLog.debug({ label: 'deleteSurveyStratums', stratumIds });
 
     const deleteQuery = getKnex()
@@ -163,7 +166,9 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .whereIn('survey_stratum_id', stratumIds)
       .returning('*');
 
-    await this.connection.knex(deleteQuery, SurveyStratumRecord);
+    const response = await this.connection.knex(deleteQuery, SurveyStratumRecord);
+
+    return response.rowCount;
   }
 
   /**
@@ -228,17 +233,17 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       stratums.map((stratum) => this.connection.knex(makeUpdateQuery(stratum), SurveyStratumRecord))
     );
 
-    const records = responses.reduce((acc: SurveyStratumRecord[], queryResult) => {
-      return [...acc, ...queryResult.rows];
-    }, []);
+    const totalRowCount = responses.reduce((sum, response) => (sum += response.rowCount), 0);
 
-    if (records.length !== stratums.length) {
+    if (totalRowCount !== stratums.length) {
       throw new ApiExecuteSQLError('Failed to update survey stratums', [
         'SurveyRepository->updateSurveyStratums',
-        `Total rowCount was ${records.length}, expected ${stratums.length} rows`
+        `Total rowCount was ${totalRowCount}, expected ${stratums.length} rows`
       ]);
     }
 
-    return records;
+    return responses.reduce((acc: SurveyStratumRecord[], queryResult) => {
+      return [...acc, ...queryResult.rows];
+    }, []);
   }
 }
