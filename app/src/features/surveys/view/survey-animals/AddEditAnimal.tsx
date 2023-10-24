@@ -1,6 +1,6 @@
 import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import { Button, Grid, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -13,6 +13,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router';
 import { dateRangesOverlap } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
@@ -27,7 +28,6 @@ import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
 import { DeviceFormSection, IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
-import { useParams } from 'react-router';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
@@ -39,9 +39,9 @@ interface AddEditAnimalProps {
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
-  const { section, isLoading, critterData, telemetrySaveAction, deploymentRemoveAction } = props;
+  const { section, critterData, telemetrySaveAction, deploymentRemoveAction } = props;
   const surveyContext = useContext(SurveyContext);
-  const { submitForm, initialValues, values, resetForm, setFieldValue } = useFormikContext<IAnimal>();
+  const { submitForm, initialValues, values, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
   const [showDialog, setShowDialog] = useState(false);
