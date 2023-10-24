@@ -168,6 +168,6 @@ export class ObservationService extends DBService {
     }));
 
     // Step 6. Insert new rows and return them
-    return this.insertUpdateDeleteSurveyObservations(surveyId, insertRows);
+    return this.observationRepository.insertUpdateSurveyObservations(surveyId, insertRows);
   }
 }
