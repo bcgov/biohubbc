@@ -526,6 +526,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onNo={() => handleCancelDeleteRow()}
       />
       <DataGrid
+        checkboxSelection
         loading={observationsDataLoader.isLoading || props.isLoading}
         rowHeight={56}
         apiRef={apiRef}
@@ -567,7 +568,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             }
           },
           '& .MuiDataGrid-columnHeader': {
-            px: 3,
+            // px: 3,
             py: 1,
             '&:focus': {
               outline: 'none'
@@ -579,14 +580,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             color: 'text.secondary'
           },
           '& .MuiDataGrid-cell': {
-            px: 3,
+            // px: 3,
             py: 1,
             background: '#fff',
             '&.MuiDataGrid-cell--editing:focus-within': {
               outline: 'none'
             },
             '&.MuiDataGrid-cell--editing': {
-              p: 1,
+              p: 0.5,
               backgroundColor: cyan[100]
             }
           },
