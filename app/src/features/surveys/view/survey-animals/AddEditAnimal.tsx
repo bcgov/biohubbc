@@ -1,7 +1,6 @@
 import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { LoadingButton } from '@mui/lab';
-import { Box, Button, Collapse, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import { Box, Button, Grid, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -13,9 +12,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { isEqual } from 'lodash-es';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
 import { dateRangesOverlap } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
@@ -30,6 +27,7 @@ import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
 import { DeviceFormSection, IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
+import { useParams } from 'react-router';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
@@ -49,6 +47,8 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
+
+  const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
 
   const dialogTitle = openedFromAddButton
     ? `Add ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`
@@ -94,7 +94,13 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           values={values.device}
           mode={openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT}
           index={selectedIndex}
-          removeAction={deploymentRemoveAction}
+          removeAction={(id) => {
+            deploymentRemoveAction(id);
+            const deployments = props.deploymentData?.filter((a) => a.critter_id === survey_critter_id) ?? [];
+            if (deployments.length <= 1) {
+              setShowDialog(false);
+            }
+          }}
         />
       )
     };
@@ -137,7 +143,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     attachment_start: string | undefined,
     attachment_end: string | null | undefined
   ): Promise<string> => {
-    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
+    const deviceDetails = await getDeviceDetails(device_id);
     if (!attachment_start) {
       return 'Attachment start is required.'; //It probably won't actually display this but just in case.
     }
@@ -155,13 +161,27 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     }
   };
 
+  const { data: deviceDetails, refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
+  const getDeviceDetails = async (deviceId: number | string) => {
+    if (deviceDetails?.device?.device_id !== Number(deviceId)) {
+      await refreshDeviceDetails(Number(deviceId));
+      return deviceDetails;
+    } else {
+      return deviceDetails;
+    }
+  };
+
   const AnimalDeploymentSchemaAsyncValidation = AnimalTelemetryDeviceSchema.shape({
     device_make: yup
       .string()
       .required('Required')
       .test('checkDeviceMakeIsNotChanged', '', async (value, context) => {
-        const deviceDetails = await telemetryApi.devices.getDeviceDetails(Number(context.parent.device_id));
-        if (deviceDetails.device?.device_make && deviceDetails.device?.device_make !== value) {
+        const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches device[0].deployments[0].attachment_start for the number contained in first index.
+        if (selectedIndex !== upperLevelIndex) {
+          return true;
+        }
+        const deviceDetails = await getDeviceDetails(context.parent.device_id);
+        if (deviceDetails?.device?.device_make && deviceDetails.device?.device_make !== value) {
           return context.createError({
             message: `The current make for this device is ${deviceDetails.device?.device_make}, this value should not be changed.`
           });
@@ -177,6 +197,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           .typeError('Required.')
           .test('checkDeploymentRange', '', async (value, context) => {
             const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches device[0].deployments[0].attachment_start for the number contained in first index.
+            if (selectedIndex !== upperLevelIndex) {
+              return true;
+            }
             const deviceId = context.options.context?.device?.[upperLevelIndex]?.device_id;
             const errStr = await deploymentOverlapTest(
               deviceId,
@@ -197,6 +220,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           .nullable()
           .test('checkDeploymentRangeEnd', '', async (value, context) => {
             const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches device[0].deployments[0].attachment_start for the number contained in first index.
+            if (selectedIndex !== upperLevelIndex) {
+              return true;
+            }
             const deviceId = context.options.context?.device?.[upperLevelIndex]?.device_id;
             const errStr = await deploymentOverlapTest(
               deviceId,
@@ -253,9 +279,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 component={{
                   initialValues: values,
                   element: renderSingleForm,
-                  validationSchema: AnimalSchemaWithDeployments,
-                  validateOnBlur: section !== 'Telemetry',
-                  validateOnChange: section === 'Telemetry'
+                  validationSchema: AnimalSchemaWithDeployments
                 }}
                 onCancel={() => {
                   if (openedFromAddButton) {
@@ -282,6 +306,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                     ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
                     saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
                   );
+                  submitForm();
                 }}
               />
               {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
@@ -301,7 +326,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             </>
           )}
         </FieldArray>
-        <Collapse in={!isEqual(initialValues, values) && section !== 'Telemetry'} orientation="horizontal">
+        {/*<Collapse in={!isEqual(initialValues, values) && section !== 'Telemetry'} orientation="horizontal">
           <Box ml={1} whiteSpace="nowrap">
             <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
               Save
@@ -310,7 +335,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               Discard Changes
             </Button>
           </Box>
-        </Collapse>
+                </Collapse>*/}
       </Toolbar>
       <Box p={2}>
         {values.general.animal_id ? (

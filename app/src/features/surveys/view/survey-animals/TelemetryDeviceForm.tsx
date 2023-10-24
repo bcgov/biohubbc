@@ -155,14 +155,18 @@ export const DeviceFormSection = ({ values, index, mode, removeAction }: IDevice
   const { data: bctwDeviceData, refresh } = useDataLoader(() => api.devices.getDeviceDetails(values[index].device_id));
 
   useEffect(() => {
-    if (values[index].device_id) {
+    if (values?.[index]?.device_id) {
       refresh();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values[index].device_id]);
+  }, [values?.[index]?.device_id]);
 
   const { values: formikVals } = useFormikContext();
+
+  if (!values[index]) {
+    return <></>;
+  }
 
   return (
     <>
