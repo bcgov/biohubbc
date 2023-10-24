@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import EditDialog from 'components/dialog/EditDialog';
 import { AttachmentType } from 'constants/attachments';
+import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
@@ -24,7 +25,7 @@ import { ANIMAL_FORM_MODE } from './IndividualAnimalForm';
 import { IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
 
 export const SurveyAnimalsPage = () => {
-  const [selectedSection, setSelectedSection] = useState<IAnimalSections>('General');
+  const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
   //const [selectedCritterID, setSelectedCritterID] = useState<string | null>(null);
   const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);

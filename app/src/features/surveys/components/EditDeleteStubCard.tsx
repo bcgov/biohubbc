@@ -25,6 +25,7 @@ export const EditDeleteStubCard = ({ header, subHeaderData, onClickEdit, onClick
     });
     return formatArr.join(' | ');
   };
+
   return (
     <Card
       variant="outlined"

@@ -253,6 +253,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               <Grid item lg={12} md={12} sm={12}>
                 <Form>
                   <AnimalSectionDataCards
+                    key={section}
                     onEditClick={(idx) => {
                       setSelectedIndex(idx);
                       setShowDialog(true);
@@ -264,11 +265,11 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               </Grid>
             </>
           ) : (
-            <Box display="flex" alignItems="center" justifyContent="center">
+            <Grid item>
               <Typography component="span" variant="body2" color="textSecondary">
                 No Critter Selected
               </Typography>
-            </Box>
+            </Grid>
           )}
         </Grid>
       </Grid>
