@@ -50,9 +50,6 @@ const FileUploadDialog = (props: IFileUploadDialogProps) => {
         <FileUpload {...props.FileUploadProps} fileHandler={fileHandler} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose} color="primary" variant="contained">
-          {props.closeButtonLabel ? props.closeButtonLabel : 'Cancel'}
-        </Button>
         <LoadingButton
           loading={uploading}
           disabled={!currentFile}
@@ -62,6 +59,9 @@ const FileUploadDialog = (props: IFileUploadDialogProps) => {
           autoFocus>
           {props.uploadButtonLabel ? props.uploadButtonLabel : 'Import'}
         </LoadingButton>
+        <Button onClick={props.onClose} color="primary" variant="outlined">
+          {props.closeButtonLabel ? props.closeButtonLabel : 'Cancel'}
+        </Button>
       </DialogActions>
     </Dialog>
   );

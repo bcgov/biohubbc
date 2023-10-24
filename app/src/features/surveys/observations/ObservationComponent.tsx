@@ -57,7 +57,7 @@ const ObservationComponent = () => {
           fileHandler: (file) => {
             console.log(file);
           },
-          dropZoneProps: { maxNumFiles: 2, acceptedFileExtensions: '.csv' },
+          dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED
         }}></FileUploadDialog>
       <YesNoDialog
