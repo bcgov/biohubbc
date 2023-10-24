@@ -9,13 +9,27 @@ import {
 } from '../repositories/observation-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
-import { CSVWorkBook } from '../utils/media/csv/csv-file';
-import { MediaFile } from '../utils/media/media-file';
 import { parseS3File } from '../utils/media/media-utils';
+import {
+  constructWorksheets,
+  constructXLSXWorkbook,
+  getWorksheetRowObjects,
+  validateWorksheetColumnTypes,
+  validateWorksheetHeaders
+} from '../utils/xlsx-utils/worksheet-utils';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('services/observation-service');
 
+export interface IXLSXCSVValidator {
+  columnNames: string[];
+  columnTypes: string[];
+}
+
+const observationCSVColumnValidator = {
+  columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
+  columnTypes: ['number', 'number', 'date', 'string', 'number', 'number']
+};
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
 
@@ -25,19 +39,22 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Checks if the given media file is valid for importing observations. Returns
-   * `true` if the given file is valid, `false` otherwise.
+   * Validates the given CSV file against the given column validator
    *
    * @param {MediaFile} file
    * @return {*}  {boolean}
    * @memberof ObservationService
    */
-  validateCsvFile(file: MediaFile): boolean {
-    if (file.mimetype !== 'text/csv') {
+  validateCsvFile(xlsxWorksheets: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
+    // Validate the worksheet headers
+    if (!validateWorksheetHeaders(xlsxWorksheets['Sheet1'], columnValidator.columnNames)) {
       return false;
     }
 
-    // TODO perform validation on columns
+    // Validate the worksheet column types
+    if (!validateWorksheetColumnTypes(xlsxWorksheets['Sheet1'], columnValidator.columnTypes)) {
+      return false;
+    }
 
     return true;
   }
@@ -145,16 +162,26 @@ export class ObservationService extends DBService {
     // Step 3. Get the contents of the S3 object
     const mediaFile = parseS3File(s3Object);
 
-    // Step 4. Validate the CSV
-    if (!this.validateCsvFile(mediaFile)) {
+    // Step 4. Validate the CSV file
+    if (mediaFile.mimetype !== 'text/csv') {
       throw new Error('Failed to process file for importing observations. Invalid CSV file.');
     }
 
-    // Step 5. Merge all the table rows into an array of ObservationInsert[]
-    const workbook = new CSVWorkBook(xlsx.read(mediaFile.buffer, { cellDates: true, cellNF: true, cellHTML: false }));
-    const worksheet = Object.values(workbook.worksheets)[0];
+    // Construct the XLSX workbook
+    const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
 
-    const insertRows: InsertObservation[] = worksheet.getRowObjects().map((row) => ({
+    // Construct the worksheets
+    const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
+
+    if (!this.validateCsvFile(xlsxWorksheets, observationCSVColumnValidator)) {
+      throw new Error('Failed to process file for importing observations. Invalid CSV file.');
+    }
+
+    // Get the worksheet row objects
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets['Sheet1']);
+
+    // Step 5. Merge all the table rows into an array of ObservationInsert[]
+    const insertRows: InsertObservation[] = worksheetRowObjects.map((row) => ({
       survey_id: surveyId,
       wldtaxonomic_units_id: row['SPECIES_TAXONOMIC_ID'],
       survey_sample_site_id: null,
