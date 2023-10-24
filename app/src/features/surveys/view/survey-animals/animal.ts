@@ -264,9 +264,15 @@ export type ICritterMarking = Omit<ICritterID & IAnimalMarking, '_id'>;
 
 export type ICritterCollection = Omit<ICritterID & IAnimalCollectionUnit, '_id' | 'collection_category_id'>;
 
-type ICritterQualitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'value' | '_id'>;
+type ICritterQualitativeMeasurement = Omit<
+  ICritterID & IAnimalMeasurement,
+  'value' | '_id' | 'option_label' | 'measurement_name'
+>;
 
-type ICritterQuantitativeMeasurement = Omit<ICritterID & IAnimalMeasurement, 'qualitative_option_id' | '_id'>;
+type ICritterQuantitativeMeasurement = Omit<
+  ICritterID & IAnimalMeasurement,
+  'qualitative_option_id' | '_id' | 'option_label' | 'measurement_name'
+>;
 
 type ICapturesAndLocations = { captures: ICritterCapture[]; capture_locations: ICritterLocation[] };
 type IMortalityAndLocation = { mortalities: ICritterMortality[]; mortalities_locations: ICritterLocation[] };
@@ -391,8 +397,8 @@ export class Critter {
 
       const mortality_location = {
         latitude: Number(mortality.mortality_latitude),
-        longitude: Number(mortality.mortality_latitude),
-        coordinate_uncertainty: Number(mortality.mortality_latitude),
+        longitude: Number(mortality.mortality_longitude),
+        coordinate_uncertainty: Number(mortality.mortality_coordinate_uncertainty),
         coordinate_uncertainty_unit: 'm'
       };
 
@@ -417,7 +423,9 @@ export class Critter {
         formattedLocations.push({ ...mortality_location, location_id: loc_id });
       }
     });
-    return { mortalities: formattedMortalities, mortalities_locations: formattedLocations };
+    const ret = { mortalities: formattedMortalities, mortalities_locations: formattedLocations };
+    console.log(`Given ${JSON.stringify(animal_mortalities, null, 2)} Output: ${JSON.stringify(ret, null, 2)}`);
+    return ret;
   }
 
   _formatCritterMarkings(animal_markings: IAnimalMarking[]): ICritterMarking[] {
@@ -453,9 +461,7 @@ export class Critter {
       taxon_measurement_id: qual_measurement.taxon_measurement_id,
       qualitative_option_id: qual_measurement.qualitative_option_id,
       measured_timestamp: qual_measurement.measured_timestamp || undefined,
-      measurement_comment: qual_measurement.measurement_comment || undefined,
-      option_label: qual_measurement.option_label || undefined,
-      measurement_name: qual_measurement.measurement_name || undefined
+      measurement_comment: qual_measurement.measurement_comment || undefined
     }));
   }
 
@@ -474,9 +480,7 @@ export class Critter {
         taxon_measurement_id: quant_measurement.taxon_measurement_id,
         value: Number(quant_measurement.value),
         measured_timestamp: quant_measurement.measured_timestamp || undefined,
-        measurement_comment: quant_measurement.measurement_comment || undefined,
-        option_label: quant_measurement.option_label || undefined,
-        measurement_name: quant_measurement.measurement_name || undefined
+        measurement_comment: quant_measurement.measurement_comment || undefined
       };
     });
   }
@@ -486,7 +490,7 @@ export class Critter {
     const families: ICritterFamily[] = [];
     for (const fam of animal_family) {
       //If animal form had the newFamilyIdPlaceholder used at some point, make a real uuid for the new family and add it for creation.
-      console.log(`Comparing ${fam.family_id} to ${newFamilyIdPlaceholder}`)
+      console.log(`Comparing ${fam.family_id} to ${newFamilyIdPlaceholder}`);
       if (fam.family_id === newFamilyIdPlaceholder) {
         if (!newFamily) {
           newFamily = { family_id: v4(), family_label: this.name + '_family' };

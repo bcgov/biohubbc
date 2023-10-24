@@ -118,8 +118,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     deploymentRemoveAction,
     measurements,
     openedFromAddButton,
+    props.deploymentData,
     section,
     selectedIndex,
+    survey_critter_id,
     values.captures,
     values.device,
     values.mortality
