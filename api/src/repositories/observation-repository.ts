@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
+import { ApiExecuteSQLError } from '../errors/api-error';
 
 /**
  * Interface reflecting survey observations retrieved from the database
@@ -271,7 +272,12 @@ export class ObservationRepository extends BaseRepository {
 
     const response = await this.connection.knex(sqlStatement, ObservationSubmissionRecord);
 
-    // TODO add null check here.
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get observation submission', [
+        'ObservationRepository->getObservationSubmissionById',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
 
     return response.rows[0];
   }

@@ -125,7 +125,7 @@ export function uploadMedia(): RequestHandler {
       const rawMediaFile = rawMediaArray[0];
 
       if (!rawMediaFile?.originalname.endsWith('.csv')) {
-        throw new HTTP400('Invalid file type');
+        throw new HTTP400('Invalid file type, expected a CSV file.');
       }
 
       await connection.open();
@@ -148,8 +148,8 @@ export function uploadMedia(): RequestHandler {
       // Upload file to S3
       const metadata = {
         filename: rawMediaFile.originalname,
-        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
-        email: (req['auth_payload'] && req['auth_payload'].email) || ''
+        username: req['auth_payload']?.preferred_username ?? '',
+        email: req['auth_payload']?.email ?? ''
       };
 
       const result = await uploadFileToS3(rawMediaFile, key, metadata);
