@@ -122,7 +122,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     selectedIndex,
     values.captures,
     values.device,
-    values.mortality
+    values.mortality,
+    props.deploymentData,
+    survey_critter_id
   ]);
 
   const setPopup = (message: string) => {
@@ -274,6 +276,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             <>
               <EditDialog
                 dialogTitle={dialogTitle}
+                dialogText={ANIMAL_SECTIONS_FORM_MAP[section].infoText}
                 open={showDialog}
                 dialogSaveButtonLabel={openedFromAddButton ? 'Add' : 'Update'}
                 component={{
@@ -326,16 +329,6 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             </>
           )}
         </FieldArray>
-        {/*<Collapse in={!isEqual(initialValues, values) && section !== 'Telemetry'} orientation="horizontal">
-          <Box ml={1} whiteSpace="nowrap">
-            <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
-              Save
-            </LoadingButton>
-            <Button variant="outlined" color="primary" onClick={() => resetForm()}>
-              Discard Changes
-            </Button>
-          </Box>
-                </Collapse>*/}
       </Toolbar>
       <Grid container flexDirection="column" px={3} py={2} alignItems="center">
         <Grid item container spacing={1} mb={2} lg={8} md={10} sm={12}>

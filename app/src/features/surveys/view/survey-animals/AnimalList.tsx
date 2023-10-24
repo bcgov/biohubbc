@@ -16,11 +16,9 @@ import {
 import { cyan } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
 import { useFormikContext } from 'formik';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { isEqual } from 'lodash-es';
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
@@ -36,8 +34,7 @@ interface AnimalListProps {
 const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, onAddButton }: AnimalListProps) => {
   const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
   const history = useHistory();
-  const { errors, values, initialValues } = useFormikContext();
-  const dialogContext = useContext(DialogContext);
+  const { errors } = useFormikContext();
 
   const sortedCritterData = useMemo(() => {
     return [...(critterData ?? [])].sort(
@@ -45,37 +42,13 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
     );
   }, [critterData]);
 
-  const showCreateYesNoDialog = (surveyCritterID: string) => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: `Unsaved Changes`,
-      dialogText: 'Current animal has unsaved changes. Are you sure you want to discard these changes?',
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onYes: () => {
-        dialogContext.setYesNoDialog({ open: false });
-        onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
-        history.push(surveyCritterID);
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      open: true
-    });
-  };
-
   const handleCritterSelect = (id: string) => {
-    const formHasChanges = !isEqual(values, initialValues);
     let critterParamID = id;
     if (survey_critter_id === id) {
       critterParamID = MANAGE_ANIMALS_DEFAULT_URL_PARAM;
     }
-    if (formHasChanges) {
-      showCreateYesNoDialog(critterParamID);
-    } else {
-      onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
-      history.push(critterParamID);
-    }
+    onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
+    history.push(critterParamID);
   };
 
   return (

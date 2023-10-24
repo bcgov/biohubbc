@@ -17,7 +17,7 @@ interface AnimalSectionDataCardsProps {
   isAddingNew: boolean;
 }
 export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: AnimalSectionDataCardsProps) => {
-  const { values } = useFormikContext<IAnimal>();
+  const { values, submitForm } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
   const cbApi = useCritterbaseApi();
@@ -79,14 +79,14 @@ export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: An
       [SurveyAnimalsI18N.animalFamilyTitle]: values.family.map((family) => {
         const family_label = allFamilies?.find((a) => a.family_id === family.family_id)?.family_label;
         return {
-          header: `Animal Relationship: ${family_label ?? family.family_id}`,
+          header: family_label ? `Animal Relationship: ${family_label}` : `Animal Relationship`,
           subHeaderData: { Status: family.relationship },
           key: family._id
         };
       }),
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: values.collectionUnits.map((collectionUnit) => ({
         header: `Ecological Unit: ${collectionUnit.unit_name}`,
-        subHeaderData: {},
+        subHeaderData: { Category: collectionUnit.category_name },
         key: collectionUnit._id
       })),
       Telemetry: values.device.map((device) => ({
@@ -125,8 +125,7 @@ export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: An
               {({ remove }: FieldArrayRenderProps) => {
                 const handleDelete = () => {
                   showDeleteDialog(() => {
-                    // code to fire delete request
-                    console.log('deleted');
+                    submitForm();
                     remove(index);
                   });
                 };

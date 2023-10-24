@@ -53,6 +53,7 @@ export const SurveyAnimalsPage = () => {
   const setPopup = (message: string) => {
     dialogContext.setSnackbar({
       open: true,
+      snackbarAutoCloseMs: 2000,
       snackbarMessage: (
         <Typography variant="body2" component="div">
           {message}
