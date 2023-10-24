@@ -14,7 +14,7 @@ import { MediaFile } from '../utils/media/media-file';
 import { parseS3File } from '../utils/media/media-utils';
 import { DBService } from './db-service';
 
-const defaultLog = getLogger('services/observation-queries');
+const defaultLog = getLogger('services/observation-service');
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
@@ -95,9 +95,9 @@ export class ObservationService extends DBService {
     const submissionId = await this.observationRepository.getNextSubmissionId();
 
     const key = generateS3FileKey({
-      projectId: projectId,
-      surveyId: surveyId,
-      submissionId: submissionId,
+      projectId,
+      surveyId,
+      submissionId,
       fileName: file.originalname
     });
 
