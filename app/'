@@ -218,16 +218,16 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           </Box>
         </Collapse>
       </Toolbar>
-      <Grid container flexDirection="column" px={3} py={2} alignItems="center">
-        <Grid item container spacing={1} mb={2} lg={8} md={10} sm={12}>
+      <Grid container flexDirection="column" py={2} alignItems="center">
+        <Grid item container spacing={1} alignItems="center" px={3} mb={2} lg={8} md={12} sm={12}>
           {values.general.critter_id ? (
             <>
-              <Grid item lg={7} md={6}>
+              <Grid item lg={9} md={6}>
                 <Typography variant="body1" color="textSecondary" maxWidth={'92ch'}>
                   {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
                 </Typography>
               </Grid>
-              <Grid item lg={5} md={6} sm={12}>
+              <Grid item lg={6} md={6}>
                 <CustomTextField
                   label="Critter ID"
                   name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
@@ -250,19 +250,21 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                   }}
                 />
               </Grid>
-              <Grid item lg={12} md={12} sm={12}>
-                <Form>
-                  <AnimalSectionDataCards
-                    onEditClick={(idx) => {
-                      setSelectedIndex(idx);
-                      setShowDialog(true);
-                    }}
-                    section={section}
-                    isAddingNew={openedFromAddButton}
-                  />
-                </Form>
-              </Grid>
             </>
+          ) : null}
+        </Grid>
+        <Grid item lg={8} md={12} sm={12}>
+          {values.general.animal_id ? (
+            <Form>
+              <AnimalSectionDataCards
+                onEditClick={(idx) => {
+                  setSelectedIndex(idx);
+                  setShowDialog(true);
+                }}
+                section={section}
+                isAddingNew={openedFromAddButton}
+              />
+            </Form>
           ) : (
             <Box display="flex" alignItems="center" justifyContent="center">
               <Typography component="span" variant="body2" color="textSecondary">

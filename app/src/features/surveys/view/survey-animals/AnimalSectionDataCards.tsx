@@ -28,13 +28,14 @@ export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: An
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.family.length]);
 
-  const showDeleteDialog = () => {
+  const showDeleteDialog = (onConfirmDelete: () => void) => {
     const close = () => dialogContext.setYesNoDialog({ open: false });
     dialogContext.setYesNoDialog({
       dialogTitle: `Delete ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`,
       dialogText: 'Are you sure you want to delete this record?',
       open: true,
       onYes: async () => {
+        onConfirmDelete();
         close();
       },
       onNo: () => close(),
@@ -116,27 +117,38 @@ export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: An
   ]);
 
   return (
-    <TransitionGroup>
-      {sectionCardData.map((cardData, index) =>
-        isAddingNew && index === sectionCardData.length - 1 ? null : (
-          <Collapse key={cardData.key}>
-            <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
-              {({ remove }: FieldArrayRenderProps) => (
-                <EditDeleteStubCard
-                  header={cardData.header}
-                  subHeaderData={cardData.subHeaderData}
-                  onClickEdit={() => onEditClick(index)}
-                  onClickDelete={
-                    section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
-                      ? undefined
-                      : showDeleteDialog
-                  }
-                />
-              )}
-            </FieldArray>
-          </Collapse>
-        )
-      )}
-    </TransitionGroup>
+    <>
+      <TransitionGroup>
+        {sectionCardData.map((cardData, index) =>
+          isAddingNew && index === sectionCardData.length - 1 ? null : (
+            <Collapse key={cardData.key}>
+              <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
+                {({ remove }: FieldArrayRenderProps) => {
+                  const handleDelete = () => {
+                    showDeleteDialog(() => {
+                      // code to fire delete request
+                      console.log('deleted');
+                      remove(index);
+                    });
+                  };
+                  return (
+                    <EditDeleteStubCard
+                      header={cardData.header}
+                      subHeaderData={cardData.subHeaderData}
+                      onClickEdit={() => onEditClick(index)}
+                      onClickDelete={
+                        section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
+                          ? undefined
+                          : handleDelete
+                      }
+                    />
+                  );
+                }}
+              </FieldArray>
+            </Collapse>
+          )
+        )}
+      </TransitionGroup>
+    </>
   );
 };
