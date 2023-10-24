@@ -135,4 +135,74 @@ describe('ObservationRepository', () => {
       expect(response).to.be.eql(mockRows);
     });
   });
+
+  describe('insertSurveyObservationSubmission', () => {
+    it('inserts a survey observation submission record', async () => {
+      const mockQueryResponse = ({ rows: [1] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({
+        sql: sinon.stub().resolves(mockQueryResponse)
+      });
+
+      const surveyId = 1;
+      const submissionId = 2;
+      const key = 'key';
+      const original_filename = 'originalFilename';
+
+      const repo = new ObservationRepository(mockDBConnection);
+
+      const response = await repo.insertSurveyObservationSubmission(submissionId, key, surveyId, original_filename);
+
+      expect(response).to.equal(1);
+    });
+  });
+
+  describe('getNextSubmissionId', () => {
+    it('gets the next submission id', async () => {
+      const mockQueryResponse = ({ rows: [{ submission_id: 1 }], rowCount: 1 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({
+        sql: sinon.stub().resolves(mockQueryResponse)
+      });
+
+      const repo = new ObservationRepository(mockDBConnection);
+
+      const response = await repo.getNextSubmissionId();
+
+      expect(response).to.equal(1);
+    });
+  });
+
+  describe('getObservationSubmissionById', () => {
+    it('gets a submission by ID', async () => {
+      const mockQueryResponse = ({ rows: [{ submission_id: 5 }], rowCount: 1 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({
+        knex: sinon.stub().resolves(mockQueryResponse)
+      });
+
+      const repo = new ObservationRepository(mockDBConnection);
+
+      const response = await repo.getObservationSubmissionById(5);
+
+      expect(response).to.eql({ submission_id: 5 });
+    });
+
+    it('throws an error when no submission is found', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({
+        knex: sinon.stub().resolves(mockQueryResponse)
+      });
+
+      const repo = new ObservationRepository(mockDBConnection);
+
+      try {
+        await repo.getObservationSubmissionById(5);
+        expect.fail();
+      } catch (error) {
+        expect((error as Error).message).to.equal('Failed to get observation submission');
+      }
+    });
+  });
 });

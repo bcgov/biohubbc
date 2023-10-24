@@ -1,12 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
-import { OccurrenceService } from '../../../../../../../../services/occurrence-service';
-import { getLogger } from '../../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../../database/db';
+import { authorizeRequestHandler } from '../../../../../../../../../request-handlers/security/authorization';
+import { OccurrenceService } from '../../../../../../../../../services/occurrence-service';
+import { getLogger } from '../../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/delete');
+const defaultLog = getLogger(
+  '/api/project/{projectId}/survey/{surveyId}/dwca/observations/submission/{submissionId}/delete'
+);
 
 export const DELETE: Operation = [
   authorizeRequestHandler((req) => {

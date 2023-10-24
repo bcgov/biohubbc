@@ -1,16 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../../errors/http-error';
-import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
-import { OccurrenceService } from '../../../../../../../../services/occurrence-service';
-import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../../../utils/logger';
-import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../../errors/http-error';
+import { authorizeRequestHandler } from '../../../../../../../../../request-handlers/security/authorization';
+import { OccurrenceService } from '../../../../../../../../../services/occurrence-service';
+import { getS3SignedURL } from '../../../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../../../utils/logger';
+import { attachmentApiDocObject } from '../../../../../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/getSignedUrl'
+  '/api/project/{projectId}/survey/{surveyId}/dwca/observations/submission/{submissionId}/getSignedUrl'
 );
 
 export const GET: Operation = [

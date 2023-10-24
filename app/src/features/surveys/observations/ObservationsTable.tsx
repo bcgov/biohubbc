@@ -22,42 +22,37 @@ import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyData
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import {
+  IGetSampleLocationRecord,
+  IGetSampleMethodRecord,
+  IGetSamplePeriodRecord
+} from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
+import { getCodesName } from 'utils/Utils';
 
-export interface ISampleSiteSelectProps {
+type ISampleSiteOption = {
   survey_sample_site_id: number;
   sample_site_name: string;
-}
+};
 
-export interface ISampleMethodSelectProps {
+type ISampleMethodOption = {
   survey_sample_method_id: number;
   survey_sample_site_id: number;
   sample_method_name: string;
-}
+};
 
-export interface ISamplePeriodSelectProps {
+type ISamplePeriodOption = {
   survey_sample_period_id: number;
   survey_sample_method_id: number;
   sample_period_name: string;
-}
+};
 export interface ISpeciesObservationTableProps {
-  sample_sites: {
-    survey_sample_site_id: number;
-    sample_site_name: string;
-  }[];
-  sample_methods: {
-    survey_sample_method_id: number;
-    survey_sample_site_id: number;
-    sample_method_name: string;
-  }[];
-  sample_periods: {
-    survey_sample_period_id: number;
-    survey_sample_method_id: number;
-    sample_period_name: string;
-  }[];
+  isLoading?: boolean;
 }
 
 const SampleSiteSkeleton = () => (
@@ -92,12 +87,48 @@ const LoadingOverlay = () => {
 };
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const { sample_sites, sample_methods, sample_periods } = props;
+  const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
   const location = useLocation();
-
   const observationsContext = useContext(ObservationsContext);
+  const surveyContext = useContext(SurveyContext);
+  const codesContext = useContext(CodesContext);
+  const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
+
   const { observationsDataLoader } = observationsContext;
   const apiRef = observationsContext._muiDataGridApiRef;
+
+  // Collect sample sites
+  const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+  const sampleSiteOptions: ISampleSiteOption[] =
+    surveySampleSites.map((site) => ({
+      survey_sample_site_id: site.survey_sample_site_id,
+      sample_site_name: site.name
+    })) ?? [];
+
+  // Collect sample methods
+  const surveySampleMethods: IGetSampleMethodRecord[] = surveySampleSites
+    .filter((sampleSite) => Boolean(sampleSite.sample_methods))
+    .map((sampleSite) => sampleSite.sample_methods as IGetSampleMethodRecord[])
+    .flat(2);
+  const sampleMethodOptions: ISampleMethodOption[] = hasLoadedCodes
+    ? surveySampleMethods.map((method) => ({
+        survey_sample_method_id: method.survey_sample_method_id,
+        survey_sample_site_id: method.survey_sample_site_id,
+        sample_method_name:
+          getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
+      }))
+    : [];
+
+  // Collect sample periods
+  const samplePeriodOptions: ISamplePeriodOption[] = surveySampleMethods
+    .filter((sampleMethod) => Boolean(sampleMethod.sample_periods))
+    .map((sampleMethod) => sampleMethod.sample_periods as IGetSamplePeriodRecord[])
+    .flat(2)
+    .map((samplePeriod: IGetSamplePeriodRecord) => ({
+      survey_sample_period_id: samplePeriod.survey_sample_period_id,
+      survey_sample_method_id: samplePeriod.survey_sample_method_id,
+      sample_period_name: `${samplePeriod.start_date} - ${samplePeriod.end_date}`
+    }));
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
@@ -130,9 +161,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       align: 'left',
       renderCell: (params) => {
         return (
-          <AutocompleteDataGridViewCell
+          <AutocompleteDataGridViewCell<IObservationTableRow, number>
             dataGridProps={params}
-            options={sample_sites.map((item) => ({
+            options={sampleSiteOptions.map((item) => ({
               label: item.sample_site_name,
               value: item.survey_sample_site_id
             }))}
@@ -141,9 +172,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       },
       renderEditCell: (params) => {
         return (
-          <AutocompleteDataGridEditCell
+          <AutocompleteDataGridEditCell<IObservationTableRow, number>
             dataGridProps={params}
-            options={sample_sites.map((item) => ({
+            options={sampleSiteOptions.map((item) => ({
               label: item.sample_site_name,
               value: item.survey_sample_site_id
             }))}
@@ -162,27 +193,27 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       align: 'left',
       renderCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridViewCell
+          <ConditionalAutocompleteDataGridViewCell<IObservationTableRow, ISampleMethodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
                 .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
                 .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
             }}
-            allOptions={sample_methods}
+            allOptions={sampleMethodOptions}
           />
         );
       },
       renderEditCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridEditCell
+          <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, ISampleMethodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
                 .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
                 .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
             }}
-            allOptions={sample_methods}
+            allOptions={sampleMethodOptions}
           />
         );
       }
@@ -198,27 +229,27 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       align: 'left',
       renderCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridViewCell
+          <ConditionalAutocompleteDataGridViewCell<IObservationTableRow, ISamplePeriodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
                 .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
                 .map((item) => ({ label: item.sample_period_name, value: item.survey_sample_period_id }));
             }}
-            allOptions={sample_periods}
+            allOptions={samplePeriodOptions}
           />
         );
       },
       renderEditCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridEditCell
+          <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, ISamplePeriodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
                 .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
                 .map((item) => ({ label: item.sample_period_name, value: item.survey_sample_period_id }));
             }}
-            allOptions={sample_periods}
+            allOptions={samplePeriodOptions}
           />
         );
       }
@@ -237,7 +268,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           <TextField
             onChange={(event) => {
               if (!/^\d{0,7}$/.test(event.target.value)) {
-                // If the value is not a number
+                // If the value is not a number, return
                 return;
               }
 
@@ -422,18 +453,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     }
   ];
 
-  const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
-  const showConfirmDeleteDialog = Boolean(deletingObservation);
-
-  const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
-    if (location.hash.startsWith('#view-')) {
-      const selectedId = location.hash.split('-')[1];
-      return [selectedId];
-    }
-
-    return undefined;
-  }, []);
-
   useEffect(() => {
     if (observationsDataLoader.data?.surveyObservations) {
       const rows: IObservationTableRow[] = observationsDataLoader.data.surveyObservations.map(
@@ -476,6 +495,17 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     observationsContext.markRecordWithUnsavedChanges(id);
   };
 
+  const showConfirmDeleteDialog = Boolean(deletingObservation);
+
+  const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
+    if (location.hash.startsWith('#view-')) {
+      const selectedId = location.hash.split('-')[1];
+      return [selectedId];
+    }
+
+    return undefined;
+  }, []);
+
   return (
     <>
       <YesNoDialog
@@ -496,7 +526,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onNo={() => handleCancelDeleteRow()}
       />
       <DataGrid
-        loading={observationsDataLoader.isLoading}
+        checkboxSelection
+        loading={observationsDataLoader.isLoading || props.isLoading}
         rowHeight={56}
         apiRef={apiRef}
         editMode="row"
@@ -537,7 +568,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             }
           },
           '& .MuiDataGrid-columnHeader': {
-            px: 3,
+            // px: 3,
             py: 1,
             '&:focus': {
               outline: 'none'
@@ -549,14 +580,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             color: 'text.secondary'
           },
           '& .MuiDataGrid-cell': {
-            px: 3,
+            // px: 3,
             py: 1,
             background: '#fff',
             '&.MuiDataGrid-cell--editing:focus-within': {
               outline: 'none'
             },
             '&.MuiDataGrid-cell--editing': {
-              p: 1,
+              p: 0.5,
               backgroundColor: cyan[100]
             }
           },

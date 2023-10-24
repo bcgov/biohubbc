@@ -52,8 +52,7 @@ export const PUT: Operation = [
   insertUpdateDeleteSurveyObservations()
 ];
 
-const surveyObservationsResponseSchema: SchemaObject = {
-  title: 'Survey get response object, for view purposes',
+export const surveyObservationsResponseSchema: SchemaObject = {
   type: 'object',
   nullable: true,
   required: ['surveyObservations'],
@@ -159,7 +158,10 @@ GET.apiDoc = {
       description: 'Survey Observations get response.',
       content: {
         'application/json': {
-          schema: { ...surveyObservationsResponseSchema }
+          schema: {
+            ...surveyObservationsResponseSchema,
+            title: 'Survey get response object, for view purposes'
+          }
         }
       }
     },

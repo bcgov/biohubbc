@@ -5,7 +5,7 @@ import { SubmitSurveyBiohubI18N } from 'constants/i18n';
 import { SUBMISSION_STATUS_TYPE } from 'constants/submissions';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ISurveyObservationData } from 'interfaces/useObservationApi.interface';
+import { ISurveyObservationData } from 'interfaces/useDwcaApi.interface';
 import { ISurveySubmitForm } from 'interfaces/usePublishApi.interface';
 import { ISurveySummaryData } from 'interfaces/useSummaryResultsApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from 'interfaces/useSurveyApi.interface';

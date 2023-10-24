@@ -2,9 +2,9 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../../../../../../database/db';
-import { OccurrenceService } from '../../../../../../../../services/occurrence-service';
-import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
+import * as db from '../../../../../../../../../database/db';
+import { OccurrenceService } from '../../../../../../../../../services/occurrence-service';
+import { getMockDBConnection } from '../../../../../../../../../__mocks__/db';
 import * as delete_submission from './delete';
 
 chai.use(sinonChai);

@@ -47,7 +47,7 @@ const SurveyStudyArea = () => {
   });
 
   const mapDataLoader = useDataLoader((projectId: number, occurrenceSubmissionId: number) =>
-    biohubApi.observation.getOccurrencesForView(projectId, occurrenceSubmissionId)
+    biohubApi.dwca.getOccurrencesForView(projectId, occurrenceSubmissionId)
   );
   useDataLoaderError(mapDataLoader, () => {
     return {
