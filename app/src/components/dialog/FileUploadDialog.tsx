@@ -9,8 +9,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import FileUpload, { IFileUploadProps } from 'components/file-upload/FileUpload';
 import { IFileHandler, ISubtextProps, UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { useState } from 'react';
-import { IComponentDialogProps } from './ComponentDialog';
 import { getFormattedFileSize } from 'utils/Utils';
+import { IComponentDialogProps } from './ComponentDialog';
 
 interface IFileUploadDialogProps extends IComponentDialogProps {
   uploadButtonLabel?: string;
@@ -52,7 +52,8 @@ const FileUploadDialog = (props: IFileUploadDialogProps) => {
           {...props.FileUploadProps}
           FileUploadItemComponentProps={{
             SubtextComponent: (props: ISubtextProps) => (
-              <>{props.status === UploadFileStatus.STAGED
+              <>
+                {props.status === UploadFileStatus.STAGED
                   ? getFormattedFileSize(props.file.size)
                   : props.error || props.status}
               </>

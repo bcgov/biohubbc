@@ -204,5 +204,5 @@ describe('ObservationRepository', () => {
         expect((error as Error).message).to.equal('Failed to get observation submission');
       }
     });
-  })
+  });
 });
