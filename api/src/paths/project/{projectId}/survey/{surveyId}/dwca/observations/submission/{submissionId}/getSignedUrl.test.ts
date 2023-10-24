@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../../../../../../database/db';
-import { HTTPError } from '../../../../../../../../errors/http-error';
-import { IOccurrenceSubmission } from '../../../../../../../../repositories/occurrence-repository';
-import { OccurrenceService } from '../../../../../../../../services/occurrence-service';
-import * as file_utils from '../../../../../../../../utils/file-utils';
-import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
+import * as db from '../../../../../../../../../database/db';
+import { HTTPError } from '../../../../../../../../../errors/http-error';
+import { IOccurrenceSubmission } from '../../../../../../../../../repositories/occurrence-repository';
+import { OccurrenceService } from '../../../../../../../../../services/occurrence-service';
+import * as file_utils from '../../../../../../../../../utils/file-utils';
+import { getMockDBConnection } from '../../../../../../../../../__mocks__/db';
 import * as get_signed_url from './getSignedUrl';
 
 chai.use(sinonChai);

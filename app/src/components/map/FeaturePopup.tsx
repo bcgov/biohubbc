@@ -126,7 +126,7 @@ const FeaturePopup: React.FC<React.PropsWithChildren<{ submissionSpatialComponen
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const metadataLoader = useDataLoader(() => {
-    return api.observation.getSpatialMetadata<IDwCMetadata>(submissionSpatialComponentIds);
+    return api.dwca.getSpatialMetadata<IDwCMetadata>(submissionSpatialComponentIds);
   });
 
   metadataLoader.load();

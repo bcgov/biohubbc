@@ -1,6 +1,8 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
+import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -10,9 +12,9 @@ export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
   wldtaxonomic_units_id: z.number(),
-  survey_sample_site_id: z.number(),
-  survey_sample_method_id: z.number(),
-  survey_sample_period_id: z.number(),
+  survey_sample_site_id: z.number().nullable(),
+  survey_sample_method_id: z.number().nullable(),
+  survey_sample_period_id: z.number().nullable(),
   latitude: z.number(),
   longitude: z.number(),
   count: z.number(),
@@ -60,6 +62,24 @@ export type UpdateObservation = Pick<
   | 'survey_sample_method_id'
   | 'survey_sample_period_id'
 >;
+
+/**
+ * Interface reflecting survey observations retrieved from the database
+ */
+export const ObservationSubmissionRecord = z.object({
+  submission_id: z.number(),
+  survey_id: z.number(),
+  key: z.string(),
+  original_filename: z.string(),
+  create_date: z.string(),
+  create_user: z.number(),
+  update_date: z.string().nullable(),
+  update_user: z.number().nullable()
+});
+
+export type ObservationSubmissionRecord = z.infer<typeof ObservationSubmissionRecord>;
+
+const defaultLog = getLogger('repositories/observation-repository');
 
 export class ObservationRepository extends BaseRepository {
   /**
@@ -130,7 +150,7 @@ export class ObservationRepository extends BaseRepository {
         observation_time
       )
       OVERRIDING SYSTEM VALUE
-      VALUES 
+      VALUES
     `;
 
     sqlStatement.append(
@@ -140,9 +160,9 @@ export class ObservationRepository extends BaseRepository {
             observation['survey_observation_id'] || 'DEFAULT',
             surveyId,
             observation.wldtaxonomic_units_id,
-            observation.survey_sample_site_id,
-            observation.survey_sample_method_id,
-            observation.survey_sample_period_id,
+            observation.survey_sample_site_id ?? 'NULL',
+            observation.survey_sample_method_id ?? 'NULL',
+            observation.survey_sample_period_id ?? 'NULL',
             observation.count,
             observation.latitude,
             observation.longitude,
@@ -189,5 +209,76 @@ export class ObservationRepository extends BaseRepository {
 
     const response = await this.connection.knex(sqlStatement, ObservationRecord);
     return response.rows;
+  }
+
+  /**
+   * Inserts a survey observation submission record into the database and returns the record
+   *
+   * @param {number} submission_id
+   * @param {string} key
+   * @param {number} survey_id
+   * @param {string} original_filename
+   * @return {*}  {Promise<ObservationSubmissionRecord>}
+   * @memberof ObservationRepository
+   */
+  async insertSurveyObservationSubmission(
+    submission_id: number,
+    key: string,
+    survey_id: number,
+    original_filename: string
+  ): Promise<ObservationSubmissionRecord> {
+    defaultLog.debug({ label: 'insertSurveyObservationSubmission' });
+    const sqlStatement = SQL`
+      INSERT INTO
+        survey_observation_submission
+        (submission_id, key, survey_id, original_filename)
+      VALUES
+        (${submission_id}, ${key}, ${survey_id}, ${original_filename})
+      RETURNING *;`;
+
+    const response = await this.connection.sql(sqlStatement, ObservationSubmissionRecord);
+
+    return response.rows[0];
+  }
+
+  /**
+   * Retrieves the next submission ID from the survey_observation_submission_seq sequence
+   *
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async getNextSubmissionId(): Promise<number> {
+    const sqlStatement = SQL`
+      SELECT nextval('biohub.survey_observation_submission_id_seq')::integer as submission_id;
+    `;
+    const response = await this.connection.sql<{ submission_id: number }>(sqlStatement);
+    return response.rows[0].submission_id;
+  }
+
+  /**
+   * Retrieves the observation submission record by the given submission ID.
+   *
+   * @param {number} submissionId
+   * @return {*}  {Promise<ObservationSubmissionRecord>}
+   * @memberof ObservationService
+   */
+  async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .select('*')
+      .from('survey_observation_submission')
+      .where('submission_id', submissionId);
+
+    const response = await this.connection.knex(sqlStatement, ObservationSubmissionRecord);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get observation submission', [
+        'ObservationRepository->getObservationSubmissionById',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rows[0];
   }
 }

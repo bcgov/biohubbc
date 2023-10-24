@@ -1,14 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { SUBMISSION_STATUS_TYPE } from '../../../../../../../constants/status';
-import { getDBConnection } from '../../../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { HistoryPublishService } from '../../../../../../../services/history-publish-service';
-import { IMessageTypeGroup, SurveyService } from '../../../../../../../services/survey-service';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { SUBMISSION_STATUS_TYPE } from '../../../../../../../../constants/status';
+import { getDBConnection } from '../../../../../../../../database/db';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { HistoryPublishService } from '../../../../../../../../services/history-publish-service';
+import { IMessageTypeGroup, SurveyService } from '../../../../../../../../services/survey-service';
+import { getLogger } from '../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/get');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/dwca/observations/submission/get');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
