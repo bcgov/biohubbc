@@ -69,7 +69,7 @@ describe('uploadMedia', () => {
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Invalid file type');
+      expect((actualError as HTTPError).message).to.equal('Invalid file type, expected a CSV file.');
     }
   });
 
