@@ -71,7 +71,7 @@ const StudyAreaForm = () => {
     const data = values.locations;
     const locationData = data.splice(index, 1);
 
-    // Use Draw Ref to remove editable layer form the map
+    // Use Draw Ref to remove editable layer from the map
     locationData.forEach((item) => {
       if (item.leaflet_id) {
         drawRef.current?.deleteLayer(item.leaflet_id);

@@ -70,7 +70,7 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
           Remove
         </MenuItem>
       </Menu>
-      <Box display="flex" flexDirection="column" height="100%">
+      <Box data-testid="study-area-list" display="flex" flexDirection="column" height="100%">
         <TransitionGroup>
           {data.map((item: ISurveyLocation, index: number) => {
             return (

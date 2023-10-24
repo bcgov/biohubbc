@@ -83,6 +83,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
       </Box>
       <Paper elevation={0} sx={{ overflow: 'hidden' }}>
         <LeafletMapContainer
+          data-testid={`leaflet-${map_id}`}
           style={{ height: 500 }}
           id={map_id}
           center={[55, -128]}
