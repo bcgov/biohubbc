@@ -33,11 +33,11 @@ parameters:
     required: true
     value: 'dev'
   - name: CPU_REQUEST
-    value: '100m'
+    value: '50m'
   - name: CPU_LIMIT
     value: '1000m'
   - name: MEMORY_REQUEST
-    value: '512Mi'
+    value: '100Mi'
   - name: MEMORY_LIMIT
     value: '1.5Gi'
 objects:
@@ -45,7 +45,6 @@ objects:
     apiVersion: v1
     metadata:
       name: '${NAME}'
-      creationTimestamp:
       labels:
         role: setup
     spec:

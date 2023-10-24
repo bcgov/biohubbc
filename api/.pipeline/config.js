@@ -62,9 +62,9 @@ const phases = {
     env: 'build',
     tz: config.timezone.api,
     branch: branch,
-    cpuRequest: '100m',
-    cpuLimit: '1250m',
-    memoryRequest: '512Mi',
+    cpuRequest: '50m',
+    cpuLimit: '1000m',
+    memoryRequest: '100Mi',
     memoryLimit: '3Gi'
   },
   dev: {
@@ -92,12 +92,12 @@ const phases = {
     tz: config.timezone.api,
     sso: config.sso.dev,
     logLevel: 'debug',
-    cpuRequest: '100m',
-    cpuLimit: '500m',
-    memoryRequest: '512Mi',
+    cpuRequest: '50m',
+    cpuLimit: '400m',
+    memoryRequest: '100Mi',
     memoryLimit: '2Gi',
-    replicas: (isStaticDeployment && '2') || '1',
-    replicasMax: (isStaticDeployment && '3') || '1'
+    replicas: (isStaticDeployment && '1') || '1',
+    replicasMax: (isStaticDeployment && '2') || '1'
   },
   test: {
     namespace: 'af2668-test',
@@ -124,12 +124,12 @@ const phases = {
     tz: config.timezone.api,
     sso: config.sso.test,
     logLevel: 'info',
-    cpuRequest: '200m',
+    cpuRequest: '50m',
     cpuLimit: '1000m',
-    memoryRequest: '512Mi',
+    memoryRequest: '100Mi',
     memoryLimit: '3Gi',
     replicas: '2',
-    replicasMax: '5'
+    replicasMax: '4'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -156,12 +156,12 @@ const phases = {
     tz: config.timezone.api,
     sso: config.sso.prod,
     logLevel: 'info',
-    cpuRequest: '200m',
+    cpuRequest: '50m',
     cpuLimit: '1000m',
-    memoryRequest: '512Mi',
+    memoryRequest: '100Mi',
     memoryLimit: '3Gi',
     replicas: '2',
-    replicasMax: '5'
+    replicasMax: '4'
   }
 };
 
