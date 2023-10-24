@@ -381,6 +381,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                     }}
                     section={section}
                     isAddingNew={openedFromAddButton}
+                    allFamilies={allFamilies}
                   />
                 </Form>
               </Grid>
