@@ -1,7 +1,6 @@
 import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { LoadingButton } from '@mui/lab';
-import { Box, Button, Collapse, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import { Box, Button, Grid, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -11,13 +10,15 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { isEqual } from 'lodash-es';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { dateRangesOverlap } from 'utils/Utils';
+import yup from 'utils/YupSchema';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import { AnimalSectionDataCards } from './AnimalSectionDataCards';
-import { IAnimalDeployment } from './device';
+import { AnimalDeploymentTimespanSchema, AnimalTelemetryDeviceSchema, IAnimalDeployment } from './device';
 import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
 import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitAnimalForm';
 import { FamilyAnimalFormContent } from './form-sections/FamilyAnimalForm';
@@ -26,6 +27,7 @@ import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
 import { DeviceFormSection, IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
+import { useParams } from 'react-router';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
@@ -46,11 +48,14 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
 
+  const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
+
   const dialogTitle = openedFromAddButton
     ? `Add ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`
     : `Edit ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`;
 
   const cbApi = useCritterbaseApi();
+  const telemetryApi = useTelemetryApi();
 
   const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
 
@@ -89,7 +94,13 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           values={values.device}
           mode={openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT}
           index={selectedIndex}
-          removeAction={deploymentRemoveAction}
+          removeAction={(id) => {
+            deploymentRemoveAction(id);
+            const deployments = props.deploymentData?.filter((a) => a.critter_id === survey_critter_id) ?? [];
+            if (deployments.length <= 1) {
+              setShowDialog(false);
+            }
+          }}
         />
       )
     };
@@ -126,6 +137,113 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     });
   };
 
+  const deploymentOverlapTest = async (
+    device_id: number,
+    deployment_id: string,
+    attachment_start: string | undefined,
+    attachment_end: string | null | undefined
+  ): Promise<string> => {
+    const deviceDetails = await getDeviceDetails(device_id);
+    if (!attachment_start) {
+      return 'Attachment start is required.'; //It probably won't actually display this but just in case.
+    }
+    const existingDeployment = deviceDetails?.deployments?.find(
+      (a) =>
+        a.deployment_id !== deployment_id &&
+        dateRangesOverlap(a.attachment_start, a.attachment_end, attachment_start, attachment_end)
+    );
+    if (existingDeployment) {
+      return `This will conflict with an existing deployment for the device running from ${
+        existingDeployment.attachment_start
+      } until ${existingDeployment.attachment_end ?? 'indefinite.'}`;
+    } else {
+      return '';
+    }
+  };
+
+  const { data: deviceDetails, refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
+  const getDeviceDetails = async (deviceId: number | string) => {
+    if (deviceDetails?.device?.device_id !== Number(deviceId)) {
+      await refreshDeviceDetails(Number(deviceId));
+      return deviceDetails;
+    } else {
+      return deviceDetails;
+    }
+  };
+
+  const AnimalDeploymentSchemaAsyncValidation = AnimalTelemetryDeviceSchema.shape({
+    device_make: yup
+      .string()
+      .required('Required')
+      .test('checkDeviceMakeIsNotChanged', '', async (value, context) => {
+        const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches device[0].deployments[0].attachment_start for the number contained in first index.
+        if (selectedIndex !== upperLevelIndex) {
+          return true;
+        }
+        const deviceDetails = await getDeviceDetails(context.parent.device_id);
+        if (deviceDetails?.device?.device_make && deviceDetails.device?.device_make !== value) {
+          return context.createError({
+            message: `The current make for this device is ${deviceDetails.device?.device_make}, this value should not be changed.`
+          });
+        }
+        return true;
+      }),
+    deployments: yup.array(
+      AnimalDeploymentTimespanSchema.shape({
+        attachment_start: yup
+          .string()
+          .required('Required.')
+          .isValidDateString()
+          .typeError('Required.')
+          .test('checkDeploymentRange', '', async (value, context) => {
+            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches device[0].deployments[0].attachment_start for the number contained in first index.
+            if (selectedIndex !== upperLevelIndex) {
+              return true;
+            }
+            const deviceId = context.options.context?.device?.[upperLevelIndex]?.device_id;
+            const errStr = await deploymentOverlapTest(
+              deviceId,
+              context.parent.deployment_id,
+              value,
+              context.parent.attachment_end
+            );
+            if (errStr.length) {
+              return context.createError({ message: errStr });
+            } else {
+              return true;
+            }
+          }),
+        attachment_end: yup
+          .string()
+          .isValidDateString()
+          .isEndDateSameOrAfterStartDate('attachment_start')
+          .nullable()
+          .test('checkDeploymentRangeEnd', '', async (value, context) => {
+            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches device[0].deployments[0].attachment_start for the number contained in first index.
+            if (selectedIndex !== upperLevelIndex) {
+              return true;
+            }
+            const deviceId = context.options.context?.device?.[upperLevelIndex]?.device_id;
+            const errStr = await deploymentOverlapTest(
+              deviceId,
+              context.parent.deployment_id,
+              context.parent.attachment_start,
+              value
+            );
+            if (errStr.length) {
+              return context.createError({ message: errStr });
+            } else {
+              return true;
+            }
+          })
+      })
+    )
+  });
+
+  const AnimalSchemaWithDeployments = AnimalSchema.shape({
+    device: yup.array().of(AnimalDeploymentSchemaAsyncValidation)
+  });
+
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -161,7 +279,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 component={{
                   initialValues: values,
                   element: renderSingleForm,
-                  validationSchema: AnimalSchema
+                  validationSchema: AnimalSchemaWithDeployments
                 }}
                 onCancel={() => {
                   if (openedFromAddButton) {
@@ -188,6 +306,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                     ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
                     saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
                   );
+                  submitForm();
                 }}
               />
               {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
@@ -207,7 +326,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             </>
           )}
         </FieldArray>
-        <Collapse in={!isEqual(initialValues, values) && section !== 'Telemetry'} orientation="horizontal">
+        {/*<Collapse in={!isEqual(initialValues, values) && section !== 'Telemetry'} orientation="horizontal">
           <Box ml={1} whiteSpace="nowrap">
             <LoadingButton loading={isLoading} variant="contained" color="primary" onClick={() => submitForm()}>
               Save
@@ -216,7 +335,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               Discard Changes
             </Button>
           </Box>
-        </Collapse>
+                </Collapse>*/}
       </Toolbar>
       <Grid container flexDirection="column" px={3} py={2} alignItems="center">
         <Grid item container spacing={1} mb={2} lg={8} md={10} sm={12}>
