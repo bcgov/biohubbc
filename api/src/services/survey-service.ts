@@ -750,7 +750,14 @@ export class SurveyService extends DBService {
     await Promise.all(promises);
   }
 
-  async insertUpdateDeleteSurveyLocation(surveyId: number, data: PostSurveyLocationData[]) {
+  /**
+   * Handles the create, update and deletion of survey locations based on the given data.
+   *
+   * @param {number} surveyId
+   * @param {PostSurveyLocationData} data
+   * @returns {*} {Promise<any[]>}
+   */
+  async insertUpdateDeleteSurveyLocation(surveyId: number, data: PostSurveyLocationData[]): Promise<any[]> {
     const existingLocations = await this.getSurveyLocationsData(surveyId);
     // compare existing locations with passed in locations
     // any locations not found in both arrays will be deleted
@@ -765,14 +772,28 @@ export class SurveyService extends DBService {
     const updates = data.filter((item) => item.survey_location_id);
     const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
 
-    return [...insertPromises, ...updatePromises, ...deletePromises];
+    return Promise.all([...insertPromises, ...updatePromises, ...deletePromises]);
   }
 
+  /**
+   * Deletes a survey location for the given id. Returns the deleted record
+   *
+   * @param {number} surveyLocationId Id of the record to delete
+   * @returns {*} {Promise<SurveyLocationRecord>} The deleted record
+   * @memberof SurveyService
+   */
   async deleteSurveyLocation(surveyLocationId: number): Promise<SurveyLocationRecord> {
     const surveyLocationService = new SurveyLocationService(this.connection);
     return surveyLocationService.deleteSurveyLocation(surveyLocationId);
   }
 
+  /**
+   * Updates Survey Locations based on the data provided
+   *
+   * @param {PostSurveyLocationData} data
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
   async updateSurveyLocation(data: PostSurveyLocationData): Promise<void> {
     const surveyLocationService = new SurveyLocationService(this.connection);
     return surveyLocationService.updateSurveyLocation(data);

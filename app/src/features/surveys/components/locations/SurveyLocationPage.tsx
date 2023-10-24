@@ -47,7 +47,6 @@ export const SurveyLocationPage = () => {
       </Box>
 
       <Box display="flex" flex="1 1 auto" overflow="hidden">
-        {/* Survey Locations */}
         <Box
           flex="0 0 auto"
           width={400}
@@ -56,16 +55,7 @@ export const SurveyLocationPage = () => {
             borderRightWidth: '1px',
             borderRightColor: grey[300]
           }}></Box>
-
-        {/* Map Component */}
-        <Box flex="1 1 auto" overflow="hidden">
-          {/* <SurveyAreaMapControl
-            map_id=""
-            title=""
-            formik_key=""
-            formik_props={{} as any as FormikContextType<ISurveyLocationForm>}
-          /> */}
-        </Box>
+        <Box flex="1 1 auto" overflow="hidden"></Box>
       </Box>
     </Box>
   );

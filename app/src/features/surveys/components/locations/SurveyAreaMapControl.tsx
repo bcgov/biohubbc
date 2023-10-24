@@ -7,7 +7,7 @@ import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import DrawControls2, { IDrawControlsRef } from 'components/map/components/DrawControls2';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
-import { ImportBoundaryDialog } from 'components/map/components/ImportBoundaryDialog';
+import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog';
 import { IRegionOption, RegionSelector } from 'components/map/components/RegionSelector';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { layerContentHandlers, layerNameHandler } from 'components/map/wfs-utils';

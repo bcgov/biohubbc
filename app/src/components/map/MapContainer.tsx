@@ -157,7 +157,7 @@ const MapContainer = (props: IMapContainerProps) => {
             });
           }
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
       }, 300),
     [biohubApi.spatial, drawControls?.initialFeatures, nonEditableGeometries, setInferredLayersInfo]

@@ -79,7 +79,10 @@ export interface IDrawControlsProps {
 }
 
 /**
- * @deprecated Prefer using `DrawControls2` moving forward.
+ * @deprecated Prefer using `DrawControls2` moving forward. The existing MapContainer was designed to be a one component fits all solution
+ * but that has become difficult to maintain. The existing component will be phased out and replaced with smaller for use case specific map components.
+ *
+ * These draw controls have a lot of assumptions based on how the MapContainer was designed and built
  */
 const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (props) => {
   const context = useLeafletContext();

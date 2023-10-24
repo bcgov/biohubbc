@@ -13,7 +13,7 @@ export interface IImportBoundaryDialogProps {
   onFailure: (message: string) => void;
 }
 
-export const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
+const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
   const { isOpen, onClose, onSuccess, onFailure } = props;
   return (
     <ComponentDialog open={isOpen} dialogTitle="Import Boundary" onClose={onClose}>
@@ -34,3 +34,5 @@ export const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
     </ComponentDialog>
   );
 };
+
+export default ImportBoundaryDialog;

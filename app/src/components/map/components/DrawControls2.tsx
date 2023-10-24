@@ -57,6 +57,12 @@ export interface IDrawControlsRef {
   deleteLayer: (layerId: number) => void;
 }
 
+/**
+ * A component to add draw controls to a map.
+ * IDrawControlsRef allows other components outside of the map context to interact with layers on the map
+ *
+ * The props provide callbacks and options to interact with the draw controls
+ */
 const DrawControls2 = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps>((props, ref) => {
   const { options, onLayerDelete, onLayerEdit, onLayerAdd } = props;
 

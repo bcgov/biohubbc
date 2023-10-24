@@ -84,7 +84,7 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
 /**
  *  Function to handle parsing and prep work of a shape file for upload
  *
- * @param {File} file The file to upload
+ * @param {File} file The file to process
  * @return {*}  {Promise<Feature[]>}
  */
 export const handleShapeFileUpload = (file: File): Promise<Feature[]> => {
@@ -93,6 +93,12 @@ export const handleShapeFileUpload = (file: File): Promise<Feature[]> => {
   });
 };
 
+/**
+ * Function to handle parsing and prep work of a GPX file
+ *
+ * @param {File} file The file to process
+ * @return {*}  {Promise<Feature[]>}
+ */
 export const handleGPXUpload = async (file: File) => {
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
@@ -119,6 +125,12 @@ export const handleGPXUpload = async (file: File) => {
   }
 };
 
+/**
+ * Function to handle parsing and prep work of a KML file
+ *
+ * @param {File} file The file to process
+ * @return {*}  {Promise<Feature[]>}
+ */
 export const handleKMLUpload = async (file: File) => {
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
@@ -141,12 +153,22 @@ export const handleKMLUpload = async (file: File) => {
   return [...sanitizedGeoJSON];
 };
 
+/**
+ * This function accepts a File and two call back functions onSuccess, onFailure and returns an IUploadHandler.
+ * The file type is determined and processed into an array of features to be passed back in the onSuccess function.
+ * Any errors during the processing are passed back in the onFailure function
+ *
+ * Accepted file types: zip, gpx, kml
+ *
+ * @param {{onSuccess: (Feature[]) => void, onFailure: (string) => void}} params
+ * @returns {*} {IUploadHandler}
+ */
 export const boundaryUploadHelper = (params: {
   onSuccess: (features: Feature[]) => void;
   onFailure: (message: string) => void;
 }): IUploadHandler => {
   const { onSuccess, onFailure } = params;
-  return async (file) => {
+  return async (file: File) => {
     let features: Feature<Geometry, GeoJsonProperties>[] = [];
     try {
       if (file?.type.includes('zip') || file?.name.includes('.zip')) {
@@ -155,6 +177,8 @@ export const boundaryUploadHelper = (params: {
         features = await handleGPXUpload(file);
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
         features = await handleKMLUpload(file);
+      } else {
+        throw `${file?.type} is not supported`;
       }
 
       onSuccess(features);
