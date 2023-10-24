@@ -772,7 +772,7 @@ export class SurveyService extends DBService {
     const updates = data.filter((item) => item.survey_location_id);
     const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
 
-    return Promise.all([insertPromises,updatePromises,deletePromises]);
+    return Promise.all([insertPromises, updatePromises, deletePromises]);
   }
 
   /**
