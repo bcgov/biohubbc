@@ -95,7 +95,7 @@ describe.skip('CreateSurveyPage', () => {
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
     mockUseApi.survey.getSurveyPermits.mockResolvedValue({
-      permits: [{ id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
+      permits: [{ permit_id: 1, permit_number: 'abcd1', permit_type: 'Wildlife permit' }]
     });
 
     const { getByText, getAllByText } = renderContainer();
@@ -134,8 +134,8 @@ describe.skip('CreateSurveyPage', () => {
 
     mockUseApi.survey.getSurveyPermits.mockResolvedValue({
       permits: [
-        { id: 1, permit_number: '123', permit_type: 'Scientific' },
-        { id: 2, permit_number: '456', permit_type: 'Wildlife' }
+        { permit_id: 1, permit_number: '123', permit_type: 'Scientific' },
+        { permit_id: 2, permit_number: '456', permit_type: 'Wildlife' }
       ]
     });
 
@@ -170,8 +170,8 @@ describe.skip('CreateSurveyPage', () => {
       mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
       mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [
-          { id: 1, permit_number: '123', permit_type: 'Scientific' },
-          { id: 2, permit_number: '456', permit_type: 'Wildlife' }
+          { permit_id: 1, permit_number: '123', permit_type: 'Scientific' },
+          { permit_id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
       mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
@@ -217,8 +217,8 @@ describe.skip('CreateSurveyPage', () => {
       mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
       mockUseApi.survey.getSurveyPermits.mockResolvedValue({
         permits: [
-          { id: 1, permit_number: '123', permit_type: 'Scientific' },
-          { id: 2, permit_number: '456', permit_type: 'Wildlife' }
+          { permit_id: 1, permit_number: '123', permit_type: 'Scientific' },
+          { permit_id: 2, permit_number: '456', permit_type: 'Wildlife' }
         ]
       });
       mockUseApi.taxonomy.getSpeciesFromIds.mockResolvedValue({
