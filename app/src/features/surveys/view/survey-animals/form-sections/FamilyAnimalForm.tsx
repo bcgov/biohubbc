@@ -57,15 +57,6 @@ export const FamilyAnimalFormContent = ({ name, index, allFamilies }: IFamilyAni
     return acc;
   }, {});
 
-  /*const handleFamilyChange = (event: SelectChangeEvent<unknown>) => {
-    handleChange(event);
-    const family_label = allFamilies?.find((a) => a.family_id === event.target.value)?.family_label;
-    setFieldValue(
-      getAnimalFieldName<IAnimalRelationship>(name, 'family_label', index),
-      family_label ?? newFamilyIdPlaceholder
-    );
-  };*/
-
   const classes = useStyles();
   const [showFamilyStructure, setShowFamilyStructure] = useState(false);
   const critterbase = useCritterbaseApi();

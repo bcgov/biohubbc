@@ -75,7 +75,6 @@ export const AnimalSectionDataCards = ({
         key: mortality._id
       })),
       [SurveyAnimalsI18N.animalFamilyTitle]: values.family.map((family) => {
-        //refreshFamilies();
         const family_label = allFamilies?.find((a) => a.family_id === family.family_id)?.family_label;
         return {
           header: family_label ? `Animal Relationship: ${family_label}` : `Animal Relationship`,
@@ -119,7 +118,7 @@ export const AnimalSectionDataCards = ({
     <TransitionGroup>
       {sectionCardData.map((cardData, index) =>
         isAddingNew && index === sectionCardData.length - 1 ? null : (
-          <Collapse>
+          <Collapse key={cardData.key}>
             <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
               {({ remove }: FieldArrayRenderProps) => {
                 const handleDelete = () => {

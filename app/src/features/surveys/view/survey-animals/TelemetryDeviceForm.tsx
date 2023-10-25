@@ -457,14 +457,6 @@ const TelemetryDeviceForm = ({
               }
             }}></CardHeader>
           <CardContent>
-            {/*<DeviceFormSection
-                mode={mode}
-                values={values.device}
-                key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
-                index={idx}
-                removeAction={removeAction}
-              />*/}
-
             <Box display="flex" flexDirection={'row'} alignItems={'center'}>
               <Typography>{`Vendor: ${device.device_make} / Model: ${device.device_model || 'N/A'} / Deployments: ${
                 device.deployments?.length

@@ -34,7 +34,6 @@ interface AddEditAnimalProps {
   section: IAnimalSections;
   critterData?: IDetailedCritterWithInternalId[];
   deploymentData?: IAnimalDeployment[];
-  isLoading?: boolean;
   telemetrySaveAction: (data: IAnimalTelemetryDeviceFile[], formMode: TELEMETRY_DEVICE_FORM_MODE) => Promise<void>;
   deploymentRemoveAction: (deploymentId: string) => void;
 }

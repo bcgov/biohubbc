@@ -28,7 +28,6 @@ import { IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './Teleme
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
   const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const bhApi = useBiohubApi();
   const telemetryApi = useTelemetryApi();
@@ -113,10 +112,6 @@ export const SurveyAnimalsPage = () => {
       return;
     }
 
-    //const deployments = deploymentData?.filter((a) => a.critter_id === survey_critter_id) ?? [];
-    // if (deployments.length <= 1) {
-    //   setOpenDeviceDialog(false);
-    // }
     refreshDeployments();
   };
 
@@ -151,7 +146,6 @@ export const SurveyAnimalsPage = () => {
       );
     };
     try {
-      setIsSubmitting(true);
       if (formMode === ANIMAL_FORM_MODE.ADD) {
         await postCritterPayload();
       } else {
@@ -162,8 +156,6 @@ export const SurveyAnimalsPage = () => {
       setPopup(`Successfully ${formMode === ANIMAL_FORM_MODE.ADD ? 'created' : 'updated'} animal.`, dialogContext);
     } catch (err) {
       setPopup(`Submmision failed ${(err as Error).message}`, dialogContext);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -256,7 +248,6 @@ export const SurveyAnimalsPage = () => {
     data: IAnimalTelemetryDeviceFile[],
     telemetryFormMode: TELEMETRY_DEVICE_FORM_MODE
   ) => {
-    //setIsSubmittingTelemetry(true);
     if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
       await handleAddTelemetry(survey_critter_id, data);
     } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
@@ -291,7 +282,6 @@ export const SurveyAnimalsPage = () => {
             <AddEditAnimal
               critterData={critterData}
               deploymentData={deploymentData}
-              isLoading={isSubmitting}
               section={selectedSection}
               telemetrySaveAction={(data, mode) => handleTelemetrySave(Number(survey_critter_id), data, mode)}
               deploymentRemoveAction={handleRemoveDeployment}

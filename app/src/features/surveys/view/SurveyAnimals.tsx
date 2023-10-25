@@ -574,7 +574,6 @@ const SurveyAnimals: React.FC = () => {
               setOpenDeviceDialog(true);
             }}
             onEditCritter={() => {
-              //setAnimalFormMode(ANIMAL_FORM_MODE.EDIT);
               history.push(`animals/${selectedCritterId}`);
             }}
             onMapOpen={() => {
