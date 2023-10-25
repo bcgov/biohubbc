@@ -1,11 +1,11 @@
 import xlsx from 'xlsx';
+import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import {
   InsertObservation,
   ObservationRecord,
   ObservationRepository,
   ObservationSubmissionRecord,
-  ObservationSupplementaryData,
   UpdateObservation
 } from '../repositories/observation-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
@@ -31,6 +31,13 @@ const observationCSVColumnValidator = {
   columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
   columnTypes: ['number', 'number', 'date', 'string', 'number', 'number']
 };
+
+export const ObservationSupplementaryData = z.object({
+  observationCount: z.number()
+});
+
+export type ObservationSupplementaryData = z.infer<typeof ObservationSupplementaryData>;
+
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
 
@@ -96,7 +103,7 @@ export class ObservationService extends DBService {
     surveyId: number
   ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
     const surveyObservations = await this.observationRepository.getSurveyObservations(surveyId);
-    const supplementaryObservationData = await this.observationRepository.getSurveyObservationRowCount(surveyId);
+    const supplementaryObservationData = await this.observationRepository.getSurveyObservationCount(surveyId);
     return { surveyObservations, supplementaryObservationData };
   }
 

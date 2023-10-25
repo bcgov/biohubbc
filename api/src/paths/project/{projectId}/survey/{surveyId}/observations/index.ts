@@ -165,9 +165,9 @@ GET.apiDoc = {
               ...surveyObservationsResponseSchema.properties,
               supplementaryObservationData: {
                 type: 'object',
-                required: ['rowCount'],
+                required: ['observationCount'],
                 properties: {
-                  rowCount: {
+                  observationCount: {
                     type: 'integer',
                     minimum: 0
                   }

@@ -46,7 +46,7 @@ const ObservationComponent = () => {
   const hasUnsavedChanges = observationsContext.hasUnsavedChanges();
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
   const observationCount =
-    observationsContext.observationsDataLoader?.data?.supplementaryObservationData?.rowCount ?? 0;
+    observationsContext.observationsDataLoader?.data?.supplementaryObservationData?.observationCount ?? 0;
 
   return (
     <>

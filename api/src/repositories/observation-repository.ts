@@ -79,12 +79,6 @@ export const ObservationSubmissionRecord = z.object({
 
 export type ObservationSubmissionRecord = z.infer<typeof ObservationSubmissionRecord>;
 
-export const ObservationSupplementaryData = z.object({
-  rowCount: z.number()
-});
-
-export type ObservationSupplementaryData = z.infer<typeof ObservationSupplementaryData>;
-
 const defaultLog = getLogger('repositories/observation-repository');
 
 export class ObservationRepository extends BaseRepository {
@@ -218,13 +212,13 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves the number of survey observation records for the given survey
+   * Retrieves the count of survey observations for the given survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<ObservationSupplementaryData>}
+   * @return {*}  {Promise<{ observationCount: number }>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationRowCount(surveyId: number): Promise<ObservationSupplementaryData> {
+  async getSurveyObservationCount(surveyId: number): Promise<{ observationCount: number }> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
@@ -233,8 +227,8 @@ export class ObservationRepository extends BaseRepository {
       .where('survey_id', surveyId);
 
     const response = await this.connection.knex(sqlStatement);
-    const rowCount = parseInt(response.rows[0].rowCount, 10);
-    return { rowCount };
+    const observationCount = parseInt(response.rows[0].rowCount, 10);
+    return { observationCount };
   }
 
   /**
