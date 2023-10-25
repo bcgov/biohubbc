@@ -62,9 +62,9 @@ const phases = {
     tag: tag,
     env: 'build',
     branch: branch,
-    cpuRequest: '100m',
+    cpuRequest: '50m',
     cpuLimit: '1000m',
-    memoryRequest: '512Mi',
+    memoryRequest: '100Mi',
     memoryLimit: '5Gi'
   },
   dev: {
@@ -85,10 +85,10 @@ const phases = {
     env: 'dev',
     sso: config.sso.dev,
     cpuRequest: '50m',
-    cpuLimit: (isStaticDeployment && '300m') || '200m',
-    memoryRequest: '50Mi',
-    memoryLimit: (isStaticDeployment && '300Mi') || '200Mi',
-    replicas: '1',
+    cpuLimit: '200m',
+    memoryRequest: '100Mi',
+    memoryLimit: '333Mi',
+    replicas: (isStaticDeployment && '1') || '1',
     replicasMax: (isStaticDeployment && '2') || '1'
   },
   test: {
@@ -107,10 +107,10 @@ const phases = {
     maxUploadFileSize,
     env: 'test',
     sso: config.sso.test,
-    cpuRequest: '100m',
-    cpuLimit: '400m',
+    cpuRequest: '50m',
+    cpuLimit: '500m',
     memoryRequest: '100Mi',
-    memoryLimit: '400Mi',
+    memoryLimit: '500Mi',
     replicas: '2',
     replicasMax: '3'
   },
@@ -130,10 +130,10 @@ const phases = {
     maxUploadFileSize,
     env: 'prod',
     sso: config.sso.prod,
-    cpuRequest: '100m',
-    cpuLimit: '400m',
+    cpuRequest: '50m',
+    cpuLimit: '500m',
     memoryRequest: '100Mi',
-    memoryLimit: '400Mi',
+    memoryLimit: '500Mi',
     replicas: '2',
     replicasMax: '3'
   }

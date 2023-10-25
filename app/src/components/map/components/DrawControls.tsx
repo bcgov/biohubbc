@@ -2,7 +2,7 @@ import { useLeafletContext } from '@react-leaflet/core';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { Feature } from 'geojson';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
-import * as L from 'leaflet';
+import L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import React, { useEffect, useRef, useState } from 'react';
@@ -78,6 +78,12 @@ export interface IDrawControlsProps {
   confirmDeletion?: boolean;
 }
 
+/**
+ * @deprecated Prefer using `DrawControls2` moving forward. The existing MapContainer was designed to be a one component fits all solution
+ * but that has become difficult to maintain. The existing component will be phased out and replaced with smaller for use case specific map components.
+ *
+ * These draw controls have a lot of assumptions based on how the MapContainer was designed and built
+ */
 const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (props) => {
   const context = useLeafletContext();
   const [deleteEvent, setDeleteEvent] = useState<L.LeafletEvent | null>(null);

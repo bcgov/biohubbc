@@ -34,7 +34,6 @@ interface AddEditAnimalProps {
   section: IAnimalSections;
   critterData?: IDetailedCritterWithInternalId[];
   deploymentData?: IAnimalDeployment[];
-  isLoading?: boolean;
   telemetrySaveAction: (data: IAnimalTelemetryDeviceFile[], formMode: TELEMETRY_DEVICE_FORM_MODE) => Promise<void>;
   deploymentRemoveAction: (deploymentId: string) => void;
 }
@@ -115,6 +114,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         </Grid>
       );
     return gridWrappedComp ?? <Typography>Unimplemented</Typography>;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     allFamilies,
     deploymentRemoveAction,
@@ -240,6 +240,19 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  const handleSaveTelemetry = async (saveValues: IAnimal) => {
+    const vals = openedFromAddButton ? [saveValues.device[selectedIndex]] : saveValues.device;
+    try {
+      await telemetrySaveAction(
+        vals,
+        openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
+      );
+      refreshDeviceDetails(Number(saveValues.device[selectedIndex].device_id));
+    } catch (err) {
+      setPopup('Telemetry save failed!', dialogContext);
+    }
+  };
+
   return (
     <>
       <Toolbar
@@ -283,16 +296,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 }}
                 onSave={async (saveVals) => {
                   if (section === 'Telemetry') {
-                    const vals = openedFromAddButton ? [saveVals.device[selectedIndex]] : saveVals.device;
-                    try {
-                      await telemetrySaveAction(
-                        vals,
-                        openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
-                      );
-                      refreshDeviceDetails(Number(saveVals.device[selectedIndex].device_id));
-                    } catch (err) {
-                      setPopup('Telemetry save failed!', dialogContext);
-                    }
+                    handleSaveTelemetry(saveVals);
                   }
                   setOpenedFromAddButton(false);
                   setShowDialog(false);
@@ -322,20 +326,19 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         </FieldArray>
       </Toolbar>
       <Grid container flexDirection="column" px={3} py={2} alignItems="center">
-        <Grid item container spacing={1} mb={2} lg={8} md={10} sm={12}>
+        <Grid item container spacing={2} mb={2} lg={7} md={10} sm={12}>
           {values.general.critter_id ? (
             <>
-              <Grid item lg={7} md={6}>
+              <Grid item lg={6} md={12}>
                 <Typography variant="body1" color="textSecondary" maxWidth={'92ch'}>
                   {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
                 </Typography>
               </Grid>
-              <Grid item lg={5} md={6} sm={12}>
+              <Grid item lg={6} md={12} sm={12}>
                 <CustomTextField
                   label="Critter ID"
                   name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
                   other={{
-                    size: 'small',
                     InputProps: {
                       endAdornment: (
                         <IconButton
@@ -348,8 +351,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         </IconButton>
                       )
                     },
-                    disabled: true,
-                    variant: 'filled'
+                    disabled: true
                   }}
                 />
               </Grid>

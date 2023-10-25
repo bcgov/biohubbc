@@ -1,6 +1,6 @@
-import { Feature } from 'geojson';
 import { SurveyStratum } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
+import { PostSurveyLocationData } from './survey-update';
 
 export class PostSurveyObject {
   survey_details: PostSurveyDetailsData;
@@ -9,7 +9,7 @@ export class PostSurveyObject {
   funding_sources: PostFundingSourceData[];
   proprietor: PostProprietorData;
   purpose_and_methodology: PostPurposeAndMethodologyData;
-  locations: PostLocationData[];
+  locations: PostSurveyLocationData[];
   agreements: PostAgreementsData;
   participants: PostParticipationData[];
   partnerships: PostPartnershipsData;
@@ -29,7 +29,7 @@ export class PostSurveyObject {
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
-    this.locations = (obj?.locations && obj.locations.map((p: any) => new PostLocationData(p))) || [];
+    this.locations = (obj?.locations && obj.locations.map((p: any) => new PostSurveyLocationData(p))) || [];
     this.site_selection = (obj?.site_selection && new PostSiteSelectionData(obj)) || null;
     this.blocks = (obj?.blocks && obj.blocks.map((p: any) => p as PostSurveyBlock)) || [];
   }
@@ -117,18 +117,6 @@ export class PostProprietorData {
     this.proprietor_name = (!obj?.first_nations_id && obj?.proprietor_name) || null;
     this.disa_required = obj?.disa_required === 'true' || false;
     this.survey_data_proprietary = obj?.survey_data_proprietary === 'true' || false;
-  }
-}
-
-export class PostLocationData {
-  name: string;
-  description: string;
-  geojson: Feature[];
-
-  constructor(obj?: any) {
-    this.name = obj?.name || null;
-    this.description = obj?.description || null;
-    this.geojson = (obj?.geojson?.length && obj.geojson) || [];
   }
 }
 

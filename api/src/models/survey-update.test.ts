@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  PostSurveyLocationData,
   PutPartnershipsData,
   PutSurveyDetailsData,
-  PutSurveyLocationData,
   PutSurveyObject,
   PutSurveyPermitData,
   PutSurveyProprietorData,
@@ -410,10 +410,10 @@ describe('PutPurposeAndMethodologyData', () => {
 
 describe('PutLocationData', () => {
   describe('No values provided', () => {
-    let data: PutSurveyLocationData;
+    let data: PostSurveyLocationData;
 
     before(() => {
-      data = new PutSurveyLocationData(null);
+      data = new PostSurveyLocationData(null);
     });
 
     it('sets name', () => {
@@ -421,7 +421,7 @@ describe('PutLocationData', () => {
     });
 
     it('sets description', () => {
-      expect(data.description).to.equal(null);
+      expect(data.description).to.equal('');
     });
 
     it('sets geojson', () => {
@@ -434,7 +434,7 @@ describe('PutLocationData', () => {
   });
 
   describe('All values provided with first nations id', () => {
-    let data: PutSurveyLocationData;
+    let data: PostSurveyLocationData;
 
     const obj = {
       name: 'area name',
@@ -444,7 +444,7 @@ describe('PutLocationData', () => {
     };
 
     before(() => {
-      data = new PutSurveyLocationData(obj);
+      data = new PostSurveyLocationData(obj);
     });
 
     it('sets name', () => {

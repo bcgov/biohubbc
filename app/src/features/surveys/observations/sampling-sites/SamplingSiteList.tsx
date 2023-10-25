@@ -7,13 +7,13 @@ import {
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Fade, Skeleton } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { cyan, grey } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
+import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -21,6 +21,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
@@ -28,6 +29,20 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
+
+const SampleSiteSkeleton = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      gap: '16px',
+      py: 1.5,
+      px: 2,
+      height: '52px',
+      borderBottom: '1px solid ' + grey[300]
+    }}>
+    <Skeleton sx={{ flex: '1 1 auto' }} />
+  </Box>
+);
 
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
@@ -39,7 +54,7 @@ const SamplingSiteList = () => {
 
   useEffect(() => {
     surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-  }, []);
+  }, [surveyContext.projectId, surveyContext.sampleSiteDataLoader, surveyContext.surveyId]);
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
@@ -48,19 +63,6 @@ const SamplingSiteList = () => {
     setAnchorEl(event.currentTarget);
     setSelectedSampleSiteId(sample_site_id);
   };
-
-  const SampleSiteSkeleton = () => (
-    <Box
-      sx={{
-        display: 'flex',
-        gap: '16px',
-        py: 1.5,
-        px: 2,
-        borderBottom: '1px solid' + grey[300]
-      }}>
-      <Skeleton sx={{ flex: '1 1 auto' }} />
-    </Box>
-  );
 
   return (
     <>
@@ -84,7 +86,11 @@ const SamplingSiteList = () => {
               px: 2,
               py: '6px',
               textDecoration: 'none',
-              color: 'text.primary'
+              color: 'text.primary',
+              borderRadius: 0,
+              '&:focus': {
+                outline: 'none'
+              }
             }
           }}>
           <RouterLink to={`sampling/${selectedSampleSiteId}/edit`}>
@@ -104,8 +110,7 @@ const SamplingSiteList = () => {
       <Box display="flex" flexDirection="column" height="100%">
         <Toolbar
           sx={{
-            flex: '0 0 auto',
-            borderBottom: '1px solid #ccc'
+            flex: '0 0 auto'
           }}>
           <Typography
             sx={{
@@ -129,33 +134,34 @@ const SamplingSiteList = () => {
         </Toolbar>
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           {/* Display spinner if data loaders are still waiting for a response */}
-          {(surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading) && (
-            <Fade in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  width: '100%',
-                  height: '100%',
-                  p: 1,
-                  background: '#fff',
-                  zIndex: 2
-                }}>
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-                <SampleSiteSkeleton />
-              </Box>
-            </Fade>
-          )}
+          <Fade
+            in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}
+            timeout={1000}>
+            <Box
+              sx={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                p: 1,
+                background: grey[100],
+                zIndex: 2
+              }}>
+              <SampleSiteSkeleton />
+              <SampleSiteSkeleton />
+              <SampleSiteSkeleton />
+              <SampleSiteSkeleton />
+              <SampleSiteSkeleton />
+            </Box>
+          </Fade>
 
           <Box
             sx={{
               position: 'absolute',
               width: '100%',
               height: '100%',
+              overflowY: 'auto',
               p: 1,
-              overflowY: 'auto'
+              background: grey[100]
             }}>
             {/* Display text if the sample site data loader has no items in it */}
             {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
@@ -168,18 +174,17 @@ const SamplingSiteList = () => {
             {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite, index) => {
               return (
                 <Accordion
-                  disableGutters
                   key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
                   sx={{
-                    boxShadow: 'none',
-                    '&.Mui-expanded': {
-                      // my: 1
-                    },
-                    '&.Mui-expanded .sampleSiteHeader': {
-                      background: cyan[50]
-                    }
+                    boxShadow: 'none'
                   }}>
-                  <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="sampleSiteHeader">
+                  <Box
+                    display="flex"
+                    overflow="hidden"
+                    alignItems="center"
+                    pr={1.5}
+                    height={55}
+                    className="sampleSiteHeader">
                     <AccordionSummary
                       expandIcon={<Icon path={mdiChevronDown} size={1} />}
                       aria-controls="panel1bh-content"
@@ -188,14 +193,22 @@ const SamplingSiteList = () => {
                         overflow: 'hidden',
                         py: 0.25,
                         pr: 1.5,
-                        gap: '16px',
+                        pl: 2,
+                        gap: '24px',
                         '& .MuiAccordionSummary-content': {
                           flex: '1 1 auto',
                           overflow: 'hidden',
                           whiteSpace: 'nowrap'
                         }
                       }}>
-                      <Typography sx={{ overflow: 'hidden', textOverflow: 'ellipsis', typography: 'body2' }}>
+                      <Typography
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          typography: 'body2',
+                          fontWeight: 700,
+                          fontSize: '0.9rem'
+                        }}>
                         {sampleSite.name}
                       </Typography>
                     </AccordionSummary>
@@ -209,39 +222,45 @@ const SamplingSiteList = () => {
                   </Box>
                   <AccordionDetails
                     sx={{
-                      py: 0
+                      pt: 0,
+                      px: 2
                     }}>
                     <List
                       disablePadding
                       sx={{
                         '& .MuiListItemText-primary': {
-                          fontSize: '0.875rem'
+                          fontSize: '0.9rem'
                         }
                       }}>
                       {sampleSite.sample_methods?.map((sampleMethod) => {
                         return (
                           <ListItem
                             disableGutters
-                            divider
                             key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}`}
                             sx={{
-                              display: 'block'
+                              display: 'block',
+                              py: 0
                             }}>
                             <ListItemText
                               primary={getCodesName(
                                 codesContext.codesDataLoader.data,
                                 'sample_methods',
                                 sampleMethod.method_lookup_id
-                              )}></ListItemText>
-                            <List disablePadding dense>
+                              )}
+                              sx={{
+                                m: 0,
+                                px: 2,
+                                py: 1.25,
+                                backgroundColor: grey[100]
+                              }}></ListItemText>
+                            <List disablePadding>
                               {sampleMethod.sample_periods?.map((samplePeriod) => {
                                 return (
                                   <ListItem
-                                    dense
                                     divider
                                     key={`${samplePeriod.survey_sample_method_id}-${samplePeriod.survey_sample_period_id}`}>
                                     <ListItemIcon>
-                                      <Icon path={mdiCalendarRange} size={0.8}></Icon>
+                                      <Icon path={mdiCalendarRange} size={1}></Icon>
                                     </ListItemIcon>
                                     <ListItemText
                                       primary={`${samplePeriod.start_date} to ${samplePeriod.end_date}`}></ListItemText>

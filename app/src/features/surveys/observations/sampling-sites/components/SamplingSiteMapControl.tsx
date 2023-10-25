@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import FileUpload from 'components/file-upload/FileUpload';
-import FileUploadItem, { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import FileUploadItem from 'components/file-upload/FileUploadItem';
 import MapContainer from 'components/map/MapContainer';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
 import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemProgressBar';
@@ -19,12 +19,7 @@ import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import { useEffect, useState } from 'react';
-import {
-  calculateUpdatedMapBounds,
-  handleGPXUpload,
-  handleKMLUpload,
-  handleShapeFileUpload
-} from 'utils/mapBoundaryUploadHelpers';
+import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize } from 'utils/Utils';
 
 const useStyles = makeStyles(() => ({
@@ -59,21 +54,9 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
 
   const { name, mapId, formikProps } = props;
 
-  const { values, errors, setFieldValue } = formikProps;
+  const { values, errors, setFieldValue, setFieldError } = formikProps;
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
-
-  const boundaryUploadHandler = (): IUploadHandler => {
-    return async (file) => {
-      if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        await handleShapeFileUpload(file, name, formikProps);
-      } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        await handleGPXUpload(file, name, formikProps);
-      } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        await handleKMLUpload(file, name, formikProps);
-      }
-    };
-  };
 
   const removeFile = () => {
     setFieldValue(name, []);
@@ -101,7 +84,14 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
             </Alert>
           )}
           <FileUpload
-            uploadHandler={boundaryUploadHandler()}
+            uploadHandler={boundaryUploadHelper({
+              onSuccess: (features: Feature[]) => {
+                setFieldValue(name, [...features]);
+              },
+              onFailure: (message: string) => {
+                setFieldError(name, message);
+              }
+            })}
             onRemove={removeFile}
             dropZoneProps={{
               maxNumFiles: 1,
@@ -132,7 +122,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           <Paper variant="outlined">
             <Box position="relative" height={500}>
               <MapContainer
-                scrollWheelZoom={true}
+                scrollWheelZoom={false}
                 mapId={mapId}
                 staticLayers={[
                   {

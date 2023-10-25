@@ -3,16 +3,16 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Permits from 'features/surveys/view/components/Permits';
 import SurveyParticipants from 'features/surveys/view/components/SurveyParticipants';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
-import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 import Partnerships from './components/Partnerships';
 import SamplingMethods from './components/SamplingMethods';
 import SurveyFundingSources from './components/SurveyFundingSources';
@@ -26,31 +26,23 @@ import SurveyStudyArea from './components/SurveyStudyArea';
  */
 
 const SurveyDetails = () => {
-  const history = useHistory();
-
   return (
     <Paper>
       <Toolbar>
         <Typography variant="h4" component="h2" sx={{ flex: '1 1 auto' }}>
           Survey Details
         </Typography>
-        <IconButton aria-label="Edit Details" onClick={() => history.push('edit')}>
+        <IconButton component={RouterLink} aria-label="Edit Details" to="edit">
           <Icon path={mdiPencilOutline} size={1} />
         </IconButton>
       </Toolbar>
 
       <Divider sx={{ m: 0 }}></Divider>
 
-      <Box
+      <Stack
+        divider={<Divider />}
         p={3}
         sx={{
-          // '& section': {
-          //   display: 'flex',
-          //   flexDirection: 'row'
-          // },
-          '& section + section': {
-            mt: 3
-          },
           '& h3': {
             mb: 2,
             flex: '0 0 auto',
@@ -82,74 +74,57 @@ const SurveyDetails = () => {
             flexDirection: 'row',
             flexWrap: { xs: 'wrap', md: 'nowrap' },
             gap: { xs: 0, md: '24px' },
+            mt: 0,
             py: 1,
-            borderTop: '1px solid' + grey[300]
+            borderTop: '1px solid ' + grey[300]
           },
-          '& section.row': {
-            mt: 0
+          '& hr': {
+            my: 3
           }
         }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Box component="section">
-              <Typography component="h3">General Information</Typography>
-              <SurveyGeneralInformation />
-            </Box>
+        <Box component="section">
+          <Typography component="h3">General Information</Typography>
+          <SurveyGeneralInformation />
+        </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+        <Box component="section">
+          <Typography component="h3">Study Area Location</Typography>
+          <SurveyStudyArea />
+        </Box>
 
-            <Box component="section">
-              <Typography component="h3">Study Area Location</Typography>
-              <SurveyStudyArea />
-            </Box>
+        <Box component="section">
+          <Typography component="h3">Purpose and Methodology</Typography>
+          <SurveyPurposeAndMethodologyData />
+        </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+        <Box component="section">
+          <Typography component="h3">Sampling Methods</Typography>
+          <SamplingMethods />
+        </Box>
 
-            <Box component="section">
-              <Typography component="h3">Purpose and Methodology</Typography>
-              <SurveyPurposeAndMethodologyData />
-            </Box>
+        <Box component="section">
+          <Typography component="h3">Survey Participants</Typography>
+          <SurveyParticipants />
+        </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
+        <Box component="section">
+          <Typography component="h3">Funding Sources & Partnerships</Typography>
+          <Box flex="1 1 auto">
+            <SurveyFundingSources />
+            <Partnerships />
+          </Box>
+        </Box>
 
-            <Box component="section">
-              <Typography component="h3">Sampling Methods</Typography>
-              <SamplingMethods />
-            </Box>
+        <Box component="section">
+          <Typography component="h3">Permits</Typography>
+          <Permits />
+        </Box>
 
-            <Divider sx={{ my: 3 }}></Divider>
-
-            <Box component="section">
-              <Typography component="h3">Survey Participants</Typography>
-              <SurveyParticipants />
-            </Box>
-
-            <Divider sx={{ my: 3 }}></Divider>
-
-            <Box component="section">
-              <Typography component="h3">Funding Sources & Partnerships</Typography>
-              <Box flex="1 1 auto">
-                <SurveyFundingSources />
-                <Partnerships />
-              </Box>
-            </Box>
-
-            <Divider sx={{ my: 3 }}></Divider>
-
-            <Box component="section">
-              <Typography component="h3">Permits</Typography>
-              <Permits />
-            </Box>
-
-            <Divider sx={{ my: 3 }}></Divider>
-
-            <Box component="section">
-              <Typography component="h3">Proprietary Information</Typography>
-              <SurveyProprietaryData />
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
+        <Box component="section">
+          <Typography component="h3">Proprietary Information</Typography>
+          <SurveyProprietaryData />
+        </Box>
+      </Stack>
     </Paper>
   );
 };

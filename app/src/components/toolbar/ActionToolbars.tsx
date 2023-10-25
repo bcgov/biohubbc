@@ -37,7 +37,7 @@ const defaultButtonProps = (props: ICustomButtonProps): Partial<ButtonProps> => 
   children: props.buttonLabel
 });
 
-export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps { }
+export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
 
 export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const classes = useStyles();
@@ -84,7 +84,7 @@ export interface IMenuToolbarItem {
   menuOnClick: () => void;
 }
 
-export interface IMenuToolbarProps extends ICustomMenuButtonProps, IActionToolbarProps { }
+export interface IMenuToolbarProps extends ICustomMenuButtonProps, IActionToolbarProps {}
 
 export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
   return (

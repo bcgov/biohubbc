@@ -388,13 +388,13 @@ const TelemetryDeviceForm = ({
     data: IAnimalTelemetryDeviceFile[],
     telemetryFormMode: TELEMETRY_DEVICE_FORM_MODE
   ) => {
-    //setIsSubmittingTelemetry(true);
     if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
       await handleAddTelemetry(survey_critter_id, data);
+      setOpenDialog(false);
     } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
       await handleEditTelemetry(survey_critter_id, data);
+      setOpenDialog(false);
     }
-    setOpenDialog(false);
   };
 
   const telemetryFormMode = selectedIndex != null ? TELEMETRY_DEVICE_FORM_MODE.EDIT : TELEMETRY_DEVICE_FORM_MODE.ADD;
@@ -456,14 +456,6 @@ const TelemetryDeviceForm = ({
               }
             }}></CardHeader>
           <CardContent>
-            {/*<DeviceFormSection
-                mode={mode}
-                values={values.device}
-                key={`device-form-section-${mode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'add' : device.device_id}`}
-                index={idx}
-                removeAction={removeAction}
-              />*/}
-
             <Box display="flex" flexDirection={'row'} alignItems={'center'}>
               <Typography>{`Vendor: ${device.device_make} / Model: ${device.device_model || 'N/A'} / Deployments: ${
                 device.deployments?.length

@@ -22,48 +22,32 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
 
   return (
     <Box display="flex" flexDirection="column" height="100%" overflow="hidden" position="relative">
-      <Box
-        zIndex={999}
+      <SurveySectionHeader
+        project_id={surveyContext.projectId}
+        survey_id={surveyContext.surveyId}
+        survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+        title={pageTitle}
+      />
+      <Paper
+        elevation={0}
         sx={{
-          borderBottomStyle: 'solid',
-          borderBottomWidth: '1px',
-          borderBottomColor: grey[300]
+          display: 'flex',
+          flex: '1 1 auto',
+          overflow: 'hidden',
+          m: 1
         }}>
-        <SurveySectionHeader
-          project_id={surveyContext.projectId}
-          survey_id={surveyContext.surveyId}
-          survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-          title={pageTitle}
-        />
-      </Box>
-
-      <Box display="flex" flex="1 1 auto" overflow="hidden" p={1}>
-        {/* Sidebar Component */}
-        <Paper
-          elevation={0}
+        <Box
+          flex="0 0 auto"
+          width="400px"
           sx={{
-            flex: '0 0 auto',
-            width: 400,
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: 0,
-            borderRight: '1px solid' + grey[300]
+            borderRight: '1px solid ' + grey[300]
           }}>
           {sideBarComponent}
-        </Paper>
-
-        {/* Main content Component */}
-        <Paper
-          elevation={0}
-          sx={{
-            flex: '1 1 auto',
-            overflowY: 'auto',
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0
-            //padding: 2
-          }}>
+        </Box>
+        <Box flex="1 1 auto" overflow="hidden">
           {mainComponent}
-        </Paper>
-      </Box>
+        </Box>
+      </Paper>
     </Box>
   );
 };

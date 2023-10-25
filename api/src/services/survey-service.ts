@@ -1,8 +1,8 @@
 import { Feature } from 'geojson';
 import { MESSAGE_CLASS_NAME, SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../constants/status';
 import { IDBConnection } from '../database/db';
-import { PostLocationData, PostProprietorData, PostSurveyObject } from '../models/survey-create';
-import { PutPartnershipsData, PutSurveyLocationData, PutSurveyObject } from '../models/survey-update';
+import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
+import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
@@ -494,7 +494,7 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof SurveyService
    */
-  async insertSurveyLocations(surveyId: number, data: PostLocationData): Promise<void> {
+  async insertSurveyLocations(surveyId: number, data: PostSurveyLocationData): Promise<void> {
     const service = new SurveyLocationService(this.connection);
     return service.insertSurveyLocation(surveyId, data);
   }
@@ -714,8 +714,8 @@ export class SurveyService extends DBService {
       promises.push(this.updateSurveyProprietorData(surveyId, putSurveyData));
     }
 
-    if (putSurveyData?.locations) {
-      promises.push(Promise.all(putSurveyData.locations.map((item) => this.updateSurveyLocation(item))));
+    if (putSurveyData?.locations.length) {
+      promises.push(this.insertUpdateDeleteSurveyLocation(surveyId, putSurveyData.locations));
     }
 
     if (putSurveyData?.participants.length) {
@@ -750,7 +750,51 @@ export class SurveyService extends DBService {
     await Promise.all(promises);
   }
 
-  async updateSurveyLocation(data: PutSurveyLocationData): Promise<void> {
+  /**
+   * Handles the create, update and deletion of survey locations based on the given data.
+   *
+   * @param {number} surveyId
+   * @param {PostSurveyLocationData} data
+   * @returns {*} {Promise<any[]>}
+   */
+  async insertUpdateDeleteSurveyLocation(surveyId: number, data: PostSurveyLocationData[]): Promise<any[]> {
+    const existingLocations = await this.getSurveyLocationsData(surveyId);
+    // compare existing locations with passed in locations
+    // any locations not found in both arrays will be deleted
+    const deletes = existingLocations.filter(
+      (existing) => !data.find((incoming) => incoming?.survey_location_id === existing.survey_location_id)
+    );
+    const deletePromises = deletes.map((item) => this.deleteSurveyLocation(item.survey_location_id));
+
+    const inserts = data.filter((item) => !item.survey_location_id);
+    const insertPromises = inserts.map((item) => this.insertSurveyLocations(surveyId, item));
+
+    const updates = data.filter((item) => item.survey_location_id);
+    const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
+
+    return Promise.all([insertPromises, updatePromises, deletePromises]);
+  }
+
+  /**
+   * Deletes a survey location for the given id. Returns the deleted record
+   *
+   * @param {number} surveyLocationId Id of the record to delete
+   * @returns {*} {Promise<SurveyLocationRecord>} The deleted record
+   * @memberof SurveyService
+   */
+  async deleteSurveyLocation(surveyLocationId: number): Promise<SurveyLocationRecord> {
+    const surveyLocationService = new SurveyLocationService(this.connection);
+    return surveyLocationService.deleteSurveyLocation(surveyLocationId);
+  }
+
+  /**
+   * Updates Survey Locations based on the data provided
+   *
+   * @param {PostSurveyLocationData} data
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
+  async updateSurveyLocation(data: PostSurveyLocationData): Promise<void> {
     const surveyLocationService = new SurveyLocationService(this.connection);
     return surveyLocationService.updateSurveyLocation(data);
   }

@@ -1,10 +1,31 @@
 import { Feature } from 'geojson';
 
+export const layerNameHandler: Record<string, any> = {
+  'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': (feature: Feature) => {
+    if (!feature?.properties) {
+      return 'Unparsable Feature';
+    }
+    return `${feature.properties.WILDLIFE_MGMT_UNIT_ID} - ${feature.properties.GAME_MANAGEMENT_ZONE_ID} - ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`;
+  },
+  'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': (feature: Feature) => {
+    if (!feature?.properties) {
+      return 'Unparsable Feature';
+    }
+    return `${feature.properties.PROTECTED_LANDS_NAME} - ${feature.properties.PROTECTED_LANDS_DESIGNATION}`;
+  },
+  'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': (feature: Feature) => {
+    if (!feature?.properties) {
+      return 'Unparsable Feature';
+    }
+    return feature.properties.REGION_NAME;
+  }
+};
+
 export const layerContentHandlers: Record<string, any> = {
   'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': {
     featureKeyHandler: (feature: Feature) => feature?.properties?.OBJECTID,
     popupContentHandler: (feature: Feature) => {
-      if (!feature || !feature.properties) {
+      if (!feature?.properties) {
         return { tooltip: 'Unparsable Feature', content: [] };
       }
 
@@ -30,7 +51,7 @@ export const layerContentHandlers: Record<string, any> = {
   'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': {
     featureKeyHandler: (feature: Feature) => feature?.properties?.OBJECTID,
     popupContentHandler: (feature: Feature) => {
-      if (!feature || !feature.properties) {
+      if (!feature?.properties) {
         return { tooltip: 'Unparsable Feature', content: [] };
       }
 
@@ -53,7 +74,7 @@ export const layerContentHandlers: Record<string, any> = {
   'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': {
     featureKeyHandler: (feature: Feature) => feature?.properties?.OBJECTID,
     popupContentHandler: (feature: Feature) => {
-      if (!feature || !feature.properties) {
+      if (!feature?.properties) {
         return { tooltip: 'Unparsable Feature', content: [] };
       }
 

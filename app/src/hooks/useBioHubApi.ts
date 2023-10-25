@@ -5,6 +5,7 @@ import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
+import useDwcaApi from './api/useDwcaApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
 import useObservationApi from './api/useObservationApi';
@@ -48,6 +49,8 @@ export const useBiohubApi = () => {
 
   const observation = useObservationApi(apiAxios);
 
+  const dwca = useDwcaApi(apiAxios);
+
   const resources = useResourcesApi(apiAxios);
 
   const external = useExternalApi(axios);
@@ -68,6 +71,7 @@ export const useBiohubApi = () => {
       taxonomy,
       survey,
       observation,
+      dwca,
       resources,
       codes,
       draft,

@@ -39,14 +39,10 @@ const FormSectionWrapper = ({
   btnLabel,
   maxSections
 }: FormSectionWrapperProps) => {
-  //const { values } = useFormikContext<IAnimal>();
-  //const showBtn = btnLabel && handleAddSection && (maxSections === undefined || childs.length < maxSections);
-  //For convienence, vs rendering duplicated components for children and children[]
   const childs = Array.isArray(children) ? children : [children];
 
   return (
     <>
-      {/*<Divider sx={{ mt: 4, mb: 3 }} />*/}
       <Box component="fieldset">
         <Typography component="legend">{title}</Typography>
         <Typography
@@ -103,16 +99,6 @@ const FormSectionWrapper = ({
             </CardContent>
           </Card>
         ))}
-        {/*{showBtn ? (
-          <Button
-            onClick={handleAddSection}
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            variant="outlined"
-            disabled={disableAddBtn || !values.general.taxon_id}
-            color="primary">
-            {btnLabel}
-          </Button>
-        ) : null}*/}
       </Box>
     </>
   );

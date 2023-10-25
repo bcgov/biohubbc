@@ -55,7 +55,7 @@ const GeneralInformation = () => {
               </>
             ) : (
               <>
-                <span>Start Date:</span>{' '}
+                <span>Start Date: </span>
                 {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, projectData.project.start_date)}
               </>
             )}

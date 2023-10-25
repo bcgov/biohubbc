@@ -6,7 +6,8 @@ import {
   IParticipant,
   ProjectParticipationRecord,
   ProjectParticipationRepository,
-  ProjectUser
+  ProjectUser,
+  UserProjectParticipation
 } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 import { DBService } from './db-service';
@@ -112,6 +113,21 @@ export class ProjectParticipationService extends DBService {
   }
 
   /**
+   * Get the project participant for the given project and user guid.
+   *
+   * @param {number} projectId
+   * @param {number} userGuid
+   * @return {*}  {(Promise<(ProjectUser & SystemUser) | null>)}
+   * @memberof ProjectParticipationService
+   */
+  async getProjectParticipantByUserGuid(
+    projectId: number,
+    userGuid: string
+  ): Promise<(ProjectUser & SystemUser) | null> {
+    return this.projectParticipationRepository.getProjectParticipantByUserGuid(projectId, userGuid);
+  }
+
+  /**
    * Gets the project participants for the given project.
    *
    * @param {number} projectId
@@ -154,32 +170,10 @@ export class ProjectParticipationService extends DBService {
    * Fetches all projects for the given system user.
    *
    * @param {number} systemUserId
-   * @return {*}  {Promise<
-   *     {
-   *       project_participation_id: number;
-   *       project_id: number;
-   *       project_name: string;
-   *       system_user_id: number;
-   *       project_role_ids: number[];
-   *       project_role_names: string[];
-   *       project_role_permissions: string[];
-   *     }[]
-   *   >}
+   * @return {*}  {Promise<UserProjectParticipation[]>}
    * @memberof ProjectParticipationService
    */
-  async getProjectsBySystemUserId(
-    systemUserId: number
-  ): Promise<
-    {
-      project_participation_id: number;
-      project_id: number;
-      project_name: string;
-      system_user_id: number;
-      project_role_ids: number[];
-      project_role_names: string[];
-      project_role_permissions: string[];
-    }[]
-  > {
+  async getProjectsBySystemUserId(systemUserId: number): Promise<UserProjectParticipation[]> {
     return this.projectParticipationRepository.getProjectsBySystemUserId(systemUserId);
   }
 

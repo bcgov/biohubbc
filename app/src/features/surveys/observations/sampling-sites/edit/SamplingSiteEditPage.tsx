@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -47,7 +46,7 @@ const SamplingSiteEditPage = () => {
   useEffect(() => {
     if (surveyContext.sampleSiteDataLoader.data) {
       const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
-        (x) => x.survey_sample_site_id === surveySampleSiteId
+        (sampleSite) => sampleSite.survey_sample_site_id === surveySampleSiteId
       );
 
       if (data !== undefined) {
@@ -90,9 +89,9 @@ const SamplingSiteEditPage = () => {
   };
 
   const handleSubmit = async (values: IEditSamplingSiteRequest) => {
-    setIsSubmitting(true);
-
     try {
+      setIsSubmitting(true);
+
       // create edit request
       const editSampleSite: IEditSamplingSiteRequest = {
         sampleSite: {
@@ -115,6 +114,10 @@ const SamplingSiteEditPage = () => {
 
       // Disable cancel prompt so we can navigate away from the page after saving
       setEnableCancelCheck(false);
+
+      // Refresh the context, so the next page loads with the latest data
+      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
       // create complete, navigate back to observations page
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
     } catch (error) {
@@ -124,7 +127,6 @@ const SamplingSiteEditPage = () => {
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -179,27 +181,16 @@ const SamplingSiteEditPage = () => {
         enableReinitialize
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column" height="100%">
-          <Box
-            position="sticky"
-            top="0"
-            zIndex={1001}
-            sx={{
-              borderBottomStyle: 'solid',
-              borderBottomWidth: '1px',
-              borderBottomColor: grey[300]
-            }}>
-            <SamplingSiteHeader
-              project_id={surveyContext.projectId}
-              survey_id={surveyContext.surveyId}
-              survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-              is_submitting={isSubmitting}
-              title={`Edit Sampling Site > ${initialFormData.sampleSite.name}`}
-              breadcrumb="Edit Sampling Sites"
-            />
-          </Box>
-          <Box display="flex" flex="1 1 auto">
-            <SampleSiteEditForm formikRef={formikRef} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
-          </Box>
+          <SamplingSiteHeader
+            project_id={surveyContext.projectId}
+            survey_id={surveyContext.surveyId}
+            survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+            is_submitting={isSubmitting}
+            title="Edit Sampling Site"
+            breadcrumb="Edit Sampling Site"
+          />
+
+          <SampleSiteEditForm isSubmitting={isSubmitting} />
         </Box>
       </Formik>
     </>

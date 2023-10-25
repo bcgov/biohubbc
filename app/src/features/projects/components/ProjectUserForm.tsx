@@ -222,7 +222,7 @@ const ProjectUserForm: React.FC<IProjectUser> = (props) => {
             )}
             renderOption={(renderProps, renderOption) => {
               return (
-                <Box component="li" {...renderProps}>
+                <Box component="li" {...renderProps} key={renderOption.system_user_id}>
                   <UserCard
                     name={renderOption.display_name}
                     email={renderOption.email}

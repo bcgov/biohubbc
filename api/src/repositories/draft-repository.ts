@@ -1,13 +1,13 @@
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { jsonSchema } from '../zod-schema/json';
+import { shallowJsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
 
 export const WebformDraft = z.object({
   webform_draft_id: z.number(),
   name: z.string(),
-  data: jsonSchema,
+  data: shallowJsonSchema,
   create_date: z.string(),
   update_date: z.string().nullable()
 });

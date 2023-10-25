@@ -5,6 +5,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { IStratum } from 'features/surveys/components/SurveySiteSelectionForm';
+import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 
 /**
@@ -41,10 +43,10 @@ const SamplingMethods = () => {
               content: '","'
             }
           }}>
-          {site_selection.strategies?.map((item, index: number) => {
+          {site_selection.strategies?.map((strategy: string) => {
             return (
-              <Typography component="dd" key={index}>
-                {item}
+              <Typography component="dd" key={strategy}>
+                {strategy}
               </Typography>
             );
           })}
@@ -55,10 +57,10 @@ const SamplingMethods = () => {
         <Box className="row" component="section">
           <Typography component="h4">Stratums</Typography>
           <List disablePadding>
-            {site_selection.stratums?.map((item, index: number) => {
+            {site_selection.stratums?.map((stratum: IStratum) => {
               return (
                 <ListItem
-                  key={index}
+                  key={`${stratum.name}-${stratum.description}`}
                   sx={{
                     p: 0,
                     '& + .MuiListItem-root': {
@@ -69,8 +71,8 @@ const SamplingMethods = () => {
                     sx={{
                       m: 0
                     }}
-                    primary={item.name}
-                    secondary={item.description}
+                    primary={stratum.name}
+                    secondary={stratum.description}
                   />
                 </ListItem>
               );
@@ -83,10 +85,10 @@ const SamplingMethods = () => {
         <Box component="section" className="row">
           <Typography component="h4">Blocks</Typography>
           <List disablePadding>
-            {blocks?.map((item, index: number) => {
+            {blocks?.map((block: IGetSurveyBlock) => {
               return (
                 <ListItem
-                  key={index}
+                  key={`${block.name}-${block.description}`}
                   sx={{
                     p: 0,
                     '& + .MuiListItem-root': {
@@ -97,8 +99,8 @@ const SamplingMethods = () => {
                     sx={{
                       m: 0
                     }}
-                    primary={item.name}
-                    secondary={item.description}
+                    primary={block.name}
+                    secondary={block.description}
                   />
                 </ListItem>
               );

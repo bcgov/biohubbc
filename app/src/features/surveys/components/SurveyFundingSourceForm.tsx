@@ -82,7 +82,7 @@ const SurveyFundingSourceForm = () => {
                   gap={2}
                   alignItems="flex-start"
                   key={surveyFundingSource.survey_funding_source_id}>
-                  <AutocompleteField // <IGetFundingSourcesResponse>
+                  <AutocompleteField
                     id={`funding_sources.[${index}].funding_source_id`}
                     name={`funding_sources.[${index}].funding_source_id`}
                     label="Funding Source"
@@ -91,7 +91,6 @@ const SurveyFundingSourceForm = () => {
                       value: fundingSource.funding_source_id,
                       label: fundingSource.name
                     }))}
-                    // getOptionDisabled={(option) => values.funding_sources.some((source) => source.funding_source_id === option.value)}
                     loading={fundingSourcesDataLoader.isLoading}
                     required
                   />
