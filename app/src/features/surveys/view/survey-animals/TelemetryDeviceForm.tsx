@@ -388,7 +388,6 @@ const TelemetryDeviceForm = ({
     data: IAnimalTelemetryDeviceFile[],
     telemetryFormMode: TELEMETRY_DEVICE_FORM_MODE
   ) => {
-    //setIsSubmittingTelemetry(true);
     if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
       await handleAddTelemetry(survey_critter_id, data);
       setOpenDialog(false);

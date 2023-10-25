@@ -238,6 +238,18 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  const handleSaveTelemetry = async (saveValues: IAnimal) => {
+    const vals = openedFromAddButton ? [saveValues.device[selectedIndex]] : saveValues.device;
+    try {
+      await telemetrySaveAction(
+        vals,
+        openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
+      );
+    } catch (err) {
+      setPopup('Telemetry save failed!', dialogContext);
+    }
+  };
+
   return (
     <>
       <Toolbar
@@ -281,15 +293,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 }}
                 onSave={async (saveVals) => {
                   if (section === 'Telemetry') {
-                    const vals = openedFromAddButton ? [saveVals.device[selectedIndex]] : saveVals.device;
-                    try {
-                      await telemetrySaveAction(
-                        vals,
-                        openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
-                      );
-                    } catch (err) {
-                      setPopup('Telemetry save failed!', dialogContext);
-                    }
+                    handleSaveTelemetry(saveVals);
                   }
                   setOpenedFromAddButton(false);
                   setShowDialog(false);
