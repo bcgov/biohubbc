@@ -320,20 +320,19 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         </FieldArray>
       </Toolbar>
       <Grid container flexDirection="column" px={3} py={2} alignItems="center">
-        <Grid item container spacing={1} mb={2} lg={8} md={10} sm={12}>
+        <Grid item container spacing={2} mb={2} lg={7} md={10} sm={12}>
           {values.general.critter_id ? (
             <>
-              <Grid item lg={7} md={6}>
+              <Grid item lg={6} md={12}>
                 <Typography variant="body1" color="textSecondary" maxWidth={'92ch'}>
                   {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
                 </Typography>
               </Grid>
-              <Grid item lg={5} md={6} sm={12}>
+              <Grid item lg={6} md={12} sm={12}>
                 <CustomTextField
                   label="Critter ID"
                   name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
                   other={{
-                    size: 'small',
                     InputProps: {
                       endAdornment: (
                         <IconButton
@@ -346,8 +345,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         </IconButton>
                       )
                     },
-                    disabled: true,
-                    variant: 'filled'
+                    disabled: true
                   }}
                 />
               </Grid>

@@ -391,10 +391,11 @@ const TelemetryDeviceForm = ({
     //setIsSubmittingTelemetry(true);
     if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
       await handleAddTelemetry(survey_critter_id, data);
+      setOpenDialog(false);
     } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
       await handleEditTelemetry(survey_critter_id, data);
+      setOpenDialog(false);
     }
-    setOpenDialog(false);
   };
 
   const telemetryFormMode = selectedIndex != null ? TELEMETRY_DEVICE_FORM_MODE.EDIT : TELEMETRY_DEVICE_FORM_MODE.ADD;
