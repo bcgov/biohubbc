@@ -24,7 +24,7 @@ const InferredLocationDetails = (props: IInferredLocationDetailsProps) => {
           {type} ({layerNames.length})
         </Typography>
         <Box>
-          {data.map((item: string, index: number) => (
+          {layerNames.map((name: string, index: number) => (
             <Typography
               key={name}
               component="dd"
