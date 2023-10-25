@@ -15,6 +15,7 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { dateRangesOverlap } from 'utils/Utils';
+import { setPopup } from 'utils/UtilsJSX';
 import yup from 'utils/YupSchema';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
@@ -126,18 +127,6 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     values.device,
     values.mortality
   ]);
-
-  const setPopup = (message: string) => {
-    dialogContext.setSnackbar({
-      open: true,
-      snackbarAutoCloseMs: 1500,
-      snackbarMessage: (
-        <Typography variant="body2" component="div">
-          {message}
-        </Typography>
-      )
-    });
-  };
 
   const deploymentOverlapTest = async (
     device_id: number,
@@ -299,7 +288,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
                       );
                     } catch (err) {
-                      setPopup('Telemetry save failed!');
+                      setPopup('Telemetry save failed!', dialogContext);
                     }
                   }
                   setOpenedFromAddButton(false);
@@ -360,7 +349,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                           aria-label={`Copy Critter ID`}
                           onClick={() => {
                             navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
-                            setPopup('Copied Critter ID');
+                            setPopup('Copied Critter ID', dialogContext);
                           }}>
                           <Icon path={mdiContentCopy} size={0.8} />
                         </IconButton>

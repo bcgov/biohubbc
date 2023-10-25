@@ -31,6 +31,8 @@ import {
   IDeploymentTimespan
 } from './device';
 import { TelemetryFileUpload } from './TelemetryFileUpload';
+import { setPopup } from 'utils/UtilsJSX';
+import { DialogContext } from 'contexts/dialogContext';
 
 export enum TELEMETRY_DEVICE_FORM_MODE {
   ADD = 'add',
@@ -252,7 +254,6 @@ export const DeviceFormSection = ({ values, index, mode, removeAction }: IDevice
           />
         }
       </Box>
-      <pre>{JSON.stringify(formikVals, null, 2)}</pre>
     </>
   );
 };
@@ -276,10 +277,7 @@ const TelemetryDeviceForm = ({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const { surveyId, projectId, artifactDataLoader } = useContext(SurveyContext);
-
-  const setPopup = (msg: string) => {
-    console.log(msg);
-  };
+  const dialogContext = useContext(DialogContext);
 
   const DeviceFormValues: IAnimalTelemetryDevice = useMemo(() => {
     return {
@@ -330,13 +328,13 @@ const TelemetryDeviceForm = ({
       await uploadAttachment(attachmentFile, attachmentType);
       // create new deployment record
       await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
-      setPopup('Successfully added deployment.');
+      setPopup('Successfully added deployment.', dialogContext);
       artifactDataLoader.refresh(projectId, surveyId);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'));
+        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'),  dialogContext);
       } else {
-        setPopup('Failed to add deployment.');
+        setPopup('Failed to add deployment.', dialogContext);
       }
     }
   };
@@ -383,8 +381,8 @@ const TelemetryDeviceForm = ({
       }
     }
     errors.length
-      ? setPopup('Failed to save some data: ' + errors.join(', '))
-      : setPopup('Updated deployment and device data successfully.');
+      ? setPopup('Failed to save some data: ' + errors.join(', '), dialogContext)
+      : setPopup('Updated deployment and device data successfully.', dialogContext);
   };
 
   const handleTelemetrySave = async (
@@ -484,11 +482,6 @@ const TelemetryDeviceForm = ({
           </CardContent>
         </Card>
       ))}
-      <Box>
-        {' '}
-        <pre>{JSON.stringify(values, null, 2)}</pre>
-        <pre>{`selectedIndex: ${selectedIndex}`}</pre>
-      </Box>
     </>
   );
 };

@@ -423,9 +423,7 @@ export class Critter {
         formattedLocations.push({ ...mortality_location, location_id: loc_id });
       }
     });
-    const ret = { mortalities: formattedMortalities, mortalities_locations: formattedLocations };
-    console.log(`Given ${JSON.stringify(animal_mortalities, null, 2)} Output: ${JSON.stringify(ret, null, 2)}`);
-    return ret;
+    return { mortalities: formattedMortalities, mortalities_locations: formattedLocations };
   }
 
   _formatCritterMarkings(animal_markings: IAnimalMarking[]): ICritterMarking[] {
