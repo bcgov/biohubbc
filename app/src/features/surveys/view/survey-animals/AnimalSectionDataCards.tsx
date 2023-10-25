@@ -3,10 +3,9 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import useDataLoader from 'hooks/useDataLoader';
+import { IFamily } from 'hooks/cb_api/useFamilyApi';
 import moment from 'moment';
-import React, { useContext, useEffect, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
@@ -15,18 +14,17 @@ interface AnimalSectionDataCardsProps {
   section: IAnimalSections;
   onEditClick: (idx: number) => void;
   isAddingNew: boolean;
+  allFamilies?: IFamily[];
 }
-export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: AnimalSectionDataCardsProps) => {
+export const AnimalSectionDataCards = ({
+  section,
+  onEditClick,
+  isAddingNew,
+  allFamilies
+}: AnimalSectionDataCardsProps) => {
   const { values, submitForm } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
-  const cbApi = useCritterbaseApi();
-  const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(() => cbApi.family.getAllFamilies());
-
-  useEffect(() => {
-    refreshFamilies();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.family.length]);
 
   const showDeleteDialog = (onConfirmDelete: () => void) => {
     const close = () => dialogContext.setYesNoDialog({ open: false });
@@ -77,6 +75,7 @@ export const AnimalSectionDataCards = ({ section, onEditClick, isAddingNew }: An
         key: mortality._id
       })),
       [SurveyAnimalsI18N.animalFamilyTitle]: values.family.map((family) => {
+        //refreshFamilies();
         const family_label = allFamilies?.find((a) => a.family_id === family.family_id)?.family_label;
         return {
           header: family_label ? `Animal Relationship: ${family_label}` : `Animal Relationship`,

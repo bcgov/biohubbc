@@ -118,13 +118,13 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     deploymentRemoveAction,
     measurements,
     openedFromAddButton,
+    props.deploymentData,
     section,
     selectedIndex,
+    survey_critter_id,
     values.captures,
     values.device,
-    values.mortality,
-    props.deploymentData,
-    survey_critter_id
+    values.mortality
   ]);
 
   const setPopup = (message: string) => {
@@ -372,6 +372,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                     }}
                     section={section}
                     isAddingNew={openedFromAddButton}
+                    allFamilies={allFamilies}
                   />
                 </Form>
               </Grid>
