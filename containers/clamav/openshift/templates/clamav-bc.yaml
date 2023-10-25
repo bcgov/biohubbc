@@ -44,7 +44,6 @@ objects:
     apiVersion: build.openshift.io/v1
     metadata:
       name: "${NAME}-build"
-      creationTimestamp: null
       labels:
         app: "${NAME}"
     spec:
