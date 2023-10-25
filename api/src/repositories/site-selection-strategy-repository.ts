@@ -233,7 +233,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       stratums.map((stratum) => this.connection.knex(makeUpdateQuery(stratum), SurveyStratumRecord))
     );
 
-    const totalRowCount = responses.reduce((sum, response) => (sum += response.rowCount), 0);
+    const totalRowCount = responses.reduce((sum, response) => sum + response.rowCount, 0);
 
     if (totalRowCount !== stratums.length) {
       throw new ApiExecuteSQLError('Failed to update survey stratums', [
