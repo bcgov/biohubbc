@@ -101,6 +101,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             if (deployments.length <= 1) {
               setShowDialog(false);
             }
+            refreshDeviceDetails(values.device[selectedIndex].device_id);
           }}
         />
       )
@@ -288,6 +289,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         vals,
                         openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
                       );
+                      refreshDeviceDetails(Number(saveVals.device[selectedIndex].device_id));
                     } catch (err) {
                       setPopup('Telemetry save failed!', dialogContext);
                     }
