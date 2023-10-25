@@ -5,6 +5,7 @@ import {
   ObservationRecord,
   ObservationRepository,
   ObservationSubmissionRecord,
+  ObservationSupplementaryData,
   UpdateObservation
 } from '../repositories/observation-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
@@ -88,11 +89,15 @@ export class ObservationService extends DBService {
    * Retrieves all observation records for the given survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
    * @memberof ObservationService
    */
-  async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
-    return this.observationRepository.getSurveyObservations(surveyId);
+  async getSurveyObservationsWithSupplementaryData(
+    surveyId: number
+  ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
+    const surveyObservations = await this.observationRepository.getSurveyObservations(surveyId);
+    const supplementaryObservationData = await this.observationRepository.getSurveyObservationRowCount(surveyId);
+    return { surveyObservations, supplementaryObservationData };
   }
 
   /**
