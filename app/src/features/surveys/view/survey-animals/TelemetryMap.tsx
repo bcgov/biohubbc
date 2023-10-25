@@ -1,10 +1,13 @@
 import { Box, Paper, Typography } from '@mui/material';
-import MapContainer from 'components/map/MapContainer';
+import AdditionalLayers from 'components/map/components/AdditionalLayers';
+import BaseLayerControls from 'components/map/components/BaseLayerControls';
+import { SetMapBounds } from 'components/map/components/Bounds';
 import { Feature } from 'geojson';
 import L, { LatLng } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import moment from 'moment';
 import { useMemo, useState } from 'react';
-import { GeoJSON } from 'react-leaflet';
+import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { uuidToColor } from 'utils/Utils';
 import { v4 } from 'uuid';
 import { IAnimalDeployment, ITelemetryPointCollection } from './device';
@@ -115,21 +118,29 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
   };
 
   return (
-    <MapContainer
-      mapId={`view-animal-telemetry-map`}
+    <LeafletMapContainer
+      id={`view-animal-telemetry-map`}
+      style={{ height: '100%' }}
       scrollWheelZoom={true}
-      bounds={mapBounds}
-      additionalLayers={[
-        ...features.map((feature) => (
-          <GeoJSON
-            pointToLayer={point}
-            style={{ weight: 2, color: feature.properties?.colour, fillColor: feature.properties?.fillColour }}
-            key={v4()}
-            data={feature}></GeoJSON>
-        )),
-        <Legend key={'view-animal-telemetry-map-legend'} hasData={features.length > 0} colourMap={legendColours} />
-      ]}
-    />
+      zoom={5}
+      center={[55, -128]}>
+      <SetMapBounds bounds={mapBounds} />
+      <AdditionalLayers
+        layers={[
+          ...features.map((feature) => (
+            <GeoJSON
+              pointToLayer={point}
+              style={{ weight: 2, color: feature.properties?.colour, fillColor: feature.properties?.fillColour }}
+              key={v4()}
+              data={feature}></GeoJSON>
+          )),
+          <Legend key={'view-animal-telemetry-map-legend'} hasData={features.length > 0} colourMap={legendColours} />
+        ]}
+      />
+      <LayersControl position="bottomright">
+        <BaseLayerControls />
+      </LayersControl>
+    </LeafletMapContainer>
   );
 };
 

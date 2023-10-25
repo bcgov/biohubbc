@@ -9,7 +9,6 @@ import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
-import SearchPage from 'features/search/SearchPage';
 import BaseLayout from 'layouts/BaseLayout';
 import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
@@ -82,16 +81,6 @@ const AppRouter: React.FC = () => {
           <AuthenticatedRouteGuard>
             <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <AdminUsersRouter />
-            </SystemRoleRouteGuard>
-          </AuthenticatedRouteGuard>
-        </BaseLayout>
-      </RouteWithTitle>
-
-      <RouteWithTitle path="/admin/search" title={getTitle('Search')}>
-        <BaseLayout>
-          <AuthenticatedRouteGuard>
-            <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <SearchPage />
             </SystemRoleRouteGuard>
           </AuthenticatedRouteGuard>
         </BaseLayout>

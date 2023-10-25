@@ -84,8 +84,8 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
       <Paper elevation={0} sx={{ overflow: 'hidden' }}>
         <LeafletMapContainer
           data-testid={`leaflet-${map_id}`}
-          style={{ height: 500 }}
           id={map_id}
+          style={{ height: 500 }}
           center={[55, -128]}
           zoom={5}
           maxZoom={17}
