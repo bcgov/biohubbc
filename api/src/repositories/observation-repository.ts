@@ -217,6 +217,13 @@ export class ObservationRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Retrieves the number of survey observation records for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationSupplementaryData>}
+   * @memberof ObservationRepository
+   */
   async getSurveyObservationRowCount(surveyId: number): Promise<ObservationSupplementaryData> {
     const knex = getKnex();
     const sqlStatement = knex

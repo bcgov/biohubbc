@@ -160,6 +160,20 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             ...surveyObservationsResponseSchema,
+            required: ['surveyObservations', 'supplementaryObservationData'],
+            properties: {
+              ...surveyObservationsResponseSchema.properties,
+              supplementaryObservationData: {
+                type: 'object',
+                required: ['rowCount'],
+                properties: {
+                  rowCount: {
+                    type: 'integer',
+                    minimum: 0
+                  }
+                }
+              }
+            },
             title: 'Survey get response object, for view purposes'
           }
         }

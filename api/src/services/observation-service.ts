@@ -86,7 +86,7 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Retrieves all observation records for the given survey
+   * Retrieves all observation records for the given survey along with supplementary data
    *
    * @param {number} surveyId
    * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
