@@ -120,7 +120,10 @@ const SamplingSiteList = () => {
               fontSize: '1.125rem',
               fontWeight: 700
             }}>
-            {`Sampling Sites (${samplingSiteCount})`}
+            Sampling Sites &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({samplingSiteCount})
+            </Typography>
           </Typography>
           <Button
             sx={{

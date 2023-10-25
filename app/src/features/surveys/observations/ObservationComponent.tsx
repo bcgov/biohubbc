@@ -101,7 +101,10 @@ const ObservationComponent = () => {
               fontSize: '1.125rem',
               fontWeight: 700
             }}>
-            {`Observations (${observationCount})`}
+            Observations &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({observationCount})
+            </Typography>
           </Typography>
 
           <Box
