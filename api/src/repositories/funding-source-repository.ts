@@ -17,8 +17,8 @@ const FundingSource = z.object({
 export type FundingSource = z.infer<typeof FundingSource>;
 
 const FundingSourceSupplementaryData = z.object({
-  survey_reference_count: z.number(),
-  survey_reference_amount_total: z.number()
+  survey_reference_count: z.number().optional(),
+  survey_reference_amount_total: z.number().optional()
 });
 
 export type FundingSourceSupplementaryData = z.infer<typeof FundingSourceSupplementaryData>;
@@ -129,10 +129,10 @@ export class FundingSourceRepository extends BaseRepository {
    * Fetch a single funding source.
    *
    * @param {number} fundingSourceId
-   * @return {*}  {(Promise<FundingSource | FundingSourceSupplementaryData>)}
+   * @return {*}  {(Promise<FundingSource & FundingSourceSupplementaryData>)}
    * @memberof FundingSourceRepository
    */
-  async getFundingSource(fundingSourceId: number): Promise<FundingSource | FundingSourceSupplementaryData> {
+  async getFundingSource(fundingSourceId: number): Promise<FundingSource & FundingSourceSupplementaryData> {
     const sqlStatement = SQL`
       WITH
         w_references as (

@@ -1,5 +1,5 @@
 import { PublishStatus } from 'constants/attachments';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import {
   IGetSurveyForListResponse,
   IGetSurveyForViewResponse,
@@ -40,7 +40,7 @@ export const surveyObject: SurveyViewObject = {
   permit: {
     permits: [
       {
-        id: 1,
+        permit_id: 1,
         permit_number: '123',
         permit_type: 'Scientific'
       }

@@ -66,11 +66,15 @@ const dbSetupDeploy = async (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         CHANGE_ID: changeId,
-        NODE_ENV: phases[phase].env || 'dev',
+        NODE_ENV: phases[phase].env,
         DB_SERVICE_NAME: dbName,
         DB_SCHEMA: 'biohub',
         DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
-        IMAGE: dbSetupImageStream.image.dockerImageReference
+        IMAGE: dbSetupImageStream.image.dockerImageReference,
+        CPU_REQUEST: '50m',
+        CPU_LIMIT: '1000m',
+        MEMORY_REQUEST: '100Mi',
+        MEMORY_LIMIT: '1.5Gi'
       }
     })
   );

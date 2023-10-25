@@ -3,13 +3,11 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
 import { Container } from '@mui/system';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
 import { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from 'features/surveys/components/MethodForm';
-import { FormikProps } from 'formik';
+import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -17,20 +15,6 @@ import yup from 'utils/YupSchema';
 import SampleMethodEditForm from './SampleMethodEditForm';
 import SampleSiteGeneralInformationForm from './SampleSiteGeneralInformationForm';
 import SurveySamplingSiteEditForm from './SurveySampleSiteEditForm';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
-  sectionDivider: {
-    height: '1px',
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5)
-  }
-}));
 
 export interface IEditSamplingSiteRequest {
   sampleSite: {
@@ -43,9 +27,7 @@ export interface IEditSamplingSiteRequest {
   };
 }
 
-export interface ISampleSiteEditForm {
-  handleSubmit: (formikData: IEditSamplingSiteRequest) => void;
-  formikRef: React.RefObject<FormikProps<IEditSamplingSiteRequest>>;
+export interface ISampleSiteEditFormProps {
   isSubmitting: boolean;
 }
 
@@ -63,10 +45,9 @@ export const samplingSiteYupSchema = yup.object({
   })
 });
 
-const SampleSiteEditForm: React.FC<ISampleSiteEditForm> = (props) => {
-  const classes = useStyles();
-
+const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
   const surveyContext = useContext(SurveyContext);
+  const { submitForm } = useFormikContext<IEditSamplingSiteRequest>();
 
   return (
     <>
@@ -75,49 +56,60 @@ const SampleSiteEditForm: React.FC<ISampleSiteEditForm> = (props) => {
           <Paper
             elevation={0}
             sx={{
-              p: 5
+              p: 5,
+              '& hr': {
+                height: '1px',
+                mt: 5,
+                mb: 5
+              }
             }}>
             <HorizontalSplitFormComponent
               title="General Information"
               summary="Specify the name and description for this sampling site"
               component={<SampleSiteGeneralInformationForm />}></HorizontalSplitFormComponent>
 
-            <Divider className={classes.sectionDivider} />
+            <Divider />
 
             <HorizontalSplitFormComponent
               title="Site Location"
               summary="Import or draw sampling site locations used for this survey."
               component={<SurveySamplingSiteEditForm />}></HorizontalSplitFormComponent>
 
-            <Divider className={classes.sectionDivider} />
+            <Divider />
 
             <HorizontalSplitFormComponent
               title="Sampling Methods"
               summary="Specify sampling methods that were used to collect data."
               component={<SampleMethodEditForm name={'sampleSite.methods'} />}></HorizontalSplitFormComponent>
 
-            <Divider className={classes.sectionDivider} />
+            <Divider />
 
             <Box display="flex" justifyContent="flex-end">
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                color="primary"
-                loading={props.isSubmitting}
-                onClick={() => {
-                  props.formikRef.current?.submitForm();
-                }}
-                className={classes.actionButton}>
-                Save and Exit
-              </LoadingButton>
-              <Button
-                variant="outlined"
-                color="primary"
-                component={RouterLink}
-                to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}
-                className={classes.actionButton}>
-                Cancel
-              </Button>
+              <Box
+                sx={{
+                  '& [class^="MuiButton"]': {
+                    minWidth: '6rem'
+                  }
+                }}>
+                <LoadingButton
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  loading={props.isSubmitting}
+                  onClick={() => submitForm()}>
+                  Save and Exit
+                </LoadingButton>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  component={RouterLink}
+                  to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}
+                  sx={{
+                    ml: 1
+                  }}>
+                  Cancel
+                </Button>
+              </Box>
             </Box>
           </Paper>
         </Box>

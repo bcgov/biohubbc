@@ -52,7 +52,7 @@ const SurveyGeneralInformation = () => {
             </>
           ) : (
             <>
-              <span>Start Date: &zwnj;</span>
+              <span>Start Date: </span>
               {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, survey_details.start_date)}
             </>
           )}
@@ -66,7 +66,7 @@ const SurveyGeneralInformation = () => {
             return (
               <Typography
                 component="dd"
-                key={index}
+                key={`${focalSpecies}-${index}`}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',
@@ -94,7 +94,7 @@ const SurveyGeneralInformation = () => {
             return (
               <Typography
                 component="dd"
-                key={index}
+                key={`${ancillarySpecies}-${index}`}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',

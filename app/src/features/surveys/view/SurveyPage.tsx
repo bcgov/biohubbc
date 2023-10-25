@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -20,7 +19,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import ObservationsMap from '../observations/ObservationsMap';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveySummaryResults from './summary-results/SurveySummaryResults';
-import SurveyObservations from './survey-observations/SurveyObservations';
 import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
@@ -85,6 +83,12 @@ const SurveyPage: React.FC = () => {
 
         <Box mt={3}>
           <Paper elevation={0}>
+            <SurveySummaryResults />
+          </Paper>
+        </Box>
+
+        <Box mt={3}>
+          <Paper elevation={0}>
             <SurveyAttachments />
           </Paper>
         </Box>
@@ -101,35 +105,6 @@ const SurveyPage: React.FC = () => {
           <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
             <SurveySubmissionAlertBar />
           </SystemRoleGuard>
-          <Grid container spacing={3}>
-            <Grid item md={12} lg={4}>
-              <Paper elevation={0}>
-                <SurveyDetails />
-              </Paper>
-            </Grid>
-            <Grid item md={12} lg={8}>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveyObservations />
-                </Paper>
-              </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveySummaryResults />
-                </Paper>
-              </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveyAttachments />
-                </Paper>
-              </Box>
-              <Box mb={3}>
-                <Paper elevation={0}>
-                  <SurveyStudyArea />
-                </Paper>
-              </Box>
-            </Grid>
-          </Grid>
         </Box>
       </Container>
     </>

@@ -12,7 +12,11 @@ export type ITelemetryPointCollection = { points: FeatureCollection; tracks: Fea
 
 const req = 'Required.';
 const mustBeNum = 'Must be a number';
-const numSchema = yup.number().typeError(mustBeNum);
+const mustBePos = 'Must be positive';
+const mustBeInt = 'Must be an integer';
+const maxInt = 2147483647;
+const numSchema = yup.number().typeError(mustBeNum).min(0, mustBePos);
+const intSchema = numSchema.max(maxInt, `Must be less than ${maxInt}`).integer(mustBeInt).required(req);
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   deployment_id: yup.string(),
@@ -21,7 +25,7 @@ export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
 });
 
 export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
-  device_id: numSchema.required(req),
+  device_id: intSchema,
   device_make: yup.string().required(req),
   frequency: numSchema,
   frequency_unit: yup.string().nullable(),

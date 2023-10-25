@@ -41,7 +41,6 @@ objects:
     metadata:
       name: clamav
       generation: 1
-      creationTimestamp: null
       labels:
         app: clamav
     spec:
@@ -66,7 +65,6 @@ objects:
         deploymentconfig: clamav
       template:
         metadata:
-          creationTimestamp: null
           labels:
             app: clamav
             deploymentconfig: clamav

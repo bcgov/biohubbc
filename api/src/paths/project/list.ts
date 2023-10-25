@@ -59,22 +59,6 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            agency_id: {
-              anyOf: [
-                {
-                  type: 'number'
-                },
-                {
-                  type: 'string',
-                  maxLength: 0
-                }
-              ],
-              nullable: true
-            },
-            agency_project_id: {
-              type: 'string',
-              nullable: true
-            },
             species: {
               type: 'array',
               items: {

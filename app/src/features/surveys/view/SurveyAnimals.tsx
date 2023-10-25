@@ -176,6 +176,10 @@ const SurveyAnimals: React.FC = () => {
       .string()
       .required('Required')
       .test('checkDeviceMakeIsNotChanged', '', async (value, context) => {
+        // Bypass to avoid an api call when invalid device_id
+        if (!context.parent.device_id) {
+          return true;
+        }
         const deviceDetails = await telemetryApi.devices.getDeviceDetails(Number(context.parent.device_id));
         if (deviceDetails.device?.device_make && deviceDetails.device?.device_make !== value) {
           return context.createError({
@@ -194,12 +198,14 @@ const SurveyAnimals: React.FC = () => {
           .test('checkDeploymentRange', '', async (value, context) => {
             const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
             const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
-            const errStr = await deploymentOverlapTest(
-              deviceId,
-              context.parent.deployment_id,
-              value,
-              context.parent.attachment_end
-            );
+            const errStr = deviceId
+              ? await deploymentOverlapTest(
+                  deviceId,
+                  context.parent.deployment_id,
+                  value,
+                  context.parent.attachment_end
+                )
+              : '';
             if (errStr.length) {
               return context.createError({ message: errStr });
             } else {
@@ -214,12 +220,14 @@ const SurveyAnimals: React.FC = () => {
           .test('checkDeploymentRangeEnd', '', async (value, context) => {
             const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
             const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
-            const errStr = await deploymentOverlapTest(
-              deviceId,
-              context.parent.deployment_id,
-              context.parent.attachment_start,
-              value
-            );
+            const errStr = deviceId
+              ? await deploymentOverlapTest(
+                  deviceId,
+                  context.parent.deployment_id,
+                  context.parent.attachment_start,
+                  value
+                )
+              : '';
             if (errStr.length) {
               return context.createError({ message: errStr });
             } else {

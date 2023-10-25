@@ -27,7 +27,17 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
   const getCurrentOption = async (
     speciesId: string | number
   ): Promise<IAutocompleteDataGridOption<ValueType> | null> => {
-    const response = await biohubApi.taxonomy.getSpeciesFromIds([Number(speciesId)]);
+    if (!speciesId) {
+      return null;
+    }
+
+    const id = Number(speciesId);
+
+    if (isNaN(id)) {
+      return null;
+    }
+
+    const response = await biohubApi.taxonomy.getSpeciesFromIds([id]);
 
     if (response.searchResponse.length !== 1) {
       return null;
@@ -43,6 +53,11 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
           searchTerm: string,
           onSearchResults: (searchedValues: IAutocompleteDataGridOption<ValueType>[]) => void
         ) => {
+          if (!searchTerm) {
+            onSearchResults([]);
+            return;
+          }
+
           const response = await biohubApi.taxonomy.searchSpecies(searchTerm);
           const options = response.searchResponse.map((item) => ({
             value: parseInt(item.id) as ValueType,

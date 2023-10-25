@@ -1,13 +1,13 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Skeleton from '@mui/lab/Skeleton';
 import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
+import Skeleton from '@mui/material/Skeleton';
+import TextField from '@mui/material/TextField';
 import {
   DataGrid,
   GridColDef,
-  GridEditInputCell,
   GridEventListener,
   GridInputRowSelectionModel,
   GridRowModelUpdate
@@ -22,42 +22,37 @@ import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyData
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
+import { CodesContext } from 'contexts/codesContext';
 import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import {
+  IGetSampleLocationRecord,
+  IGetSampleMethodRecord,
+  IGetSamplePeriodRecord
+} from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
+import { getCodesName } from 'utils/Utils';
 
-export interface ISampleSiteSelectProps {
+type ISampleSiteOption = {
   survey_sample_site_id: number;
   sample_site_name: string;
-}
+};
 
-export interface ISampleMethodSelectProps {
+type ISampleMethodOption = {
   survey_sample_method_id: number;
   survey_sample_site_id: number;
   sample_method_name: string;
-}
+};
 
-export interface ISamplePeriodSelectProps {
+type ISamplePeriodOption = {
   survey_sample_period_id: number;
   survey_sample_method_id: number;
   sample_period_name: string;
-}
+};
 export interface ISpeciesObservationTableProps {
-  sample_sites: {
-    survey_sample_site_id: number;
-    sample_site_name: string;
-  }[];
-  sample_methods: {
-    survey_sample_method_id: number;
-    survey_sample_site_id: number;
-    sample_method_name: string;
-  }[];
-  sample_periods: {
-    survey_sample_period_id: number;
-    survey_sample_method_id: number;
-    sample_period_name: string;
-  }[];
+  isLoading?: boolean;
 }
 
 const SampleSiteSkeleton = () => (
@@ -69,7 +64,7 @@ const SampleSiteSkeleton = () => (
       p: 1,
       height: 58,
       background: '#fff',
-      borderBottom: '1px solid' + grey[300]
+      borderBottom: '1px solid ' + grey[300]
     }}>
     <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
     <Skeleton height={26} sx={{ flex: '1 1 auto' }} />
@@ -83,21 +78,57 @@ const SampleSiteSkeleton = () => (
 const LoadingOverlay = () => {
   return (
     <Box display="flex" flexDirection="column">
-      <SampleSiteSkeleton/>
-      <SampleSiteSkeleton/>
-      <SampleSiteSkeleton/>
-      <SampleSiteSkeleton/>
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
+      <SampleSiteSkeleton />
     </Box>
   );
 };
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const { sample_sites, sample_methods, sample_periods } = props;
+  const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
   const location = useLocation();
-
   const observationsContext = useContext(ObservationsContext);
+  const surveyContext = useContext(SurveyContext);
+  const codesContext = useContext(CodesContext);
+  const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
+
   const { observationsDataLoader } = observationsContext;
   const apiRef = observationsContext._muiDataGridApiRef;
+
+  // Collect sample sites
+  const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+  const sampleSiteOptions: ISampleSiteOption[] =
+    surveySampleSites.map((site) => ({
+      survey_sample_site_id: site.survey_sample_site_id,
+      sample_site_name: site.name
+    })) ?? [];
+
+  // Collect sample methods
+  const surveySampleMethods: IGetSampleMethodRecord[] = surveySampleSites
+    .filter((sampleSite) => Boolean(sampleSite.sample_methods))
+    .map((sampleSite) => sampleSite.sample_methods as IGetSampleMethodRecord[])
+    .flat(2);
+  const sampleMethodOptions: ISampleMethodOption[] = hasLoadedCodes
+    ? surveySampleMethods.map((method) => ({
+        survey_sample_method_id: method.survey_sample_method_id,
+        survey_sample_site_id: method.survey_sample_site_id,
+        sample_method_name:
+          getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
+      }))
+    : [];
+
+  // Collect sample periods
+  const samplePeriodOptions: ISamplePeriodOption[] = surveySampleMethods
+    .filter((sampleMethod) => Boolean(sampleMethod.sample_periods))
+    .map((sampleMethod) => sampleMethod.sample_periods as IGetSamplePeriodRecord[])
+    .flat(2)
+    .map((samplePeriod: IGetSamplePeriodRecord) => ({
+      survey_sample_period_id: samplePeriod.survey_sample_period_id,
+      survey_sample_method_id: samplePeriod.survey_sample_method_id,
+      sample_period_name: `${samplePeriod.start_date} - ${samplePeriod.end_date}`
+    }));
 
   const observationColumns: GridColDef<IObservationTableRow>[] = [
     {
@@ -109,6 +140,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
+      valueSetter: (params) => {
+        return { ...params.row, wldtaxonomic_units_id: Number(params.value) };
+      },
       renderCell: (params) => {
         return <TaxonomyDataGridViewCell dataGridProps={params} />;
       },
@@ -121,15 +155,15 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Sampling Site',
       editable: true,
       flex: 1,
-      minWidth: 200,
+      minWidth: 250,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
       renderCell: (params) => {
         return (
-          <AutocompleteDataGridViewCell
+          <AutocompleteDataGridViewCell<IObservationTableRow, number>
             dataGridProps={params}
-            options={sample_sites.map((item) => ({
+            options={sampleSiteOptions.map((item) => ({
               label: item.sample_site_name,
               value: item.survey_sample_site_id
             }))}
@@ -138,9 +172,9 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       },
       renderEditCell: (params) => {
         return (
-          <AutocompleteDataGridEditCell
+          <AutocompleteDataGridEditCell<IObservationTableRow, number>
             dataGridProps={params}
-            options={sample_sites.map((item) => ({
+            options={sampleSiteOptions.map((item) => ({
               label: item.sample_site_name,
               value: item.survey_sample_site_id
             }))}
@@ -153,33 +187,33 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Sampling Method',
       editable: true,
       flex: 1,
-      minWidth: 200,
+      minWidth: 250,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
       renderCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridViewCell
+          <ConditionalAutocompleteDataGridViewCell<IObservationTableRow, ISampleMethodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
                 .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
                 .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
             }}
-            allOptions={sample_methods}
+            allOptions={sampleMethodOptions}
           />
         );
       },
       renderEditCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridEditCell
+          <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, ISampleMethodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
                 .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
                 .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
             }}
-            allOptions={sample_methods}
+            allOptions={sampleMethodOptions}
           />
         );
       }
@@ -188,34 +222,34 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       field: 'survey_sample_period_id',
       headerName: 'Sampling Period',
       editable: true,
-      flex: 1,
-      minWidth: 200,
+      flex: 0,
+      width: 240,
       disableColumnMenu: true,
       headerAlign: 'left',
       align: 'left',
       renderCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridViewCell
+          <ConditionalAutocompleteDataGridViewCell<IObservationTableRow, ISamplePeriodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
                 .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
                 .map((item) => ({ label: item.sample_period_name, value: item.survey_sample_period_id }));
             }}
-            allOptions={sample_periods}
+            allOptions={samplePeriodOptions}
           />
         );
       },
       renderEditCell: (params) => {
         return (
-          <ConditionalAutocompleteDataGridEditCell
+          <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, ISamplePeriodOption, number>
             dataGridProps={params}
             optionsGetter={(row, allOptions) => {
               return allOptions
                 .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
                 .map((item) => ({ label: item.sample_period_name, value: item.survey_sample_period_id }));
             }}
-            allOptions={sample_periods}
+            allOptions={samplePeriodOptions}
           />
         );
       }
@@ -225,19 +259,32 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       headerName: 'Count',
       editable: true,
       type: 'number',
-      minWidth: 100,
+      minWidth: 110,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderEditCell: (params) => (
-        <GridEditInputCell
-          {...params}
-          inputProps={{
-            min: 0,
-            max: 99999
-          }}
-        />
-      )
+      headerAlign: 'right',
+      align: 'right',
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^\d{0,7}$/.test(event.target.value)) {
+                // If the value is not a number, return
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={params.value ?? ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'observation_date',
@@ -257,24 +304,33 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       type: 'string',
       width: 150,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        return { ...params.row, observation_time: params.value };
+      },
+      valueParser: (value) => {
+        if (!value) {
+          return null;
+        }
+
+        if (moment.isMoment(value)) {
+          return value.format('HH:mm');
+        }
+
+        return moment(value, 'HH:mm:ss').format('HH:mm');
+      },
       renderCell: (params) => {
         if (!params.value) {
           return null;
         }
 
-        if (moment.isMoment(params.value)) {
-          return <>{params.value.format('HH:mm')}</>;
-        }
-
-        return <>{moment(params.value, 'HH:mm:ss').format('HH:mm')}</>;
+        return <>{params.value}</>;
       },
       renderEditCell: (params) => {
         return (
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <TimePicker
-              timeSteps={{ hours: 1, minutes: 1 }}
               value={(params.value && moment(params.value, 'HH:mm:ss')) || null}
               onChange={(value) => {
                 apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
@@ -286,6 +342,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: value?.format('HH:mm:ss')
                 });
               }}
+              timeSteps={{ hours: 1, minutes: 1 }}
               ampm={false}
             />
           </LocalizationProvider>
@@ -295,24 +352,84 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     {
       field: 'latitude',
       headerName: 'Lat',
-      type: 'number',
       editable: true,
       width: 120,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderCell: (params) => String(params.row.latitude)
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
+          // If the value is a legal latitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, latitude: Number(params.value) };
+        }
+
+        const value = parseFloat(params.value);
+        return { ...params.row, longitude: isNaN(value) ? null : value };
+      },
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
+                // If the value is not a subset of a legal latitude value, prevent the value from being applied
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={params.value ?? ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'longitude',
       headerName: 'Long',
-      type: 'number',
       editable: true,
       width: 120,
       disableColumnMenu: true,
-      headerAlign: 'left',
-      align: 'left',
-      renderCell: (params) => String(params.row.longitude)
+      headerAlign: 'right',
+      align: 'right',
+      valueSetter: (params) => {
+        if (/^-?\d{1,3}(?:\.\d{0,12})?$/.test(params.value)) {
+          // If the value is a legal longitude value
+          // Valid entries: `-1`, `-1.1`, `-123.456789` `1`, `1.1, `123.456789`
+          return { ...params.row, longitude: Number(params.value) };
+        }
+
+        const value = parseFloat(params.value);
+        return { ...params.row, longitude: isNaN(value) ? null : value };
+      },
+      renderEditCell: (params) => {
+        return (
+          <TextField
+            onChange={(event) => {
+              if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
+                // If the value is not a subset of a legal longitude value, prevent the value from being applied
+                return;
+              }
+
+              apiRef?.current.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            }}
+            value={params.value ?? ''}
+            variant="outlined"
+            type="text"
+            inputProps={{ inputMode: 'numeric' }}
+          />
+        );
+      }
     },
     {
       field: 'actions',
@@ -321,6 +438,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       width: 70,
       disableColumnMenu: true,
       resizable: false,
+      headerClassName: 'pinnedColumn',
       cellClassName: 'pinnedColumn',
       getActions: (params) => [
         <IconButton
@@ -334,18 +452,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       ]
     }
   ];
-
-  const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
-  const showConfirmDeleteDialog = Boolean(deletingObservation);
-
-  const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
-    if (location.hash.startsWith('#view-')) {
-      const selectedId = location.hash.split('-')[1];
-      return [selectedId];
-    }
-
-    return undefined;
-  }, []);
 
   useEffect(() => {
     if (observationsDataLoader.data?.surveyObservations) {
@@ -389,10 +495,16 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     observationsContext.markRecordWithUnsavedChanges(id);
   };
 
-  const handleProcessRowUpdate = (newRow: IObservationTableRow) => {
-    const updatedRow = { ...newRow, wldtaxonomic_units_id: Number(newRow.wldtaxonomic_units_id) };
-    return updatedRow;
-  };
+  const showConfirmDeleteDialog = Boolean(deletingObservation);
+
+  const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
+    if (location.hash.startsWith('#view-')) {
+      const selectedId = location.hash.split('-')[1];
+      return [selectedId];
+    }
+
+    return undefined;
+  }, []);
 
   return (
     <>
@@ -414,13 +526,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         onNo={() => handleCancelDeleteRow()}
       />
       <DataGrid
-        loading={observationsDataLoader.isLoading}
+        checkboxSelection
+        loading={observationsDataLoader.isLoading || props.isLoading}
         rowHeight={56}
         apiRef={apiRef}
         editMode="row"
         onCellClick={handleCellClick}
         onRowEditStop={handleRowEditStop}
-        processRowUpdate={handleProcessRowUpdate}
         columns={observationColumns}
         rows={observationsContext.initialRows}
         disableRowSelectionOnClick
@@ -433,44 +545,71 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
           loadingOverlay: LoadingOverlay
         }}
         sx={{
+          background: grey[50],
           border: 'none',
+          '& .pinnedColumn': {
+            position: 'sticky',
+            right: 0,
+            top: 0,
+            borderLeft: '1px solid' + grey[300]
+          },
+          '& .MuiDataGrid-columnHeaders': {
+            background: '#fff',
+            position: 'relative',
+            '&:after': {
+              content: "''",
+              position: 'absolute',
+              top: '0',
+              right: 0,
+              width: '70px',
+              height: '60px',
+              background: '#fff',
+              borderLeft: '1px solid' + grey[300]
+            }
+          },
+          '& .MuiDataGrid-columnHeader': {
+            // px: 3,
+            py: 1,
+            '&:focus': {
+              outline: 'none'
+            }
+          },
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 700,
             textTransform: 'uppercase',
             color: 'text.secondary'
           },
-          '& .pinnedColumn': {
-            position: 'sticky',
-            right: 0,
-            top: 0,
-            borderLeft: '1px solid #ccc',
-            background: '#fff'
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            position: 'relative'
-          },
-          '& .MuiDataGrid-columnHeaders:after': {
-            content: "''",
-            position: 'absolute',
-            top: '20px',
-            right: 0,
-            width: '70px',
-            height: '60px',
-            background: '#fff'
-          },
-          '& .MuiDataGrid-actionsCell': {
-            gap: 0
-          },
           '& .MuiDataGrid-cell': {
-            p: 1
-          },
-          '& .MuiDataGrid-cell.MuiDataGrid-cell--editing:focus-within': {
-            outline: 'none'
-          },
-          '& .MuiDataGrid-cell.MuiDataGrid-cell--editing': {
-            px: 0.5,
+            // px: 3,
             py: 1,
-            backgroundColor: cyan[50]
+            background: '#fff',
+            '&.MuiDataGrid-cell--editing:focus-within': {
+              outline: 'none'
+            },
+            '&.MuiDataGrid-cell--editing': {
+              p: 0.5,
+              backgroundColor: cyan[100]
+            }
+          },
+          '& .MuiDataGrid-row--editing': {
+            boxShadow: 'none',
+            backgroundColor: cyan[50],
+            '& .MuiDataGrid-cell': {
+              backgroundColor: cyan[50]
+            }
+          },
+          '& .MuiDataGrid-editInputCell': {
+            border: '1px solid #ccc',
+            '&:hover': {
+              borderColor: 'primary.main'
+            },
+            '&.Mui-focused': {
+              borderColor: 'primary.main',
+              outlineWidth: '2px',
+              outlineStyle: 'solid',
+              outlineColor: 'primary.main',
+              outlineOffset: '-2px'
+            }
           },
           '& .MuiInputBase-root': {
             height: '40px',
@@ -481,47 +620,29 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               padding: 0
             }
           },
-          '& .MuiDataGrid-editInputCell:hover': {
-            borderColor: 'primary.main'
-          },
-          '& .MuiDataGrid-editInputCell': {
-            border: '1px solid #ccc',
-            '&.Mui-focused': {
-              borderColor: 'primary.main',
-              outlineWidth: '2px',
-              outlineStyle: 'solid',
-              outlineColor: 'primary.main',
-              outlineOffset: '-2px'
-            }
-          },
           '& .MuiOutlinedInput-root': {
             borderRadius: '4px',
             background: '#fff',
             border: 'none',
             '&:hover': {
               borderColor: 'primary.main'
-            }
-          },
-          '& .MuiOutlinedInput-root:hover': {
-            '& > fieldset': {
-              border: '1px solid' + 'primary.main'
+            },
+            '&:hover > fieldset': {
+              border: '1px solid primary.main'
             }
           },
           '& .MuiOutlinedInput-notchedOutline': {
-            border: '1px solid #ccc',
+            border: '1px solid ' + grey[300],
             '&.Mui-focused': {
               borderColor: 'primary.main'
             }
           },
-          '& .MuiDataGrid-row': {
-            '&--editing': {
-              boxShadow: 'none',
-              background: grey[100]
-            }
+          '& .MuiDataGrid-virtualScrollerContent': {
+            background: grey[100]
+          },
+          '& .MuiDataGrid-footerContainer': {
+            background: '#fff'
           }
-          // '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-          //   border: '1px solid' + 'primary.main'
-          // }
         }}
       />
     </>

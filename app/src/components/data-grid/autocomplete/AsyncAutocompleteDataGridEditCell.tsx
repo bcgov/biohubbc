@@ -170,7 +170,6 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
           {...params}
           size="small"
           variant="outlined"
-          // placeholder={'Type to search...'}
           fullWidth
           InputProps={{
             ...params.InputProps,

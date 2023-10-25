@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import {
   IGetObservationSubmissionResponse,
   IGetObservationSubmissionResponseMessages
-} from 'interfaces/useObservationApi.interface';
+} from 'interfaces/useDwcaApi.interface';
 
 export interface IObservationMessagesCardProps {
   observationRecord: IGetObservationSubmissionResponse;

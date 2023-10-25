@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import React from 'react';
 
 export interface IInferredLayers {
   parks: string[];
@@ -13,28 +12,28 @@ export interface IInferredLocationDetailsProps {
   layers: IInferredLayers;
 }
 
-const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props) => {
-  const displayInferredLayersInfo = (data: any[], type: string) => {
-    if (!data.length) {
+const InferredLocationDetails = (props: IInferredLocationDetailsProps) => {
+  const displayInferredLayersInfo = (layerNames: string[], type: string) => {
+    if (!layerNames.length) {
       return;
     }
 
     return (
       <Box className="row">
         <Typography component="dt">
-          {type} ({data.length})
+          {type} ({layerNames.length})
         </Typography>
         <Box>
           {data.map((item: string, index: number) => (
             <Typography
-              key={index}
+              key={name}
               component="dd"
               sx={{
                 display: 'inline-block',
                 mr: '5px'
               }}>
-              {item}
-              {index < data.length - 1 && ', '}
+              {name}
+              {index < layerNames.length - 1 && ', '}
             </Typography>
           ))}
         </Box>

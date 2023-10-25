@@ -1,6 +1,6 @@
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import { IGetObservationSubmissionResponse } from 'interfaces/useDwcaApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { getObservationSubmissionResponse, getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render } from 'test-helpers/test-utils';

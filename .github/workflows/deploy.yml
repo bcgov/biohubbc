@@ -5,6 +5,8 @@ name: PR-Based Deploy on OpenShift
 on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
+    branches-ignore:
+      - prod
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}
@@ -41,9 +43,11 @@ jobs:
       - checkEnv
     outputs:
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
-      # Set to `true` if the latest commit message contains `ignore-skip` anywhere in the message.
+      # Set to `true` if the latest commit message contains `ignore-skip` anywhere in the message OR the base branch
+      # is dev, test, or prod.
       # Used to disable duplicate action skipping, if needed.
-      ignore_skip: ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') }}
+      ignore_skip: ${{ contains(steps.head_commit_message.outputs.commit_message, 'ignore-skip') || 
+        github.head_ref == 'dev' || github.head_ref == 'test' || github.head_ref == 'prod' }}
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
