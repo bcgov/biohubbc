@@ -3,6 +3,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import AdditionalLayers from 'components/map/components/AdditionalLayers';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
+import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -224,8 +225,8 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
               id={`location-entry-${name}-${index}`}
               scrollWheelZoom={true}
               style={{ height: 400 }}
-              center={[55, -128]}
-              zoom={5}>
+              center={MAP_DEFAULT_CENTER}
+              zoom={MAP_DEFAULT_ZOOM}>
               <AdditionalLayers
                 layers={[
                   renderResizableMarker(primaryLocationFields, !placeSecondaryMode, 'blue'),

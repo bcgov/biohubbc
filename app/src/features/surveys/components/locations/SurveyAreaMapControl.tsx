@@ -12,6 +12,7 @@ import { IRegionOption, RegionSelector } from 'components/map/components/RegionS
 import StaticLayers from 'components/map/components/StaticLayers';
 import { layerContentHandlers, layerNameHandler } from 'components/map/wfs-utils';
 import WFSFeatureGroup from 'components/map/WFSFeatureGroup';
+import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { FormikContextType } from 'formik';
 import { Feature, FeatureCollection } from 'geojson';
 import L, { DrawEvents, LatLngBoundsExpression } from 'leaflet';
@@ -83,11 +84,11 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
       </Box>
       <Paper elevation={0} sx={{ overflow: 'hidden' }}>
         <LeafletMapContainer
-          data-testid={`leaflet-${map_id}`}
           id={map_id}
+          data-testid={`leaflet-${map_id}`}
+          center={MAP_DEFAULT_CENTER}
+          zoom={MAP_DEFAULT_ZOOM}
           style={{ height: 500 }}
-          center={[55, -128]}
-          zoom={5}
           maxZoom={17}
           fullscreenControl={true}
           scrollWheelZoom={false}>

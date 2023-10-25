@@ -3,8 +3,7 @@ import L, { LatLng } from 'leaflet';
 
 export const DefaultMapValues = {
   zoom: 5,
-  center: [55, -128],
-  height: 400
+  center: [55, -128]
 };
 
 export interface MapPointProps {

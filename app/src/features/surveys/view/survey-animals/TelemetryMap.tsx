@@ -2,6 +2,7 @@ import { Box, Paper, Typography } from '@mui/material';
 import AdditionalLayers from 'components/map/components/AdditionalLayers';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
+import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { Feature } from 'geojson';
 import L, { LatLng } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -122,8 +123,8 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
       id={`view-animal-telemetry-map`}
       style={{ height: '100%' }}
       scrollWheelZoom={true}
-      zoom={5}
-      center={[55, -128]}>
+      zoom={MAP_DEFAULT_ZOOM}
+      center={MAP_DEFAULT_CENTER}>
       <SetMapBounds bounds={mapBounds} />
       <AdditionalLayers
         layers={[

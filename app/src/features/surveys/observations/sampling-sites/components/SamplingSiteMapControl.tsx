@@ -14,6 +14,7 @@ import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import StaticLayers from 'components/map/components/StaticLayers';
+import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
 import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemProgressBar';
 import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
@@ -130,8 +131,8 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                 data-testid={`leaflet-${mapId}`}
                 style={{ height: 500 }}
                 id={mapId}
-                center={[55, -128]}
-                zoom={5}
+                center={MAP_DEFAULT_CENTER}
+                zoom={MAP_DEFAULT_ZOOM}
                 maxZoom={17}
                 fullscreenControl={true}
                 scrollWheelZoom={false}>

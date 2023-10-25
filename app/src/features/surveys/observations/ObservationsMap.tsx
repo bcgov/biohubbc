@@ -7,6 +7,7 @@ import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import { INonEditableGeometries } from 'components/map/MapContainer';
+import { MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { Position } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
@@ -81,6 +82,7 @@ const ObservationsMap = () => {
         data-testid="leaflet-survey_observations_map"
         id="survey_observations_map"
         zoom={6}
+        center={MAP_DEFAULT_CENTER}
         scrollWheelZoom={false}
         fullscreenControl={true}
         style={{ height: 600 }}>
