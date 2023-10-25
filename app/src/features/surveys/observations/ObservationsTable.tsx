@@ -484,17 +484,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     event.defaultMuiPrevented = true;
   };
 
-  const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
-    const { id } = params.row;
-
-    if (apiRef?.current.state.editRows[id]) {
-      return;
-    }
-
-    apiRef?.current.startRowEditMode({ id, fieldToFocus: params.field });
-    observationsContext.markRecordWithUnsavedChanges(id);
-  };
-
   const showConfirmDeleteDialog = Boolean(deletingObservation);
 
   const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
@@ -531,7 +520,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         rowHeight={56}
         apiRef={apiRef}
         editMode="row"
-        onCellClick={handleCellClick}
         onRowEditStop={handleRowEditStop}
         columns={observationColumns}
         rows={observationsContext.initialRows}
