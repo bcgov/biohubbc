@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   PostAgreementsData,
-  PostLocationData,
   PostPartnershipsData,
   PostPermitData,
   PostProprietorData,
@@ -358,54 +357,6 @@ describe('PostProprietorData', () => {
 
     it('sets disa_required', () => {
       expect(data.disa_required).to.equal(false);
-    });
-  });
-});
-
-describe('PostLocationData', () => {
-  describe('No values provided', () => {
-    let data: PostLocationData;
-
-    before(() => {
-      data = new PostLocationData(null);
-    });
-
-    it('sets name', () => {
-      expect(data.name).to.equal(null);
-    });
-
-    it('sets description', () => {
-      expect(data.description).to.equal(null);
-    });
-
-    it('sets geojson', () => {
-      expect(data.geojson).to.eql([]);
-    });
-  });
-
-  describe('All values provided with first nations id', () => {
-    let data: PostLocationData;
-
-    const obj = {
-      name: 'area name',
-      description: 'area description',
-      geojson: [{}]
-    };
-
-    before(() => {
-      data = new PostLocationData(obj);
-    });
-
-    it('sets name', () => {
-      expect(data.name).to.equal(obj.name);
-    });
-
-    it('sets description', () => {
-      expect(data.description).to.equal(obj.description);
-    });
-
-    it('sets geojson', () => {
-      expect(data.geojson).to.eql(obj.geojson);
     });
   });
 });

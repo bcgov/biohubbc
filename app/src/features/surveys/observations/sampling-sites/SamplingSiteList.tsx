@@ -52,6 +52,10 @@ const SamplingSiteList = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
+  useEffect(() => {
+    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+  }, []);
+
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
 
