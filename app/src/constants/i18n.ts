@@ -341,7 +341,9 @@ export const SurveyAnimalsI18N = {
     'The species or taxon of the animal. If the species is unknown, select the lowest-ranking known taxon, such as the genus or family.',
   taxonLabelHelp: 'A unique name for you to recognize this individual.',
   wlhIdHelp: 'An ID used to identify animals in the BC Wildlife Health Program',
-  sexHelp: 'The sex of this critter. Leave as Unknown if unsure.'
+  sexHelp: 'The sex of this critter. Leave as Unknown if unsure.',
+  telemetryDeviceHelp:
+    'Devices transmit telemetry data while they are attached to an animal during a deployment. Animals may have multiple devices and deployments, however a single device may not have overlapping deployments.'
 } as const;
 
 export const FundingSourceI18N = {

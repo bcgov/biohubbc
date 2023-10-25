@@ -262,7 +262,7 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       ]
     }),
     dialogTitle: 'Device / Deployment',
-    infoText: 'Placeholder text for telemetry section',
+    infoText: SurveyAnimalsI18N.telemetryDeviceHelp,
     mdiIcon: mdiAccessPoint
   }
 };

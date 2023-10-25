@@ -12,6 +12,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import { AttachmentType } from 'constants/attachments';
+import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -21,6 +22,7 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import { isEqual as _deepEquals } from 'lodash';
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
 import { datesSameNullable } from 'utils/Utils';
+import { setPopup } from 'utils/UtilsJSX';
 import yup from 'utils/YupSchema';
 import { IAnimal } from './animal';
 import {
@@ -90,8 +92,8 @@ export const DeploymentFormSection = ({
     <>
       <YesNoDialog
         dialogTitle={'Remove deployment?'}
-        dialogText={`Are you sure you want to remove this deployment? 
-          If you would like to end a deployment / unattach a device, you should set the attachment end date instead. 
+        dialogText={`Are you sure you want to remove this deployment?
+          If you would like to end a deployment / unattach a device, you should set the attachment end date instead.
           Please confirm that you wish to permanently erase this deployment.`}
         open={openDeleteDialog}
         yesButtonLabel="Delete"
@@ -161,8 +163,6 @@ export const DeviceFormSection = ({ values, index, mode, removeAction }: IDevice
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values?.[index]?.device_id]);
-
-  const { values: formikVals } = useFormikContext();
 
   if (!values[index]) {
     return <></>;
@@ -252,7 +252,6 @@ export const DeviceFormSection = ({ values, index, mode, removeAction }: IDevice
           />
         }
       </Box>
-      <pre>{JSON.stringify(formikVals, null, 2)}</pre>
     </>
   );
 };
@@ -276,10 +275,7 @@ const TelemetryDeviceForm = ({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const { surveyId, projectId, artifactDataLoader } = useContext(SurveyContext);
-
-  const setPopup = (msg: string) => {
-    console.log(msg);
-  };
+  const dialogContext = useContext(DialogContext);
 
   const DeviceFormValues: IAnimalTelemetryDevice = useMemo(() => {
     return {
@@ -330,13 +326,13 @@ const TelemetryDeviceForm = ({
       await uploadAttachment(attachmentFile, attachmentType);
       // create new deployment record
       await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
-      setPopup('Successfully added deployment.');
+      setPopup('Successfully added deployment.', dialogContext);
       artifactDataLoader.refresh(projectId, surveyId);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'));
+        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
       } else {
-        setPopup('Failed to add deployment.');
+        setPopup('Failed to add deployment.', dialogContext);
       }
     }
   };
@@ -383,8 +379,8 @@ const TelemetryDeviceForm = ({
       }
     }
     errors.length
-      ? setPopup('Failed to save some data: ' + errors.join(', '))
-      : setPopup('Updated deployment and device data successfully.');
+      ? setPopup('Failed to save some data: ' + errors.join(', '), dialogContext)
+      : setPopup('Updated deployment and device data successfully.', dialogContext);
   };
 
   const handleTelemetrySave = async (
@@ -484,11 +480,6 @@ const TelemetryDeviceForm = ({
           </CardContent>
         </Card>
       ))}
-      <Box>
-        {' '}
-        <pre>{JSON.stringify(values, null, 2)}</pre>
-        <pre>{`selectedIndex: ${selectedIndex}`}</pre>
-      </Box>
     </>
   );
 };

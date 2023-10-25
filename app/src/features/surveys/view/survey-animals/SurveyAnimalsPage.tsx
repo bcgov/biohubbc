@@ -14,6 +14,7 @@ import { isEqual as _deepEquals } from 'lodash';
 import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { datesSameNullable } from 'utils/Utils';
+import { setPopup } from 'utils/UtilsJSX';
 import { AddEditAnimal } from './AddEditAnimal';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
@@ -49,18 +50,6 @@ export const SurveyAnimalsPage = () => {
 
   loadCritters();
   loadDeployments();
-
-  const setPopup = (message: string) => {
-    dialogContext.setSnackbar({
-      open: true,
-      snackbarAutoCloseMs: 2000,
-      snackbarMessage: (
-        <Typography variant="body2" component="div">
-          {message}
-        </Typography>
-      )
-    });
-  };
 
   const defaultFormValues: IAnimal = useMemo(() => {
     return {
@@ -116,11 +105,11 @@ export const SurveyAnimalsPage = () => {
   const handleRemoveDeployment = async (deployment_id: string) => {
     try {
       if (survey_critter_id === undefined) {
-        setPopup('No critter set!');
+        setPopup('No critter set!', dialogContext);
       }
       await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
     } catch (e) {
-      setPopup('Failed to delete deployment.');
+      setPopup('Failed to delete deployment.', dialogContext);
       return;
     }
 
@@ -136,7 +125,7 @@ export const SurveyAnimalsPage = () => {
       const critter = new Critter(currentFormValues);
       setOpenAddDialog(false);
       await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
-      setPopup('Animal added to survey.');
+      setPopup('Animal added to survey.', dialogContext);
     };
     const patchCritterPayload = async () => {
       const initialFormValues = critterAsFormikValues;
@@ -153,10 +142,6 @@ export const SurveyAnimalsPage = () => {
       if (!survey_critter_id || !surveyCritter) {
         throw Error('The internal critter id for this row was not set correctly.');
       }
-      console.log('Initial values: ' + JSON.stringify(initialFormValues, null, 2));
-      console.log('Current values: ' + JSON.stringify(currentFormValues, null, 2));
-      console.log('Create critter: ' + JSON.stringify(createCritter, null, 2));
-      console.log('Update critter: ' + JSON.stringify(updateCritter, null, 2));
       await bhApi.survey.updateSurveyCritter(
         projectId,
         surveyId,
@@ -174,9 +159,9 @@ export const SurveyAnimalsPage = () => {
       }
       refreshDeployments();
       refreshCritters();
-      setPopup(`Successfully ${formMode === ANIMAL_FORM_MODE.ADD ? 'created' : 'updated'} animal.`);
+      setPopup(`Successfully ${formMode === ANIMAL_FORM_MODE.ADD ? 'created' : 'updated'} animal.`, dialogContext);
     } catch (err) {
-      setPopup(`Submmision failed ${(err as Error).message}`);
+      setPopup(`Submmision failed ${(err as Error).message}`, dialogContext);
     } finally {
       setIsSubmitting(false);
     }
@@ -207,13 +192,13 @@ export const SurveyAnimalsPage = () => {
       // create new deployment record
       console.log(`Would save the following in add mode: ${JSON.stringify(critterTelemetryDevice, null, 2)}`);
       await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
-      setPopup('Successfully added deployment.');
+      setPopup('Successfully added deployment.', dialogContext);
       artifactDataLoader.refresh(projectId, surveyId);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'));
+        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
       } else {
-        setPopup('Failed to add deployment.');
+        setPopup('Failed to add deployment.', dialogContext);
       }
     }
   };
@@ -262,8 +247,8 @@ export const SurveyAnimalsPage = () => {
       }
     }
     errors.length
-      ? setPopup('Failed to save some data: ' + errors.join(', '))
-      : setPopup('Updated deployment and device data successfully.');
+      ? setPopup('Failed to save some data: ' + errors.join(', '), dialogContext)
+      : setPopup('Updated deployment and device data successfully.', dialogContext);
   };
 
   const handleTelemetrySave = async (
