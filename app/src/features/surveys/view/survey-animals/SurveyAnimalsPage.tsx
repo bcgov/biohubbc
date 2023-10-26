@@ -10,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { isEqual as _deepEquals } from 'lodash';
+import { isEqual as _deepEquals, omitBy } from 'lodash';
 import React, { useContext, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { datesSameNullable } from 'utils/Utils';
@@ -182,8 +182,11 @@ export const SurveyAnimalsPage = () => {
       // Upload attachment if there is one
       await uploadAttachment(attachmentFile, attachmentType);
       // create new deployment record
-      console.log(`Would save the following in add mode: ${JSON.stringify(critterTelemetryDevice, null, 2)}`);
-      await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
+      const critterTelemNoBlanks = omitBy(
+        critterTelemetryDevice,
+        (value) => value === '' || value === null
+      ) as IAnimalTelemetryDevice & { critter_id: string };
+      await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemNoBlanks);
       setPopup('Successfully added deployment.', dialogContext);
       artifactDataLoader.refresh(projectId, surveyId);
     } catch (error: unknown) {
