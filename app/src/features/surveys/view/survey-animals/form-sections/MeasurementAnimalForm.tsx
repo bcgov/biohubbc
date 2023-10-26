@@ -90,17 +90,17 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
   const { values, handleChange, setFieldValue, handleBlur } = useFormikContext<IAnimal>();
   const { animalKeyName } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalMeasurementTitle];
   const taxonMeasurementId = values.measurements[index].taxon_measurement_id;
-  const [measurement, setMeasurement] = useState<IMeasurementStub | undefined>(
-    measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId)
+  const [currentMeasurement, setCurrentMeasurement] = useState<IMeasurementStub | undefined>(
+    measurements?.find((lookup_measurement) => lookup_measurement.taxon_measurement_id === taxonMeasurementId)
   );
-  const isQuantMeasurement = has(measurement, 'unit');
+  const isQuantMeasurement = has(currentMeasurement, 'unit');
 
-  const tMeasurementIDName = getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'taxon_measurement_id', index);
+  const taxonMeasurementIDName = getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'taxon_measurement_id', index);
   const valueName = getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'value', index);
   const optionName = getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'qualitative_option_id', index);
 
   useEffect(() => {
-    setMeasurement(measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId));
+    setCurrentMeasurement(measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [measurements]); //Sometimes will not display the correct fields without this useEffect but could have side effects, may need to revisit.
 
@@ -109,14 +109,14 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
     setFieldValue(valueName, '');
     setFieldValue(optionName, '');
     const m = measurements?.find((m) => m.taxon_measurement_id === event.target.value);
-    setMeasurement(m);
+    setCurrentMeasurement(m);
     handleMeasurementName('', m?.measurement_name ?? '');
   };
 
   const validateValue = async (val: '' | number) => {
-    const min = measurement?.min_value ?? 0;
-    const max = measurement?.max_value;
-    const unit = measurement?.unit ? ` ${measurement.unit}'s` : ``;
+    const min = currentMeasurement?.min_value ?? 0;
+    const max = currentMeasurement?.max_value;
+    const unit = currentMeasurement?.unit ? ` ${currentMeasurement.unit}'s` : ``;
     if (val === '') {
       return;
     }
@@ -141,7 +141,7 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
       <Grid item xs={4}>
         <CbSelectWrapper
           label="Measurement Type"
-          name={tMeasurementIDName}
+          name={taxonMeasurementIDName}
           onChange={handleMeasurementTypeChange}
           controlProps={{
             size: 'medium',
@@ -175,7 +175,7 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
             as={CustomTextField}
             name={valueName}
             handleBlur={handleBlur}
-            label={measurement?.unit ? `Value [${measurement.unit}'s]` : `Value`}
+            label={currentMeasurement?.unit ? `Value [${currentMeasurement.unit}'s]` : `Value`}
             other={{
               required: true,
               size: 'medium',
