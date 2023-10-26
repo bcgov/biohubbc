@@ -25,7 +25,9 @@ import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
+import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
@@ -47,6 +49,8 @@ const SampleSiteSkeleton = () => (
 const SamplingSiteList = () => {
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
+  const dialogContext = useContext(DialogContext);
+  const biohubApi = useBiohubApi();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -62,6 +66,65 @@ const SamplingSiteList = () => {
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
     setAnchorEl(event.currentTarget);
     setSelectedSampleSiteId(sample_site_id);
+  };
+
+  /**
+   * Handle the delete sampling site API call.
+   *
+   */
+  const handleDeleteSampleSite = async () => {
+    await biohubApi.samplingSite
+      .deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, selectedSampleSiteId as number)
+      .then(() => {
+        dialogContext.setYesNoDialog({ open: false });
+        setAnchorEl(null);
+        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      })
+      .catch((error: any) => {
+        dialogContext.setYesNoDialog({ open: false });
+        setAnchorEl(null);
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                <strong>Error Deleting Sampling Site</strong>
+              </Typography>
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            </>
+          ),
+          open: true
+        });
+      });
+  };
+
+  /**
+   * Display the delete sampling site dialog.
+   *
+   */
+  const deleteSampleSiteDialog = () => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Delete Sampling Site?',
+      dialogContent: (
+        <Typography variant="body1" component="div" color="textSecondary">
+          Are you sure you want to delete this sampling site?
+        </Typography>
+      ),
+      yesButtonLabel: 'Delete Sampling Site',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'error' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        handleDeleteSampleSite();
+      }
+    });
   };
 
   return (
@@ -100,7 +163,7 @@ const SamplingSiteList = () => {
             <ListItemText>Edit Details</ListItemText>
           </RouterLink>
         </MenuItem>
-        <MenuItem onClick={() => console.log('DELETE THIS SAMPLING SITE')}>
+        <MenuItem onClick={deleteSampleSiteDialog}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>

@@ -281,4 +281,26 @@ export class ObservationRepository extends BaseRepository {
 
     return response.rows[0];
   }
+
+  /**
+   * Retrieves all observation records for the given survey and sample site ids
+   *
+   * @param {number} surveyId
+   * @param {number} sampleSiteId
+   * @return {*}  {Promise<ObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getObservationBySampleSiteId(surveyId: number, sampleSiteId: number): Promise<ObservationRecord[]> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .select('*')
+      .from('survey_observation')
+      .where('survey_id', surveyId)
+      .where('survey_sample_site_id', sampleSiteId);
+
+    const response = await this.connection.knex(sqlStatement, ObservationRecord);
+
+    return response.rows;
+  }
 }
