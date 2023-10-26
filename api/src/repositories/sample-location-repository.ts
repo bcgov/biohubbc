@@ -152,6 +152,10 @@ export class SampleLocationRepository extends BaseRepository {
    * @memberof SampleLocationRepository
    */
   async insertSampleLocation(sample: InsertSampleLocationRecord): Promise<SampleLocationRecord> {
+    const name = sample.name
+      ? SQL`${sample.name}`
+      : SQL`(SELECT concat('Sample Site ', (SELECT count(survey_sample_site_id) + 1 FROM survey_sample_site sss WHERE survey_id = ${sample.survey_id})))`;
+
     const sqlStatement = SQL`
     INSERT INTO survey_sample_site (
       survey_id,
@@ -160,11 +164,10 @@ export class SampleLocationRepository extends BaseRepository {
       geojson,
       geography
     ) VALUES (
-      ${sample.survey_id},
-      (SELECT concat('Sample Site ', (SELECT count(survey_sample_site_id) + 1 FROM survey_sample_site sss WHERE survey_id = ${sample.survey_id}))),
-      ${sample.description},
-      ${sample.geojson},
-      `;
+      ${sample.survey_id},`.append(name).append(SQL`,
+        ${sample.description},
+        ${sample.geojson},
+        `);
     const geometryCollectionSQL = generateGeometryCollectionSQL(sample.geojson);
 
     sqlStatement.append(SQL`

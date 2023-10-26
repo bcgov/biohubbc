@@ -1,4 +1,4 @@
-import { Feature } from '@turf/helpers';
+import { Feature, Geometry, GeometryCollection, Properties } from '@turf/helpers';
 import { IDBConnection } from '../database/db';
 import {
   SampleLocationRecord,
@@ -64,13 +64,24 @@ export class SampleLocationService extends DBService {
    */
   async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleLocationRecord[]> {
     const methodService = new SampleMethodService(this.connection);
-
+    const determineName = (geometry: Feature<Geometry | GeometryCollection, Properties>) => {
+      const nameKey = Object.keys(geometry.properties ?? {}).find(
+        (key) => key.toLowerCase() === 'name' || key.toLowerCase() === 'label'
+      );
+      return nameKey && geometry.properties ? geometry.properties[nameKey] : '';
+    };
+    const determineDesc = (geometry: Feature<Geometry | GeometryCollection, Properties>) => {
+      const descKey = Object.keys(geometry.properties ?? {}).find(
+        (key) => key.toLowerCase() === 'desc' || key.toLowerCase() === 'description'
+      );
+      return descKey && geometry.properties ? geometry.properties[descKey] : '';
+    };
     // Create a sample location for each feature found
-    const promises = sampleLocations.survey_sample_sites.map((item, index) => {
+    const promises = sampleLocations.survey_sample_sites.map((item) => {
       const sampleLocation = {
         survey_id: sampleLocations.survey_id,
-        name: `Sample Site ${index + 1}`, // Business requirement to default the names to Sample Site # on creation
-        description: sampleLocations.description,
+        name: determineName(item), // Please note that additional logic for this also happens in insertSampleLocation below
+        description: determineDesc(item) || sampleLocations.description,
         geojson: item
       };
 
