@@ -574,7 +574,7 @@ const SurveyAnimals: React.FC = () => {
               setOpenDeviceDialog(true);
             }}
             onEditCritter={() => {
-              history.push(`animals/${selectedCritterId}`);
+              history.push(`animals/?cid=${selectedCritterId}`);
             }}
             onMapOpen={() => {
               setOpenViewTelemetryDialog(true);
