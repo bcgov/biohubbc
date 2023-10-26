@@ -315,10 +315,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }
 
         if (moment.isMoment(value)) {
-          return value.format('HH:mm');
+          return value.format('HH:mm:ss');
         }
 
-        return moment(value, 'HH:mm:ss').format('HH:mm');
+        return moment(value, 'HH:mm:ss').format('HH:mm:ss');
       },
       renderCell: (params) => {
         if (!params.value) {
@@ -342,7 +342,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: value?.format('HH:mm:ss')
                 });
               }}
-              timeSteps={{ hours: 1, minutes: 1 }}
+              views={['hours', 'minutes', 'seconds']}
+              timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
               ampm={false}
             />
           </LocalizationProvider>
