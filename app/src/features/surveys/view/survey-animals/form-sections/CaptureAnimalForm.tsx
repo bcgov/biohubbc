@@ -48,7 +48,7 @@ const CaptureAnimalForm = () => {
             handleAddSection={() => push(defaultFormValue)}
             handleRemoveSection={remove}>
             {values.captures.map((cap, index) => (
-              <CaptureAnimalFormContent key={cap._id} name={animalKeyName} index={index} value={cap} />
+              <CaptureAnimalFormContent key={cap._id} name={animalKeyName} index={index} />
             ))}
           </FormSectionWrapper>
         </>
@@ -60,15 +60,16 @@ const CaptureAnimalForm = () => {
 interface CaptureAnimalFormContentProps {
   name: keyof IAnimal;
   index: number;
-  value: IAnimalCapture;
 }
 
-export const CaptureAnimalFormContent = ({ name, index, value }: CaptureAnimalFormContentProps) => {
+export const CaptureAnimalFormContent = ({ name, index }: CaptureAnimalFormContentProps) => {
   const { handleBlur, values, handleChange } = useFormikContext<IAnimal>();
   const [showCaptureComment, setShowCaptureComment] = useState(false);
   const [showReleaseComment, setShowReleaseComment] = useState(false);
 
   const showReleaseSection = values.captures[index].show_release;
+
+  const value = values.captures[index];
 
   const renderCaptureFields = (): JSX.Element => {
     return (

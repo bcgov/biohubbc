@@ -46,7 +46,7 @@ const MortalityAnimalForm = () => {
             handleAddSection={() => push(defaultFormValue)}
             handleRemoveSection={remove}>
             {values.mortality.map((mort, index) => (
-              <MortalityAnimalFormContent key={mort._id} name={animalKeyName} index={index} value={mort} />
+              <MortalityAnimalFormContent key={mort._id} name={animalKeyName} index={index} />
             ))}
           </FormSectionWrapper>
         </>
@@ -58,15 +58,16 @@ const MortalityAnimalForm = () => {
 interface MortalityAnimalFormContentProps {
   name: keyof IAnimal;
   index: number;
-  value: IAnimalMortality;
 }
 
-export const MortalityAnimalFormContent = ({ name, index, value }: MortalityAnimalFormContentProps) => {
-  const { handleBlur } = useFormikContext<IAnimal>();
+export const MortalityAnimalFormContent = ({ name, index }: MortalityAnimalFormContentProps) => {
+  const { values, handleBlur } = useFormikContext<IAnimal>();
 
   const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
   const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
   const [showMortalityComment, setShowMortalityComment] = useState(false);
+
+  const value = values.mortality[index];
 
   const renderFields = (): JSX.Element => {
     return (

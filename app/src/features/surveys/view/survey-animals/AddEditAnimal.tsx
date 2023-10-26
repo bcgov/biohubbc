@@ -77,12 +77,8 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       [SurveyAnimalsI18N.animalMeasurementTitle]: (
         <MeasurementFormContent index={selectedIndex} measurements={measurements} />
       ),
-      [SurveyAnimalsI18N.animalCaptureTitle]: (
-        <CaptureAnimalFormContent name={'captures'} index={selectedIndex} value={values.captures[selectedIndex]} />
-      ),
-      [SurveyAnimalsI18N.animalMortalityTitle]: (
-        <MortalityAnimalFormContent name={'mortality'} index={selectedIndex} value={values.mortality[selectedIndex]} />
-      ),
+      [SurveyAnimalsI18N.animalCaptureTitle]: <CaptureAnimalFormContent name={'captures'} index={selectedIndex} />,
+      [SurveyAnimalsI18N.animalMortalityTitle]: <MortalityAnimalFormContent name={'mortality'} index={selectedIndex} />,
       [SurveyAnimalsI18N.animalFamilyTitle]: (
         <FamilyAnimalFormContent name={'family'} index={selectedIndex} allFamilies={allFamilies} />
       ),
