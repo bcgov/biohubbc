@@ -15,7 +15,7 @@ interface IEditSamplingMethodProps {
 
 export const SamplingSiteMethodYupSchema = yup.object({
   method_lookup_id: yup.number().required(),
-  description: yup.string().required(),
+  description: yup.string(),
   periods: yup
     .array(
       yup.object({
@@ -27,7 +27,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
           .required('End date is required')
       })
     )
-    .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_state')
+    .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_date')
     .min(1, 'At least one time period is required')
 });
 
