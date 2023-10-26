@@ -101,9 +101,9 @@ export const SurveyAnimalsTable = ({
           critter_id={params.row.survey_critter_id}
           devices={params.row?.deployments}
           onMenuOpen={onMenuOpen}
-          onAddDevice={onAddDevice}
+          //onAddDevice={onAddDevice} TODO: Undecided if these are deprecated
           onEditCritter={onEditCritter}
-          onEditDevice={onEditDevice}
+          //onEditDevice={onEditDevice} TODO: Potentially deprecated fields for menu
           onRemoveCritter={onRemoveCritter}
           onMapOpen={onMapOpen}
         />

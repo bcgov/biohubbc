@@ -8,16 +8,20 @@ import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
 import { IAnimalDeployment } from './device';
 
+type ICritterFn = (critter_id: number) => void;
+
 export interface ITableActionsMenuProps {
   critter_id: number;
   devices?: IAnimalDeployment[];
-  onMenuOpen: (critter_id: number) => void;
-  onAddDevice: (critter_id: number) => void;
-  onEditDevice: (critter_id: number) => void;
-  onEditCritter: (critter_id: number) => void;
-  onRemoveCritter: (critter_id: number) => void;
+  onMenuOpen: ICritterFn;
+  onAddDevice?: ICritterFn;
+  onEditDevice?: ICritterFn;
+  onEditCritter: ICritterFn;
+  onRemoveCritter: ICritterFn;
   onMapOpen: () => void;
 }
+
+// TODO Is this component deprecated?
 
 const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -53,22 +57,25 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
         MenuListProps={{
           'aria-labelledby': 'basic-button'
         }}>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            props.onAddDevice(props.critter_id);
-          }}
-          data-testid="animal-table-row-add-device">
-          <ListItemIcon>
-            <Icon path={mdiPlus} size={1} />
-          </ListItemIcon>
-          <Typography variant="inherit">Add Telemetry Device</Typography>
-        </MenuItem>
-        {props.devices?.length ? (
+        {props.onAddDevice ? (
           <MenuItem
             onClick={() => {
               handleClose();
-              props.onEditDevice(props.critter_id);
+              props.onAddDevice?.(props.critter_id);
+            }}
+            data-testid="animal-table-row-add-device">
+            <ListItemIcon>
+              <Icon path={mdiPlus} size={1} />
+            </ListItemIcon>
+            <Typography variant="inherit">Add Telemetry Device</Typography>
+          </MenuItem>
+        ) : null}
+
+        {props.devices?.length && props.onEditDevice ? (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              props.onEditDevice?.(props.critter_id);
             }}
             data-testid="animal-table-row-edit-timespan">
             <ListItemIcon>
@@ -77,6 +84,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             <Typography variant="inherit">Edit Telemetry Devices</Typography>
           </MenuItem>
         ) : null}
+
         <MenuItem
           onClick={() => {
             handleClose();
@@ -88,6 +96,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
           </ListItemIcon>
           <Typography variant="inherit">Edit Animal</Typography>
         </MenuItem>
+
         {!props.devices?.length && (
           <MenuItem
             onClick={() => {
@@ -101,6 +110,7 @@ const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
             <Typography variant="inherit">Remove Animal</Typography>
           </MenuItem>
         )}
+
         {props.devices?.length ? (
           <MenuItem
             onClick={() => {
