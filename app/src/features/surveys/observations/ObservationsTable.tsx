@@ -484,6 +484,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     event.defaultMuiPrevented = true;
   };
 
+  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, _event) => {
+    observationsContext.markRecordWithUnsavedChanges(params.id);
+  }
+
   const showConfirmDeleteDialog = Boolean(deletingObservation);
 
   const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
@@ -521,6 +525,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         apiRef={apiRef}
         editMode="row"
         onRowEditStop={handleRowEditStop}
+        onRowEditStart={handleRowEditStart}
         columns={observationColumns}
         rows={observationsContext.initialRows}
         disableRowSelectionOnClick
