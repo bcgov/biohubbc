@@ -1,12 +1,12 @@
 import {
   mdiAccessPoint,
   mdiFamilyTree,
-  mdiHomeGroup,
-  mdiPencil,
+  mdiFormatListGroup,
+  mdiInformationOutline,
   mdiRuler,
-  mdiSkull,
+  mdiSkullOutline,
   mdiSpiderWeb,
-  mdiTag
+  mdiTagOutline
 } from '@mdi/js';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { v4 } from 'uuid';
@@ -117,7 +117,7 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     }),
     dialogTitle: 'General Information',
     infoText: SurveyAnimalsI18N.animalGeneralHelp,
-    mdiIcon: mdiPencil
+    mdiIcon: mdiInformationOutline
   },
   [SurveyAnimalsI18N.animalCollectionUnitTitle]: {
     animalKeyName: 'collectionUnits',
@@ -132,7 +132,7 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     }),
     dialogTitle: 'Ecological Unit',
     infoText: SurveyAnimalsI18N.animalCollectionUnitHelp,
-    mdiIcon: mdiHomeGroup
+    mdiIcon: mdiFormatListGroup
   },
   [SurveyAnimalsI18N.animalMarkingTitle]: {
     animalKeyName: 'markings',
@@ -153,7 +153,7 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     }),
     dialogTitle: 'Marking',
     infoText: SurveyAnimalsI18N.animalMarkingHelp,
-    mdiIcon: mdiTag
+    mdiIcon: mdiTagOutline
   },
   [SurveyAnimalsI18N.animalMeasurementTitle]: {
     animalKeyName: 'measurements',
@@ -199,7 +199,7 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     }),
     dialogTitle: 'Mortality',
     infoText: SurveyAnimalsI18N.animalMortalityHelp,
-    mdiIcon: mdiSkull
+    mdiIcon: mdiSkullOutline
   },
   [SurveyAnimalsI18N.animalFamilyTitle]: {
     animalKeyName: 'family',
