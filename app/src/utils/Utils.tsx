@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
 import { Feature, Polygon } from 'geojson';
@@ -6,6 +7,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { LatLngBounds } from 'leaflet';
 import _ from 'lodash';
 import moment from 'moment';
+import { IDialogContext } from '../contexts/dialogContext';
 
 /**
  * Checks if a url string starts with an `http[s]://` protocol, and adds `https://` if it does not. If the url
@@ -467,4 +469,23 @@ export const uuidToColor = (id: string): { fillColor: string; outlineColor: stri
   const hexOutlineColor = RGBToHex(rgbOutlineColor);
 
   return { fillColor: `#${hexFillColor}`, outlineColor: `#${hexOutlineColor}` };
+};
+
+// JSX Functions //
+//
+/**
+ * Simple reusable method to make a snackbar appear with a string of your choice.
+ *
+ * @param message string to show
+ * @param context reference to current DialogContext
+ */
+export const setPopup = (message: string, context: IDialogContext) => {
+  context.setSnackbar({
+    open: true,
+    snackbarMessage: (
+      <Typography variant="body2" component="div">
+        {message}
+      </Typography>
+    )
+  });
 };

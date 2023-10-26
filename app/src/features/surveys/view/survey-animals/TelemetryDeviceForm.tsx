@@ -21,8 +21,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
-import { datesSameNullable } from 'utils/Utils';
-import { setPopup } from 'utils/UtilsJSX';
+import { datesSameNullable, setPopup } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { IAnimal } from './animal';
 import {
