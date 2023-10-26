@@ -11,7 +11,6 @@ import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.int
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
-import { pluralize as p } from 'utils/Utils';
 
 export interface IObservationRecord {
   survey_observation_id: number;
@@ -236,12 +235,11 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const saveRecords = useCallback(
     async (rowsToSave: GridValidRowModel[]) => {
       try {
-        const response = await biohubApi.observation.insertUpdateObservationRecords(
+        await biohubApi.observation.insertUpdateObservationRecords(
           projectId,
           surveyId,
           rowsToSave as IObservationTableRow[]
         );
-        const numRows = response.length;
 
         setRowIdsToSave([]);
         _setUnsavedRecordIds([]);
@@ -249,7 +247,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
           snackbarMessage: (
             <>
               <Typography variant="body2" component="div">
-                Updated <strong>{numRows} </strong>survey {p(numRows, 'observation')} successfully.
+                Updated survey observations successfully.
               </Typography>
             </>
           )
