@@ -504,7 +504,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     }
 
     return undefined;
-  }, [location.hash]);
+  }, []);
 
   return (
     <>
