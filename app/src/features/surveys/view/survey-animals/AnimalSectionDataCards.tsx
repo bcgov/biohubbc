@@ -1,7 +1,7 @@
 import { Collapse } from '@mui/material';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
-import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
+import { EditDeleteStubCard, ISubHeaderData } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IFamily } from 'hooks/cb_api/useFamilyApi';
 import moment from 'moment';
@@ -44,7 +44,7 @@ export const AnimalSectionDataCards = ({
   const sectionCardData = useMemo(() => {
     const sectionData: Record<
       IAnimalSections,
-      Array<{ header: string; key: string; subHeaderData: Record<string, string | number | undefined> }>
+      Array<{ header: string; key: string; subHeaderData: ISubHeaderData }>
     > = {
       [SurveyAnimalsI18N.animalGeneralTitle]: [
         {
@@ -83,8 +83,8 @@ export const AnimalSectionDataCards = ({
         };
       }),
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: values.collectionUnits.map((collectionUnit) => ({
-        header: `Ecological Unit: ${collectionUnit.unit_name}`,
-        subHeaderData: { Category: collectionUnit.category_name },
+        header: `${collectionUnit.unit_name}`,
+        subHeaderData: `${collectionUnit.category_name}`,
         key: collectionUnit._id
       })),
       Telemetry: values.device.map((device) => ({

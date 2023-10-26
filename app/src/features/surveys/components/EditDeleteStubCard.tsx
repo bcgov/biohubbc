@@ -4,7 +4,7 @@ import { Card, CardHeader, IconButton } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React from 'react';
 
-type ISubHeaderData = Record<string, string | number | undefined>;
+export type ISubHeaderData = Record<string, string | number | undefined> | string;
 
 interface EditDeleteStubCardProps {
   header: string;
@@ -61,7 +61,7 @@ export const EditDeleteStubCard = ({ header, subHeaderData, onClickEdit, onClick
           </>
         }
         title={header}
-        subheader={formatSubHeaderString(subHeaderData)}
+        subheader={typeof subHeaderData === 'string' ? subHeaderData : formatSubHeaderString(subHeaderData)}
       />
     </Card>
   );
