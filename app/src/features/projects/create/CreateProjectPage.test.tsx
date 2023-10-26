@@ -475,7 +475,6 @@ describe('CreateProjectPage', () => {
             end_date: ''
           },
           objectives: { objectives: 'Draft objectives' },
-          location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
           participants: [
             {
@@ -539,7 +538,6 @@ describe('CreateProjectPage', () => {
             end_date: ''
           },
           objectives: { objectives: 'my new Draft objectives' },
-          location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
           participants: [
             {

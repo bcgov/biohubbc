@@ -122,33 +122,6 @@ describe('EmlPackage', () => {
         }
       ]);
 
-      sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({
-        geographicCoverage: {
-          geographicDescription: 'Location Description',
-          boundingCoordinates: {
-            westBoundingCoordinate: -121.904297,
-            eastBoundingCoordinate: -120.19043,
-            northBoundingCoordinate: 51.971346,
-            southBoundingCoordinate: 50.930738
-          },
-          datasetGPolygon: [
-            {
-              datasetGPolygonOuterGRing: [
-                {
-                  gRingPoint: [
-                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
-                    { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
-                    { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
-                    { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
-                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      });
-
       sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
         rangeOfDates: {
           beginDate: { calendarDate: '2023-01-01' },
@@ -175,30 +148,6 @@ describe('EmlPackage', () => {
         },
         studyAreaDescription: {
           coverage: {
-            geographicCoverage: {
-              geographicDescription: 'Location Description',
-              boundingCoordinates: {
-                westBoundingCoordinate: -121.904297,
-                eastBoundingCoordinate: -120.19043,
-                northBoundingCoordinate: 51.971346,
-                southBoundingCoordinate: 50.930738
-              },
-              datasetGPolygon: [
-                {
-                  datasetGPolygonOuterGRing: [
-                    {
-                      gRingPoint: [
-                        { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
-                        { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
-                        { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
-                        { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
-                        { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
             temporalCoverage: {
               rangeOfDates: {
                 beginDate: { calendarDate: '2023-01-01' },
@@ -1228,33 +1177,6 @@ describe.skip('EmlService', () => {
         }
       ]);
 
-      sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({
-        geographicCoverage: {
-          geographicDescription: 'Location Description',
-          boundingCoordinates: {
-            westBoundingCoordinate: -121.904297,
-            eastBoundingCoordinate: -120.19043,
-            northBoundingCoordinate: 51.971346,
-            southBoundingCoordinate: 50.930738
-          },
-          datasetGPolygon: [
-            {
-              datasetGPolygonOuterGRing: [
-                {
-                  gRingPoint: [
-                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
-                    { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
-                    { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
-                    { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
-                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      });
-
       sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
         rangeOfDates: {
           beginDate: { calendarDate: '2023-01-01' },
@@ -1337,8 +1259,6 @@ describe.skip('EmlService', () => {
           role: 'pointOfContact'
         }
       ]);
-
-      sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({});
 
       sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
         rangeOfDates: {

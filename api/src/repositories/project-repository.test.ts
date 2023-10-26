@@ -8,7 +8,6 @@ import { PostProjectObject } from '../models/project-create';
 import {
   GetAttachmentsData,
   GetIUCNClassificationData,
-  GetLocationData,
   GetObjectivesData,
   GetReportAttachmentsData
 } from '../models/project-view';
@@ -130,32 +129,6 @@ describe('ProjectRepository', () => {
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get project objectives data');
       }
-    });
-  });
-
-  describe('getLocationData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ location_description: 'desc' }], rowCount: 1 } as any) as Promise<
-        QueryResult<any>
-      >;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new ProjectRepository(dbConnection);
-
-      const response = await repository.getLocationData(1);
-
-      expect(response).to.eql(new GetLocationData([{ location_description: 'desc' }]));
-    });
-
-    it('should return empty rows', async () => {
-      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new ProjectRepository(dbConnection);
-
-      const response = await repository.getLocationData(1);
-
-      expect(response).to.eql(new GetLocationData([]));
     });
   });
 

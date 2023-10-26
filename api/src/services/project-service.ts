@@ -8,7 +8,6 @@ import { IPutIUCN, PutIUCNData, PutObjectivesData, PutProjectData } from '../mod
 import {
   GetAttachmentsData,
   GetIUCNClassificationData,
-  GetLocationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IGetProject,
@@ -72,11 +71,10 @@ export class ProjectService extends DBService {
   }
 
   async getProjectById(projectId: number): Promise<IGetProject> {
-    const [projectData, objectiveData, projectParticipantsData, locationData, iucnData] = await Promise.all([
+    const [projectData, objectiveData, projectParticipantsData, iucnData] = await Promise.all([
       this.getProjectData(projectId),
       this.getObjectivesData(projectId),
       this.getProjectParticipantsData(projectId),
-      this.getLocationData(projectId),
       this.getIUCNClassificationData(projectId)
     ]);
 
@@ -84,7 +82,6 @@ export class ProjectService extends DBService {
       project: projectData,
       objectives: objectiveData,
       participants: projectParticipantsData,
-      location: locationData,
       iucn: iucnData
     };
   }
@@ -106,19 +103,10 @@ export class ProjectService extends DBService {
     const results: Partial<IGetProject> = {
       project: undefined,
       objectives: undefined,
-      location: undefined,
       iucn: undefined
     };
 
     const promises: Promise<any>[] = [];
-
-    if (entities.includes(GET_ENTITIES.location)) {
-      promises.push(
-        this.getLocationData(projectId).then((value) => {
-          results.location = value;
-        })
-      );
-    }
 
     if (entities.includes(GET_ENTITIES.iucn)) {
       promises.push(
@@ -167,10 +155,6 @@ export class ProjectService extends DBService {
 
   async getProjectParticipantsData(projectId: number): Promise<(ProjectUser & SystemUser)[]> {
     return this.projectParticipationService.getProjectParticipants(projectId);
-  }
-
-  async getLocationData(projectId: number): Promise<GetLocationData> {
-    return this.projectRepository.getLocationData(projectId);
   }
 
   async getIUCNClassificationData(projectId: number): Promise<GetIUCNClassificationData> {

@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
@@ -63,7 +62,7 @@ GET.apiDoc = {
             properties: {
               projectData: {
                 type: 'object',
-                required: ['project', 'participants', 'objectives', 'location', 'iucn'],
+                required: ['project', 'participants', 'objectives', 'iucn'],
                 properties: {
                   project: {
                     description: 'Basic project metadata',
@@ -152,22 +151,6 @@ GET.apiDoc = {
                     properties: {
                       objectives: {
                         type: 'string'
-                      }
-                    }
-                  },
-                  location: {
-                    description: 'The project location object',
-                    type: 'object',
-                    required: ['location_description', 'geometry'],
-                    properties: {
-                      location_description: {
-                        type: 'string'
-                      },
-                      geometry: {
-                        type: 'array',
-                        items: {
-                          ...(GeoJSONFeature as object)
-                        }
                       }
                     }
                   },

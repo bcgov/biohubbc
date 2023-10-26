@@ -518,7 +518,6 @@ export class EmlService extends DBService {
       },
       studyAreaDescription: {
         coverage: {
-          ...this._getProjectGeographicCoverage(projectData),
           temporalCoverage: this._getProjectTemporalCoverage(projectData)
         }
       }
@@ -871,36 +870,6 @@ export class EmlService extends DBService {
         ]
       };
     });
-  }
-
-  /**
-   * Creates an object representing geographic coverage pertaining to the given project
-   *
-   * @param {IGetProject} projectData
-   * @return {*}  {Record<string, any>}
-   * @memberof EmlService
-   */
-  _getProjectGeographicCoverage(projectData: IGetProject): Record<string, any> {
-    if (!projectData.location.geometry) {
-      return {};
-    }
-
-    const polygonFeatures = this._makePolygonFeatures(projectData.location.geometry);
-    const datasetGPolygons = this._makeDatasetGPolygons(polygonFeatures);
-    const projectBoundingBox = bbox(featureCollection(polygonFeatures));
-
-    return {
-      geographicCoverage: {
-        geographicDescription: projectData.location.location_description || NOT_SUPPLIED,
-        boundingCoordinates: {
-          westBoundingCoordinate: projectBoundingBox[0],
-          eastBoundingCoordinate: projectBoundingBox[2],
-          northBoundingCoordinate: projectBoundingBox[3],
-          southBoundingCoordinate: projectBoundingBox[1]
-        },
-        datasetGPolygon: datasetGPolygons
-      }
-    };
   }
 
   /**

@@ -6,7 +6,6 @@ import { PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
   GetAttachmentsData,
   GetIUCNClassificationData,
-  GetLocationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IProjectAdvancedFilters,
@@ -210,27 +209,6 @@ export class ProjectRepository extends BaseRepository {
     }
 
     return new GetObjectivesData(result);
-  }
-
-  async getLocationData(projectId: number): Promise<GetLocationData> {
-    const sqlStatement = SQL`
-      SELECT
-        p.location_description,
-        p.geojson as geometry,
-        p.revision_count
-      FROM
-        project p
-      WHERE
-        p.project_id = ${projectId}
-      GROUP BY
-        p.location_description,
-        p.geojson,
-        p.revision_count;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return new GetLocationData(response.rows);
   }
 
   async getIUCNClassificationData(projectId: number): Promise<GetIUCNClassificationData> {
