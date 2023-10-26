@@ -52,6 +52,9 @@ export const PUT: Operation = [
   insertUpdateDeleteSurveyObservations()
 ];
 
+// TODO
+export const DELETE: Operation = [];
+
 export const surveyObservationsResponseSchema: SchemaObject = {
   type: 'object',
   nullable: true,
