@@ -19,7 +19,7 @@ import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import { AnimalSchema, AnimalSex, Critter, IAnimal, MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './survey-animals/animal';
+import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
 import {
   createCritterUpdatePayload,
   transformCritterbaseAPIResponseToForm
@@ -547,7 +547,7 @@ const SurveyAnimals: React.FC = () => {
         </Typography>
         <Button
           component={RouterLink}
-          to={`animals/${MANAGE_ANIMALS_DEFAULT_URL_PARAM}`}
+          to={`animals/`}
           title="Manage Marked and Known Animals"
           color="primary"
           variant="contained"

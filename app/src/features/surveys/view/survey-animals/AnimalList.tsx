@@ -18,10 +18,10 @@ import { grey } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
+import { useQuery } from 'hooks/useQuery';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useMemo } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import { MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './animal';
+import { useHistory } from 'react-router-dom';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
 interface AnimalListProps {
@@ -34,7 +34,8 @@ interface AnimalListProps {
 
 const AnimalList = (props: AnimalListProps) => {
   const { selectedSection, onSelectSection, critterData, onAddButton } = props;
-  const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
+  const { cid: survey_critter_id } = useQuery();
+
   const history = useHistory();
   const { errors } = useFormikContext();
 
@@ -45,12 +46,12 @@ const AnimalList = (props: AnimalListProps) => {
   }, [critterData]);
 
   const handleCritterSelect = (id: string) => {
-    let critterParamID = id;
-    if (survey_critter_id === id) {
-      critterParamID = MANAGE_ANIMALS_DEFAULT_URL_PARAM;
+    if (id === survey_critter_id) {
+      history.replace(history.location.pathname);
+    } else {
+      history.push(`?cid=${id}`);
     }
     onSelectSection(SurveyAnimalsI18N.animalGeneralTitle);
-    history.push(critterParamID);
   };
 
   return (

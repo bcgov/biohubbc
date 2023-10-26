@@ -8,11 +8,11 @@ import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveyS
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals, omitBy } from 'lodash';
 import React, { useContext, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
 import { datesSameNullable } from 'utils/Utils';
 import { setPopup } from 'utils/UtilsJSX';
 import { AddEditAnimal } from './AddEditAnimal';
@@ -27,7 +27,7 @@ import { IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './Teleme
 
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
-  const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
+  const { cid: survey_critter_id } = useQuery();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const bhApi = useBiohubApi();
   const telemetryApi = useTelemetryApi();

@@ -10,10 +10,10 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
 import { dateRangesOverlap } from 'utils/Utils';
 import { setPopup } from 'utils/UtilsJSX';
 import yup from 'utils/YupSchema';
@@ -48,7 +48,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
 
-  const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
+  const { cid: survey_critter_id } = useQuery();
 
   const dialogTitle = openedFromAddButton
     ? `Add ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`
