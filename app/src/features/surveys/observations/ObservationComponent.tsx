@@ -58,6 +58,8 @@ const ObservationComponent = () => {
 
   const hasUnsavedChanges = observationsContext.hasUnsavedChanges();
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
+  const observationCount =
+    observationsContext.observationsDataLoader?.data?.supplementaryObservationData?.observationCount ?? 0;
 
   return (
     <>
@@ -112,7 +114,10 @@ const ObservationComponent = () => {
               fontSize: '1.125rem',
               fontWeight: 700
             }}>
-            Observations
+            Observations &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({observationCount})
+            </Typography>
           </Typography>
 
           <Box

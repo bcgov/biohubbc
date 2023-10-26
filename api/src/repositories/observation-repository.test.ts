@@ -136,6 +136,22 @@ describe('ObservationRepository', () => {
     });
   });
 
+  describe('getSurveyObservationCount', () => {
+    it('gets the count of survey observations for the given survey', async () => {
+      const mockQueryResponse = ({ rows: [{ rowCount: 1 }] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({
+        knex: sinon.stub().resolves(mockQueryResponse)
+      });
+
+      const repo = new ObservationRepository(mockDBConnection);
+
+      const response = await repo.getSurveyObservationCount(1);
+
+      expect(response).to.eql({ observationCount: 1 });
+    });
+  });
+
   describe('insertSurveyObservationSubmission', () => {
     it('inserts a survey observation submission record', async () => {
       const mockQueryResponse = ({ rows: [1] } as unknown) as QueryResult<any>;
