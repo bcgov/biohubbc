@@ -557,7 +557,7 @@ describe('insertUpdateSurveyObservations', () => {
   });
 });
 
-describe('getSurveyObservations', () => {
+describe('getSurveyObservationsWithSupplementaryData', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -585,7 +585,8 @@ describe('getSurveyObservations', () => {
                   observation_date: '1970-01-01',
                   observation_time: '00:00:00'
                 }
-              ]
+              ],
+              supplementaryObservationData: { observationCount: 1 }
             }
           };
 
@@ -614,7 +615,8 @@ describe('getSurveyObservations', () => {
                   observation_date: '1970-01-01',
                   observation_time: '00:00:00'
                 }
-              ]
+              ],
+              supplementaryObservationData: { observationCount: 1 }
             }
           };
 
@@ -635,7 +637,8 @@ describe('getSurveyObservations', () => {
       describe('should succeed when', () => {
         it('returns an empty array', () => {
           const apiResponse = {
-            surveyObservations: []
+            surveyObservations: [],
+            supplementaryObservationData: { observationCount: 0 }
           };
 
           const response = responseValidator.validateResponse(200, apiResponse);
@@ -660,7 +663,8 @@ describe('getSurveyObservations', () => {
                 update_date: '1970-01-01',
                 revision_count: 1
               }
-            ]
+            ],
+            supplementaryObservationData: { observationCount: 1 }
           };
 
           const response = responseValidator.validateResponse(200, apiResponse);
@@ -687,7 +691,8 @@ describe('getSurveyObservations', () => {
                 update_date: '1970-01-01',
                 revision_count: 1
               }
-            ]
+            ],
+            supplementaryObservationData: { observationCount: 1 }
           };
 
           const response = responseValidator.validateResponse(200, apiResponse);
@@ -715,7 +720,8 @@ describe('getSurveyObservations', () => {
                 update_date: '1970-01-01',
                 revision_count: 1
               }
-            ]
+            ],
+            supplementaryObservationData: { observationCount: 1 }
           };
 
           const response = responseValidator.validateResponse(200, apiResponse);
@@ -743,7 +749,8 @@ describe('getSurveyObservations', () => {
                 update_date: '1970-01-01',
                 revision_count: 1
               }
-            ]
+            ],
+            supplementaryObservationData: { observationCount: 1 }
           };
 
           const response = responseValidator.validateResponse(200, apiResponse);
@@ -771,7 +778,8 @@ describe('getSurveyObservations', () => {
                 update_date: '1970-01-01',
                 revision_count: 1
               }
-            ]
+            ],
+            supplementaryObservationData: { observationCount: 1 }
           };
 
           const response = responseValidator.validateResponse(200, apiResponse);
@@ -799,7 +807,8 @@ describe('getSurveyObservations', () => {
                 update_date: '1970-01-01',
                 revision_count: 1
               }
-            ]
+            ],
+            supplementaryObservationData: { observationCount: 1 }
           };
 
           const response = responseValidator.validateResponse(200, apiResponse);
@@ -819,8 +828,14 @@ describe('getSurveyObservations', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const getSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'getSurveyObservations')
-      .resolves(([{ survey_observation_id: 1 }, { survey_observation_id: 2 }] as unknown) as ObservationRecord[]);
+      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryData')
+      .resolves({
+        surveyObservations: ([
+          { survey_observation_id: 1 },
+          { survey_observation_id: 2 }
+        ] as unknown) as ObservationRecord[],
+        supplementaryObservationData: { observationCount: 2 }
+      });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -835,7 +850,8 @@ describe('getSurveyObservations', () => {
     expect(getSurveyObservationsStub).to.have.been.calledOnceWith(2);
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({
-      surveyObservations: [{ survey_observation_id: 1 }, { survey_observation_id: 2 }]
+      surveyObservations: [{ survey_observation_id: 1 }, { survey_observation_id: 2 }],
+      supplementaryObservationData: { observationCount: 2 }
     });
   });
 
@@ -844,7 +860,9 @@ describe('getSurveyObservations', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(ObservationService.prototype, 'getSurveyObservations').rejects(new Error('a test error'));
+    sinon
+      .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryData')
+      .rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

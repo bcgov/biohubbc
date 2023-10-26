@@ -212,6 +212,26 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
+   * Retrieves the count of survey observations for the given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ observationCount: number }>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationCount(surveyId: number): Promise<{ observationCount: number }> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .count('survey_observation_id as rowCount')
+      .from('survey_observation')
+      .where('survey_id', surveyId);
+
+    const response = await this.connection.knex(sqlStatement);
+    const observationCount = Number(response.rows[0].rowCount);
+    return { observationCount };
+  }
+
+  /**
    * Inserts a survey observation submission record into the database and returns the record
    *
    * @param {number} submission_id

@@ -160,6 +160,20 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             ...surveyObservationsResponseSchema,
+            required: ['surveyObservations', 'supplementaryObservationData'],
+            properties: {
+              ...surveyObservationsResponseSchema.properties,
+              supplementaryObservationData: {
+                type: 'object',
+                required: ['observationCount'],
+                properties: {
+                  observationCount: {
+                    type: 'integer',
+                    minimum: 0
+                  }
+                }
+              }
+            },
             title: 'Survey get response object, for view purposes'
           }
         }
@@ -296,8 +310,8 @@ export function getSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const surveyObservations = await observationService.getSurveyObservations(surveyId);
-      return res.status(200).json({ surveyObservations });
+      const observationData = await observationService.getSurveyObservationsWithSupplementaryData(surveyId);
+      return res.status(200).json(observationData);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservations', message: 'error', error });
       await connection.rollback();

@@ -126,6 +126,7 @@ const SamplingSiteList = () => {
       }
     });
   };
+  const samplingSiteCount = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
 
   return (
     <>
@@ -181,7 +182,10 @@ const SamplingSiteList = () => {
               fontSize: '1.125rem',
               fontWeight: 700
             }}>
-            Sampling Sites
+            Sampling Sites &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({samplingSiteCount})
+            </Typography>
           </Typography>
           <Button
             sx={{
