@@ -245,11 +245,9 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         _setUnsavedRecordIds([]);
         _showSnackBar({
           snackbarMessage: (
-            <>
-              <Typography variant="body2" component="div">
-                Updated survey observations successfully.
-              </Typography>
-            </>
+            <Typography variant="body2" component="div">
+              Updated survey observations successfully.
+            </Typography>
           )
         });
         return refreshRecords();
