@@ -2,7 +2,6 @@ import { PublishStatus } from 'constants/attachments';
 import { PROJECT_PERMISSION, PROJECT_ROLE } from 'constants/roles';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
-import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { Feature } from 'geojson';
 
@@ -127,11 +126,7 @@ export interface IProjectUserRoles {
  * @export
  * @interface ICreateProjectRequest
  */
-export type ICreateProjectRequest = IProjectDetailsForm &
-  IProjectObjectivesForm &
-  IProjectLocationForm &
-  IProjectIUCNForm &
-  IProjectUserRoles;
+export type ICreateProjectRequest = IProjectDetailsForm & IProjectObjectivesForm & IProjectIUCNForm & IProjectUserRoles;
 
 /**
  * Create project response object.
