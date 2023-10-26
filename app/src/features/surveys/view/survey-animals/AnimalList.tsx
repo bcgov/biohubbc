@@ -13,6 +13,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
+import { grey } from '@mui/material/colors';
 // import { cyan } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { SurveyAnimalsI18N } from 'constants/i18n';
@@ -22,7 +23,6 @@ import { useMemo } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { MANAGE_ANIMALS_DEFAULT_URL_PARAM } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
-import { grey } from '@mui/material/colors';
 
 interface AnimalListProps {
   isLoading?: boolean;
@@ -32,7 +32,8 @@ interface AnimalListProps {
   onAddButton: () => void;
 }
 
-const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, onAddButton }: AnimalListProps) => {
+const AnimalList = (props: AnimalListProps) => {
+  const { selectedSection, onSelectSection, critterData, onAddButton } = props;
   const { survey_critter_id } = useParams<{ survey_critter_id?: string }>();
   const history = useHistory();
   const { errors } = useFormikContext();
@@ -90,78 +91,76 @@ const AnimalList = ({ selectedSection, onSelectSection, critterData, isLoading, 
             background: grey[100]
           }}>
           {sortedCritterData.map((critter) => (
-          <Accordion
-            key={critter.critter_id}
-            expanded={critter.survey_critter_id.toString() === survey_critter_id}
-            sx={{
-              boxShadow: 'none'
-            }}
-          >
-            <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="sampleSiteHeader">
-              <AccordionSummary
-                expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                onClick={() => handleCritterSelect(critter.survey_critter_id.toString())}
-                aria-controls="panel1bh-content"
-                sx={{
-                  flex: '1 1 auto',
-                  overflow: 'hidden',
-                  py: 0.25,
-                  pr: 1.5,
-                  gap: '16px',
-                  '& .MuiAccordionSummary-content': {
+            <Accordion
+              key={critter.critter_id}
+              expanded={critter.survey_critter_id.toString() === survey_critter_id}
+              sx={{
+                boxShadow: 'none'
+              }}>
+              <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="sampleSiteHeader">
+                <AccordionSummary
+                  expandIcon={<Icon path={mdiChevronDown} size={1} />}
+                  onClick={() => handleCritterSelect(critter.survey_critter_id.toString())}
+                  aria-controls="panel1bh-content"
+                  sx={{
                     flex: '1 1 auto',
                     overflow: 'hidden',
-                    whiteSpace: 'nowrap'
-                  }
-                }}>
-                <Typography fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {critter.animal_id}
-                </Typography>
-              </AccordionSummary>
-            </Box>
-            <AccordionDetails
-              sx={{
-                pt: 0,
-                px: 0,
-                pb: 1
-              }}>
-              <List
-                disablePadding
+                    py: 0.25,
+                    pr: 1.5,
+                    gap: '16px',
+                    '& .MuiAccordionSummary-content': {
+                      flex: '1 1 auto',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap'
+                    }
+                  }}>
+                  <Typography fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {critter.animal_id}
+                  </Typography>
+                </AccordionSummary>
+              </Box>
+              <AccordionDetails
                 sx={{
-                  '& .MuiListItemText-primary': {
-                    fontSize: '0.875rem'
-                  }
+                  pt: 0,
+                  px: 0,
+                  pb: 1
                 }}>
-                {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
-                  <ListItem
-                    key={section}
-                    divider
-                    button
-                    selected={section === selectedSection}
-                    onClick={() => {
-                      onSelectSection(section);
-                    }}>
-                    <ListItemIcon>
-                      <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
-                    </ListItemIcon>
-                    <ListItemText>{section}</ListItemText>
-                    {Object.keys(errors).find((key) => key.toLowerCase() === section.toLowerCase()) !== undefined && (
-                      <Tooltip
-                        placement="top"
-                        arrow
-                        title={'There are errors in this section that must be resolved before submitting the form.'}>
-                        <Icon size={1} color="#D8292F" path={mdiAlert}></Icon>
-                      </Tooltip>
-                    )}
-                  </ListItem>
-                ))}
-              </List>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                <List
+                  disablePadding
+                  sx={{
+                    '& .MuiListItemText-primary': {
+                      fontSize: '0.875rem'
+                    }
+                  }}>
+                  {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
+                    <ListItem
+                      key={section}
+                      divider
+                      button
+                      selected={section === selectedSection}
+                      onClick={() => {
+                        onSelectSection(section);
+                      }}>
+                      <ListItemIcon>
+                        <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
+                      </ListItemIcon>
+                      <ListItemText>{section}</ListItemText>
+                      {Object.keys(errors).find((key) => key.toLowerCase() === section.toLowerCase()) !== undefined && (
+                        <Tooltip
+                          placement="top"
+                          arrow
+                          title={'There are errors in this section that must be resolved before submitting the form.'}>
+                          <Icon size={1} color="#D8292F" path={mdiAlert}></Icon>
+                        </Tooltip>
+                      )}
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+          ))}
         </Box>
       </Box>
-
     </Box>
   );
 };

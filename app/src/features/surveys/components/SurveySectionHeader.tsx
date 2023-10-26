@@ -11,7 +11,7 @@ export interface SurveySectionHeaderProps {
   title: string;
 }
 
-const SurveySectionHeader: React.FC<SurveySectionHeaderProps> = (props) => {
+const SurveySectionHeader = (props: SurveySectionHeaderProps) => {
   const { project_id, survey_id, survey_name, title } = props;
   return (
     <Paper
