@@ -487,7 +487,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, _event) => {
     observationsContext.markRecordWithUnsavedChanges(params.id);
-  }
+  };
 
   const showConfirmDeleteDialog = Boolean(deletingObservation);
 

@@ -1,6 +1,6 @@
+import Typography from '@mui/material/Typography';
 import { GridRowId, GridRowModelUpdate, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
-import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
