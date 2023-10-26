@@ -4,7 +4,7 @@ import { COMPLETION_STATUS } from '../constants/status';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
-import { IPutIUCN, PutIUCNData, PutLocationData, PutObjectivesData, PutProjectData } from '../models/project-update';
+import { IPutIUCN, PutIUCNData, PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
   GetAttachmentsData,
   GetIUCNClassificationData,
@@ -225,9 +225,6 @@ export class ProjectService extends DBService {
       )
     );
 
-    // Handle project regions
-    promises.push(this.insertRegion(projectId, postProjectData.location.geometry));
-
     // Handle project programs
     promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
 
@@ -338,7 +335,7 @@ export class ProjectService extends DBService {
   async updateProject(projectId: number, entities: IUpdateProject): Promise<void> {
     const promises: Promise<any>[] = [];
 
-    if (entities?.project || entities?.location || entities?.objectives) {
+    if (entities?.project || entities?.objectives) {
       promises.push(this.updateProjectData(projectId, entities));
     }
 
@@ -372,24 +369,16 @@ export class ProjectService extends DBService {
 
   async updateProjectData(projectId: number, entities: IUpdateProject): Promise<void> {
     const putProjectData = (entities?.project && new PutProjectData(entities.project)) || null;
-    const putLocationData = (entities?.location && new PutLocationData(entities.location)) || null;
     const putObjectivesData = (entities?.objectives && new PutObjectivesData(entities.objectives)) || null;
 
     // Update project table
-    const revision_count =
-      putProjectData?.revision_count ?? putLocationData?.revision_count ?? putObjectivesData?.revision_count ?? null;
+    const revision_count = putProjectData?.revision_count ?? putObjectivesData?.revision_count ?? null;
 
     if (!revision_count && revision_count !== 0) {
       throw new HTTP400('Failed to parse request body');
     }
 
-    await this.projectRepository.updateProjectData(
-      projectId,
-      putProjectData,
-      putLocationData,
-      putObjectivesData,
-      revision_count
-    );
+    await this.projectRepository.updateProjectData(projectId, putProjectData, putObjectivesData, revision_count);
   }
 
   async deleteProject(projectId: number): Promise<boolean | null> {

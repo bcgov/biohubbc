@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { Feature } from 'geojson';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
@@ -360,7 +359,6 @@ PUT.apiDoc = {
 export interface IUpdateProject {
   project: any | null;
   objectives: any | null;
-  location: { geometry: Feature[]; location_description: string } | null;
   iucn: any | null;
   participants: PostParticipantData[] | null;
 }

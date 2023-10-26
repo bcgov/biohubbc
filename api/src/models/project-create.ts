@@ -1,4 +1,3 @@
-import { Feature } from 'geojson';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { PROJECT_ROLE } from '../constants/roles';
 import { getLogger } from '../utils/logger';
@@ -14,7 +13,6 @@ const defaultLog = getLogger('models/project-create');
 export class PostProjectObject {
   project: PostProjectData;
   objectives: PostObjectivesData;
-  location: PostLocationData;
   iucn: PostIUCNData;
   participants: PostParticipantData[];
 
@@ -23,7 +21,6 @@ export class PostProjectObject {
 
     this.project = (obj?.project && new PostProjectData(obj.project)) || null;
     this.objectives = (obj?.project && new PostObjectivesData(obj.objectives)) || null;
-    this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
     this.participants = obj?.participants || [];
   }
@@ -66,33 +63,6 @@ export class PostObjectivesData {
     defaultLog.debug({ label: 'PostObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-  }
-}
-
-/**
- * Processes POST /project location data
- *
- * @export
- * @class PostLocationData
- */
-export class PostLocationData {
-  location_description: string;
-  geometry: Feature[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({
-      label: 'PostLocationData',
-      message: 'params',
-      obj: {
-        ...obj,
-        geometry: obj?.geometry?.map((item: any) => {
-          return { ...item, geometry: 'Too big to print' };
-        })
-      }
-    });
-
-    this.location_description = obj?.location_description;
-    this.geometry = (obj?.geometry?.length && obj.geometry) || [];
   }
 }
 
