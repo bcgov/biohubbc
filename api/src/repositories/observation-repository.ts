@@ -227,7 +227,7 @@ export class ObservationRepository extends BaseRepository {
       .where('survey_id', surveyId);
 
     const response = await this.connection.knex(sqlStatement);
-    const observationCount = parseInt(response.rows[0].rowCount, 10);
+    const observationCount = Number(response.rows[0].rowCount);
     return { observationCount };
   }
 
