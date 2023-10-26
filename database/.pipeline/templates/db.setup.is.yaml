@@ -11,7 +11,6 @@ objects:
         description: Database setup image stream
       labels:
         shared: 'true'
-      creationTimestamp: null
       generation: 0
       name: ${NAME}
     spec:

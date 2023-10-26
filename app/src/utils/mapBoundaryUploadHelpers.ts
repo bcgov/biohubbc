@@ -184,7 +184,7 @@ export const boundaryUploadHelper = (params: {
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
         features = await handleKMLUpload(file);
       } else {
-        throw `${file?.type} is not supported`;
+        throw Error(`${file?.type} is not supported`);
       }
 
       onSuccess(features);

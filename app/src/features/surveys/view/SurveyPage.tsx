@@ -35,7 +35,8 @@ const SurveyPage: React.FC = () => {
   const surveyContext = useContext(SurveyContext);
   const observationsContext = useContext(ObservationsContext);
 
-  const numObservations: number = observationsContext.observationsDataLoader.data?.surveyObservations.length || 0;
+  const numObservations: number =
+    observationsContext.observationsDataLoader.data?.supplementaryObservationData?.observationCount || 0;
 
   useEffect(() => {
     codesContext.codesDataLoader.load();

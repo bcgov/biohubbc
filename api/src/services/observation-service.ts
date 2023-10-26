@@ -1,4 +1,5 @@
 import xlsx from 'xlsx';
+import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import {
   InsertObservation,
@@ -30,6 +31,13 @@ const observationCSVColumnValidator = {
   columnNames: ['SPECIES_TAXONOMIC_ID', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
   columnTypes: ['number', 'number', 'date', 'string', 'number', 'number']
 };
+
+export const ObservationSupplementaryData = z.object({
+  observationCount: z.number()
+});
+
+export type ObservationSupplementaryData = z.infer<typeof ObservationSupplementaryData>;
+
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
 
@@ -85,14 +93,18 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Retrieves all observation records for the given survey
+   * Retrieves all observation records for the given survey along with supplementary data
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<ObservationRecord[]>}
+   * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
    * @memberof ObservationService
    */
-  async getSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
-    return this.observationRepository.getSurveyObservations(surveyId);
+  async getSurveyObservationsWithSupplementaryData(
+    surveyId: number
+  ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
+    const surveyObservations = await this.observationRepository.getSurveyObservations(surveyId);
+    const supplementaryObservationData = await this.observationRepository.getSurveyObservationCount(surveyId);
+    return { surveyObservations, supplementaryObservationData };
   }
 
   /**

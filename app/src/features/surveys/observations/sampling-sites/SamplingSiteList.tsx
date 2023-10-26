@@ -64,6 +64,8 @@ const SamplingSiteList = () => {
     setSelectedSampleSiteId(sample_site_id);
   };
 
+  const samplingSiteCount = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
+
   return (
     <>
       <Menu
@@ -118,7 +120,10 @@ const SamplingSiteList = () => {
               fontSize: '1.125rem',
               fontWeight: 700
             }}>
-            Sampling Sites
+            Sampling Sites &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({samplingSiteCount})
+            </Typography>
           </Typography>
           <Button
             sx={{
