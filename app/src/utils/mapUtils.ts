@@ -6,6 +6,15 @@ export const DefaultMapValues = {
   center: [55, -128]
 };
 
+export interface INonEditableGeometries {
+  feature: Feature;
+  popupComponent?: JSX.Element;
+}
+
+export interface IClusteredPointGeometries {
+  coordinates: number[];
+  popupComponent?: JSX.Element;
+}
 export interface MapPointProps {
   feature: Feature;
   latlng: LatLng;

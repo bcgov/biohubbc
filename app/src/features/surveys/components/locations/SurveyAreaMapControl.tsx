@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
-import DrawControls2, { IDrawControlsRef } from 'components/map/components/DrawControls2';
+import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog';
 import { IRegionOption, RegionSelector } from 'components/map/components/RegionSelector';
@@ -99,7 +99,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           <SetMapBounds bounds={updatedBounds} />
 
           <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
-            <DrawControls2
+            <DrawControls
               ref={draw_controls_ref}
               options={{
                 // Always disable circle, circlemarker and line

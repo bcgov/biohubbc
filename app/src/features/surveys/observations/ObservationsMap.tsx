@@ -6,7 +6,6 @@ import { square } from '@turf/turf';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
-import { INonEditableGeometries } from 'components/map/MapContainer';
 import { MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { Position } from 'geojson';
@@ -15,7 +14,7 @@ import 'leaflet/dist/leaflet.css';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateFeatureBoundingBox, latLngBoundsFromBoundingBox } from 'utils/mapBoundaryUploadHelpers';
-import { coloredPoint } from 'utils/mapUtils';
+import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 const ObservationsMap = () => {
