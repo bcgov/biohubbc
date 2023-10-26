@@ -13,7 +13,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals, omitBy } from 'lodash';
 import React, { useContext, useMemo, useState } from 'react';
-import { datesSameNullable, setPopup } from 'utils/Utils';
+import { datesSameNullable, setMessageSnackbar } from 'utils/Utils';
 import { AddEditAnimal } from './AddEditAnimal';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
@@ -103,11 +103,11 @@ export const SurveyAnimalsPage = () => {
   const handleRemoveDeployment = async (deployment_id: string) => {
     try {
       if (survey_critter_id === undefined) {
-        setPopup('No critter set!', dialogContext);
+        setMessageSnackbar('No critter set!', dialogContext);
       }
       await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
     } catch (e) {
-      setPopup('Failed to delete deployment.', dialogContext);
+      setMessageSnackbar('Failed to delete deployment.', dialogContext);
       return;
     }
 
@@ -119,7 +119,7 @@ export const SurveyAnimalsPage = () => {
       const critter = new Critter(currentFormValues);
       setOpenAddDialog(false);
       await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
-      setPopup('Animal added to survey.', dialogContext);
+      setMessageSnackbar('Animal added to survey.', dialogContext);
     };
     const patchCritterPayload = async () => {
       const initialFormValues = critterAsFormikValues;
@@ -152,9 +152,12 @@ export const SurveyAnimalsPage = () => {
       }
       refreshDeployments();
       refreshCritters();
-      setPopup(`Successfully ${formMode === ANIMAL_FORM_MODE.ADD ? 'created' : 'updated'} animal.`, dialogContext);
+      setMessageSnackbar(
+        `Successfully ${formMode === ANIMAL_FORM_MODE.ADD ? 'created' : 'updated'} animal.`,
+        dialogContext
+      );
     } catch (err) {
-      setPopup(`Submmision failed ${(err as Error).message}`, dialogContext);
+      setMessageSnackbar(`Submmision failed ${(err as Error).message}`, dialogContext);
     }
   };
 
@@ -186,13 +189,13 @@ export const SurveyAnimalsPage = () => {
         (value) => value === '' || value === null
       ) as IAnimalTelemetryDevice & { critter_id: string };
       await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemNoBlanks);
-      setPopup('Successfully added deployment.', dialogContext);
+      setMessageSnackbar('Successfully added deployment.', dialogContext);
       artifactDataLoader.refresh(projectId, surveyId);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
+        setMessageSnackbar('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
       } else {
-        setPopup('Failed to add deployment.', dialogContext);
+        setMessageSnackbar('Failed to add deployment.', dialogContext);
       }
     }
   };
@@ -241,8 +244,8 @@ export const SurveyAnimalsPage = () => {
       }
     }
     errors.length
-      ? setPopup('Failed to save some data: ' + errors.join(', '), dialogContext)
-      : setPopup('Updated deployment and device data successfully.', dialogContext);
+      ? setMessageSnackbar('Failed to save some data: ' + errors.join(', '), dialogContext)
+      : setMessageSnackbar('Updated deployment and device data successfully.', dialogContext);
   };
 
   const handleTelemetrySave = async (

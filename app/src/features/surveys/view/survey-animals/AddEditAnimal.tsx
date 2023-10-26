@@ -14,7 +14,7 @@ import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { dateRangesOverlap, setPopup } from 'utils/Utils';
+import { dateRangesOverlap, setMessageSnackbar } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
@@ -244,7 +244,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       );
       refreshDeviceDetails(Number(saveValues.device[selectedIndex].device_id));
     } catch (err) {
-      setPopup('Telemetry save failed!', dialogContext);
+      setMessageSnackbar('Telemetry save failed!', dialogContext);
     }
   };
 
@@ -340,7 +340,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                           aria-label={`Copy Critter ID`}
                           onClick={() => {
                             navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
-                            setPopup('Copied Critter ID', dialogContext);
+                            setMessageSnackbar('Copied Critter ID', dialogContext);
                           }}>
                           <Icon path={mdiContentCopy} size={0.8} />
                         </IconButton>

@@ -479,7 +479,7 @@ export const uuidToColor = (id: string): { fillColor: string; outlineColor: stri
  * @param message string to show
  * @param context reference to current DialogContext
  */
-export const setPopup = (message: string, context: IDialogContext) => {
+export const setMessageSnackbar = (message: string, context: IDialogContext) => {
   context.setSnackbar({
     open: true,
     snackbarMessage: (

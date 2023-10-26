@@ -21,7 +21,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
-import { datesSameNullable, setPopup } from 'utils/Utils';
+import { datesSameNullable, setMessageSnackbar } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { IAnimal } from './animal';
 import {
@@ -325,13 +325,13 @@ const TelemetryDeviceForm = ({
       await uploadAttachment(attachmentFile, attachmentType);
       // create new deployment record
       await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
-      setPopup('Successfully added deployment.', dialogContext);
+      setMessageSnackbar('Successfully added deployment.', dialogContext);
       artifactDataLoader.refresh(projectId, surveyId);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
+        setMessageSnackbar('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'), dialogContext);
       } else {
-        setPopup('Failed to add deployment.', dialogContext);
+        setMessageSnackbar('Failed to add deployment.', dialogContext);
       }
     }
   };
@@ -378,8 +378,8 @@ const TelemetryDeviceForm = ({
       }
     }
     errors.length
-      ? setPopup('Failed to save some data: ' + errors.join(', '), dialogContext)
-      : setPopup('Updated deployment and device data successfully.', dialogContext);
+      ? setMessageSnackbar('Failed to save some data: ' + errors.join(', '), dialogContext)
+      : setMessageSnackbar('Updated deployment and device data successfully.', dialogContext);
   };
 
   const handleTelemetrySave = async (
