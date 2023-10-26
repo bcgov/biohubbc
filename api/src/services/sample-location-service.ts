@@ -68,13 +68,13 @@ export class SampleLocationService extends DBService {
       const nameKey = Object.keys(geometry.properties ?? {}).find(
         (key) => key.toLowerCase() === 'name' || key.toLowerCase() === 'label'
       );
-      return nameKey && geometry.properties ? geometry.properties[nameKey] : '';
+      return nameKey && geometry.properties ? geometry.properties[nameKey].substring(0, 50) : '';
     };
     const determineDesc = (geometry: Feature<Geometry | GeometryCollection, Properties>) => {
       const descKey = Object.keys(geometry.properties ?? {}).find(
         (key) => key.toLowerCase() === 'desc' || key.toLowerCase() === 'description'
       );
-      return descKey && geometry.properties ? geometry.properties[descKey] : '';
+      return descKey && geometry.properties ? geometry.properties[descKey].substring(0, 250) : '';
     };
     // Create a sample location for each feature found
     const promises = sampleLocations.survey_sample_sites.map((item) => {
