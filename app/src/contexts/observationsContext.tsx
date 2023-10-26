@@ -1,8 +1,9 @@
 import { GridRowId, GridRowModelUpdate, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
+import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
+import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
@@ -10,6 +11,7 @@ import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.int
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
+import { pluralize as p } from 'utils/Utils';
 
 export interface IObservationRecord {
   survey_observation_id: number;
@@ -112,10 +114,13 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   const [unsavedRecordIds, _setUnsavedRecordIds] = useState<string[]>([]);
   const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
-
   const [rowIdsToSave, setRowIdsToSave] = useState<GridRowId[]>([]);
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const _showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
 
   const _showErrorDialog = useCallback(
     (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -231,13 +236,24 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const saveRecords = useCallback(
     async (rowsToSave: GridValidRowModel[]) => {
       try {
-        await biohubApi.observation.insertUpdateObservationRecords(
+        const response = await biohubApi.observation.insertUpdateObservationRecords(
           projectId,
           surveyId,
           rowsToSave as IObservationTableRow[]
         );
+        const numRows = response.length;
+
         setRowIdsToSave([]);
         _setUnsavedRecordIds([]);
+        _showSnackBar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                Updated <strong>{numRows} </strong>survey {p(numRows, 'observation')} successfully.
+              </Typography>
+            </>
+          )
+        });
         return refreshRecords();
       } catch (error) {
         revertAllRowsEditMode();
