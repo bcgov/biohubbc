@@ -14,7 +14,6 @@ import { makeStyles } from '@mui/styles';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/file-upload/FileUpload';
-import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import MapContainer from 'components/map/MapContainer';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { FormikContextType } from 'formik';
@@ -22,12 +21,7 @@ import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import { useEffect, useState } from 'react';
-import {
-  calculateUpdatedMapBounds,
-  handleGPXUpload,
-  handleKMLUpload,
-  handleShapeFileUpload
-} from 'utils/mapBoundaryUploadHelpers';
+import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -67,7 +61,7 @@ const MapBoundary = (props: IMapBoundaryProps) => {
 
   const { name, title, mapId, bounds, formikProps } = props;
 
-  const { values, errors, setFieldValue } = formikProps;
+  const { values, errors, setFieldValue, setFieldError } = formikProps;
 
   const [openUploadBoundary, setOpenUploadBoundary] = useState(false);
   const [shouldUpdateBounds, setShouldUpdateBounds] = useState<boolean>(false);
@@ -84,18 +78,6 @@ const MapBoundary = (props: IMapBoundaryProps) => {
     setShouldUpdateBounds(false);
   }, [updatedBounds]);
 
-  const boundaryUploadHandler = (): IUploadHandler => {
-    return async (file) => {
-      if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        handleShapeFileUpload(file, name, formikProps);
-      } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        await handleGPXUpload(file, name, formikProps);
-      } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        await handleKMLUpload(file, name, formikProps);
-      }
-    };
-  };
-
   return (
     <>
       <ComponentDialog
@@ -107,7 +89,14 @@ const MapBoundary = (props: IMapBoundaryProps) => {
             <Alert severity="info">If importing a shapefile, it must be configured with a valid projection.</Alert>
           </Box>
           <FileUpload
-            uploadHandler={boundaryUploadHandler()}
+            uploadHandler={boundaryUploadHelper({
+              onSuccess: (features) => {
+                setFieldValue(name, [...features]);
+              },
+              onFailure: (message) => {
+                setFieldError(name, message);
+              }
+            })}
             dropZoneProps={{
               acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.SPATIAL
             }}

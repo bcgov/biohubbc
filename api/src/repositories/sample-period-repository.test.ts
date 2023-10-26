@@ -116,7 +116,6 @@ describe('SamplePeriodRepository', () => {
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to insert sample period');
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
       }
     });
   });
@@ -147,7 +146,6 @@ describe('SamplePeriodRepository', () => {
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete sample period');
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
       }
     });
   });

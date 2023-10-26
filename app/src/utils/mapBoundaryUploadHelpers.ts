@@ -1,11 +1,17 @@
 import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
-import { FormikContextType } from 'formik';
-import { Feature } from 'geojson';
+import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { BBox, Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * Returns true if the file is a zip and false if it is not
+ *
+ * @param {File} file
+ * @returns {*} boolean
+ */
 export const isZipFile = (file: File): boolean => {
   if (!file?.type.match(/zip/) || !file?.name.includes('.zip')) {
     return false;
@@ -82,44 +88,30 @@ export const parseShapeFile = async (file: File): Promise<Feature[]> => {
 };
 
 /**
- * Function to handle zipped shapefile spatial boundary uploads
+ *  Function to handle parsing and prep work of a shape file for upload
  *
- * @template T Type of the formikProps (should be auto-determined if the incoming formikProps are properly typed)
- * @param {File} file The file to upload
- * @param {string} name The name of the formik field that the parsed geometry will be saved to
- * @param {FormikContextType<T>} formikProps The formik props
+ * @param {File} file The file to process
+ * @return {*}  {Promise<Feature[]>}
  */
-export const handleShapeFileUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { setFieldValue, setFieldError } = formikProps;
-
-  try {
-    const features = await parseShapeFile(file);
-
-    setFieldValue(name, [...features]);
-  } catch (error) {
-    setFieldError(name, 'You must upload a valid shapefile (.zip format). Please try again.');
-  }
+export const handleShapeFileUpload = (file: File): Promise<Feature[]> => {
+  return parseShapeFile(file).catch(() => {
+    throw Error('You must upload a valid shapefile (.zip format). Please try again.');
+  });
 };
 
 /**
- * Function to handle GPX file spatial boundary uploads
+ * Function to handle parsing and prep work of a GPX file
  *
- * @template T Type of the formikProps (should be auto-determined if the incoming formikProps are properly typed)
- * @param {File} file The file to upload
- * @param {string} name The name of the formik field that the parsed geometry will be saved to
- * @param {FormikContextType<T>} formikProps The formik props
- * @return {*}
+ * @param {File} file The file to process
+ * @return {*}  {Promise<Feature[]>}
  */
-export const handleGPXUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { setFieldValue, setFieldError } = formikProps;
-
+export const handleGPXUpload = async (file: File) => {
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
 
   if (!file?.type.includes('gpx') && !fileAsString?.includes('</gpx>')) {
-    setFieldError(name, 'You must upload a GPX file, please try again.');
-    return;
+    throw Error('You must upload a GPX file, please try again.');
   }
 
   try {
@@ -133,31 +125,25 @@ export const handleGPXUpload = async <T>(file: File, name: string, formikProps: 
       }
     });
 
-    setFieldValue(name, [...sanitizedGeoJSON]);
+    return [...sanitizedGeoJSON];
   } catch (error) {
-    setFieldError(name, 'Error uploading your GPX file, please check the file and try again.');
+    throw Error('Error uploading your GPX file, please check the file and try again.');
   }
 };
 
 /**
- * Function to handle KML file spatial boundary uploads
+ * Function to handle parsing and prep work of a KML file
  *
- * @template T Type of the formikProps (should be auto-determined if the incoming formikProps are properly typed)
- * @param {File} file The file to upload
- * @param {string} name The name of the formik field that the parsed geometry will be saved to
- * @param {FormikContextType<T>} formikProps The formik props
- * @return {*}
+ * @param {File} file The file to process
+ * @return {*}  {Promise<Feature[]>}
  */
-export const handleKMLUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
-  const { setFieldValue, setFieldError } = formikProps;
-
+export const handleKMLUpload = async (file: File) => {
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
 
   if (file?.type !== 'application/vnd.google-earth.kml+xml' && !fileAsString?.includes('</kml>')) {
-    setFieldError(name, 'You must upload a KML file, please try again.');
-    return;
+    throw Error('You must upload a KML file, please try again.');
   }
 
   const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');
@@ -170,35 +156,106 @@ export const handleKMLUpload = async <T>(file: File, name: string, formikProps: 
     }
   });
 
-  setFieldValue(name, [...sanitizedGeoJSON]);
+  return [...sanitizedGeoJSON];
 };
 
 /**
- * @param geometries geometry values on map
+ * This function accepts a File and two call back functions onSuccess, onFailure and returns an IUploadHandler.
+ * The file type is determined and processed into an array of features to be passed back in the onSuccess function.
+ * Any errors during the processing are passed back in the onFailure function
+ *
+ * Accepted file types: zip, gpx, kml
+ *
+ * @param {{onSuccess: (Feature[]) => void, onFailure: (string) => void}} params
+ * @returns {*} {IUploadHandler}
  */
-export const calculateUpdatedMapBounds = (geometries: Feature[]): LatLngBoundsExpression | undefined => {
-  /*
-    If no geometries, we do not need to set bounds
+export const boundaryUploadHelper = (params: {
+  onSuccess: (features: Feature[]) => void;
+  onFailure: (message: string) => void;
+}): IUploadHandler => {
+  const { onSuccess, onFailure } = params;
+  return async (file: File) => {
+    let features: Feature<Geometry, GeoJsonProperties>[] = [];
+    try {
+      if (file?.type.includes('zip') || file?.name.includes('.zip')) {
+        features = await handleShapeFileUpload(file);
+      } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
+        features = await handleGPXUpload(file);
+      } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
+        features = await handleKMLUpload(file);
+      } else {
+        throw Error(`${file?.type} is not supported`);
+      }
 
-    If there is only one geometry and it is a point, we cannot do the bound setting
-    because leaflet does not know how to handle that and tries to zoom in way too much
+      onSuccess(features);
+    } catch (error) {
+      onFailure(String(error));
+    }
+  };
+};
 
-    If there are multiple points or a polygon and a point, this is not an issue
-  */
-  if (!geometries || !geometries.length || (geometries.length === 1 && geometries[0]?.geometry?.type === 'Point')) {
+/**
+ * Calculates the bounding box that encompasses all of the given features
+ *
+ * @param features The features used to calculate the bounding box
+ * @returns The bounding box, or undefined if a bounding box cannot be calculated.
+ */
+export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefined => {
+  // If no geometries, we do not need to set bounds
+  if (!features.length) {
     return;
   }
 
+  /**
+   * If there is only one geometry and it is a point, we cannot automatically calculate
+   * a bounding box, because leaflet does not know how to handle the scale, and tries
+   * to zoom in way too much. In this case, we manually create a bounding box.
+   */
+  if (features.length === 1 && features[0]?.geometry?.type === 'Point') {
+    const singlePoint = features[0]?.geometry;
+    const [longitude, latitude] = singlePoint.coordinates;
+
+    return [longitude + 1, latitude + 1, longitude - 1, latitude - 1];
+  }
+
+  /**
+   * If there are multiple points or a polygon and a point, we can automatically
+   * create a bouding box using Turf.
+   */
   const allGeosFeatureCollection = {
     type: 'FeatureCollection',
-    features: [...geometries]
+    features: [...features]
   };
-  const bboxCoords = bbox(allGeosFeatureCollection);
 
+  return bbox(allGeosFeatureCollection);
+};
+
+/**
+ * Converts a bounding box to a lat/long bounds expression
+ * @param boundingBox
+ * @returns
+ */
+export const latLngBoundsFromBoundingBox = (boundingBox: BBox): LatLngBoundsExpression => {
   return [
-    [bboxCoords[1], bboxCoords[0]],
-    [bboxCoords[3], bboxCoords[2]]
+    [boundingBox[1], boundingBox[0]],
+    [boundingBox[3], boundingBox[2]]
   ];
+};
+
+/**
+ * Calculates the bounding box that encompasses all of the given features
+ *
+ * @param features The features used to calculate the map bounds
+ * @returns The Lat/Long bounding box, or undefined if a bounding box cannot be calculated.
+ */
+export const calculateUpdatedMapBounds = (features: Feature[]): LatLngBoundsExpression | undefined => {
+  const bboxCoords = calculateFeatureBoundingBox(features);
+
+  if (!bboxCoords) {
+    return;
+  }
+
+  return latLngBoundsFromBoundingBox(bboxCoords);
 };
 
 /**

@@ -7,6 +7,7 @@ import {
   ObservationRepository,
   UpdateObservation
 } from '../repositories/observation-repository';
+import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationService } from './observation-service';
 
@@ -161,6 +162,53 @@ describe('ObservationService', () => {
 
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql(mockGetResponse);
+    });
+  });
+
+  describe('insertSurveyObservationSubmission', () => {
+    it('Inserts a survey observation submission record into the database', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const submission_id = 1;
+      const key = 'key';
+      const survey_id = 1;
+      const original_filename = 'originalFilename';
+      const mockFile = { originalname: original_filename } as Express.Multer.File;
+      const projectId = 1;
+
+      const mockInsertResponse = {
+        submission_id,
+        key,
+        survey_id,
+        original_filename,
+        create_date: '2023-04-04',
+        create_user: 1,
+        update_date: null,
+        update_user: null
+      };
+      const getNextSubmissionIdStub = sinon
+        .stub(ObservationRepository.prototype, 'getNextSubmissionId')
+        .resolves(submission_id);
+      const generateS3FileKeyStub = sinon.stub(file_utils, 'generateS3FileKey').returns(key);
+      const insertSurveyObservationSubmissionStub = sinon
+        .stub(ObservationRepository.prototype, 'insertSurveyObservationSubmission')
+        .resolves(mockInsertResponse);
+
+      const observationService = new ObservationService(mockDBConnection);
+
+      const response = await observationService.insertSurveyObservationSubmission(mockFile, projectId, survey_id);
+
+      expect(getNextSubmissionIdStub).to.be.calledOnce;
+      expect(generateS3FileKeyStub).to.be.calledOnce;
+      expect(insertSurveyObservationSubmissionStub).to.be.calledOnceWith(
+        submission_id,
+        key,
+        survey_id,
+        original_filename
+      );
+      expect(response).to.eql({
+        submission_id,
+        key
+      });
     });
   });
 });

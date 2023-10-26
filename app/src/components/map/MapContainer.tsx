@@ -1,7 +1,7 @@
 import { layerContentHandlers } from 'components/map/wfs-utils';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
+import L, { LatLng, LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
@@ -23,6 +23,10 @@ import FullScreenScrollingEventHandler from './components/FullScreenScrollingEve
 import MarkerCluster, { IMarkerLayer } from './components/MarkerCluster';
 import StaticLayers, { IStaticLayer } from './components/StaticLayers';
 import WFSFeatureGroup from './WFSFeatureGroup';
+
+const point = (feature: Feature, latlng: LatLng) => {
+  return new L.CircleMarker(latlng, { radius: 6, fillOpacity: 1, fillColor: '#006edc', color: '#ffffff', weight: 1 });
+};
 
 /*
   Get leaflet icons working
@@ -60,6 +64,7 @@ export interface IMapContainerProps {
   additionalLayers?: IAdditionalLayers;
   clusteredPointGeometries?: IClusteredPointGeometries[];
   confirmDeletion?: boolean;
+  hideLayerControls?: boolean;
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   onBoundsChange?: IMapBoundsOnChange;
   onDrawChange?: IDrawControlsOnChange;
@@ -132,23 +137,27 @@ const MapContainer = (props: IMapContainerProps) => {
         // Get map geometries based on whether boundary is non editable or drawn/uploaded
         const mapGeometries: Feature[] = determineMapGeometries(drawControls?.initialFeatures, nonEditableGeometries);
 
-        const getFeatureDetails = await biohubApi.spatial.getRegions(mapGeometries);
+        try {
+          const getFeatureDetails = await biohubApi.spatial.getRegions(mapGeometries);
 
-        if (setInferredLayersInfo) {
-          setInferredLayersInfo({
-            parks: getFeatureDetails.regions
-              .filter((item) => item.sourceLayer === 'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW')
-              .map((item) => item.regionName),
-            nrm: getFeatureDetails.regions
-              .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG')
-              .map((item) => item.regionName),
-            env: getFeatureDetails.regions
-              .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW')
-              .map((item) => item.regionName),
-            wmu: getFeatureDetails.regions
-              .filter((item) => item.sourceLayer === 'WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW')
-              .map((item) => item.regionName)
-          });
+          if (setInferredLayersInfo) {
+            setInferredLayersInfo({
+              parks: getFeatureDetails.regions
+                .filter((item) => item.sourceLayer === 'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW')
+                .map((item) => item.regionName),
+              nrm: getFeatureDetails.regions
+                .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG')
+                .map((item) => item.regionName),
+              env: getFeatureDetails.regions
+                .filter((item) => item.sourceLayer === 'WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW')
+                .map((item) => item.regionName),
+              wmu: getFeatureDetails.regions
+                .filter((item) => item.sourceLayer === 'WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW')
+                .map((item) => item.regionName)
+            });
+          }
+        } catch (error) {
+          console.error(error);
         }
       }, 300),
     [biohubApi.spatial, drawControls?.initialFeatures, nonEditableGeometries, setInferredLayersInfo]
@@ -188,8 +197,10 @@ const MapContainer = (props: IMapContainerProps) => {
 
       {clusteredPointGeometries && clusteredPointGeometries.length > 0 && (
         <MarkerClusterGroup chunkedLoading>
-          {clusteredPointGeometries.map((pointGeo: IClusteredPointGeometries, index: number) => (
-            <Marker key={index} position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]}>
+          {clusteredPointGeometries.map((pointGeo: IClusteredPointGeometries) => (
+            <Marker
+              key={`marker-cluster-${pointGeo.coordinates.join('-')}`}
+              position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]}>
               {pointGeo.popupComponent}
             </Marker>
           ))}
@@ -197,7 +208,7 @@ const MapContainer = (props: IMapContainerProps) => {
       )}
 
       {nonEditableGeometries?.map((nonEditableGeo: INonEditableGeometries) => (
-        <GeoJSON key={uuidv4()} data={nonEditableGeo.feature}>
+        <GeoJSON key={uuidv4()} data={nonEditableGeo.feature} pointToLayer={point}>
           {nonEditableGeo.popupComponent}
         </GeoJSON>
       ))}
@@ -208,20 +219,22 @@ const MapContainer = (props: IMapContainerProps) => {
           minZoom={7}
           featureKeyHandler={layerContentHandlers[selectedLayer].featureKeyHandler}
           popupContentHandler={layerContentHandlers[selectedLayer].popupContentHandler}
-          existingGeometry={drawControls?.initialFeatures}
+          existingGeometry={staticLayers?.flatMap((item) => item.features.map((feature) => feature.geoJSON))}
           onSelectGeometry={setPreDefinedGeometry}
         />
       )}
 
       {additionalLayers && <AdditionalLayers layers={additionalLayers} />}
 
-      <LayersControl position="bottomright">
-        <StaticLayers layers={staticLayers} />
+      {props.hideLayerControls !== true && (
+        <LayersControl position="bottomright">
+          <StaticLayers layers={staticLayers} />
 
-        <MarkerCluster layers={markerLayers} />
+          <MarkerCluster layers={markerLayers} />
 
-        <BaseLayerControls />
-      </LayersControl>
+          <BaseLayerControls />
+        </LayersControl>
+      )}
     </LeafletMapContainer>
   );
 };

@@ -104,16 +104,23 @@ const appTheme = createTheme({
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {
-          marginTop: '-8px',
-          marginBottom: '4px',
-          marginLeft: '-4px'
+          marginTop: '-4px',
+          marginBottom: '12px',
+          marginLeft: '-4px',
+          fontSize: '0.9rem'
         },
         li: {
           maxWidth: '40ch',
           padding: '4px',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
-          textOverflow: 'ellipsis'
+          textOverflow: 'ellipsis',
+          '& a': {
+            fontSize: 'inherit'
+          },
+          '& span': {
+            fontSize: 'inherit'
+          }
         },
         separator: {
           marginLeft: '4px',
@@ -215,11 +222,7 @@ const appTheme = createTheme({
           textAlign: 'left',
           color: '#1a5a96',
           borderRadius: '1px',
-          cursor: 'pointer',
-          '&:focus': {
-            outline: '2px solid #3B99FC',
-            outlineOffset: '2px'
-          }
+          cursor: 'pointer'
         }
       }
     },
@@ -257,6 +260,7 @@ const appTheme = createTheme({
     MuiTable: {
       styleOverrides: {
         root: {
+          fontSize: '0.9rem',
           '& th': {
             letterSpacing: '0.02rem',
             textTransform: 'uppercase',

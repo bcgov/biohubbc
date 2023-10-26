@@ -5,7 +5,7 @@ import {
   ADMINISTRATIVE_ACTIVITY_TYPE
 } from '../constants/administrative-activity';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { jsonSchema } from '../zod-schema/json';
+import { shallowJsonSchema } from '../zod-schema/json';
 import { BaseRepository } from './base-repository';
 
 export const IAdministrativeActivityStanding = z.object({
@@ -22,7 +22,7 @@ export const IAdministrativeActivity = z.object({
   status: z.number(),
   status_name: z.string(),
   description: z.string().nullable(),
-  data: jsonSchema,
+  data: shallowJsonSchema,
   notes: z.string().nullable(),
   create_date: z.string()
 });

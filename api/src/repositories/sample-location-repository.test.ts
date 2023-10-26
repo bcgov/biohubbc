@@ -120,7 +120,6 @@ describe('SampleLocationRepository', () => {
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to insert sample location');
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
       }
     });
   });
@@ -151,7 +150,6 @@ describe('SampleLocationRepository', () => {
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to delete survey block record');
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
       }
     });
   });

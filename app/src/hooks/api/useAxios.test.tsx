@@ -1,9 +1,9 @@
 import { ReactKeycloakProvider } from '@react-keycloak/web';
-import { PropsWithChildren } from '@react-leaflet/core/types/component';
 import { renderHook } from '@testing-library/react-hooks';
 import axios, { AxiosError } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Keycloak, { KeycloakPromise } from 'keycloak-js';
+import { PropsWithChildren } from 'react';
 import useAxios, { APIError } from './useAxios';
 
 describe('APIError', () => {

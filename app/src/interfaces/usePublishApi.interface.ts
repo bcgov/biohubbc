@@ -1,4 +1,4 @@
-import { ISurveyObservationData } from './useObservationApi.interface';
+import { ISurveyObservationData } from './useDwcaApi.interface';
 import { IGetProjectAttachment, IGetProjectReportAttachment } from './useProjectApi.interface';
 import { ISurveySummaryData } from './useSummaryResultsApi.interface';
 import { IGetSurveyAttachment, IGetSurveyReportAttachment } from './useSurveyApi.interface';

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import useObservationApi from './useObservationApi';
+import useDwcaApi from './useDwcaApi';
 
-describe('useObservationApi', () => {
+describe('useDwcaApi', () => {
   let mock: any;
 
   beforeEach(() => {
@@ -17,12 +17,12 @@ describe('useObservationApi', () => {
   const surveyId = 2;
 
   it('getObservationSubmission works as expected', async () => {
-    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`).reply(200, {
+    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/get`).reply(200, {
       surveyObservationData: { occurrence_submission_id: 1, inputFileName: 'file.txt' },
       surveyObservationSupplementaryData: null
     });
 
-    const result = await useObservationApi(axios).getObservationSubmission(projectId, surveyId);
+    const result = await useDwcaApi(axios).getObservationSubmission(projectId, surveyId);
 
     expect(result.surveyObservationData.occurrence_submission_id).toEqual(1);
     expect(result.surveyObservationData.inputFileName).toEqual('file.txt');
@@ -32,10 +32,10 @@ describe('useObservationApi', () => {
     const submissionId = 1;
 
     mock
-      .onDelete(`/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`)
+      .onDelete(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/${submissionId}/delete`)
       .reply(200, 1);
 
-    const result = await useObservationApi(axios).deleteObservationSubmission(projectId, surveyId, submissionId);
+    const result = await useDwcaApi(axios).deleteObservationSubmission(projectId, surveyId, submissionId);
 
     expect(result).toEqual(1);
   });
@@ -46,11 +46,11 @@ describe('useObservationApi', () => {
     });
 
     mock
-      .onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`)
+      .onPost(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/upload`)
       .reply(200, { submissionId: 1 });
     mock.onPost('/api/dwc/validate').reply(200);
 
-    const result = await useObservationApi(axios).uploadObservationSubmission(projectId, surveyId, file);
+    const result = await useDwcaApi(axios).uploadObservationSubmission(projectId, surveyId, file);
 
     expect(result.submissionId).toEqual(1);
   });
@@ -61,11 +61,11 @@ describe('useObservationApi', () => {
     });
 
     mock
-      .onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`)
+      .onPost(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/upload`)
       .reply(200, { submissionId: 1 });
     mock.onPost('/api/xlsx/validate').reply(200);
 
-    const result = await useObservationApi(axios).uploadObservationSubmission(projectId, surveyId, file);
+    const result = await useDwcaApi(axios).uploadObservationSubmission(projectId, surveyId, file);
 
     expect(result.submissionId).toEqual(1);
   });
@@ -75,9 +75,9 @@ describe('useObservationApi', () => {
       type: 'xlsx'
     });
 
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`).reply(200, {});
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/dwca/observations/submission/upload`).reply(200, {});
 
-    const result = await useObservationApi(axios).uploadObservationSubmission(projectId, surveyId, file);
+    const result = await useDwcaApi(axios).uploadObservationSubmission(projectId, surveyId, file);
 
     expect(result).toEqual({});
   });
@@ -88,7 +88,7 @@ describe('useObservationApi', () => {
     const surveyId = 3;
     mock.onPost(`/api/xlsx/transform`).reply(200, true);
 
-    const result = await useObservationApi(axios).initiateXLSXSubmissionTransform(projectId, submissionId, surveyId);
+    const result = await useDwcaApi(axios).initiateXLSXSubmissionTransform(projectId, submissionId, surveyId);
 
     expect(result).toEqual(true);
   });
@@ -110,7 +110,7 @@ describe('useObservationApi', () => {
 
     mock.onPost(`/api/dwc/view-occurrences`).reply(200, data);
 
-    const result = await useObservationApi(axios).getOccurrencesForView(project_id, observation_submission_id);
+    const result = await useDwcaApi(axios).getOccurrencesForView(project_id, observation_submission_id);
 
     expect(result).toEqual(data);
   });
@@ -122,7 +122,7 @@ describe('useObservationApi', () => {
 
     mock.onPost(`/api/xlsx/process`).reply(200, true);
 
-    const result = await useObservationApi(axios).processOccurrences(projectId, submissionId, surveyId);
+    const result = await useDwcaApi(axios).processOccurrences(projectId, submissionId, surveyId);
 
     expect(result).toEqual(true);
   });
@@ -133,7 +133,7 @@ describe('useObservationApi', () => {
 
     mock.onPost(`api/dwc/process`).reply(200, true);
 
-    const result = await useObservationApi(axios).processDWCFile(projectId, submissionId);
+    const result = await useDwcaApi(axios).processDWCFile(projectId, submissionId);
 
     expect(result).toEqual(true);
   });

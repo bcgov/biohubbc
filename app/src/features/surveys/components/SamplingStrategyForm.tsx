@@ -6,7 +6,7 @@ import SurveyBlockSection from './SurveyBlockSection';
 import SurveySiteSelectionForm from './SurveySiteSelectionForm';
 import SurveyStratumForm from './SurveyStratumForm';
 
-const SamplingMethodsForm = () => {
+const SamplingStrategyForm = () => {
   const [showStratumForm, setShowStratumForm] = useState<boolean>(false);
 
   return (
@@ -53,4 +53,4 @@ const SamplingMethodsForm = () => {
   );
 };
 
-export default SamplingMethodsForm;
+export default SamplingStrategyForm;

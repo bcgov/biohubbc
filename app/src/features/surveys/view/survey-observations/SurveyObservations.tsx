@@ -2,16 +2,12 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import ComponentDialog from 'components/dialog/ComponentDialog';
-import FileUpload from 'components/file-upload/FileUpload';
-import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import NoSurveySectionData from 'features/surveys/components/NoSurveySectionData';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
-import { IUploadObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import LoadingObservationsCard from './components/LoadingObservationsCard';
 import ObservationFileCard from './components/ObservationFileCard';
 import ObservationMessagesCard from './components/ObservationMessagesCard';
@@ -21,8 +17,6 @@ const SurveyObservations: React.FC = () => {
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
-
-  const [openImportObservations, setOpenImportObservations] = useState(false);
 
   const projectId = surveyContext.projectId as number;
   const surveyId = surveyContext.surveyId as number;
@@ -52,29 +46,6 @@ const SurveyObservations: React.FC = () => {
     }
   }, [occurrenceSubmission, submissionPollingInterval]);
 
-  const importObservations = (): IUploadHandler => {
-    return async (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.observation
-        .uploadObservationSubmission(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
-        .then((result: IUploadObservationSubmissionResponse) => {
-          if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            // Process a DwCA zip file
-            return biohubApi.observation.processDWCFile(projectId, result.submissionId);
-          }
-
-          // Process an Observation Template file
-          return biohubApi.observation.processOccurrences(projectId, result.submissionId, surveyId);
-        })
-        .finally(() => {
-          surveyContext.observationDataLoader.refresh(projectId, surveyId);
-        });
-    };
-  };
-
-  function handleCloseImportObservations() {
-    setOpenImportObservations(false);
-  }
-
   function handleDelete() {
     if (!occurrenceSubmission) {
       return;
@@ -89,7 +60,7 @@ const SurveyObservations: React.FC = () => {
       noButtonLabel: 'Cancel',
       open: true,
       onYes: async () => {
-        await biohubApi.observation.deleteObservationSubmission(
+        await biohubApi.dwca.deleteObservationSubmission(
           projectId,
           surveyId,
           occurrenceSubmission.occurrence_submission_id
@@ -107,7 +78,7 @@ const SurveyObservations: React.FC = () => {
       return;
     }
 
-    biohubApi.observation
+    biohubApi.dwca
       .getObservationSubmissionSignedURL(projectId, surveyId, occurrenceSubmission.occurrence_submission_id)
       .then((objectUrl: string) => {
         window.open(objectUrl);
@@ -119,16 +90,6 @@ const SurveyObservations: React.FC = () => {
 
   return (
     <>
-      <ComponentDialog
-        open={openImportObservations}
-        dialogTitle="Import Observation Data"
-        onClose={handleCloseImportObservations}>
-        <FileUpload
-          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.xls, .xlsm, .xlsx' }}
-          uploadHandler={importObservations()}
-        />
-      </ComponentDialog>
-
       <Toolbar>
         <Typography variant="h2">Observations</Typography>
       </Toolbar>

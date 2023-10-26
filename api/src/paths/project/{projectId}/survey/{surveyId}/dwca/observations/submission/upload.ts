@@ -1,14 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { SurveyService } from '../../../../../../../services/survey-service';
-import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../errors/http-error';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../../../../../../services/survey-service';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/dwca/observations/submission/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -109,7 +109,7 @@ export function uploadMedia(): RequestHandler {
   return async (req, res) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
-    if (!rawMediaArray || !rawMediaArray.length) {
+    if (!rawMediaArray?.length) {
       // no media objects included, skipping media upload step
       throw new HTTP400('Missing upload data');
     }
@@ -172,8 +172,8 @@ export function uploadMedia(): RequestHandler {
 
       const metadata = {
         filename: rawMediaFile.originalname,
-        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
-        email: (req['auth_payload'] && req['auth_payload'].email) || ''
+        username: req['auth_payload']?.preferred_username ?? '',
+        email: req['auth_payload']?.email ?? ''
       };
 
       await uploadFileToS3(rawMediaFile, inputKey, metadata);
