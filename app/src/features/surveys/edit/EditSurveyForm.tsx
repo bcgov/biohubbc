@@ -188,11 +188,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                     return { value: item.id, label: item.name, subText: item.description };
                   }) || []
                 }
-                field_methods={
-                  props.codes.field_methods.map((item) => {
-                    return { value: item.id, label: item.name, subText: item.description };
-                  }) || []
-                }
                 ecological_seasons={
                   props.codes.ecological_seasons.map((item) => {
                     return { value: item.id, label: item.name, subText: item.description };

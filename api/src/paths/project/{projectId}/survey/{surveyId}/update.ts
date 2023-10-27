@@ -213,7 +213,6 @@ PUT.apiDoc = {
               required: [
                 'intended_outcome_id',
                 'additional_details',
-                'field_method_id',
                 'vantage_code_ids',
                 'ecological_season_id',
                 'revision_count'
@@ -226,7 +225,8 @@ PUT.apiDoc = {
                   type: 'string'
                 },
                 field_method_id: {
-                  type: 'number'
+                  type: 'number',
+                  nullable: true
                 },
                 vantage_code_ids: {
                   type: 'array',

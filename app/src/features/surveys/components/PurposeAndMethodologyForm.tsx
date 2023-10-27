@@ -13,7 +13,7 @@ export interface IPurposeAndMethodologyForm {
   purpose_and_methodology: {
     intended_outcome_id: number;
     additional_details: string;
-    field_method_id: number;
+    field_method_id: number | null;
     ecological_season_id: number;
     vantage_code_ids: number[];
   };
@@ -23,7 +23,7 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
   purpose_and_methodology: {
     intended_outcome_id: '' as unknown as number,
     additional_details: '',
-    field_method_id: '' as unknown as number,
+    field_method_id: null,
     ecological_season_id: '' as unknown as number,
     vantage_code_ids: []
   }
@@ -31,7 +31,6 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
 
 export const PurposeAndMethodologyYupSchema = yup.object().shape({
   purpose_and_methodology: yup.object().shape({
-    field_method_id: yup.number().required('Field Method is Required'),
     additional_details: yup.string(),
     intended_outcome_id: yup.number().required('Intended Outcome is Required'),
     ecological_season_id: yup.number().required('Ecological Season is Required'),
@@ -41,7 +40,6 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
 
 export interface IPurposeAndMethodologyFormProps {
   intended_outcomes: ISelectWithSubtextFieldOption[];
-  field_methods: ISelectWithSubtextFieldOption[];
   ecological_seasons: ISelectWithSubtextFieldOption[];
   vantage_codes: IMultiAutocompleteFieldOption[];
 }
@@ -82,15 +80,6 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
           Survey Methodology
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <SelectWithSubtextField
-              id="field_method_id"
-              name="purpose_and_methodology.field_method_id"
-              label="Field Method"
-              options={props.field_methods}
-              required={true}
-            />
-          </Grid>
           <Grid item xs={12}>
             <SelectWithSubtextField
               id="ecological_season_id"

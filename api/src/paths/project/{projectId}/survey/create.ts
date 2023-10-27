@@ -202,7 +202,8 @@ POST.apiDoc = {
                   type: 'string'
                 },
                 field_method_id: {
-                  type: 'number'
+                  type: 'number',
+                  nullable: true
                 },
                 vantage_code_ids: {
                   type: 'array',

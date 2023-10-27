@@ -171,7 +171,6 @@ GET.apiDoc = {
                       description: 'Survey Details',
                       type: 'object',
                       required: [
-                        'field_method_id',
                         'additional_details',
                         'intended_outcome_id',
                         'ecological_season_id',
@@ -180,7 +179,8 @@ GET.apiDoc = {
                       ],
                       properties: {
                         field_method_id: {
-                          type: 'number'
+                          type: 'number',
+                          nullable: true
                         },
                         additional_details: {
                           type: 'string',

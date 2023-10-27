@@ -334,11 +334,6 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name, subText: item.description };
                         }) || []
                       }
-                      field_methods={
-                        codes?.field_methods.map((item) => {
-                          return { value: item.id, label: item.name, subText: item.description };
-                        }) || []
-                      }
                       ecological_seasons={
                         codes?.ecological_seasons.map((item) => {
                           return { value: item.id, label: item.name, subText: item.description };

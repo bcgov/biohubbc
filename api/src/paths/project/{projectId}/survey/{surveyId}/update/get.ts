@@ -219,7 +219,8 @@ GET.apiDoc = {
                     ],
                     properties: {
                       field_method_id: {
-                        type: 'number'
+                        type: 'number',
+                        nullable: true
                       },
                       additional_details: {
                         type: 'string',
