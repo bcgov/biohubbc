@@ -329,28 +329,28 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                   {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
                 </Typography>
               </Grid>
-              <Grid item lg={6} md={12} sm={12}>
-                <CustomTextField
-                  label="Critter ID"
-                  name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
-                  other={{
-                    InputProps: {
-                      endAdornment: (
-                        <IconButton
-                          aria-label={`Copy Critter ID`}
-                          onClick={() => {
-                            navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
-                            setMessageSnackbar('Copied Critter ID', dialogContext);
-                          }}>
-                          <Icon path={mdiContentCopy} size={0.8} />
-                        </IconButton>
-                      )
-                    },
-                    disabled: true
-                  }}
-                />
-              </Grid>
               <Grid item lg={12} md={12} sm={12}>
+                {section === SurveyAnimalsI18N.animalGeneralTitle ? (
+                  <CustomTextField
+                    label="Critter ID"
+                    name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
+                    other={{
+                      InputProps: {
+                        endAdornment: (
+                          <IconButton
+                            aria-label={`Copy Critter ID`}
+                            onClick={() => {
+                              navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
+                              setMessageSnackbar('Copied Critter ID', dialogContext);
+                            }}>
+                            <Icon path={mdiContentCopy} size={0.8} />
+                          </IconButton>
+                        )
+                      },
+                      disabled: true
+                    }}
+                  />
+                ) : null}
                 <Form>
                   <AnimalSectionDataCards
                     key={section}
