@@ -151,7 +151,6 @@ export class ProjectRepository extends BaseRepository {
         p.uuid,
         p.name as project_name,
         p.objectives,
-        p.location_description,
         p.start_date,
         p.end_date,
         p.comments,

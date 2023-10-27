@@ -217,7 +217,6 @@ export interface IGetProjectForViewResponse {
 export interface ProjectViewObject {
   project: IGetProjectForViewResponseDetails;
   objectives: IGetProjectForViewResponseObjectives;
-  location: IGetProjectForViewResponseLocation;
   participants: IGetProjectParticipant[];
   iucn: IGetProjectForViewResponseIUCN;
 }
@@ -232,11 +231,6 @@ export interface IGetProjectForViewResponseDetails {
 }
 export interface IGetProjectForViewResponseObjectives {
   objectives: string;
-}
-
-export interface IGetProjectForViewResponseLocation {
-  location_description: string;
-  geometry: Feature[];
 }
 
 export interface IGetProjectParticipant {

@@ -4,7 +4,6 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/http-error';
 import { PostParticipantData } from '../../../models/project-create';
-import { GeoJSONFeature } from '../../../openapi/schemas/geoJson';
 import { projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
@@ -34,7 +33,6 @@ export const GET: Operation = [
 export enum GET_ENTITIES {
   project = 'project',
   objectives = 'objectives',
-  location = 'location',
   iucn = 'iucn',
   participants = 'participants'
 }
@@ -118,23 +116,6 @@ GET.apiDoc = {
                 properties: {
                   objectives: {
                     type: 'string'
-                  }
-                }
-              },
-              location: {
-                description: 'The project location object',
-                type: 'object',
-                required: ['location_description', 'geometry'],
-                nullable: true,
-                properties: {
-                  location_description: {
-                    type: 'string'
-                  },
-                  geometry: {
-                    type: 'array',
-                    items: {
-                      ...(GeoJSONFeature as object)
-                    }
                   }
                 }
               },

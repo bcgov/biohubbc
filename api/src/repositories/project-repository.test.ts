@@ -225,8 +225,7 @@ describe('ProjectRepository', () => {
           end_date: 'end_date',
           comments: 'comments'
         },
-        objectives: { objectives: '' },
-        location: { location_description: '', geometry: [{ id: 1 }] }
+        objectives: { objectives: '' }
       } as unknown) as PostProjectObject;
 
       const response = await repository.insertProject(input);
@@ -248,8 +247,7 @@ describe('ProjectRepository', () => {
           end_date: 'end_date',
           comments: 'comments'
         },
-        objectives: { objectives: '' },
-        location: { location_description: '', geometry: [] }
+        objectives: { objectives: '' }
       } as unknown) as PostProjectObject;
 
       const response = await repository.insertProject(input);
@@ -271,8 +269,7 @@ describe('ProjectRepository', () => {
           end_date: 'end_date',
           comments: 'comments'
         },
-        objectives: { objectives: '' },
-        location: { location_description: '', geometry: [] }
+        objectives: { objectives: '' }
       } as unknown) as PostProjectObject;
 
       try {
