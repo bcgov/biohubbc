@@ -37,11 +37,11 @@ parameters:
     required: true
     value: 14-ubi8
   - name: CPU_REQUEST
-    value: '100m'
+    value: '50m'
   - name: CPU_LIMIT
     value: '1000m'
   - name: MEMORY_REQUEST
-    value: '512Mi'
+    value: '100Mi'
   - name: MEMORY_LIMIT
     value: '5Gi'
 objects:
@@ -49,7 +49,6 @@ objects:
     apiVersion: image.openshift.io/v1
     metadata:
       name: ${SOURCE_IMAGE_NAME}
-      creationTimestamp: null
       annotations:
         description: Nodejs Base Image
       labels:
@@ -71,7 +70,6 @@ objects:
     apiVersion: image.openshift.io/v1
     metadata:
       name: '${NAME}'
-      creationTimestamp: null
       annotations:
         description: Nodejs Runtime Image
       labels:
@@ -84,7 +82,6 @@ objects:
     apiVersion: build.openshift.io/v1
     metadata:
       name: '${NAME}${SUFFIX}'
-      creationTimestamp:
       labels: {}
       annotations: {}
     spec:

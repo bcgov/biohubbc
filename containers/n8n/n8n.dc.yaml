@@ -207,7 +207,6 @@ objects:
         type: Recreate
       template:
         metadata:
-          creationTimestamp: null
           labels:
             name: "redis-${NAME}"
         spec:
@@ -300,7 +299,6 @@ objects:
         type: Recreate
       template:
         metadata:
-          creationTimestamp: null
           labels:
             name: "postgresql-${NAME}"
         spec:
@@ -406,7 +404,6 @@ objects:
         type: Rolling
       template:
         metadata:
-          creationTimestamp: null
           labels:
             name: "${NAME}"
         spec:
