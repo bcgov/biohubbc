@@ -45,7 +45,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
 
   return (
     <Fragment>
-      <Grid item md={12}>
+      <Grid item xs={12} md={12}>
         <CbSelectField
           label="Marking Type"
           name={getAnimalFieldName<IAnimalMarking>(name, 'marking_type_id', index)}
@@ -58,7 +58,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
           handleChangeSideEffect={handleMarkingTypeName}
         />
       </Grid>
-      <Grid item md={12}>
+      <Grid item xs={12} md={12}>
         <CbSelectField
           label="Marking Body Location"
           name={getAnimalFieldName<IAnimalMarking>(name, 'taxon_marking_body_location_id', index)}
@@ -72,7 +72,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
           handleChangeSideEffect={handleMarkingLocationName}
         />
       </Grid>
-      <Grid item md={12}>
+      <Grid item xs={12} md={12}>
         <CbSelectField
           label="Primary Colour"
           name={getAnimalFieldName<IAnimalMarking>(name, 'primary_colour_id', index)}
@@ -85,7 +85,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
           handleChangeSideEffect={handlePrimaryColourName}
         />
       </Grid>
-      <Grid item md={12}>
+      <Grid item xs={12} md={12}>
         <CbSelectField
           label="Secondary Colour"
           name={getAnimalFieldName<IAnimalMarking>(name, 'secondary_colour_id', index)}
