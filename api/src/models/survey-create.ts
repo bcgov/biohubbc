@@ -121,7 +121,7 @@ export class PostProprietorData {
 }
 
 export class PostPurposeAndMethodologyData {
-  intended_outcome_id: number;
+  intended_outcome_ids: number[];
   additional_details: string;
   field_method_id: number;
   ecological_season_id: number;
@@ -129,7 +129,7 @@ export class PostPurposeAndMethodologyData {
   surveyed_all_areas: boolean;
 
   constructor(obj?: any) {
-    this.intended_outcome_id = obj?.intended_outcome_id || null;
+    this.intended_outcome_ids = obj?.intended_outcome_ids || null;
     this.additional_details = obj?.additional_details || null;
     this.field_method_id = obj?.field_method_id || null;
     this.ecological_season_id = obj?.ecological_season_id || null;

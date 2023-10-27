@@ -20,7 +20,7 @@ export const surveyObject: SurveyViewObject = {
   },
   blocks: [],
   purpose_and_methodology: {
-    intended_outcome_id: 1,
+    intended_outcome_ids: [1],
     additional_details: 'details',
     field_method_id: 1,
     ecological_season_id: 1,

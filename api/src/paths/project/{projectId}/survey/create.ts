@@ -195,8 +195,11 @@ POST.apiDoc = {
             purpose_and_methodology: {
               type: 'object',
               properties: {
-                intended_outcome_id: {
-                  type: 'number'
+                intended_outcome_ids: {
+                  type: 'array',
+                  items: {
+                    type: 'integer'
+                  }
                 },
                 additional_details: {
                   type: 'string'

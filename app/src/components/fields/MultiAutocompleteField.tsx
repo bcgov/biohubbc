@@ -1,5 +1,6 @@
 import CheckBox from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
+import { ListItemText } from '@mui/material';
 import Autocomplete, {
   AutocompleteChangeReason,
   AutocompleteInputChangeReason,
@@ -16,6 +17,7 @@ import { useEffect, useState } from 'react';
 export interface IMultiAutocompleteFieldOption {
   value: string | number;
   label: string;
+  subText?: string;
 }
 
 export interface IMultiAutocompleteField {
@@ -138,7 +140,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
               value={renderOption.value}
               color="default"
             />
-            {renderOption.label}
+            <ListItemText primary={renderOption.label} secondary={renderOption.subText}/>
           </Box>
         );
       }}

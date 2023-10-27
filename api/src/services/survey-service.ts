@@ -380,6 +380,10 @@ export class SurveyService extends DBService {
     // Handle survey types
     promises.push(this.insertSurveyTypes(postSurveyData.survey_details.survey_types, surveyId));
 
+    promises.push(
+      this.insertSurveyIntendedOutcomes(postSurveyData.purpose_and_methodology.intended_outcome_ids, surveyId)
+    );
+
     // Handle focal species associated to this survey
     promises.push(
       Promise.all(
@@ -620,6 +624,16 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Inserts multiple rows for intended outcomes of a survey.
+   *
+   * @param {number[]} intended_outcomes
+   * @param {number} surveyId
+   */
+  async insertSurveyIntendedOutcomes(intended_outcomes: number[], surveyId: number): Promise<void> {
+    return this.surveyRepository.insertSurveyIntendedOutcomes(intended_outcomes, surveyId);
+  }
+
+  /**
    * Insert or update association of permit to a given survey
    *
    * @param {number} systemUserId
@@ -693,6 +707,7 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyVantageCodesData(surveyId, putSurveyData));
+      promises.push(this.updateSurveyIntendedOutcomes(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.partnerships) {
@@ -919,6 +934,15 @@ export class SurveyService extends DBService {
     });
 
     await Promise.all(promises);
+  }
+
+  async updateSurveyIntendedOutcomes(surveyId: number, surveyData: PutSurveyObject) {
+    const purposeMethodInfo = await this.getSurveyPurposeAndMethodology(surveyId);
+    await this.surveyRepository.updateSurveyIntendedOutcomes(
+      surveyData.purpose_and_methodology.intended_outcome_ids,
+      purposeMethodInfo.intended_outcome_ids,
+      surveyId
+    );
   }
 
   /**

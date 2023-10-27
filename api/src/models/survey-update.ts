@@ -131,7 +131,7 @@ export class PutSurveyProprietorData {
   }
 }
 export class PutSurveyPurposeAndMethodologyData {
-  intended_outcome_id: number;
+  intended_outcome_ids: number[];
   field_method_id: number;
   additional_details: string;
   ecological_season_id: number;
@@ -140,7 +140,7 @@ export class PutSurveyPurposeAndMethodologyData {
   revision_count: number;
 
   constructor(obj?: any) {
-    this.intended_outcome_id = obj?.intended_outcome_id || null;
+    this.intended_outcome_ids = obj?.intended_outcome_ids || null;
     this.field_method_id = obj?.field_method_id || null;
     this.additional_details = obj?.additional_details || null;
     this.ecological_season_id = obj?.ecological_season_id || null;

@@ -27,10 +27,29 @@ const SurveyPurposeAndMethodologyData = () => {
       <Box className="row">
         <Typography component="dt">Intended Outcome</Typography>
         <Typography component="dd" variant="body1" data-testid="survey_intended_outcome">
-          {Boolean(surveyData.purpose_and_methodology.intended_outcome_id) &&
-            codes?.intended_outcomes?.find(
-              (item: any) => item.id === surveyData.purpose_and_methodology.intended_outcome_id
-            )?.name}
+          {surveyData.purpose_and_methodology.intended_outcome_ids?.map((outcomeId: number) => {
+            return (
+              <Typography
+                component="dd"
+                key={`key-outcome-${outcomeId}`}
+                sx={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  mr: 1.25,
+                  '&::after': {
+                    content: `','`,
+                    position: 'absolute',
+                    top: 0
+                  },
+                  '&:last-child::after': {
+                    display: 'none'
+                  }
+                }}
+                data-testid="survey_vantage_code">
+                {codes?.intended_outcomes?.find((item: any) => item.id === outcomeId)?.name}
+              </Typography>
+            );
+          })}
         </Typography>
       </Box>
       {surveyData.purpose_and_methodology.additional_details && (

@@ -61,7 +61,7 @@ export interface IGetSurveyForViewResponseDetails {
 }
 
 export interface IGetSurveyForViewResponsePurposeAndMethodology {
-  intended_outcome_id: number;
+  intended_outcome_ids: number[];
   additional_details: string;
   field_method_id: number;
   ecological_season_id: number;
@@ -162,7 +162,7 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
   ];
   partnerships?: IGetSurveyForUpdateResponsePartnerships;
   purpose_and_methodology?: {
-    intended_outcome_id: number;
+    intended_outcome_ids: number[];
     additional_details: string;
     field_method_id: number;
     ecological_season_id: number;

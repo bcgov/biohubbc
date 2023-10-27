@@ -173,7 +173,7 @@ GET.apiDoc = {
                       required: [
                         'field_method_id',
                         'additional_details',
-                        'intended_outcome_id',
+                        'intended_outcome_ids',
                         'ecological_season_id',
                         'vantage_code_ids',
                         'revision_count'
@@ -186,8 +186,11 @@ GET.apiDoc = {
                           type: 'string',
                           nullable: true
                         },
-                        intended_outcome_id: {
-                          type: 'number',
+                        intended_outcome_ids: {
+                          type: 'array',
+                          items: {
+                            type: 'number'
+                          },
                           nullable: true
                         },
                         ecological_season_id: {

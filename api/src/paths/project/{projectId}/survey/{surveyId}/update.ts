@@ -211,7 +211,7 @@ PUT.apiDoc = {
             purpose_and_methodology: {
               type: 'object',
               required: [
-                'intended_outcome_id',
+                'intended_outcome_ids',
                 'additional_details',
                 'field_method_id',
                 'vantage_code_ids',
@@ -219,8 +219,11 @@ PUT.apiDoc = {
                 'revision_count'
               ],
               properties: {
-                intended_outcome_id: {
-                  type: 'number'
+                intended_outcome_ids: {
+                  type: 'array',
+                  items: {
+                    type: 'number'
+                  }
                 },
                 additional_details: {
                   type: 'string'

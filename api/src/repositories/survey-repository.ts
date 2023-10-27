@@ -82,7 +82,6 @@ const SurveyRecord = z.object({
   field_method_id: z.number().nullable(),
   additional_details: z.string().nullable(),
   ecological_season_id: z.number().nullable(),
-  intended_outcome_id: z.number().nullable(),
   comments: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
@@ -245,21 +244,24 @@ export class SurveyRepository extends BaseRepository {
         s.field_method_id,
         s.additional_details,
         s.ecological_season_id,
-        s.intended_outcome_id,
-        array_remove(array_agg(sv.vantage_id), NULL) as vantage_ids
+        array_remove(array_agg(DISTINCT io.intended_outcome_id), NULL) as intended_outcome_ids,
+        array_remove(array_agg(DISTINCT sv.vantage_id), NULL) as vantage_ids
       FROM
         survey s
       LEFT OUTER JOIN
         survey_vantage sv
       ON
         sv.survey_id = s.survey_id
+      LEFT OUTER JOIN
+        survey_intended_outcome io
+      ON 
+        io.survey_id = s.survey_id
       WHERE
         s.survey_id = ${surveyId}
       GROUP BY
         s.field_method_id,
         s.additional_details,
-        s.ecological_season_id,
-        s.intended_outcome_id;
+        s.ecological_season_id;
       `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -583,8 +585,7 @@ export class SurveyRepository extends BaseRepository {
         end_date,
         field_method_id,
         additional_details,
-        ecological_season_id,
-        intended_outcome_id
+        ecological_season_id
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
@@ -592,8 +593,7 @@ export class SurveyRepository extends BaseRepository {
         ${surveyData.survey_details.end_date},
         ${surveyData.purpose_and_methodology.field_method_id},
         ${surveyData.purpose_and_methodology.additional_details},
-        ${surveyData.purpose_and_methodology.ecological_season_id},
-        ${surveyData.purpose_and_methodology.intended_outcome_id}
+        ${surveyData.purpose_and_methodology.ecological_season_id}
       )
       RETURNING
         survey_id as id;
@@ -737,6 +737,63 @@ export class SurveyRepository extends BaseRepository {
       ]);
     }
     return result.id;
+  }
+
+  /**
+   * Insert a new row for each provided intended outcome id.
+   *
+   * @param {number[]} intendedOutcomeIds
+   * @param {number} surveyId
+   */
+  async insertSurveyIntendedOutcomes(intendedOutcomeIds: number[], surveyId: number): Promise<void> {
+    const knex = getKnex();
+    const queryBuilder = knex.queryBuilder();
+    const rowsForInsertion = intendedOutcomeIds.map((outcome_id) => ({
+      intended_outcome_id: outcome_id,
+      survey_id: surveyId
+    }));
+    queryBuilder.insert(rowsForInsertion).into('survey_intended_outcome');
+    await this.connection.knex(queryBuilder);
+    return;
+  }
+
+  /**
+   * Insert new rows that weren't found in the existing list. Delete rows that existed before but weren't found in the new list.
+   * @param {number[]} intendedOutcomeIds
+   * @param {number[]} existingOutcomeIds
+   * @param {number} surveyId
+   */
+  async updateSurveyIntendedOutcomes(
+    intendedOutcomeIds: number[],
+    existingOutcomeIds: number[],
+    surveyId: number
+  ): Promise<void> {
+    const rowsToInsert = intendedOutcomeIds.reduce((acc: number[], curr: number) => {
+      if (!existingOutcomeIds.find((existingId) => existingId === curr)) {
+        return [...acc, curr];
+      }
+      return acc;
+    }, []);
+    const rowsToDelete = existingOutcomeIds.reduce((acc: number[], curr: number) => {
+      if (!intendedOutcomeIds.find((existingId) => existingId === curr)) {
+        return [...acc, curr];
+      }
+      return acc;
+    }, []);
+
+    const knex = getKnex();
+    const queryBuilder = knex.queryBuilder();
+    if (rowsToInsert.length) {
+      queryBuilder
+        .insert(rowsToInsert.map((outcomeId) => ({ survey_id: surveyId, intended_outcome_id: outcomeId })))
+        .into('survey_intended_outcome');
+      await this.connection.knex(queryBuilder);
+    }
+
+    if (rowsToDelete.length) {
+      queryBuilder.delete().whereIn('intended_outcome_id', rowsToDelete).andWhere('survey_id', surveyId);
+      await this.connection.knex(queryBuilder);
+    }
   }
 
   /**
@@ -894,8 +951,7 @@ export class SurveyRepository extends BaseRepository {
         ...fieldsToUpdate,
         field_method_id: surveyData.purpose_and_methodology.field_method_id,
         additional_details: surveyData.purpose_and_methodology.additional_details,
-        ecological_season_id: surveyData.purpose_and_methodology.ecological_season_id,
-        intended_outcome_id: surveyData.purpose_and_methodology.intended_outcome_id
+        ecological_season_id: surveyData.purpose_and_methodology.ecological_season_id
       };
     }
 
