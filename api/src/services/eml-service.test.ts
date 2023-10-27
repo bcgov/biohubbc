@@ -633,10 +633,6 @@ describe.skip('EmlService', () => {
                   para: 'Call Playback'
                 },
                 {
-                  title: 'Ecological Season',
-                  para: 'Spring'
-                },
-                {
                   title: 'Vantage Codes',
                   para: {
                     itemizedlist: {
@@ -986,7 +982,6 @@ describe.skip('EmlService', () => {
       system_roles: [],
       project_roles: [],
       administrative_activity_status_type: [],
-      ecological_seasons: [],
       field_methods: [],
       intended_outcomes: [],
       vantage_codes: [],

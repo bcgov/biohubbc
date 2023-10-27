@@ -42,7 +42,6 @@ describe('survey/{surveyId}/view', () => {
               field_method_id: 1,
               additional_details: 'details',
               intended_outcome_id: 8,
-              ecological_season_id: 1,
               vantage_code_ids: [1, 2],
               surveyed_all_areas: 'true',
               revision_count: 0
@@ -121,7 +120,6 @@ describe('survey/{surveyId}/view', () => {
               field_method_id: 1,
               additional_details: null,
               intended_outcome_id: null,
-              ecological_season_id: null,
               vantage_code_ids: [],
               surveyed_all_areas: 'false',
               revision_count: 0

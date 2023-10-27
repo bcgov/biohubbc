@@ -468,7 +468,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
@@ -496,7 +495,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
@@ -524,7 +522,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y'
         },
@@ -850,7 +847,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y',
           revision_count: 1
@@ -879,7 +875,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y',
           revision_count: 1
@@ -908,7 +903,6 @@ describe('SurveyRepository', () => {
         purpose_and_methodology: {
           field_method_id: 1,
           additional_details: '',
-          ecological_season_id: 1,
           intended_outcome_id: 1,
           surveyed_all_areas: 'Y',
           revision_count: 1
