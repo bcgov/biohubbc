@@ -15,6 +15,7 @@ import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
+import StartEndTimeFields from 'components/fields/StartEndTimeFields';
 import { CodesContext } from 'contexts/codesContext';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
@@ -26,6 +27,8 @@ interface ISurveySampleMethodPeriodData {
   survey_sample_method_id: number | null;
   start_date: string;
   end_date: string;
+  start_time: string | null;
+  end_time: string | null;
 }
 
 export interface ISurveySampleMethodData {
@@ -45,7 +48,9 @@ export const SurveySampleMethodPeriodArrayItemInitialValues = {
   survey_sample_period_id: '' as unknown as null,
   survey_sample_method_id: '' as unknown as null,
   start_date: '',
-  end_date: ''
+  end_date: '',
+  start_time: '',
+  end_time: ''
 };
 
 export const SurveySampleMethodDataInitialValues = {
@@ -72,7 +77,9 @@ export const SamplingSiteMethodYupSchema = yup.object({
           .typeError('End Date is required')
           .isValidDateString()
           .required('End Date is required')
-          .isEndDateSameOrAfterStartDate('start_date')
+          .isEndDateSameOrAfterStartDate('start_date'),
+        start_time: yup.string().nullable(),
+        end_time: yup.string().nullable()
       })
     )
     .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_date')
@@ -156,17 +163,29 @@ const MethodForm = () => {
                           }
                         }}>
                         <Box width="100%">
-                          <StartEndDateFields
-                            formikProps={formikProps}
-                            startName={`periods[${index}].start_date`}
-                            endName={`periods[${index}].end_date`}
-                            startRequired={true}
-                            endRequired={true}
-                          />
+                          <Box width="100%">
+                            <StartEndDateFields
+                              formikProps={formikProps}
+                              startName={`periods[${index}].start_date`}
+                              endName={`periods[${index}].end_date`}
+                              startRequired={true}
+                              endRequired={true}
+                            />
+                          </Box>
+
+                          <Box width="100%" pt={1}>
+                            <StartEndTimeFields
+                              formikProps={formikProps}
+                              startName={`periods[${index}].start_time`}
+                              endName={`periods[${index}].end_time`}
+                              startRequired={true}
+                              endRequired={true}
+                            />
+                          </Box>
                         </Box>
                         <ListItemSecondaryAction
                           sx={{
-                            top: '36px'
+                            flex: '0 0 auto'
                           }}>
                           <IconButton
                             data-testid="delete-icon"
