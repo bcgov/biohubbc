@@ -52,9 +52,6 @@ export const PUT: Operation = [
   insertUpdateDeleteSurveyObservations()
 ];
 
-// TODO
-export const DELETE: Operation = [];
-
 export const surveyObservationsResponseSchema: SchemaObject = {
   type: 'object',
   nullable: true,
@@ -228,7 +225,7 @@ PUT.apiDoc = {
           type: 'object',
           properties: {
             surveyObservations: {
-              description: 'Survey observation reords.',
+              description: 'Survey observation records.',
               type: 'array',
               items: {
                 type: 'object',

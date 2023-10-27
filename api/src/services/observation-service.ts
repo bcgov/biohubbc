@@ -209,4 +209,15 @@ export class ObservationService extends DBService {
     // Step 6. Insert new rows and return them
     return this.observationRepository.insertUpdateSurveyObservations(surveyId, insertRows);
   }
+
+   /**
+   * TODO jsdoc
+   *
+   * @param {number[]} observationIds
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async deleteObservationsByIds(observationIds: number[]): Promise<number> {
+    return this.observationRepository.deleteObservationsByIds(observationIds);
+  }
 }
