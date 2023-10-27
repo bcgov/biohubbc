@@ -74,7 +74,7 @@ const SamplingSiteList = () => {
    */
   const handleDeleteSampleSite = async () => {
     await biohubApi.samplingSite
-      .deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, selectedSampleSiteId as number)
+      .deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, Number(selectedSampleSiteId))
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setAnchorEl(null);
