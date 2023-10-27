@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
-import Paper from '@mui/material/Paper';
+// import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import SurveySectionHeader from '../components/SurveySectionHeader';
+import Stack from '@mui/system/Stack';
+import Divider from '@mui/material/Divider';
 
 interface SurveySectionFullPageLayoutProps {
   sideBarComponent: JSX.Element;
@@ -22,32 +23,34 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
 
   return (
     <Box display="flex" flexDirection="column" height="100%" overflow="hidden" position="relative">
+      
       <SurveySectionHeader
         project_id={surveyContext.projectId}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
         title={pageTitle}
       />
-      <Paper
-        elevation={0}
+
+      <Divider flexItem></Divider>
+
+      <Stack 
+        direction="row"
+        divider={<Divider orientation="vertical" flexItem />}
         sx={{
-          display: 'flex',
           flex: '1 1 auto',
-          overflow: 'hidden',
-          m: 1
-        }}>
+          background: '#fff'
+        }}
+      >
         <Box
           flex="0 0 auto"
-          width="400px"
-          sx={{
-            borderRight: '1px solid ' + grey[300]
-          }}>
+          width="400px">
           {sideBarComponent}
         </Box>
-        <Box flex="1 1 auto" overflow="hidden">
+        
+        <Box flex="1 1 auto" position="relative">
           {mainComponent}
         </Box>
-      </Paper>
+      </Stack>
     </Box>
   );
 };
