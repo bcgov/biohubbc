@@ -140,7 +140,7 @@ export class PutSurveyPurposeAndMethodologyData {
   revision_count: number;
 
   constructor(obj?: any) {
-    this.intended_outcome_ids = obj?.intended_outcome_ids || null;
+    this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.field_method_id = obj?.field_method_id || null;
     this.additional_details = obj?.additional_details || null;
     this.ecological_season_id = obj?.ecological_season_id || null;

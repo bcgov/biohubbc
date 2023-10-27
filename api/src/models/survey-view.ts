@@ -131,7 +131,7 @@ export class GetSurveyPurposeAndMethodologyData {
   vantage_code_ids: number[];
 
   constructor(obj?: any) {
-    this.intended_outcome_ids = obj?.intended_outcome_ids || null;
+    this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.additional_details = obj?.additional_details || '';
     this.field_method_id = obj?.field_method_id || null;
     this.ecological_season_id = obj?.ecological_season_id || null;

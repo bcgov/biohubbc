@@ -181,6 +181,9 @@ describe('SurveyService', () => {
       const updateSurveyVantageCodesDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyVantageCodesData')
         .resolves();
+      const updateSurveyIntendedOutcomesStub = sinon
+        .stub(SurveyService.prototype, 'updateSurveyIntendedOutcomes')
+        .resolves();
       const updateSurveySpeciesDataStub = sinon.stub(SurveyService.prototype, 'updateSurveySpeciesData').resolves();
       const updateSurveyPermitDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyPermitData').resolves();
       const upsertSurveyFundingSourceDataStub = sinon
@@ -233,6 +236,7 @@ describe('SurveyService', () => {
       expect(replaceSurveyStratumsStub).to.have.been.calledOnce;
       expect(replaceSiteStrategiesStub).to.have.been.calledOnce;
       expect(insertUpdateDeleteSurveyLocationStub).to.have.been.calledOnce;
+      expect(updateSurveyIntendedOutcomesStub).to.have.been.calledOnce;
     });
   });
 

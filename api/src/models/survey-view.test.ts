@@ -337,7 +337,7 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(null);
+      expect(data.intended_outcome_ids).to.eql([]);
     });
 
     it('sets additional_details', () => {
@@ -361,7 +361,7 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     let data: GetSurveyPurposeAndMethodologyData;
 
     const obj = {
-      intended_outcome_id: 1,
+      intended_outcome_ids: [1],
       additional_details: 'additional_detail',
       field_method_id: 2,
       ecological_season_id: 3,
@@ -374,7 +374,7 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(obj.intended_outcome_id);
+      expect(data.intended_outcome_ids).to.equal(obj.intended_outcome_ids);
     });
 
     it('sets additional_details', () => {
