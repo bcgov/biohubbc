@@ -25,7 +25,9 @@ export const SampleLocationRecord = z.object({
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
 
 // Insert Object for Sample Locations
-export type InsertSampleLocationRecord = Pick<SampleLocationRecord, 'survey_id' | 'name' | 'description' | 'geojson'>;
+export type InsertSampleLocationRecord = Pick<SampleLocationRecord, 'survey_id' | 'description' | 'geojson'> & {
+  name: string | undefined;
+};
 
 // Update Object for Sample Locations
 export type UpdateSampleLocationRecord = Pick<
@@ -152,7 +154,7 @@ export class SampleLocationRepository extends BaseRepository {
    * @memberof SampleLocationRepository
    */
   async insertSampleLocation(sample: InsertSampleLocationRecord): Promise<SampleLocationRecord> {
-    const name = sample.name
+    const shapeNameOrQuery = sample.name
       ? SQL`${sample.name}`
       : SQL`(SELECT concat('Sample Site ', (SELECT count(survey_sample_site_id) + 1 FROM survey_sample_site sss WHERE survey_id = ${sample.survey_id})))`;
 
@@ -164,7 +166,7 @@ export class SampleLocationRepository extends BaseRepository {
       geojson,
       geography
     ) VALUES (
-      ${sample.survey_id},`.append(name).append(SQL`,
+      ${sample.survey_id},`.append(shapeNameOrQuery).append(SQL`,
         ${sample.description},
         ${sample.geojson},
         `);

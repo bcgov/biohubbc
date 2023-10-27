@@ -33,7 +33,7 @@ export interface ISampleSiteEditFormProps {
 
 export const samplingSiteYupSchema = yup.object({
   sampleSite: yup.object({
-    name: yup.string().default('').max(50),
+    name: yup.string().default('').max(50, 'Maximum 50 characters.'),
     description: yup.string().default('').nullable(),
     survey_sample_sites: yup
       .array(yup.object())
