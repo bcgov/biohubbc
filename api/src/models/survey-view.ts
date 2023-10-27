@@ -126,7 +126,6 @@ export class GetSurveyPurposeAndMethodologyData {
   intended_outcome_id: number;
   additional_details: string;
   field_method_id: number;
-  ecological_season_id: number;
   revision_count: number;
   vantage_code_ids: number[];
 
@@ -134,7 +133,6 @@ export class GetSurveyPurposeAndMethodologyData {
     this.intended_outcome_id = obj?.intended_outcome_id || null;
     this.additional_details = obj?.additional_details || '';
     this.field_method_id = obj?.field_method_id || null;
-    this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
     this.revision_count = obj?.revision_count ?? 0;
   }
