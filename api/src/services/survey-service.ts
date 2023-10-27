@@ -380,6 +380,7 @@ export class SurveyService extends DBService {
     // Handle survey types
     promises.push(this.insertSurveyTypes(postSurveyData.survey_details.survey_types, surveyId));
 
+    //Handle multiple intended outcomes
     promises.push(
       this.insertSurveyIntendedOutcomes(postSurveyData.purpose_and_methodology.intended_outcome_ids, surveyId)
     );
@@ -936,6 +937,12 @@ export class SurveyService extends DBService {
     await Promise.all(promises);
   }
 
+  /**
+   * Updates the list of intended outcomes associated with this survey.
+   *
+   * @param {number} surveyId
+   * @param {PurSurveyObject} surveyData
+   */
   async updateSurveyIntendedOutcomes(surveyId: number, surveyData: PutSurveyObject) {
     const purposeMethodInfo = await this.getSurveyPurposeAndMethodology(surveyId);
     await this.surveyRepository.updateSurveyIntendedOutcomes(
