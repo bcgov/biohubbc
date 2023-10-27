@@ -1,8 +1,9 @@
+import Typography from '@mui/material/Typography';
 import { GridRowId, GridRowModelUpdate, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
+import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
@@ -112,10 +113,13 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   const [unsavedRecordIds, _setUnsavedRecordIds] = useState<string[]>([]);
   const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
-
   const [rowIdsToSave, setRowIdsToSave] = useState<GridRowId[]>([]);
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const _showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
 
   const _showErrorDialog = useCallback(
     (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -236,8 +240,16 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
           surveyId,
           rowsToSave as IObservationTableRow[]
         );
+
         setRowIdsToSave([]);
         _setUnsavedRecordIds([]);
+        _showSnackBar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              Updated survey observations successfully.
+            </Typography>
+          )
+        });
         return refreshRecords();
       } catch (error) {
         revertAllRowsEditMode();

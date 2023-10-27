@@ -315,10 +315,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         }
 
         if (moment.isMoment(value)) {
-          return value.format('HH:mm');
+          return value.format('HH:mm:ss');
         }
 
-        return moment(value, 'HH:mm:ss').format('HH:mm');
+        return moment(value, 'HH:mm:ss').format('HH:mm:ss');
       },
       renderCell: (params) => {
         if (!params.value) {
@@ -342,7 +342,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
                   value: value?.format('HH:mm:ss')
                 });
               }}
-              timeSteps={{ hours: 1, minutes: 1 }}
+              views={['hours', 'minutes', 'seconds']}
+              timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
               ampm={false}
             />
           </LocalizationProvider>
@@ -484,15 +485,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     event.defaultMuiPrevented = true;
   };
 
-  const handleCellClick: GridEventListener<'cellClick'> = (params, event) => {
-    const { id } = params.row;
-
-    if (apiRef?.current.state.editRows[id]) {
-      return;
-    }
-
-    apiRef?.current.startRowEditMode({ id, fieldToFocus: params.field });
-    observationsContext.markRecordWithUnsavedChanges(id);
+  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, _event) => {
+    observationsContext.markRecordWithUnsavedChanges(params.id);
   };
 
   const showConfirmDeleteDialog = Boolean(deletingObservation);
@@ -531,8 +525,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         rowHeight={56}
         apiRef={apiRef}
         editMode="row"
-        onCellClick={handleCellClick}
         onRowEditStop={handleRowEditStop}
+        onRowEditStart={handleRowEditStart}
         columns={observationColumns}
         rows={observationsContext.initialRows}
         disableRowSelectionOnClick
