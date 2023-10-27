@@ -58,7 +58,7 @@ const AnimalList = (props: AnimalListProps) => {
     <Box display="flex" flexDirection="column" height="100%">
       <Toolbar
         sx={{
-          flex: '0 0 auto',
+          flex: '0 0 auto'
         }}>
         <Typography
           component="h2"

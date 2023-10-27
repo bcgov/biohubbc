@@ -2,6 +2,8 @@ import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Grid, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
+import Stack from '@mui/system/Stack';
 import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
@@ -28,8 +30,6 @@ import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
 import { DeviceFormSection, IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
-import grey from '@mui/material/colors/grey';
-import Stack from '@mui/system/Stack';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
@@ -257,9 +257,8 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         top: 0,
         right: 0,
         left: 0,
-        bottom: 0,
-      }}
-    >
+        bottom: 0
+      }}>
       <Toolbar
         sx={{
           position: 'sticky',
@@ -342,65 +341,65 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           sx={{
             overflowY: 'scroll',
             background: grey[100]
-          }}
-        >
-
+          }}>
           <Box
             sx={{
               maxWidth: '1200px',
               mx: 'auto'
-            }}
-          >
-            <Typography component="h1" variant="h2"
+            }}>
+            <Typography
+              component="h1"
+              variant="h2"
               sx={{
                 mb: 2
-              }}
-            >
+              }}>
               {section}
             </Typography>
 
-            <Typography variant="body1" color="textSecondary" maxWidth={'72ch'}
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              maxWidth={'72ch'}
               sx={{
                 mb: 4
-              }}
-            >
+              }}>
               {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
             </Typography>
 
-              {section === SurveyAnimalsI18N.animalGeneralTitle ? (
-                <CustomTextField
-                  label="Critter ID"
-                  name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
-                  other={{
-                    InputProps: {
-                      endAdornment: (
-                        <IconButton
-                          aria-label={`Copy Critter ID`}
-                          onClick={() => {
-                            navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
-                            setMessageSnackbar('Copied Critter ID', dialogContext);
-                          }}>
-                          <Icon path={mdiContentCopy} size={0.8} />
-                        </IconButton>
-                      )
-                    },
-                    disabled: true
-                  }}
-                />
-              ) : null}
-              
-              <Form>
-                <AnimalSectionDataCards
-                  key={section}
-                  onEditClick={(idx) => {
-                    setSelectedIndex(idx);
-                    setShowDialog(true);
-                  }}
-                  section={section}
-                  isAddingNew={openedFromAddButton}
-                  allFamilies={allFamilies}
-                />
-              </Form>
+            {section === SurveyAnimalsI18N.animalGeneralTitle ? (
+              <CustomTextField
+                label="Critter ID"
+                name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
+                other={{
+                  InputProps: {
+                    endAdornment: (
+                      <IconButton
+                        aria-label={`Copy Critter ID`}
+                        onClick={() => {
+                          navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
+                          setMessageSnackbar('Copied Critter ID', dialogContext);
+                        }}>
+                        <Icon path={mdiContentCopy} size={0.8} />
+                      </IconButton>
+                    )
+                  },
+                  disabled: true
+                }}
+              />
+            ) : null}
+
+            <Form>
+              <AnimalSectionDataCards
+                key={section}
+                onEditClick={(idx) => {
+                  setSelectedIndex(idx);
+                  setShowDialog(true);
+                }}
+                section={section}
+                isAddingNew={openedFromAddButton}
+                allFamilies={allFamilies}
+              />
+            </Form>
           </Box>
         </Box>
       ) : (
@@ -413,8 +412,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           sx={{
             overflowY: 'scroll',
             background: grey[100]
-          }}
-        >
+          }}>
           <Typography component="span" variant="body2" color="textSecondary">
             No Critter Selected
           </Typography>

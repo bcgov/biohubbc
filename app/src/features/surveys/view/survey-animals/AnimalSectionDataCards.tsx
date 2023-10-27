@@ -138,29 +138,33 @@ export const AnimalSectionDataCards = ({
       {({ remove }: FieldArrayRenderProps) => {
         return (
           <TransitionGroup>
-            {sectionCardData.map((cardData, index) => {
-              const submitFormRemoveCard = () => {
-                remove(index);
-                submitForm();
-              };
-              const handleDelete = () => {
-                showDeleteDialog(submitFormRemoveCard);
-              };
-              return (
-                <Collapse key={cardData.key}>
-                  <EditDeleteStubCard
-                    header={cardData.header}
-                    subHeader={cardData.subHeader}
-                    onClickEdit={() => onEditClick(index)}
-                    onClickDelete={
-                      section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
-                        ? undefined
-                        : handleDelete
-                    }
-                  />
-                </Collapse>
-              );
-            })}
+            {sectionCardData.length > 0 ? (
+              sectionCardData.map((cardData, index) => {
+                const submitFormRemoveCard = () => {
+                  remove(index);
+                  submitForm();
+                };
+                const handleDelete = () => {
+                  showDeleteDialog(submitFormRemoveCard);
+                };
+                return (
+                  <Collapse key={cardData.key}>
+                    <EditDeleteStubCard
+                      header={cardData.header}
+                      subHeader={cardData.subHeader}
+                      onClickEdit={() => onEditClick(index)}
+                      onClickDelete={
+                        section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
+                          ? undefined
+                          : handleDelete
+                      }
+                    />
+                  </Collapse>
+                );
+              })
+            ) : (
+              <div>EMPTY STATE</div>
+            )}
           </TransitionGroup>
         );
       }}
