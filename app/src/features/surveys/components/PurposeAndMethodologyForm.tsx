@@ -7,7 +7,6 @@ import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
-import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
@@ -54,8 +53,6 @@ export interface IPurposeAndMethodologyFormProps {
  * @return {*}
  */
 const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
-  const { values } = useFormikContext();
-
   return (
     <form>
       <Box component="fieldset">
@@ -113,7 +110,6 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
             />
           </Grid>
         </Grid>
-        <pre>{JSON.stringify(values, null, 2)}</pre>
       </Box>
     </form>
   );

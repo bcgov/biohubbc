@@ -25,7 +25,7 @@ const SurveyPurposeAndMethodologyData = () => {
   return (
     <Box component="dl">
       <Box className="row">
-        <Typography component="dt">Intended Outcome</Typography>
+        <Typography component="dt">Ecological Variables</Typography>
         <Typography component="dd" variant="body1" data-testid="survey_intended_outcome">
           {surveyData.purpose_and_methodology.intended_outcome_ids?.map((outcomeId: number) => {
             return (
