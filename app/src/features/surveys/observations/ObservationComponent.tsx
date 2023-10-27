@@ -11,6 +11,7 @@ import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { ObservationsTableI18N } from 'constants/i18n';
+import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import ObservationsTable from 'features/surveys/observations/ObservationsTable';
@@ -23,6 +24,11 @@ const ObservationComponent = () => {
   const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
   const biohubApi = useBiohubApi();
+  const dialogContext = useContext(DialogContext);
+
+  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
 
   const { projectId, surveyId } = surveyContext;
 
@@ -33,6 +39,13 @@ const ObservationComponent = () => {
       biohubApi.observation
         .processCsvSubmission(projectId, surveyId, response.submissionId)
         .then(() => {
+          showSnackBar({
+            snackbarMessage: (
+              <Typography variant="body2" component="div">
+                Imported survey observations successfully.
+              </Typography>
+            )
+          });
           observationsContext.refreshRecords().then(() => {
             setProcessingRecords(false);
           });
