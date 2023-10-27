@@ -4,28 +4,14 @@ import { Card, CardHeader, IconButton } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React from 'react';
 
-export type ISubHeaderData = Record<string, string | number | undefined> | string;
-
 interface EditDeleteStubCardProps {
   header: string;
-  subHeaderData: ISubHeaderData;
+  subHeader: string;
   onClickEdit?: () => void;
   onClickDelete?: () => void;
 }
 
-export const EditDeleteStubCard = ({ header, subHeaderData, onClickEdit, onClickDelete }: EditDeleteStubCardProps) => {
-  const formatSubHeaderString = (subHeaderData: ISubHeaderData) => {
-    const formatArr: string[] = [];
-    const entries = Object.entries(subHeaderData);
-    entries.forEach(([key, value]) => {
-      if (value == null || value === '') {
-        return;
-      }
-      formatArr.push(`${key} • ${value}`);
-    });
-    return formatArr.join(' | ');
-  };
-
+export const EditDeleteStubCard = ({ header, subHeader, onClickEdit, onClickDelete }: EditDeleteStubCardProps) => {
   return (
     <Card
       variant="outlined"
@@ -61,7 +47,7 @@ export const EditDeleteStubCard = ({ header, subHeaderData, onClickEdit, onClick
           </>
         }
         title={header}
-        subheader={typeof subHeaderData === 'string' ? subHeaderData : formatSubHeaderString(subHeaderData)}
+        subheader={subHeader}
       />
     </Card>
   );

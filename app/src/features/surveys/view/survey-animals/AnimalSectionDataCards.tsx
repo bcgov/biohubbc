@@ -1,7 +1,7 @@
 import Collapse from '@mui/material/Collapse';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
-import { EditDeleteStubCard, ISubHeaderData } from 'features/surveys/components/EditDeleteStubCard';
+import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IFamily } from 'hooks/cb_api/useFamilyApi';
 import moment from 'moment';
@@ -9,6 +9,8 @@ import React, { useContext, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+
+export type SubHeaderData = Record<string, string | number | undefined>;
 
 interface AnimalSectionDataCardsProps {
   section: IAnimalSections;
@@ -26,62 +28,76 @@ export const AnimalSectionDataCards = ({
   const dialogContext = useContext(DialogContext);
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
 
+  const formatSubHeader = (subHeaderData: SubHeaderData) => {
+    const formatArr: string[] = [];
+    const entries = Object.entries(subHeaderData);
+    entries.forEach(([key, value]) => {
+      if (value == null || value === '') {
+        return;
+      }
+      formatArr.push(`${key} • ${value}`);
+    });
+    return formatArr.join(' | ');
+  };
+
   const sectionCardData = useMemo(() => {
-    const sectionData: Record<
-      IAnimalSections,
-      Array<{ header: string; key: string; subHeaderData: ISubHeaderData }>
-    > = {
+    const sectionData: Record<IAnimalSections, Array<{ header: string; key: string; subHeader: string }>> = {
       [SurveyAnimalsI18N.animalGeneralTitle]: [
         {
           header: `General: ${initialValues.general.animal_id}`,
-          subHeaderData: {
+          subHeader: formatSubHeader({
             Taxon: initialValues.general.taxon_name,
             Sex: initialValues.general.sex,
             'WLH ID': values.general.wlh_id
-          },
+          }),
           key: 'general-key'
         }
       ],
       [SurveyAnimalsI18N.animalMarkingTitle]: initialValues.markings.map((marking) => ({
         header: `Marking: ${marking.marking_type}`,
-        subHeaderData: { Location: marking.body_location, Colour: marking.primary_colour },
+        subHeader: formatSubHeader({ Location: marking.body_location, Colour: marking.primary_colour }),
         key: marking.marking_id ?? 'new-marking-key'
       })),
       [SurveyAnimalsI18N.animalMeasurementTitle]: initialValues.measurements.map((measurement) => ({
         header: `Measurement: ${formatDate(measurement.measured_timestamp)}`,
-        subHeaderData: { [`${measurement.measurement_name}`]: measurement.option_label ?? measurement.value },
+        subHeader: formatSubHeader({
+          [`${measurement.measurement_name}`]: measurement.option_label ?? measurement.value
+        }),
         key: measurement.measurement_qualitative_id ?? measurement.measurement_quantitative_id ?? 'new-measurement-key'
       })),
       [SurveyAnimalsI18N.animalCaptureTitle]: initialValues.captures.map((capture) => ({
         header: `Animal Captured: ${formatDate(capture.capture_timestamp)}`,
-        subHeaderData: { Latitude: capture.capture_latitude, Longitude: capture.capture_longitude },
+        subHeader: formatSubHeader({ Latitude: capture.capture_latitude, Longitude: capture.capture_longitude }),
         key: capture.capture_id ?? 'new-capture-key'
       })),
       [SurveyAnimalsI18N.animalMortalityTitle]: initialValues.mortality.map((mortality) => ({
         header: `Animal Mortality: ${formatDate(mortality.mortality_timestamp)}`,
-        subHeaderData: { Latitude: mortality.mortality_latitude, Longitude: mortality.mortality_longitude },
+        subHeader: formatSubHeader({
+          Latitude: mortality.mortality_latitude,
+          Longitude: mortality.mortality_longitude
+        }),
         key: mortality.mortality_id ?? 'new-mortality-key'
       })),
       [SurveyAnimalsI18N.animalFamilyTitle]: initialValues.family.map((family) => {
         const family_label = allFamilies?.find((a) => a.family_id === family.family_id)?.family_label;
         return {
           header: family_label ? `Animal Relationship: ${family_label}` : `Animal Relationship`,
-          subHeaderData: { Status: family.relationship },
+          subHeader: formatSubHeader({ Status: family.relationship }),
           key: family.family_id ?? 'new-family-key'
         };
       }),
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: initialValues.collectionUnits.map((collectionUnit) => ({
         header: `${collectionUnit.unit_name}`,
-        subHeaderData: `${collectionUnit.category_name}`,
+        subHeader: `${collectionUnit.category_name}`,
         key: collectionUnit.collection_unit_id ?? 'new-collection-unit-key'
       })),
       Telemetry: initialValues.device.map((device) => ({
         header: `Device: ${device.device_id}`,
-        subHeaderData: {
+        subHeader: formatSubHeader({
           Make: device.device_make,
           Model: device.device_model,
           Deployments: device.deployments?.length ?? 0
-        },
+        }),
         key: `${device.device_id}`
       }))
     };
@@ -134,7 +150,7 @@ export const AnimalSectionDataCards = ({
                 <Collapse key={cardData.key}>
                   <EditDeleteStubCard
                     header={cardData.header}
-                    subHeaderData={cardData.subHeaderData}
+                    subHeader={cardData.subHeader}
                     onClickEdit={() => onEditClick(index)}
                     onClickDelete={
                       section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
