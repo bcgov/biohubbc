@@ -121,7 +121,9 @@ const AnimalList = (props: AnimalListProps) => {
                     <Typography fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {critter.animal_id}
                     </Typography>
-                    <Typography variant='subtitle2' color="textSecondary">{critter.taxon} • {critter.sex}</Typography>
+                    <Typography variant="subtitle2" color="textSecondary">
+                      {critter.taxon} • {critter.sex}
+                    </Typography>
                   </Box>
                 </AccordionSummary>
               </Box>

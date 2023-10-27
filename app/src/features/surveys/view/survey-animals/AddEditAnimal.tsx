@@ -321,8 +321,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                   color="primary"
                   onClick={() => {
                     setOpenedFromAddButton(true);
-                    push(ANIMAL_SECTIONS_FORM_MAP[section]?.defaultFormValue());
-                    setSelectedIndex((values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName] as any)['length'] ?? 0);
+                    const animalData = ANIMAL_SECTIONS_FORM_MAP[section];
+                    const sectionValues = values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName];
+                    push(animalData?.defaultFormValue());
+                    setSelectedIndex((sectionValues as any)['length'] ?? 0);
                     setShowDialog(true);
                   }}>
                   {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
