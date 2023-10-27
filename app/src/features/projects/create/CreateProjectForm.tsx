@@ -5,11 +5,11 @@ import { makeStyles } from '@mui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { PROJECT_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { useAuthStateContext } from 'contexts/useAuthStateContext';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
-import React, { useContext } from 'react';
+import React from 'react';
 import { alphabetizeObjects } from 'utils/Utils';
 import ProjectDetailsForm, {
   ProjectDetailsFormInitialValues,
@@ -76,7 +76,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
     props.handleSubmit(formikData);
   };
 
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
   const getProjectParticipants = (): IGetProjectParticipant[] => {
     let participants: IGetProjectParticipant[] = [];
@@ -86,14 +86,13 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
       participants = props.initialValues?.participants as IGetProjectParticipant[];
     } else {
       // this is a fresh form and the logged in user needs to be added as a participant
-      const loggedInUser = keycloakWrapper?.user;
       participants = [
         {
-          system_user_id: loggedInUser?.system_user_id,
-          display_name: loggedInUser?.display_name,
-          email: loggedInUser?.email,
-          agency: loggedInUser?.agency,
-          identity_source: loggedInUser?.identity_source,
+          system_user_id: authStateContext.simsUserWrapper?.systemUserId,
+          display_name: authStateContext.simsUserWrapper?.displayName,
+          email: authStateContext.simsUserWrapper?.email,
+          agency: authStateContext.simsUserWrapper?.agency,
+          identity_source: authStateContext.simsUserWrapper?.identitySource,
           project_role_names: [PROJECT_ROLE.COORDINATOR]
         } as IGetProjectParticipant
       ];

@@ -1,6 +1,5 @@
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IConfig } from 'contexts/configContext';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import {
   buildUrl,
   dateRangesOverlap,
@@ -11,7 +10,6 @@ import {
   getFormattedFileSize,
   getFormattedIdentitySource,
   getKeyByValue,
-  getLogOutUrl,
   getTitle,
   pluralize
 } from './Utils';
@@ -162,90 +160,6 @@ describe('getFormattedDateRangeString', () => {
     const endDate = '2021-05-25T22:44:55.478682';
     const formattedDateString = getFormattedDateRangeString(DATE_FORMAT.MediumDateFormat, startDate, endDate, '//');
     expect(formattedDateString).toEqual('March 4, 2021 // May 25, 2021');
-  });
-});
-
-describe('getLogOutUrl', () => {
-  it('returns null when config is null', () => {
-    expect(getLogOutUrl(null as unknown as IConfig)).toBeUndefined();
-  });
-
-  it('returns null when config is missing `KEYCLOAK_CONFIG.url`', () => {
-    const config = {
-      API_HOST: '',
-      CHANGE_VERSION: '',
-      NODE_ENV: '',
-      VERSION: '',
-      KEYCLOAK_CONFIG: {
-        url: '',
-        realm: 'myrealm',
-        clientId: ''
-      },
-      SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-    } as IConfig;
-
-    expect(getLogOutUrl(config)).toBeUndefined();
-  });
-
-  it('returns null when config is missing `KEYCLOAK_CONFIG.realm`', () => {
-    const config = {
-      API_HOST: '',
-      CHANGE_VERSION: '',
-      NODE_ENV: '',
-      VERSION: '',
-      KEYCLOAK_CONFIG: {
-        url: 'https://www.keycloaklogout.com/auth',
-        realm: '',
-        clientId: ''
-      },
-      SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-    } as IConfig;
-
-    expect(getLogOutUrl(config)).toBeUndefined();
-  });
-
-  it('returns null when config is missing `SITEMINDER_LOGOUT_URL`', () => {
-    const config = {
-      API_HOST: '',
-      CHANGE_VERSION: '',
-      NODE_ENV: '',
-      VERSION: '',
-      KEYCLOAK_CONFIG: {
-        url: 'https://www.keycloaklogout.com/auth',
-        realm: 'myrealm',
-        clientId: ''
-      },
-      SITEMINDER_LOGOUT_URL: ''
-    } as IConfig;
-
-    expect(getLogOutUrl(config)).toBeUndefined();
-  });
-
-  it('returns a log out url', () => {
-    // @ts-ignore
-    delete window.location;
-
-    // @ts-ignore
-    window.location = {
-      origin: 'https://biohub.com'
-    };
-
-    const config = {
-      API_HOST: '',
-      CHANGE_VERSION: '',
-      NODE_ENV: '',
-      VERSION: '',
-      KEYCLOAK_CONFIG: {
-        url: 'https://www.keycloaklogout.com/auth',
-        realm: 'myrealm',
-        clientId: ''
-      },
-      SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-    } as IConfig;
-
-    expect(getLogOutUrl(config)).toEqual(
-      'https://www.siteminderlogout.com?returl=https://www.keycloaklogout.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=https://biohub.com/&retnow=1'
-    );
   });
 });
 

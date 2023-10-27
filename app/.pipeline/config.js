@@ -79,7 +79,6 @@ const phases = {
     host: (isStaticDeployment && staticUrls.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     apiHost:
       (isStaticDeployment && staticUrlsAPI.dev) || `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    siteminderLogoutURL: config.siteminderLogoutURL.dev,
     maxUploadNumFiles,
     maxUploadFileSize,
     env: 'dev',
@@ -102,7 +101,6 @@ const phases = {
     tag: `test-${version}`,
     host: staticUrls.test,
     apiHost: staticUrlsAPI.test,
-    siteminderLogoutURL: config.siteminderLogoutURL.test,
     maxUploadNumFiles,
     maxUploadFileSize,
     env: 'test',
@@ -125,7 +123,6 @@ const phases = {
     tag: `prod-${version}`,
     host: staticUrls.prod,
     apiHost: staticUrlsAPI.prod,
-    siteminderLogoutURL: config.siteminderLogoutURL.prod,
     maxUploadNumFiles,
     maxUploadFileSize,
     env: 'prod',

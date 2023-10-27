@@ -1,7 +1,6 @@
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
-import { IConfig } from 'contexts/configContext';
 import { Feature, Polygon } from 'geojson';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { LatLngBounds } from 'leaflet';
 import _ from 'lodash';
@@ -152,22 +151,6 @@ export const getFormattedAmount = (
   });
 
   return formatter.format(amount);
-};
-
-/**
- * Returns a url that when navigated to, will log the user out, redirecting them to the login page.
- *
- * @param {IConfig} config
- * @return {*}  {(string | undefined)}
- */
-export const getLogOutUrl = (config?: IConfig): string | undefined => {
-  if (config?.KEYCLOAK_CONFIG.url && config?.KEYCLOAK_CONFIG.realm && config?.SITEMINDER_LOGOUT_URL) {
-    const localRedirectURL = `${window.location.origin}/logout`;
-
-    const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
-
-    return `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
-  }
 };
 
 export const getFormattedFileSize = (fileSize: number) => {

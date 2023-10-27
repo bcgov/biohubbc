@@ -64,9 +64,9 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
 
         // Attempt to refresh the keycloak token
         // Note: updateToken called with an arbitrarily large number of seconds to guarantee the update is executed
-        const isTokenRefreshed = await keycloak.updateToken(86400);
+        const user = await auth.signinSilent();
 
-        if (!isTokenRefreshed) {
+        if (!user) {
           // Token was not refreshed successfully, throw original error
           throw new APIError(error);
         }
@@ -76,14 +76,14 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
           ...error.config,
           headers: {
             ...error.config.headers,
-            Authorization: `Bearer ${keycloak.token}`
+            Authorization: `Bearer ${user?.access_token}`
           }
         });
       }
     );
 
     return instance;
-  }, [baseUrl, auth?.user?.access_token]);
+  }, [auth, baseUrl]);
 };
 
 export default useAxios;

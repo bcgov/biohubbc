@@ -1,8 +1,4 @@
-import {
-  AuthenticatedRouteGuard,
-  SystemRoleRouteGuard,
-  UnAuthenticatedRouteGuard
-} from 'components/security/RouteGuards';
+import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
@@ -15,12 +11,10 @@ import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
-import LoginPage from 'pages/authentication/LoginPage';
-import LogOutPage from 'pages/authentication/LogOutPage';
 import { LandingPage } from 'pages/landing/LandingPage';
 import { Playground } from 'pages/Playground';
 import React from 'react';
-import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
+import { Redirect, Switch, useLocation } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 
@@ -112,20 +106,6 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle path="/resources" title={getTitle('Resources')}>
         <BaseLayout>
           <ResourcesPage />
-        </BaseLayout>
-      </RouteWithTitle>
-
-      <Route path="/login">
-        <UnAuthenticatedRouteGuard>
-          <LoginPage />
-        </UnAuthenticatedRouteGuard>
-      </Route>
-
-      <RouteWithTitle path="/logout" title={getTitle('Logout')}>
-        <BaseLayout>
-          <AuthenticatedRouteGuard>
-            <LogOutPage />
-          </AuthenticatedRouteGuard>
         </BaseLayout>
       </RouteWithTitle>
 

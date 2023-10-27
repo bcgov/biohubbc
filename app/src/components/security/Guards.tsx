@@ -1,8 +1,7 @@
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
+import { useAuthStateContext } from 'contexts/useAuthStateContext';
 import { PropsWithChildren, ReactElement, useContext } from 'react';
-import { isAuthenticated } from 'utils/authUtils';
 
 interface IGuardProps {
   /**
@@ -55,9 +54,9 @@ export interface IProjectRoleGuardProps extends IGuardProps {
  * @return {*}
  */
 export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>) => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
   const { validSystemRoles } = props;
-  const hasSystemRole = keycloakWrapper?.hasSystemRole(validSystemRoles);
+  const hasSystemRole = authStateContext.simsUserWrapper.hasSystemRole(validSystemRoles);
 
   if (!hasSystemRole) {
     if (props.fallback) {
@@ -119,9 +118,9 @@ export const HasProjectOrSystemRole = (roles: IProjectRoleGuardProps): boolean =
  * @return {*}
  */
 export const AuthGuard = (props: PropsWithChildren<IGuardProps>) => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
-  if (!isAuthenticated(keycloakWrapper)) {
+  if (!authStateContext.auth.isAuthenticated || !authStateContext.simsUserWrapper.isReady) {
     if (props.fallback) {
       return <>{props.fallback}</>;
     } else {
@@ -139,9 +138,9 @@ export const AuthGuard = (props: PropsWithChildren<IGuardProps>) => {
  * @return {*}
  */
 export const UnAuthGuard = (props: PropsWithChildren<IGuardProps>) => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
-  if (isAuthenticated(keycloakWrapper)) {
+  if (authStateContext.auth.isAuthenticated) {
     if (props.fallback) {
       return <>{props.fallback}</>;
     } else {

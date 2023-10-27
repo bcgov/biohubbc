@@ -1,9 +1,9 @@
+import { useAuthStateContext } from 'contexts/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetUserProjectParticipantResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router';
-import { AuthStateContext } from './authStateContext';
 
 export interface IProjectAuthStateContext {
   getProjectParticipant: () => IGetUserProjectParticipantResponse;
@@ -28,7 +28,7 @@ export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> 
   const participantDataLoader = useDataLoader((projectId: number) =>
     biohubApi.projectParticipants.getUserProjectParticipant(projectId)
   );
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const projectId: string | number | undefined = urlParams['id'];
@@ -90,9 +90,9 @@ export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> 
         return false;
       }
 
-      return !!keycloakWrapper && keycloakWrapper.hasSystemRole(validSystemRoles);
+      return authStateContext.simsUserWrapper.hasSystemRole(validSystemRoles);
     },
-    [keycloakWrapper]
+    [authStateContext.simsUserWrapper]
   );
 
   React.useEffect(() => {

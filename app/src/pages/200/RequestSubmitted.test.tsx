@@ -6,10 +6,10 @@ import { render } from 'test-helpers/test-utils';
 import RequestSubmitted from './RequestSubmitted';
 
 describe('RequestSubmitted', () => {
-  it.skip('renders a spinner when `hasLoadedAllUserInfo` is false', () => {
+  it.skip('renders a spinner when `isReady` is false', () => {
     const authState = getMockAuthState({
       base: SystemUserAuthState,
-      overrides: { keycloakWrapper: { hasLoadedAllUserInfo: false } }
+      overrides: { simsUserWrapper: { isReady: false } }
     });
 
     const history = createMemoryHistory();
@@ -70,7 +70,7 @@ describe('RequestSubmitted', () => {
   it.skip('renders correctly when user has no role but has a pending access requests', () => {
     const authState = getMockAuthState({
       base: SystemUserAuthState,
-      overrides: { keycloakWrapper: { hasAccessRequest: true } }
+      overrides: { simsUserWrapper: { hasAccessRequest: true } }
     });
 
     const history = createMemoryHistory();
@@ -100,7 +100,7 @@ describe('RequestSubmitted', () => {
     it('should redirect to `/logout`', async () => {
       const authState = getMockAuthState({
         base: SystemUserAuthState,
-        overrides: { keycloakWrapper: { hasAccessRequest: true } }
+        overrides: { simsUserWrapper: { hasAccessRequest: true } }
       });
 
       const { getByTestId } = render(

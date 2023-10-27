@@ -18,10 +18,10 @@ import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { useAuthStateContext } from 'contexts/useAuthStateContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
@@ -47,7 +47,7 @@ const SurveyHeader = () => {
 
   const dialogContext = useContext(DialogContext);
 
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
   const defaultYesNoDialogProps = {
     dialogTitle: 'Delete Survey?',
@@ -116,7 +116,7 @@ const SurveyHeader = () => {
   };
 
   // Enable delete button if you a system admin or a project admin
-  const enableDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
+  const enableDeleteSurveyButton = authStateContext.simsUserWrapper.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
     SYSTEM_ROLE.DATA_ADMINISTRATOR,
     SYSTEM_ROLE.PROJECT_CREATOR

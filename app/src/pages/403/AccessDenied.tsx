@@ -4,21 +4,22 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { useContext } from 'react';
+import { useAuthStateContext } from 'contexts/useAuthStateContext';
 import { Redirect, useHistory } from 'react-router';
+import { buildUrl } from 'utils/Utils';
 
 const AccessDenied = () => {
   const history = useHistory();
 
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
-  if (keycloakWrapper?.hasAccessRequest) {
+  if (authStateContext.simsUserWrapper.hasAccessRequest) {
     // User already has a pending access request
     return <Redirect to={{ pathname: '/request-submitted' }} />;
   }
 
-  const userHasARole = !!keycloakWrapper?.systemRoles?.length;
+  const showRequestAccessButton =
+    authStateContext.simsUserWrapper.isReady && !authStateContext.simsUserWrapper.roleNames?.length;
 
   return (
     <Container>
@@ -27,22 +28,22 @@ const AccessDenied = () => {
         <h1>Access Denied</h1>
         <Typography>You do not have permission to access this page.</Typography>
         <Box pt={4}>
-          {!userHasARole && (
+          {showRequestAccessButton && (
             <Button
               onClick={() => {
-                if (keycloakWrapper?.keycloak.isAuthenticated) {
+                if (authStateContext.auth.isAuthenticated) {
                   history.push('/access-request');
                 } else {
-                  // setting page to return to after login
-                  history.push('/access-request');
-                  keycloakWrapper?.getLoginUrl();
+                  authStateContext.auth.signinRedirect({
+                    redirect_uri: buildUrl(window.location.origin, '/access-request')
+                  });
                 }
               }}
               type="submit"
               size="large"
               variant="contained"
               color="primary"
-              data-testid="request_access">
+              data-testid="access_denied_request_access_button">
               Request Access
             </Button>
           )}

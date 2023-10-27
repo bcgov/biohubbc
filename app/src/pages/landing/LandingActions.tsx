@@ -10,8 +10,7 @@ import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { useContext } from 'react';
+import { useAuthStateContext } from 'contexts/useAuthStateContext';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -66,21 +65,22 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const LandingActions = () => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
   const classes = useStyles();
 
-  //   const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
-  const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
+  const authStateContext = useAuthStateContext();
 
-  const hasPendingAccessRequest = keycloakWrapper?.hasAccessRequest;
-  const isSystemUser = keycloakWrapper?.isSystemUser();
-  const hasAdministrativeRole = keycloakWrapper?.hasSystemRole([
+  const userIdentifier = authStateContext.simsUserWrapper.userIdentifier || '';
+
+  const hasPendingAccessRequest = authStateContext.simsUserWrapper.hasAccessRequest;
+  const isSystemUser = authStateContext.simsUserWrapper.systemUserId;
+  const hasAdministrativeRole = authStateContext.simsUserWrapper.hasSystemRole([
     SYSTEM_ROLE.DATA_ADMINISTRATOR,
     SYSTEM_ROLE.SYSTEM_ADMIN
   ]);
 
-  const mayBelongToOneOrMoreProjects = isSystemUser || keycloakWrapper?.hasOneOrMoreProjectRoles;
-  const hasProjectCreationRole = hasAdministrativeRole || keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]);
+  const mayBelongToOneOrMoreProjects = isSystemUser || authStateContext.simsUserWrapper.hasOneOrMoreProjectRoles;
+  const hasProjectCreationRole =
+    hasAdministrativeRole || authStateContext.simsUserWrapper.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]);
   const isReturningUser = isSystemUser || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;
   const mayViewProjects = isSystemUser || mayBelongToOneOrMoreProjects;
   const mayMakeAccessRequest = !mayViewProjects && !hasPendingAccessRequest;
@@ -96,8 +96,7 @@ const LandingActions = () => {
           <Box className={classes.heroActions}>
             <Button
               component="a"
-              href={'#'}
-              onClick={() => keycloakWrapper?.getLoginUrl()}
+              onClick={() => authStateContext.auth.signinRedirect()}
               variant="contained"
               className={clsx(classes.heroButton, classes.heroButton)}
               size="large"

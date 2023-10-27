@@ -7,14 +7,14 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { AccessRequestI18N } from 'constants/i18n';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
+import { useAuthStateContext } from 'contexts/useAuthStateContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import {
   IBCeIDBasicAccessRequestDataObject,
   IBCeIDBusinessAccessRequestDataObject,
@@ -22,7 +22,6 @@ import {
 } from 'interfaces/useAdminApi.interface';
 import React, { ReactElement, useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
-import { Link } from 'react-router-dom';
 import BCeIDRequestForm, {
   BCeIDBasicRequestFormInitialValues,
   BCeIDBasicRequestFormYupSchema,
@@ -50,7 +49,7 @@ export const AccessRequestPage: React.FC = () => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
   const dialogContext = useContext(DialogContext);
 
@@ -87,12 +86,12 @@ export const AccessRequestPage: React.FC = () => {
     try {
       const response = await biohubApi.admin.createAdministrativeActivity({
         ...values,
-        userGuid: keycloakWrapper?.getUserGuid() as string,
-        name: keycloakWrapper?.displayName as string,
-        username: keycloakWrapper?.getUserIdentifier() as string,
-        email: keycloakWrapper?.email as string,
-        identitySource: keycloakWrapper?.getIdentitySource() as string,
-        displayName: keycloakWrapper?.displayName as string
+        userGuid: authStateContext.simsUserWrapper.userGuid as string,
+        name: authStateContext.simsUserWrapper.displayName as string,
+        username: authStateContext.simsUserWrapper.userIdentifier as string,
+        email: authStateContext.simsUserWrapper.email as string,
+        identitySource: authStateContext.simsUserWrapper.identitySource as string,
+        displayName: authStateContext.simsUserWrapper.displayName as string
       });
 
       if (!response?.id) {
@@ -103,7 +102,7 @@ export const AccessRequestPage: React.FC = () => {
       }
       setIsSubmittingRequest(false);
 
-      keycloakWrapper?.refresh();
+      authStateContext.simsUserWrapper.refresh();
 
       history.push('/request-submitted');
     } catch (error) {
@@ -118,17 +117,17 @@ export const AccessRequestPage: React.FC = () => {
     }
   };
 
-  if (!keycloakWrapper?.keycloak.isAuthenticated) {
+  if (!authStateContext.auth.isAuthenticated) {
     // User is not logged in
     return <Redirect to={{ pathname: '/' }} />;
   }
 
-  if (!keycloakWrapper.hasLoadedAllUserInfo) {
+  if (!authStateContext.simsUserWrapper.isReady) {
     // User data has not been loaded, can not yet determine if they have a role
     return <CircularProgress className="pageProgress" />;
   }
 
-  if (keycloakWrapper?.hasAccessRequest) {
+  if (authStateContext.simsUserWrapper.hasAccessRequest) {
     // User already has a pending access request
     return <Redirect to={{ pathname: '/request-submitted' }} />;
   }
@@ -145,7 +144,7 @@ export const AccessRequestPage: React.FC = () => {
 
   let requestForm: ReactElement;
 
-  switch (keycloakWrapper?.getIdentitySource()) {
+  switch (authStateContext.simsUserWrapper.identitySource) {
     case SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS:
       initialValues = BCeIDBusinessRequestFormInitialValues;
       validationSchema = BCeIDBusinessRequestFormYupSchema;
@@ -205,8 +204,9 @@ export const AccessRequestPage: React.FC = () => {
                     <Button
                       variant="outlined"
                       color="primary"
-                      component={Link}
-                      to="/logout"
+                      onClick={() => {
+                        authStateContext.auth.signoutRedirect();
+                      }}
                       data-testid="logout-button">
                       Log out
                     </Button>

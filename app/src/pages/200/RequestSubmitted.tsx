@@ -5,25 +5,24 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { useContext } from 'react';
+import { useAuthStateContext } from 'contexts/useAuthStateContext';
 import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
 
 const RequestSubmitted = () => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
-  if (!keycloakWrapper?.hasLoadedAllUserInfo) {
+  if (!authStateContext.simsUserWrapper.isReady) {
     // User data has not been loaded, can not yet determine if they have a role
     return <CircularProgress className="pageProgress" />;
   }
 
-  if (keycloakWrapper?.systemRoles.length) {
+  if (authStateContext.simsUserWrapper.roleNames?.length) {
     // User already has a role
     return <Redirect to={{ pathname: '/admin/projects' }} />;
   }
 
-  if (!keycloakWrapper.hasAccessRequest) {
+  if (!authStateContext.simsUserWrapper.hasAccessRequest) {
     // User has no pending access request
     return <Redirect to={{ pathname: '/' }} />;
   }
