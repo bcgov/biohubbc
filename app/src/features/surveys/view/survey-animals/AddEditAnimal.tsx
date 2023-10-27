@@ -276,7 +276,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 dialogTitle={dialogTitle}
                 dialogText={ANIMAL_SECTIONS_FORM_MAP[section].infoText}
                 open={showDialog}
-                dialogSaveButtonLabel={openedFromAddButton ? 'Add' : 'Update'}
+                dialogSaveButtonLabel={openedFromAddButton ? 'Save' : 'Update'}
                 component={{
                   initialValues: values,
                   element: renderSingleForm,

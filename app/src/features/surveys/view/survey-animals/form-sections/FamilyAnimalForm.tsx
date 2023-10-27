@@ -63,7 +63,7 @@ export const FamilyAnimalFormContent = ({ name, index, allFamilies }: IFamilyAni
   const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbase.family.getImmediateFamily);
   return (
     <Fragment>
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <CbSelectWrapper
           label={'Family ID'}
           name={getAnimalFieldName<IAnimalRelationship>(name, 'family_id', index)}
@@ -81,8 +81,8 @@ export const FamilyAnimalFormContent = ({ name, index, allFamilies }: IFamilyAni
           )}
         </CbSelectWrapper>
       </Grid>
-      <Grid item xs={6}>
-        <Grid item xs={6}>
+      <Grid item xs={12}>
+        <Grid item xs={12}>
           <CbSelectWrapper
             label={'Relationship'}
             name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}

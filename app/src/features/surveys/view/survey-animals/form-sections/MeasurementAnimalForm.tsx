@@ -18,7 +18,6 @@ import {
   isRequiredInSchema
 } from '../animal';
 import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
-import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
 /**
@@ -138,7 +137,7 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
 
   return (
     <Fragment>
-      <Grid item xs={4}>
+      <Grid item xs={12}>
         <CbSelectWrapper
           label="Measurement Type"
           name={taxonMeasurementIDName}
@@ -155,7 +154,7 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
           ))}
         </CbSelectWrapper>
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={12}>
         {!isQuantMeasurement && taxonMeasurementId ? (
           <CbSelectField
             label="Value"
@@ -185,7 +184,7 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
           />
         )}
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={12}>
         <SingleDateField
           name={getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'measured_timestamp', index)}
           required={isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp')}
@@ -194,14 +193,12 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
         />
       </Grid>
       <Grid item xs={12}>
-        <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Measurement')}>
-          <CustomTextField
-            other={{ size: 'medium', required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment') }}
-            label="Measurement Comment"
-            name={getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'measurement_comment', index)}
-            handleBlur={handleBlur}
-          />
-        </TextInputToggle>
+        <CustomTextField
+          other={{ size: 'medium', required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment') }}
+          label="Measurement Comment"
+          name={getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'measurement_comment', index)}
+          handleBlur={handleBlur}
+        />
       </Grid>
     </Fragment>
   );

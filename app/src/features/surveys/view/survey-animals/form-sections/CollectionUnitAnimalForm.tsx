@@ -42,7 +42,7 @@ export const CollectionUnitAnimalFormContent = ({ name, index }: ICollectionUnit
 
   return (
     <Fragment>
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <CbSelectField
           label="Unit Category"
           name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_category_id', index)}
@@ -57,7 +57,7 @@ export const CollectionUnitAnimalFormContent = ({ name, index }: ICollectionUnit
           handleChangeSideEffect={handleCategoryName}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <CbSelectField
           label="Unit Name"
           id={'collection_unit_id'}

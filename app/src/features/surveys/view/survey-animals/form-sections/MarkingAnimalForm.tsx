@@ -15,7 +15,6 @@ import {
   isRequiredInSchema,
   lastAnimalValueValid
 } from '../animal';
-import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 
 /**
@@ -46,7 +45,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
 
   return (
     <Fragment>
-      <Grid item xs={12} md={6}>
+      <Grid item md={12}>
         <CbSelectField
           label="Marking Type"
           name={getAnimalFieldName<IAnimalMarking>(name, 'marking_type_id', index)}
@@ -59,7 +58,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
           handleChangeSideEffect={handleMarkingTypeName}
         />
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid item md={12}>
         <CbSelectField
           label="Marking Body Location"
           name={getAnimalFieldName<IAnimalMarking>(name, 'taxon_marking_body_location_id', index)}
@@ -73,7 +72,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
           handleChangeSideEffect={handleMarkingLocationName}
         />
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid item md={12}>
         <CbSelectField
           label="Primary Colour"
           name={getAnimalFieldName<IAnimalMarking>(name, 'primary_colour_id', index)}
@@ -86,7 +85,7 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
           handleChangeSideEffect={handlePrimaryColourName}
         />
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid item md={12}>
         <CbSelectField
           label="Secondary Colour"
           name={getAnimalFieldName<IAnimalMarking>(name, 'secondary_colour_id', index)}
@@ -99,14 +98,12 @@ export const MarkingAnimalFormContent = ({ name, index }: IMarkingAnimalFormCont
         />
       </Grid>
       <Grid item xs={12}>
-        <TextInputToggle label={SurveyAnimalsI18N.animalSectionComment('Marking')}>
-          <CustomTextField
-            label="Marking Comment"
-            name={getAnimalFieldName<IAnimalMarking>(name, 'marking_comment', index)}
-            other={{ size: 'medium', required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment') }}
-            handleBlur={handleBlur}
-          />
-        </TextInputToggle>
+        <CustomTextField
+          label="Marking Comment"
+          name={getAnimalFieldName<IAnimalMarking>(name, 'marking_comment', index)}
+          other={{ size: 'medium', required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment') }}
+          handleBlur={handleBlur}
+        />
       </Grid>
     </Fragment>
   );

@@ -3,10 +3,9 @@ import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import { AnimalCaptureSchema, getAnimalFieldName, IAnimal, IAnimalCapture, isRequiredInSchema } from '../animal';
 import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
-import TextInputToggle from '../TextInputToggle';
 import FormSectionWrapper from './FormSectionWrapper';
 import LocationEntryForm from './LocationEntryForm';
 /**
@@ -64,8 +63,6 @@ interface CaptureAnimalFormContentProps {
 
 export const CaptureAnimalFormContent = ({ name, index }: CaptureAnimalFormContentProps) => {
   const { handleBlur, values, handleChange } = useFormikContext<IAnimal>();
-  const [showCaptureComment, setShowCaptureComment] = useState(false);
-  const [showReleaseComment, setShowReleaseComment] = useState(false);
 
   const showReleaseSection = values.captures[index].show_release;
 
@@ -83,16 +80,12 @@ export const CaptureAnimalFormContent = ({ name, index }: CaptureAnimalFormConte
           />
         </Grid>
         <Grid item xs={12}>
-          <TextInputToggle
-            toggleProps={{ handleToggle: () => setShowCaptureComment((c) => !c), toggleState: showCaptureComment }}
-            label="Add comment about this Capture">
-            <CustomTextField
-              other={{ size: 'medium', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
-              label="Capture Comment"
-              name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
-              handleBlur={handleBlur}
-            />
-          </TextInputToggle>
+          <CustomTextField
+            other={{ size: 'medium', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
+            label="Capture Comment"
+            name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
+            handleBlur={handleBlur}
+          />
         </Grid>
         <Grid item xs={12}>
           <FormControlLabel
@@ -123,16 +116,12 @@ export const CaptureAnimalFormContent = ({ name, index }: CaptureAnimalFormConte
           />
         </Grid>
         <Grid item xs={12}>
-          <TextInputToggle
-            label="Add comment about this Release"
-            toggleProps={{ handleToggle: () => setShowReleaseComment((c) => !c), toggleState: showReleaseComment }}>
-            <CustomTextField
-              other={{ size: 'medium', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
-              label="Release Comment"
-              name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
-              handleBlur={handleBlur}
-            />
-          </TextInputToggle>
+          <CustomTextField
+            other={{ size: 'medium', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
+            label="Release Comment"
+            name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
+            handleBlur={handleBlur}
+          />
         </Grid>
       </Fragment>
     );

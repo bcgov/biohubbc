@@ -1,7 +1,6 @@
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Formik } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { render, waitFor } from 'test-helpers/test-utils';
 import CollectionUnitAnimalForm from './CollectionUnitAnimalForm';
 
 jest.mock('hooks/useCritterbaseApi');
@@ -31,8 +30,6 @@ describe('CollectionUnitAnimalForm', () => {
     );
 
     await waitFor(() => {
-      fireEvent.click(getByText(SurveyAnimalsI18N.animalCollectionUnitAddBtn));
-      expect(getByText(SurveyAnimalsI18N.animalCollectionUnitTitle2)).toBeInTheDocument();
       expect(getByText('Unit Category')).toBeInTheDocument();
       expect(getByText('Unit Name')).toBeInTheDocument();
     });
