@@ -40,10 +40,6 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Recruitment', description: 'Description' },
     { id: 2, name: 'SRB', description: 'Description' }
   ],
-  ecological_seasons: [
-    { id: 1, name: 'Season 1', description: 'Description' },
-    { id: 2, name: 'Season 2', description: 'Description' }
-  ],
   vantage_codes: [
     { id: 1, name: 'Vantage Code 1' },
     { id: 2, name: 'Vantage Code 2' }

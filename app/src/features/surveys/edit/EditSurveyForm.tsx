@@ -76,7 +76,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         intended_outcome_id: '' as unknown as number,
         additional_details: '',
         field_method_id: '' as unknown as number,
-        ecological_season_id: '' as unknown as number,
         vantage_code_ids: []
       }
     },
