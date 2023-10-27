@@ -24,7 +24,7 @@ export const AnimalSectionDataCards = ({
   isAddingNew,
   allFamilies
 }: AnimalSectionDataCardsProps) => {
-  const { values, submitForm, initialValues } = useFormikContext<IAnimal>();
+  const { submitForm, initialValues } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
 
@@ -48,7 +48,7 @@ export const AnimalSectionDataCards = ({
           subHeader: formatSubHeader({
             Taxon: initialValues.general.taxon_name,
             Sex: initialValues.general.sex,
-            'WLH ID': values.general.wlh_id
+            'WLH ID': initialValues.general.wlh_id
           }),
           key: 'general-key'
         }
@@ -89,7 +89,7 @@ export const AnimalSectionDataCards = ({
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: initialValues.collectionUnits.map((collectionUnit) => ({
         header: `${collectionUnit.unit_name}`,
         subHeader: `${collectionUnit.category_name}`,
-        key: collectionUnit.collection_unit_id ?? 'new-collection-unit-key'
+        key: collectionUnit.critter_collection_unit_id ?? 'new-collection-unit-key'
       })),
       Telemetry: initialValues.device.map((device) => ({
         header: `Device: ${device.device_id}`,
@@ -113,7 +113,7 @@ export const AnimalSectionDataCards = ({
     initialValues.family,
     initialValues.collectionUnits,
     initialValues.device,
-    values.general.wlh_id,
+    initialValues.general.wlh_id,
     section,
     allFamilies
   ]);
@@ -137,35 +137,37 @@ export const AnimalSectionDataCards = ({
     <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
       {({ remove }: FieldArrayRenderProps) => {
         return (
-          <TransitionGroup>
+          <>
             {sectionCardData.length > 0 ? (
-              sectionCardData.map((cardData, index) => {
-                const submitFormRemoveCard = () => {
-                  remove(index);
-                  submitForm();
-                };
-                const handleDelete = () => {
-                  showDeleteDialog(submitFormRemoveCard);
-                };
-                return (
-                  <Collapse key={cardData.key}>
-                    <EditDeleteStubCard
-                      header={cardData.header}
-                      subHeader={cardData.subHeader}
-                      onClickEdit={() => onEditClick(index)}
-                      onClickDelete={
-                        section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
-                          ? undefined
-                          : handleDelete
-                      }
-                    />
-                  </Collapse>
-                );
-              })
+              <TransitionGroup>
+                {sectionCardData.map((cardData, index) => {
+                  const submitFormRemoveCard = () => {
+                    remove(index);
+                    submitForm();
+                  };
+                  const handleDelete = () => {
+                    showDeleteDialog(submitFormRemoveCard);
+                  };
+                  return (
+                    <Collapse key={cardData.key}>
+                      <EditDeleteStubCard
+                        header={cardData.header}
+                        subHeader={cardData.subHeader}
+                        onClickEdit={() => onEditClick(index)}
+                        onClickDelete={
+                          section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
+                            ? undefined
+                            : handleDelete
+                        }
+                      />
+                    </Collapse>
+                  );
+                })}
+              </TransitionGroup>
             ) : (
               <div>EMPTY STATE</div>
             )}
-          </TransitionGroup>
+          </>
         );
       }}
     </FieldArray>
