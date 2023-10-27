@@ -3,7 +3,6 @@ import { PROJECT_PERMISSION, PROJECT_ROLE } from 'constants/roles';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
-import { Feature } from 'geojson';
 
 export interface IGetProjectAttachment {
   id: number;
@@ -155,7 +154,6 @@ export enum UPDATE_GET_ENTITIES {
 export interface IGetProjectForUpdateResponse {
   project?: IGetProjectForUpdateResponseDetails;
   objectives?: IGetProjectForUpdateResponseObjectives;
-  location?: IGetProjectForUpdateResponseLocation;
   iucn?: IGetProjectForUpdateResponseIUCN;
   participants?: IGetProjectParticipant[];
 }
@@ -169,12 +167,6 @@ export interface IGetProjectForUpdateResponseDetails {
 }
 export interface IGetProjectForUpdateResponseObjectives {
   objectives: string;
-  revision_count: number;
-}
-
-export interface IGetProjectForUpdateResponseLocation {
-  location_description: string;
-  geometry: Feature[];
   revision_count: number;
 }
 

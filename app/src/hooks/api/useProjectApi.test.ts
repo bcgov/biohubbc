@@ -105,7 +105,6 @@ describe('useProjectApi', () => {
         id: 1,
         name: 'project name',
         objectives: 'objectives',
-        location_description: 'location',
         start_date: '2020/04/04',
         end_date: '2020/05/05',
         comments: 'comment',
