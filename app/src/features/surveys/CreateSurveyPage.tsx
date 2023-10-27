@@ -339,11 +339,6 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name, subText: item.description };
                         }) || []
                       }
-                      ecological_seasons={
-                        codes?.ecological_seasons.map((item) => {
-                          return { value: item.id, label: item.name, subText: item.description };
-                        }) || []
-                      }
                       vantage_codes={
                         codes?.vantage_codes.map((item) => {
                           return { value: item.id, label: item.name };

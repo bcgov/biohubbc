@@ -193,11 +193,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                     return { value: item.id, label: item.name, subText: item.description };
                   }) || []
                 }
-                ecological_seasons={
-                  props.codes.ecological_seasons.map((item) => {
-                    return { value: item.id, label: item.name, subText: item.description };
-                  }) || []
-                }
                 vantage_codes={
                   props.codes.vantage_codes.map((item) => {
                     return { value: item.id, label: item.name };
