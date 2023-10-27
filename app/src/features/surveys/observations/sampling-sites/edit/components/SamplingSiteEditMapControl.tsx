@@ -22,6 +22,8 @@ import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampl
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
+import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
+import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import get from 'lodash-es/get';
 import { useContext, useEffect, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
