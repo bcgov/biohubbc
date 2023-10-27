@@ -58,6 +58,7 @@ const appTheme = createTheme({
       fontWeight: 700
     },
     h6: {
+      fontSize: '0.9rem !important',
       fontWeight: 700
     }
   },
@@ -299,7 +300,7 @@ const appTheme = createTheme({
       styleOverrides: {
         root: {
           '& h2': {
-            fontSize: '1.125rem'
+            fontSize: '0.9rem'
           }
         }
       }

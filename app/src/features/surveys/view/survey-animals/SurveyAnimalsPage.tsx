@@ -12,7 +12,7 @@ import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals, omitBy } from 'lodash';
-import React, { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { datesSameNullable, setMessageSnackbar } from 'utils/Utils';
 import { AddEditAnimal } from './AddEditAnimal';
 import { AnimalSchema, AnimalSex, Critter, IAnimal } from './animal';

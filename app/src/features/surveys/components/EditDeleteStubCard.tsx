@@ -1,8 +1,6 @@
 import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Card, CardHeader, IconButton } from '@mui/material';
-import { grey } from '@mui/material/colors';
-import React from 'react';
 
 interface EditDeleteStubCardProps {
   header: string;
@@ -14,9 +12,7 @@ interface EditDeleteStubCardProps {
 export const EditDeleteStubCard = ({ header, subHeader, onClickEdit, onClickDelete }: EditDeleteStubCardProps) => {
   return (
     <Card
-      variant="outlined"
       sx={{
-        background: grey[100],
         '& .MuiCardHeader-subheader': {
           display: '-webkit-box',
           WebkitLineClamp: '2',

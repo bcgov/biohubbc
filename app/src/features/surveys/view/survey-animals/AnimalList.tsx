@@ -5,6 +5,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
+  Divider,
   List,
   ListItem,
   ListItemIcon,
@@ -14,7 +15,6 @@ import {
   Typography
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
-// import { cyan } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
@@ -59,13 +59,13 @@ const AnimalList = (props: AnimalListProps) => {
       <Toolbar
         sx={{
           flex: '0 0 auto',
-          borderBottom: '1px solid #ccc'
         }}>
         <Typography
+          component="h2"
           sx={{
             flexGrow: '1',
-            fontSize: '1.125rem',
-            fontWeight: 700
+            fontWeight: 700,
+            textTransform: 'uppercase'
           }}>
           Animals
         </Typography>
@@ -81,6 +81,8 @@ const AnimalList = (props: AnimalListProps) => {
         </Button>
       </Toolbar>
 
+      <Divider flexItem></Divider>
+
       <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
         <Box
           sx={{
@@ -88,17 +90,17 @@ const AnimalList = (props: AnimalListProps) => {
             width: '100%',
             height: '100%',
             overflowY: 'auto',
-            p: 1,
             background: grey[100]
           }}>
           {sortedCritterData.map((critter) => (
             <Accordion
-              key={critter.critter_id}
-              expanded={critter.survey_critter_id.toString() === survey_critter_id}
+              disableGutters
               sx={{
                 boxShadow: 'none'
-              }}>
-              <Box display="flex" overflow="hidden" alignItems="center" pr={1.5} className="sampleSiteHeader">
+              }}
+              key={critter.critter_id}
+              expanded={critter.survey_critter_id.toString() === survey_critter_id}>
+              <Box display="flex" overflow="hidden" alignItems="center" className="sampleSiteHeader">
                 <AccordionSummary
                   expandIcon={<Icon path={mdiChevronDown} size={1} />}
                   onClick={() => handleCritterSelect(critter.survey_critter_id.toString())}
@@ -107,7 +109,7 @@ const AnimalList = (props: AnimalListProps) => {
                     flex: '1 1 auto',
                     overflow: 'hidden',
                     py: 0.25,
-                    pr: 1.5,
+                    px: 3,
                     gap: '16px',
                     '& .MuiAccordionSummary-content': {
                       flex: '1 1 auto',
