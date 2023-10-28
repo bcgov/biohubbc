@@ -1,4 +1,4 @@
-import Button, { ButtonProps } from '@mui/material/Button';
+import LoadingButton, { LoadingButtonProps } from '@mui/lab/LoadingButton';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -76,7 +76,7 @@ export interface IYesNoDialogProps {
    * @type {Partial<ButtonProps>}
    * @memberof IYesNoDialogProps
    */
-  yesButtonProps?: Partial<ButtonProps>;
+  yesButtonProps?: Partial<LoadingButtonProps>;
 
   /**
    * Optional no-button props
@@ -84,7 +84,7 @@ export interface IYesNoDialogProps {
    * @type {Partial<ButtonProps>}
    * @memberof IYesNoDialogProps
    */
-  noButtonProps?: Partial<ButtonProps>;
+  noButtonProps?: Partial<LoadingButtonProps>;
 
   /**
    * Optional Boolean to state if button should be loading
@@ -121,7 +121,7 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
         {props.dialogContent}
       </DialogContent>
       <DialogActions>
-        <Button
+        <LoadingButton
           data-testid="yes-button"
           onClick={props.onYes}
           color="primary"
@@ -131,16 +131,16 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
           }}
           {...props.yesButtonProps}>
           {props.yesButtonLabel ? props.yesButtonLabel : 'Yes'}
-        </Button>
+        </LoadingButton>
 
-        <Button
+        <LoadingButton
           data-testid="no-button"
           onClick={props.onNo}
           color="primary"
           variant="outlined"
           {...props.noButtonProps}>
           {props.noButtonLabel ? props.noButtonLabel : 'No'}
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

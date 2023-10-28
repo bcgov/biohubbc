@@ -87,7 +87,7 @@ const LoadingOverlay = () => {
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const [pendingDeleteObservations, setPendingDeleteObservations] = useState<IObservationTableRow[]>([]);
-  // const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
+  const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
   const location = useLocation();
   const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
@@ -467,6 +467,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsDataLoader.data]);
 
+  const handleCommitDeleteRows = () => {
+    setLoadingDelete(true);
+    observationsContext
+      .deleteObservationRecords(pendingDeleteObservations)
+      .then(() => setPendingDeleteObservations([]))
+      .finally(() => setLoadingDelete(false));
+  }
+
   const handleCancelDeleteRows = () => {
     setPendingDeleteObservations([]);
   };
@@ -497,17 +505,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         dialogText={ObservationsTableI18N.removeRecordDialogText}
         yesButtonProps={{
           color: 'error',
-          // loading: loadingDelete // TODO change yesNoDialog.tsx to accept this prop...
+          loading: loadingDelete
         }}
         yesButtonLabel={'Delete Record'}
         noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
         open={showConfirmDeleteDialog}
-        onYes={() => {
-          observationsContext
-            .deleteObservationRecords(pendingDeleteObservations)
-            .then(() => setPendingDeleteObservations([]));
-        }}
+        onYes={() => handleCommitDeleteRows()}
         onClose={() => handleCancelDeleteRows()}
         onNo={() => handleCancelDeleteRows()}
       />
