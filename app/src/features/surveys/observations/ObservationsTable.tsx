@@ -9,8 +9,7 @@ import {
   DataGrid,
   GridColDef,
   GridEventListener,
-  GridInputRowSelectionModel,
-  GridRowModelUpdate
+  GridInputRowSelectionModel
 } from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
@@ -87,7 +86,8 @@ const LoadingOverlay = () => {
 };
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
+  const [pendingDeleteObservations, setPendingDeleteObservations] = useState<IObservationTableRow[]>([]);
+  // const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
   const location = useLocation();
   const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
@@ -443,9 +443,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       cellClassName: 'pinnedColumn',
       getActions: (params) => [
         <IconButton
-          onClick={(event) => {
-            event.preventDefault(); // Prevent row from going into edit mode
-            handleConfirmDeleteRow(params.id);
+          onClick={() => {
+            setPendingDeleteObservations([params.row]);
           }}
           key={`actions[${params.id}].handleDeleteRow`}>
           <Icon path={mdiTrashCanOutline} size={1} />
@@ -468,17 +467,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observationsDataLoader.data]);
 
-  const handleCancelDeleteRow = () => {
-    setDeletingObservation(null);
-  };
-
-  const handleConfirmDeleteRow = (id: string | number) => {
-    setDeletingObservation(id);
-  };
-
-  const handleDeleteRow = (id: string | number) => {
-    observationsContext.markRecordWithUnsavedChanges(id);
-    apiRef?.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
+  const handleCancelDeleteRows = () => {
+    setPendingDeleteObservations([]);
   };
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
@@ -489,7 +479,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     observationsContext.markRecordWithUnsavedChanges(params.id);
   };
 
-  const showConfirmDeleteDialog = Boolean(deletingObservation);
+  const showConfirmDeleteDialog = pendingDeleteObservations.length > 0;
 
   const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
     if (location.hash.startsWith('#view-')) {
@@ -505,19 +495,21 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       <YesNoDialog
         dialogTitle={ObservationsTableI18N.removeRecordDialogTitle}
         dialogText={ObservationsTableI18N.removeRecordDialogText}
-        yesButtonProps={{ color: 'error' }}
+        yesButtonProps={{
+          color: 'error',
+          // loading: loadingDelete // TODO change yesNoDialog.tsx to accept this prop...
+        }}
         yesButtonLabel={'Delete Record'}
         noButtonProps={{ color: 'primary', variant: 'outlined' }}
         noButtonLabel={'Cancel'}
         open={showConfirmDeleteDialog}
         onYes={() => {
-          if (deletingObservation) {
-            handleDeleteRow(deletingObservation);
-          }
-          setDeletingObservation(null);
+          observationsContext
+            .deleteObservationRecords(pendingDeleteObservations)
+            .then(() => setPendingDeleteObservations([]));
         }}
-        onClose={() => handleCancelDeleteRow()}
-        onNo={() => handleCancelDeleteRow()}
+        onClose={() => handleCancelDeleteRows()}
+        onNo={() => handleCancelDeleteRows()}
       />
       <DataGrid
         checkboxSelection

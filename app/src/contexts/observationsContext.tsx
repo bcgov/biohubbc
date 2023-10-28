@@ -25,8 +25,10 @@ export interface IObservationRecord {
   longitude: number | null;
 }
 
+type RowId = string | number
+
 export interface IObservationTableRow extends Partial<IObservationRecord> {
-  id: string;
+  id: RowId;
 }
 
 /**
@@ -40,6 +42,10 @@ export type IObservationsContext = {
    * Appends a new blank record to the observation rows
    */
   createNewRecord: () => void;
+  /**
+   * Deletes all of the given records and removes them from the Observation table.
+   */
+  deleteObservationRecords: (observationRecords: IObservationTableRow[]) => Promise<void>;
   /**
    * Transitions all rows in edit mode to view mode and triggers a commit of all observation rows to the database.
    */
@@ -55,7 +61,7 @@ export type IObservationsContext = {
   /**
    * Marks the given record as unsaved
    */
-  markRecordWithUnsavedChanges: (id: string | number) => void;
+  markRecordWithUnsavedChanges: (id: RowId) => void;
   /**
    * Indicates all observation table rows that have unsaved changes, include IDs of rows that have been deleted.
    */
@@ -95,6 +101,7 @@ export const ObservationsContext = createContext<IObservationsContext>({
   markRecordWithUnsavedChanges: () => {},
   hasUnsavedChanges: () => false,
   createNewRecord: () => {},
+  deleteObservationRecords: () => Promise.resolve(),
   revertRecords: () => Promise.resolve(),
   stopEditAndSaveRows: () => {},
   refreshRecords: () => Promise.resolve(),
@@ -137,12 +144,36 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   observationsDataLoader.load();
 
-  const markRecordWithUnsavedChanges = (id: string | number) => {
+  const markRecordWithUnsavedChanges = (id: RowId) => {
     const unsavedRecordSet = new Set<string>(unsavedRecordIds);
     unsavedRecordSet.add(String(id));
 
     _setUnsavedRecordIds(Array.from(unsavedRecordSet));
   };
+
+  const deleteObservationRecords = async (observationRecords: IObservationTableRow[]): Promise<void> => {
+    if (!observationRecords.length) {
+      return;
+    }
+
+    // markRecordWithUnsavedChanges(id); // TODO probably not needed anymore.
+    const deletingObservationIds = observationRecords
+      .filter((observationRecord) => 'survey_observation_id' in observationRecord)
+      .map((observationRecord) => (observationRecord as IObservationRecord).survey_observation_id);
+
+    return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds)
+      .then(() => {
+        const gridRowModelUpdate: GridRowModelUpdate[] = observationRecords.map((observationRecord) => ({
+          id: observationRecord.id,
+          _action: 'delete'
+        }));
+        _muiDataGridApiRef.current.updateRows(gridRowModelUpdate);
+      })
+      .catch((error: any) => {
+        // TODO replace with dialog popup
+        throw new Error(error);
+      })
+  }
 
   /**
    * Add a new empty record to the data grid.
@@ -306,6 +337,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     refreshRecords,
     hasUnsavedChanges,
     markRecordWithUnsavedChanges,
+    deleteObservationRecords,
     unsavedRecordIds,
     observationsDataLoader,
     _muiDataGridApiRef,
