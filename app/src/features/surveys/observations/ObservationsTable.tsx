@@ -443,7 +443,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       cellClassName: 'pinnedColumn',
       getActions: (params) => [
         <IconButton
-          onClick={() => {
+          onClick={(event) => {
+            event.stopPropagation(); // TODO potential fix? https://github.com/mui/mui-x/issues/2714#issuecomment-1032480880
             setPendingDeleteObservations([params.row]);
           }}
           key={`actions[${params.id}].handleDeleteRow`}>

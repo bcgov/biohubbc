@@ -163,11 +163,17 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
     return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds)
       .then(() => {
+
         const gridRowModelUpdate: GridRowModelUpdate[] = observationRecords.map((observationRecord) => ({
-          id: observationRecord.id,
+          id: String(observationRecord.id),
           _action: 'delete'
         }));
         _muiDataGridApiRef.current.updateRows(gridRowModelUpdate);
+
+        console.log(_muiDataGridApiRef.current.getRowModels())
+
+
+
       })
       .catch((error: any) => {
         // TODO replace with dialog popup
