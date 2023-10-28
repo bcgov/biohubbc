@@ -117,8 +117,8 @@ export function deleteSurveyObservations(): RequestHandler {
 
       const deleteObservationIds = req.body?.surveyObservationIds?.map((observationId: string | number) => Number(observationId)) ?? [];
 
-      const observationData = await observationService.deleteObservationsByIds(deleteObservationIds);
-      return res.status(200).json(observationData);
+      const numRows = await observationService.deleteObservationsByIds(deleteObservationIds);
+      return res.status(200).json(numRows);
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveyObservations', message: 'error', error });
       await connection.rollback();

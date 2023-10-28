@@ -316,7 +316,7 @@ export class ObservationRepository extends BaseRepository {
       .whereIn('survey_observation_id', observationIds)
       .returning('*');
 
-    const response = await this.connection.knex(queryBuilder, ObservationSubmissionRecord);
+    const response = await this.connection.knex(queryBuilder, ObservationRecord);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete observation records', [
