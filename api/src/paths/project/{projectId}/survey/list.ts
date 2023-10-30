@@ -178,10 +178,6 @@ GET.apiDoc = {
                         'revision_count'
                       ],
                       properties: {
-                        field_method_id: {
-                          type: 'number',
-                          nullable: true
-                        },
                         additional_details: {
                           type: 'string',
                           nullable: true
