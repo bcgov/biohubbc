@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { useAuthStateContext } from 'contexts/useAuthStateContext';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
 

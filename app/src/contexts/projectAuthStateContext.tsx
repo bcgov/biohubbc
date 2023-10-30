@@ -1,4 +1,4 @@
-import { useAuthStateContext } from 'contexts/useAuthStateContext';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetUserProjectParticipantResponse } from 'interfaces/useProjectApi.interface';

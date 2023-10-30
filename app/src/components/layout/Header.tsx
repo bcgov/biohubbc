@@ -17,7 +17,7 @@ import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { useAuthStateContext } from 'contexts/useAuthStateContext';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';

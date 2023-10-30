@@ -1,6 +1,6 @@
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
-import { useAuthStateContext } from 'contexts/useAuthStateContext';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { PropsWithChildren, ReactElement, useContext } from 'react';
 
 interface IGuardProps {

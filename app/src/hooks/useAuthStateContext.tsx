@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AuthStateContext, IAuthState } from './authStateContext';
+import { AuthStateContext, IAuthState } from '../contexts/authStateContext';
 
 /**
  * Returns an instance of `IAuthState` from `AuthStateContext`.

@@ -1,6 +1,6 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
-import { useAuthStateContext } from 'contexts/useAuthStateContext';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useRedirectUri } from 'hooks/useRedirect';
 import { useContext, useEffect } from 'react';
 import { hasAuthParams } from 'react-oidc-context';

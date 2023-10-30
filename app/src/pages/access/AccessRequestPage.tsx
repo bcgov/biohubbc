@@ -9,9 +9,9 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { AccessRequestI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
-import { useAuthStateContext } from 'contexts/useAuthStateContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import {
