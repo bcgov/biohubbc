@@ -14,7 +14,6 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { grey } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
@@ -62,6 +61,7 @@ const AnimalList = (props: AnimalListProps) => {
         }}>
         <Typography
           component="h2"
+          variant="body2"
           sx={{
             flexGrow: '1',
             fontWeight: 700,
@@ -89,14 +89,16 @@ const AnimalList = (props: AnimalListProps) => {
             position: 'absolute',
             width: '100%',
             height: '100%',
-            overflowY: 'auto',
-            background: grey[100]
+            overflowY: 'auto'
           }}>
           {sortedCritterData.map((critter) => (
             <Accordion
               disableGutters
               sx={{
-                boxShadow: 'none'
+                boxShadow: 'none',
+                '&.Mui-expanded::before': {
+                  opacity: 1
+                }
               }}
               key={critter.critter_id}
               expanded={critter.survey_critter_id.toString() === survey_critter_id}>
@@ -129,9 +131,7 @@ const AnimalList = (props: AnimalListProps) => {
               </Box>
               <AccordionDetails
                 sx={{
-                  pt: 0,
-                  px: 0,
-                  pb: 1
+                  p: 0
                 }}>
                 <List
                   disablePadding
@@ -141,7 +141,10 @@ const AnimalList = (props: AnimalListProps) => {
                     }
                   }}>
                   {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
-                    <ListItem
+                    <ListItem  
+                      sx={{
+                        px: 3
+                      }}
                       key={section}
                       divider
                       button

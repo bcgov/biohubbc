@@ -5,10 +5,12 @@ import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCa
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IFamily } from 'hooks/cb_api/useFamilyApi';
 import moment from 'moment';
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+// import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 export type SubHeaderData = Record<string, string | number | undefined>;
 
@@ -165,7 +167,7 @@ export const AnimalSectionDataCards = ({
                 })}
               </TransitionGroup>
             ) : (
-              <div>EMPTY STATE</div>
+              <Typography component="strong" color="textSecondary" fontWeight={700}>No records found</Typography>
             )}
           </>
         );

@@ -272,9 +272,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         }}>
         <Typography
           component="h2"
+          variant="body2"
           sx={{
             flexGrow: '1',
-            fontSize: '0.9rem !important',
             fontWeight: 700,
             textTransform: 'uppercase'
           }}>
@@ -337,9 +337,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       {values.general.critter_id ? (
         <Box
           flex="1 1 auto"
-          p={4}
+          p={5}
           sx={{
-            overflowY: 'scroll',
+            overflowY: 'auto',
             background: grey[100]
           }}>
           <Box
@@ -351,7 +351,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               component="h1"
               variant="h2"
               sx={{
-                mb: 2
+                mb: 3
               }}>
               {section}
             </Typography>
@@ -359,9 +359,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             <Typography
               variant="body1"
               color="textSecondary"
-              maxWidth={'72ch'}
+              maxWidth={'110ch'}
               sx={{
-                mb: 4
+                mb: 4,
               }}>
               {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
             </Typography>
@@ -413,7 +413,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             overflowY: 'scroll',
             background: grey[100]
           }}>
-          <Typography component="span" variant="body2" color="textSecondary">
+          <Typography component="span" variant="body2">
             No Critter Selected
           </Typography>
         </Box>
