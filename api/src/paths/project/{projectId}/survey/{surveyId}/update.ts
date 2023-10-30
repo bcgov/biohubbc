@@ -224,10 +224,6 @@ PUT.apiDoc = {
                 additional_details: {
                   type: 'string'
                 },
-                field_method_id: {
-                  type: 'number',
-                  nullable: true
-                },
                 vantage_code_ids: {
                   type: 'array',
                   items: {
