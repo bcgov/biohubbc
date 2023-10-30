@@ -1,29 +1,21 @@
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Divider, Toolbar, Typography } from '@mui/material';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { AttachmentType } from 'constants/attachments';
-import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
-import { AnimalSchema, AnimalSex, Critter, IAnimal } from './survey-animals/animal';
-import {
-  createCritterUpdatePayload,
-  transformCritterbaseAPIResponseToForm
-} from './survey-animals/animal-form-helpers';
 import {
   AnimalDeploymentTimespanSchema,
   AnimalTelemetryDeviceSchema,
@@ -31,7 +23,6 @@ import {
   IAnimalTelemetryDevice,
   IDeploymentTimespan
 } from './survey-animals/device';
-import IndividualAnimalForm, { ANIMAL_FORM_MODE } from './survey-animals/IndividualAnimalForm';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
 import TelemetryDeviceForm, {
   IAnimalTelemetryDeviceFile,
@@ -47,7 +38,6 @@ const SurveyAnimals: React.FC = () => {
   const history = useHistory();
 
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
-  const [openAddCritterDialog, setOpenAddCritterDialog] = useState(false);
   const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
   const [openViewTelemetryDialog, setOpenViewTelemetryDialog] = useState(false);
   const [isSubmittingTelemetry, setIsSubmittingTelemetry] = useState(false);
@@ -55,7 +45,6 @@ const SurveyAnimals: React.FC = () => {
   const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
     TELEMETRY_DEVICE_FORM_MODE.ADD
   );
-  const [animalFormMode, setAnimalFormMode] = useState<ANIMAL_FORM_MODE>(ANIMAL_FORM_MODE.ADD);
 
   const { projectId, surveyId } = surveyContext;
   const {
@@ -104,11 +93,6 @@ const SurveyAnimals: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCritterbaseCritterId]);
 
-  const toggleDialog = () => {
-    setAnimalFormMode(ANIMAL_FORM_MODE.ADD);
-    setOpenAddCritterDialog((d) => !d);
-  };
-
   const setPopup = (message: string) => {
     dialogContext.setSnackbar({
       open: true,
@@ -118,18 +102,6 @@ const SurveyAnimals: React.FC = () => {
         </Typography>
       )
     });
-  };
-
-  const AnimalFormValues: IAnimal = {
-    general: { wlh_id: '', taxon_id: '', taxon_name: '', animal_id: '', sex: AnimalSex.UNKNOWN, critter_id: '' },
-    captures: [],
-    markings: [],
-    mortality: [],
-    collectionUnits: [],
-    measurements: [],
-    family: [],
-    images: [],
-    device: []
   };
 
   const DeviceFormValues: IAnimalTelemetryDevice = {
@@ -238,22 +210,6 @@ const SurveyAnimals: React.FC = () => {
     )
   });
 
-  const obtainAnimalFormInitialvalues = (mode: ANIMAL_FORM_MODE): IAnimal | null => {
-    switch (mode) {
-      case ANIMAL_FORM_MODE.ADD:
-        return AnimalFormValues;
-      case ANIMAL_FORM_MODE.EDIT: {
-        const existingCritter = critterData?.find(
-          (critter: IDetailedCritterWithInternalId) => currentCritterbaseCritterId === critter.critter_id
-        );
-        if (!existingCritter) {
-          return null;
-        }
-        return transformCritterbaseAPIResponseToForm(existingCritter);
-      }
-    }
-  };
-
   const obtainDeviceFormInitialValues = (mode: TELEMETRY_DEVICE_FORM_MODE) => {
     switch (mode) {
       case TELEMETRY_DEVICE_FORM_MODE.ADD:
@@ -284,92 +240,6 @@ const SurveyAnimals: React.FC = () => {
           return [DeviceFormValues];
         }
       }
-    }
-  };
-
-  const renderAnimalFormSafe = (): JSX.Element => {
-    const initialValues = obtainAnimalFormInitialvalues(animalFormMode);
-    if (!initialValues) {
-      return (
-        <YesNoDialog
-          dialogTitle={'Error'}
-          dialogText={'Could not obtain existing critter values.'}
-          open={openAddCritterDialog}
-          onClose={toggleDialog}
-          onNo={toggleDialog}
-          onYes={toggleDialog}
-          noButtonLabel="OK"
-          yesButtonProps={{ sx: { display: 'none' } }}></YesNoDialog>
-      );
-    } else {
-      return (
-        <EditDialog
-          dialogTitle={
-            <Box>
-              <HelpButtonTooltip
-                content={SurveyAnimalsI18N.animalIndividualsHelp}
-                iconSx={{ position: 'relative', top: '-4px', right: '0px' }}>
-                <Typography variant="h3" component="span">
-                  {animalFormMode === ANIMAL_FORM_MODE.EDIT ? 'Edit Animal' : 'Add Animal'}
-                </Typography>
-              </HelpButtonTooltip>
-              {animalFormMode === ANIMAL_FORM_MODE.EDIT && (
-                <Typography variant="body2" color={'textSecondary'}>
-                  ID: {currentCritterbaseCritterId}
-                </Typography>
-              )}
-            </Box>
-          }
-          open={openAddCritterDialog}
-          onSave={(values) => {
-            handleCritterSave(values);
-          }}
-          onCancel={toggleDialog}
-          component={{
-            element: <IndividualAnimalForm />,
-            initialValues: initialValues,
-            validationSchema: AnimalSchema
-          }}
-          dialogSaveButtonLabel="Save"
-        />
-      );
-    }
-  };
-
-  const handleCritterSave = async (currentFormValues: IAnimal) => {
-    const postCritterPayload = async () => {
-      const critter = new Critter(currentFormValues);
-      toggleDialog();
-      await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
-      refreshCritters();
-      setPopup('Animal added to survey.');
-    };
-    const patchCritterPayload = async () => {
-      const initialFormValues = obtainAnimalFormInitialvalues(ANIMAL_FORM_MODE.EDIT);
-      if (!initialFormValues) {
-        throw Error('Could not obtain initial form values.');
-      }
-      const { create: createCritter, update: updateCritter } = createCritterUpdatePayload(
-        initialFormValues,
-        currentFormValues
-      );
-      toggleDialog();
-      if (!selectedCritterId) {
-        throw Error('The internal critter id for this row was not set correctly.');
-      }
-      await bhApi.survey.updateSurveyCritter(projectId, surveyId, selectedCritterId, updateCritter, createCritter);
-      refreshCritters();
-      setPopup('Animal data updated.');
-    };
-    try {
-      if (animalFormMode === ANIMAL_FORM_MODE.ADD) {
-        await postCritterPayload();
-      } else {
-        await patchCritterPayload();
-      }
-    } catch (err) {
-      setPopup(`Submission failed. ${(err as Error).message}`);
-      toggleDialog();
     }
   };
 
@@ -502,7 +372,6 @@ const SurveyAnimals: React.FC = () => {
 
   return (
     <Box>
-      {renderAnimalFormSafe()}
       <EditDialog
         dialogTitle={
           telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'Add Telemetry Device' : 'Edit Telemetry Devices'

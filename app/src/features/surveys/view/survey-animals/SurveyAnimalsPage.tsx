@@ -15,13 +15,12 @@ import { isEqual as _deepEquals, omitBy } from 'lodash';
 import { useContext, useMemo, useState } from 'react';
 import { datesSameNullable, setMessageSnackbar } from 'utils/Utils';
 import { AddEditAnimal } from './AddEditAnimal';
-import { AnimalSchema, AnimalSex, Critter, IAnimal } from './animal';
+import { AnimalSchema, AnimalSex, ANIMAL_FORM_MODE, Critter, IAnimal } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import { IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
 import { Device, IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import { ANIMAL_FORM_MODE } from './IndividualAnimalForm';
 import { IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
 
 export const SurveyAnimalsPage = () => {

@@ -1,7 +1,7 @@
 import { Formik } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { render, waitFor } from 'test-helpers/test-utils';
-import CollectionUnitAnimalForm from './CollectionUnitAnimalForm';
+import CollectionUnitAnimalFormContent from './CollectionUnitAnimalForm';
 
 jest.mock('hooks/useCritterbaseApi');
 
@@ -25,7 +25,7 @@ describe('CollectionUnitAnimalForm', () => {
 
     const { getByText } = render(
       <Formik initialValues={{ general: { taxon_id: 'a' }, collectionUnits: [] }} onSubmit={() => {}}>
-        {() => <CollectionUnitAnimalForm />}
+        {() => <CollectionUnitAnimalFormContent index={0} />}
       </Formik>
     );
 
