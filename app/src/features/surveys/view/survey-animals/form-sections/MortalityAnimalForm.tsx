@@ -2,67 +2,20 @@ import { Grid } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
-import { SurveyAnimalsI18N } from 'constants/i18n';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React, { Fragment, useState } from 'react';
+import { useFormikContext } from 'formik';
+import { Fragment, useState } from 'react';
 import { AnimalMortalitySchema, getAnimalFieldName, IAnimal, IAnimalMortality, isRequiredInSchema } from '../animal';
-import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 import TextInputToggle from '../TextInputToggle';
-import FormSectionWrapper from './FormSectionWrapper';
 import LocationEntryForm from './LocationEntryForm';
 
-/**
- * Renders the Mortality section for the Individual Animal form
- *
- * Note A: Using <FieldArray/> the name properties must stay in sync with
- * values object and nested arrays.
- * ie: values = { mortality: [{id: 'test'}] };  name = 'mortality.[0].id';
- *
- * Note B: FormSectionWrapper uses a Grid container to render children elements.
- * Children of FormSectionWrapper can use Grid items to organize inputs.
- *
- * Note C: Mortality gets set like an array here, though it should only ever contain one value.
- * This might seem odd, but this is in line with how critterbase stores these values.
- * To encourage the max of one rule, we use the maxSections prop here to prevent additional copies of the form
- * from rendering.
- *
- * @return {*}
- */
-
-const MortalityAnimalForm = () => {
-  const { values } = useFormikContext<IAnimal>();
-  const { animalKeyName, defaultFormValue } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalMortalityTitle];
-
-  return (
-    <FieldArray name={animalKeyName}>
-      {({ remove, push }: FieldArrayRenderProps) => (
-        <>
-          <FormSectionWrapper
-            title={SurveyAnimalsI18N.animalMortalityTitle}
-            addedSectionTitle={SurveyAnimalsI18N.animalMortalityTitle2}
-            titleHelp={SurveyAnimalsI18N.animalMortalityHelp}
-            btnLabel={SurveyAnimalsI18N.animalMortalityAddBtn}
-            maxSections={1}
-            handleAddSection={() => push(defaultFormValue)}
-            handleRemoveSection={remove}>
-            {values.mortality.map((mort, index) => (
-              <MortalityAnimalFormContent key={mort._id} name={animalKeyName} index={index} />
-            ))}
-          </FormSectionWrapper>
-        </>
-      )}
-    </FieldArray>
-  );
-};
-
 interface MortalityAnimalFormContentProps {
-  name: keyof IAnimal;
   index: number;
 }
 
-export const MortalityAnimalFormContent = ({ name, index }: MortalityAnimalFormContentProps) => {
-  const { values, handleBlur } = useFormikContext<IAnimal>();
+export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContentProps) => {
+  const name: keyof IAnimal = 'measurements';
 
+  const { values, handleBlur } = useFormikContext<IAnimal>();
   const [pcodTaxonDisabled, setPcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the PCOD Taxon dropdown.
   const [ucodTaxonDisabled, setUcodTaxonDisabled] = useState(true); //Controls whether you can select taxons from the UCOD Taxon dropdown.
   const [showMortalityComment, setShowMortalityComment] = useState(false);
@@ -196,4 +149,4 @@ export const MortalityAnimalFormContent = ({ name, index }: MortalityAnimalFormC
   );
 };
 
-export default MortalityAnimalForm;
+export default MortalityAnimalFormContent;

@@ -4,7 +4,6 @@ import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useFormikContext } from 'formik';
-import React from 'react';
 import { AnimalGeneralSchema, getAnimalFieldName, IAnimal, IAnimalGeneral, isRequiredInSchema } from '../animal';
 import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 

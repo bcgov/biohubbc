@@ -3,23 +3,19 @@ import { grey } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
-import { SurveyAnimalsI18N } from 'constants/i18n';
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { IFamily } from 'hooks/cb_api/useFamilyApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import React, { Fragment, useState } from 'react';
+import { Fragment, useState } from 'react';
 import {
   AnimalRelationshipSchema,
   getAnimalFieldName,
   IAnimal,
   IAnimalRelationship,
   isRequiredInSchema,
-  lastAnimalValueValid,
   newFamilyIdPlaceholder
 } from '../animal';
-import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
-import FormSectionWrapper from './FormSectionWrapper';
 const useStyles = makeStyles((theme: Theme) => ({
   surveyMetadataContainer: {
     '& dt': {
@@ -43,12 +39,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface IFamilyAnimalFormContentProps {
-  name: keyof IAnimal;
   index: number;
   allFamilies?: IFamily[];
 }
 
-export const FamilyAnimalFormContent = ({ name, index, allFamilies }: IFamilyAnimalFormContentProps) => {
+export const FamilyAnimalFormContent = ({ index, allFamilies }: IFamilyAnimalFormContentProps) => {
+  const name: keyof IAnimal = 'family';
   const { values, handleChange } = useFormikContext<IAnimal>();
   const disabledFamilyIds = values.family.reduce((acc: Record<string, boolean>, curr) => {
     if (curr.family_id) {
@@ -82,7 +78,7 @@ export const FamilyAnimalFormContent = ({ name, index, allFamilies }: IFamilyAni
         </CbSelectWrapper>
       </Grid>
       <Grid item xs={12}>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <CbSelectWrapper
             label={'Relationship'}
             name={getAnimalFieldName<IAnimalRelationship>(name, 'relationship', index)}
@@ -178,46 +174,4 @@ export const FamilyAnimalFormContent = ({ name, index, allFamilies }: IFamilyAni
   );
 };
 
-/**
- * Renders the Family section for the Individual Animal form
- *
- * This form needs to validate against the Critterbase critter table, as only critters that have already been
- * added to Critterbase are permissible as family members.
- *
- * @return {*}
- **/
-const FamilyAnimalForm = () => {
-  const { values } = useFormikContext<IAnimal>();
-  const critterbase = useCritterbaseApi();
-  const { animalKeyName, defaultFormValue } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalFamilyTitle];
-  const { data: allFamilies, load } = useDataLoader(critterbase.family.getAllFamilies);
-
-  if (!allFamilies) {
-    load();
-  }
-
-  return (
-    <Box id={'family-animal-form'}>
-      <FieldArray validateOnChange={true} name={animalKeyName}>
-        {({ remove, push }: FieldArrayRenderProps) => (
-          <>
-            <FormSectionWrapper
-              title={SurveyAnimalsI18N.animalFamilyTitle}
-              addedSectionTitle={SurveyAnimalsI18N.animalFamilyTitle2}
-              titleHelp={SurveyAnimalsI18N.animalFamilyHelp}
-              btnLabel={SurveyAnimalsI18N.animalFamilyAddBtn}
-              disableAddBtn={!lastAnimalValueValid('family', values)}
-              handleAddSection={() => push(defaultFormValue)}
-              handleRemoveSection={remove}>
-              {values.family.map((fam, index) => (
-                <FamilyAnimalFormContent key={fam._id} index={index} allFamilies={allFamilies} name={'family'} />
-              ))}
-            </FormSectionWrapper>
-          </>
-        )}
-      </FieldArray>
-    </Box>
-  );
-};
-
-export default FamilyAnimalForm;
+export default FamilyAnimalFormContent;

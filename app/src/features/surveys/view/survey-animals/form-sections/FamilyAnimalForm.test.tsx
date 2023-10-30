@@ -2,7 +2,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { Formik } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
-import FamilyAnimalForm from './FamilyAnimalForm';
+import FamilyAnimalFormContent from './FamilyAnimalForm';
 
 jest.mock('hooks/useCritterbaseApi');
 
@@ -30,7 +30,7 @@ describe('FamilyAnimalForm', () => {
       <Formik
         initialValues={{ general: { taxon_id: 'a' }, family: [{ family_id: 'New Family', relationship: 'parent' }] }}
         onSubmit={() => {}}>
-        {() => <FamilyAnimalForm />}
+        {() => <FamilyAnimalFormContent index={0} />}
       </Formik>
     );
 

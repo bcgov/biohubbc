@@ -6,6 +6,11 @@ import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
 import { AnimalTelemetryDeviceSchema } from './device';
 
+export enum ANIMAL_FORM_MODE {
+  ADD = 'add',
+  EDIT = 'edit'
+}
+
 export enum AnimalSex {
   MALE = 'Male',
   FEMALE = 'Female',

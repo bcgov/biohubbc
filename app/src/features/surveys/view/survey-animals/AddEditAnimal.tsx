@@ -27,7 +27,7 @@ import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitA
 import { FamilyAnimalFormContent } from './form-sections/FamilyAnimalForm';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
-import { MeasurementFormContent } from './form-sections/MeasurementAnimalForm';
+import MeasurementAnimalFormContent from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
 import { DeviceFormSection, IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
 
@@ -74,18 +74,16 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const renderSingleForm = useMemo(() => {
     const sectionMap: Partial<Record<IAnimalSections, JSX.Element>> = {
       [SurveyAnimalsI18N.animalGeneralTitle]: <GeneralAnimalForm />,
-      [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalFormContent name={'markings'} index={selectedIndex} />,
+      [SurveyAnimalsI18N.animalMarkingTitle]: <MarkingAnimalFormContent index={selectedIndex} />,
       [SurveyAnimalsI18N.animalMeasurementTitle]: (
-        <MeasurementFormContent index={selectedIndex} measurements={measurements} />
+        <MeasurementAnimalFormContent index={selectedIndex} measurements={measurements} />
       ),
-      [SurveyAnimalsI18N.animalCaptureTitle]: <CaptureAnimalFormContent name={'captures'} index={selectedIndex} />,
-      [SurveyAnimalsI18N.animalMortalityTitle]: <MortalityAnimalFormContent name={'mortality'} index={selectedIndex} />,
+      [SurveyAnimalsI18N.animalCaptureTitle]: <CaptureAnimalFormContent index={selectedIndex} />,
+      [SurveyAnimalsI18N.animalMortalityTitle]: <MortalityAnimalFormContent index={selectedIndex} />,
       [SurveyAnimalsI18N.animalFamilyTitle]: (
-        <FamilyAnimalFormContent name={'family'} index={selectedIndex} allFamilies={allFamilies} />
+        <FamilyAnimalFormContent index={selectedIndex} allFamilies={allFamilies} />
       ),
-      [SurveyAnimalsI18N.animalCollectionUnitTitle]: (
-        <CollectionUnitAnimalFormContent name={'collectionUnits'} index={selectedIndex} />
-      ),
+      [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalFormContent index={selectedIndex} />,
       Telemetry: (
         <DeviceFormSection
           values={values.device}

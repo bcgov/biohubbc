@@ -3,11 +3,8 @@ import CbSelectField from 'components/fields/CbSelectField';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
-import { SurveyAnimalsI18N } from 'constants/i18n';
-import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { Field, useFormikContext } from 'formik';
 import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import useDataLoader from 'hooks/useDataLoader';
 import { has } from 'lodash-es';
 import { Fragment, useEffect, useState } from 'react';
 import {
@@ -17,86 +14,30 @@ import {
   IAnimalMeasurement,
   isRequiredInSchema
 } from '../animal';
-import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
-import FormSectionWrapper from './FormSectionWrapper';
 
 /**
- * Renders the Measurement section for the Individual Animal form
- *
- * Note a: Requesting the raw unformatted measurement data to allow easier lookups
- * Displays both qualitative / quantitative measurement options in one dropdown.
- * The value / option selector needs to change based on the chosen measurement in first select.
- *
- * Note b: Custom quantiative measurement validation based on min / max values in database.
+ * Renders the Measurement form inputs
  *
  * @return {*}
  */
-
-const MeasurementAnimalForm = () => {
-  const api = useCritterbaseApi();
-  const { values } = useFormikContext<IAnimal>();
-  const { animalKeyName, defaultFormValue } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalMeasurementTitle];
-
-  const { data: measurements, refresh, load } = useDataLoader(api.lookup.getTaxonMeasurements);
-
-  if (values.general.taxon_id) {
-    load(values.general.taxon_id);
-  }
-
-  useEffect(() => {
-    refresh(values.general.taxon_id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.general.taxon_id]);
-
-  const canAddMeasurement = () => {
-    const lastMeasurement = values.measurements[values.measurements.length - 1];
-    if (!lastMeasurement) {
-      return true;
-    }
-    const { value, qualitative_option_id, taxon_measurement_id, measured_timestamp } = lastMeasurement;
-    const hasValueOrOption = value || qualitative_option_id;
-    return taxon_measurement_id && measured_timestamp && hasValueOrOption;
-  };
-
-  return (
-    <FieldArray name={animalKeyName}>
-      {({ remove, push }: FieldArrayRenderProps) => (
-        <>
-          <FormSectionWrapper
-            title={SurveyAnimalsI18N.animalMeasurementTitle}
-            addedSectionTitle={SurveyAnimalsI18N.animalMeasurementTitle2}
-            titleHelp={SurveyAnimalsI18N.animalMeasurementHelp}
-            btnLabel={SurveyAnimalsI18N.animalMeasurementAddBtn}
-            disableAddBtn={!canAddMeasurement()}
-            handleAddSection={() => push(defaultFormValue)}
-            handleRemoveSection={remove}>
-            {values.measurements.map((measurement, index) => (
-              <MeasurementFormContent key={`${measurement._id}`} index={index} measurements={measurements} />
-            ))}
-          </FormSectionWrapper>
-        </>
-      )}
-    </FieldArray>
-  );
-};
 
 interface MeasurementFormContentProps {
   index: number;
   measurements?: IMeasurementStub[];
 }
 
-export const MeasurementFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
+export const MeasurementAnimalFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
+  const name: keyof IAnimal = 'measurements';
   const { values, handleChange, setFieldValue, handleBlur } = useFormikContext<IAnimal>();
-  const { animalKeyName } = ANIMAL_SECTIONS_FORM_MAP[SurveyAnimalsI18N.animalMeasurementTitle];
   const taxonMeasurementId = values.measurements[index].taxon_measurement_id;
   const [currentMeasurement, setCurrentMeasurement] = useState<IMeasurementStub | undefined>(
     measurements?.find((lookup_measurement) => lookup_measurement.taxon_measurement_id === taxonMeasurementId)
   );
   const isQuantMeasurement = has(currentMeasurement, 'unit');
 
-  const taxonMeasurementIDName = getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'taxon_measurement_id', index);
-  const valueName = getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'value', index);
-  const optionName = getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'qualitative_option_id', index);
+  const taxonMeasurementIDName = getAnimalFieldName<IAnimalMeasurement>(name, 'taxon_measurement_id', index);
+  const valueName = getAnimalFieldName<IAnimalMeasurement>(name, 'value', index);
+  const optionName = getAnimalFieldName<IAnimalMeasurement>(name, 'qualitative_option_id', index);
 
   useEffect(() => {
     setCurrentMeasurement(measurements?.find((m) => m.taxon_measurement_id === taxonMeasurementId));
@@ -186,7 +127,7 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
       </Grid>
       <Grid item xs={12}>
         <SingleDateField
-          name={getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'measured_timestamp', index)}
+          name={getAnimalFieldName<IAnimalMeasurement>(name, 'measured_timestamp', index)}
           required={isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp')}
           label={'Measured Date'}
           other={{ size: 'medium' }}
@@ -196,7 +137,7 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
         <CustomTextField
           other={{ size: 'medium', required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment') }}
           label="Measurement Comment"
-          name={getAnimalFieldName<IAnimalMeasurement>(animalKeyName, 'measurement_comment', index)}
+          name={getAnimalFieldName<IAnimalMeasurement>(name, 'measurement_comment', index)}
           handleBlur={handleBlur}
         />
       </Grid>
@@ -204,4 +145,4 @@ export const MeasurementFormContent = ({ index, measurements }: MeasurementFormC
   );
 };
 
-export default MeasurementAnimalForm;
+export default MeasurementAnimalFormContent;
