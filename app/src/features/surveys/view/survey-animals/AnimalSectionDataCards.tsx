@@ -15,15 +15,9 @@ export type SubHeaderData = Record<string, string | number | undefined>;
 interface AnimalSectionDataCardsProps {
   section: IAnimalSections;
   onEditClick: (idx: number) => void;
-  isAddingNew: boolean;
   allFamilies?: IFamily[];
 }
-export const AnimalSectionDataCards = ({
-  section,
-  onEditClick,
-  isAddingNew,
-  allFamilies
-}: AnimalSectionDataCardsProps) => {
+export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: AnimalSectionDataCardsProps) => {
   const { submitForm, initialValues } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
@@ -134,42 +128,39 @@ export const AnimalSectionDataCards = ({
   };
 
   return (
-    <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
-      {({ remove }: FieldArrayRenderProps) => {
-        return (
-          <>
-            {sectionCardData.length > 0 ? (
-              <TransitionGroup>
-                {sectionCardData.map((cardData, index) => {
-                  const submitFormRemoveCard = () => {
-                    remove(index);
-                    submitForm();
-                  };
-                  const handleDelete = () => {
-                    showDeleteDialog(submitFormRemoveCard);
-                  };
-                  return (
-                    <Collapse key={cardData.key}>
-                      <EditDeleteStubCard
-                        header={cardData.header}
-                        subHeader={cardData.subHeader}
-                        onClickEdit={() => onEditClick(index)}
-                        onClickDelete={
-                          section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
-                            ? undefined
-                            : handleDelete
-                        }
-                      />
-                    </Collapse>
-                  );
-                })}
-              </TransitionGroup>
-            ) : (
-              <div>EMPTY STATE</div>
-            )}
-          </>
-        );
-      }}
-    </FieldArray>
+    <>
+      <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
+        {({ remove }: FieldArrayRenderProps) => {
+          return (
+            <TransitionGroup>
+              {sectionCardData.map((cardData, index) => {
+                const submitFormRemoveCard = () => {
+                  remove(index);
+                  submitForm();
+                };
+                const handleDelete = () => {
+                  showDeleteDialog(submitFormRemoveCard);
+                };
+                return (
+                  <Collapse key={cardData.key}>
+                    <EditDeleteStubCard
+                      header={cardData.header}
+                      subHeader={cardData.subHeader}
+                      onClickEdit={() => onEditClick(index)}
+                      onClickDelete={
+                        section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
+                          ? undefined
+                          : handleDelete
+                      }
+                    />
+                  </Collapse>
+                );
+              })}
+            </TransitionGroup>
+          );
+        }}
+      </FieldArray>
+      {sectionCardData.length === 0 ? <div>EMPTY STATE</div> : null}
+    </>
   );
 };

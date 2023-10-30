@@ -396,7 +396,6 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                   setShowDialog(true);
                 }}
                 section={section}
-                isAddingNew={openedFromAddButton}
                 allFamilies={allFamilies}
               />
             </Form>
