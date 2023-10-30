@@ -54,8 +54,8 @@ const Header: React.FC = () => {
   const LoggedInUser = () => {
     const authStateContext = useAuthStateContext();
 
-    const identitySource = authStateContext.simsUserWrapper.identitySource || '';
-    const userIdentifier = authStateContext.simsUserWrapper.userIdentifier || '';
+    const identitySource = authStateContext.simsUserWrapper.identitySource ?? '';
+    const userIdentifier = authStateContext.simsUserWrapper.userIdentifier ?? '';
     const formattedUsername = [getFormattedIdentitySource(identitySource as SYSTEM_IDENTITY_SOURCE), userIdentifier]
       .filter(Boolean)
       .join('/');

@@ -4,9 +4,9 @@ import { ISimsUserWrapper } from 'hooks/useSimsUserWrapper';
 
 export interface ICritterbaseUserWrapper {
   /**
-   * Set to `true` if the user's information has finished being loaded, false otherwise.
+   * Set to `true` if the user's information is still loading, false otherwise.
    */
-  isReady: boolean;
+  isLoading: boolean;
   /**
    * The critterbase user uuid.
    */
@@ -18,12 +18,12 @@ function useCritterbaseUserWrapper(simsUserWrapper: ISimsUserWrapper): ICritterb
 
   const critterbaseSignupLoader = useDataLoader(async () => cbApi.authentication.signUp());
 
-  if (simsUserWrapper.isReady && simsUserWrapper.systemUserId) {
+  if (!simsUserWrapper.isLoading && simsUserWrapper.systemUserId) {
     critterbaseSignupLoader.load();
   }
 
   return {
-    isReady: simsUserWrapper.isReady && (simsUserWrapper.systemUserId ? critterbaseSignupLoader.isReady : true),
+    isLoading: simsUserWrapper.isLoading || (simsUserWrapper.systemUserId ? !critterbaseSignupLoader.isReady : false),
     critterbaseUserUuid: critterbaseSignupLoader.data?.user_id
   };
 }

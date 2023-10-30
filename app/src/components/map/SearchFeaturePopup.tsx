@@ -21,7 +21,7 @@ export const SearchFeaturePopup: React.FC<{ featureData: any }> = (props) => {
         variant="contained"
         color="primary"
         onClick={() => {
-          if (!authStateContext.auth.isAuthenticated || !authStateContext.simsUserWrapper.isReady) {
+          if (!authStateContext.auth.isAuthenticated || authStateContext.simsUserWrapper.isLoading) {
             history.push(`/admin/projects/${featureData.id}`);
           } else {
             history.push(`/projects/${featureData.id}`);

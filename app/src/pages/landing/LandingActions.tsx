@@ -69,7 +69,7 @@ const LandingActions = () => {
 
   const authStateContext = useAuthStateContext();
 
-  const userIdentifier = authStateContext.simsUserWrapper.userIdentifier || '';
+  const userIdentifier = authStateContext.simsUserWrapper.userIdentifier ?? '';
 
   const hasPendingAccessRequest = authStateContext.simsUserWrapper.hasAccessRequest;
   const isSystemUser = authStateContext.simsUserWrapper.systemUserId;
@@ -78,7 +78,7 @@ const LandingActions = () => {
     SYSTEM_ROLE.SYSTEM_ADMIN
   ]);
 
-  const mayBelongToOneOrMoreProjects = isSystemUser || authStateContext.simsUserWrapper.hasOneOrMoreProjectRoles;
+  const mayBelongToOneOrMoreProjects = isSystemUser ?? authStateContext.simsUserWrapper.hasOneOrMoreProjectRoles;
   const hasProjectCreationRole =
     hasAdministrativeRole || authStateContext.simsUserWrapper.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]);
   const isReturningUser = isSystemUser || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;

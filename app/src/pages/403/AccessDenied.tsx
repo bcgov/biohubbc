@@ -19,7 +19,7 @@ const AccessDenied = () => {
   }
 
   const showRequestAccessButton =
-    authStateContext.simsUserWrapper.isReady && !authStateContext.simsUserWrapper.roleNames?.length;
+    !authStateContext.simsUserWrapper.isLoading && !authStateContext.simsUserWrapper.roleNames?.length;
 
   return (
     <Container>

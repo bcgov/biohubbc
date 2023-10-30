@@ -120,7 +120,7 @@ export const HasProjectOrSystemRole = (roles: IProjectRoleGuardProps): boolean =
 export const AuthGuard = (props: PropsWithChildren<IGuardProps>) => {
   const authStateContext = useAuthStateContext();
 
-  if (!authStateContext.auth.isAuthenticated || !authStateContext.simsUserWrapper.isReady) {
+  if (!authStateContext.auth.isAuthenticated || authStateContext.simsUserWrapper.isLoading) {
     if (props.fallback) {
       return <>{props.fallback}</>;
     } else {

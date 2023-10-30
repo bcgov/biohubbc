@@ -8,7 +8,6 @@ import { AuthContextProps } from 'react-oidc-context';
  *  - not yet successfully authenticated (all keycloak details about the user will be false, null, or undefined)
  */
 export const UnauthenticatedUserAuthState: IAuthState = {
-  isReady: true,
   auth: {
     isLoading: false,
     isAuthenticated: false,
@@ -20,7 +19,7 @@ export const UnauthenticatedUserAuthState: IAuthState = {
     }
   } as unknown as AuthContextProps,
   simsUserWrapper: {
-    isReady: true,
+    isLoading: false,
     systemUserId: undefined,
     userGuid: null,
     userIdentifier: undefined,
@@ -37,7 +36,7 @@ export const UnauthenticatedUserAuthState: IAuthState = {
     }
   },
   critterbaseUserWrapper: {
-    isReady: true,
+    isLoading: false,
     critterbaseUserUuid: 'fakeguid'
   }
 };
@@ -50,7 +49,6 @@ export const UnauthenticatedUserAuthState: IAuthState = {
  *  - has no system or project level roles
  */
 export const SystemUserAuthState: IAuthState = {
-  isReady: true,
   auth: {
     isLoading: false,
     isAuthenticated: true,
@@ -62,7 +60,7 @@ export const SystemUserAuthState: IAuthState = {
     }
   } as unknown as AuthContextProps,
   simsUserWrapper: {
-    isReady: true,
+    isLoading: false,
     systemUserId: 1,
     userGuid: '987-654-321',
     userIdentifier: 'testusername',
@@ -79,7 +77,7 @@ export const SystemUserAuthState: IAuthState = {
     }
   },
   critterbaseUserWrapper: {
-    isReady: true,
+    isLoading: false,
     critterbaseUserUuid: 'fakeguid'
   }
 };
@@ -92,7 +90,6 @@ export const SystemUserAuthState: IAuthState = {
  *  - has the `System Administrator` system level role
  */
 export const SystemAdminAuthState: IAuthState = {
-  isReady: true,
   auth: {
     isLoading: false,
     isAuthenticated: true,
@@ -104,7 +101,7 @@ export const SystemAdminAuthState: IAuthState = {
     }
   } as unknown as AuthContextProps,
   simsUserWrapper: {
-    isReady: true,
+    isLoading: false,
     systemUserId: 1,
     userGuid: '123-456-789',
     userIdentifier: 'admin-username',
@@ -121,7 +118,7 @@ export const SystemAdminAuthState: IAuthState = {
     }
   },
   critterbaseUserWrapper: {
-    isReady: true,
+    isLoading: false,
     critterbaseUserUuid: 'fakeguid'
   }
 };

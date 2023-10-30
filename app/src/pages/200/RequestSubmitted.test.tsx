@@ -6,10 +6,10 @@ import { render } from 'test-helpers/test-utils';
 import RequestSubmitted from './RequestSubmitted';
 
 describe('RequestSubmitted', () => {
-  it.skip('renders a spinner when `isReady` is false', () => {
+  it.skip('renders a spinner when the sims user information is still loading', () => {
     const authState = getMockAuthState({
       base: SystemUserAuthState,
-      overrides: { simsUserWrapper: { isReady: false } }
+      overrides: { simsUserWrapper: { isLoading: true } }
     });
 
     const history = createMemoryHistory();

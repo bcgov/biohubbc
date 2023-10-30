@@ -7,9 +7,9 @@ import { coerceIdentitySource } from 'utils/authUtils';
 
 export interface ISimsUserWrapper {
   /**
-   * Set to `true` if the user's information has finished being loaded, false otherwise.
+   * Set to `true` if the user's information is still loading, false otherwise.
    */
-  isReady: boolean;
+  isLoading: boolean;
   /**
    * The user's system user id.
    */
@@ -115,7 +115,7 @@ function useSimsUserWrapper(): ISimsUserWrapper {
   };
 
   return {
-    isReady: simsUserDataLoader.isReady && administrativeActivityStandingDataLoader.isReady,
+    isLoading: !simsUserDataLoader.isReady || !administrativeActivityStandingDataLoader.isReady,
     systemUserId: simsUserDataLoader.data?.system_user_id,
     userGuid: simsUserDataLoader.data?.user_guid,
     userIdentifier: simsUserDataLoader.data?.user_identifier,

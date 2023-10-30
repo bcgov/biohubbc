@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 const RequestSubmitted = () => {
   const authStateContext = useAuthStateContext();
 
-  if (!authStateContext.simsUserWrapper.isReady) {
+  if (authStateContext.simsUserWrapper.isLoading) {
     // User data has not been loaded, can not yet determine if they have a role
     return <CircularProgress className="pageProgress" />;
   }

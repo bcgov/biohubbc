@@ -1,7 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -21,7 +20,7 @@ import {
   IIDIRAccessRequestDataObject
 } from 'interfaces/useAdminApi.interface';
 import React, { ReactElement, useContext, useState } from 'react';
-import { Redirect, useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 import BCeIDRequestForm, {
   BCeIDBasicRequestFormInitialValues,
   BCeIDBasicRequestFormYupSchema,
@@ -116,21 +115,6 @@ export const AccessRequestPage: React.FC = () => {
       setIsSubmittingRequest(false);
     }
   };
-
-  if (!authStateContext.auth.isAuthenticated) {
-    // User is not logged in
-    return <Redirect to={{ pathname: '/' }} />;
-  }
-
-  if (!authStateContext.simsUserWrapper.isReady) {
-    // User data has not been loaded, can not yet determine if they have a role
-    return <CircularProgress className="pageProgress" />;
-  }
-
-  if (authStateContext.simsUserWrapper.hasAccessRequest) {
-    // User already has a pending access request
-    return <Redirect to={{ pathname: '/request-submitted' }} />;
-  }
 
   let initialValues:
     | IIDIRAccessRequestDataObject

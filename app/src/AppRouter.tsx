@@ -47,7 +47,9 @@ const AppRouter: React.FC = () => {
 
       <RouteWithTitle path="/access-request" title={getTitle('Access Request')}>
         <BaseLayout>
-          <AccessRequestPage />
+          <AuthenticatedRouteGuard>
+            <AccessRequestPage />
+          </AuthenticatedRouteGuard>
         </BaseLayout>
       </RouteWithTitle>
 

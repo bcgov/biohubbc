@@ -60,7 +60,7 @@ export const SystemRoleRouteGuard = (props: ISystemRoleRouteGuardProps) => {
 
   const authStateContext = useAuthStateContext();
 
-  if (!authStateContext.simsUserWrapper.isReady) {
+  if (authStateContext.simsUserWrapper.isLoading) {
     // User data has not been loaded, can not yet determine if user has sufficient roles
     return <CircularProgress className="pageProgress" />;
   }
@@ -87,9 +87,13 @@ export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
 
   const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
-  if (!authStateContext.simsUserWrapper.isReady || !projectAuthStateContext.hasLoadedParticipantInfo) {
+  if (
+    authStateContext.auth.isLoading ||
+    authStateContext.simsUserWrapper.isLoading ||
+    !projectAuthStateContext.hasLoadedParticipantInfo
+  ) {
     // Participant data has not been loaded, can not yet determine if user has sufficient roles
-    return <CircularProgress className="pageProgress" />;
+    return <CircularProgress className="pageProgress" data-testid="project-role-guard-spinner" />;
   }
 
   if (
@@ -104,7 +108,7 @@ export const ProjectRoleRouteGuard = (props: IProjectRoleRouteGuardProps) => {
 };
 
 /**
- * Route guard that requires the user to be authenticated.
+ * Route guard that requires the user to be authenticated and registered with Sims.
  *
  * @param {RouteProps} props
  * @return {*}
@@ -118,52 +122,47 @@ export const AuthenticatedRouteGuard = (props: RouteProps) => {
 
   useEffect(() => {
     if (
-      authStateContext.isReady &&
+      !authStateContext.auth.isLoading &&
       !hasAuthParams() &&
       !authStateContext.auth.isAuthenticated &&
       !authStateContext.auth.activeNavigator
     ) {
-      // User is not authenticated and has no active authentication navigator
+      // User is not authenticated and has no active authentication navigator, redirect to the keycloak login page
       authStateContext.auth.signinRedirect({ redirect_uri: buildUrl(window.location.origin, location.pathname) });
     }
-  }, [authStateContext.auth, authStateContext.isReady, location.pathname]);
+  }, [authStateContext.auth, location.pathname]);
 
   if (
-    !authStateContext.isReady ||
-    !authStateContext.simsUserWrapper.isReady ||
+    authStateContext.auth.isLoading ||
+    authStateContext.simsUserWrapper.isLoading ||
     !authStateContext.auth.isAuthenticated
   ) {
-    return <CircularProgress className="pageProgress" />;
-  }
-
-  if (!authStateContext.auth.isAuthenticated) {
-    // Redirect to forbidden page
-    return <Redirect to="/forbidden" />;
+    return <CircularProgress className="pageProgress" data-testid={'authenticated-route-guard-spinner'} />;
   }
 
   if (!authStateContext.simsUserWrapper.systemUserId) {
     // User is not a registered system user
+
     if (authStateContext.simsUserWrapper.hasAccessRequest) {
-      // The user has a pending access request, restrict them to the request-submitted or logout pages
-      if (location.pathname !== '/request-submitted') {
-        return <Redirect to="/request-submitted" />;
-      }
-    } else {
-      // The user does not have a pending access request, restrict them to the access-request or request-submitted pages
-      if (!['/access-request', '/request-submitted'].includes(location.pathname)) {
-        /**
-         * User attempted to go to restricted page. If the request to fetch user data fails, the user
-         * can never navigate away from the forbidden page unless they refetch the user data by refreshing
-         * the browser. We can preemptively re-attempt to load the user data again each time they attempt to navigate
-         * away from the forbidden page.
-         */
-        authStateContext.simsUserWrapper.refresh();
-        // Redirect to forbidden page
-        return <Redirect to="/forbidden" />;
-      }
+      // The user has a pending access request, restrict them to the request-submitted page
+      return <Redirect to="/request-submitted" />;
+    }
+
+    // The user does not have a pending access request, restrict them to landing or access request pages
+    if (!['/', '/access-request'].includes(location.pathname)) {
+      /**
+       * User attempted to go to restricted page. If the request to fetch user data fails, the user
+       * can never navigate away from the forbidden page unless they refetch the user data by refreshing
+       * the browser. We can preemptively re-attempt to load the user data again each time they attempt to navigate
+       * away from the forbidden page.
+       */
+      authStateContext.simsUserWrapper.refresh();
+      // Redirect to forbidden page
+      return <Redirect to="/forbidden" />;
     }
   }
 
+  // The user is a registered system user
   return <Route {...rest}>{children}</Route>;
 };
 
@@ -179,8 +178,6 @@ export const UnAuthenticatedRouteGuard = (props: RouteProps) => {
   const authStateContext = useAuthStateContext();
 
   const redirectUri = useRedirectUri('/');
-
-  console.log('redirectUri', redirectUri);
 
   if (authStateContext.auth.isAuthenticated) {
     /**
