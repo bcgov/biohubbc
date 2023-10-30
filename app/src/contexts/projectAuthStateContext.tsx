@@ -4,6 +4,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IGetUserProjectParticipantResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router';
+import { hasAtLeastOneValidValue } from 'utils/authUtils';
 
 export interface IProjectAuthStateContext {
   getProjectParticipant: () => IGetUserProjectParticipantResponse;
@@ -90,7 +91,7 @@ export const ProjectAuthStateContextProvider: React.FC<React.PropsWithChildren> 
         return false;
       }
 
-      return authStateContext.simsUserWrapper.hasSystemRole(validSystemRoles);
+      return hasAtLeastOneValidValue(validSystemRoles, authStateContext.simsUserWrapper.roleNames);
     },
     [authStateContext.simsUserWrapper]
   );

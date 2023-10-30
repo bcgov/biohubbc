@@ -30,7 +30,6 @@ export const UnauthenticatedUserAuthState: IAuthState = {
     identitySource: null,
     hasAccessRequest: false,
     hasOneOrMoreProjectRoles: false,
-    hasSystemRole: () => false,
     refresh: () => {
       // do nothing
     }
@@ -71,7 +70,6 @@ export const SystemUserAuthState: IAuthState = {
     identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
     hasAccessRequest: false,
     hasOneOrMoreProjectRoles: false,
-    hasSystemRole: () => false,
     refresh: () => {
       // do nothing
     }
@@ -112,7 +110,6 @@ export const SystemAdminAuthState: IAuthState = {
     identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
     hasAccessRequest: false,
     hasOneOrMoreProjectRoles: false,
-    hasSystemRole: () => true,
     refresh: () => {
       // do nothing
     }

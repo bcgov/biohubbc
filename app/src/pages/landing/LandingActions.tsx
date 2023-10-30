@@ -12,6 +12,7 @@ import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { Link } from 'react-router-dom';
+import { hasAtLeastOneValidValue } from 'utils/authUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionsContainer: {
@@ -73,14 +74,16 @@ const LandingActions = () => {
 
   const hasPendingAccessRequest = authStateContext.simsUserWrapper.hasAccessRequest;
   const isSystemUser = authStateContext.simsUserWrapper.systemUserId;
-  const hasAdministrativeRole = authStateContext.simsUserWrapper.hasSystemRole([
-    SYSTEM_ROLE.DATA_ADMINISTRATOR,
-    SYSTEM_ROLE.SYSTEM_ADMIN
-  ]);
+
+  const hasAdministrativeRole = hasAtLeastOneValidValue(
+    [SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN],
+    authStateContext.simsUserWrapper.roleNames
+  );
 
   const mayBelongToOneOrMoreProjects = isSystemUser ?? authStateContext.simsUserWrapper.hasOneOrMoreProjectRoles;
   const hasProjectCreationRole =
-    hasAdministrativeRole || authStateContext.simsUserWrapper.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]);
+    hasAdministrativeRole ||
+    hasAtLeastOneValidValue([SYSTEM_ROLE.PROJECT_CREATOR], authStateContext.simsUserWrapper.roleNames);
   const isReturningUser = isSystemUser || hasPendingAccessRequest || mayBelongToOneOrMoreProjects;
   const mayViewProjects = isSystemUser || mayBelongToOneOrMoreProjects;
   const mayMakeAccessRequest = !mayViewProjects && !hasPendingAccessRequest;

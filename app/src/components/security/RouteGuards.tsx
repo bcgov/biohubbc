@@ -1,10 +1,12 @@
 import CircularProgress from '@mui/material/CircularProgress';
+import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useRedirectUri } from 'hooks/useRedirect';
 import { useContext, useEffect } from 'react';
 import { hasAuthParams } from 'react-oidc-context';
 import { Redirect, Route, RouteProps, useLocation } from 'react-router';
+import { hasAtLeastOneValidValue } from 'utils/authUtils';
 import { buildUrl } from 'utils/Utils';
 
 export interface ISystemRoleRouteGuardProps extends RouteProps {
@@ -13,9 +15,9 @@ export interface ISystemRoleRouteGuardProps extends RouteProps {
    *
    * Note: The user only needs 1 of the valid roles, when multiple are specified.
    *
-   * @type {string[]}
+   * @type {SYSTEM_ROLE[]}
    */
-  validRoles?: string[];
+  validRoles?: SYSTEM_ROLE[];
 }
 
 export interface IProjectRoleRouteGuardProps extends RouteProps {
@@ -24,27 +26,27 @@ export interface IProjectRoleRouteGuardProps extends RouteProps {
    *
    * Note: The user only needs 1 of the valid roles, when multiple are specified.
    *
-   * @type {string[]}
+   * @type {PROJECT_ROLE[]}
    */
-  validProjectRoles?: string[];
+  validProjectRoles?: PROJECT_ROLE[];
 
   /**
    * Indicates the sufficient project permissions needed to access this route, if any.
    *
    * Note: The user only needs 1 of the valid roles, when multiple are specified.
    *
-   * @type {string[]}
+   * @type {PROJECT_PERMISSION[]}
    */
-  validProjectPermissions?: string[];
+  validProjectPermissions?: PROJECT_PERMISSION[];
 
   /**
    * Indicates the sufficient system roles that will grant access to this route, if any.
    *
    * Note: The user only needs 1 of the valid roles, when multiple are specified.
    *
-   * @type {string[]}
+   * @type {SYSTEM_ROLE[]}
    */
-  validSystemRoles?: string[];
+  validSystemRoles?: SYSTEM_ROLE[];
 }
 
 /**
@@ -60,12 +62,12 @@ export const SystemRoleRouteGuard = (props: ISystemRoleRouteGuardProps) => {
 
   const authStateContext = useAuthStateContext();
 
-  if (authStateContext.simsUserWrapper.isLoading) {
+  if (authStateContext.auth.isLoading || authStateContext.simsUserWrapper.isLoading) {
     // User data has not been loaded, can not yet determine if user has sufficient roles
-    return <CircularProgress className="pageProgress" />;
+    return <CircularProgress className="pageProgress" data-testid="system-role-guard-spinner" />;
   }
 
-  if (!authStateContext.simsUserWrapper.hasSystemRole(props.validRoles)) {
+  if (!hasAtLeastOneValidValue(props.validRoles, authStateContext.simsUserWrapper.roleNames)) {
     return <Redirect to="/forbidden" />;
   }
 

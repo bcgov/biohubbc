@@ -184,7 +184,7 @@ describe('LandingPage', () => {
         overrides: {
           simsUserWrapper: {
             hasOneOrMoreProjectRoles: true,
-            hasSystemRole: (systemRoles?: string[]) => Boolean(systemRoles?.includes(SYSTEM_ROLE.PROJECT_CREATOR))
+            roleNames: [SYSTEM_ROLE.PROJECT_CREATOR]
           }
         }
       });

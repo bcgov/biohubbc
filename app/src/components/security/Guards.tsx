@@ -2,6 +2,7 @@ import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { PropsWithChildren, ReactElement, useContext } from 'react';
+import { hasAtLeastOneValidValue } from 'utils/authUtils';
 
 interface IGuardProps {
   /**
@@ -56,7 +57,8 @@ export interface IProjectRoleGuardProps extends IGuardProps {
 export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>) => {
   const authStateContext = useAuthStateContext();
   const { validSystemRoles } = props;
-  const hasSystemRole = authStateContext.simsUserWrapper.hasSystemRole(validSystemRoles);
+
+  const hasSystemRole = hasAtLeastOneValidValue(validSystemRoles, authStateContext.simsUserWrapper.roleNames);
 
   if (!hasSystemRole) {
     if (props.fallback) {

@@ -1,7 +1,7 @@
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { coerceIdentitySource } from 'utils/authUtils';
 
@@ -51,12 +51,6 @@ export interface ISimsUserWrapper {
    */
   hasOneOrMoreProjectRoles: boolean;
   /**
-   * Returns `true` if the logged in user has at least one of the provided `validSystemRoles`, `false` otherwise.
-   *
-   * Note: If no `validSystemRoles` provided, returns `true`.
-   */
-  hasSystemRole: (validSystemRoles?: string[]) => boolean;
-  /**
    * Force this sims user wrapper to refresh its data.
    */
   refresh: () => void;
@@ -88,23 +82,6 @@ function useSimsUserWrapper(): ISimsUserWrapper {
     return coerceIdentitySource(userIdentitySource);
   }, [simsUserDataLoader.data?.identity_source]);
 
-  const hasSystemRole = useCallback(
-    (validSystemRoles?: string[]) => {
-      if (!validSystemRoles?.length) {
-        return true;
-      }
-
-      const userSystemRoles = simsUserDataLoader.data?.role_names;
-
-      if (userSystemRoles?.some((item) => validSystemRoles.includes(item))) {
-        return true;
-      }
-
-      return false;
-    },
-    [simsUserDataLoader.data?.role_names]
-  );
-
   const hasAccessRequest = !!administrativeActivityStandingDataLoader.data?.has_pending_access_request;
 
   const hasOneOrMoreProjectRoles = !!administrativeActivityStandingDataLoader.data?.has_one_or_more_project_roles;
@@ -126,7 +103,6 @@ function useSimsUserWrapper(): ISimsUserWrapper {
     identitySource: identitySource,
     hasAccessRequest,
     hasOneOrMoreProjectRoles,
-    hasSystemRole,
     refresh
   };
 }

@@ -1,4 +1,9 @@
-import { AuthenticatedRouteGuard, UnAuthenticatedRouteGuard } from 'components/security/RouteGuards';
+import {
+  AuthenticatedRouteGuard,
+  SystemRoleRouteGuard,
+  UnAuthenticatedRouteGuard
+} from 'components/security/RouteGuards';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import { AuthContextProps } from 'react-oidc-context';
@@ -28,7 +33,6 @@ const nullAuthState = getMockAuthState({
       identitySource: null,
       hasAccessRequest: false,
       hasOneOrMoreProjectRoles: false,
-      hasSystemRole: () => false,
       refresh: () => {
         // do nothing
       }
@@ -49,8 +53,237 @@ const Success = () => {
 };
 
 describe('RouteGuards', () => {
+  describe('SystemRoleRouteGuard', () => {
+    describe('loading', () => {
+      afterAll(() => {
+        cleanup();
+      });
+
+      it('renders a spinner if the auth context is still loading', async () => {
+        const authState = getMockAuthState({
+          base: nullAuthState,
+          overrides: {
+            auth: {
+              isLoading: true,
+              isAuthenticated: true
+            },
+            simsUserWrapper: {
+              isLoading: false
+            }
+          }
+        });
+
+        const initialPath = '/';
+        const history = createMemoryHistory({ initialEntries: [initialPath] });
+
+        const validRoles = [SYSTEM_ROLE.PROJECT_CREATOR];
+
+        const { getByTestId } = render(
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <SystemRoleRouteGuard validRoles={validRoles}>
+                <Fail />
+              </SystemRoleRouteGuard>
+            </Router>
+          </AuthStateContext.Provider>
+        );
+
+        await waitFor(() => {
+          expect(getByTestId('system-role-guard-spinner')).toBeVisible();
+        });
+      });
+
+      it('renders a spinner if the sims user is still loading', async () => {
+        const authState = getMockAuthState({
+          base: nullAuthState,
+          overrides: {
+            auth: {
+              isLoading: false,
+              isAuthenticated: true
+            },
+            simsUserWrapper: {
+              isLoading: true
+            }
+          }
+        });
+
+        const initialPath = '/';
+        const history = createMemoryHistory({ initialEntries: [initialPath] });
+
+        const validRoles = [SYSTEM_ROLE.PROJECT_CREATOR];
+
+        const { getByTestId } = render(
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <SystemRoleRouteGuard validRoles={validRoles}>
+                <Fail />
+              </SystemRoleRouteGuard>
+            </Router>
+          </AuthStateContext.Provider>
+        );
+
+        await waitFor(() => {
+          expect(getByTestId('system-role-guard-spinner')).toBeVisible();
+          expect(history.location.pathname).toEqual(initialPath);
+        });
+      });
+    });
+
+    describe('authenticated', () => {
+      afterAll(() => {
+        cleanup();
+      });
+
+      it('redirects to the forbidden page if the user has insufficient system roles', async () => {
+        const authState = getMockAuthState({
+          base: nullAuthState,
+          overrides: {
+            auth: {
+              isLoading: false,
+              isAuthenticated: true
+            },
+            simsUserWrapper: {
+              isLoading: false,
+              roleNames: [SYSTEM_ROLE.PROJECT_CREATOR]
+            }
+          }
+        });
+
+        const initialPath = '/';
+        const history = createMemoryHistory({ initialEntries: [initialPath] });
+
+        const validRoles = [SYSTEM_ROLE.DATA_ADMINISTRATOR];
+
+        render(
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <SystemRoleRouteGuard validRoles={validRoles}>
+                <Fail />
+              </SystemRoleRouteGuard>
+            </Router>
+          </AuthStateContext.Provider>
+        );
+
+        const expectedPath = '/forbidden';
+
+        await waitFor(() => {
+          expect(history.location.pathname).toEqual(expectedPath);
+        });
+      });
+
+      it('redirects to the forbidden page if the user has no system roles', async () => {
+        const authState = getMockAuthState({
+          base: nullAuthState,
+          overrides: {
+            auth: {
+              isLoading: false,
+              isAuthenticated: true
+            },
+            simsUserWrapper: {
+              isLoading: false,
+              roleNames: []
+            }
+          }
+        });
+
+        const initialPath = '/';
+        const history = createMemoryHistory({ initialEntries: [initialPath] });
+
+        const validRoles = [SYSTEM_ROLE.DATA_ADMINISTRATOR];
+
+        render(
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <SystemRoleRouteGuard validRoles={validRoles}>
+                <Fail />
+              </SystemRoleRouteGuard>
+            </Router>
+          </AuthStateContext.Provider>
+        );
+
+        const expectedPath = '/forbidden';
+
+        await waitFor(() => {
+          expect(history.location.pathname).toEqual(expectedPath);
+        });
+      });
+
+      it('renders the route if no valid system roles specified', async () => {
+        const authState = getMockAuthState({
+          base: nullAuthState,
+          overrides: {
+            auth: {
+              isLoading: false,
+              isAuthenticated: true
+            },
+            simsUserWrapper: {
+              isLoading: false,
+              roleNames: []
+            }
+          }
+        });
+
+        const initialPath = '/';
+        const history = createMemoryHistory({ initialEntries: [initialPath] });
+
+        const validRoles: SYSTEM_ROLE[] = [];
+
+        const { getByTestId } = render(
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <SystemRoleRouteGuard validRoles={validRoles}>
+                <Success />
+              </SystemRoleRouteGuard>
+            </Router>
+          </AuthStateContext.Provider>
+        );
+
+        await waitFor(() => {
+          expect(history.location.pathname).toEqual(initialPath);
+          expect(getByTestId('success-component')).toBeVisible();
+        });
+      });
+
+      it('renders the route if the user has sufficient system roles', async () => {
+        const authState = getMockAuthState({
+          base: nullAuthState,
+          overrides: {
+            auth: {
+              isLoading: false,
+              isAuthenticated: true
+            },
+            simsUserWrapper: {
+              isLoading: false,
+              roleNames: [SYSTEM_ROLE.DATA_ADMINISTRATOR]
+            }
+          }
+        });
+
+        const initialPath = '/';
+        const history = createMemoryHistory({ initialEntries: [initialPath] });
+
+        const validRoles = [SYSTEM_ROLE.DATA_ADMINISTRATOR];
+
+        const { getByTestId } = render(
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <SystemRoleRouteGuard validRoles={validRoles}>
+                <Success />
+              </SystemRoleRouteGuard>
+            </Router>
+          </AuthStateContext.Provider>
+        );
+
+        await waitFor(() => {
+          expect(history.location.pathname).toEqual(initialPath);
+          expect(getByTestId('success-component')).toBeVisible();
+        });
+      });
+    });
+  });
+
   describe('AuthenticatedRouteGuard', () => {
-    describe('loading and/or unauthenticated', () => {
+    describe('loading', () => {
       afterAll(() => {
         cleanup();
       });
@@ -126,6 +359,12 @@ describe('RouteGuards', () => {
           expect(history.location.pathname).toEqual(initialPath);
           expect(signinRedirectStub).toHaveBeenCalledTimes(0);
         });
+      });
+    });
+
+    describe('unauthenticated', () => {
+      afterAll(() => {
+        cleanup();
       });
 
       it('renders a spinner and calls `signinRedirect` if the user is not authenticated', async () => {

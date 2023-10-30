@@ -27,6 +27,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
+import { hasAtLeastOneValidValue } from 'utils/authUtils';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 /**
@@ -116,11 +117,10 @@ const SurveyHeader = () => {
   };
 
   // Enable delete button if you a system admin or a project admin
-  const enableDeleteSurveyButton = authStateContext.simsUserWrapper.hasSystemRole([
-    SYSTEM_ROLE.SYSTEM_ADMIN,
-    SYSTEM_ROLE.DATA_ADMINISTRATOR,
-    SYSTEM_ROLE.PROJECT_CREATOR
-  ]);
+  const enableDeleteSurveyButton = hasAtLeastOneValidValue(
+    [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR],
+    authStateContext.simsUserWrapper.roleNames
+  );
 
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [publishSurveyDialogOpen, setPublishSurveyDialogOpen] = useState<boolean>(false);
