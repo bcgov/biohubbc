@@ -22,6 +22,7 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+// import grey from '@mui/material/colors/grey';
 
 interface AnimalListProps {
   isLoading?: boolean;
@@ -61,19 +62,18 @@ const AnimalList = (props: AnimalListProps) => {
         }}>
         <Typography
           component="h2"
-          variant="body2"
+          variant="h5"
           sx={{
-            flexGrow: '1',
-            fontWeight: 700,
-            textTransform: 'uppercase'
+            flexGrow: '1'
           }}>
           Animals
         </Typography>
         <Button
-          sx={{
-            mr: -1
-          }}
           variant="contained"
+          sx={{
+            mr: -1,
+            fontWeight: 700
+          }}
           color="primary"
           startIcon={<Icon path={mdiPlus} size={1} />}
           onClick={onAddButton}>
@@ -94,7 +94,7 @@ const AnimalList = (props: AnimalListProps) => {
           {sortedCritterData.map((critter) => (
             <Accordion
               disableGutters
-              sx={{
+              sx={{ 
                 boxShadow: 'none',
                 '&.Mui-expanded::before': {
                   opacity: 1

@@ -12,6 +12,7 @@ interface EditDeleteStubCardProps {
 export const EditDeleteStubCard = ({ header, subHeader, onClickEdit, onClickDelete }: EditDeleteStubCardProps) => {
   return (
     <Card
+      variant="outlined"
       sx={{
         mb: 1,
         '& .MuiCardHeader-subheader': {
