@@ -13,6 +13,7 @@ export const EditDeleteStubCard = ({ header, subHeader, onClickEdit, onClickDele
   return (
     <Card
       sx={{
+        mb: 1,
         '& .MuiCardHeader-subheader': {
           display: '-webkit-box',
           WebkitLineClamp: '2',
@@ -22,7 +23,6 @@ export const EditDeleteStubCard = ({ header, subHeader, onClickEdit, onClickDele
           textOverflow: 'ellipsis',
           fontSize: '14px'
         },
-        mt: 1,
         '& .MuiCardHeader-title': {
           mb: 0.5
         }

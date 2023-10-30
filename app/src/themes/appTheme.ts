@@ -58,7 +58,6 @@ const appTheme = createTheme({
       fontWeight: 700
     },
     h6: {
-      fontSize: '0.9rem !important',
       fontWeight: 700
     }
   },
@@ -293,15 +292,6 @@ const appTheme = createTheme({
           textTransform: 'none',
           minWidth: '100px !important',
           fontWeight: 700
-        }
-      }
-    },
-    MuiToolbar: {
-      styleOverrides: {
-        root: {
-          '& h2': {
-            fontSize: '0.9rem'
-          }
         }
       }
     }

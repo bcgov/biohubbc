@@ -1,11 +1,13 @@
 import Collapse from '@mui/material/Collapse';
+// import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IFamily } from 'hooks/cb_api/useFamilyApi';
 import moment from 'moment';
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
@@ -160,7 +162,13 @@ export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: An
           );
         }}
       </FieldArray>
-      {sectionCardData.length === 0 ? <div>EMPTY STATE</div> : null}
+
+      {/* Empty State */}
+      {sectionCardData.length === 0 ? (
+        <Typography component="strong" color="textSecondary" fontWeight={700}>
+          No records found
+        </Typography>
+      ) : null}
     </>
   );
 };
