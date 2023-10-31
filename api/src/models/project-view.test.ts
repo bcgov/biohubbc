@@ -3,7 +3,6 @@ import { describe } from 'mocha';
 import {
   GetAttachmentsData,
   GetIUCNClassificationData,
-  GetLocationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   ProjectData
@@ -125,87 +124,6 @@ describe('GetObjectivesData', () => {
 
     it('sets revision_count', function () {
       expect(projectObjectivesData.revision_count).to.equal(obj.revision_count);
-    });
-  });
-});
-
-describe('GetLocationData', () => {
-  describe('No values provided', () => {
-    let locationData: GetLocationData;
-
-    before(() => {
-      locationData = new GetLocationData(null);
-    });
-
-    it('sets location_description', function () {
-      expect(locationData.location_description).to.equal('');
-    });
-
-    it('sets the geometry', function () {
-      expect(locationData.geometry).to.eql([]);
-    });
-  });
-
-  describe('Empty array values provided', () => {
-    let locationData: GetLocationData;
-
-    before(() => {
-      locationData = new GetLocationData([]);
-    });
-
-    it('sets location_description', function () {
-      expect(locationData.location_description).to.equal('');
-    });
-
-    it('sets the geometry', function () {
-      expect(locationData.geometry).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let locationData: GetLocationData;
-
-    const location_description = 'location description';
-    const geometry = [
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [125.6, 10.1]
-        },
-        properties: {
-          name: 'Dinagat Islands'
-        }
-      }
-    ];
-
-    const locationDataObj = [
-      {
-        location_description,
-        geometry,
-        revision_count: 'count'
-      },
-      {
-        location_description,
-        geometry,
-        revision_count: 'count'
-      }
-    ];
-
-    before(() => {
-      locationData = new GetLocationData(locationDataObj);
-    });
-
-    it('sets location_description', function () {
-      expect(locationData.location_description).to.equal(location_description);
-    });
-
-    it('sets the geometry', function () {
-      expect(locationData.geometry).to.eql(geometry);
-    });
-
-    it('sets revision_count', function () {
-      expect(locationData.revision_count).to.equal('count');
     });
   });
 });

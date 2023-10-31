@@ -122,33 +122,6 @@ describe('EmlPackage', () => {
         }
       ]);
 
-      sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({
-        geographicCoverage: {
-          geographicDescription: 'Location Description',
-          boundingCoordinates: {
-            westBoundingCoordinate: -121.904297,
-            eastBoundingCoordinate: -120.19043,
-            northBoundingCoordinate: 51.971346,
-            southBoundingCoordinate: 50.930738
-          },
-          datasetGPolygon: [
-            {
-              datasetGPolygonOuterGRing: [
-                {
-                  gRingPoint: [
-                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
-                    { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
-                    { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
-                    { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
-                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      });
-
       sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
         rangeOfDates: {
           beginDate: { calendarDate: '2023-01-01' },
@@ -156,7 +129,7 @@ describe('EmlPackage', () => {
         }
       });
 
-      const response = emlPackage.withProject(emlService._buildProjectEmlProjectSection(mockProjectData));
+      const response = emlPackage.withProject(emlService._buildProjectEmlProjectSection(mockProjectData, []));
 
       expect(response._projectMetadata).to.eql(emlPackage._projectMetadata);
       expect(response._projectMetadata).to.eql({
@@ -175,30 +148,6 @@ describe('EmlPackage', () => {
         },
         studyAreaDescription: {
           coverage: {
-            geographicCoverage: {
-              geographicDescription: 'Location Description',
-              boundingCoordinates: {
-                westBoundingCoordinate: -121.904297,
-                eastBoundingCoordinate: -120.19043,
-                northBoundingCoordinate: 51.971346,
-                southBoundingCoordinate: 50.930738
-              },
-              datasetGPolygon: [
-                {
-                  datasetGPolygonOuterGRing: [
-                    {
-                      gRingPoint: [
-                        { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
-                        { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
-                        { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
-                        { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
-                        { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
             temporalCoverage: {
               rangeOfDates: {
                 beginDate: { calendarDate: '2023-01-01' },
@@ -1223,33 +1172,6 @@ describe.skip('EmlService', () => {
         }
       ]);
 
-      sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({
-        geographicCoverage: {
-          geographicDescription: 'Location Description',
-          boundingCoordinates: {
-            westBoundingCoordinate: -121.904297,
-            eastBoundingCoordinate: -120.19043,
-            northBoundingCoordinate: 51.971346,
-            southBoundingCoordinate: 50.930738
-          },
-          datasetGPolygon: [
-            {
-              datasetGPolygonOuterGRing: [
-                {
-                  gRingPoint: [
-                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 },
-                    { gRingLatitude: 51.971346, gRingLongitude: -121.904297 },
-                    { gRingLatitude: 51.971346, gRingLongitude: -120.19043 },
-                    { gRingLatitude: 50.930738, gRingLongitude: -120.19043 },
-                    { gRingLatitude: 50.930738, gRingLongitude: -121.904297 }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      });
-
       sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
         rangeOfDates: {
           beginDate: { calendarDate: '2023-01-01' },
@@ -1257,7 +1179,7 @@ describe.skip('EmlService', () => {
         }
       });
 
-      const response = emlService._buildProjectEmlProjectSection(mockProjectData);
+      const response = emlService._buildProjectEmlProjectSection(mockProjectData, []);
 
       expect(response).to.eql({
         $: { id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii', system: '' },
@@ -1333,8 +1255,6 @@ describe.skip('EmlService', () => {
         }
       ]);
 
-      sinon.stub(EmlService.prototype, '_getProjectGeographicCoverage').returns({});
-
       sinon.stub(EmlService.prototype, '_getProjectTemporalCoverage').returns({
         rangeOfDates: {
           beginDate: { calendarDate: '2023-01-01' },
@@ -1342,7 +1262,7 @@ describe.skip('EmlService', () => {
         }
       });
 
-      const response = emlService._buildProjectEmlProjectSection(mockProjectData);
+      const response = emlService._buildProjectEmlProjectSection(mockProjectData, []);
 
       expect(response).to.eql({
         $: { id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii', system: '' },

@@ -3,7 +3,6 @@ import MockAdapter from 'axios-mock-adapter';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
-import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { ICreateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
@@ -106,7 +105,6 @@ describe('useProjectApi', () => {
         id: 1,
         name: 'project name',
         objectives: 'objectives',
-        location_description: 'location',
         start_date: '2020/04/04',
         end_date: '2020/05/05',
         comments: 'comment',
@@ -175,7 +173,6 @@ describe('useProjectApi', () => {
       permit: null as unknown as ISurveyPermitForm,
       project: null as unknown as IProjectDetailsForm,
       objectives: null as unknown as IProjectObjectivesForm,
-      location: null as unknown as IProjectLocationForm,
       iucn: null as unknown as IProjectIUCNForm
     } as unknown as ICreateProjectRequest;
 

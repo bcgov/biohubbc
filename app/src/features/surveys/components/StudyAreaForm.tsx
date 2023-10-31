@@ -1,5 +1,5 @@
 import EditDialog from 'components/dialog/EditDialog';
-import { IDrawControlsRef } from 'components/map/components/DrawControls2';
+import { IDrawControlsRef } from 'components/map/components/DrawControls';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { createRef, useMemo, useState } from 'react';
