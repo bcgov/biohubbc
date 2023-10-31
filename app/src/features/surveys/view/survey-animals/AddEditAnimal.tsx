@@ -1,6 +1,6 @@
 import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import { Box, Button, Divider, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import Stack from '@mui/system/Stack';
@@ -101,14 +101,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         />
       )
     };
-    const gridWrappedComp =
-      section === 'Telemetry' ? (
-        sectionMap[section]
-      ) : (
-        <Grid container spacing={2}>
-          {sectionMap[section]}
-        </Grid>
-      );
+    const gridWrappedComp = section === 'Telemetry' ? sectionMap[section] : <>{sectionMap[section]}</>;
     return gridWrappedComp ?? <Typography>Unimplemented</Typography>;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -271,15 +264,16 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         }}>
         <Typography
           component="h2"
-          variant="body2"
+          variant="h5"
           sx={{
             flexGrow: '1',
-            fontWeight: 700,
-            textTransform: 'uppercase'
+            fontWeight: 700
           }}>
           {values?.general?.animal_id ? `Animal Details > ${values.general.animal_id}` : 'No animal selected'}
         </Typography>
       </Toolbar>
+
+      <Divider flexItem></Divider>
 
       {values.general.critter_id ? (
         <Box
@@ -294,21 +288,76 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               maxWidth: '1200px',
               mx: 'auto'
             }}>
-            <Typography
-              component="h1"
-              variant="h2"
-              sx={{
-                mb: 3
-              }}>
-              {section}
-            </Typography>
+            <Box display="flex" flexDirection="row" alignItems="flex-start" mb={3}>
+              <Typography
+                component="h1"
+                variant="h2"
+                sx={{
+                  flex: '1 1 auto'
+                }}>
+                {section}
+              </Typography>
+
+              <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
+                {({ push, remove }: FieldArrayRenderProps) => (
+                  <>
+                    <EditDialog
+                      dialogTitle={dialogTitle}
+                      open={showDialog}
+                      dialogSaveButtonLabel={'Save'}
+                      component={{
+                        initialValues: values,
+                        element: renderSingleForm,
+                        validationSchema: AnimalSchemaWithDeployments
+                      }}
+                      onCancel={() => {
+                        if (openedFromAddButton) {
+                          remove(selectedIndex);
+                        }
+                        setOpenedFromAddButton(false);
+                        setShowDialog(false);
+                      }}
+                      onSave={async (saveVals) => {
+                        if (section === 'Telemetry') {
+                          handleSaveTelemetry(saveVals);
+                        }
+                        setOpenedFromAddButton(false);
+                        setShowDialog(false);
+                        setFieldValue(
+                          ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
+                          saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
+                        );
+                        submitForm();
+                      }}
+                    />
+                    {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
+                      <Button
+                        sx={{ fontWeight: 700 }}
+                        startIcon={<Icon path={mdiPlus} size={1} />}
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                          setOpenedFromAddButton(true);
+                          const animalData = ANIMAL_SECTIONS_FORM_MAP[section];
+                          const sectionValues = values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName];
+                          push(animalData?.defaultFormValue());
+                          setSelectedIndex((sectionValues as any)['length'] ?? 0);
+                          setShowDialog(true);
+                        }}>
+                        {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
+                      </Button>
+                    ) : null}
+                  </>
+                )}
+              </FieldArray>
+            </Box>
 
             <Typography
               variant="body1"
               color="textSecondary"
               maxWidth={'110ch'}
               sx={{
-                mb: 4
+                mb: 5
               }}>
               {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
             </Typography>

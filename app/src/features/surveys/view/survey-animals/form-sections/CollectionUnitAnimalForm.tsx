@@ -1,7 +1,6 @@
 import { Grid } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import { useFormikContext } from 'formik';
-import { Fragment } from 'react';
 import {
   AnimalCollectionUnitSchema,
   getAnimalFieldName,
@@ -36,10 +35,10 @@ export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimal
   };
 
   return (
-    <Fragment>
+    <Grid container spacing={3}>
       <Grid item xs={12}>
         <CbSelectField
-          label="Unit Category"
+          label="Category"
           name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_category_id', index)}
           id={'collection_category_id'}
           disabledValues={disabledCategories}
@@ -54,7 +53,7 @@ export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimal
       </Grid>
       <Grid item xs={12}>
         <CbSelectField
-          label="Unit Name"
+          label="Name"
           id={'collection_unit_id'}
           route={'lookups/collection-units'}
           query={`category_id=${values.collectionUnits[index].collection_category_id}`}
@@ -66,7 +65,7 @@ export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimal
           handleChangeSideEffect={handleUnitName}
         />
       </Grid>
-    </Fragment>
+    </Grid>
   );
 };
 

@@ -314,12 +314,12 @@ export const SurveyAnimalsI18N = {
   animalMarkingTitle: 'Markings',
   animalMarkingTitle2: 'Animal Marking',
   animalMarkingHelp:
-    'Markings are physical, chemical, or electronic tags or characteristics that uniquely identify individuals.',
+    'Physical or chemical characteristics of an animal, or electronic tags that uniquely identify an individual.',
   animalMarkingAddBtn: 'Add Marking',
   animalMeasurementTitle: 'Measurements',
   animalMeasurementTitle2: 'Animal Measurement',
   animalMeasurementHelp:
-    'Measurements are quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
+    'Quantitative or categorical attributes, such as body mass or body condition, that describe an individual.',
   animalMeasurementAddBtn: 'Add Measurement',
   animalFamilyTitle: 'Family',
   animalFamilyTitle2: 'Animal Relationship',
