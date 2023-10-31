@@ -254,7 +254,7 @@ export function prepareWorksheetCells(worksheet: xlsx.WorkSheet) {
       const coord = xlsx.utils.encode_cell({ r, c });
       let cell: CellObject = worksheet[coord];
 
-      if (!cell || !cell.v) {
+      if (!cell?.v) {
         // Cell is null or has no raw value
         continue;
       }

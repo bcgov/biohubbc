@@ -66,7 +66,7 @@ const SurveyGeneralInformation = () => {
             return (
               <Typography
                 component="dd"
-                key={`${focalSpecies}-${index}`}
+                key={focalSpecies}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',
@@ -94,7 +94,7 @@ const SurveyGeneralInformation = () => {
             return (
               <Typography
                 component="dd"
-                key={`${ancillarySpecies}-${index}`}
+                key={ancillarySpecies}
                 sx={{
                   position: 'relative',
                   display: 'inline-block',

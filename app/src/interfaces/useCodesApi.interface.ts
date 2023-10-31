@@ -34,7 +34,6 @@ export interface IGetAllCodeSetsResponse {
   system_roles: CodeSet;
   project_roles: CodeSet;
   administrative_activity_status_type: CodeSet;
-  field_methods: CodeSet<{ id: number; name: string; description: string }>;
   intended_outcomes: CodeSet<{ id: number; name: string; description: string }>;
   vantage_codes: CodeSet;
   survey_jobs: CodeSet;
