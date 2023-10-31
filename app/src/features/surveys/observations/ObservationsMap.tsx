@@ -75,7 +75,7 @@ const ObservationsMap = () => {
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(getDefaultMapBounds());
-  }, [surveyObservations]);
+  }, [getDefaultMapBounds]);
 
   return (
     <Box position="relative">

@@ -24,10 +24,17 @@ const SurveyStudyArea = () => {
   });
 
   useEffect(() => {
+    let isMounted = true;
+
     const locations = surveyContext.surveyDataLoader.data?.surveyData?.locations;
 
     const getRegions = async (features: Feature[]) => {
       const regions = await biohubApi.spatial.getRegions(features);
+
+      if (!isMounted) {
+        return;
+      }
+
       setInferredLayersInfo({
         parks: regions.regions
           .filter((item) => item.sourceLayer === 'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW')
@@ -53,7 +60,11 @@ const SurveyStudyArea = () => {
       });
       getRegions(features);
     }
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [biohubApi.spatial, surveyContext.surveyDataLoader.data?.surveyData?.locations]);
 
   return (
     <>
