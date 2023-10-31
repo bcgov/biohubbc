@@ -142,7 +142,7 @@ export class EmlPackage {
    * @return {*}
    * @memberof EmlPackage
    */
-  withEml(emlMetadata: Record<string, any>): EmlPackage {
+  withEml(emlMetadata: Record<string, any>): this {
     this._emlMetadata = emlMetadata;
 
     return this;
@@ -155,7 +155,7 @@ export class EmlPackage {
    * @return {*}
    * @memberof EmlPackage
    */
-  withDataset(datasetMetadata: Record<string, any>): EmlPackage {
+  withDataset(datasetMetadata: Record<string, any>): this {
     this._datasetMetadata = datasetMetadata;
 
     return this;
@@ -168,7 +168,7 @@ export class EmlPackage {
    * @return {*}
    * @memberof EmlPackage
    */
-  withProject(projectMetadata: Record<string, any>): EmlPackage {
+  withProject(projectMetadata: Record<string, any>): this {
     this._projectMetadata = projectMetadata;
 
     return this;
@@ -181,7 +181,7 @@ export class EmlPackage {
    * @return {*}
    * @memberof EmlPackage
    */
-  withAdditionalMetadata(additionalMetadata: AdditionalMetadata[]): EmlPackage {
+  withAdditionalMetadata(additionalMetadata: AdditionalMetadata[]): this {
     additionalMetadata.forEach((meta) => this._additionalMetadata.push(meta));
 
     return this;
@@ -194,7 +194,7 @@ export class EmlPackage {
    * @return {*}
    * @memberof EmlPackage
    */
-  withRelatedProjects(relatedProjects: Record<string, any>[]): EmlPackage {
+  withRelatedProjects(relatedProjects: Record<string, any>[]): this {
     relatedProjects.forEach((project) => this._relatedProjects.push(project));
 
     return this;
@@ -206,7 +206,7 @@ export class EmlPackage {
    * @return {*}  {EmlPackage}
    * @memberof EmlPackage
    */
-  build(): EmlPackage {
+  build(): this {
     if (this._data) {
       // Support subsequent compilations
       this._data = {};
@@ -906,10 +906,9 @@ export class EmlService extends DBService {
 
     const features: Feature[] = [];
 
-    surveyData.locations.forEach((item) => {
-      const geo = item.geometry as Feature<Geometry, GeoJsonProperties>[];
-      features.concat(geo);
-    });
+    for (const item of surveyData.locations) {
+      features.concat(item.geometry as Feature<Geometry, GeoJsonProperties>[]);
+    }
 
     return this._getBoundingBoxForFeatures('Survey location Geographic Coverage', features);
   }
@@ -926,11 +925,12 @@ export class EmlService extends DBService {
       return {};
     }
     const features: Feature[] = [];
-    surveys.forEach((survey) => {
-      survey.locations.forEach((location) => {
+
+    for (const survey of surveys) {
+      for (const location of survey.locations) {
         features.concat(location.geometry as Feature<Geometry, GeoJsonProperties>[]);
-      });
-    });
+      }
+    }
 
     return this._getBoundingBoxForFeatures('Geographic coverage of all underlying project surveys', features);
   }
