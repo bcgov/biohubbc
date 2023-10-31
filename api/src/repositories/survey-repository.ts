@@ -81,7 +81,6 @@ const SurveyRecord = z.object({
   end_date: z.string().nullable(),
   field_method_id: z.number().nullable(),
   additional_details: z.string().nullable(),
-  ecological_season_id: z.number().nullable(),
   comments: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
@@ -243,9 +242,9 @@ export class SurveyRepository extends BaseRepository {
       SELECT
         s.field_method_id,
         s.additional_details,
-        s.ecological_season_id,
         array_remove(array_agg(DISTINCT io.intended_outcome_id), NULL) as intended_outcome_ids,
         array_remove(array_agg(DISTINCT sv.vantage_id), NULL) as vantage_ids
+
       FROM
         survey s
       LEFT OUTER JOIN
@@ -260,8 +259,7 @@ export class SurveyRepository extends BaseRepository {
         s.survey_id = ${surveyId}
       GROUP BY
         s.field_method_id,
-        s.additional_details,
-        s.ecological_season_id;
+        s.additional_details
       `;
 
     const response = await this.connection.sql(sqlStatement);
@@ -584,16 +582,14 @@ export class SurveyRepository extends BaseRepository {
         start_date,
         end_date,
         field_method_id,
-        additional_details,
-        ecological_season_id
+        additional_details
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
         ${surveyData.purpose_and_methodology.field_method_id},
-        ${surveyData.purpose_and_methodology.additional_details},
-        ${surveyData.purpose_and_methodology.ecological_season_id}
+        ${surveyData.purpose_and_methodology.additional_details}
       )
       RETURNING
         survey_id as id;
@@ -945,8 +941,7 @@ export class SurveyRepository extends BaseRepository {
       fieldsToUpdate = {
         ...fieldsToUpdate,
         field_method_id: surveyData.purpose_and_methodology.field_method_id,
-        additional_details: surveyData.purpose_and_methodology.additional_details,
-        ecological_season_id: surveyData.purpose_and_methodology.ecological_season_id
+        additional_details: surveyData.purpose_and_methodology.additional_details
       };
     }
 

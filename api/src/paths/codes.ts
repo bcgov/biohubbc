@@ -34,7 +34,6 @@ GET.apiDoc = {
               'project_roles',
               'administrative_activity_status_type',
               'field_methods',
-              'ecological_seasons',
               'intended_outcomes',
               'vantage_codes',
               'site_selection_strategies'
@@ -264,20 +263,6 @@ GET.apiDoc = {
                 }
               },
               field_methods: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              ecological_seasons: {
                 type: 'array',
                 items: {
                   type: 'object',

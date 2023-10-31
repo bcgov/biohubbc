@@ -15,7 +15,6 @@ export interface IPurposeAndMethodologyForm {
     intended_outcome_ids: number[];
     additional_details: string;
     field_method_id: number;
-    ecological_season_id: number;
     vantage_code_ids: number[];
   };
 }
@@ -25,7 +24,6 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
     intended_outcome_ids: [],
     additional_details: '',
     field_method_id: '' as unknown as number,
-    ecological_season_id: '' as unknown as number,
     vantage_code_ids: []
   }
 };
@@ -35,7 +33,6 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
     field_method_id: yup.number().required('Field Method is Required'),
     additional_details: yup.string(),
     intended_outcome_ids: yup.array().min(1, 'One or more Ecological Variables are Required').required('Required'),
-    ecological_season_id: yup.number().required('Ecological Season is Required'),
     vantage_code_ids: yup.array().min(1, 'One or more Vantage Codes are Required').required('Required')
   })
 });
@@ -43,7 +40,6 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
 export interface IPurposeAndMethodologyFormProps {
   intended_outcomes: ISelectWithSubtextFieldOption[];
   field_methods: ISelectWithSubtextFieldOption[];
-  ecological_seasons: ISelectWithSubtextFieldOption[];
   vantage_codes: IMultiAutocompleteFieldOption[];
 }
 
@@ -88,15 +84,6 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
               name="purpose_and_methodology.field_method_id"
               label="Field Method"
               options={props.field_methods}
-              required={true}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <SelectWithSubtextField
-              id="ecological_season_id"
-              name="purpose_and_methodology.ecological_season_id"
-              label="Ecological Season"
-              options={props.ecological_seasons}
               required={true}
             />
           </Grid>

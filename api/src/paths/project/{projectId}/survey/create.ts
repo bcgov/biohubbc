@@ -213,9 +213,6 @@ POST.apiDoc = {
                   items: {
                     type: 'number'
                   }
-                },
-                ecological_season_id: {
-                  type: 'number'
                 }
               }
             },
