@@ -904,10 +904,10 @@ export class EmlService extends DBService {
       return {};
     }
 
-    const features: Feature[] = [];
+    let features: Feature[] = [];
 
     for (const item of surveyData.locations) {
-      features.concat(item.geometry as Feature<Geometry, GeoJsonProperties>[]);
+      features = features.concat(item.geometry as Feature<Geometry, GeoJsonProperties>[]);
     }
 
     return this._getBoundingBoxForFeatures('Survey location Geographic Coverage', features);
@@ -924,11 +924,11 @@ export class EmlService extends DBService {
     if (!surveys.length) {
       return {};
     }
-    const features: Feature[] = [];
+    let features: Feature[] = [];
 
     for (const survey of surveys) {
       for (const location of survey.locations) {
-        features.concat(location.geometry as Feature<Geometry, GeoJsonProperties>[]);
+        features = features.concat(location.geometry as Feature<Geometry, GeoJsonProperties>[]);
       }
     }
 
