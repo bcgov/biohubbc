@@ -328,7 +328,7 @@ export class EmlService extends DBService {
         .withDataset(this._buildProjectEmlDatasetSection(packageId, projectData))
 
         // Build EML->Dataset->Project field
-        .withProject(this._buildProjectEmlProjectSection(projectData))
+        .withProject(this._buildProjectEmlProjectSection(projectData, surveysData))
 
         // Build EML->Dataset->Project->AdditionalMetadata field
         .withAdditionalMetadata(await this._getProjectAdditionalMetadata(projectData))
@@ -378,7 +378,7 @@ export class EmlService extends DBService {
         .withAdditionalMetadata(await this._getSurveyAdditionalMetadata([surveyData]))
 
         // Build EML->Dataset->Project->RelatedProject field//
-        .withRelatedProjects([this._buildProjectEmlProjectSection(projectData)])
+        .withRelatedProjects([this._buildProjectEmlProjectSection(projectData, [surveyData])])
 
         // Compile the EML package
         .build()
@@ -508,7 +508,7 @@ export class EmlService extends DBService {
    * @return {*}  {Record<string, any>}
    * @memberof EmlService
    */
-  _buildProjectEmlProjectSection(projectData: IGetProject): Record<string, any> {
+  _buildProjectEmlProjectSection(projectData: IGetProject, surveys: SurveyObject[]): Record<string, any> {
     return {
       $: { id: projectData.project.uuid, system: EMPTY_STRING },
       title: projectData.project.project_name,
@@ -518,6 +518,7 @@ export class EmlService extends DBService {
       },
       studyAreaDescription: {
         coverage: {
+          ...this._getProjectGeographicCoverage(surveys),
           temporalCoverage: this._getProjectTemporalCoverage(projectData)
         }
       }
@@ -872,6 +873,25 @@ export class EmlService extends DBService {
     });
   }
 
+  _getBoundingBoxForFeatures(description: string, features: Feature[]): Record<string, any> {
+    const polygonFeatures = this._makePolygonFeatures(features);
+    const datasetPolygons = this._makeDatasetGPolygons(polygonFeatures);
+    const boundingBox = bbox(featureCollection(polygonFeatures));
+
+    return {
+      geographicCoverage: {
+        geographicDescription: description,
+        boundingCoordinates: {
+          westBoundingCoordinate: boundingBox[0],
+          eastBoundingCoordinate: boundingBox[2],
+          northBoundingCoordinate: boundingBox[3],
+          southBoundingCoordinate: boundingBox[1]
+        },
+        datasetGPolygon: datasetPolygons
+      }
+    };
+  }
+
   /**
    * Creates an object representing geographic coverage pertaining to the given survey
    *
@@ -880,28 +900,39 @@ export class EmlService extends DBService {
    * @memberof EmlService
    */
   _getSurveyGeographicCoverage(surveyData: SurveyObject): Record<string, any> {
-    if (!surveyData.locations[0]?.geometry?.length) {
+    if (!surveyData.locations?.length) {
       return {};
     }
 
-    const polygonFeatures = this._makePolygonFeatures(
-      surveyData.locations[0].geometry as Feature<Geometry, GeoJsonProperties>[]
-    );
-    const datasetGPolygons = this._makeDatasetGPolygons(polygonFeatures);
-    const surveyBoundingBox = bbox(featureCollection(polygonFeatures));
+    const features: Feature[] = [];
 
-    return {
-      geographicCoverage: {
-        geographicDescription: surveyData.locations[0].name,
-        boundingCoordinates: {
-          westBoundingCoordinate: surveyBoundingBox[0],
-          eastBoundingCoordinate: surveyBoundingBox[2],
-          northBoundingCoordinate: surveyBoundingBox[3],
-          southBoundingCoordinate: surveyBoundingBox[1]
-        },
-        datasetGPolygon: datasetGPolygons
-      }
-    };
+    surveyData.locations.forEach((item) => {
+      const geo = item.geometry as Feature<Geometry, GeoJsonProperties>[];
+      features.concat(geo);
+    });
+
+    return this._getBoundingBoxForFeatures('Survey location Geographic Coverage', features);
+  }
+
+  /**
+   * Creates an object representing geographic coverage pertaining to the given project
+   *
+   * @param {IGetProject} projectData
+   * @return {*}  {Record<string, any>}
+   * @memberof EmlService
+   */
+  _getProjectGeographicCoverage(surveys: SurveyObject[]): Record<string, any> {
+    if (!surveys.length) {
+      return {};
+    }
+    const features: Feature[] = [];
+    surveys.forEach((survey) => {
+      survey.locations.forEach((location) => {
+        features.concat(location.geometry as Feature<Geometry, GeoJsonProperties>[]);
+      });
+    });
+
+    return this._getBoundingBoxForFeatures('Geographic coverage of all underlying project surveys', features);
   }
 
   /**

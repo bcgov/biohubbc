@@ -129,7 +129,7 @@ describe('EmlPackage', () => {
         }
       });
 
-      const response = emlPackage.withProject(emlService._buildProjectEmlProjectSection(mockProjectData));
+      const response = emlPackage.withProject(emlService._buildProjectEmlProjectSection(mockProjectData, []));
 
       expect(response._projectMetadata).to.eql(emlPackage._projectMetadata);
       expect(response._projectMetadata).to.eql({
@@ -1184,7 +1184,7 @@ describe.skip('EmlService', () => {
         }
       });
 
-      const response = emlService._buildProjectEmlProjectSection(mockProjectData);
+      const response = emlService._buildProjectEmlProjectSection(mockProjectData, []);
 
       expect(response).to.eql({
         $: { id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii', system: '' },
@@ -1267,7 +1267,7 @@ describe.skip('EmlService', () => {
         }
       });
 
-      const response = emlService._buildProjectEmlProjectSection(mockProjectData);
+      const response = emlService._buildProjectEmlProjectSection(mockProjectData, []);
 
       expect(response).to.eql({
         $: { id: 'aaaabbbb-cccc-dddd-eeee-ffffgggghhhhiiii', system: '' },
