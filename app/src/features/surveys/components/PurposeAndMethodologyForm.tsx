@@ -13,7 +13,6 @@ export interface IPurposeAndMethodologyForm {
   purpose_and_methodology: {
     intended_outcome_id: number;
     additional_details: string;
-    ecological_season_id: number;
     vantage_code_ids: number[];
   };
 }
@@ -22,7 +21,6 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
   purpose_and_methodology: {
     intended_outcome_id: '' as unknown as number,
     additional_details: '',
-    ecological_season_id: '' as unknown as number,
     vantage_code_ids: []
   }
 };
@@ -31,14 +29,12 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   purpose_and_methodology: yup.object().shape({
     additional_details: yup.string(),
     intended_outcome_id: yup.number().required('Intended Outcome is Required'),
-    ecological_season_id: yup.number().required('Ecological Season is Required'),
     vantage_code_ids: yup.array().min(1, 'One or more Vantage Codes are Required').required('Required')
   })
 });
 
 export interface IPurposeAndMethodologyFormProps {
   intended_outcomes: ISelectWithSubtextFieldOption[];
-  ecological_seasons: ISelectWithSubtextFieldOption[];
   vantage_codes: IMultiAutocompleteFieldOption[];
 }
 
@@ -78,15 +74,6 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
           Survey Methodology
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <SelectWithSubtextField
-              id="ecological_season_id"
-              name="purpose_and_methodology.ecological_season_id"
-              label="Ecological Season"
-              options={props.ecological_seasons}
-              required={true}
-            />
-          </Grid>
           <Grid item xs={12}>
             <MultiAutocompleteFieldVariableSize
               id="purpose_and_methodology.vantage_code_ids"

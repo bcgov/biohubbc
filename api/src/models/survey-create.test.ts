@@ -377,10 +377,6 @@ describe('PostPurposeAndMethodologyData', () => {
       expect(data.additional_details).to.equal(null);
     });
 
-    it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.equal(null);
-    });
-
     it('sets vantage_code_ids', () => {
       expect(data.vantage_code_ids).to.eql([]);
     });
@@ -396,7 +392,6 @@ describe('PostPurposeAndMethodologyData', () => {
     const obj = {
       intended_outcome_id: 1,
       additional_details: 'additional_detail',
-      ecological_season_id: 3,
       vantage_code_ids: [4, 5],
       surveyed_all_areas: true
     };
@@ -411,10 +406,6 @@ describe('PostPurposeAndMethodologyData', () => {
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.eql(obj.additional_details);
-    });
-
-    it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.eql(obj.ecological_season_id);
     });
 
     it('sets vantage_code_ids', () => {

@@ -80,7 +80,6 @@ const SurveyRecord = z.object({
   start_date: z.string(),
   end_date: z.string().nullable(),
   additional_details: z.string().nullable(),
-  ecological_season_id: z.number().nullable(),
   intended_outcome_id: z.number().nullable(),
   comments: z.string().nullable(),
   create_date: z.string(),
@@ -242,7 +241,6 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         s.additional_details,
-        s.ecological_season_id,
         s.intended_outcome_id,
         array_remove(array_agg(sv.vantage_id), NULL) as vantage_ids
       FROM
@@ -255,7 +253,6 @@ export class SurveyRepository extends BaseRepository {
         s.survey_id = ${surveyId}
       GROUP BY
         s.additional_details,
-        s.ecological_season_id,
         s.intended_outcome_id;
       `;
 
@@ -579,7 +576,6 @@ export class SurveyRepository extends BaseRepository {
         start_date,
         end_date,
         additional_details,
-        ecological_season_id,
         intended_outcome_id
       ) VALUES (
         ${projectId},
@@ -587,7 +583,6 @@ export class SurveyRepository extends BaseRepository {
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
         ${surveyData.purpose_and_methodology.additional_details},
-        ${surveyData.purpose_and_methodology.ecological_season_id},
         ${surveyData.purpose_and_methodology.intended_outcome_id}
       )
       RETURNING
@@ -888,7 +883,6 @@ export class SurveyRepository extends BaseRepository {
       fieldsToUpdate = {
         ...fieldsToUpdate,
         additional_details: surveyData.purpose_and_methodology.additional_details,
-        ecological_season_id: surveyData.purpose_and_methodology.ecological_season_id,
         intended_outcome_id: surveyData.purpose_and_methodology.intended_outcome_id
       };
     }

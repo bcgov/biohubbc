@@ -39,7 +39,6 @@ describe('CodeService', () => {
         'system_roles',
         'project_roles',
         'administrative_activity_status_type',
-        'ecological_seasons',
         'intended_outcomes',
         'vantage_codes',
         'site_selection_strategies',

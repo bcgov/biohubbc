@@ -982,12 +982,6 @@ export class EmlService extends DBService {
       description: {
         section: [
           {
-            title: 'Ecological Season',
-            para: codes.ecological_seasons.find(
-              (code) => code.id === survey.purpose_and_methodology.ecological_season_id
-            )?.name
-          },
-          {
             title: 'Vantage Codes',
             para: {
               itemizedlist: {

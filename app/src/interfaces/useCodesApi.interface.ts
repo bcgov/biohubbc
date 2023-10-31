@@ -35,7 +35,6 @@ export interface IGetAllCodeSetsResponse {
   project_roles: CodeSet;
   administrative_activity_status_type: CodeSet;
   intended_outcomes: CodeSet<{ id: number; name: string; description: string }>;
-  ecological_seasons: CodeSet<{ id: number; name: string; description: string }>;
   vantage_codes: CodeSet;
   survey_jobs: CodeSet;
   site_selection_strategies: CodeSet;

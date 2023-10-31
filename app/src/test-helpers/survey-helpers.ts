@@ -22,7 +22,6 @@ export const surveyObject: SurveyViewObject = {
   purpose_and_methodology: {
     intended_outcome_id: 1,
     additional_details: 'details',
-    ecological_season_id: 1,
     vantage_code_ids: [1, 2],
     surveyed_all_areas: 'true'
   },

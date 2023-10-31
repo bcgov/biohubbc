@@ -75,7 +75,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
       purpose_and_methodology: {
         intended_outcome_id: '' as unknown as number,
         additional_details: '',
-        ecological_season_id: '' as unknown as number,
         vantage_code_ids: []
       }
     },
@@ -184,11 +183,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
               <PurposeAndMethodologyForm
                 intended_outcomes={
                   props.codes.intended_outcomes.map((item) => {
-                    return { value: item.id, label: item.name, subText: item.description };
-                  }) || []
-                }
-                ecological_seasons={
-                  props.codes.ecological_seasons.map((item) => {
                     return { value: item.id, label: item.name, subText: item.description };
                   }) || []
                 }

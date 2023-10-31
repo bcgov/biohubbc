@@ -31,7 +31,6 @@ export const IAllCodeSets = z.object({
   system_roles: CodeSet(),
   project_roles: CodeSet(),
   administrative_activity_status_type: CodeSet(),
-  ecological_seasons: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   intended_outcomes: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   vantage_codes: CodeSet(),
   survey_jobs: CodeSet(),
@@ -151,28 +150,6 @@ export class CodeRepository extends BaseRepository {
         name
       FROM
         type
-      WHERE
-        record_end_date is null;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return response.rows;
-  }
-
-  /**
-   * Fetch ecological season codes.
-   *
-   * @return {*}
-   * @memberof CodeRepository
-   */
-  async getEcologicalSeasons() {
-    const sqlStatement = SQL`
-      SELECT
-        ecological_season_id as id,
-        name, description
-      FROM
-        ecological_season
       WHERE
         record_end_date is null;
     `;

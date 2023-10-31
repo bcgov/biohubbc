@@ -214,7 +214,6 @@ PUT.apiDoc = {
                 'intended_outcome_id',
                 'additional_details',
                 'vantage_code_ids',
-                'ecological_season_id',
                 'revision_count'
               ],
               properties: {
@@ -229,9 +228,6 @@ PUT.apiDoc = {
                   items: {
                     type: 'number'
                   }
-                },
-                ecological_season_id: {
-                  type: 'number'
                 },
                 revision_count: {
                   type: 'number'
