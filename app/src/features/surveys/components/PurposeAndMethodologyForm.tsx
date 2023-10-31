@@ -13,7 +13,6 @@ export interface IPurposeAndMethodologyForm {
   purpose_and_methodology: {
     intended_outcome_id: number;
     additional_details: string;
-    field_method_id: number | null;
     ecological_season_id: number;
     vantage_code_ids: number[];
   };
@@ -23,7 +22,6 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
   purpose_and_methodology: {
     intended_outcome_id: '' as unknown as number,
     additional_details: '',
-    field_method_id: null,
     ecological_season_id: '' as unknown as number,
     vantage_code_ids: []
   }

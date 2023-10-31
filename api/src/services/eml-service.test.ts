@@ -987,7 +987,6 @@ describe.skip('EmlService', () => {
       project_roles: [],
       administrative_activity_status_type: [],
       ecological_seasons: [],
-      field_methods: [],
       intended_outcomes: [],
       vantage_codes: [],
       site_selection_strategies: [],

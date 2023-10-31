@@ -39,7 +39,6 @@ describe('survey/{surveyId}/view', () => {
             },
             funding_sources: [],
             purpose_and_methodology: {
-              field_method_id: 1,
               additional_details: 'details',
               intended_outcome_id: 8,
               ecological_season_id: 1,
@@ -118,7 +117,6 @@ describe('survey/{surveyId}/view', () => {
             },
             funding_sources: [],
             purpose_and_methodology: {
-              field_method_id: 1,
               additional_details: null,
               intended_outcome_id: null,
               ecological_season_id: null,

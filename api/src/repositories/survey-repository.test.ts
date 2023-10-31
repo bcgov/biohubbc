@@ -466,7 +466,6 @@ describe('SurveyRepository', () => {
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
           ecological_season_id: 1,
           intended_outcome_id: 1,
@@ -494,7 +493,6 @@ describe('SurveyRepository', () => {
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
           ecological_season_id: 1,
           intended_outcome_id: 1,
@@ -522,7 +520,6 @@ describe('SurveyRepository', () => {
           survey_types: [1, 2]
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
           ecological_season_id: 1,
           intended_outcome_id: 1,
@@ -848,7 +845,6 @@ describe('SurveyRepository', () => {
           revision_count: 1
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
           ecological_season_id: 1,
           intended_outcome_id: 1,
@@ -877,7 +873,6 @@ describe('SurveyRepository', () => {
           revision_count: 1
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
           ecological_season_id: 1,
           intended_outcome_id: 1,
@@ -906,7 +901,6 @@ describe('SurveyRepository', () => {
           revision_count: 1
         },
         purpose_and_methodology: {
-          field_method_id: 1,
           additional_details: '',
           ecological_season_id: 1,
           intended_outcome_id: 1,

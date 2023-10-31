@@ -344,10 +344,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
       expect(data.additional_details).to.equal('');
     });
 
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.equal(null);
-    });
-
     it('sets ecological_season_id', () => {
       expect(data.ecological_season_id).to.equal(null);
     });
@@ -363,7 +359,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     const obj = {
       intended_outcome_id: 1,
       additional_details: 'additional_detail',
-      field_method_id: 2,
       ecological_season_id: 3,
       vantage_ids: [4, 5],
       revision_count: 'count'
@@ -379,10 +374,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.eql(obj.additional_details);
-    });
-
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.eql(obj.field_method_id);
     });
 
     it('sets ecological_season_id', () => {

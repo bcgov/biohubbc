@@ -31,7 +31,6 @@ export const IAllCodeSets = z.object({
   system_roles: CodeSet(),
   project_roles: CodeSet(),
   administrative_activity_status_type: CodeSet(),
-  field_methods: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   ecological_seasons: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   intended_outcomes: CodeSet(z.object({ id: z.number(), name: z.string(), description: z.string() }).shape),
   vantage_codes: CodeSet(),
@@ -152,28 +151,6 @@ export class CodeRepository extends BaseRepository {
         name
       FROM
         type
-      WHERE
-        record_end_date is null;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return response.rows;
-  }
-
-  /**
-   * Fetch field method codes.
-   *
-   * @return {*}
-   * @memberof CodeRepository
-   */
-  async getFieldMethods() {
-    const sqlStatement = SQL`
-      SELECT
-        field_method_id as id,
-        name, description
-      FROM
-        field_method
       WHERE
         record_end_date is null;
     `;
