@@ -23,12 +23,6 @@ import { Device, IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
 
-export interface IAnimalStatus {
-  message?: string;
-  success?: boolean;
-  isLoading: boolean;
-}
-
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
   const { cid: survey_critter_id } = useQuery();
@@ -119,13 +113,11 @@ export const SurveyAnimalsPage = () => {
     refreshDeployments();
   };
 
-  const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE): Promise<IAnimalStatus> => {
+  const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE) => {
     const postCritterPayload = async () => {
       const critter = new Critter(currentFormValues);
       setOpenAddDialog(false);
       await bhApi.survey.createCritterAndAddToSurvey(projectId, surveyId, critter);
-      return { success: true, message: 'Animal added to survey.', isLoading: false };
-      //setMessageSnackbar('Animal added to survey.', dialogContext);
     };
     const patchCritterPayload = async () => {
       const initialFormValues = critterAsFormikValues;
@@ -151,21 +143,20 @@ export const SurveyAnimalsPage = () => {
       );
     };
     try {
+      let status: undefined | string;
       if (formMode === ANIMAL_FORM_MODE.ADD) {
         await postCritterPayload();
+        //Manually setting the message snackbar at this point
+        setMessageSnackbar('Animal added to survey', dialogContext);
       } else {
         await patchCritterPayload();
+        status = 'Successfully updated animal';
       }
       refreshDeployments();
       refreshCritters();
-      return {
-        success: true,
-        message: `Successfully ${formMode === ANIMAL_FORM_MODE.ADD ? 'created' : 'updated'} animal.`,
-        isLoading: false
-      };
+      return status;
     } catch (err) {
-      //setMessageSnackbar(`Submmision failed ${(err as Error).message}`, dialogContext);
-      return { success: true, message: `Submmision failed ${(err as Error).message}`, isLoading: false };
+      setMessageSnackbar(`Submmision failed ${(err as Error).message}`, dialogContext);
     }
   };
 
@@ -279,7 +270,9 @@ export const SurveyAnimalsPage = () => {
         validateOnChange={false}
         onSubmit={async (values, actions) => {
           const status = await handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
-          actions.setStatus(status);
+          if (status) {
+            actions.setStatus(status);
+          }
         }}>
         <SurveySectionFullPageLayout
           pageTitle="Manage Animals"
