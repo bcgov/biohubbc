@@ -1,10 +1,11 @@
-import { mdiImport, mdiPlus } from '@mdi/js';
+import { mdiDotsVertical, mdiImport, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
@@ -163,6 +164,14 @@ const ObservationComponent = () => {
                   </Button>
                 </Box>
               </Collapse>
+              <IconButton
+                onClick={(event) => {
+                  // handleMenuClick(event, sampleSite.survey_sample_site_id)
+                }}
+                aria-label="options"
+              >
+                <Icon path={mdiDotsVertical} />
+              </IconButton>
             </Box>
           </Box>
         </Toolbar>
