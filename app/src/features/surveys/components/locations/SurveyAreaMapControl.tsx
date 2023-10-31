@@ -8,6 +8,7 @@ import { SetMapBounds } from 'components/map/components/Bounds';
 import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog';
+import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import { IRegionOption, RegionSelector } from 'components/map/components/RegionSelector';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { layerContentHandlers, layerNameHandler } from 'components/map/wfs-utils';
@@ -16,9 +17,6 @@ import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { FormikContextType } from 'formik';
 import { Feature, FeatureCollection } from 'geojson';
 import L, { DrawEvents, LatLngBoundsExpression } from 'leaflet';
-import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
-import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
-import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
@@ -94,6 +92,8 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           maxZoom={17}
           fullscreenControl={true}
           scrollWheelZoom={false}>
+          <MapBaseCss />
+
           {/* Allow scroll wheel zoom when in full screen mode */}
           <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
 

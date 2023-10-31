@@ -13,6 +13,7 @@ import FileUploadItem from 'components/file-upload/FileUploadItem';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
+import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
@@ -138,6 +139,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                 maxZoom={17}
                 fullscreenControl={true}
                 scrollWheelZoom={false}>
+                <MapBaseCss />
                 {/* Allow scroll wheel zoom when in full screen mode */}
                 <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
 

@@ -2,11 +2,11 @@ import { Box, FormControlLabel, FormGroup, Grid, Switch, Tab, Tabs } from '@mui/
 import CustomTextField from 'components/fields/CustomTextField';
 import AdditionalLayers from 'components/map/components/AdditionalLayers';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
+import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import { ChangeEvent, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
@@ -227,6 +227,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
               style={{ height: 400 }}
               center={MAP_DEFAULT_CENTER}
               zoom={MAP_DEFAULT_ZOOM}>
+              <MapBaseCss />
               <AdditionalLayers
                 layers={[
                   renderResizableMarker(primaryLocationFields, !placeSecondaryMode, 'blue'),

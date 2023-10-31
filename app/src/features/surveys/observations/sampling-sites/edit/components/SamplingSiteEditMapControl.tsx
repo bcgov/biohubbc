@@ -13,6 +13,7 @@ import FileUploadItem from 'components/file-upload/FileUploadItem';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
+import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import StaticLayers, { IStaticLayer } from 'components/map/components/StaticLayers';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -22,8 +23,6 @@ import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampl
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
-import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import get from 'lodash-es/get';
 import { useContext, useEffect, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
@@ -155,6 +154,7 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
               maxZoom={17}
               fullscreenControl={true}
               scrollWheelZoom={false}>
+              <MapBaseCss />
               <LayersControl position="bottomright">
                 <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
                 <SetMapBounds bounds={updatedBounds} />

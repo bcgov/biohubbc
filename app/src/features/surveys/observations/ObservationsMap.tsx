@@ -6,13 +6,11 @@ import { square } from '@turf/turf';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
+import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import { MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { Position } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
-import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
-import 'leaflet/dist/leaflet.css';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateFeatureBoundingBox, latLngBoundsFromBoundingBox } from 'utils/mapBoundaryUploadHelpers';
@@ -87,6 +85,7 @@ const ObservationsMap = () => {
         scrollWheelZoom={false}
         fullscreenControl={true}
         style={{ height: 600 }}>
+        <MapBaseCss />
         <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
         <SetMapBounds bounds={bounds} />
 
