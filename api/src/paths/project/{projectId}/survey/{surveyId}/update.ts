@@ -210,12 +210,7 @@ PUT.apiDoc = {
             },
             purpose_and_methodology: {
               type: 'object',
-              required: [
-                'intended_outcome_id',
-                'additional_details',
-                'vantage_code_ids',
-                'revision_count'
-              ],
+              required: ['intended_outcome_id', 'additional_details', 'vantage_code_ids', 'revision_count'],
               properties: {
                 intended_outcome_id: {
                   type: 'number'
