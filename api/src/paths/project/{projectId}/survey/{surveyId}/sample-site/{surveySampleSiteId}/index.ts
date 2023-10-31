@@ -283,7 +283,9 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      if ((await observationService.getObservationsBySampleSiteId(surveyId, surveySampleSiteId)).length > 0) {
+      if (
+        (await observationService.getObservationsCountBySampleSiteId(surveyId, surveySampleSiteId)).observationCount > 0
+      ) {
         throw new HTTP400('Cannot delete a sample site that is associated with an observation');
       }
 
