@@ -45,7 +45,7 @@ const SurveyPurposeAndMethodologyData = () => {
                     display: 'none'
                   }
                 }}
-                data-testid="survey_vantage_code">
+                data-testid="intended_outcome_codes">
                 {codes?.intended_outcomes?.find((item: any) => item.id === outcomeId)?.name}
               </Typography>
             );

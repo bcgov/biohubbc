@@ -140,7 +140,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
               value={renderOption.value}
               color="default"
             />
-            <ListItemText primary={renderOption.label} secondary={renderOption.subText}/>
+            <ListItemText primary={renderOption.label} secondary={renderOption.subText} />
           </Box>
         );
       }}
