@@ -750,7 +750,6 @@ export class SurveyRepository extends BaseRepository {
     }));
     queryBuilder.insert(rowsForInsertion).into('survey_intended_outcome');
     await this.connection.knex(queryBuilder);
-    return;
   }
 
   /**
