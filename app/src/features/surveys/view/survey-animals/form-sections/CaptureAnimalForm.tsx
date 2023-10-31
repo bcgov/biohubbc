@@ -43,8 +43,8 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
         </Grid>
         <Grid item xs={12}>
           <CustomTextField
-            other={{ size: 'medium', required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
-            label="Capture Comment"
+            other={{ multiline: true, minRows: 3, required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
+            label="Comments"
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
             handleBlur={handleBlur}
           />
@@ -80,7 +80,7 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
         <Grid item xs={12}>
           <CustomTextField
             other={{ size: 'medium', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
-            label="Release Comment"
+            label="Comments"
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
             handleBlur={handleBlur}
           />
