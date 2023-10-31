@@ -530,6 +530,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         localeText={{
           noRowsLabel: 'No Records'
         }}
+        isRowSelectable={(data) => data.row !== undefined}
         rowSelectionModel={rowSelectionModel}
         getRowHeight={() => 'auto'}
         slots={{

@@ -29,6 +29,7 @@ type RowId = string | number
 
 export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: RowId;
+  _isUnsaved?: boolean;
 }
 
 /**
@@ -164,6 +165,11 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds)
       .then(() => {
 
+
+        /*
+
+        // TODO deprecated
+
         const gridRowModelUpdate: GridRowModelUpdate[] = observationRecords.map((observationRecord) => ({
           id: String(observationRecord.id),
           _action: 'delete'
@@ -171,6 +177,12 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         _muiDataGridApiRef.current.updateRows(gridRowModelUpdate);
 
         console.log(_muiDataGridApiRef.current.getRowModels())
+        */
+
+
+        setInitialRows(initialRows.filter((row) => {
+          return observationRecords.every((record) => record.id !== row.id)
+        }));
 
 
 
@@ -186,24 +198,31 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
    */
   const createNewRecord = () => {
     const id = uuidv4();
+
+    const newRecord: IObservationTableRow = {
+      id,
+      survey_observation_id: undefined, //null,
+      wldtaxonomic_units_id: undefined, //null,
+      survey_sample_site_id: undefined, //null,
+      survey_sample_method_id: undefined, //null,
+      survey_sample_period_id: undefined, //null,
+      count: undefined, //null,
+      observation_date: undefined, //null,
+      observation_time: undefined, //null,
+      latitude: undefined, //null,
+      longitude: undefined, //null
+      _isUnsaved: true
+    }
+
+    // _muiDataGridApiRef.current.updateRows([newRecord]);// TODO deprecated
+    
+    //
+    setInitialRows([...initialRows, newRecord]);
+
+    //
     markRecordWithUnsavedChanges(id);
 
-    _muiDataGridApiRef.current.updateRows([
-      {
-        id,
-        survey_observation_id: null,
-        wldtaxonomic_units_id: null,
-        survey_sample_site_id: null,
-        survey_sample_method_id: null,
-        survey_sample_period_id: null,
-        count: null,
-        observation_date: null,
-        observation_time: null,
-        latitude: null,
-        longitude: null
-      } as GridRowModelUpdate
-    ]);
-
+    //
     _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
   };
 
@@ -239,11 +258,10 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   /**
    * Transition all rows tracked by `rowIdsToSave` to view mode.
    */
-  const revertAllRowsEditMode = useCallback(() => {
+  const _revertAllRowsEditMode = useCallback(() => {
     rowIdsToSave.forEach((id) => _muiDataGridApiRef.current.startRowEditMode({ id }));
   }, [_muiDataGridApiRef, rowIdsToSave]);
 
-  // @TODO deleting a row and then calling method currently fails to recover said row...
   const revertRecords = async () => {
     // Mark all rows as saved
     _setUnsavedRecordIds([]);
@@ -253,7 +271,10 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
 
     // Remove any rows that are newly created
-    _muiDataGridApiRef.current.setRows(initialRows);
+    // TODO should we deprecated directly calling curernt.setRows, and just set the initalRows prop?
+
+    // _muiDataGridApiRef.current.setRows(initialRows.filter((row) => !row._isUnsaved));
+    setInitialRows(initialRows.filter((row) => !row._isUnsaved));
   };
 
   const refreshRecords = useCallback(async () => {
@@ -289,7 +310,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         });
         return refreshRecords();
       } catch (error) {
-        revertAllRowsEditMode();
+        _revertAllRowsEditMode();
         const apiError = error as APIError;
         _showErrorDialog({ dialogErrorDetails: apiError.errors });
         return;
@@ -297,7 +318,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         setIsSaving(false);
       }
     },
-    [_showErrorDialog, biohubApi.observation, projectId, refreshRecords, revertAllRowsEditMode, surveyId]
+    [_showErrorDialog, biohubApi.observation, projectId, refreshRecords, _revertAllRowsEditMode, surveyId]
   );
 
   useEffect(() => {
