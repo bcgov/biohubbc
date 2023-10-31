@@ -145,15 +145,15 @@ export const AuthenticatedRouteGuard = (props: RouteProps) => {
   if (!authStateContext.simsUserWrapper.systemUserId) {
     // User is not a registered system user
 
-    if (authStateContext.simsUserWrapper.hasAccessRequest) {
-      // The user has a pending access request, restrict them to the request-submitted page
+    if (authStateContext.simsUserWrapper.hasAccessRequest && !['/request-submitted'].includes(location.pathname)) {
+      // The user has a pending access request and isn't already navigating to the request submitted page
       return <Redirect to="/request-submitted" />;
     }
 
-    // The user does not have a pending access request, restrict them to landing or access request pages
-    if (!['/', '/access-request'].includes(location.pathname)) {
+    // The user does not have a pending access request, restrict them to public pages
+    if (!['/', '/access-request', '/request-submitted'].includes(location.pathname)) {
       /**
-       * User attempted to go to restricted page. If the request to fetch user data fails, the user
+       * User attempted to go to a non-public page. If the request to fetch user data fails, the user
        * can never navigate away from the forbidden page unless they refetch the user data by refreshing
        * the browser. We can preemptively re-attempt to load the user data again each time they attempt to navigate
        * away from the forbidden page.

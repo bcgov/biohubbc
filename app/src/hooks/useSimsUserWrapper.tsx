@@ -1,7 +1,6 @@
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useMemo } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { coerceIdentitySource } from 'utils/authUtils';
 
@@ -72,15 +71,31 @@ function useSimsUserWrapper(): ISimsUserWrapper {
     administrativeActivityStandingDataLoader.load();
   }
 
-  const identitySource = useMemo(() => {
-    const userIdentitySource = simsUserDataLoader.data?.identity_source;
+  const isLoading = !simsUserDataLoader.isReady || !administrativeActivityStandingDataLoader.isReady;
 
-    if (!userIdentitySource) {
-      return null;
-    }
+  const systemUserId = simsUserDataLoader.data?.system_user_id;
 
-    return coerceIdentitySource(userIdentitySource);
-  }, [simsUserDataLoader.data?.identity_source]);
+  const userGuid =
+    simsUserDataLoader.data?.user_guid ||
+    (auth.user?.profile?.idir_user_guid as string)?.toLowerCase() ||
+    (auth.user?.profile?.bceid_user_guid as string)?.toLowerCase();
+
+  const userIdentifier =
+    simsUserDataLoader.data?.user_identifier ||
+    (auth.user?.profile?.idir_username as string) ||
+    (auth.user?.profile?.bceid_username as string);
+
+  const displayName = simsUserDataLoader.data?.display_name || (auth.user?.profile?.display_name as string);
+
+  const email = simsUserDataLoader.data?.email || (auth.user?.profile?.email as string);
+
+  const agency = simsUserDataLoader.data?.agency;
+
+  const roleNames = simsUserDataLoader.data?.role_names;
+
+  const identitySource = coerceIdentitySource(
+    simsUserDataLoader.data?.identity_source || (auth.user?.profile?.identity_provider as string)?.toUpperCase()
+  );
 
   const hasAccessRequest = !!administrativeActivityStandingDataLoader.data?.has_pending_access_request;
 
@@ -92,15 +107,15 @@ function useSimsUserWrapper(): ISimsUserWrapper {
   };
 
   return {
-    isLoading: !simsUserDataLoader.isReady || !administrativeActivityStandingDataLoader.isReady,
-    systemUserId: simsUserDataLoader.data?.system_user_id,
-    userGuid: simsUserDataLoader.data?.user_guid,
-    userIdentifier: simsUserDataLoader.data?.user_identifier,
-    displayName: simsUserDataLoader.data?.display_name,
-    email: simsUserDataLoader.data?.email,
-    agency: simsUserDataLoader.data?.agency,
-    roleNames: simsUserDataLoader.data?.role_names,
-    identitySource: identitySource,
+    isLoading,
+    systemUserId,
+    userGuid,
+    userIdentifier,
+    displayName,
+    email,
+    agency,
+    roleNames,
+    identitySource,
     hasAccessRequest,
     hasOneOrMoreProjectRoles,
     refresh

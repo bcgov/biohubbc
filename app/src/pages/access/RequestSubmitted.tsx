@@ -17,13 +17,8 @@ const RequestSubmitted = () => {
     return <CircularProgress className="pageProgress" />;
   }
 
-  if (authStateContext.simsUserWrapper.roleNames?.length) {
-    // User already has a role
-    return <Redirect to={{ pathname: '/admin/projects' }} />;
-  }
-
-  if (!authStateContext.simsUserWrapper.hasAccessRequest) {
-    // User has no pending access request
+  if (!authStateContext.simsUserWrapper.hasAccessRequest || authStateContext.simsUserWrapper.roleNames?.length) {
+    // User has no pending access request or already has a role
     return <Redirect to={{ pathname: '/' }} />;
   }
 

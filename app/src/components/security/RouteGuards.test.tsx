@@ -432,11 +432,11 @@ describe('RouteGuards', () => {
         const initialPath = '/';
         const history = createMemoryHistory({ initialEntries: [initialPath] });
 
-        render(
+        const { getByTestId } = render(
           <AuthStateContext.Provider value={authState}>
             <Router history={history}>
               <AuthenticatedRouteGuard>
-                <Fail />
+                <Success />
               </AuthenticatedRouteGuard>
             </Router>
           </AuthStateContext.Provider>
@@ -446,6 +446,7 @@ describe('RouteGuards', () => {
 
         await waitFor(() => {
           expect(history.location.pathname).toEqual(expectedPath);
+          expect(getByTestId('success-component')).toBeVisible();
           expect(signinRedirectStub).toHaveBeenCalledTimes(0);
         });
       });

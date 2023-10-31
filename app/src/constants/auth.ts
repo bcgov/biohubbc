@@ -6,7 +6,7 @@ export enum SYSTEM_IDENTITY_SOURCE {
   UNVERIFIED = 'UNVERIFIED'
 }
 
-export interface IUserInfo {
+interface IUserInfo {
   sub: string;
   email_verified: boolean;
   preferred_username: string;
@@ -21,14 +21,20 @@ export interface IIDIRUserInfo extends IUserInfo {
   name: string;
   given_name: string;
   family_name: string;
+  identity_provider: 'idir';
 }
 
-interface IBCEIDBasicUserInfo extends IUserInfo {
+interface IBCEIDUserInfo {
   bceid_user_guid: string;
   bceid_username: string;
 }
 
-export interface IBCEIDBusinessUserInfo extends IBCEIDBasicUserInfo {
+export interface IBCEIDBasicUserInfo extends IBCEIDUserInfo, IUserInfo {
+  identity_provider: 'bceidbasic';
+}
+
+export interface IBCEIDBusinessUserInfo extends IBCEIDUserInfo, IUserInfo {
   bceid_business_guid: string;
   bceid_business_name: string;
+  identity_provider: 'bceidbusiness';
 }
