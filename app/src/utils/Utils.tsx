@@ -317,11 +317,12 @@ export const formatLabel = (str: string): string => {
  * Checks if two dates are the same, but safe to use against nullish values.
  * By default moment(null).isSame(moment(null)) returns false, which is not always desirable.
  *
- * @param date1
- * @param date2
+ * @param {NullishDate}
+ * @param {NullishDate}
  * @returns boolean
  */
-export const datesSameNullable = (date1: string | null | undefined, date2: string | null | undefined): boolean => {
+type NullishDate = string | null | undefined;
+export const datesSameNullable = (date1: NullishDate, date2: NullishDate): boolean => {
   if (date1 == null && date2 == null) {
     //Note: intentionally loose equality
     return true;

@@ -29,6 +29,7 @@ import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalFormContent from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
+import { IAnimalStatus } from './SurveyAnimalsPage';
 import { DeviceFormSection, IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
 
 interface AddEditAnimalProps {
@@ -42,7 +43,7 @@ interface AddEditAnimalProps {
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, critterData, telemetrySaveAction, deploymentRemoveAction } = props;
   const surveyContext = useContext(SurveyContext);
-  const { submitForm, initialValues, values, setFieldValue } = useFormikContext<IAnimal>();
+  const { submitForm, initialValues, setStatus, values, setFieldValue } = useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
   const [showDialog, setShowDialog] = useState(false);
@@ -365,6 +366,8 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                       setShowDialog(false);
                     }}
                     onSave={async (saveVals) => {
+                      const animalStatus: IAnimalStatus = { isLoading: true };
+                      setStatus(animalStatus);
                       if (section === 'Telemetry') {
                         handleSaveTelemetry(saveVals);
                       }

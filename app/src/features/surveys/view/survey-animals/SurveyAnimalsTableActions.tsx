@@ -21,8 +21,6 @@ export interface ITableActionsMenuProps {
   onMapOpen: () => void;
 }
 
-// TODO Is this component deprecated?
-
 const SurveyAnimalsTableActions = (props: ITableActionsMenuProps) => {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const open = Boolean(anchorEl);
