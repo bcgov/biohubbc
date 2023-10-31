@@ -736,23 +736,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Insert a new row for each provided intended outcome id.
-   *
-   * @param {number[]} intendedOutcomeIds
-   * @param {number} surveyId
-   */
-  async insertSurveyIntendedOutcomes(intendedOutcomeIds: number[], surveyId: number): Promise<void> {
-    const knex = getKnex();
-    const queryBuilder = knex.queryBuilder();
-    const rowsForInsertion = intendedOutcomeIds.map((outcome_id) => ({
-      intended_outcome_id: outcome_id,
-      survey_id: surveyId
-    }));
-    queryBuilder.insert(rowsForInsertion).into('survey_intended_outcome');
-    await this.connection.knex(queryBuilder);
-  }
-
-  /**
    * Insert many rows associating a survey id to various intended outcome ids.
    *
    * @param {number} surveyId

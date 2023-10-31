@@ -1436,6 +1436,43 @@ describe('SurveyService', () => {
       expect(surveyLocationServiceStub).to.be.calledOnceWith(input);
     });
   });
+
+  describe('insertSurveyIntendedOutcomes', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('calls the updateSurveyLocation method of SurveyLocationService with correct arguments', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+      const insertionStub = sinon.stub(SurveyRepository.prototype, 'insertManySurveyIntendedOutcomes').resolves();
+
+      await service.insertSurveyIntendedOutcomes([1, 2], 1);
+
+      expect(insertionStub).to.be.calledOnceWith(1, [1, 2]);
+    });
+  });
+
+  describe('updateSurveyIntendedOutcomes', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('calls the updateSurveyLocation method of SurveyLocationService with correct arguments', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+      const insertionStub = sinon.stub(SurveyRepository.prototype, 'insertManySurveyIntendedOutcomes').resolves();
+      const deleteStub = sinon.stub(SurveyRepository.prototype, 'deleteManySurveyIntendedOutcomes').resolves();
+      sinon
+        .stub(SurveyRepository.prototype, 'getSurveyPurposeAndMethodology')
+        .resolves(new GetSurveyPurposeAndMethodologyData({ intended_outcome_ids: [1, 3] }));
+      const putObj = new PutSurveyObject({ purpose_and_methodology: { intended_outcome_ids: [1, 2] } });
+      await service.updateSurveyIntendedOutcomes(1, putObj);
+
+      expect(insertionStub).to.be.calledOnceWith(1, [2]);
+      expect(deleteStub).to.be.calledOnceWith(1, [3]);
+    });
+  });
 });
 
 /*

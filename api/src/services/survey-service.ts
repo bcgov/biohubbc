@@ -631,7 +631,7 @@ export class SurveyService extends DBService {
    * @param {number} surveyId
    */
   async insertSurveyIntendedOutcomes(intended_outcomes: number[], surveyId: number): Promise<void> {
-    return this.surveyRepository.insertSurveyIntendedOutcomes(intended_outcomes, surveyId);
+    return this.surveyRepository.insertManySurveyIntendedOutcomes(surveyId, intended_outcomes);
   }
 
   /**
