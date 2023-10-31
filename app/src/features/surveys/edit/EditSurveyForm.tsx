@@ -76,7 +76,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
         intended_outcome_id: '' as unknown as number,
         additional_details: '',
         field_method_id: '' as unknown as number,
-        ecological_season_id: '' as unknown as number,
         vantage_code_ids: []
       }
     },
@@ -190,11 +189,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
                 }
                 field_methods={
                   props.codes.field_methods.map((item) => {
-                    return { value: item.id, label: item.name, subText: item.description };
-                  }) || []
-                }
-                ecological_seasons={
-                  props.codes.ecological_seasons.map((item) => {
                     return { value: item.id, label: item.name, subText: item.description };
                   }) || []
                 }

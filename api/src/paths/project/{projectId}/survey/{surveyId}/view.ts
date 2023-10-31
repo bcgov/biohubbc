@@ -234,7 +234,6 @@ GET.apiDoc = {
                       'field_method_id',
                       'additional_details',
                       'intended_outcome_id',
-                      'ecological_season_id',
                       'vantage_code_ids',
                       'revision_count'
                     ],
@@ -247,10 +246,6 @@ GET.apiDoc = {
                         nullable: true
                       },
                       intended_outcome_id: {
-                        type: 'number',
-                        nullable: true
-                      },
-                      ecological_season_id: {
                         type: 'number',
                         nullable: true
                       },

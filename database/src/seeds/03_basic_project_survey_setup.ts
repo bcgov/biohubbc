@@ -309,7 +309,6 @@ const insertSurveyData = (projectId: number) => `
       end_date,
       lead_first_name,
       lead_last_name,
-      ecological_season_id,
       intended_outcome_id
     )
   VALUES (
@@ -321,7 +320,6 @@ const insertSurveyData = (projectId: number) => `
     $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.person.firstName()}$$,
     $$${faker.person.lastName()}$$,
-    (select ecological_season_id from ecological_season order by random() limit 1),
     (select intended_outcome_id from intended_outcome order by random() limit 1)
   )
   RETURNING survey_id;
