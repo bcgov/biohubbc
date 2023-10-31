@@ -1,4 +1,4 @@
-import { mdiAlert, mdiChevronDown, mdiPlus } from '@mdi/js';
+import { mdiChevronDown, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
   Accordion,
@@ -11,12 +11,10 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Tooltip,
   Typography
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { useFormikContext } from 'formik';
 import { useQuery } from 'hooks/useQuery';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useMemo } from 'react';
@@ -37,7 +35,6 @@ const AnimalList = (props: AnimalListProps) => {
   const { cid: survey_critter_id } = useQuery();
 
   const history = useHistory();
-  const { errors } = useFormikContext();
 
   const sortedCritterData = useMemo(() => {
     return [...(critterData ?? [])].sort(
@@ -156,14 +153,6 @@ const AnimalList = (props: AnimalListProps) => {
                         <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
                       </ListItemIcon>
                       <ListItemText>{section}</ListItemText>
-                      {Object.keys(errors).find((key) => key.toLowerCase() === section.toLowerCase()) !== undefined && (
-                        <Tooltip
-                          placement="top"
-                          arrow
-                          title={'There are errors in this section that must be resolved before submitting the form.'}>
-                          <Icon size={1} color="#D8292F" path={mdiAlert}></Icon>
-                        </Tooltip>
-                      )}
                     </ListItem>
                   ))}
                 </List>

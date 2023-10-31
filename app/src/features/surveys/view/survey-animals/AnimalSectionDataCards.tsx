@@ -189,7 +189,6 @@ export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: An
           );
         }}
       </FieldArray>
-
       {/* Empty State */}
       {/* {sectionCardData.length === 0 ? (
         <Paper variant="outlined">
