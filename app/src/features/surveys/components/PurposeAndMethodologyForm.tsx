@@ -34,7 +34,7 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   purpose_and_methodology: yup.object().shape({
     field_method_id: yup.number().required('Field Method is Required'),
     additional_details: yup.string(),
-    intended_outcome_ids: yup.array().required('Intended Outcome is Required'),
+    intended_outcome_ids: yup.array().min(1, 'One or more Ecological Variables are Required').required('Required'),
     ecological_season_id: yup.number().required('Ecological Season is Required'),
     vantage_code_ids: yup.array().min(1, 'One or more Vantage Codes are Required').required('Required')
   })
@@ -62,7 +62,6 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <MultiAutocompleteField
-              //id="intended_outcome_id"
               id="purpose_and_methodology.intended_outcome_ids"
               label="Ecological Variables"
               options={props.intended_outcomes}

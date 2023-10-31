@@ -197,6 +197,7 @@ POST.apiDoc = {
               properties: {
                 intended_outcome_ids: {
                   type: 'array',
+                  minItems: 1,
                   items: {
                     type: 'integer'
                   }

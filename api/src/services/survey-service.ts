@@ -945,11 +945,23 @@ export class SurveyService extends DBService {
    */
   async updateSurveyIntendedOutcomes(surveyId: number, surveyData: PutSurveyObject) {
     const purposeMethodInfo = await this.getSurveyPurposeAndMethodology(surveyId);
-    await this.surveyRepository.updateSurveyIntendedOutcomes(
-      surveyData.purpose_and_methodology.intended_outcome_ids,
-      purposeMethodInfo.intended_outcome_ids,
-      surveyId
-    );
+    const { intended_outcome_ids: currentOutcomeIds } = surveyData.purpose_and_methodology;
+    const existingOutcomeIds = purposeMethodInfo.intended_outcome_ids;
+    const rowsToInsert = currentOutcomeIds.reduce((acc: number[], curr: number) => {
+      if (!existingOutcomeIds.find((existingId) => existingId === curr)) {
+        return [...acc, curr];
+      }
+      return acc;
+    }, []);
+    const rowsToDelete = existingOutcomeIds.reduce((acc: number[], curr: number) => {
+      if (!currentOutcomeIds.find((existingId) => existingId === curr)) {
+        return [...acc, curr];
+      }
+      return acc;
+    }, []);
+
+    await this.surveyRepository.insertManySurveyIntendedOutcomes(surveyId, rowsToInsert);
+    await this.surveyRepository.deleteManySurveyIntendedOutcomes(surveyId, rowsToDelete);
   }
 
   /**

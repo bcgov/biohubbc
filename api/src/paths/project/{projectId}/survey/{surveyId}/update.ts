@@ -221,8 +221,9 @@ PUT.apiDoc = {
               properties: {
                 intended_outcome_ids: {
                   type: 'array',
+                  minItems: 1,
                   items: {
-                    type: 'number'
+                    type: 'integer'
                   }
                 },
                 additional_details: {

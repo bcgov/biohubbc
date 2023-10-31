@@ -758,40 +758,35 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Insert new rows that weren't found in the existing list. Delete rows that existed before but weren't found in the new list.
-   * @param {number[]} intendedOutcomeIds
-   * @param {number[]} existingOutcomeIds
+   * Insert many rows associating a survey id to various intended outcome ids.
+   *
    * @param {number} surveyId
+   * @param {number[]} intendedOutcomeIds
    */
-  async updateSurveyIntendedOutcomes(
-    intendedOutcomeIds: number[],
-    existingOutcomeIds: number[],
-    surveyId: number
-  ): Promise<void> {
-    const rowsToInsert = intendedOutcomeIds.reduce((acc: number[], curr: number) => {
-      if (!existingOutcomeIds.find((existingId) => existingId === curr)) {
-        return [...acc, curr];
-      }
-      return acc;
-    }, []);
-    const rowsToDelete = existingOutcomeIds.reduce((acc: number[], curr: number) => {
-      if (!intendedOutcomeIds.find((existingId) => existingId === curr)) {
-        return [...acc, curr];
-      }
-      return acc;
-    }, []);
-
-    const knex = getKnex();
-    const queryBuilder = knex.queryBuilder();
-    if (rowsToInsert.length) {
+  async insertManySurveyIntendedOutcomes(surveyId: number, intendedOutcomeIds: number[]) {
+    const queryBuilder = getKnex().queryBuilder();
+    if (intendedOutcomeIds.length) {
       queryBuilder
-        .insert(rowsToInsert.map((outcomeId) => ({ survey_id: surveyId, intended_outcome_id: outcomeId })))
+        .insert(intendedOutcomeIds.map((outcomeId) => ({ survey_id: surveyId, intended_outcome_id: outcomeId })))
         .into('survey_intended_outcome');
       await this.connection.knex(queryBuilder);
     }
+  }
 
-    if (rowsToDelete.length) {
-      queryBuilder.delete().whereIn('intended_outcome_id', rowsToDelete).andWhere('survey_id', surveyId);
+  /**
+   * Delete many rows associating a survey id to various intended outcome ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} intendedOutcomeIds
+   */
+  async deleteManySurveyIntendedOutcomes(surveyId: number, intendedOutcomeIds: number[]) {
+    const queryBuilder = getKnex().queryBuilder();
+    if (intendedOutcomeIds.length) {
+      queryBuilder
+        .delete()
+        .from('survey_intended_outcome')
+        .whereIn('intended_outcome_id', intendedOutcomeIds)
+        .andWhere('survey_id', surveyId);
       await this.connection.knex(queryBuilder);
     }
   }
