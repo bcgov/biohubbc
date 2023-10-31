@@ -54,7 +54,7 @@ const SamplingSiteList = () => {
 
   useEffect(() => {
     surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-  }, []);
+  }, [surveyContext.projectId, surveyContext.sampleSiteDataLoader, surveyContext.surveyId]);
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();

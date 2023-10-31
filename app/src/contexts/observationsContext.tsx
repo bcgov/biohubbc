@@ -117,10 +117,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const _showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
-    dialogContext.setSnackbar({ ...textDialogProps, open: true });
-  };
-
   const _showErrorDialog = useCallback(
     (textDialogProps?: Partial<IErrorDialogProps>) => {
       dialogContext.setErrorDialog({
@@ -234,6 +230,10 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
    */
   const saveRecords = useCallback(
     async (rowsToSave: GridValidRowModel[]) => {
+      const _showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+        dialogContext.setSnackbar({ ...textDialogProps, open: true });
+      };
+
       try {
         await biohubApi.observation.insertUpdateObservationRecords(
           projectId,
@@ -260,7 +260,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         setIsSaving(false);
       }
     },
-    [_showErrorDialog, biohubApi.observation, projectId, refreshRecords, revertAllRowsEditMode, surveyId]
+    [_showErrorDialog, biohubApi.observation, dialogContext, projectId, refreshRecords, revertAllRowsEditMode, surveyId]
   );
 
   useEffect(() => {
