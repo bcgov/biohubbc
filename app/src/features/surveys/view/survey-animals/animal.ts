@@ -115,8 +115,8 @@ export const AnimalCaptureSchema = yup.object({}).shape({
 export const AnimalMarkingSchema = yup.object({}).shape({
   _id: yup.string().required(),
   marking_id: yup.string(),
-  marking_type_id: yup.string().required(req),
-  taxon_marking_body_location_id: yup.string().required(req),
+  marking_type_id: yup.string().required('Type is required'),
+  taxon_marking_body_location_id: yup.string().required('Location is required'),
   primary_colour_id: yup.string().optional(),
   secondary_colour_id: yup.string().optional(),
   marking_comment: yup.string(),
@@ -127,8 +127,8 @@ export const AnimalMarkingSchema = yup.object({}).shape({
 
 export const AnimalCollectionUnitSchema = yup.object({}).shape({
   _id: yup.string().required(),
-  collection_unit_id: yup.string().required(),
-  collection_category_id: yup.string().required(),
+  collection_unit_id: yup.string().required('Name is required'),
+  collection_category_id: yup.string().required('Category is required'),
   critter_collection_unit_id: yup.string(),
   unit_name: yup.string().optional(),
   category_name: yup.string().optional()
@@ -139,18 +139,18 @@ export const AnimalMeasurementSchema = yup.object({}).shape(
     _id: yup.string().required(),
     measurement_qualitative_id: yup.string(),
     measurement_quantitative_id: yup.string(),
-    taxon_measurement_id: yup.string().required(req),
+    taxon_measurement_id: yup.string().required('Type is required'),
     qualitative_option_id: yup.string().when('value', {
       is: (value: '' | number) => value === '' || value == null,
-      then: yup.string().required(req),
+      then: yup.string().required('Value is required'),
       otherwise: yup.string()
     }),
     value: numSchema.when('qualitative_option_id', {
       is: (qualitative_option_id: string) => !qualitative_option_id,
-      then: numSchema.required(req),
+      then: numSchema.required('Value is required'),
       otherwise: numSchema
     }),
-    measured_timestamp: dateSchema.required(req),
+    measured_timestamp: dateSchema.required('Date is required'),
     measurement_comment: yup.string(),
     option_label: yup.string().optional(),
     measurement_name: yup.string().optional()

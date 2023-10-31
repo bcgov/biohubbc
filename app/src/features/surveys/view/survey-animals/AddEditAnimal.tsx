@@ -1,6 +1,6 @@
 import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Divider, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import { Box, Button, Divider, IconButton, Toolbar, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import Stack from '@mui/system/Stack';
@@ -100,14 +100,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         />
       )
     };
-    const gridWrappedComp =
-      section === 'Telemetry' ? (
-        sectionMap[section]
-      ) : (
-        <Grid container spacing={2}>
-          {sectionMap[section]}
-        </Grid>
-      );
+    const gridWrappedComp = section === 'Telemetry' ? sectionMap[section] : <>{sectionMap[section]}</>;
     return gridWrappedComp ?? <Typography>Unimplemented</Typography>;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -273,7 +266,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
           variant="h5"
           sx={{
             flexGrow: '1',
-            fontWeight: 700,
+            fontWeight: 700
           }}>
           {values?.general?.animal_id ? `Animal Details > ${values.general.animal_id}` : 'No animal selected'}
         </Typography>
@@ -299,7 +292,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 component="h1"
                 variant="h2"
                 sx={{
-                  flex: '1 1 auto',
+                  flex: '1 1 auto'
                 }}>
                 {section}
               </Typography>
@@ -338,7 +331,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                     />
                     {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
                       <Button
-                        sx={{fontWeight: 700}}
+                        sx={{ fontWeight: 700 }}
                         startIcon={<Icon path={mdiPlus} size={1} />}
                         variant="contained"
                         color="primary"
@@ -363,7 +356,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               color="textSecondary"
               maxWidth={'110ch'}
               sx={{
-                mb: 4
+                mb: 5
               }}>
               {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
             </Typography>
@@ -401,7 +394,6 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 allFamilies={allFamilies}
               />
             </Form>
-
           </Box>
         </Box>
       ) : (

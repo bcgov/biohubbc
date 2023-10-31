@@ -6,7 +6,7 @@ import SingleDateField from 'components/fields/SingleDateField';
 import { Field, useFormikContext } from 'formik';
 import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
 import { has } from 'lodash-es';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AnimalMeasurementSchema,
   getAnimalFieldName,
@@ -77,14 +77,13 @@ export const MeasurementAnimalFormContent = ({ index, measurements }: Measuremen
   };
 
   return (
-    <Fragment>
+    <Grid container spacing={3}>
       <Grid item xs={12}>
         <CbSelectWrapper
-          label="Measurement Type"
+          label="Type"
           name={taxonMeasurementIDName}
           onChange={handleMeasurementTypeChange}
           controlProps={{
-            size: 'medium',
             required: isRequiredInSchema(AnimalMeasurementSchema, 'taxon_measurement_id'),
             disabled: !measurements?.length
           }}>
@@ -104,7 +103,6 @@ export const MeasurementAnimalFormContent = ({ index, measurements }: Measuremen
             route="xref/taxon-qualitative-measurement-options"
             query={`taxon_measurement_id=${taxonMeasurementId}`}
             controlProps={{
-              size: 'medium',
               required: true,
               disabled: !taxonMeasurementId
             }}
@@ -118,7 +116,6 @@ export const MeasurementAnimalFormContent = ({ index, measurements }: Measuremen
             label={currentMeasurement?.unit ? `Value [${currentMeasurement.unit}'s]` : `Value`}
             other={{
               required: true,
-              size: 'medium',
               disabled: !taxonMeasurementId
             }}
             validate={validateValue}
@@ -129,19 +126,23 @@ export const MeasurementAnimalFormContent = ({ index, measurements }: Measuremen
         <SingleDateField
           name={getAnimalFieldName<IAnimalMeasurement>(name, 'measured_timestamp', index)}
           required={isRequiredInSchema(AnimalMeasurementSchema, 'measured_timestamp')}
-          label={'Measured Date'}
-          other={{ size: 'medium' }}
+          label="Date Measurement Taken"
         />
       </Grid>
       <Grid item xs={12}>
         <CustomTextField
-          other={{ size: 'medium', required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment') }}
-          label="Measurement Comment"
+          other={{
+            size: 'medium',
+            multiline: true,
+            minRows: 3,
+            required: isRequiredInSchema(AnimalMeasurementSchema, 'measurement_comment')
+          }}
+          label="Comments"
           name={getAnimalFieldName<IAnimalMeasurement>(name, 'measurement_comment', index)}
           handleBlur={handleBlur}
         />
       </Grid>
-    </Fragment>
+    </Grid>
   );
 };
 

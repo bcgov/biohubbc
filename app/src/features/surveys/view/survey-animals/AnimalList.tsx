@@ -94,7 +94,7 @@ const AnimalList = (props: AnimalListProps) => {
           {sortedCritterData.map((critter) => (
             <Accordion
               disableGutters
-              sx={{ 
+              sx={{
                 boxShadow: 'none',
                 '&.Mui-expanded::before': {
                   opacity: 1
@@ -141,7 +141,7 @@ const AnimalList = (props: AnimalListProps) => {
                     }
                   }}>
                   {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
-                    <ListItem  
+                    <ListItem
                       sx={{
                         px: 3
                       }}

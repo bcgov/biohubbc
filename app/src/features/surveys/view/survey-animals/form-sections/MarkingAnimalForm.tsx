@@ -2,7 +2,6 @@ import { Grid } from '@mui/material';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
-import { Fragment } from 'react';
 import { AnimalMarkingSchema, getAnimalFieldName, IAnimal, IAnimalMarking, isRequiredInSchema } from '../animal';
 
 /**
@@ -33,10 +32,10 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
   };
 
   return (
-    <Fragment>
-      <Grid item xs={12} md={12}>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
         <CbSelectField
-          label="Marking Type"
+          label="Type"
           name={getAnimalFieldName<IAnimalMarking>(name, 'marking_type_id', index)}
           id="marking_type"
           route="lookups/marking-types"
@@ -47,9 +46,9 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
           handleChangeSideEffect={handleMarkingTypeName}
         />
       </Grid>
-      <Grid item xs={12} md={12}>
+      <Grid item xs={12}>
         <CbSelectField
-          label="Marking Body Location"
+          label="Body Location"
           name={getAnimalFieldName<IAnimalMarking>(name, 'taxon_marking_body_location_id', index)}
           id="marking_body_location"
           route="xref/taxon-marking-body-locations"
@@ -61,7 +60,7 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
           handleChangeSideEffect={handleMarkingLocationName}
         />
       </Grid>
-      <Grid item xs={12} md={12}>
+      <Grid item xs={12} sm={6}>
         <CbSelectField
           label="Primary Colour"
           name={getAnimalFieldName<IAnimalMarking>(name, 'primary_colour_id', index)}
@@ -74,7 +73,7 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
           handleChangeSideEffect={handlePrimaryColourName}
         />
       </Grid>
-      <Grid item xs={12} md={12}>
+      <Grid item xs={12} sm={6}>
         <CbSelectField
           label="Secondary Colour"
           name={getAnimalFieldName<IAnimalMarking>(name, 'secondary_colour_id', index)}
@@ -88,13 +87,18 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
       </Grid>
       <Grid item xs={12}>
         <CustomTextField
-          label="Marking Comment"
+          label="Comments"
           name={getAnimalFieldName<IAnimalMarking>(name, 'marking_comment', index)}
-          other={{ size: 'medium', required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment') }}
+          other={{
+            size: 'medium',
+            multiline: true,
+            minRows: 3,
+            required: isRequiredInSchema(AnimalMarkingSchema, 'marking_comment')
+          }}
           handleBlur={handleBlur}
         />
       </Grid>
-    </Fragment>
+    </Grid>
   );
 };
 

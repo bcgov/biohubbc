@@ -32,7 +32,7 @@ export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: An
       if (value == null || value === '') {
         return;
       }
-      formatArr.push(`${key} • ${value}`);
+      formatArr.push(`${key}: ${value}`);
     });
     return formatArr.join(' | ');
   };
@@ -51,15 +51,13 @@ export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: An
         }
       ],
       [SurveyAnimalsI18N.animalMarkingTitle]: initialValues.markings.map((marking) => ({
-        header: `Marking: ${marking.marking_type}`,
+        header: `${marking.marking_type}`,
         subHeader: formatSubHeader({ Location: marking.body_location, Colour: marking.primary_colour }),
         key: marking.marking_id ?? 'new-marking-key'
       })),
       [SurveyAnimalsI18N.animalMeasurementTitle]: initialValues.measurements.map((measurement) => ({
-        header: `Measurement: ${formatDate(measurement.measured_timestamp)}`,
-        subHeader: formatSubHeader({
-          [`${measurement.measurement_name}`]: measurement.option_label ?? measurement.value
-        }),
+        header: `${measurement.measurement_name}: ${measurement.option_label ?? measurement.value}`,
+        subHeader: `Date: ${formatDate(measurement.measured_timestamp)}`,
         key: measurement.measurement_qualitative_id ?? measurement.measurement_quantitative_id ?? 'new-measurement-key'
       })),
       [SurveyAnimalsI18N.animalCaptureTitle]: initialValues.captures.map((capture) => ({
@@ -85,7 +83,7 @@ export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: An
       }),
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: initialValues.collectionUnits.map((collectionUnit) => ({
         header: `${collectionUnit.unit_name}`,
-        subHeader: `${collectionUnit.category_name}`,
+        subHeader: formatSubHeader({ Category: collectionUnit.category_name }),
         key: collectionUnit.critter_collection_unit_id ?? 'new-collection-unit-key'
       })),
       Telemetry: initialValues.device.map((device) => ({
@@ -145,7 +143,7 @@ export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: An
                   showDeleteDialog(submitFormRemoveCard);
                 };
                 return (
-                  <Collapse key={cardData.key}>
+                  <Collapse key={cardData.key} timeout={0}>
                     <EditDeleteStubCard
                       header={cardData.header}
                       subHeader={cardData.subHeader}
