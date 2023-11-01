@@ -87,7 +87,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} submissionId
-   * @return {*} 
+   * @return {*}
    */
   const processCsvSubmission = async (projectId: number, surveyId: number, submissionId: number) => {
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
@@ -105,13 +105,17 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {((string | number)[])} surveyObservationIds
    * @return {*}  {Promise<number>}
    */
-  const deleteObservationRecords = async (projectId: number, surveyId: number, surveyObservationIds: (string | number)[]): Promise<number> => {
+  const deleteObservationRecords = async (
+    projectId: number,
+    surveyId: number,
+    surveyObservationIds: (string | number)[]
+  ): Promise<number> => {
     const { data } = await axios.post<number>(`/api/project/${projectId}/survey/${surveyId}/observations/delete`, {
       surveyObservationIds
     });
 
-    return data
-  }
+    return data;
+  };
 
   return {
     insertUpdateObservationRecords,

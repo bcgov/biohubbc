@@ -1,13 +1,14 @@
 import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import { ListItemIcon } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
@@ -20,7 +21,6 @@ import { SurveyContext } from 'contexts/surveyContext';
 import ObservationsTable from 'features/surveys/observations/ObservationsTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
-import { ListItemIcon } from '@mui/material';
 import { pluralize as p } from 'utils/Utils';
 
 const ObservationComponent = () => {
@@ -39,7 +39,7 @@ const ObservationComponent = () => {
 
   const handleCloseMenu = () => {
     setMenuAnchorEl(null);
-  }
+  };
 
   const { projectId, surveyId } = surveyContext;
 
@@ -70,7 +70,7 @@ const ObservationComponent = () => {
   const handleDeleteSelectedObservations = () => {
     const selectedRecords = observationsContext.getSelectedObservations();
     observationsContext.deleteObservationRecords(selectedRecords);
-  }
+  };
 
   const hasUnsavedChanges = observationsContext.hasUnsavedChanges();
   const numSelectedRows = observationsContext.rowSelectionModel.length;
@@ -128,10 +128,10 @@ const ObservationComponent = () => {
           </Typography>
 
           <Box>
-            <Box display="flex" overflow="hidden" sx={{ display: 'flex',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                gap: 1}}>
+            <Box
+              display="flex"
+              overflow="hidden"
+              sx={{ display: 'flex', overflow: 'hidden', whiteSpace: 'nowrap', gap: 1 }}>
               <Button
                 variant="contained"
                 color="primary"
@@ -148,7 +148,7 @@ const ObservationComponent = () => {
                 Add Record
               </Button>
               <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
-                <Box whiteSpace="nowrap" display='flex' sx={{ gap: 1, pr: 1 }}>
+                <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
                   <LoadingButton
                     loading={observationsContext.isSaving}
                     variant="contained"
@@ -169,11 +169,10 @@ const ObservationComponent = () => {
               <Box>
                 <IconButton
                   onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                    setMenuAnchorEl(event.currentTarget)
+                    setMenuAnchorEl(event.currentTarget);
                   }}
                   disabled={numSelectedRows === 0}
-                  aria-label="observation options"
-                >
+                  aria-label="observation options">
                   <Icon size={1} path={mdiDotsVertical} />
                 </IconButton>
                 <Menu
@@ -200,9 +199,7 @@ const ObservationComponent = () => {
                     <ListItemIcon>
                       <Icon path={mdiTrashCanOutline} size={1} />
                     </ListItemIcon>
-                    <Typography variant="inherit">
-                      Delete {p(numSelectedRows, 'Observation')}
-                    </Typography>
+                    <Typography variant="inherit">Delete {p(numSelectedRows, 'Observation')}</Typography>
                   </MenuItem>
                 </Menu>
               </Box>
