@@ -400,5 +400,8 @@ export const ObservationsTableI18N = {
   removeMultipleRecordsButtonText: 'Delete Records',
   submitRecordsErrorDialogTitle: 'Error Updating Observation Records',
   submitRecordsErrorDialogText:
-    'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to update the observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
+  removeRecordsErrorDialogTitle: 'Error Deleting Observation Record',
+  removeRecordsErrorDialogText:
+    'An error has occurred while attempting to delete observation records for this survey. Please try again. If the error persists, please contact your system administrator.'
 };

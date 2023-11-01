@@ -147,6 +147,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
 
+  // TODO rename this or inline it, since there are now nuemerous error dialogs spawned by this context.
   const _showErrorDialog = useCallback(
     (textDialogProps?: Partial<IErrorDialogProps>) => {
       dialogContext.setErrorDialog({
@@ -198,7 +199,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       .filter((observationRecords) => 'survey_observation_id' in observationRecords)
       .map((observationRecords) => (observationRecords as IObservationRecord).survey_observation_id);
 
-    return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds)
+    return biohubApi.observation.deleteObservationRecords(projectId, surveyId, [1]) // TODO
       .then(() => {
         console.log('.then()')
         _setPendingDeletionObservations([]);
@@ -215,9 +216,14 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
         // Show error dialog
         dialogContext.setErrorDialog({
-          // TODO
+          onOk: () => dialogContext.setErrorDialog({ open: false }),
+          onClose: () => dialogContext.setErrorDialog({ open: false }),
+          dialogTitle: ObservationsTableI18N.removeRecordsErrorDialogTitle,
+          dialogText: ObservationsTableI18N.removeRecordsErrorDialogText,
+          dialogError: error,
+          open: true
         });
-      })
+      });
   }, [initialRows, _confirmDeletionDialogDefaultProps]);
 
   const _promptConfirmDeleteDialog = useCallback(() => {
