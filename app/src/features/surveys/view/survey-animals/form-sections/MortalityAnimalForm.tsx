@@ -38,6 +38,7 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
             name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_id', index)}
             handleChangeSideEffect={(_value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
             label={'PCOD Reason'}
+            orderBy={'asc'}
             controlProps={{
               size: 'medium',
               required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_id')
@@ -78,6 +79,7 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
               setUcodTaxonDisabled(!label.includes('Predation'));
             }}
             label={'UCOD Reason'}
+            orderBy={'desc'}
             controlProps={{
               size: 'medium',
               required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_id')

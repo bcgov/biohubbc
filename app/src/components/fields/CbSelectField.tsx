@@ -1,6 +1,6 @@
 import { FormControlProps, MenuItem, SelectChangeEvent } from '@mui/material';
 import { useFormikContext } from 'formik';
-import { ICbSelectRows } from 'hooks/cb_api/useLookupApi';
+import { ICbSelectRows, OrderBy } from 'hooks/cb_api/useLookupApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';
@@ -20,6 +20,7 @@ export interface ICbSelectField extends ICbSelectSharedProps {
   query?: string;
   disabledValues?: Record<string, boolean>;
   handleChangeSideEffect?: (value: string, label: string) => void;
+  orderBy?: OrderBy;
 }
 
 interface ICbSelectOption {
@@ -35,7 +36,7 @@ interface ICbSelectOption {
  **/
 
 const CbSelectField: React.FC<ICbSelectField> = (props) => {
-  const { name, label, route, param, query, handleChangeSideEffect, controlProps, disabledValues } = props;
+  const { name, orderBy, label, route, param, query, handleChangeSideEffect, controlProps, disabledValues } = props;
 
   const api = useCritterbaseApi();
   const { data, refresh } = useDataLoader(api.lookup.getSelectOptions);
@@ -45,7 +46,7 @@ const CbSelectField: React.FC<ICbSelectField> = (props) => {
 
   useEffect(() => {
     // Only refresh when the query or param changes
-    refresh({ route, param, query });
+    refresh({ route, param, query, orderBy });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, param]);
 
