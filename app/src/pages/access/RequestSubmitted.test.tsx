@@ -2,7 +2,7 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
-import { render } from 'test-helpers/test-utils';
+import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import RequestSubmitted from './RequestSubmitted';
 
 describe('RequestSubmitted', () => {
@@ -97,10 +97,12 @@ describe('RequestSubmitted', () => {
   describe('Log Out', () => {
     const history = createMemoryHistory();
 
-    it('should redirect to `/logout`', async () => {
+    it('should call the auth signoutRedirect function', async () => {
+      const signoutRedirectStub = jest.fn();
+
       const authState = getMockAuthState({
         base: SystemUserAuthState,
-        overrides: { simsUserWrapper: { hasAccessRequest: true } }
+        overrides: { auth: { signoutRedirect: signoutRedirectStub }, simsUserWrapper: { hasAccessRequest: true } }
       });
 
       const { getByTestId } = render(
@@ -111,7 +113,17 @@ describe('RequestSubmitted', () => {
         </AuthStateContext.Provider>
       );
 
-      expect(getByTestId('logout-button')).toHaveAttribute('href', '/logout');
+      const logoutButton = getByTestId('request-submitted-logout-button');
+
+      waitFor(() => {
+        expect(logoutButton).toBeVisible();
+      });
+
+      fireEvent.click(logoutButton);
+
+      waitFor(() => {
+        expect(signoutRedirectStub).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });

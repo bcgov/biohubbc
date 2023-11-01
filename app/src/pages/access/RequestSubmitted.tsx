@@ -35,7 +35,7 @@ const RequestSubmitted = () => {
             size="large"
             variant="contained"
             color="primary"
-            data-testid="logout-button">
+            data-testid="request-submitted-logout-button">
             Log Out
           </Button>
         </Box>
