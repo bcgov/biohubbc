@@ -35,7 +35,7 @@ describe('useSurveyApi', () => {
         id: 1
       };
 
-      mock.onGet(`/api/project/${projectId}/survey/create`).reply(200, res);
+      mock.onPost(`/api/project/${projectId}/survey/create`).reply(200, res);
 
       const result = await useSurveyApi(axios).createSurvey(projectId, survey);
 
@@ -52,7 +52,7 @@ describe('useSurveyApi', () => {
         { surveyData: { survey_id: 2 }, surveySupplementaryData: {} } as IGetSurveyForListResponse
       ];
 
-      mock.onGet(`/api/project/${projectId}/survey/create`).reply(200, res);
+      mock.onGet(`/api/project/${projectId}/survey`).reply(200, res);
 
       const result = await useSurveyApi(axios).getSurveysBasicFieldsByProjectId(projectId);
 

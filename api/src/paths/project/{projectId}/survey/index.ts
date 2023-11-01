@@ -65,11 +65,12 @@ GET.apiDoc = {
                   required: ['survey_id', 'name', 'start_date', 'end_date', 'focal_species', 'focal_species_names'],
                   properties: {
                     survey_id: {
-                      type: 'number',
+                      type: 'integer',
                       minimum: 1
                     },
                     name: {
-                      type: 'string'
+                      type: 'string',
+                      maxLength: 300
                     },
                     start_date: {
                       type: 'string',
@@ -85,7 +86,7 @@ GET.apiDoc = {
                     focal_species: {
                       type: 'array',
                       items: {
-                        type: 'number'
+                        type: 'integer'
                       }
                     },
                     focal_species_names: {
