@@ -8,8 +8,7 @@ import TextField from '@mui/material/TextField';
 import {
   DataGrid,
   GridColDef,
-  GridEventListener,
-  GridInputRowSelectionModel
+  GridEventListener
 } from '@mui/x-data-grid';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
@@ -30,7 +29,7 @@ import {
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { getCodesName } from 'utils/Utils';
 
@@ -490,13 +489,14 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   const showConfirmDeleteDialog = pendingDeleteObservations.length > 0;
 
-  const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
+  /**
+   * On first render, pre-selected the observation row based on the URL
+   */
+  useEffect(() => {
     if (location.hash.startsWith('#view-')) {
       const selectedId = location.hash.split('-')[1];
-      return [selectedId];
+      observationsContext.setRowSelectionModel([selectedId]);
     }
-
-    return undefined;
   }, []);
 
   return (
@@ -530,8 +530,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         localeText={{
           noRowsLabel: 'No Records'
         }}
-        isRowSelectable={(data) => data.row !== undefined}
-        rowSelectionModel={rowSelectionModel}
+        onRowSelectionModelChange={observationsContext.setRowSelectionModel}
+        rowSelectionModel={observationsContext.rowSelectionModel}
         getRowHeight={() => 'auto'}
         slots={{
           loadingOverlay: LoadingOverlay

@@ -1,6 +1,8 @@
-import { mdiDotsVertical, mdiImport, mdiPlus } from '@mdi/js';
+import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -18,10 +20,14 @@ import { SurveyContext } from 'contexts/surveyContext';
 import ObservationsTable from 'features/surveys/observations/ObservationsTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
+import { ListItemIcon } from '@mui/material';
+import { pluralize as p } from 'utils/Utils';
 
 const ObservationComponent = () => {
   const [showImportDiaolog, setShowImportDiaolog] = useState<boolean>(false);
   const [processingRecords, setProcessingRecords] = useState<boolean>(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
+  const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
   const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
   const biohubApi = useBiohubApi();
@@ -30,6 +36,10 @@ const ObservationComponent = () => {
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
+
+  const handleCloseMenu = () => {
+    setMenuAnchorEl(null);
+  }
 
   const { projectId, surveyId } = surveyContext;
 
@@ -57,8 +67,13 @@ const ObservationComponent = () => {
     });
   };
 
+  const handleDeleteSelectedObservations = () => {
+    const selectedRecords = observationsContext.getSelectedObservations();
+    observationsContext.deleteObservationRecords(selectedRecords);
+  }
+
   const hasUnsavedChanges = observationsContext.hasUnsavedChanges();
-  const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
+  const numSelectedRows = observationsContext.rowSelectionModel.length;
   const observationCount =
     observationsContext.observationsDataLoader?.data?.supplementaryObservationData?.observationCount ?? 0;
 
@@ -99,16 +114,7 @@ const ObservationComponent = () => {
         sx={{
           overflow: 'hidden'
         }}>
-        <Toolbar
-          sx={{
-            flex: '0 0 auto',
-            '& button': {
-              minWidth: '6rem'
-            },
-            '& button + button': {
-              ml: 1
-            }
-          }}>
+        <Toolbar>
           <Typography
             sx={{
               flexGrow: '1',
@@ -121,15 +127,11 @@ const ObservationComponent = () => {
             </Typography>
           </Typography>
 
-          <Box
-            sx={{
-              '& div:first-of-type': {
-                display: 'flex',
+          <Box>
+            <Box display="flex" overflow="hidden" sx={{ display: 'flex',
                 overflow: 'hidden',
-                whiteSpace: 'nowrap'
-              }
-            }}>
-            <Box display="flex" overflow="hidden">
+                whiteSpace: 'nowrap',
+                gap: 1}}>
               <Button
                 variant="contained"
                 color="primary"
@@ -145,8 +147,8 @@ const ObservationComponent = () => {
                 disabled={observationsContext.isSaving}>
                 Add Record
               </Button>
-              <Collapse in={hasUnsavedChanges} orientation="horizontal">
-                <Box ml={1} whiteSpace="nowrap">
+              <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
+                <Box whiteSpace="nowrap" display='flex' sx={{ gap: 1, pr: 1 }}>
                   <LoadingButton
                     loading={observationsContext.isSaving}
                     variant="contained"
@@ -164,14 +166,46 @@ const ObservationComponent = () => {
                   </Button>
                 </Box>
               </Collapse>
-              <IconButton
-                onClick={(event) => {
-                  // handleMenuClick(event, sampleSite.survey_sample_site_id)
-                }}
-                aria-label="options"
-              >
-                <Icon path={mdiDotsVertical} />
-              </IconButton>
+              <Box>
+                <IconButton
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    setMenuAnchorEl(event.currentTarget)
+                  }}
+                  disabled={numSelectedRows === 0}
+                  aria-label="observation options"
+                >
+                  <Icon size={1} path={mdiDotsVertical} />
+                </IconButton>
+                <Menu
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  id="survey-observations-table-actions-menu"
+                  anchorEl={menuAnchorEl}
+                  open={Boolean(menuAnchorEl)}
+                  onClose={handleCloseMenu}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button'
+                  }}>
+                  <MenuItem
+                    onClick={() => {
+                      handleDeleteSelectedObservations();
+                      handleCloseMenu();
+                    }}>
+                    <ListItemIcon>
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </ListItemIcon>
+                    <Typography variant="inherit">
+                      Delete {p(numSelectedRows, 'Observation')}
+                    </Typography>
+                  </MenuItem>
+                </Menu>
+              </Box>
             </Box>
           </Box>
         </Toolbar>

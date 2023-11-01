@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography';
-import { GridRowId, GridRowModelUpdate, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
+import { GridRowId, GridRowSelectionModel, GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { ObservationsTableI18N } from 'constants/i18n';
@@ -88,6 +88,18 @@ export type IObservationsContext = {
    */
   setInitialRows: React.Dispatch<React.SetStateAction<IObservationTableRow[]>>;
   /**
+   * The IDs of the selected observation table rows
+   */
+  rowSelectionModel: GridRowSelectionModel;
+  /**
+   * Sets the IDs of the selected observation table rows
+   */
+  setRowSelectionModel: (rowSelectionModel: GridRowSelectionModel) => void;
+  /**
+   * Returns all of the observation table records that have been selected
+   */
+  getSelectedObservations: () => IObservationTableRow[];
+  /**
    * Indicates if the data is in the process of being persisted to the server.
    */
   isSaving: boolean;
@@ -106,6 +118,9 @@ export const ObservationsContext = createContext<IObservationsContext>({
   revertRecords: () => Promise.resolve(),
   stopEditAndSaveRows: () => {},
   refreshRecords: () => Promise.resolve(),
+  rowSelectionModel: [],
+  setRowSelectionModel: () => {},
+  getSelectedObservations: () => [],
   isSaving: false
 });
 
@@ -121,6 +136,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
   const [unsavedRecordIds, _setUnsavedRecordIds] = useState<string[]>([]);
   const [initialRows, setInitialRows] = useState<IObservationTableRow[]>([]);
+  const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
   const [rowIdsToSave, setRowIdsToSave] = useState<GridRowId[]>([]);
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -157,38 +173,18 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       return;
     }
 
-    // markRecordWithUnsavedChanges(id); // TODO probably not needed anymore.
     const deletingObservationIds = observationRecords
       .filter((observationRecord) => 'survey_observation_id' in observationRecord)
       .map((observationRecord) => (observationRecord as IObservationRecord).survey_observation_id);
 
     return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds)
       .then(() => {
-
-
-        /*
-
-        // TODO deprecated
-
-        const gridRowModelUpdate: GridRowModelUpdate[] = observationRecords.map((observationRecord) => ({
-          id: String(observationRecord.id),
-          _action: 'delete'
-        }));
-        _muiDataGridApiRef.current.updateRows(gridRowModelUpdate);
-
-        console.log(_muiDataGridApiRef.current.getRowModels())
-        */
-
-
         setInitialRows(initialRows.filter((row) => {
           return observationRecords.every((record) => record.id !== row.id)
         }));
-
-
-
       })
       .catch((error: any) => {
-        // TODO replace with dialog popup
+        // @TODO replace with dialog popup
         throw new Error(error);
       })
   }
@@ -201,7 +197,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
     const newRecord: IObservationTableRow = {
       id,
-      survey_observation_id: undefined, //null,
+      survey_observation_id: undefined, //null, @TODO remvoe these commented nulls
       wldtaxonomic_units_id: undefined, //null,
       survey_sample_site_id: undefined, //null,
       survey_sample_method_id: undefined, //null,
@@ -214,15 +210,13 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       _isUnsaved: true
     }
 
-    // _muiDataGridApiRef.current.updateRows([newRecord]);// TODO deprecated
-    
-    //
+    // todo
     setInitialRows([...initialRows, newRecord]);
 
-    //
+    // todo
     markRecordWithUnsavedChanges(id);
 
-    //
+    // todo
     _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
   };
 
@@ -271,9 +265,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
 
     // Remove any rows that are newly created
-    // TODO should we deprecated directly calling curernt.setRows, and just set the initalRows prop?
-
-    // _muiDataGridApiRef.current.setRows(initialRows.filter((row) => !row._isUnsaved));
     setInitialRows(initialRows.filter((row) => !row._isUnsaved));
   };
 
@@ -320,6 +311,16 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     },
     [_showErrorDialog, biohubApi.observation, projectId, refreshRecords, _revertAllRowsEditMode, surveyId]
   );
+
+  const getSelectedObservations: () => IObservationTableRow[] = useCallback(() => {
+    if (!_muiDataGridApiRef?.current?.getRowModels) {
+      // Data grid is not fully initialized
+      return [];
+    }
+
+    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value)
+    return rowValues.filter((row): row is IObservationTableRow => rowSelectionModel.includes(row.id))
+  }, [rowSelectionModel])
 
   useEffect(() => {
     if (!_muiDataGridApiRef?.current?.getRowModels) {
@@ -370,6 +371,9 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     _muiDataGridApiRef,
     initialRows,
     setInitialRows,
+    rowSelectionModel,
+    setRowSelectionModel,
+    getSelectedObservations,
     isSaving
   };
 
