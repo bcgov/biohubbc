@@ -1,6 +1,6 @@
 import TextField, { TextFieldProps } from '@mui/material/TextField/TextField';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
-import { GridRenderEditCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
+import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { useRef } from 'react';
 
 interface ITextFieldCustomValidation<DataGridType extends GridValidRowModel> {
@@ -12,7 +12,6 @@ const TextFieldDataGrid = <DataGridType extends GridValidRowModel>({
   textFieldProps,
   dataGridProps
 }: ITextFieldCustomValidation<DataGridType>) => {
-  const apiRef = useGridApiContext();
   const ref = useRef<HTMLInputElement>();
   useEnhancedEffect(() => {
     if (dataGridProps.hasFocus) {
