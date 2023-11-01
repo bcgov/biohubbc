@@ -6,7 +6,7 @@ import MultiAutocompleteField from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
-import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
+import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
