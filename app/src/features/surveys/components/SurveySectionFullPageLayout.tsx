@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/system/Stack';
-// import Paper from '@mui/material/Paper';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import SurveySectionHeader from '../components/SurveySectionHeader';
