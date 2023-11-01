@@ -7,9 +7,11 @@ import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import { MapBaseCss } from 'components/map/components/MapBaseCss';
+import StaticLayers from 'components/map/components/StaticLayers';
 import { MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
-import { Position } from 'geojson';
+import { SurveyContext } from 'contexts/surveyContext';
+import { Feature, Position } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
@@ -19,6 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const ObservationsMap = () => {
   const observationsContext = useContext(ObservationsContext);
+  const surveyContext = useContext(SurveyContext);
 
   const surveyObservations: INonEditableGeometries[] = useMemo(() => {
     const observations = observationsContext.observationsDataLoader.data?.surveyObservations;
@@ -58,9 +61,28 @@ const ObservationsMap = () => {
       });
   }, [observationsContext.observationsDataLoader.data]);
 
+  const studyAreaFeatures: Feature[] = useMemo(() => {
+    const locations = surveyContext.surveyDataLoader.data?.surveyData.locations;
+    if (!locations) {
+      return [];
+    }
+
+    return locations.flatMap((item) => item.geojson);
+  }, [surveyContext.surveyDataLoader.data]);
+
+  const sampleSiteFeatures: Feature[] = useMemo(() => {
+    const sites = surveyContext.sampleSiteDataLoader.data?.sampleSites;
+    if (!sites) {
+      return [];
+    }
+
+    return sites.map((item) => item.geojson);
+  }, [surveyContext.sampleSiteDataLoader.data]);
+
   const getDefaultMapBounds = useCallback((): LatLngBoundsExpression | undefined => {
     const features = surveyObservations.map((observation) => observation.feature);
-    const boundingBox = calculateFeatureBoundingBox(features);
+
+    const boundingBox = calculateFeatureBoundingBox([...features, ...studyAreaFeatures, ...sampleSiteFeatures]);
 
     if (!boundingBox) {
       return;
@@ -99,6 +121,18 @@ const ObservationsMap = () => {
         ))}
         <LayersControl position="bottomright">
           <BaseLayerControls />
+          <StaticLayers
+            layers={[
+              {
+                layerName: 'Study Area',
+                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature }))
+              },
+              {
+                layerName: 'Sample Sites',
+                features: sampleSiteFeatures.map((feature) => ({ geoJSON: feature }))
+              }
+            ]}
+          />
         </LayersControl>
       </LeafletMapContainer>
       {surveyObservations.length > 0 && (
