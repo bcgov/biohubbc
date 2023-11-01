@@ -23,7 +23,7 @@ const mockUseApi = {
     publishProject: jest.fn()
   },
   survey: {
-    getSurveysList: jest.fn().mockResolvedValue([])
+    getSurveysBasicFieldsByProjectId: jest.fn().mockResolvedValue([])
   },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
@@ -38,7 +38,7 @@ describe.skip('ProjectPage', () => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
     mockUseApi.project.deleteProject.mockClear();
     mockUseApi.project.getProjectForView.mockClear();
-    mockUseApi.survey.getSurveysList.mockClear();
+    mockUseApi.survey.getSurveysBasicFieldsByProjectId.mockClear();
     mockUseApi.codes.getAllCodeSets.mockClear();
     mockUseApi.project.publishProject.mockClear();
     mockUseApi.spatial.getRegions.mockClear();

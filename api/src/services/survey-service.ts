@@ -27,6 +27,7 @@ import {
   IObservationSubmissionUpdateDetails,
   IOccurrenceSubmissionMessagesResponse,
   ISurveyProprietorModel,
+  SurveyBasicFields,
   SurveyRepository
 } from '../repositories/survey-repository';
 import { getLogger } from '../utils/logger';
@@ -336,6 +337,38 @@ export class SurveyService extends DBService {
     const surveyIds = await this.getSurveyIdsByProjectId(projectId);
 
     return this.getSurveysByIds(surveyIds.map((survey) => survey.id));
+  }
+
+  /**
+   * Fetches a subset of survey fields for all surveys under a project.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<SurveyBasicFields[]>}
+   * @memberof SurveyService
+   */
+  async getSurveysBasicFieldsByProjectId(projectId: number): Promise<SurveyBasicFields[]> {
+    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId);
+
+    // Build an array of all unique focal species ids from all surveys
+    const uniqueFocalSpeciesIds = Array.from(
+      new Set(surveys.reduce((ids: number[], survey) => ids.concat(survey.focal_species), []))
+    );
+
+    // Fetch focal species data for all species ids
+    const taxonomyService = new TaxonomyService();
+    const focalSpecies = await taxonomyService.getSpeciesFromIds(uniqueFocalSpeciesIds);
+
+    // Decorate the surveys response with their matching focal species labels
+    const decoratedSurveys: SurveyBasicFields[] = [];
+    for (const survey of surveys) {
+      const matchingFocalSpeciesNames = focalSpecies
+        .filter((item) => survey.focal_species.includes(Number(item.id)))
+        .map((item) => item.label);
+
+      decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
+    }
+
+    return decoratedSurveys;
   }
 
   /**

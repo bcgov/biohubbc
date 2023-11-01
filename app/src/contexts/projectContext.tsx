@@ -55,7 +55,7 @@ export const ProjectContext = createContext<IProjectContext>({
 export const ProjectContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
   const projectDataLoader = useDataLoader(biohubApi.project.getProjectForView);
-  const surveysListDataLoader = useDataLoader(biohubApi.survey.getSurveysList);
+  const surveysListDataLoader = useDataLoader(biohubApi.survey.getSurveysBasicFieldsByProjectId);
   const artifactDataLoader = useDataLoader(biohubApi.project.getProjectAttachments);
   const urlParams: Record<string, string | number | undefined> = useParams();
 
