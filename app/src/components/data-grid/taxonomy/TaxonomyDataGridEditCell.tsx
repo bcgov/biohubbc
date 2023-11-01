@@ -3,7 +3,7 @@ import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import debounce from 'lodash-es/debounce';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 export interface ITaxonomyDataGridCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderEditCellParams<DataGridType>;

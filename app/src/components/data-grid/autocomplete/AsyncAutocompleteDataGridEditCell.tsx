@@ -2,10 +2,11 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
+import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderCellParams, GridValidRowModel, useGridApiContext } from '@mui/x-data-grid';
 import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { DebouncedFunc } from 'lodash-es';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export interface IAsyncAutocompleteDataGridEditCell<
   DataGridType extends GridValidRowModel,
@@ -52,6 +53,14 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   const apiRef = useGridApiContext();
 
+  const ref = useRef<HTMLInputElement>();
+
+  useEnhancedEffect(() => {
+    if (dataGridProps.hasFocus) {
+      ref.current?.focus();
+      console.log('Focus fired!');
+    }
+  }, [dataGridProps.hasFocus]);
   // The current data grid value
   const dataGridValue = dataGridProps.value;
   // The input field value
@@ -168,6 +177,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
       renderInput={(params) => (
         <TextField
           {...params}
+          inputRef={ref}
           size="small"
           variant="outlined"
           fullWidth
