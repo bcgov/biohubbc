@@ -2,7 +2,6 @@ import { mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import { square } from '@turf/turf';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
@@ -15,7 +14,7 @@ import { Feature, Position } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
-import { calculateFeatureBoundingBox, latLngBoundsFromBoundingBox } from 'utils/mapBoundaryUploadHelpers';
+import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -81,28 +80,20 @@ const ObservationsMap = () => {
 
   const getDefaultMapBounds = useCallback((): LatLngBoundsExpression | undefined => {
     const features = surveyObservations.map((observation) => observation.feature);
-
-    const boundingBox = calculateFeatureBoundingBox([...features, ...studyAreaFeatures, ...sampleSiteFeatures]);
-
-    if (!boundingBox) {
-      return;
-    }
-
-    return latLngBoundsFromBoundingBox(square(boundingBox));
-  }, [surveyObservations]);
+    return calculateUpdatedMapBounds([...features, ...studyAreaFeatures, ...sampleSiteFeatures]);
+  }, [surveyObservations, studyAreaFeatures, sampleSiteFeatures]);
 
   const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(getDefaultMapBounds());
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(getDefaultMapBounds());
-  }, [getDefaultMapBounds]);
+  }, [getDefaultMapBounds, surveyObservations, studyAreaFeatures, sampleSiteFeatures]);
 
   return (
     <Box position="relative">
       <LeafletMapContainer
         data-testid="leaflet-survey_observations_map"
         id="survey_observations_map"
-        zoom={6}
         center={MAP_DEFAULT_CENTER}
         scrollWheelZoom={false}
         fullscreenControl={true}
@@ -135,7 +126,7 @@ const ObservationsMap = () => {
           />
         </LayersControl>
       </LeafletMapContainer>
-      {surveyObservations.length > 0 && (
+      {(surveyObservations.length > 0 || studyAreaFeatures.length > 0 || sampleSiteFeatures.length > 0) && (
         <Box position="absolute" top="126px" left="10px" zIndex="999">
           <IconButton
             sx={{
