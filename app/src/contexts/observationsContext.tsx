@@ -208,7 +208,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       return biohubApi.observation
         .deleteObservationRecords(projectId, surveyId, deletingObservationIds)
         .then(() => {
-          console.log('.then()');
           _setPendingDeletionObservations([]);
           setInitialRows(
             initialRows.filter((row) => {
@@ -216,7 +215,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
             })
           );
         })
-        .catch((error: any) => {
+        .catch(() => {
           // Close yes-no dialog
           dialogContext.setYesNoDialog({
             ..._confirmDeletionDialogDefaultProps,

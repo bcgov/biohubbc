@@ -127,84 +127,86 @@ const ObservationComponent = () => {
             </Typography>
           </Typography>
 
-          <Box>
-            <Box
-              display="flex"
-              overflow="hidden"
-              sx={{ display: 'flex', overflow: 'hidden', whiteSpace: 'nowrap', gap: 1 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiImport} size={1} />}
-                onClick={() => setShowImportDiaolog(true)}>
-                Import
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiPlus} size={1} />}
-                onClick={() => observationsContext.createNewRecord()}
-                disabled={observationsContext.isSaving}>
-                Add Record
-              </Button>
-              <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
-                <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
-                  <LoadingButton
-                    loading={observationsContext.isSaving}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => observationsContext.stopEditAndSaveRows()}
-                    disabled={observationsContext.isSaving}>
-                    Save
-                  </LoadingButton>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => setShowConfirmRemoveAllDialog(true)}
-                    disabled={observationsContext.isSaving}>
-                    Discard Changes
-                  </Button>
-                </Box>
-              </Collapse>
-              <Box>
-                <IconButton
-                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                    setMenuAnchorEl(event.currentTarget);
-                  }}
-                  disabled={numSelectedRows === 0}
-                  aria-label="observation options">
-                  <Icon size={1} path={mdiDotsVertical} />
-                </IconButton>
-                <Menu
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  id="survey-observations-table-actions-menu"
-                  anchorEl={menuAnchorEl}
-                  open={Boolean(menuAnchorEl)}
-                  onClose={handleCloseMenu}
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-button'
-                  }}>
-                  <MenuItem
-                    onClick={() => {
-                      handleDeleteSelectedObservations();
-                      handleCloseMenu();
-                    }}>
-                    <ListItemIcon>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </ListItemIcon>
-                    <Typography variant="inherit">Delete {p(numSelectedRows, 'Observation')}</Typography>
-                  </MenuItem>
-                </Menu>
+
+          <Box
+            display="flex"
+            overflow="hidden"
+            gap={1}
+            whiteSpace='nowrap'>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiImport} size={1} />}
+              onClick={() => setShowImportDiaolog(true)}>
+              Import
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => observationsContext.createNewRecord()}
+              disabled={observationsContext.isSaving}>
+              Add Record
+            </Button>
+            <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
+              <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
+                <LoadingButton
+                  loading={observationsContext.isSaving}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => observationsContext.stopEditAndSaveRows()}
+                  disabled={observationsContext.isSaving}>
+                  Save
+                </LoadingButton>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setShowConfirmRemoveAllDialog(true)}
+                  disabled={observationsContext.isSaving}>
+                  Discard Changes
+                </Button>
               </Box>
+            </Collapse>
+            <Box>
+              <IconButton
+                onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                  setMenuAnchorEl(event.currentTarget);
+                }}
+                size='small'
+                disabled={numSelectedRows === 0}
+                aria-label="observation options">
+                <Icon size={1} path={mdiDotsVertical} />
+              </IconButton>
+              <Menu
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                id="survey-observations-table-actions-menu"
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={handleCloseMenu}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button'
+                }}>
+                <MenuItem
+                  onClick={() => {
+                    handleDeleteSelectedObservations();
+                    handleCloseMenu();
+                  }}>
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Delete {p(numSelectedRows, 'Observation')}</Typography>
+                </MenuItem>
+              </Menu>
             </Box>
           </Box>
+
         </Toolbar>
         <Box
           display="flex"
