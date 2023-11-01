@@ -3,8 +3,6 @@ import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import CustomTextField from 'components/fields/CustomTextField';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
 import MapContainer from 'components/map/MapContainer';
@@ -15,6 +13,8 @@ import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
 import { coerceZero } from 'utils/Utils';
 import { getAnimalFieldName, IAnimal, ProjectionMode } from '../animal';
 import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
 
 export type LocationEntryFields<T> = {
   latitude: keyof T;
@@ -44,7 +44,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   otherSecondaryFields
 }: LocationEntryFormProps<T>) => {
   const { handleBlur, setFieldValue } = useFormikContext();
-  const [tabState, setTabState] = useState(0); //Controls whether we are on the Forms tab or the Map tab.
   const [placeSecondaryMode, setPlaceSecondary] = useState(false); //Controls whether left clicking on the map will place the capture or release marker.
 
   const handleMarkerPlacement = (e: LatLng, fields: LocationEntryFields<T>) => {
@@ -104,10 +103,11 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
 
   const renderLocationFields = (fields: LocationEntryFields<T>): JSX.Element => {
     return (
-      <Fragment>       
+      <Grid container spacing={1}>
+
         {value.projection_mode === 'wgs' ? (
-          <Grid container item sm={12} spacing={3}>
-            <Grid item xs={6}>
+          <Fragment>
+            <Grid item xs={12} sm={4}>
               <CustomTextField
                 other={{ required: true, type: 'number' }}
                 label="Latitude"
@@ -115,7 +115,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 handleBlur={handleBlur}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
               <CustomTextField
                 other={{ required: true, type: 'number' }}
                 label="Longitude"
@@ -123,11 +123,11 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 handleBlur={handleBlur}
               />
             </Grid>
-          </Grid>
+          </Fragment>
 
         ) : (
-          <Grid container item sm={12} spacing={3}>
-            <Grid item xs={6}>
+          <Fragment>
+            <Grid item xs={12} sm={4}>
               <CustomTextField
                 other={{ required: true, type: 'number' }}
                 label="Northing"
@@ -135,7 +135,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 handleBlur={handleBlur}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
               <CustomTextField
                 other={{ required: true, type: 'number' }}
                 label="Easting"
@@ -143,22 +143,22 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                 handleBlur={handleBlur}
               />
             </Grid>
-          </Grid>
+          </Fragment>
         )}
 
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={4}>
           <CustomTextField
             other={{ 
               required: true, 
               type: 'number',
-              InputProps: { endAdornment: <Typography component="div" variant="subtitle2" color="textSecondary" sx={{ml: 2}}>METERS</Typography>}
             }}
-            label="Coordinate Uncertainty"
+            label="Uncertainty (Meters)"
             name={getAnimalFieldName<T>(name, fields.coordinate_uncertainty, index)}
             handleBlur={handleBlur}
           />
         </Grid>
-      </Fragment>
+
+      </Grid>
     );
   };
 
@@ -182,83 +182,84 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   };
 
   return (
-    <>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-          value={tabState}
-          onChange={(e, newVal) => {
-            setTabState(newVal);
-          }}>
-          <Tab label="FORM" />
-          <Tab label="MAP" />
-        </Tabs>
-      </Box>
-
-      {tabState === 0 ? (
-        <>
-
-          <Box px={1} py={3}>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} />
-                }
-                label="Use UTM Coordinates"
-              />
-            </FormGroup>
-          </Box>
-
-          <Box mb={3} component="fieldset">
-            <Typography component='legend'>Event Details</Typography>
-            <Grid container spacing={3}>
-              {renderLocationFields(primaryLocationFields)}
-              {otherPrimaryFields}
-            </Grid>
-          </Box>
-
-          {secondaryLocationFields ? (
-            <Box component="fieldset">
-              <Typography component='legend'>Release Event Details</Typography>
-              <Grid container spacing={3}>
-                {renderLocationFields(secondaryLocationFields)}
-                {otherSecondaryFields}
-              </Grid>
-            </Box>
-          ) : null}
-
-      </>
-
-      ) : (
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            {secondaryLocationFields ? (
-              <FormGroup sx={{ alignItems: 'end' }}>
+    <Stack 
+      flexDirection="column" 
+      gap={3} 
+      maxWidth={800}
+    >
+      
+      <Box component="fieldset">
+        <Typography component='legend'>Event Location</Typography>
+        
+        <Stack gap={3}>
+          <Box>
+            {renderLocationFields(primaryLocationFields)}
+            <Box p={1}>
+              <FormGroup>
                 <FormControlLabel
                   control={
-                    <Checkbox checked={placeSecondaryMode} onChange={(e, b) => setPlaceSecondary(b)} />
+                    <Checkbox checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} />
                   }
-                  label={'Place Other Coordinate'}
+                  label="Use UTM Coordinates"
                 />
               </FormGroup>
-            ) : null}
-            <Box position="relative" height={400}>
-              <MapContainer
-                mapId={`location-entry-${name}-${index}`}
-                scrollWheelZoom={true}
-                additionalLayers={[
-                  renderResizableMarker(primaryLocationFields, !placeSecondaryMode, 'blue'),
-                  secondaryLocationFields ? (
-                    renderResizableMarker(secondaryLocationFields, placeSecondaryMode, 'green')
-                  ) : (
-                    <></>
-                  )
-                ]}
-              />
             </Box>
-          </Grid>
-        </Grid>
-      )}
-    </>
+          </Box>
+          {otherPrimaryFields}
+        </Stack>
+
+      </Box>
+
+        {secondaryLocationFields ? (
+          <Box component="fieldset">
+            <Typography component='legend'>Release Details</Typography>
+            <Grid container spacing={3}>
+              {renderLocationFields(secondaryLocationFields)}
+              {otherSecondaryFields}
+            </Grid>
+          </Box>
+        ) : null}
+
+      <Box component="fieldset" flex="0 0 auto">
+        <Typography component='legend'>Preview</Typography>
+
+        <Box display="none">
+          {secondaryLocationFields ? (
+            <FormGroup sx={{ alignItems: 'end' }}>
+              <FormControlLabel
+                control={
+                  <Checkbox checked={placeSecondaryMode} onChange={(e, b) => setPlaceSecondary(b)} />
+                }
+                label={'Place Other Coordinate'}
+              />
+            </FormGroup>
+          ) : null}
+        </Box>
+
+        <Paper
+          variant="outlined"
+          sx={{
+            height: 400,
+            overflow: 'hidden'
+          }}
+        >
+          <MapContainer
+            mapId={`location-entry-${name}-${index}`}
+            scrollWheelZoom={false}
+            additionalLayers={[
+              renderResizableMarker(primaryLocationFields, !placeSecondaryMode, 'blue'),
+              secondaryLocationFields ? (
+                renderResizableMarker(secondaryLocationFields, placeSecondaryMode, 'green')
+              ) : (
+                <></>
+              )
+            ]}
+          />
+        </Paper>
+
+      </Box>
+
+    </Stack>
   );
 };
 

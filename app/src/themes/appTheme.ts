@@ -80,9 +80,11 @@ const appTheme = createTheme({
         },
         legend: {
           '&.MuiTypography-root': {
-            marginBottom: '15px',
+            marginBottom: '18px',
             padding: 0,
-            fontWeight: 700
+            fontSize: '0.875rem',
+            fontWeight: 700,
+            textTransform: 'uppercase'
           }
         }
       }
@@ -178,7 +180,7 @@ const appTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paperWidthXl: {
-          width: '800px'
+          minWidth: '800px'
         }
       }
     },

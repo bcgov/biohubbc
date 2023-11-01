@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel, Grid } from '@mui/material';
+import { Checkbox, FormControlLabel, Grid, Stack } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
@@ -32,46 +32,49 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
 
   const renderCaptureFields = (): JSX.Element => {
     return (
-      <Fragment key={'capture-fields'}>
-        <Grid item xs={12} sm={6}>
-          <SingleDateField
-            name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
-            required={true}
-            label={'Capture Date'}
-            other={{ size: 'medium' }}
-          />
+      <Stack gap={3} key={'capture-fields'}>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={4}>
+            <SingleDateField
+              name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
+              required={true}
+              label={'Capture Date'}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <CustomTextField
-            other={{ multiline: true, minRows: 2, required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
-            label="Comments"
-            name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
-            handleBlur={handleBlur}
-          />
+
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <CustomTextField
+              other={{ multiline: true, minRows: 2, required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
+              label="Comments"
+              name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
+              handleBlur={handleBlur}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControlLabel
+              sx={{my: -1, ml: 0}}
+              control={
+                <Checkbox
+                  onChange={handleChange}
+                  checked={values.captures[index].show_release}
+                  disabled={!!values.captures[index].release_location_id}
+                  name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
+                />
+              }
+              label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} sx={{pt: '16px !important'}}>
-          <FormControlLabel
-            sx={{ml: 1}}
-            control={
-              <Checkbox
-                edge="start"
-                onChange={handleChange}
-                checked={values.captures[index].show_release}
-                disabled={!!values.captures[index].release_location_id}
-                name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
-              />
-            }
-            label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
-          />
-        </Grid>
-      </Fragment>
+      </Stack>
     );
   };
 
   const renderReleaseFields = (): JSX.Element => {
     return (
       <Fragment key={`capture-release-fields`}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={6}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
             label={'Release Date'}
