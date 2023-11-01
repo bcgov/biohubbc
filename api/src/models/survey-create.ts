@@ -121,13 +121,13 @@ export class PostProprietorData {
 }
 
 export class PostPurposeAndMethodologyData {
-  intended_outcome_id: number;
+  intended_outcome_ids: number[];
   additional_details: string;
   vantage_code_ids: number[];
   surveyed_all_areas: boolean;
 
   constructor(obj?: any) {
-    this.intended_outcome_id = obj?.intended_outcome_id || null;
+    this.intended_outcome_ids = obj?.intended_outcome_ids || [];
     this.additional_details = obj?.additional_details || null;
     this.vantage_code_ids = obj?.vantage_code_ids || [];
     this.surveyed_all_areas = obj?.surveyed_all_areas || null;

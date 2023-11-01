@@ -1027,9 +1027,9 @@ export class EmlService extends DBService {
         section: [
           {
             title: 'Intended Outcomes',
-            para: codes.intended_outcomes.find(
-              (code) => code.id === surveyData.purpose_and_methodology.intended_outcome_id
-            )?.name
+            para: surveyData.purpose_and_methodology.intended_outcome_ids
+              .map((outcomeId) => codes.intended_outcomes.find((code) => code.id === outcomeId)?.name)
+              .join(', ')
           },
           {
             title: 'Additional Details',

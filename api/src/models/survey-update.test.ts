@@ -333,7 +333,7 @@ describe('PutPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(null);
+      expect(data.intended_outcome_ids).to.eql([]);
     });
 
     it('sets additional_details', () => {
@@ -357,7 +357,7 @@ describe('PutPurposeAndMethodologyData', () => {
     let data: PutSurveyPurposeAndMethodologyData;
 
     const obj = {
-      intended_outcome_id: 1,
+      intended_outcome_ids: [1],
       additional_details: 'additional_detail',
       vantage_code_ids: [4, 5],
       surveyed_all_areas: 'true',
@@ -369,7 +369,7 @@ describe('PutPurposeAndMethodologyData', () => {
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(obj.intended_outcome_id);
+      expect(data.intended_outcome_ids).to.equal(obj.intended_outcome_ids);
     });
 
     it('sets additional_details', () => {

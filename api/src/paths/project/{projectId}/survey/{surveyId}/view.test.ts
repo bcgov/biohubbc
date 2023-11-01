@@ -40,7 +40,7 @@ describe('survey/{surveyId}/view', () => {
             funding_sources: [],
             purpose_and_methodology: {
               additional_details: 'details',
-              intended_outcome_id: 8,
+              intended_outcome_ids: [8],
               vantage_code_ids: [1, 2],
               surveyed_all_areas: 'true',
               revision_count: 0
@@ -117,7 +117,7 @@ describe('survey/{surveyId}/view', () => {
             funding_sources: [],
             purpose_and_methodology: {
               additional_details: null,
-              intended_outcome_id: null,
+              intended_outcome_ids: [],
               vantage_code_ids: [],
               surveyed_all_areas: 'false',
               revision_count: 0

@@ -71,10 +71,9 @@ const SurveysList: React.FC = () => {
                   </TableCell>
                   <TableCell>{row.surveyData.species.focal_species_names.join('; ')}</TableCell>
                   <TableCell>
-                    {row.surveyData.purpose_and_methodology.intended_outcome_id &&
-                      codes?.intended_outcomes?.find(
-                        (item: any) => item.id === row.surveyData.purpose_and_methodology.intended_outcome_id
-                      )?.name}
+                    {row.surveyData.purpose_and_methodology.intended_outcome_ids
+                      ?.map((outcomeId) => codes?.intended_outcomes?.find((item: any) => item.id === outcomeId)?.name)
+                      .join(', ') ?? ''}
                   </TableCell>
                   <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
                     <TableCell>

@@ -1041,4 +1041,26 @@ describe('SurveyRepository', () => {
       }
     });
   });
+
+  describe('insertManySurveyIntendedOutcomes', () => {
+    it('should insert intended outcome ids', async () => {
+      const mockResponse = ({ rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+      const repsonse = await repository.insertManySurveyIntendedOutcomes(1, [1, 2]);
+      expect(repsonse).to.be.undefined;
+    });
+  });
+
+  describe('deleteManySurveyIntendedOutcomes', () => {
+    it('should delete intended outcome ids', async () => {
+      const mockResponse = ({ rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const dbConnection = getMockDBConnection({ knex: () => mockResponse });
+
+      const repository = new SurveyRepository(dbConnection);
+      const repsonse = await repository.deleteManySurveyIntendedOutcomes(1, [1, 2]);
+      expect(repsonse).to.be.undefined;
+    });
+  });
 });

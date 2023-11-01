@@ -65,6 +65,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyParticipationData(surveyId)}
       ${insertSurveyLocationData(surveyId)}
       ${insertSurveySiteStrategy(surveyId)}
+      ${insertSurveyIntendedOutcome(surveyId)}
     `);
   }
 }
@@ -320,8 +321,7 @@ const insertSurveyData = (projectId: number) => `
       start_date,
       end_date,
       lead_first_name,
-      lead_last_name,
-      intended_outcome_id
+      lead_last_name
     )
   VALUES (
     ${projectId},
@@ -330,10 +330,22 @@ const insertSurveyData = (projectId: number) => `
     $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.person.firstName()}$$,
-    $$${faker.person.lastName()}$$,
-    (select intended_outcome_id from intended_outcome order by random() limit 1)
+    $$${faker.person.lastName()}$$
   )
   RETURNING survey_id;
+`;
+
+const insertSurveyIntendedOutcome = (surveyId: number) => `
+    INSERT into survey_intended_outcome
+    (
+      survey_id,
+      intended_outcome_id  
+    )
+    VALUES 
+    (
+      ${surveyId}, 
+      (select intended_outcome_id from intended_outcome order by random() limit 1)
+    );
 `;
 
 /**

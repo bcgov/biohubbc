@@ -61,7 +61,7 @@ export interface IGetSurveyForViewResponseDetails {
 }
 
 export interface IGetSurveyForViewResponsePurposeAndMethodology {
-  intended_outcome_id: number;
+  intended_outcome_ids: number[];
   additional_details: string;
   vantage_code_ids: number[];
   surveyed_all_areas: StringBoolean;
@@ -160,7 +160,7 @@ export interface SurveyUpdateObject extends ISurveyLocationForm {
   ];
   partnerships?: IGetSurveyForUpdateResponsePartnerships;
   purpose_and_methodology?: {
-    intended_outcome_id: number;
+    intended_outcome_ids: number[];
     additional_details: string;
     vantage_code_ids: number[];
     surveyed_all_areas: StringBoolean;

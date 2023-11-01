@@ -131,14 +131,14 @@ export class PutSurveyProprietorData {
   }
 }
 export class PutSurveyPurposeAndMethodologyData {
-  intended_outcome_id: number;
+  intended_outcome_ids: number[];
   additional_details: string;
   vantage_code_ids: number[];
   surveyed_all_areas: boolean;
   revision_count: number;
 
   constructor(obj?: any) {
-    this.intended_outcome_id = obj?.intended_outcome_id || null;
+    this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.additional_details = obj?.additional_details || null;
     this.vantage_code_ids = (obj?.vantage_code_ids?.length && obj.vantage_code_ids) || [];
     this.surveyed_all_areas = obj?.surveyed_all_areas === 'true' || false;

@@ -73,7 +73,7 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     ...GeneralInformationInitialValues,
     ...{
       purpose_and_methodology: {
-        intended_outcome_id: '' as unknown as number,
+        intended_outcome_ids: [],
         additional_details: '',
         vantage_code_ids: []
       }
