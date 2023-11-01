@@ -115,13 +115,13 @@ describe('RequestSubmitted', () => {
 
       const logoutButton = getByTestId('request-submitted-logout-button');
 
-      waitFor(() => {
+      await waitFor(() => {
         expect(logoutButton).toBeVisible();
       });
 
       fireEvent.click(logoutButton);
 
-      waitFor(() => {
+      await waitFor(() => {
         expect(signoutRedirectStub).toHaveBeenCalledTimes(1);
       });
     });
