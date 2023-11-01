@@ -340,10 +340,6 @@ describe('PutPurposeAndMethodologyData', () => {
       expect(data.additional_details).to.equal(null);
     });
 
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.equal(null);
-    });
-
     it('sets vantage_code_ids', () => {
       expect(data.vantage_code_ids).to.eql([]);
     });
@@ -363,7 +359,6 @@ describe('PutPurposeAndMethodologyData', () => {
     const obj = {
       intended_outcome_ids: [1],
       additional_details: 'additional_detail',
-      field_method_id: 2,
       vantage_code_ids: [4, 5],
       surveyed_all_areas: 'true',
       revision_count: 0
@@ -379,10 +374,6 @@ describe('PutPurposeAndMethodologyData', () => {
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal(obj.additional_details);
-    });
-
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.equal(obj.field_method_id);
     });
 
     it('sets vantage_code_ids', () => {

@@ -64,6 +64,7 @@ export async function seed(knex: Knex): Promise<void> {
       ${insertSurveyVantageData(surveyId)}
       ${insertSurveyParticipationData(surveyId)}
       ${insertSurveyLocationData(surveyId)}
+      ${insertSurveySiteStrategy(surveyId)}
     `);
   }
 }
@@ -80,6 +81,18 @@ const checkAnyProjectExists = () => `
     project_id
   FROM
     project;
+`;
+
+const insertSurveySiteStrategy = (surveyId: number) => `
+  INSERT into survey_site_strategy
+    (
+      survey_id,
+      site_strategy_id
+    )
+  VALUES (
+    ${surveyId},
+    (select site_strategy_id  from site_strategy ss order by random() limit 1)
+  );
 `;
 
 /**
@@ -303,7 +316,6 @@ const insertSurveyData = (projectId: number) => `
     (
       project_id,
       name,
-      field_method_id,
       additional_details,
       start_date,
       end_date,
@@ -314,7 +326,6 @@ const insertSurveyData = (projectId: number) => `
   VALUES (
     ${projectId},
     'Seed Survey',
-    (select field_method_id from field_method order by random() limit 1),
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.date.between({ from: '2010-01-01T00:00:00-08:00', to: '2015-01-01T00:00:00-08:00' }).toISOString()}$$,
     $$${faker.date.between({ from: '2020-01-01T00:00:00-08:00', to: '2025-01-01T00:00:00-08:00' }).toISOString()}$$,

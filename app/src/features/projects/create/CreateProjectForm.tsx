@@ -16,7 +16,6 @@ import ProjectDetailsForm, {
   ProjectDetailsFormYupSchema
 } from '../components/ProjectDetailsForm';
 import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
-import { ProjectLocationFormInitialValues } from '../components/ProjectLocationForm';
 import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
@@ -44,15 +43,12 @@ export interface ICreateProjectForm {
 export const initialProjectFieldData: ICreateProjectRequest = {
   ...ProjectDetailsFormInitialValues,
   ...ProjectObjectivesFormInitialValues,
-  ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
   ...ProjectUserRoleFormInitialValues
 };
 
 export const validationProjectYupSchema =
   ProjectDetailsFormYupSchema.concat(ProjectObjectivesFormYupSchema).concat(ProjectUserRoleYupSchema);
-// TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (yup schema) temporarily, while its decided where exactly project/survey locations should be defined
-// .concat(ProjectLocationFormYupSchema)
 // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-162) Commenting out IUCN form (yup schema) temporarily, while its decided if IUCN information is desired
 // .concat(ProjectIUCNFormYupSchema)
 
@@ -168,15 +164,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           summary="Specify team members and their associated role for this project."
           component={<ProjectUserForm users={getProjectParticipants()} roles={codes.project_roles} />}
         />
-
-        {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
-        {/* <Divider className={classes.sectionDivider} />
-
-        <HorizontalSplitFormComponent
-          title="Location and Boundary"
-          summary="Provide details about the project's location and define the project spatial boundary"
-          component={<ProjectLocationForm />}></HorizontalSplitFormComponent> */}
-
         <Divider className={classes.sectionDivider} />
       </>
     </Formik>

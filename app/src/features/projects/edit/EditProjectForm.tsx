@@ -118,14 +118,6 @@ const EditProjectForm: React.FC<IEditProjectForm> = (props) => {
             component={<ProjectUserForm users={props.projectData.participants || []} roles={codes.project_roles} />}
           />
 
-          {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined */}
-          {/* <Divider className={classes.sectionDivider} />
-
-          <HorizontalSplitFormComponent
-            title="Location and Boundary"
-            summary="Provide details about the project's location and define the project spatial boundary"
-            component={<ProjectLocationForm />}></HorizontalSplitFormComponent> */}
-
           <Divider className={classes.sectionDivider} />
         </>
       </Formik>

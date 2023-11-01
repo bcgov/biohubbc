@@ -79,7 +79,6 @@ const SurveyRecord = z.object({
   uuid: z.string().nullable(),
   start_date: z.string(),
   end_date: z.string().nullable(),
-  field_method_id: z.number().nullable(),
   additional_details: z.string().nullable(),
   comments: z.string().nullable(),
   create_date: z.string(),
@@ -240,7 +239,6 @@ export class SurveyRepository extends BaseRepository {
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     const sqlStatement = SQL`
       SELECT
-        s.field_method_id,
         s.additional_details,
         array_remove(array_agg(DISTINCT io.intended_outcome_id), NULL) as intended_outcome_ids,
         array_remove(array_agg(DISTINCT sv.vantage_id), NULL) as vantage_ids
@@ -258,7 +256,6 @@ export class SurveyRepository extends BaseRepository {
       WHERE
         s.survey_id = ${surveyId}
       GROUP BY
-        s.field_method_id,
         s.additional_details
       `;
 
@@ -581,14 +578,12 @@ export class SurveyRepository extends BaseRepository {
         name,
         start_date,
         end_date,
-        field_method_id,
         additional_details
       ) VALUES (
         ${projectId},
         ${surveyData.survey_details.survey_name},
         ${surveyData.survey_details.start_date},
         ${surveyData.survey_details.end_date},
-        ${surveyData.purpose_and_methodology.field_method_id},
         ${surveyData.purpose_and_methodology.additional_details}
       )
       RETURNING
@@ -922,7 +917,6 @@ export class SurveyRepository extends BaseRepository {
     if (surveyData.purpose_and_methodology) {
       fieldsToUpdate = {
         ...fieldsToUpdate,
-        field_method_id: surveyData.purpose_and_methodology.field_method_id,
         additional_details: surveyData.purpose_and_methodology.additional_details
       };
     }

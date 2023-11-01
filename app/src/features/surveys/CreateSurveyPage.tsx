@@ -334,11 +334,6 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name, subText: item.description };
                         }) || []
                       }
-                      field_methods={
-                        codes?.field_methods.map((item) => {
-                          return { value: item.id, label: item.name, subText: item.description };
-                        }) || []
-                      }
                       vantage_codes={
                         codes?.vantage_codes.map((item) => {
                           return { value: item.id, label: item.name };
