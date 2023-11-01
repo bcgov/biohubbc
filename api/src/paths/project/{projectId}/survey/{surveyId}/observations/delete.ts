@@ -58,7 +58,7 @@ POST.apiDoc = {
               type: 'array',
               minItems: 1,
               items: {
-                type: 'integer',
+                type: 'integer'
               }
             }
           }
@@ -115,7 +115,8 @@ export function deleteSurveyObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const deleteObservationIds = req.body?.surveyObservationIds?.map((observationId: string | number) => Number(observationId)) ?? [];
+      const deleteObservationIds =
+        req.body?.surveyObservationIds?.map((observationId: string | number) => Number(observationId)) ?? [];
 
       const numRows = await observationService.deleteObservationsByIds(deleteObservationIds);
 

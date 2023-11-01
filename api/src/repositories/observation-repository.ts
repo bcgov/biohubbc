@@ -302,7 +302,7 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
-   * TODO jsdoc
+   * Deletes all of the given survey observations by ID.
    *
    * @param {number[]} observationIds
    * @return {*}  {Promise<number>}

@@ -225,8 +225,8 @@ export class ObservationService extends DBService {
     return this.observationRepository.insertUpdateSurveyObservations(surveyId, insertRows);
   }
 
-   /**
-   * TODO jsdoc
+  /**
+   * Deletes all of the given survey observations by ID.
    *
    * @param {number[]} observationIds
    * @return {*}  {Promise<number>}
