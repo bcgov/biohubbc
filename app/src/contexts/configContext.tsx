@@ -13,6 +13,7 @@ export interface IConfig {
     realm: string;
     clientId: string;
   };
+  SITEMINDER_LOGOUT_URL: string;
   MAX_UPLOAD_NUM_FILES: number;
   MAX_UPLOAD_FILE_SIZE: number;
   S3_PUBLIC_HOST_URL: string;
@@ -29,6 +30,7 @@ export const ConfigContext = React.createContext<IConfig | undefined>({
     realm: '',
     clientId: ''
   },
+  SITEMINDER_LOGOUT_URL: '',
   MAX_UPLOAD_NUM_FILES: 10,
   MAX_UPLOAD_FILE_SIZE: 52428800,
   S3_PUBLIC_HOST_URL: ''
@@ -58,6 +60,7 @@ const getLocalConfig = (): IConfig => {
       realm: process.env.REACT_APP_KEYCLOAK_REALM || '',
       clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || ''
     },
+    SITEMINDER_LOGOUT_URL: process.env.REACT_APP_SITEMINDER_LOGOUT_URL || '',
     MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
     MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
     S3_PUBLIC_HOST_URL: ensureProtocol(`${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`, 'https://')

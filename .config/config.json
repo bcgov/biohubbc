@@ -28,6 +28,11 @@
     "test": "api-test-biohubbc.apps.silver.devops.gov.bc.ca",
     "prod": "api-biohubbc.apps.silver.devops.gov.bc.ca"
   },
+  "siteminderLogoutURL": {
+    "dev": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
+    "test": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
+    "prod": "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi"
+  },
   "sso": {
     "dev": {
       "host": "https://dev.loginproxy.gov.bc.ca/auth",

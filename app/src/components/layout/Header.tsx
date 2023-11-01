@@ -90,9 +90,7 @@ const Header: React.FC = () => {
           <Button
             component="a"
             variant="text"
-            onClick={() => {
-              authStateContext.auth.signoutRedirect();
-            }}
+            onClick={() => authStateContext.auth.signoutRedirect()}
             data-testid="menu_log_out"
             sx={{
               color: 'inherit',
@@ -106,9 +104,7 @@ const Header: React.FC = () => {
         <MenuItem
           component="a"
           color="#1a5a96"
-          onClick={() => {
-            authStateContext.auth.signoutRedirect();
-          }}
+          onClick={() => authStateContext.auth.signoutRedirect()}
           data-testid="collapsed_menu_log_out"
           sx={{
             display: { xs: 'block', lg: 'none' }
@@ -129,9 +125,7 @@ const Header: React.FC = () => {
           component="a"
           color="inherit"
           variant="text"
-          onClick={() => {
-            authStateContext.auth.signinRedirect();
-          }}
+          onClick={() => authStateContext.auth.signinRedirect()}
           disableElevation
           startIcon={<Icon path={mdiLoginVariant} size={1} />}
           data-testid="menu_log_in"

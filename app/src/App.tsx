@@ -20,15 +20,23 @@ const App: React.FC = () => {
               return <CircularProgress className="pageProgress" size={40} />;
             }
 
+            const logoutRedirectUri = config.SITEMINDER_LOGOUT_URL
+              ? `${config.SITEMINDER_LOGOUT_URL}?returl=${window.location.origin}&retnow=1`
+              : buildUrl(window.location.origin);
+
             const authConfig: AuthProviderProps = {
               authority: `${config.KEYCLOAK_CONFIG.authority}/realms/${config.KEYCLOAK_CONFIG.realm}/`,
               client_id: config.KEYCLOAK_CONFIG.clientId,
-              redirect_uri: buildUrl(window.location.origin),
-              post_logout_redirect_uri: buildUrl(window.location.origin),
               resource: config.KEYCLOAK_CONFIG.clientId,
-              userStore: new WebStorageStateStore({ store: window.localStorage }),
+              // Default sign in redirect
+              redirect_uri: buildUrl(window.location.origin),
+              // Default sign out redirect
+              post_logout_redirect_uri: logoutRedirectUri,
+              // Automatically load additional user profile information
               loadUserInfo: true,
+              userStore: new WebStorageStateStore({ store: window.localStorage }),
               onSigninCallback: (_): void => {
+                // See https://github.com/authts/react-oidc-context#getting-started
                 window.history.replaceState({}, document.title, window.location.pathname);
               }
             };

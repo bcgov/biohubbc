@@ -188,9 +188,7 @@ export const AccessRequestPage: React.FC = () => {
                     <Button
                       variant="outlined"
                       color="primary"
-                      onClick={() => {
-                        authStateContext.auth.signoutRedirect();
-                      }}
+                      onClick={() => authStateContext.auth.signoutRedirect()}
                       data-testid="logout-button">
                       Log out
                     </Button>

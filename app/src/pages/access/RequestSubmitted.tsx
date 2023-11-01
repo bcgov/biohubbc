@@ -7,7 +7,6 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { Redirect } from 'react-router';
-import { Link } from 'react-router-dom';
 
 const RequestSubmitted = () => {
   const authStateContext = useAuthStateContext();
@@ -30,8 +29,8 @@ const RequestSubmitted = () => {
         <Typography>Your request is currently pending a review by an administrator.</Typography>
         <Box pt={4}>
           <Button
-            component={Link}
-            to="/logout"
+            component="a"
+            onClick={() => authStateContext.auth.signoutRedirect()}
             type="submit"
             size="large"
             variant="contained"
