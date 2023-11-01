@@ -46,7 +46,7 @@ export type IObservationsContext = {
   /**
    * Deletes all of the given records and removes them from the Observation table.
    */
-  deleteObservationRecords: (observationRecords: IObservationTableRow[]) => Promise<void>;
+  deleteObservationRecords: (observationRecords: IObservationTableRow[]) => void;
   /**
    * Transitions all rows in edit mode to view mode and triggers a commit of all observation rows to the database.
    */
@@ -159,6 +159,24 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     [dialogContext]
   );
 
+  const _promptConfirmDeleteDialog = useCallback((observationRecords: IObservationTableRow[]) => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: ObservationsTableI18N.removeRecordDialogTitle,
+      dialogText: ObservationsTableI18N.removeRecordDialogText,
+      yesButtonProps: {
+        color: 'error',
+        loading: false
+      },
+      yesButtonLabel: 'Delete Record', // TODO should pluralize
+      noButtonProps: { color: 'primary', variant: 'outlined' },
+      noButtonLabel: 'Cancel',
+      open: true,
+      onYes: () => _commitDeleteObservationRecords(observationRecords),
+      onClose: _handleCloseConfirmDeleteDialog,
+      onNo: _handleCloseConfirmDeleteDialog
+    })
+  }, [dialogContext]);
+
   observationsDataLoader.load();
 
   const markRecordWithUnsavedChanges = (id: RowId) => {
@@ -168,17 +186,21 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     _setUnsavedRecordIds(Array.from(unsavedRecordSet));
   };
 
-  const deleteObservationRecords = async (observationRecords: IObservationTableRow[]): Promise<void> => {
+  const _commitDeleteObservationRecords = async (observationRecords: IObservationTableRow[]): Promise<void> => {
+    console.log('_commitDeleteObservationRecords()')
     if (!observationRecords.length) {
       return;
     }
 
+    dialogContext.setYesNoDialog({ open: true, yesButtonProps: { loading: true } });
     const deletingObservationIds = observationRecords
-      .filter((observationRecord) => 'survey_observation_id' in observationRecord)
-      .map((observationRecord) => (observationRecord as IObservationRecord).survey_observation_id);
+      .filter((observationRecords) => 'survey_observation_id' in observationRecords)
+      .map((observationRecords) => (observationRecords as IObservationRecord).survey_observation_id);
 
     return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds)
       .then(() => {
+        console.log('.then()')
+        _handleCloseConfirmDeleteDialog();
         setInitialRows(initialRows.filter((row) => {
           return observationRecords.every((record) => record.id !== row.id)
         }));
@@ -187,7 +209,16 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         // @TODO replace with dialog popup
         throw new Error(error);
       })
+      .finally(() => {
+        console.log('.finally()')
+        dialogContext.setYesNoDialog({ yesButtonProps: { loading: false } });
+      })
   }
+
+  const _handleCloseConfirmDeleteDialog = () => {
+    console.log('_handleCloseConfirmDeleteDialog()');
+    dialogContext.setYesNoDialog({ open: false })
+  };
 
   /**
    * Add a new empty record to the data grid.
@@ -365,7 +396,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     refreshRecords,
     hasUnsavedChanges,
     markRecordWithUnsavedChanges,
-    deleteObservationRecords,
+    deleteObservationRecords: _promptConfirmDeleteDialog,
     unsavedRecordIds,
     observationsDataLoader,
     _muiDataGridApiRef,
