@@ -282,27 +282,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             }}
           />
         );
-
-        // return (
-        //   <TextField
-        //     onChange={(event) => {
-        //       if (!/^\d{0,7}$/.test(event.target.value)) {
-        //         // If the value is not a number, return
-        //         return;
-        //       }
-
-        //       apiRef?.current.setEditCellValue({
-        //         id: params.id,
-        //         field: params.field,
-        //         value: event.target.value
-        //       });
-        //     }}
-        //     value={params.value ?? ''}
-        //     variant="outlined"
-        //     type="text"
-        //     inputProps={{ inputMode: 'numeric' }}
-        //   />
-        // );
       }
     },
     {
@@ -347,27 +326,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return <>{params.value}</>;
       },
       renderEditCell: (params) => {
-        return (
-          <TimePickerDataGrid dataGridProps={params} />
-          // <LocalizationProvider dateAdapter={AdapterMoment}>
-          //   <TimePicker
-          //     value={(params.value && moment(params.value, 'HH:mm:ss')) || null}
-          //     onChange={(value) => {
-          //       apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
-          //     }}
-          //     onAccept={(value) => {
-          //       apiRef?.current.setEditCellValue({
-          //         id: params.id,
-          //         field: params.field,
-          //         value: value?.format('HH:mm:ss')
-          //       });
-          //     }}
-          //     views={['hours', 'minutes', 'seconds']}
-          //     timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
-          //     ampm={false}
-          //   />
-          // </LocalizationProvider>
-        );
+        return <TimePickerDataGrid dataGridProps={params} />;
       }
     },
     {
@@ -407,24 +366,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               }
             }}
           />
-          // <TextField
-          //   onChange={(event) => {
-          //     if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
-          //       // If the value is not a subset of a legal latitude value, prevent the value from being applied
-          //       return;
-          //     }
-
-          //     apiRef?.current.setEditCellValue({
-          //       id: params.id,
-          //       field: params.field,
-          //       value: event.target.value
-          //     });
-          //   }}
-          //   value={params.value ?? ''}
-          //   variant="outlined"
-          //   type="text"
-          //   inputProps={{ inputMode: 'numeric' }}
-          // />
         );
       }
     },
@@ -465,24 +406,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
               }
             }}
           />
-          // <TextField
-          //   onChange={(event) => {
-          //     if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
-          //       // If the value is not a subset of a legal longitude value, prevent the value from being applied
-          //       return;
-          //     }
-
-          //     apiRef?.current.setEditCellValue({
-          //       id: params.id,
-          //       field: params.field,
-          //       value: event.target.value
-          //     });
-          //   }}
-          //   value={params.value ?? ''}
-          //   variant="outlined"
-          //   type="text"
-          //   inputProps={{ inputMode: 'numeric' }}
-          // />
         );
       }
     },

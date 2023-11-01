@@ -52,7 +52,6 @@ const AutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, Va
   useEnhancedEffect(() => {
     if (dataGridProps.hasFocus) {
       ref.current?.focus();
-      console.log('Focus fired!');
     }
   }, [dataGridProps.hasFocus]);
 

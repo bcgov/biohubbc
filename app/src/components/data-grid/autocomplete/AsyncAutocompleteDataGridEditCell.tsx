@@ -58,7 +58,6 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
   useEnhancedEffect(() => {
     if (dataGridProps.hasFocus) {
       ref.current?.focus();
-      console.log('Focus fired!');
     }
   }, [dataGridProps.hasFocus]);
   // The current data grid value
