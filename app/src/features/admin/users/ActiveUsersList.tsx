@@ -19,6 +19,7 @@ import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/Actio
 import { AddSystemUserI18N, DeleteSystemUserI18N, UpdateSystemUserI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
@@ -45,8 +46,10 @@ export interface IActiveUsersListProps {
  * @return {*}
  */
 const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
+  const { activeUsers, codes, refresh } = props;
+
+  const authStateContext = useAuthStateContext();
   const biohubApi = useBiohubApi();
-  const { activeUsers, codes } = props;
   const history = useHistory();
 
   const [rowsPerPage, setRowsPerPage] = useState(20);
@@ -103,7 +106,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         open: true
       });
 
-      props.refresh();
+      if (authStateContext.simsUserWrapper.systemUserId === user.system_user_id) {
+        // User is deleting themselves
+        authStateContext.simsUserWrapper.refresh();
+      } else {
+        // Refresh users list
+        refresh();
+      }
     } catch (error) {
       const apiError = error as APIError;
 
@@ -168,7 +177,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         open: true
       });
 
-      props.refresh();
+      if (authStateContext.simsUserWrapper.systemUserId === user.system_user_id) {
+        // User is changing their own role
+        authStateContext.simsUserWrapper.refresh();
+      } else {
+        // Refresh users list
+        refresh();
+      }
     } catch (error) {
       const apiError = error as APIError;
       dialogContext.setErrorDialog({
@@ -201,7 +216,8 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         );
       }
 
-      props.refresh();
+      // Refresh users list
+      refresh();
 
       dialogContext.setSnackbar({
         open: true,
@@ -358,7 +374,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           element: (
             <AddSystemUsersForm
               systemRoles={
-                props.codes?.system_roles?.map((item) => {
+                codes?.system_roles?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }

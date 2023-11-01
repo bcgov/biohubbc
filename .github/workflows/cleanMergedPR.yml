@@ -1,18 +1,22 @@
-# Clean out all deployment artifacts when a PR is closed, but not merged.
-# Will attempt to remove all artifacts from any PR that was opened against any branch (and then closed (not merged)).
-name: Clean Closed PR Artifacts
+# Clean out all deployment artifacts when a PR is merged against a non-standard base branch (aka: neither dev, test, or prod)
+# Standard branches (aka: dev, test, prod) have their own cleanup routine that runs as part of the deployStatic action.
+name: Clean Merged PR Artifacts
 
 on:
   pull_request:
     types: [closed]
+    branches-ignore:
+      - dev
+      - test
+      - prod
 
 jobs:
   clean:
     name: Clean Deployment Artifacts for API and App in Dev and Tools environment
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Don't run if the PR was merged
-    if: ${{ github.event.pull_request.merged != true }}
+    # Only run if the PR was merged
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     steps:
