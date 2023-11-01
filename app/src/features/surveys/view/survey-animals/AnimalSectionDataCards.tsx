@@ -7,8 +7,9 @@ import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCa
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { IFamily } from 'hooks/cb_api/useFamilyApi';
 import moment from 'moment';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import { setMessageSnackbar } from 'utils/Utils';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 // import Paper from '@mui/material/Paper';
@@ -21,9 +22,28 @@ interface AnimalSectionDataCardsProps {
   allFamilies?: IFamily[];
 }
 export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: AnimalSectionDataCardsProps) => {
-  const { submitForm, initialValues } = useFormikContext<IAnimal>();
+  const { submitForm, initialValues, isSubmitting, status } = useFormikContext<IAnimal>();
+  const [canDisplaySnackbar, setCanDisplaySnackbar] = useState(false);
+  const statusRef = useRef<string | undefined>();
+
   const dialogContext = useContext(DialogContext);
   const formatDate = (dt: Date) => moment(dt).format('MMM Do[,] YYYY');
+
+  useEffect(() => {
+    // This delays the snackbar from entering until the card has finished animating
+    // Stores the custom status returned from formik before its deleted
+    // Manually setting when canDisplaySnackbar occurs ie: editing does not have animation
+    if (statusRef.current && canDisplaySnackbar) {
+      setTimeout(() => {
+        statusRef.current && setMessageSnackbar(statusRef.current, dialogContext);
+        statusRef.current = undefined;
+        setCanDisplaySnackbar(false);
+      }, 1000);
+    }
+    if (status) {
+      statusRef.current = status;
+    }
+  }, [canDisplaySnackbar, status, dialogContext]);
 
   const formatSubHeader = (subHeaderData: SubHeaderData) => {
     const formatArr: string[] = [];
@@ -118,6 +138,7 @@ export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: An
     dialogContext.setYesNoDialog({
       dialogTitle: `Delete ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`,
       dialogText: 'Are you sure you want to delete this record?',
+      isLoading: isSubmitting,
       open: true,
       onYes: async () => {
         onConfirmDelete();
@@ -143,11 +164,18 @@ export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: An
                   showDeleteDialog(submitFormRemoveCard);
                 };
                 return (
-                  <Collapse key={cardData.key} timeout={0}>
+                  <Collapse
+                    key={cardData.key}
+                    addEndListener={() => {
+                      setCanDisplaySnackbar(true);
+                    }}>
                     <EditDeleteStubCard
                       header={cardData.header}
                       subHeader={cardData.subHeader}
-                      onClickEdit={() => onEditClick(index)}
+                      onClickEdit={() => {
+                        setCanDisplaySnackbar(true);
+                        onEditClick(index);
+                      }}
                       onClickDelete={
                         section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
                           ? undefined
@@ -161,7 +189,6 @@ export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: An
           );
         }}
       </FieldArray>
-
       {/* Empty State */}
       {/* {sectionCardData.length === 0 ? (
         <Paper variant="outlined">
