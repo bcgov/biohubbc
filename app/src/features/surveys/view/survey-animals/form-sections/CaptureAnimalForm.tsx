@@ -2,7 +2,7 @@ import { Checkbox, FormControlLabel, Grid } from '@mui/material';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
-import { Field, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { Fragment } from 'react';
 import { AnimalCaptureSchema, getAnimalFieldName, IAnimal, IAnimalCapture, isRequiredInSchema } from '../animal';
 import LocationEntryForm from './LocationEntryForm';
@@ -33,7 +33,7 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
   const renderCaptureFields = (): JSX.Element => {
     return (
       <Fragment key={'capture-fields'}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={6}>
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
             required={true}
@@ -43,17 +43,18 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
         </Grid>
         <Grid item xs={12}>
           <CustomTextField
-            other={{ multiline: true, minRows: 3, required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
+            other={{ multiline: true, minRows: 2, required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment') }}
             label="Comments"
             name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
             handleBlur={handleBlur}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{pt: '16px !important'}}>
           <FormControlLabel
+            sx={{ml: 1}}
             control={
-              <Field
-                as={Checkbox}
+              <Checkbox
+                edge="start"
                 onChange={handleChange}
                 checked={values.captures[index].show_release}
                 disabled={!!values.captures[index].release_location_id}
@@ -74,12 +75,11 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
           <SingleDateField
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
             label={'Release Date'}
-            other={{ size: 'medium' }}
           />
         </Grid>
         <Grid item xs={12}>
           <CustomTextField
-            other={{ size: 'medium', required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
+            other={{ multiline: true, minRows: 2, required: isRequiredInSchema(AnimalCaptureSchema, 'release_comment') }}
             label="Comments"
             name={getAnimalFieldName<IAnimalCapture>(name, 'release_comment', index)}
             handleBlur={handleBlur}
