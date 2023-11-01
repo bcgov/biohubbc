@@ -134,6 +134,15 @@ export interface SurveyViewObject {
   blocks: IGetSurveyBlock[];
 }
 
+export interface SurveyBasicFieldsObject {
+  survey_id: number;
+  name: string;
+  start_date: string;
+  end_date: string | null;
+  focal_species: number[];
+  focal_species_names: string[];
+}
+
 export interface SurveyUpdateObject extends ISurveyLocationForm {
   survey_details?: {
     survey_name: string;
@@ -242,13 +251,13 @@ export interface ISurveySupplementaryData {
 }
 
 /**
- * Get Survey list response object.
+ * Get survey basic fields response object.
  *
  * @export
  * @interface IGetSurveyForListResponse
  */
 export interface IGetSurveyForListResponse {
-  surveyData: SurveyViewObject;
+  surveyData: SurveyBasicFieldsObject;
   surveySupplementaryData: ISurveySupplementaryData;
 }
 

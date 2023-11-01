@@ -18,14 +18,14 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   survey: {
-    getSurveysList: jest.fn()
+    getSurveysBasicFieldsByProjectId: jest.fn()
   }
 };
 
 describe('SurveysListPage', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.survey.getSurveysList.mockClear();
+    mockUseApi.survey.getSurveysBasicFieldsByProjectId.mockClear();
   });
 
   afterEach(() => {
@@ -56,7 +56,7 @@ describe('SurveysListPage', () => {
       hasLoadedParticipantInfo: true
     };
 
-    mockUseApi.survey.getSurveysList.mockResolvedValue([]);
+    mockUseApi.survey.getSurveysBasicFieldsByProjectId.mockResolvedValue([]);
 
     const { getByText } = render(
       <Router history={history}>

@@ -122,6 +122,17 @@ export type StakeholderPartnershipRecord = z.infer<typeof StakeholderPartnership
 
 export type IndigenousPartnershipRecord = z.infer<typeof IndigenousPartnershipRecord>;
 
+export const SurveyBasicFields = z.object({
+  survey_id: z.number(),
+  name: z.string(),
+  start_date: z.string(),
+  end_date: z.string().nullable(),
+  focal_species: z.array(z.number()),
+  focal_species_names: z.array(z.string())
+});
+
+export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
+
 const defaultLog = getLogger('repositories/survey-repository');
 
 export class SurveyRepository extends BaseRepository {
@@ -564,6 +575,40 @@ export class SurveyRepository extends BaseRepository {
     }
 
     return new GetReportAttachmentsData(result);
+  }
+
+  /**
+   * Fetches a subset of survey fields for all surveys under a project.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveysBasicFieldsByProjectId(projectId: number): Promise<Omit<SurveyBasicFields, 'focal_species_names'>[]> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .queryBuilder()
+      .select(
+        'survey.survey_id',
+        'survey.name',
+        'survey.start_date',
+        'survey.end_date',
+        knex.raw('array_remove(array_agg(study_species.wldtaxonomic_units_id), NULL) AS focal_species')
+      )
+      .from('project')
+      .leftJoin('survey', 'survey.project_id', 'project.project_id')
+      .leftJoin('study_species', 'study_species.survey_id', 'survey.survey_id')
+      .where('project.project_id', projectId)
+      .where('study_species.is_focal', true)
+      .groupBy('survey.survey_id')
+      .groupBy('survey.name')
+      .groupBy('survey.start_date')
+      .groupBy('survey.end_date');
+
+    const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
+
+    return response.rows;
   }
 
   /**
