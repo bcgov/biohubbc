@@ -3,13 +3,38 @@ import Icon from '@mdi/react';
 import { Card, CardHeader, IconButton } from '@mui/material';
 
 interface EditDeleteStubCardProps {
+  /*
+   * title of the card
+   */
   header: string;
+
+  /*
+   * sub header text of the card
+   */
   subHeader: string;
+
+  /*
+   * edit handler - undefined prevents edit action from rendering
+   */
   onClickEdit?: () => void;
+
+  /*
+   * delete handler - undefined prevents delete action from rendering
+   */
   onClickDelete?: () => void;
 }
 
-export const EditDeleteStubCard = ({ header, subHeader, onClickEdit, onClickDelete }: EditDeleteStubCardProps) => {
+/**
+ * Renders a card with title and sub header text with additional edit / delete controls inline
+ *
+ * @param {EditDeleteStubCardProps} props
+ *
+ * @return {*}
+ *
+ **/
+
+export const EditDeleteStubCard = (props: EditDeleteStubCardProps) => {
+  const { header, subHeader, onClickEdit, onClickDelete } = props;
   return (
     <Card
       variant="outlined"

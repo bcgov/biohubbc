@@ -1,6 +1,4 @@
 import Collapse from '@mui/material/Collapse';
-// import Box from '@mui/material/Box';
-// import Typography from '@mui/material/Typography';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
@@ -12,16 +10,38 @@ import { TransitionGroup } from 'react-transition-group';
 import { setMessageSnackbar } from 'utils/Utils';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
-// import Paper from '@mui/material/Paper';
 
 export type SubHeaderData = Record<string, string | number | undefined>;
 
 interface AnimalSectionDataCardsProps {
+  /*
+   * section selected from the vertical nav bar ie: 'General'
+   */
   section: IAnimalSections;
+
+  /*
+   * handler for the card edit action, needs index of the selected card
+   */
   onEditClick: (idx: number) => void;
+
+  /*
+   * providing additional family information for rendering the family cards with english readable values
+   */
   allFamilies?: IFamily[];
 }
-export const AnimalSectionDataCards = ({ section, onEditClick, allFamilies }: AnimalSectionDataCardsProps) => {
+
+/**
+ * Renders animal data as cards for the selected section
+ *
+ * @param {AnimalSectionDataCardsProps} props
+ *
+ * @return {*}
+ *
+ **/
+
+export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
+  const { section, onEditClick, allFamilies } = props;
+
   const { submitForm, initialValues, isSubmitting, status } = useFormikContext<IAnimal>();
   const [canDisplaySnackbar, setCanDisplaySnackbar] = useState(false);
   const statusRef = useRef<string | undefined>();
