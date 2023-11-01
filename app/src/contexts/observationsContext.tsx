@@ -147,8 +147,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
 
-  // TODO rename this or inline it, since there are now nuemerous error dialogs spawned by this context.
-  const _showErrorDialog = useCallback(
+  const _showImportErrorDialog = useCallback(
     (textDialogProps?: Partial<IErrorDialogProps>) => {
       dialogContext.setErrorDialog({
         ...textDialogProps,
@@ -199,7 +198,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       .filter((observationRecords) => 'survey_observation_id' in observationRecords)
       .map((observationRecords) => (observationRecords as IObservationRecord).survey_observation_id);
 
-    return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds) // TODO
+    return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds)
       .then(() => {
         console.log('.then()')
         _setPendingDeletionObservations([]);
@@ -220,7 +219,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
           onClose: () => dialogContext.setErrorDialog({ open: false }),
           dialogTitle: ObservationsTableI18N.removeRecordsErrorDialogTitle,
           dialogText: ObservationsTableI18N.removeRecordsErrorDialogText,
-          dialogError: error,
           open: true
         });
       });
@@ -250,26 +248,26 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
     const newRecord: IObservationTableRow = {
       id,
-      survey_observation_id: undefined, //null, @TODO remvoe these commented nulls
-      wldtaxonomic_units_id: undefined, //null,
-      survey_sample_site_id: undefined, //null,
-      survey_sample_method_id: undefined, //null,
-      survey_sample_period_id: undefined, //null,
-      count: undefined, //null,
-      observation_date: undefined, //null,
-      observation_time: undefined, //null,
-      latitude: undefined, //null,
-      longitude: undefined, //null
+      survey_observation_id: undefined,
+      wldtaxonomic_units_id: undefined,
+      survey_sample_site_id: undefined,
+      survey_sample_method_id: undefined,
+      survey_sample_period_id: undefined,
+      count: undefined,
+      observation_date: undefined,
+      observation_time: undefined,
+      latitude: undefined,
+      longitude: undefined,
       _isUnsaved: true
     }
 
-    // todo
+    // Append new record to initial rows
     setInitialRows([...initialRows, newRecord]);
 
-    // todo
+    // Mark new row as unsaved
     markRecordWithUnsavedChanges(id);
 
-    // todo
+    // Set edit mode for the new row
     _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
   };
 
@@ -356,13 +354,13 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       } catch (error) {
         _revertAllRowsEditMode();
         const apiError = error as APIError;
-        _showErrorDialog({ dialogErrorDetails: apiError.errors });
+        _showImportErrorDialog({ dialogErrorDetails: apiError.errors });
         return;
       } finally {
         setIsSaving(false);
       }
     },
-    [_showErrorDialog, biohubApi.observation, projectId, refreshRecords, _revertAllRowsEditMode, surveyId]
+    [_showImportErrorDialog, biohubApi.observation, projectId, refreshRecords, _revertAllRowsEditMode, surveyId]
   );
 
   const getSelectedObservations: () => IObservationTableRow[] = useCallback(() => {
