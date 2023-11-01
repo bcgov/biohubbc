@@ -85,9 +85,6 @@ const ObservationComponent = () => {
         onClose={() => setShowImportDiaolog(false)}
         onUpload={handleImportObservations}
         FileUploadProps={{
-          fileHandler: (file) => {
-            console.log(file);
-          },
           dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED
         }}></FileUploadDialog>

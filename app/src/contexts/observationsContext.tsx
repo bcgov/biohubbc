@@ -179,7 +179,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         _pendingDeletionObservations.length === 1
           ? ObservationsTableI18N.removeSingleRecordButtonText
           : ObservationsTableI18N.removeMultipleRecordsButtonText,
-      noButtonProps: { color: 'primary', variant: 'outlined' },
+      noButtonProps: { color: 'primary', variant: 'outlined', disabled: false },
       noButtonLabel: 'Cancel',
       open: false,
       onYes: () => _commitDeleteObservationRecords(_pendingDeletionObservations),
@@ -198,39 +198,41 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       dialogContext.setYesNoDialog({
         ..._confirmDeletionDialogDefaultProps,
         open: true,
-        yesButtonProps: { ..._confirmDeletionDialogDefaultProps.yesButtonProps, loading: true }
+        yesButtonProps: { ..._confirmDeletionDialogDefaultProps.yesButtonProps, loading: true },
+        noButtonProps: { ..._confirmDeletionDialogDefaultProps.noButtonProps, disabled: true }
       });
 
       const deletingObservationIds = observationRecords
-        .filter((observationRecords) => 'survey_observation_id' in observationRecords)
-        .map((observationRecords) => (observationRecords as IObservationRecord).survey_observation_id);
+        .filter((observationRecord) => Boolean(observationRecord.survey_observation_id))
+        .map((observationRecord) => (observationRecord as IObservationRecord).survey_observation_id);
 
-      return biohubApi.observation
-        .deleteObservationRecords(projectId, surveyId, deletingObservationIds)
-        .then(() => {
-          _setPendingDeletionObservations([]);
-          setInitialRows(
-            initialRows.filter((row) => {
-              return observationRecords.every((record) => record.id !== row.id);
-            })
-          );
-        })
-        .catch(() => {
-          // Close yes-no dialog
-          dialogContext.setYesNoDialog({
-            ..._confirmDeletionDialogDefaultProps,
-            open: false
-          });
+      try {
+        if (deletingObservationIds.length > 0) {
+          await biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds);
+        }
 
-          // Show error dialog
-          dialogContext.setErrorDialog({
-            onOk: () => dialogContext.setErrorDialog({ open: false }),
-            onClose: () => dialogContext.setErrorDialog({ open: false }),
-            dialogTitle: ObservationsTableI18N.removeRecordsErrorDialogTitle,
-            dialogText: ObservationsTableI18N.removeRecordsErrorDialogText,
-            open: true
-          });
+        _setPendingDeletionObservations([]);
+        setInitialRows(
+          initialRows.filter((row) => {
+            return observationRecords.every((record) => record.id !== row.id);
+          })
+        );
+      } catch {
+        // Close yes-no dialog
+        dialogContext.setYesNoDialog({
+          ..._confirmDeletionDialogDefaultProps,
+          open: false
         });
+
+        // Show error dialog
+        dialogContext.setErrorDialog({
+          onOk: () => dialogContext.setErrorDialog({ open: false }),
+          onClose: () => dialogContext.setErrorDialog({ open: false }),
+          dialogTitle: ObservationsTableI18N.removeRecordsErrorDialogTitle,
+          dialogText: ObservationsTableI18N.removeRecordsErrorDialogText,
+          open: true
+        });
+      }
     },
     [initialRows, _confirmDeletionDialogDefaultProps]
   );
