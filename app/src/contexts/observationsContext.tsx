@@ -199,7 +199,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
       .filter((observationRecords) => 'survey_observation_id' in observationRecords)
       .map((observationRecords) => (observationRecords as IObservationRecord).survey_observation_id);
 
-    return biohubApi.observation.deleteObservationRecords(projectId, surveyId, [1]) // TODO
+    return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds) // TODO
       .then(() => {
         console.log('.then()')
         _setPendingDeletionObservations([]);
