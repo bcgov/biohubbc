@@ -2,9 +2,7 @@ import { PublishStatus } from 'constants/attachments';
 import { PROJECT_PERMISSION, PROJECT_ROLE } from 'constants/roles';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
-import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
-import { Feature } from 'geojson';
 
 export interface IGetProjectAttachment {
   id: number;
@@ -127,11 +125,7 @@ export interface IProjectUserRoles {
  * @export
  * @interface ICreateProjectRequest
  */
-export type ICreateProjectRequest = IProjectDetailsForm &
-  IProjectObjectivesForm &
-  IProjectLocationForm &
-  IProjectIUCNForm &
-  IProjectUserRoles;
+export type ICreateProjectRequest = IProjectDetailsForm & IProjectObjectivesForm & IProjectIUCNForm & IProjectUserRoles;
 
 /**
  * Create project response object.
@@ -160,7 +154,6 @@ export enum UPDATE_GET_ENTITIES {
 export interface IGetProjectForUpdateResponse {
   project?: IGetProjectForUpdateResponseDetails;
   objectives?: IGetProjectForUpdateResponseObjectives;
-  location?: IGetProjectForUpdateResponseLocation;
   iucn?: IGetProjectForUpdateResponseIUCN;
   participants?: IGetProjectParticipant[];
 }
@@ -174,12 +167,6 @@ export interface IGetProjectForUpdateResponseDetails {
 }
 export interface IGetProjectForUpdateResponseObjectives {
   objectives: string;
-  revision_count: number;
-}
-
-export interface IGetProjectForUpdateResponseLocation {
-  location_description: string;
-  geometry: Feature[];
   revision_count: number;
 }
 
@@ -222,7 +209,6 @@ export interface IGetProjectForViewResponse {
 export interface ProjectViewObject {
   project: IGetProjectForViewResponseDetails;
   objectives: IGetProjectForViewResponseObjectives;
-  location: IGetProjectForViewResponseLocation;
   participants: IGetProjectParticipant[];
   iucn: IGetProjectForViewResponseIUCN;
 }
@@ -237,11 +223,6 @@ export interface IGetProjectForViewResponseDetails {
 }
 export interface IGetProjectForViewResponseObjectives {
   objectives: string;
-}
-
-export interface IGetProjectForViewResponseLocation {
-  location_description: string;
-  geometry: Feature[];
 }
 
 export interface IGetProjectParticipant {

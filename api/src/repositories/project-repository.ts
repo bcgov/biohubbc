@@ -2,18 +2,16 @@ import { isArray } from 'lodash';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
-import { PutLocationData, PutObjectivesData, PutProjectData } from '../models/project-update';
+import { PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
   GetAttachmentsData,
   GetIUCNClassificationData,
-  GetLocationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IProjectAdvancedFilters,
   ProjectData,
   ProjectListData
 } from '../models/project-view';
-import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -153,7 +151,6 @@ export class ProjectRepository extends BaseRepository {
         p.uuid,
         p.name as project_name,
         p.objectives,
-        p.location_description,
         p.start_date,
         p.end_date,
         p.comments,
@@ -211,27 +208,6 @@ export class ProjectRepository extends BaseRepository {
     }
 
     return new GetObjectivesData(result);
-  }
-
-  async getLocationData(projectId: number): Promise<GetLocationData> {
-    const sqlStatement = SQL`
-      SELECT
-        p.location_description,
-        p.geojson as geometry,
-        p.revision_count
-      FROM
-        project p
-      WHERE
-        p.project_id = ${projectId}
-      GROUP BY
-        p.location_description,
-        p.geojson,
-        p.revision_count;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return new GetLocationData(response.rows);
   }
 
   async getIUCNClassificationData(projectId: number): Promise<GetIUCNClassificationData> {
@@ -321,48 +297,17 @@ export class ProjectRepository extends BaseRepository {
       INSERT INTO project (
         name,
         objectives,
-        location_description,
         start_date,
         end_date,
-        comments,
-        geojson,
-        geography
+        comments
       ) VALUES (
         ${postProjectData.project.name},
         ${postProjectData.objectives.objectives},
-        ${postProjectData.location.location_description},
         ${postProjectData.project.start_date},
         ${postProjectData.project.end_date},
-        ${postProjectData.project.comments},
-        ${JSON.stringify(postProjectData.location.geometry)}
-    `;
-
-    if (postProjectData?.location?.geometry?.length) {
-      const geometryCollectionSQL = generateGeometryCollectionSQL(postProjectData.location.geometry);
-
-      sqlStatement.append(SQL`
-        ,public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-      sqlStatement.append(geometryCollectionSQL);
-
-      sqlStatement.append(SQL`
-        , 4326)))
-      `);
-    } else {
-      sqlStatement.append(SQL`
-        ,null
-      `);
-    }
-
-    sqlStatement.append(SQL`
+        ${postProjectData.project.comments}
       )
-      RETURNING
-        project_id as id;
-    `);
-
+      RETURNING project_id as id;`;
     const response = await this.connection.sql(sqlStatement);
 
     const result = response?.rows?.[0];
@@ -473,11 +418,10 @@ export class ProjectRepository extends BaseRepository {
   async updateProjectData(
     projectId: number,
     project: PutProjectData | null,
-    location: PutLocationData | null,
     objectives: PutObjectivesData | null,
     revision_count: number
   ): Promise<void> {
-    if (!project && !location && !objectives) {
+    if (!project && !objectives) {
       // Nothing to update
       throw new ApiExecuteSQLError('Nothing to update for Project Data', [
         'ProjectRepository->updateProjectData',
@@ -493,33 +437,6 @@ export class ProjectRepository extends BaseRepository {
       sqlSetStatements.push(SQL`name = ${project.name}`);
       sqlSetStatements.push(SQL`start_date = ${project.start_date}`);
       sqlSetStatements.push(SQL`end_date = ${project.end_date}`);
-    }
-
-    if (location) {
-      sqlSetStatements.push(SQL`location_description = ${location.location_description}`);
-      sqlSetStatements.push(SQL`geojson = ${JSON.stringify(location.geometry)}`);
-
-      const geometrySQLStatement = SQL`geography = `;
-
-      if (location?.geometry?.length) {
-        const geometryCollectionSQL = generateGeometryCollectionSQL(location.geometry);
-
-        geometrySQLStatement.append(SQL`
-        public.geography(
-          public.ST_Force2D(
-            public.ST_SetSRID(
-      `);
-
-        geometrySQLStatement.append(geometryCollectionSQL);
-
-        geometrySQLStatement.append(SQL`
-        , 4326)))
-      `);
-      } else {
-        geometrySQLStatement.append(SQL`null`);
-      }
-
-      sqlSetStatements.push(geometrySQLStatement);
     }
 
     if (objectives) {

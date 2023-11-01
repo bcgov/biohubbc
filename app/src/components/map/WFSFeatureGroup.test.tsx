@@ -1,5 +1,5 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { MapContainer } from 'react-leaflet';
+import { MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { SetMapBounds } from './components/Bounds';
 import WFSFeatureGroup from './WFSFeatureGroup';
@@ -57,7 +57,12 @@ describe('WFSFeatureGroup', () => {
     const onSelectGeometry = jest.fn();
 
     const { asFragment } = render(
-      <MapContainer id={'test-map'} style={{ height: '100%' }} center={[55, -128]} zoom={10} scrollWheelZoom={false}>
+      <LeafletMapContainer
+        id={'test-map'}
+        style={{ height: '100%' }}
+        center={[55, -128]}
+        zoom={10}
+        scrollWheelZoom={false}>
         <SetMapBounds bounds={initialBounds} />
         <WFSFeatureGroup
           typeName="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW"
@@ -68,7 +73,7 @@ describe('WFSFeatureGroup', () => {
           onSelectGeometry={onSelectGeometry}
           existingGeometry={[]}
         />
-      </MapContainer>
+      </LeafletMapContainer>
     );
 
     await waitFor(() => {

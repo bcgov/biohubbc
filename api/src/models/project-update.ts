@@ -1,4 +1,3 @@
-import { Feature } from 'geojson';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-update');
@@ -32,30 +31,6 @@ export class PutObjectivesData {
     this.revision_count = obj?.revision_count ?? null;
   }
 }
-
-export class PutLocationData {
-  location_description: string;
-  geometry: Feature[];
-  revision_count: number;
-
-  constructor(obj?: any) {
-    defaultLog.debug({
-      label: 'PutLocationData',
-      message: 'params',
-      obj: {
-        ...obj,
-        geometry: obj?.geometry?.map((item: any) => {
-          return { ...item, geometry: 'Too big to print' };
-        })
-      }
-    });
-
-    this.location_description = obj?.location_description;
-    this.geometry = (obj?.geometry?.length && obj.geometry) || [];
-    this.revision_count = obj?.revision_count ?? null;
-  }
-}
-
 export interface IPutIUCN {
   classification: number;
   subClassification1: number;

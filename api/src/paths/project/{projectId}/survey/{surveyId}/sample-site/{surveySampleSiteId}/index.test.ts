@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
+import { ObservationService } from '../../../../../../../services/observation-service';
 import { SampleLocationService } from '../../../../../../../services/sample-location-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import * as delete_survey_sample_site_record from './index';
@@ -198,6 +199,10 @@ describe('deleteSurveySampleSiteRecord', () => {
   it('should work', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
+    const getObservationsCountBySampleSiteIdStub = sinon
+      .stub(ObservationService.prototype, 'getObservationsCountBySampleSiteId')
+      .resolves({ observationCount: 0 });
+
     const deleteSampleLocationRecordStub = sinon
       .stub(SampleLocationService.prototype, 'deleteSampleLocationRecord')
       .resolves();
@@ -219,5 +224,6 @@ describe('deleteSurveySampleSiteRecord', () => {
 
     expect(mockRes.status).to.have.been.calledWith(204);
     expect(deleteSampleLocationRecordStub).to.have.been.calledOnce;
+    expect(getObservationsCountBySampleSiteIdStub).to.have.been.calledOnce;
   });
 });

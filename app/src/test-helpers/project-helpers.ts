@@ -10,10 +10,6 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
       end_date: '2021-02-26',
       completion_status: 'Active'
     },
-    location: {
-      location_description: 'Location description',
-      geometry: []
-    },
     objectives: {
       objectives: 'Et ad et in culpa si'
     },

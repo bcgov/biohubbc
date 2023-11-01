@@ -1,12 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import {
-  PostIUCNData,
-  PostLocationData,
-  PostObjectivesData,
-  PostProjectData,
-  PostProjectObject
-} from './project-create';
+import { PostIUCNData, PostObjectivesData, PostProjectData, PostProjectObject } from './project-create';
 
 describe('PostProjectObject', () => {
   describe('No values provided', () => {
@@ -22,10 +16,6 @@ describe('PostProjectObject', () => {
 
     it('sets objectives', function () {
       expect(projectPostObject.objectives).to.equal(null);
-    });
-
-    it('sets location', function () {
-      expect(projectPostObject.location).to.equal(null);
     });
 
     it('sets iucn', function () {
@@ -162,61 +152,6 @@ describe('PostIUCNData', () => {
 
     it('sets classification details', function () {
       expect(projectIUCNData.classificationDetails).to.eql(obj.classificationDetails);
-    });
-  });
-});
-
-describe('PostLocationData', () => {
-  describe('No values provided', () => {
-    let projectLocationData: PostLocationData;
-
-    before(() => {
-      projectLocationData = new PostLocationData(null);
-    });
-
-    it('sets location_description', function () {
-      expect(projectLocationData.location_description).to.be.undefined;
-    });
-
-    it('sets geometry', function () {
-      expect(projectLocationData.geometry).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectLocationData: PostLocationData;
-
-    const obj = {
-      location_description: 'a location description',
-      geometry: [
-        {
-          type: 'Polygon',
-          coordinates: [
-            [
-              [-128, 55],
-              [-128, 55.5],
-              [-128, 56],
-              [-126, 58],
-              [-128, 55]
-            ]
-          ],
-          properties: {
-            name: 'Biohub Islands'
-          }
-        }
-      ]
-    };
-
-    before(() => {
-      projectLocationData = new PostLocationData(obj);
-    });
-
-    it('sets location_description', function () {
-      expect(projectLocationData.location_description).to.equal('a location description');
-    });
-
-    it('sets the geometry', function () {
-      expect(projectLocationData.geometry).to.eql(obj.geometry);
     });
   });
 });

@@ -3,12 +3,19 @@ import Icon from '@mdi/react';
 import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import { square } from '@turf/turf';
-import MapContainer, { INonEditableGeometries } from 'components/map/MapContainer';
+import BaseLayerControls from 'components/map/components/BaseLayerControls';
+import { SetMapBounds } from 'components/map/components/Bounds';
+import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
+import { MapBaseCss } from 'components/map/components/MapBaseCss';
+import { MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { Position } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
 import { useCallback, useContext, useMemo, useState } from 'react';
+import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateFeatureBoundingBox, latLngBoundsFromBoundingBox } from 'utils/mapBoundaryUploadHelpers';
+import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
+import { v4 as uuidv4 } from 'uuid';
 
 const ObservationsMap = () => {
   const observationsContext = useContext(ObservationsContext);
@@ -66,17 +73,34 @@ const ObservationsMap = () => {
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(getDefaultMapBounds());
-  }, [surveyObservations]);
+  }, [getDefaultMapBounds]);
 
   return (
-    <Box position="relative" height={600}>
-      <MapContainer
-        mapId="survey_observations_map"
-        bounds={bounds}
-        scrollWheelZoom={false}
-        nonEditableGeometries={surveyObservations}
+    <Box position="relative">
+      <LeafletMapContainer
+        data-testid="leaflet-survey_observations_map"
+        id="survey_observations_map"
         zoom={6}
-      />
+        center={MAP_DEFAULT_CENTER}
+        scrollWheelZoom={false}
+        fullscreenControl={true}
+        style={{ height: 600 }}>
+        <MapBaseCss />
+        <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={false} />
+        <SetMapBounds bounds={bounds} />
+
+        {surveyObservations?.map((nonEditableGeo: INonEditableGeometries) => (
+          <GeoJSON
+            key={uuidv4()}
+            data={nonEditableGeo.feature}
+            pointToLayer={(feature, latlng) => coloredPoint({ feature, latlng })}>
+            {nonEditableGeo.popupComponent}
+          </GeoJSON>
+        ))}
+        <LayersControl position="bottomright">
+          <BaseLayerControls />
+        </LayersControl>
+      </LeafletMapContainer>
       {surveyObservations.length > 0 && (
         <Box position="absolute" top="126px" left="10px" zIndex="999">
           <IconButton

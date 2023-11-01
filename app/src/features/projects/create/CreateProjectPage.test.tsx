@@ -2,7 +2,6 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
 import { ProjectIUCNFormInitialValues } from 'features/projects/components/ProjectIUCNForm';
-import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
@@ -101,9 +100,6 @@ describe('CreateProjectPage', () => {
       expect(getByText('Create New Project')).toBeVisible();
 
       expect(getByText('General Information')).toBeVisible();
-
-      // TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form temporarily, while its decided where exactly project/survey locations should be defined
-      // expect(getByText('Location and Boundary')).toBeVisible();
     });
   });
 
@@ -178,7 +174,6 @@ describe('CreateProjectPage', () => {
           data: {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
-            location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
@@ -203,7 +198,6 @@ describe('CreateProjectPage', () => {
           data: {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
-            location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
@@ -236,7 +230,6 @@ describe('CreateProjectPage', () => {
           data: {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
-            location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
@@ -276,7 +269,6 @@ describe('CreateProjectPage', () => {
           data: {
             project: ProjectDetailsFormInitialValues.project,
             objectives: ProjectObjectivesFormInitialValues.objectives,
-            location: ProjectLocationFormInitialValues.location,
             iucn: ProjectIUCNFormInitialValues.iucn
           }
         });
@@ -318,7 +310,6 @@ describe('CreateProjectPage', () => {
             project_name: 'Test name'
           },
           objectives: ProjectObjectivesFormInitialValues.objectives,
-          location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn
         }
       });
@@ -406,7 +397,6 @@ describe('CreateProjectPage', () => {
         data: {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
-          location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
           participants: AddProjectParticipantsFormInitialValues.participants
         }
@@ -485,7 +475,6 @@ describe('CreateProjectPage', () => {
             end_date: ''
           },
           objectives: { objectives: 'Draft objectives' },
-          location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
           participants: [
             {
@@ -507,7 +496,6 @@ describe('CreateProjectPage', () => {
         data: {
           project: ProjectDetailsFormInitialValues.project,
           objectives: ProjectObjectivesFormInitialValues.objectives,
-          location: ProjectLocationFormInitialValues.location,
           iucn: ProjectIUCNFormInitialValues.iucn,
           participants: AddProjectParticipantsFormInitialValues.participants
         }
@@ -550,7 +538,6 @@ describe('CreateProjectPage', () => {
             end_date: ''
           },
           objectives: { objectives: 'my new Draft objectives' },
-          location: { location_description: '', geometry: [] },
           iucn: { classificationDetails: [] },
           participants: [
             {

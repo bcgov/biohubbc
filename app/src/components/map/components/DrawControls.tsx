@@ -1,55 +1,24 @@
 import { useLeafletContext } from '@react-leaflet/core';
-import YesNoDialog from 'components/dialog/YesNoDialog';
 import { Feature } from 'geojson';
-import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import React, { useEffect, useRef, useState } from 'react';
-
-/*
- * Supported draw events.
- */
-const eventHandlers = {
-  onCreated: 'draw:created',
-  onEdited: 'draw:edited',
-  onDrawStart: 'draw:drawstart',
-  onDrawStop: 'draw:drawstop',
-  onDrawVertex: 'draw:drawvertex',
-  onEditStart: 'draw:editstart',
-  onEditMove: 'draw:editmove',
-  onEditResize: 'draw:editresize',
-  onEditVertex: 'draw:editvertex',
-  onEditStop: 'draw:editstop',
-  onDeleted: 'draw:deleted',
-  onDeleteStart: 'draw:deletestart',
-  onDeleteStop: 'draw:deletestop',
-  onMounted: 'draw:mounted'
-};
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 
 /**
- * Custom subset of `L.Control.DrawConstructorOptions` that omits `edit.Feature` as this will be added automatically
+ * Custom subset of `L.Control.DrawConstructorOptions` that omits `edit.featureGroup` as this will be added automatically
  * by `DrawControls`.
  *
  * @export
  * @interface IDrawControlsOptions
  */
 export interface IDrawControlsOptions {
-  position?: L.Control.DrawConstructorOptions['position'];
-  draw?: L.Control.DrawConstructorOptions['draw'];
-  edit?: Omit<L.Control.DrawConstructorOptions['edit'], 'Feature'>;
+  position?: L.ControlPosition;
+  draw?: L.Control.DrawOptions;
+  edit?: Omit<L.Control.EditOptions, 'featureGroup'>;
 }
 
-export type IDrawControlsOnChange = (features: Feature[]) => void;
-
 export interface IDrawControlsProps {
-  /**
-   * Initial features to add to the map. These features will be editable.
-   *
-   * @type {Feature[]}
-   * @memberof IDrawControlsProps
-   */
-  initialFeatures?: Feature[];
   /**
    * Options to control the draw/edit UI controls.
    *
@@ -58,73 +27,59 @@ export interface IDrawControlsProps {
    */
   options?: IDrawControlsOptions;
   /**
-   * Callback triggered anytime a feature is added or updated or removed.
+   * Fired each time an item is drawn (a layer is added).
    *
-   * @type {IDrawControlsOnChange}
    * @memberof IDrawControlsProps
    */
-  onChange?: IDrawControlsOnChange;
+  onLayerAdd: (event: L.DrawEvents.Created, leaflet_id: number) => void;
   /**
-   * Clear any previously drawn features (layers) before drawing the next one.
-   * The result is that only 1 feature will be shown at a time.
+   * Fired each time an item (layer) is edited.
    *
-   * @type {boolean}
    * @memberof IDrawControlsProps
    */
-  clearOnDraw?: boolean;
+  onLayerEdit: (event: L.DrawEvents.Edited) => void;
   /**
-   * If true, a modal will appear to confirm deletions.
+   * Fired each time an item (layer) is deleted.
+   *
+   * @memberof IDrawControlsProps
    */
-  confirmDeletion?: boolean;
+  onLayerDelete: (event: L.DrawEvents.Deleted) => void;
+}
+
+export interface IDrawControlsRef {
+  /**
+   * Adds a GeoJson feature to a new layer in the draw controls layer group.
+   *
+   * @memberof IDrawControlsRef
+   */
+  addLayer: (feature: Feature, layerId: (id: number) => void) => void;
+
+  deleteLayer: (layerId: number) => void;
 }
 
 /**
- * @deprecated Prefer using `DrawControls2` moving forward. The existing MapContainer was designed to be a one component fits all solution
- * but that has become difficult to maintain. The existing component will be phased out and replaced with smaller for use case specific map components.
+ * A component to add draw controls to a map.
+ * IDrawControlsRef allows other components outside of the map context to interact with layers on the map
  *
- * These draw controls have a lot of assumptions based on how the MapContainer was designed and built
+ * The props provide callbacks and options to interact with the draw controls
  */
-const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (props) => {
-  const context = useLeafletContext();
-  const [deleteEvent, setDeleteEvent] = useState<L.LeafletEvent | null>(null);
-  const showDeleteModal = Boolean(deleteEvent);
+const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps>((props, ref) => {
+  const { options, onLayerDelete, onLayerEdit, onLayerAdd } = props;
+
+  const { map, layerContainer } = useLeafletContext();
 
   /**
    * Fetch the layer used by the draw controls.
    *
    * @return {*}  {L.FeatureGroup<any>}
    */
-  const getFeatureGroup = () => {
-    const container = context.layerContainer;
-
-    if (!container || !(container instanceof L.FeatureGroup)) {
-      throw new Error('Failed to get map layer');
+  const getFeatureGroup = useCallback(() => {
+    if (!layerContainer || !(layerContainer instanceof L.FeatureGroup)) {
+      throw new Error('Failed to get draw feature group');
     }
 
-    return container;
-  };
-
-  /**
-   * Collects all current feature layers, and calls `props.onChange`.
-   * Adds `radius` to the properties if the source feature is a circle type.
-   */
-  const handleFeatureUpdate = () => {
-    const container = getFeatureGroup();
-
-    const features: Feature[] = [];
-
-    container.getLayers().forEach((layer: any) => {
-      const geoJSON = layer.toGeoJSON();
-
-      if (layer._mRadius) {
-        geoJSON.properties.radius = layer.getRadius();
-      }
-
-      features.push(geoJSON);
-    });
-
-    props.onChange?.([...features]);
-  };
+    return layerContainer;
+  }, [layerContainer]);
 
   /**
    * Build and return a drawing map control.
@@ -132,19 +87,20 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
    * @return {*}  {L.Control.Draw}
    */
   const getDrawControls = (): L.Control.Draw => {
-    const options: L.Control.DrawConstructorOptions = {
+    const featureGroup = getFeatureGroup();
+
+    const drawOptions: L.Control.DrawConstructorOptions = {
       edit: {
-        ...props.options?.edit,
-        // Add FeatureGroup automatically
-        featureGroup: getFeatureGroup()
+        ...options?.edit,
+        featureGroup: featureGroup
       }
     };
 
-    options.draw = { ...props.options?.draw };
+    drawOptions.draw = { ...options?.draw };
 
-    options.position = props.options?.position || 'topright';
+    drawOptions.position = drawOptions?.position || 'topright';
 
-    return new L.Control.Draw(options);
+    return new L.Control.Draw(drawOptions);
   };
 
   /**
@@ -152,113 +108,84 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
    *
    * @param {L.DrawEvents.Created} event
    */
-  const onDrawCreate = (event: L.DrawEvents.Created) => {
-    const container = getFeatureGroup();
+  const onDrawCreate = useCallback(
+    (event: L.DrawEvents.Created) => {
+      const featureGroup = getFeatureGroup();
+      featureGroup.addLayer(event.layer);
 
-    if (props.clearOnDraw) {
-      // Clear previous layers
-      container.clearLayers();
-    }
-
-    container.addLayer(event.layer);
-    handleFeatureUpdate();
-  };
+      onLayerAdd(event, L.stamp(event.layer));
+    },
+    [getFeatureGroup, onLayerAdd]
+  );
 
   /**
-   * Handle edit/delete events.
+   * Handle edit events.
    */
-  const onDrawEditDelete = (_event?: L.LeafletEvent) => {
-    handleFeatureUpdate();
-  };
+  const onDrawEdit = useCallback(
+    (event: L.DrawEvents.Edited) => {
+      onLayerEdit(event);
+    },
+    [onLayerEdit]
+  );
 
   /**
-   * Registers/draws features.
-   *
-   * @param {Feature[]} [features]
-   * @return {*}
+   * Handle delete events.
    */
-  const drawInitialFeatures = () => {
-    const features: Feature[] = props.initialFeatures || [];
-
-    const container = getFeatureGroup();
-
-    container.clearLayers();
-
-    features?.forEach((item: Feature) => {
-      L.geoJSON(item, {
-        pointToLayer: (feature, latlng) => {
-          if (feature.properties?.radius) {
-            return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
-          }
-
-          return new L.Marker([latlng.lat, latlng.lng]);
-        },
-        onEachFeature: function (_feature, layer) {
-          container.addLayer(layer);
-        }
-      });
-    });
-  };
-
-  const cancelRemoveFeatures = () => {
-    setDeleteEvent(null);
-    drawInitialFeatures();
-  };
+  const onDrawDelete = useCallback(
+    (event: L.DrawEvents.Deleted) => {
+      onLayerDelete(event);
+    },
+    [onLayerDelete]
+  );
 
   useEffect(() => {
-    const { map } = context;
+    // Remove any existing draw control event handlers
+    map.removeEventListener(L.Draw.Event.CREATED);
+    map.removeEventListener(L.Draw.Event.EDITED);
+    map.removeEventListener(L.Draw.Event.DELETED);
 
-    // Remove any existing event handlers
-    map.removeEventListener(eventHandlers.onCreated);
-    map.removeEventListener(eventHandlers.onEdited);
-    map.removeEventListener(eventHandlers.onDeleted);
-
-    // Register draw event handlers
-    map.on(eventHandlers.onCreated, onDrawCreate as L.LeafletEventHandlerFn);
-    map.on(eventHandlers.onEdited, onDrawEditDelete);
-    map.on(eventHandlers.onDeleted, (event) => {
-      if (props.confirmDeletion) {
-        setDeleteEvent(event);
-        return;
-      }
-      onDrawEditDelete(event);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.options, props.onChange, props.clearOnDraw]);
-
-  useDeepCompareEffect(() => {
-    drawInitialFeatures();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.initialFeatures]);
+    // Register draw control event handlers
+    map.on(L.Draw.Event.CREATED, onDrawCreate as L.LeafletEventHandlerFn);
+    map.on(L.Draw.Event.EDITED, onDrawEdit as L.LeafletEventHandlerFn);
+    map.on(L.Draw.Event.DELETED, onDrawDelete as L.LeafletEventHandlerFn);
+  }, [map, onDrawCreate, onDrawDelete, onDrawEdit]);
 
   const drawControlsRef = useRef(getDrawControls());
 
-  useDeepCompareEffect(() => {
-    const { map } = context;
-    // Update draw control
-    drawControlsRef.current.remove();
-    drawControlsRef.current = getDrawControls();
+  useEffect(() => {
+    // Add draw controls to the map
     drawControlsRef.current.addTo(map);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.options]);
+  }, [map]);
 
-  if (!props.confirmDeletion) {
-    return null;
-  }
+  // Populate the forward ref
+  useImperativeHandle(
+    ref,
+    () => ({
+      addLayer: (feature: Feature) => {
+        const featureGroup = getFeatureGroup();
 
-  return (
-    <YesNoDialog
-      dialogTitle="Delete Geometries"
-      dialogText="Are you sure you want to delete the selected geometries?"
-      open={showDeleteModal}
-      onClose={() => cancelRemoveFeatures()}
-      onNo={() => cancelRemoveFeatures()}
-      onYes={() => {
-        onDrawEditDelete(deleteEvent || undefined);
-        setDeleteEvent(null);
-      }}
-    />
+        L.geoJSON(feature, {
+          pointToLayer: (feature, latlng) => {
+            if (feature.properties?.radius) {
+              return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
+            }
+
+            return new L.Marker([latlng.lat, latlng.lng]);
+          },
+          onEachFeature: function (_feature, layer) {
+            featureGroup.addLayer(layer);
+          }
+        });
+      },
+      deleteLayer: (layerId: number) => {
+        const featureGroup = getFeatureGroup();
+        featureGroup.removeLayer(layerId);
+      }
+    }),
+    [getFeatureGroup]
   );
-};
+
+  return null;
+});
 
 export default DrawControls;

@@ -1,4 +1,4 @@
-import { Feature } from '@turf/helpers';
+import { Feature, Geometry, GeometryCollection, Properties } from '@turf/helpers';
 import { IDBConnection } from '../database/db';
 import {
   SampleLocationRecord,
@@ -52,11 +52,26 @@ export class SampleLocationService extends DBService {
    * @memberof SampleLocationService
    */
   async deleteSampleLocationRecord(surveySampleSiteId: number): Promise<SampleLocationRecord> {
+    const sampleMethodService = new SampleMethodService(this.connection);
+
+    // Delete all methods associated with the sample location
+    const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+    for (const item of existingSampleMethods) {
+      await sampleMethodService.deleteSampleMethodRecord(item.survey_sample_method_id);
+    }
+
     return this.sampleLocationRepository.deleteSampleLocationRecord(surveySampleSiteId);
   }
 
   /**
    * Inserts survey Sample Locations.
+   *
+   * It is a business requirement to use strings from the properties field of provided geometry
+   * to determine the name and description of sampling locations when possible.
+   *
+   * If there is no string contained in the fields 'name', 'label' to be used in our db,
+   * the system will auto-generate a name of 'Sampling Site #x', where x is taken from the greatest value
+   * integer id + 1 in the db.
    *
    * @param {PostSampleLocations} sampleLocations
    * @return {*}  {Promise<SampleLocationRecord[]>}
@@ -64,13 +79,24 @@ export class SampleLocationService extends DBService {
    */
   async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleLocationRecord[]> {
     const methodService = new SampleMethodService(this.connection);
-
+    const shapeFileFeatureName = (geometry: Feature<Geometry | GeometryCollection, Properties>): string | undefined => {
+      const nameKey = Object.keys(geometry.properties ?? {}).find(
+        (key) => key.toLowerCase() === 'name' || key.toLowerCase() === 'label'
+      );
+      return nameKey && geometry.properties ? geometry.properties[nameKey].substring(0, 50) : undefined;
+    };
+    const shapeFileFeatureDesc = (geometry: Feature<Geometry | GeometryCollection, Properties>): string | undefined => {
+      const descKey = Object.keys(geometry.properties ?? {}).find(
+        (key) => key.toLowerCase() === 'desc' || key.toLowerCase() === 'descr' || key.toLowerCase() === 'des'
+      );
+      return descKey && geometry.properties ? geometry.properties[descKey].substring(0, 250) : undefined;
+    };
     // Create a sample location for each feature found
-    const promises = sampleLocations.survey_sample_sites.map((item, index) => {
+    const promises = sampleLocations.survey_sample_sites.map((item) => {
       const sampleLocation = {
         survey_id: sampleLocations.survey_id,
-        name: `Sample Site ${index + 1}`, // Business requirement to default the names to Sample Site # on creation
-        description: sampleLocations.description,
+        name: shapeFileFeatureName(item), // If this function returns undefined, insertSampleLocation will auto-generate a name instead.
+        description: shapeFileFeatureDesc(item) || sampleLocations.description,
         geojson: item
       };
 
