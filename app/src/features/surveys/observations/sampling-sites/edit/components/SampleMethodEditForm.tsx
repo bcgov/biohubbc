@@ -195,11 +195,16 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                           <ListItemIcon>
                             <Icon path={mdiCalendarRangeOutline} size={1} />
                           </ListItemIcon>
+
                           <ListItemText primary={`${period.start_date} to ${period.end_date}`} />
-                          <ListItemIcon>
-                            <Icon path={mdiClockOutline} size={1} />
-                          </ListItemIcon>
-                          <ListItemText primary={`${period.start_time} to ${period.end_time}`} />
+                          {period.start_time && (
+                            <>
+                              <ListItemIcon>
+                                <Icon path={mdiClockOutline} size={1} />
+                              </ListItemIcon>
+                              <ListItemText primary={`${period.start_time} to ${period.end_time || 'undefined'}`} />
+                            </>
+                          )}
                         </ListItem>
                       ))}
                     </List>

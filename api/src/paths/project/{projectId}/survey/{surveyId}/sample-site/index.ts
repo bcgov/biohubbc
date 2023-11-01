@@ -262,10 +262,12 @@ POST.apiDoc = {
                           type: 'string'
                         },
                         start_time: {
-                          type: 'string'
+                          type: 'string',
+                          nullable: true
                         },
                         end_time: {
-                          type: 'string'
+                          type: 'string',
+                          nullable: true
                         }
                       }
                     }

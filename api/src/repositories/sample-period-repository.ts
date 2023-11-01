@@ -70,8 +70,8 @@ export class SamplePeriodRepository extends BaseRepository {
         survey_sample_method_id=${sample.survey_sample_method_id},
         start_date=${sample.start_date},
         end_date=${sample.end_date},
-        start_time=${sample.start_time},
-        end_time=${sample.end_time}
+        start_time=${sample.start_time || null},
+        end_time=${sample.end_time || null}
         WHERE
         survey_sample_period_id = ${sample.survey_sample_period_id}
       RETURNING
@@ -108,8 +108,8 @@ export class SamplePeriodRepository extends BaseRepository {
       ${sample.survey_sample_method_id},
       ${sample.start_date},
       ${sample.end_date},
-      ${sample.start_time},
-      ${sample.end_time}
+      ${sample.start_time || null},
+      ${sample.end_time || null}
       )
       RETURNING
         *;`;

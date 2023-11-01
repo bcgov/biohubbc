@@ -1,6 +1,7 @@
 import {
   mdiCalendarRange,
   mdiChevronDown,
+  mdiClockOutline,
   mdiDotsVertical,
   mdiPencilOutline,
   mdiPlus,
@@ -331,6 +332,19 @@ const SamplingSiteList = () => {
                                     </ListItemIcon>
                                     <ListItemText
                                       primary={`${samplePeriod.start_date} to ${samplePeriod.end_date}`}></ListItemText>
+
+                                    {samplePeriod.start_time && (
+                                      <>
+                                        <ListItemIcon>
+                                          <Icon path={mdiClockOutline} size={1}></Icon>
+                                        </ListItemIcon>
+                                        <ListItemText
+                                          primary={`${samplePeriod.start_time} to ${
+                                            samplePeriod.end_time || 'undefined'
+                                          }`}
+                                        />
+                                      </>
+                                    )}
                                   </ListItem>
                                 );
                               })}

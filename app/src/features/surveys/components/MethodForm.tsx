@@ -178,8 +178,8 @@ const MethodForm = () => {
                               formikProps={formikProps}
                               startName={`periods[${index}].start_time`}
                               endName={`periods[${index}].end_time`}
-                              startRequired={true}
-                              endRequired={true}
+                              startRequired={false}
+                              endRequired={false}
                             />
                           </Box>
                         </Box>
