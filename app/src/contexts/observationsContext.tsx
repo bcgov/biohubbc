@@ -8,9 +8,10 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
+import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 
 export interface IObservationRecord {
   survey_observation_id: number;
@@ -140,6 +141,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   const [rowIdsToSave, setRowIdsToSave] = useState<GridRowId[]>([]);
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [_pendingDeletionObservations, _setPendingDeletionObservations] = useState<IObservationTableRow[]>([]);
 
   const _showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -159,23 +161,70 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     [dialogContext]
   );
 
-  const _promptConfirmDeleteDialog = useCallback((observationRecords: IObservationTableRow[]) => {
+  const _confirmDeletionDialogDefaultProps = useMemo((): Partial<IYesNoDialogProps> => ({
+    dialogTitle: _pendingDeletionObservations.length === 1
+      ? ObservationsTableI18N.removeSingleRecordDialogTitle
+      : ObservationsTableI18N.removeMultipleRecordsDialogTitle,
+    dialogText: _pendingDeletionObservations.length === 1
+      ? ObservationsTableI18N.removeSingleRecordDialogText
+      : ObservationsTableI18N.removeMultipleRecordsDialogText,
+    yesButtonProps: {
+      color: 'error',
+      loading: false
+    },
+    yesButtonLabel: _pendingDeletionObservations.length === 1
+      ? ObservationsTableI18N.removeSingleRecordButtonText
+      : ObservationsTableI18N.removeMultipleRecordsButtonText,
+    noButtonProps: { color: 'primary', variant: 'outlined' },
+    noButtonLabel: 'Cancel',
+    open: false,
+    onYes: () => _commitDeleteObservationRecords(_pendingDeletionObservations),
+    onClose: () => _setPendingDeletionObservations([]),
+    onNo: () => _setPendingDeletionObservations([])
+  }), [_pendingDeletionObservations]);
+
+  const _commitDeleteObservationRecords = useCallback(async (observationRecords: IObservationTableRow[]): Promise<void> => {
+    console.log('_commitDeleteObservationRecords()', observationRecords)
+    console.log({ initialRows })
+    if (!observationRecords.length) {
+      return;
+    }
+
     dialogContext.setYesNoDialog({
-      dialogTitle: ObservationsTableI18N.removeRecordDialogTitle,
-      dialogText: ObservationsTableI18N.removeRecordDialogText,
-      yesButtonProps: {
-        color: 'error',
-        loading: false
-      },
-      yesButtonLabel: 'Delete Record', // TODO should pluralize
-      noButtonProps: { color: 'primary', variant: 'outlined' },
-      noButtonLabel: 'Cancel',
+      ..._confirmDeletionDialogDefaultProps,
       open: true,
-      onYes: () => _commitDeleteObservationRecords(observationRecords),
-      onClose: _handleCloseConfirmDeleteDialog,
-      onNo: _handleCloseConfirmDeleteDialog
-    })
-  }, [dialogContext]);
+      yesButtonProps: { ..._confirmDeletionDialogDefaultProps.yesButtonProps, loading: true }
+    });
+
+    const deletingObservationIds = observationRecords
+      .filter((observationRecords) => 'survey_observation_id' in observationRecords)
+      .map((observationRecords) => (observationRecords as IObservationRecord).survey_observation_id);
+
+    return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds)
+      .then(() => {
+        console.log('.then()')
+        _setPendingDeletionObservations([]);
+        setInitialRows(initialRows.filter((row) => {
+          return observationRecords.every((record) => record.id !== row.id)
+        }));
+      })
+      .catch((error: any) => {
+        // Close yes-no dialog
+        dialogContext.setYesNoDialog({
+          ..._confirmDeletionDialogDefaultProps,
+          open: false
+        });
+        // @TODO replace with dialog popup
+        throw new Error(error);
+      })
+  }, [initialRows, _confirmDeletionDialogDefaultProps]);
+
+  const _promptConfirmDeleteDialog = useCallback(() => {
+    dialogContext.setYesNoDialog({
+      ..._confirmDeletionDialogDefaultProps,
+      open: true
+    });
+  }, [dialogContext, _confirmDeletionDialogDefaultProps]);
 
   observationsDataLoader.load();
 
@@ -184,40 +233,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     unsavedRecordSet.add(String(id));
 
     _setUnsavedRecordIds(Array.from(unsavedRecordSet));
-  };
-
-  const _commitDeleteObservationRecords = async (observationRecords: IObservationTableRow[]): Promise<void> => {
-    console.log('_commitDeleteObservationRecords()')
-    if (!observationRecords.length) {
-      return;
-    }
-
-    dialogContext.setYesNoDialog({ open: true, yesButtonProps: { loading: true } });
-    const deletingObservationIds = observationRecords
-      .filter((observationRecords) => 'survey_observation_id' in observationRecords)
-      .map((observationRecords) => (observationRecords as IObservationRecord).survey_observation_id);
-
-    return biohubApi.observation.deleteObservationRecords(projectId, surveyId, deletingObservationIds)
-      .then(() => {
-        console.log('.then()')
-        _handleCloseConfirmDeleteDialog();
-        setInitialRows(initialRows.filter((row) => {
-          return observationRecords.every((record) => record.id !== row.id)
-        }));
-      })
-      .catch((error: any) => {
-        // @TODO replace with dialog popup
-        throw new Error(error);
-      })
-      .finally(() => {
-        console.log('.finally()')
-        dialogContext.setYesNoDialog({ yesButtonProps: { loading: false } });
-      })
-  }
-
-  const _handleCloseConfirmDeleteDialog = () => {
-    console.log('_handleCloseConfirmDeleteDialog()');
-    dialogContext.setYesNoDialog({ open: false })
   };
 
   /**
@@ -354,6 +369,14 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   }, [rowSelectionModel])
 
   useEffect(() => {
+    if (_pendingDeletionObservations.length > 0) {
+      _promptConfirmDeleteDialog();
+    } else {
+      dialogContext.setYesNoDialog({ ..._confirmDeletionDialogDefaultProps, open: false })
+    }
+  }, [_pendingDeletionObservations])
+
+  useEffect(() => {
     if (!_muiDataGridApiRef?.current?.getRowModels) {
       // Data grid is not fully initialized
       return;
@@ -396,7 +419,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     refreshRecords,
     hasUnsavedChanges,
     markRecordWithUnsavedChanges,
-    deleteObservationRecords: _promptConfirmDeleteDialog,
+    deleteObservationRecords: _setPendingDeletionObservations,
     unsavedRecordIds,
     observationsDataLoader,
     _muiDataGridApiRef,
