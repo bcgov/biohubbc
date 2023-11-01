@@ -214,7 +214,11 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
           ..._confirmDeletionDialogDefaultProps,
           open: false
         });
-        // @TODO replace with dialog popup
+
+        // Show error dialog
+        dialogContext.setErrorDialog({
+          
+        })
         throw new Error(error);
       })
   }, [initialRows, _confirmDeletionDialogDefaultProps]);
