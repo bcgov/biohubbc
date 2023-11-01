@@ -310,7 +310,7 @@ export const SurveyAnimalsI18N = {
   animalCaptureHelp:
     'Capture Events are when animals have been deliberately handled or immobilized. All capture events should be reported by adding a Capture Event to a new or existing individual.',
   animalCaptureAddBtn: 'Add Capture Event',
-  animalCaptureReleaseRadio: 'This individual was released at a different location than where it was captured',
+  animalCaptureReleaseRadio: 'Individual was released at a different location',
   animalMarkingTitle: 'Markings',
   animalMarkingTitle2: 'Animal Marking',
   animalMarkingHelp:

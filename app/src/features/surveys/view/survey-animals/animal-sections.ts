@@ -216,7 +216,7 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
   },
   [SurveyAnimalsI18N.animalCaptureTitle]: {
     animalKeyName: 'captures',
-    addBtnText: 'Add Capture',
+    addBtnText: 'Add Capture Event',
     defaultFormValue: () => ({
       _id: v4(),
 
@@ -240,7 +240,7 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
       capture_location_id: undefined,
       release_location_id: undefined
     }),
-    dialogTitle: 'Capture',
+    dialogTitle: 'Capture Event',
     infoText: SurveyAnimalsI18N.animalCaptureHelp,
     mdiIcon: mdiSpiderWeb
   },

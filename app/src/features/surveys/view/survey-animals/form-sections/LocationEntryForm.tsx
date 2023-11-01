@@ -1,13 +1,20 @@
-import { Box, FormControlLabel, FormGroup, Grid, Checkbox, Tab, Tabs } from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
+import Box from '@mui/material/Box';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import CustomTextField from 'components/fields/CustomTextField';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
 import MapContainer from 'components/map/MapContainer';
 import { useFormikContext } from 'formik';
 import { LatLng } from 'leaflet';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, Fragment, useState } from 'react';
 import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
 import { coerceZero } from 'utils/Utils';
 import { getAnimalFieldName, IAnimal, ProjectionMode } from '../animal';
+import Typography from '@mui/material/Typography';
 
 export type LocationEntryFields<T> = {
   latitude: keyof T;
@@ -97,20 +104,20 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
 
   const renderLocationFields = (fields: LocationEntryFields<T>): JSX.Element => {
     return (
-      <Grid container spacing={3}>
+      <Fragment>       
         {value.projection_mode === 'wgs' ? (
-          <Grid container spacing={3} item sm={12}>
-            <Grid item xs={12}>
+          <Grid container item sm={12} spacing={3}>
+            <Grid item xs={6}>
               <CustomTextField
-                other={{ required: true }}
+                other={{ required: true, type: 'number' }}
                 label="Latitude"
                 name={getAnimalFieldName<T>(name, fields.latitude, index)}
                 handleBlur={handleBlur}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <CustomTextField
-                other={{ required: true }}
+                other={{ required: true, type: 'number' }}
                 label="Longitude"
                 name={getAnimalFieldName<T>(name, fields.longitude, index)}
                 handleBlur={handleBlur}
@@ -119,18 +126,18 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           </Grid>
 
         ) : (
-          <Grid container item spacing={3}>
-            <Grid item xs={12}>
+          <Grid container item sm={12} spacing={3}>
+            <Grid item xs={6}>
               <CustomTextField
-                other={{ required: true, size: 'medium' }}
+                other={{ required: true, type: 'number' }}
                 label="Northing"
                 name={getAnimalFieldName<T>(name, fields.utm_northing, index)}
                 handleBlur={handleBlur}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <CustomTextField
-                other={{ required: true, size: 'medium' }}
+                other={{ required: true, type: 'number' }}
                 label="Easting"
                 name={getAnimalFieldName<T>(name, fields.utm_easting, index)}
                 handleBlur={handleBlur}
@@ -141,13 +148,17 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
 
         <Grid item xs={12} sm={6}>
           <CustomTextField
-            other={{ required: true, type: 'number' }}
-            label="Coord Uncertainty"
+            other={{ 
+              required: true, 
+              type: 'number',
+              InputProps: { endAdornment: <Typography component="div" variant="subtitle2" color="textSecondary" sx={{ml: 2}}>METERS</Typography>}
+            }}
+            label="Coordinate Uncertainty"
             name={getAnimalFieldName<T>(name, fields.coordinate_uncertainty, index)}
             handleBlur={handleBlur}
           />
         </Grid>
-      </Grid>
+      </Fragment>
     );
   };
 
@@ -172,18 +183,21 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
 
   return (
     <>
-      <Tabs
-        value={tabState}
-        onChange={(e, newVal) => {
-          setTabState(newVal);
-        }}>
-        <Tab label="FORM" />
-        <Tab label="MAP" />
-      </Tabs>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={tabState}
+          onChange={(e, newVal) => {
+            setTabState(newVal);
+          }}>
+          <Tab label="FORM" />
+          <Tab label="MAP" />
+        </Tabs>
+      </Box>
 
       {tabState === 0 ? (
         <>
-          <Box py={2}>
+
+          <Box px={1} py={3}>
             <FormGroup>
               <FormControlLabel
                 control={
@@ -194,15 +208,26 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             </FormGroup>
           </Box>
 
-          {renderLocationFields(primaryLocationFields)}
-          {otherPrimaryFields}
+          <Box mb={3} component="fieldset">
+            <Typography component='legend'>Event Details</Typography>
+            <Grid container spacing={3}>
+              {renderLocationFields(primaryLocationFields)}
+              {otherPrimaryFields}
+            </Grid>
+          </Box>
+
           {secondaryLocationFields ? (
-            <>
-              {renderLocationFields(secondaryLocationFields)}
-              {otherSecondaryFields}
-            </>
+            <Box component="fieldset">
+              <Typography component='legend'>Release Event Details</Typography>
+              <Grid container spacing={3}>
+                {renderLocationFields(secondaryLocationFields)}
+                {otherSecondaryFields}
+              </Grid>
+            </Box>
           ) : null}
-        </>
+
+      </>
+
       ) : (
         <Grid container spacing={3}>
           <Grid item xs={12}>
