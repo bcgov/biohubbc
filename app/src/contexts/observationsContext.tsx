@@ -161,7 +161,7 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
     [dialogContext]
   );
 
-  const _confirmDeletionDialogDefaultProps = useMemo((): Partial<IYesNoDialogProps> => ({
+  const _confirmDeletionDialogDefaultProps: IYesNoDialogProps = useMemo(() => ({
     dialogTitle: _pendingDeletionObservations.length === 1
       ? ObservationsTableI18N.removeSingleRecordDialogTitle
       : ObservationsTableI18N.removeMultipleRecordsDialogTitle,
@@ -184,8 +184,6 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
   }), [_pendingDeletionObservations]);
 
   const _commitDeleteObservationRecords = useCallback(async (observationRecords: IObservationTableRow[]): Promise<void> => {
-    console.log('_commitDeleteObservationRecords()', observationRecords)
-    console.log({ initialRows })
     if (!observationRecords.length) {
       return;
     }
@@ -217,9 +215,8 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
 
         // Show error dialog
         dialogContext.setErrorDialog({
-          
-        })
-        throw new Error(error);
+          // TODO
+        });
       })
   }, [initialRows, _confirmDeletionDialogDefaultProps]);
 
