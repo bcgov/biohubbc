@@ -52,6 +52,14 @@ export class SampleLocationService extends DBService {
    * @memberof SampleLocationService
    */
   async deleteSampleLocationRecord(surveySampleSiteId: number): Promise<SampleLocationRecord> {
+    const sampleMethodService = new SampleMethodService(this.connection);
+
+    // Delete all methods associated with the sample location
+    const existingSampleMethods = await sampleMethodService.getSampleMethodsForSurveySampleSiteId(surveySampleSiteId);
+    for (const item of existingSampleMethods) {
+      await sampleMethodService.deleteSampleMethodRecord(item.survey_sample_method_id);
+    }
+
     return this.sampleLocationRepository.deleteSampleLocationRecord(surveySampleSiteId);
   }
 

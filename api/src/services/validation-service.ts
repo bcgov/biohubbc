@@ -332,15 +332,9 @@ export class ValidationService extends DBService {
 
     const surveyData = await this.surveyService.getSurveyById(surveyId);
 
-    const surveyFieldMethodId = surveyData.purpose_and_methodology.field_method_id;
     const surveySpecies = surveyData.species.focal_species;
 
-    return this.validationRepository.getTemplateMethodologySpeciesRecord(
-      templateName,
-      templateVersion,
-      surveyFieldMethodId,
-      surveySpecies
-    );
+    return this.validationRepository.getTemplateMethodologySpeciesRecord(templateName, templateVersion, surveySpecies);
   }
 
   async getValidationSchema(file: XLSXCSV, surveyId: number): Promise<any> {

@@ -201,9 +201,6 @@ POST.apiDoc = {
                 additional_details: {
                   type: 'string'
                 },
-                field_method_id: {
-                  type: 'number'
-                },
                 vantage_code_ids: {
                   type: 'array',
                   items: {
@@ -242,6 +239,7 @@ POST.apiDoc = {
               properties: {
                 strategies: {
                   type: 'array',
+                  minItems: 1,
                   items: {
                     type: 'string'
                   }

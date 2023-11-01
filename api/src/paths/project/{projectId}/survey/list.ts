@@ -170,17 +170,8 @@ GET.apiDoc = {
                     purpose_and_methodology: {
                       description: 'Survey Details',
                       type: 'object',
-                      required: [
-                        'field_method_id',
-                        'additional_details',
-                        'intended_outcome_id',
-                        'vantage_code_ids',
-                        'revision_count'
-                      ],
+                      required: ['additional_details', 'intended_outcome_id', 'vantage_code_ids', 'revision_count'],
                       properties: {
-                        field_method_id: {
-                          type: 'number'
-                        },
                         additional_details: {
                           type: 'string',
                           nullable: true

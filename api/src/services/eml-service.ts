@@ -982,10 +982,6 @@ export class EmlService extends DBService {
       description: {
         section: [
           {
-            title: 'Field Method',
-            para: codes.field_methods.find((code) => code.id === survey.purpose_and_methodology.field_method_id)?.name
-          },
-          {
             title: 'Vantage Codes',
             para: {
               itemizedlist: {
