@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
@@ -151,19 +152,19 @@ export class SamplePeriodRepository extends BaseRepository {
    * @memberof SamplePeriodRepository
    */
   async deleteSamplePeriods(periodsToDelete: number[]): Promise<SamplePeriodRecord[]> {
-    const sqlStatement = SQL`
-      DELETE FROM
-        survey_sample_period
-      WHERE
-        survey_sample_period_id IN (${periodsToDelete.join(',')})
-      RETURNING
-        *;
-    `;
+    const knex = getKnex();
 
-    const response = await this.connection.sql(sqlStatement, SamplePeriodRecord);
+    const sqlStatement = knex
+      .queryBuilder()
+      .delete()
+      .from('survey_sample_period')
+      .whereIn('survey_sample_period_id', periodsToDelete)
+      .returning('*');
+
+    const response = await this.connection.knex(sqlStatement, SamplePeriodRecord);
 
     if (!response?.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete sample period', [
+      throw new ApiExecuteSQLError('Failed to delete sample periods', [
         'SamplePeriodRepository->deleteSamplePeriods',
         'rows was null or undefined, expected rows != null'
       ]);

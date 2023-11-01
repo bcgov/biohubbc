@@ -66,12 +66,6 @@ const ProjectPage = () => {
                   <ProjectAttachments />
                 </Paper>
               </Box>
-              {/* TODO: (https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-161) Commenting out location form (map) temporarily, while its decided where exactly project/survey locations should be defined */}
-              {/* <Box>
-                <Paper elevation={0}>
-                  <LocationBoundary />
-                </Paper>
-              </Box> */}
             </Grid>
           </Grid>
         </Box>

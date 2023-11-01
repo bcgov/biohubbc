@@ -5,17 +5,18 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
-import DrawControls2, { IDrawControlsRef } from 'components/map/components/DrawControls2';
+import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog';
+import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import { IRegionOption, RegionSelector } from 'components/map/components/RegionSelector';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { layerContentHandlers, layerNameHandler } from 'components/map/wfs-utils';
 import WFSFeatureGroup from 'components/map/WFSFeatureGroup';
+import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { FormikContextType } from 'formik';
 import { Feature, FeatureCollection } from 'geojson';
 import L, { DrawEvents, LatLngBoundsExpression } from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
@@ -83,14 +84,16 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
       </Box>
       <Paper elevation={0} sx={{ overflow: 'hidden' }}>
         <LeafletMapContainer
-          data-testid={`leaflet-${map_id}`}
-          style={{ height: 500 }}
           id={map_id}
-          center={[55, -128]}
-          zoom={5}
+          data-testid={`leaflet-${map_id}`}
+          center={MAP_DEFAULT_CENTER}
+          zoom={MAP_DEFAULT_ZOOM}
+          style={{ height: 500 }}
           maxZoom={17}
           fullscreenControl={true}
           scrollWheelZoom={false}>
+          <MapBaseCss />
+
           {/* Allow scroll wheel zoom when in full screen mode */}
           <FullScreenScrollingEventHandler bounds={updatedBounds} scrollWheelZoom={false} />
 
@@ -98,12 +101,11 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           <SetMapBounds bounds={updatedBounds} />
 
           <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
-            <DrawControls2
+            <DrawControls
               ref={draw_controls_ref}
               options={{
                 // Always disable circle, circlemarker and line
                 draw: { circle: false, circlemarker: false, polyline: false }
-                // edit: { remove: false }
               }}
               onLayerAdd={(event: DrawEvents.Created, id: number) => {
                 const feature: Feature = event.layer.toGeoJSON();

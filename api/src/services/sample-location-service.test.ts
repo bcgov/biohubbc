@@ -116,6 +116,14 @@ describe('SampleLocationService', () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleLocationService(mockDBConnection);
 
+      const getSampleMethodsForSurveySampleSiteIdStub = sinon
+        .stub(SampleMethodService.prototype, 'getSampleMethodsForSurveySampleSiteId')
+        .resolves([{ survey_sample_method_id: 1 } as any]);
+
+      const deleteSampleMethodRecordStub = sinon
+        .stub(SampleMethodService.prototype, 'deleteSampleMethodRecord')
+        .resolves();
+
       sinon.stub(SampleLocationRepository.prototype, 'deleteSampleLocationRecord').resolves({
         survey_sample_site_id: 1,
         survey_id: 1,
@@ -134,6 +142,8 @@ describe('SampleLocationService', () => {
       const { survey_sample_site_id } = await service.deleteSampleLocationRecord(1);
 
       expect(survey_sample_site_id).to.be.eq(1);
+      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(1);
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(1);
     });
   });
 

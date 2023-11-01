@@ -73,10 +73,8 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
     ...GeneralInformationInitialValues,
     ...{
       purpose_and_methodology: {
-        intended_outcome_id: '' as unknown as number,
+        intended_outcome_ids: [],
         additional_details: '',
-        field_method_id: '' as unknown as number,
-        ecological_season_id: '' as unknown as number,
         vantage_code_ids: []
       }
     },
@@ -185,16 +183,6 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
               <PurposeAndMethodologyForm
                 intended_outcomes={
                   props.codes.intended_outcomes.map((item) => {
-                    return { value: item.id, label: item.name, subText: item.description };
-                  }) || []
-                }
-                field_methods={
-                  props.codes.field_methods.map((item) => {
-                    return { value: item.id, label: item.name, subText: item.description };
-                  }) || []
-                }
-                ecological_seasons={
-                  props.codes.ecological_seasons.map((item) => {
                     return { value: item.id, label: item.name, subText: item.description };
                   }) || []
                 }

@@ -6,7 +6,7 @@ import { PROJECT_ROLE } from '../../constants/roles';
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
-  required: ['project', 'location', 'iucn', 'participants'],
+  required: ['project', 'iucn', 'participants'],
   properties: {
     project: {
       title: 'Project details',
@@ -30,16 +30,6 @@ export const projectCreatePostRequestObject = {
           type: 'string',
           description: 'ISO 8601 date string',
           nullable: true
-        }
-      }
-    },
-    location: {
-      title: 'Location',
-      type: 'object',
-      properties: {
-        location_description: {
-          type: 'string',
-          description: 'Location description'
         }
       }
     },
@@ -93,7 +83,6 @@ export const projectCreatePostRequestObject = {
 const projectUpdateProperties = {
   project: { type: 'object', properties: {} },
   objectives: { type: 'object', properties: {} },
-  location: { type: 'object', properties: {} },
   iucn: {
     type: 'object',
     properties: {

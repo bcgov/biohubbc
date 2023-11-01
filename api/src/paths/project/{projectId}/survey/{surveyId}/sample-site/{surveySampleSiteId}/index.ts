@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { ObservationService } from '../../../../../../../services/observation-service';
 import { SampleLocationService } from '../../../../../../../services/sample-location-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -268,6 +269,7 @@ DELETE.apiDoc = {
 
 export function deleteSurveySampleSiteRecord(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const surveySampleSiteId = Number(req.params.surveySampleSiteId);
 
     if (!surveySampleSiteId) {
@@ -278,6 +280,14 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
 
     try {
       await connection.open();
+
+      const observationService = new ObservationService(connection);
+
+      if (
+        (await observationService.getObservationsCountBySampleSiteId(surveyId, surveySampleSiteId)).observationCount > 0
+      ) {
+        throw new HTTP400('Cannot delete a sample site that is associated with an observation');
+      }
 
       const sampleLocationService = new SampleLocationService(connection);
 

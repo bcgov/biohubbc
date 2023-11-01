@@ -8,7 +8,6 @@ import { PostProjectObject } from '../models/project-create';
 import {
   GetAttachmentsData,
   GetIUCNClassificationData,
-  GetLocationData,
   GetObjectivesData,
   GetReportAttachmentsData
 } from '../models/project-view';
@@ -133,32 +132,6 @@ describe('ProjectRepository', () => {
     });
   });
 
-  describe('getLocationData', () => {
-    it('should return result', async () => {
-      const mockResponse = ({ rows: [{ location_description: 'desc' }], rowCount: 1 } as any) as Promise<
-        QueryResult<any>
-      >;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new ProjectRepository(dbConnection);
-
-      const response = await repository.getLocationData(1);
-
-      expect(response).to.eql(new GetLocationData([{ location_description: 'desc' }]));
-    });
-
-    it('should return empty rows', async () => {
-      const mockResponse = ({ rows: [], rowCount: 1 } as any) as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new ProjectRepository(dbConnection);
-
-      const response = await repository.getLocationData(1);
-
-      expect(response).to.eql(new GetLocationData([]));
-    });
-  });
-
   describe('getIUCNClassificationData', () => {
     it('should return result', async () => {
       const mockResponse = ({
@@ -252,8 +225,7 @@ describe('ProjectRepository', () => {
           end_date: 'end_date',
           comments: 'comments'
         },
-        objectives: { objectives: '' },
-        location: { location_description: '', geometry: [{ id: 1 }] }
+        objectives: { objectives: '' }
       } as unknown) as PostProjectObject;
 
       const response = await repository.insertProject(input);
@@ -275,8 +247,7 @@ describe('ProjectRepository', () => {
           end_date: 'end_date',
           comments: 'comments'
         },
-        objectives: { objectives: '' },
-        location: { location_description: '', geometry: [] }
+        objectives: { objectives: '' }
       } as unknown) as PostProjectObject;
 
       const response = await repository.insertProject(input);
@@ -298,8 +269,7 @@ describe('ProjectRepository', () => {
           end_date: 'end_date',
           comments: 'comments'
         },
-        objectives: { objectives: '' },
-        location: { location_description: '', geometry: [] }
+        objectives: { objectives: '' }
       } as unknown) as PostProjectObject;
 
       try {
