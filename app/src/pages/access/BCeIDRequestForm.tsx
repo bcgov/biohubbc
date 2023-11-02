@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import {
   IBCeIDBasicAccessRequestDataObject,
   IBCeIDBusinessAccessRequestDataObject

@@ -5,26 +5,19 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { useContext } from 'react';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { Redirect } from 'react-router';
-import { Link } from 'react-router-dom';
 
 const RequestSubmitted = () => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
+  const authStateContext = useAuthStateContext();
 
-  if (!keycloakWrapper?.hasLoadedAllUserInfo) {
+  if (authStateContext.simsUserWrapper.isLoading) {
     // User data has not been loaded, can not yet determine if they have a role
     return <CircularProgress className="pageProgress" />;
   }
 
-  if (keycloakWrapper?.systemRoles.length) {
-    // User already has a role
-    return <Redirect to={{ pathname: '/admin/projects' }} />;
-  }
-
-  if (!keycloakWrapper.hasAccessRequest) {
-    // User has no pending access request
+  if (!authStateContext.simsUserWrapper.hasAccessRequest || authStateContext.simsUserWrapper.roleNames?.length) {
+    // User has no pending access request or already has a role
     return <Redirect to={{ pathname: '/' }} />;
   }
 
@@ -36,13 +29,13 @@ const RequestSubmitted = () => {
         <Typography>Your request is currently pending a review by an administrator.</Typography>
         <Box pt={4}>
           <Button
-            component={Link}
-            to="/logout"
+            component="a"
+            onClick={() => authStateContext.auth.signoutRedirect()}
             type="submit"
             size="large"
             variant="contained"
             color="primary"
-            data-testid="logout-button">
+            data-testid="request-submitted-logout-button">
             Log Out
           </Button>
         </Box>

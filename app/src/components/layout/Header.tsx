@@ -15,16 +15,14 @@ import Typography from '@mui/material/Typography';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import React, { useContext, useMemo } from 'react';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedIdentitySource } from 'utils/Utils';
 
 const Header: React.FC = () => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
-  const loginUrl = useMemo(() => keycloakWrapper?.getLoginUrl(), [keycloakWrapper]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const [open, setOpen] = React.useState(false);
@@ -54,8 +52,10 @@ const Header: React.FC = () => {
 
   // Authenticated view
   const LoggedInUser = () => {
-    const identitySource = keycloakWrapper?.getIdentitySource() || '';
-    const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
+    const authStateContext = useAuthStateContext();
+
+    const identitySource = authStateContext.simsUserWrapper.identitySource ?? '';
+    const userIdentifier = authStateContext.simsUserWrapper.userIdentifier ?? '';
     const formattedUsername = [getFormattedIdentitySource(identitySource as SYSTEM_IDENTITY_SOURCE), userIdentifier]
       .filter(Boolean)
       .join('/');
@@ -90,7 +90,7 @@ const Header: React.FC = () => {
           <Button
             component="a"
             variant="text"
-            href="/logout"
+            onClick={() => authStateContext.auth.signoutRedirect()}
             data-testid="menu_log_out"
             sx={{
               color: 'inherit',
@@ -104,7 +104,8 @@ const Header: React.FC = () => {
         <MenuItem
           component="a"
           color="#1a5a96"
-          href="/logout"
+          onClick={() => authStateContext.auth.signoutRedirect()}
+          data-testid="collapsed_menu_log_out"
           sx={{
             display: { xs: 'block', lg: 'none' }
           }}>
@@ -116,16 +117,18 @@ const Header: React.FC = () => {
 
   // Unauthenticated public view
   const PublicViewUser = () => {
+    const authStateContext = useAuthStateContext();
+
     return (
       <>
         <Button
           component="a"
           color="inherit"
           variant="text"
-          href={loginUrl}
+          onClick={() => authStateContext.auth.signinRedirect()}
           disableElevation
           startIcon={<Icon path={mdiLoginVariant} size={1} />}
-          data-testid="login"
+          data-testid="menu_log_in"
           sx={{
             p: 1,
             fontSize: '16px',

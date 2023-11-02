@@ -1,16 +1,6 @@
-import Keycloak from 'keycloak-js';
 import { getMockAuthState, SystemUserAuthState, UnauthenticatedUserAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import { AuthStateContext } from './authStateContext';
-
-jest.mock('@react-keycloak/web', () => ({
-  useKeycloak: jest.fn(() => ({
-    initialized: true,
-    keycloak: {
-      authenticated: false
-    } as unknown as Keycloak
-  }))
-}));
 
 describe('AuthStateContext', () => {
   afterAll(() => {
@@ -34,19 +24,7 @@ describe('AuthStateContext', () => {
     );
 
     await waitFor(() => {
-      expect(captureAuthStateValue).toHaveBeenCalledWith({
-        ...authState,
-        keycloakWrapper: {
-          ...authState.keycloakWrapper,
-          getIdentitySource: expect.any(Function),
-          getUserIdentifier: expect.any(Function),
-          getUserGuid: expect.any(Function),
-          refresh: expect.any(Function),
-          hasSystemRole: expect.any(Function),
-          getLoginUrl: expect.any(Function),
-          isSystemUser: expect.any(Function)
-        }
-      });
+      expect(captureAuthStateValue).toHaveBeenCalledWith(authState);
     });
   });
 

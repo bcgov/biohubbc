@@ -4,16 +4,19 @@ import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
-import TextField from '@mui/material/TextField';
-import { DataGrid, GridColDef, GridEventListener } from '@mui/x-data-grid';
-import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import {
+  DataGrid,
+  GridColDef,
+  GridEventListener
+} from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
 import ConditionalAutocompleteDataGridViewCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridViewCell';
 import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
+import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
+import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { CodesContext } from 'contexts/codesContext';
 import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -256,23 +259,22 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       align: 'right',
       renderEditCell: (params) => {
         return (
-          <TextField
-            onChange={(event) => {
-              if (!/^\d{0,7}$/.test(event.target.value)) {
-                // If the value is not a number, return
-                return;
-              }
+          <TextFieldDataGrid
+            dataGridProps={params}
+            textFieldProps={{
+              onChange: (event) => {
+                if (!/^\d{0,7}$/.test(event.target.value)) {
+                  // If the value is not a number, return
+                  return;
+                }
 
-              apiRef?.current.setEditCellValue({
-                id: params.id,
-                field: params.field,
-                value: event.target.value
-              });
+                apiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value: event.target.value
+                });
+              }
             }}
-            value={params.value ?? ''}
-            variant="outlined"
-            type="text"
-            inputProps={{ inputMode: 'numeric' }}
           />
         );
       }
@@ -319,26 +321,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         return <>{params.value}</>;
       },
       renderEditCell: (params) => {
-        return (
-          <LocalizationProvider dateAdapter={AdapterMoment}>
-            <TimePicker
-              value={(params.value && moment(params.value, 'HH:mm:ss')) || null}
-              onChange={(value) => {
-                apiRef?.current.setEditCellValue({ id: params.id, field: params.field, value: value });
-              }}
-              onAccept={(value) => {
-                apiRef?.current.setEditCellValue({
-                  id: params.id,
-                  field: params.field,
-                  value: value?.format('HH:mm:ss')
-                });
-              }}
-              views={['hours', 'minutes', 'seconds']}
-              timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
-              ampm={false}
-            />
-          </LocalizationProvider>
-        );
+        return <TimePickerDataGrid dataGridProps={params} />;
       }
     },
     {
@@ -361,23 +344,22 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       },
       renderEditCell: (params) => {
         return (
-          <TextField
-            onChange={(event) => {
-              if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
-                // If the value is not a subset of a legal latitude value, prevent the value from being applied
-                return;
-              }
+          <TextFieldDataGrid
+            dataGridProps={params}
+            textFieldProps={{
+              onChange: (event) => {
+                if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
+                  // If the value is not a subset of a legal latitude value, prevent the value from being applied
+                  return;
+                }
 
-              apiRef?.current.setEditCellValue({
-                id: params.id,
-                field: params.field,
-                value: event.target.value
-              });
+                apiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value: event.target.value
+                });
+              }
             }}
-            value={params.value ?? ''}
-            variant="outlined"
-            type="text"
-            inputProps={{ inputMode: 'numeric' }}
           />
         );
       }
@@ -402,23 +384,22 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       },
       renderEditCell: (params) => {
         return (
-          <TextField
-            onChange={(event) => {
-              if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
-                // If the value is not a subset of a legal longitude value, prevent the value from being applied
-                return;
-              }
+          <TextFieldDataGrid
+            dataGridProps={params}
+            textFieldProps={{
+              onChange: (event) => {
+                if (!/^-?\d{0,3}(?:\.\d{0,12})?$/.test(event.target.value)) {
+                  // If the value is not a subset of a legal longitude value, prevent the value from being applied
+                  return;
+                }
 
-              apiRef?.current.setEditCellValue({
-                id: params.id,
-                field: params.field,
-                value: event.target.value
-              });
+                apiRef?.current.setEditCellValue({
+                  id: params.id,
+                  field: params.field,
+                  value: event.target.value
+                });
+              }
             }}
-            value={params.value ?? ''}
-            variant="outlined"
-            type="text"
-            inputProps={{ inputMode: 'numeric' }}
           />
         );
       }
