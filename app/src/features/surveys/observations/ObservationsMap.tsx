@@ -106,7 +106,7 @@ const ObservationsMap = () => {
           <GeoJSON
             key={uuidv4()}
             data={nonEditableGeo.feature}
-            pointToLayer={(feature, latlng) => coloredPoint({ feature, latlng })}>
+            pointToLayer={(feature, latlng) => coloredPoint({ feature, latlng, fillColor: '#F28C28' })}>
             {nonEditableGeo.popupComponent}
           </GeoJSON>
         ))}
@@ -116,11 +116,11 @@ const ObservationsMap = () => {
             layers={[
               {
                 layerName: 'Study Area',
-                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature }))
+                features: studyAreaFeatures.map((feature) => ({ geoJSON: feature, tooltip: <>Study Area</> }))
               },
               {
                 layerName: 'Sample Sites',
-                features: sampleSiteFeatures.map((feature) => ({ geoJSON: feature }))
+                features: sampleSiteFeatures.map((feature) => ({ geoJSON: feature, tooltip: <>Sample Site</> }))
               }
             ]}
           />
