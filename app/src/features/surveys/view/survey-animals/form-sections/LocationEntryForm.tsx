@@ -172,17 +172,23 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   };
 
   const renderResizableMarker = (
-    fields: LocationEntryFields<T>,
+    fields: LocationEntryFields<T> | undefined,
     listening: boolean,
     color: MarkerIconColor
   ): JSX.Element => {
+    if (!fields) {
+      return <></>;
+    }
     return (
       <MarkerWithResizableRadius
         radius={coerceZero(value[fields.coordinate_uncertainty] ?? NaN)}
         position={getCurrentMarkerPos(fields)}
         markerColor={color}
         listenForMouseEvents={listening}
-        handlePlace={(p) => handleMarkerPlacement(p, fields)}
+        handlePlace={(p) => {
+          handleMarkerPlacement(p, fields);
+          setMarkerEnabled(null);
+        }}
         handleResize={(n) => {
           setFieldValue(getAnimalFieldName<T>(name, fields.coordinate_uncertainty, index), n.toFixed(3));
         }}
@@ -211,14 +217,14 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
         </Stack>
       </Box>
 
-      <Box component="fieldset">
-        {secondaryLocationFields && secondaryLocationFields.fieldsetTitle ? (
+      {secondaryLocationFields && secondaryLocationFields.fieldsetTitle ? (
+        <Box component="fieldset">
           <Typography flexGrow={1} component="legend">
             {secondaryLocationFields.fieldsetTitle}
           </Typography>
-        ) : null}
-        <Box>{renderLocationFields(secondaryLocationFields)}</Box>
-      </Box>
+          <Box>{renderLocationFields(secondaryLocationFields)}</Box>
+        </Box>
+      ) : null}
 
       <Box component="fieldset" flex="0 0 auto">
         <Typography component="legend">Location Preview</Typography>
@@ -242,11 +248,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             scrollWheelZoom={false}
             additionalLayers={[
               renderResizableMarker(primaryLocationFields, markerEnabled === 'primary', 'blue'),
-              secondaryLocationFields ? (
-                renderResizableMarker(secondaryLocationFields, markerEnabled === 'secondary', 'green')
-              ) : (
-                <></>
-              )
+              renderResizableMarker(secondaryLocationFields, markerEnabled === 'secondary', 'green')
             ]}
           />
         </Paper>

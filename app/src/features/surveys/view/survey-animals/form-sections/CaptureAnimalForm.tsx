@@ -32,7 +32,6 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
 
   return (
     <Stack gap={4}>
-
       <Box component="fieldset">
         <Typography flexGrow={1} component="legend">
           Dates
@@ -53,7 +52,6 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
           </Grid>
         </Grid>
       </Box>
-
 
       <LocationEntryForm
         name={name}
@@ -80,27 +78,23 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
             : undefined
         }
         otherPrimaryFields={[
-
-            <FormControlLabel
-              sx={{ mb: -1, ml: 0 }}
-              control={
-                <Checkbox
-                  onChange={handleChange}
-                  checked={values.captures[index].show_release}
-                  disabled={!!values.captures[index].release_location_id}
-                  name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
-                />
-              }
-              label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
-            />
-
+          <FormControlLabel
+            sx={{ mb: -1, ml: 0 }}
+            control={
+              <Checkbox
+                onChange={handleChange}
+                checked={values.captures[index].show_release}
+                disabled={!!values.captures[index].release_location_id}
+                name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
+              />
+            }
+            label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
+          />
         ]}
       />
 
       <Box component="fieldset">
-        <Typography component="legend">
-          Additional Information
-        </Typography>
+        <Typography component="legend">Additional Information</Typography>
         <CustomTextField
           other={{
             multiline: true,
