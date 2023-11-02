@@ -52,6 +52,7 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
             <CbSelectField
               name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_id', index)}
               handleChangeSideEffect={(_value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
+              orderBy={'asc'}
               label={'Reason'}
               controlProps={{
                 required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_id')
@@ -92,6 +93,7 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
           <Grid item xs={12} sm={4}>
             <CbSelectField
               name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_id', index)}
+              orderBy={'asc'}
               handleChangeSideEffect={(_value, label) => {
                 setUcodTaxonDisabled(!label.includes('Predation'));
               }}
