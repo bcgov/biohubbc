@@ -230,18 +230,21 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
         <Typography component="legend">Location Preview</Typography>
         <ToggleButtonGroup value={markerEnabled} size="small" onChange={handleMarkerSelected} exclusive>
           {primaryLocationFields ? (
-            <ToggleButton value="primary">{primaryLocationFields?.fieldsetTitle ?? 'Primary'}</ToggleButton>
+            <ToggleButton value="primary">
+              {`Set ${primaryLocationFields?.fieldsetTitle}` ?? 'Set Primary Location'}
+            </ToggleButton>
           ) : null}
           {secondaryLocationFields ? (
-            <ToggleButton value="secondary">{secondaryLocationFields?.fieldsetTitle ?? 'Secondary'}</ToggleButton>
+            <ToggleButton value="secondary">
+              {`Set ${secondaryLocationFields?.fieldsetTitle}` ?? 'Set Secondary Location'}
+            </ToggleButton>
           ) : null}
         </ToggleButtonGroup>
 
         <Paper
           variant="outlined"
           sx={{
-            height: 400,
-            overflow: 'hidden'
+            height: 400
           }}>
           <MapContainer
             mapId={`location-entry-${name}-${index}`}
