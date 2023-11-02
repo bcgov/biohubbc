@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { MarkerIconColor, MarkerWithResizableRadius } from 'components/map/components/MarkerWithResizableRadius';
@@ -15,6 +16,8 @@ import { ChangeEvent, Fragment, useState } from 'react';
 import { getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
 import { coerceZero } from 'utils/Utils';
 import { getAnimalFieldName, IAnimal, ProjectionMode } from '../animal';
+
+type Marker = 'primary' | 'secondary' | null;
 
 export type LocationEntryFields<T> = {
   fieldsetTitle?: string;
@@ -46,7 +49,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   otherSecondaryFields
 }: LocationEntryFormProps<T>) => {
   const { handleBlur, setFieldValue } = useFormikContext();
-  const [placeSecondaryMode, setPlaceSecondary] = useState(false); //Controls whether left clicking on the map will place the capture or release marker.
+  const [markerEnabled, setMarkerEnabled] = useState<Marker>(null);
 
   const handleMarkerPlacement = (e: LatLng, fields: LocationEntryFields<T>) => {
     setFieldValue(getAnimalFieldName<T>(name, fields.latitude, index), e.lat.toFixed(3));
@@ -101,6 +104,10 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
     } else {
       return new LatLng(coerceZero(value[fields.latitude]), coerceZero(value[fields.longitude]));
     }
+  };
+
+  const handleMarkerSelected = (event: React.MouseEvent<HTMLElement>, enableMarker: Marker) => {
+    setMarkerEnabled(enableMarker);
   };
 
   const renderLocationFields = (fields?: LocationEntryFields<T>): JSX.Element => {
@@ -185,15 +192,14 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
 
   return (
     <Stack flexDirection="column" gap={4} maxWidth={800}>
-      
       <Box component="fieldset">
         {primaryLocationFields.fieldsetTitle ? (
-          <Typography component="legend">
-            {primaryLocationFields.fieldsetTitle}
-          </Typography>
+          <Typography component="legend">{primaryLocationFields.fieldsetTitle}</Typography>
         ) : null}
         <FormControlLabel
-          control={<Checkbox size="small" checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} />}
+          control={
+            <Checkbox size="small" checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} />
+          }
           label="UTM Coordinates"
           sx={{
             display: 'none'
@@ -214,18 +220,16 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
         <Box>{renderLocationFields(secondaryLocationFields)}</Box>
       </Box>
 
-      <Box>
-        {/* TODO Decided what to do with this control */}
-        <Box display="none">
-          {secondaryLocationFields ? (
-            <FormGroup sx={{ alignItems: 'end' }}>
-              <FormControlLabel
-                control={<Checkbox checked={placeSecondaryMode} onChange={(e, b) => setPlaceSecondary(b)} />}
-                label={'Place Other Coordinate'}
-              />
-            </FormGroup>
+      <Box component="fieldset" flex="0 0 auto">
+        <Typography component="legend">Location Preview</Typography>
+        <ToggleButtonGroup value={markerEnabled} size="small" onChange={handleMarkerSelected} exclusive>
+          {primaryLocationFields ? (
+            <ToggleButton value="primary">{primaryLocationFields?.fieldsetTitle ?? 'Primary'}</ToggleButton>
           ) : null}
-        </Box>
+          {secondaryLocationFields ? (
+            <ToggleButton value="secondary">{secondaryLocationFields?.fieldsetTitle ?? 'Secondary'}</ToggleButton>
+          ) : null}
+        </ToggleButtonGroup>
 
         <Paper
           variant="outlined"
@@ -237,9 +241,9 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
             mapId={`location-entry-${name}-${index}`}
             scrollWheelZoom={false}
             additionalLayers={[
-              renderResizableMarker(primaryLocationFields, !placeSecondaryMode, 'blue'),
+              renderResizableMarker(primaryLocationFields, markerEnabled === 'primary', 'blue'),
               secondaryLocationFields ? (
-                renderResizableMarker(secondaryLocationFields, placeSecondaryMode, 'green')
+                renderResizableMarker(secondaryLocationFields, markerEnabled === 'secondary', 'green')
               ) : (
                 <></>
               )
@@ -247,7 +251,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
           />
         </Paper>
       </Box>
-      
     </Stack>
   );
 };
