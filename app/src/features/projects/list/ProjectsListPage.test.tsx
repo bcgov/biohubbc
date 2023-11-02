@@ -72,6 +72,8 @@ describe('ProjectsListPage', () => {
     mockUseApi.project.getProjectsList.mockResolvedValue([]);
     mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: [],
@@ -83,11 +85,13 @@ describe('ProjectsListPage', () => {
     } as unknown as ICodesContext;
 
     const { getByText } = render(
-      <CodesContext.Provider value={mockCodesContext}>
-        <MemoryRouter>
-          <ProjectsListPage />
-        </MemoryRouter>
-      </CodesContext.Provider>
+      <AuthStateContext.Provider value={authState}>
+        <CodesContext.Provider value={mockCodesContext}>
+          <MemoryRouter>
+            <ProjectsListPage />
+          </MemoryRouter>
+        </CodesContext.Provider>
+      </AuthStateContext.Provider>
     );
 
     await waitFor(() => {
@@ -104,6 +108,8 @@ describe('ProjectsListPage', () => {
     ]);
     mockUseApi.project.getProjectsList.mockResolvedValue([]);
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: [],
@@ -115,11 +121,13 @@ describe('ProjectsListPage', () => {
     } as unknown as ICodesContext;
 
     const { findByText } = render(
-      <CodesContext.Provider value={mockCodesContext}>
-        <MemoryRouter>
-          <ProjectsListPage />
-        </MemoryRouter>
-      </CodesContext.Provider>
+      <AuthStateContext.Provider value={authState}>
+        <CodesContext.Provider value={mockCodesContext}>
+          <MemoryRouter>
+            <ProjectsListPage />
+          </MemoryRouter>
+        </CodesContext.Provider>
+      </AuthStateContext.Provider>
     );
 
     expect(await findByText('Draft 1')).toBeInTheDocument();
@@ -144,6 +152,8 @@ describe('ProjectsListPage', () => {
 
     mockUseApi.draft.getDraftsList.mockResolvedValue([]);
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
         data: codes,
@@ -155,11 +165,13 @@ describe('ProjectsListPage', () => {
     } as unknown as ICodesContext;
 
     const { findByText } = render(
-      <CodesContext.Provider value={mockCodesContext}>
-        <Router history={history}>
-          <ProjectsListPage />
-        </Router>
-      </CodesContext.Provider>
+      <AuthStateContext.Provider value={authState}>
+        <CodesContext.Provider value={mockCodesContext}>
+          <Router history={history}>
+            <ProjectsListPage />
+          </Router>
+        </CodesContext.Provider>
+      </AuthStateContext.Provider>
     );
 
     fireEvent.click(await findByText('Project 1'));

@@ -1,9 +1,9 @@
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import ReviewAccessRequestForm, {
   ReviewAccessRequestFormInitialValues,
   ReviewAccessRequestFormYupSchema
 } from 'features/admin/users/ReviewAccessRequestForm';
 import { Formik } from 'formik';
-import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { codes } from 'test-helpers/code-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';

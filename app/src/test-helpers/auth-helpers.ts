@@ -1,35 +1,42 @@
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { IAuthState } from 'contexts/authStateContext';
-import Keycloak from 'keycloak-js';
+import { AuthContextProps } from 'react-oidc-context';
 
 /**
  * Represents an unauthenticated user who has:
  *  - not yet successfully authenticated (all keycloak details about the user will be false, null, or undefined)
  */
 export const UnauthenticatedUserAuthState: IAuthState = {
-  keycloakWrapper: {
-    keycloak: {
-      authenticated: false
-    } as unknown as Keycloak,
-    hasLoadedAllUserInfo: false,
-    systemRoles: [],
-    isSystemUser: () => false,
-    hasSystemRole: () => false,
-    hasAccessRequest: false,
-    hasOneOrMoreProjectRoles: false,
-    getUserIdentifier: () => null,
-    getIdentitySource: () => null,
-    getUserGuid: () => null,
-    username: undefined,
-    displayName: undefined,
-    email: undefined,
-    systemUserId: undefined,
-    user: undefined,
-    refresh: () => {
+  auth: {
+    isLoading: false,
+    isAuthenticated: false,
+    signoutRedirect: () => {
       // do nothing
     },
-    getLoginUrl: () => '/login',
-    critterbaseUuid: () => undefined
+    signinRedirect: () => {
+      // do nothing
+    }
+  } as unknown as AuthContextProps,
+  simsUserWrapper: {
+    isLoading: false,
+    systemUserId: undefined,
+    userGuid: null,
+    userIdentifier: undefined,
+    displayName: undefined,
+    email: undefined,
+    agency: undefined,
+    roleNames: [],
+    identitySource: null,
+    hasAccessRequest: false,
+    hasOneOrMoreProjectRoles: false,
+    refresh: () => {
+      // do nothing
+    }
+  },
+  critterbaseUserWrapper: {
+    isLoading: false,
+    critterbaseUserUuid: 'fakeguid'
   }
 };
 
@@ -41,29 +48,35 @@ export const UnauthenticatedUserAuthState: IAuthState = {
  *  - has no system or project level roles
  */
 export const SystemUserAuthState: IAuthState = {
-  keycloakWrapper: {
-    keycloak: {
-      authenticated: true
-    } as unknown as Keycloak,
-    hasLoadedAllUserInfo: true,
-    systemRoles: [],
-    isSystemUser: () => true,
-    hasSystemRole: () => false,
-    hasAccessRequest: false,
-    hasOneOrMoreProjectRoles: false,
-    getUserIdentifier: () => 'testusername',
-    getIdentitySource: () => 'idir',
-    getUserGuid: () => '987-654-321',
-    username: 'testusername',
-    displayName: 'testdisplayname',
-    email: 'test@email.com',
-    systemUserId: 1,
-    user: undefined,
-    refresh: () => {
+  auth: {
+    isLoading: false,
+    isAuthenticated: true,
+    signoutRedirect: () => {
       // do nothing
     },
-    getLoginUrl: () => '/login',
-    critterbaseUuid: () => 'fakeguid'
+    signinRedirect: () => {
+      // do nothing
+    }
+  } as unknown as AuthContextProps,
+  simsUserWrapper: {
+    isLoading: false,
+    systemUserId: 1,
+    userGuid: '987-654-321',
+    userIdentifier: 'testusername',
+    displayName: 'testdisplayname',
+    email: 'test@email.com',
+    agency: 'agency',
+    roleNames: [],
+    identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+    hasAccessRequest: false,
+    hasOneOrMoreProjectRoles: false,
+    refresh: () => {
+      // do nothing
+    }
+  },
+  critterbaseUserWrapper: {
+    isLoading: false,
+    critterbaseUserUuid: 'fakeguid'
   }
 };
 
@@ -75,29 +88,35 @@ export const SystemUserAuthState: IAuthState = {
  *  - has the `System Administrator` system level role
  */
 export const SystemAdminAuthState: IAuthState = {
-  keycloakWrapper: {
-    keycloak: {
-      authenticated: true
-    } as unknown as Keycloak,
-    hasLoadedAllUserInfo: true,
-    systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
-    isSystemUser: () => true,
-    hasSystemRole: () => true,
-    hasAccessRequest: false,
-    hasOneOrMoreProjectRoles: false,
-    getUserIdentifier: () => 'admin-username',
-    getIdentitySource: () => 'idir',
-    getUserGuid: () => '123-456-789',
-    username: 'admin-username',
-    displayName: 'admin-displayname',
-    email: 'admin@email.com',
-    systemUserId: 1,
-    user: undefined,
-    refresh: () => {
+  auth: {
+    isLoading: false,
+    isAuthenticated: true,
+    signoutRedirect: () => {
       // do nothing
     },
-    getLoginUrl: () => '/login',
-    critterbaseUuid: () => 'fakeguid'
+    signinRedirect: () => {
+      // do nothing
+    }
+  } as unknown as AuthContextProps,
+  simsUserWrapper: {
+    isLoading: false,
+    systemUserId: 1,
+    userGuid: '123-456-789',
+    userIdentifier: 'admin-username',
+    displayName: 'admin-displayname',
+    email: 'admin@email.com',
+    agency: 'agency',
+    roleNames: [SYSTEM_ROLE.SYSTEM_ADMIN],
+    identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
+    hasAccessRequest: false,
+    hasOneOrMoreProjectRoles: false,
+    refresh: () => {
+      // do nothing
+    }
+  },
+  critterbaseUserWrapper: {
+    isLoading: false,
+    critterbaseUserUuid: 'fakeguid'
   }
 };
 
@@ -118,13 +137,17 @@ export const getMockAuthState = (options: { base: IAuthState; overrides?: Subset
   return {
     ...base,
     ...overrides,
-    keycloakWrapper: {
-      ...base.keycloakWrapper,
-      ...overrides?.keycloakWrapper,
-      keycloak: {
-        ...base.keycloakWrapper?.keycloak,
-        ...overrides?.keycloakWrapper?.keycloak
-      }
+    auth: {
+      ...base.auth,
+      ...overrides?.auth
+    },
+    simsUserWrapper: {
+      ...base.simsUserWrapper,
+      ...overrides?.simsUserWrapper
+    },
+    critterbaseUserWrapper: {
+      ...base.simsUserWrapper,
+      ...overrides?.critterbaseUserWrapper
     }
   } as unknown as IAuthState;
 };
