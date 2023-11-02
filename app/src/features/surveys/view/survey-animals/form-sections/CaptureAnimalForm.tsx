@@ -33,8 +33,8 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
   return (
     <Stack gap={4}>
       <Box component="fieldset">
-        <Typography flexGrow={1} component="legend">
-          Dates
+        <Typography component="legend">
+          Event Dates
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -58,7 +58,7 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
         index={index}
         value={value}
         primaryLocationFields={{
-          fieldsetTitle: 'Location',
+          fieldsetTitle: 'Capture Location',
           latitude: 'capture_latitude',
           longitude: 'capture_longitude',
           coordinate_uncertainty: 'capture_coordinate_uncertainty',
@@ -79,9 +79,10 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
         }
         otherPrimaryFields={[
           <FormControlLabel
-            sx={{ mb: -1, ml: 0 }}
+            sx={{ mt: -1, ml: 0 }}
             control={
               <Checkbox
+                size='small'
                 onChange={handleChange}
                 checked={values.captures[index].show_release}
                 disabled={!!values.captures[index].release_location_id}

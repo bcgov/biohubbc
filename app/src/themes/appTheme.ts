@@ -82,9 +82,7 @@ const appTheme = createTheme({
           '&.MuiTypography-root': {
             marginBottom: '15px',
             padding: 0,
-            fontSize: '0.875rem',
-            fontWeight: 700,
-            textTransform: 'uppercase'
+            fontWeight: 700
           }
         }
       }
@@ -294,6 +292,13 @@ const appTheme = createTheme({
           textTransform: 'none',
           minWidth: '100px !important',
           fontWeight: 700
+        }
+      }
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          background: '#fff'
         }
       }
     }
