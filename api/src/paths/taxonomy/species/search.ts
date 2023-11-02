@@ -75,7 +75,7 @@ export function searchSpecies(): RequestHandler {
     try {
       const taxonomyService = new TaxonomyService();
       const response = await taxonomyService.searchSpecies(term.toLowerCase());
-
+      res.removeHeader('Cache-Control');
       res.status(200).json({ searchResponse: response });
     } catch (error) {
       defaultLog.error({ label: 'getSearchResults', message: 'error', error });
