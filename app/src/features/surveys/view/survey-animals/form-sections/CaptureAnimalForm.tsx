@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel, Grid } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, Grid, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
@@ -31,20 +31,21 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
   const value = values.captures[index];
 
   return (
-    <>
+    <Stack gap={4}>
+
       <Box component="fieldset">
         <Typography flexGrow={1} component="legend">
-          Event Dates
+          Dates
         </Typography>
-        <Grid container spacing={2} mb={3}>
-          <Grid item md={6} lg={6} sm={6}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
             <SingleDateField
               name={getAnimalFieldName<IAnimalCapture>(name, 'capture_timestamp', index)}
               required={true}
               label={'Capture Date'}
             />
           </Grid>
-          <Grid item sm={6} md={6} lg={6}>
+          <Grid item xs={12} sm={6}>
             <SingleDateField
               name={getAnimalFieldName<IAnimalCapture>(name, 'release_timestamp', index)}
               label={'Release Date'}
@@ -52,70 +53,66 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
           </Grid>
         </Grid>
       </Box>
-      <Box mb={3}>
-        <LocationEntryForm
-          name={name}
-          index={index}
-          value={value}
-          primaryLocationFields={{
-            fieldsetTitle: 'Capture Location',
-            latitude: 'capture_latitude',
-            longitude: 'capture_longitude',
-            coordinate_uncertainty: 'capture_coordinate_uncertainty',
-            utm_northing: 'capture_utm_northing',
-            utm_easting: 'capture_utm_easting'
-          }}
-          secondaryLocationFields={
-            showReleaseSection
-              ? {
-                  fieldsetTitle: 'Release Location',
-                  latitude: 'release_latitude',
-                  longitude: 'release_longitude',
-                  coordinate_uncertainty: 'release_coordinate_uncertainty',
-                  utm_northing: 'release_utm_northing',
-                  utm_easting: 'release_utm_easting'
-                }
-              : undefined
-          }
-          otherPrimaryFields={[
-            <Grid item xs={12}>
-              <FormControlLabel
-                sx={{ my: -1, ml: 0 }}
-                control={
-                  <Checkbox
-                    onChange={handleChange}
-                    checked={values.captures[index].show_release}
-                    disabled={!!values.captures[index].release_location_id}
-                    name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
-                  />
-                }
-                label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
-              />
-            </Grid>
-          ]}
-          //otherSecondaryFields={[renderReleaseFields()]}
-        />
-      </Box>
+
+
+      <LocationEntryForm
+        name={name}
+        index={index}
+        value={value}
+        primaryLocationFields={{
+          fieldsetTitle: 'Location',
+          latitude: 'capture_latitude',
+          longitude: 'capture_longitude',
+          coordinate_uncertainty: 'capture_coordinate_uncertainty',
+          utm_northing: 'capture_utm_northing',
+          utm_easting: 'capture_utm_easting'
+        }}
+        secondaryLocationFields={
+          showReleaseSection
+            ? {
+                fieldsetTitle: 'Release Location',
+                latitude: 'release_latitude',
+                longitude: 'release_longitude',
+                coordinate_uncertainty: 'release_coordinate_uncertainty',
+                utm_northing: 'release_utm_northing',
+                utm_easting: 'release_utm_easting'
+              }
+            : undefined
+        }
+        otherPrimaryFields={[
+
+            <FormControlLabel
+              sx={{ mb: -1, ml: 0 }}
+              control={
+                <Checkbox
+                  onChange={handleChange}
+                  checked={values.captures[index].show_release}
+                  disabled={!!values.captures[index].release_location_id}
+                  name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
+                />
+              }
+              label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
+            />
+
+        ]}
+      />
+
       <Box component="fieldset">
-        <Typography flexGrow={1} component="legend">
+        <Typography component="legend">
           Additional Information
         </Typography>
-        <Grid container>
-          <Grid item xs={12}>
-            <CustomTextField
-              other={{
-                multiline: true,
-                minRows: 2,
-                required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment')
-              }}
-              label="Comments"
-              name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
-              handleBlur={handleBlur}
-            />
-          </Grid>
-        </Grid>
+        <CustomTextField
+          other={{
+            multiline: true,
+            minRows: 2,
+            required: isRequiredInSchema(AnimalCaptureSchema, 'capture_comment')
+          }}
+          label="Comments"
+          name={getAnimalFieldName<IAnimalCapture>(name, 'capture_comment', index)}
+          handleBlur={handleBlur}
+        />
       </Box>
-    </>
+    </Stack>
   );
 };
 

@@ -80,7 +80,7 @@ const appTheme = createTheme({
         },
         legend: {
           '&.MuiTypography-root': {
-            marginBottom: '18px',
+            marginBottom: '15px',
             padding: 0,
             fontSize: '0.875rem',
             fontWeight: 700,
