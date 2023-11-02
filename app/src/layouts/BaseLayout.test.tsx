@@ -1,5 +1,7 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { render } from 'test-helpers/test-utils';
 import BaseLayout from './BaseLayout';
 
@@ -9,14 +11,18 @@ describe('BaseLayout', () => {
   it('renders correctly', () => {
     process.env.REACT_APP_NODE_ENV = 'local';
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByText } = render(
-      <Router history={history}>
-        <BaseLayout>
-          <div>
-            <p>The base layout content</p>
-          </div>
-        </BaseLayout>
-      </Router>
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <BaseLayout>
+            <div>
+              <p>The base layout content</p>
+            </div>
+          </BaseLayout>
+        </Router>
+      </AuthStateContext.Provider>
     );
 
     expect(

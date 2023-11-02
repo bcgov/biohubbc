@@ -38,17 +38,15 @@ describe('LandingPage', () => {
       // Should see the Log in button
       const loginButton = getByTestId('landing_page_login_button');
       expect(loginButton).toBeVisible();
-      expect(loginButton).toHaveTextContent('Log In');
-      expect(loginButton).toHaveAttribute('href', '/login');
     });
 
     it('Case 2: Signed in for the first time, no access requests sent', async () => {
       const authState = getMockAuthState({
         base: SystemUserAuthState,
-        overrides: { keycloakWrapper: { isSystemUser: () => false } }
+        overrides: { simsUserWrapper: { systemUserId: undefined } }
       });
 
-      const { getByText, getByTestId, queryByText } = render(
+      const { getByText, getByTestId, queryByTestId } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -62,7 +60,7 @@ describe('LandingPage', () => {
       expect(greeting).toHaveTextContent('Welcome, testusername');
 
       // Should not see the Log In button
-      expect(queryByText('Log In')).not.toBeInTheDocument();
+      expect(queryByTestId('landing_page_login_button')).not.toBeInTheDocument();
 
       // Should see the no-access message
       expect(getByText('You have not been granted permission to access this application.')).toBeVisible();
@@ -81,10 +79,10 @@ describe('LandingPage', () => {
     it('Case 3: Signed in, has sent an access request and is awaiting approval', () => {
       const authState = getMockAuthState({
         base: SystemUserAuthState,
-        overrides: { keycloakWrapper: { isSystemUser: () => false, hasAccessRequest: true } }
+        overrides: { simsUserWrapper: { systemUserId: undefined, hasAccessRequest: true } }
       });
 
-      const { getByText, getByTestId, queryByText } = render(
+      const { getByText, getByTestId, queryByTestId } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -98,7 +96,7 @@ describe('LandingPage', () => {
       expect(greeting).toHaveTextContent('Welcome back, testusername');
 
       // Should not see the Log In button
-      expect(queryByText('Log In')).not.toBeInTheDocument();
+      expect(queryByTestId('landing_page_login_button')).not.toBeInTheDocument();
 
       // Should see "your request is pending" message
       expect(getByText('Access request pending')).toBeVisible();
@@ -107,19 +105,18 @@ describe('LandingPage', () => {
       // Should see the Logout button
       const logoutButton = getByTestId('menu_log_out');
       expect(logoutButton).toBeVisible();
-      expect(logoutButton).toHaveAttribute('href', '/logout');
 
       // Should not see the Request access button
-      expect(queryByText('Request Access')).not.toBeInTheDocument();
+      expect(queryByTestId('landing_page_request_access_button')).not.toBeInTheDocument();
     });
 
     it('Case 4: Signed in, is added as a project participant, but still has a pending access request', () => {
       const authState = getMockAuthState({
         base: SystemUserAuthState,
-        overrides: { keycloakWrapper: { hasAccessRequest: true, hasOneOrMoreProjectRoles: true } }
+        overrides: { simsUserWrapper: { hasAccessRequest: true, hasOneOrMoreProjectRoles: true } }
       });
 
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText, queryByTestId } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -133,10 +130,10 @@ describe('LandingPage', () => {
       expect(greeting).toHaveTextContent('Welcome back, testuser');
 
       // Should not see the Log In button
-      expect(queryByText('Log In')).not.toBeInTheDocument();
+      expect(queryByTestId('landing_page_login_button')).not.toBeInTheDocument();
 
       // Should not see the Request Access button
-      expect(queryByText('Request Access')).not.toBeInTheDocument();
+      expect(queryByTestId('landing_page_request_access_button')).not.toBeInTheDocument();
 
       // Should not see "your request is pending" message
       expect(queryByText('Your access request is currently pending.')).not.toBeInTheDocument();
@@ -150,10 +147,10 @@ describe('LandingPage', () => {
     it('Case 5: Signed in, has a viewer role on some project, but not a system role that allows project creation', () => {
       const authState = getMockAuthState({
         base: SystemUserAuthState,
-        overrides: { keycloakWrapper: { hasOneOrMoreProjectRoles: true } }
+        overrides: { simsUserWrapper: { hasOneOrMoreProjectRoles: true } }
       });
 
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByText, queryByTestId } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -167,10 +164,10 @@ describe('LandingPage', () => {
       expect(greeting).toHaveTextContent('Welcome back, testuser');
 
       // Should not see the Log In button
-      expect(queryByText('Log In')).not.toBeInTheDocument();
+      expect(queryByTestId('landing_page_login_button')).not.toBeInTheDocument();
 
       // Should not see the Request Access button
-      expect(queryByText('Request Access')).not.toBeInTheDocument();
+      expect(queryByTestId('landing_page_request_access_button')).not.toBeInTheDocument();
 
       // Should not see "your request is pending" message
       expect(queryByText('Your access request is currently pending.')).not.toBeInTheDocument();
@@ -185,14 +182,14 @@ describe('LandingPage', () => {
       const authState = getMockAuthState({
         base: SystemUserAuthState,
         overrides: {
-          keycloakWrapper: {
+          simsUserWrapper: {
             hasOneOrMoreProjectRoles: true,
-            hasSystemRole: (systemRoles?: string[]) => Boolean(systemRoles?.includes(SYSTEM_ROLE.PROJECT_CREATOR))
+            roleNames: [SYSTEM_ROLE.PROJECT_CREATOR]
           }
         }
       });
 
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByTestId } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -206,7 +203,7 @@ describe('LandingPage', () => {
       expect(greeting).toHaveTextContent('Welcome back, testuser');
 
       // Should not see the Log In button
-      expect(queryByText('Log In')).not.toBeInTheDocument();
+      expect(queryByTestId('landing_page_login_button')).not.toBeInTheDocument();
 
       // Should see the View Projects button
       const viewProjectsButton = getByTestId('landing_page_projects_button');
@@ -222,7 +219,7 @@ describe('LandingPage', () => {
     it('Case 7: Signed in, has an admin role', () => {
       const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-      const { getByTestId, queryByText } = render(
+      const { getByTestId, queryByTestId } = render(
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
             <LandingPage />
@@ -236,7 +233,7 @@ describe('LandingPage', () => {
       expect(greeting).toHaveTextContent('Welcome back, admin-username');
 
       // Should not see the Log In button
-      expect(queryByText('Log In')).not.toBeInTheDocument();
+      expect(queryByTestId('landing_page_login_button')).not.toBeInTheDocument();
 
       // Should see the View Projects button
       const viewProjectsButton = getByTestId('landing_page_projects_button');

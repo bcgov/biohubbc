@@ -1,7 +1,9 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { MemoryRouter } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { getObservationSubmissionResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import SurveyObservations from './SurveyObservations';
@@ -43,12 +45,16 @@ describe('SurveyObservations', () => {
       projectId: 1
     };
 
+    const authState = getMockAuthState({ base: SystemAdminAuthState });
+
     const { getByText } = render(
-      <MemoryRouter>
-        <SurveyContext.Provider value={mockSurveyContext}>
-          <SurveyObservations />
-        </SurveyContext.Provider>
-      </MemoryRouter>
+      <AuthStateContext.Provider value={authState}>
+        <MemoryRouter>
+          <SurveyContext.Provider value={mockSurveyContext}>
+            <SurveyObservations />
+          </SurveyContext.Provider>
+        </MemoryRouter>
+      </AuthStateContext.Provider>
     );
 
     await waitFor(() => {

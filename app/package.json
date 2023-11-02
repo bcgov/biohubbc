@@ -18,7 +18,8 @@
     "lint": "eslint src/ --ext .jsx,.js,.ts,.tsx",
     "lint-fix": "npm run lint -- --fix",
     "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
-    "format-fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
+    "format-fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
+    "fix": "npm-run-all -l -s lint-fix format-fix"
   },
   "engines": {
     "node": ">= 14.0.0",
@@ -39,7 +40,6 @@
     "@mui/x-data-grid": "^6.3.1",
     "@mui/x-data-grid-pro": "^6.12.1",
     "@mui/x-date-pickers": "^6.11.0",
-    "@react-keycloak/web": "^3.4.0",
     "@react-leaflet/core": "~2.1.0",
     "@tmcw/togeojson": "~4.2.0",
     "@turf/bbox": "~6.3.0",
@@ -51,7 +51,6 @@
     "clsx": "~1.2.1",
     "express": "~4.17.1",
     "formik": "~2.4.1",
-    "keycloak-js": "^21.1.1",
     "leaflet": "~1.9.4",
     "leaflet-draw": "~1.0.4",
     "leaflet-fullscreen": "~1.0.2",
@@ -59,6 +58,8 @@
     "lodash-es": "~4.17.21",
     "moment": "~2.29.4",
     "node-sass": "~4.14.1",
+    "npm-run-all": "^4.1.5",
+    "oidc-client-ts": "^2.3.0",
     "proj4": "^2.9.0",
     "qs": "~6.9.4",
     "react": "^17.0.2",
@@ -67,6 +68,7 @@
     "react-leaflet": "~4.2.1",
     "react-leaflet-cluster": "~2.1.0",
     "react-number-format": "~4.5.2",
+    "react-oidc-context": "^2.3.1",
     "react-router": "^5.3.3",
     "react-router-dom": "^5.3.3",
     "react-window": "~1.8.6",

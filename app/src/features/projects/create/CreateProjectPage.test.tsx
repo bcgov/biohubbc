@@ -1,3 +1,4 @@
+import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
@@ -13,6 +14,7 @@ import { IDraftResponse } from 'interfaces/useDraftApi.interface';
 import { ICreateProjectResponse } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { MemoryRouter, Router } from 'react-router';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import {
   cleanup,
@@ -57,15 +59,19 @@ const mockCodesContext: ICodesContext = {
   } as DataLoader<any, any, any>
 };
 
+const authState = getMockAuthState({ base: SystemAdminAuthState });
+
 const renderContainer = () => {
   return render(
-    <CodesContext.Provider value={mockCodesContext}>
-      <DialogContextProvider>
-        <Router history={history}>
-          <CreateProjectPage />,
-        </Router>
-      </DialogContextProvider>
-    </CodesContext.Provider>
+    <AuthStateContext.Provider value={authState}>
+      <CodesContext.Provider value={mockCodesContext}>
+        <DialogContextProvider>
+          <Router history={history}>
+            <CreateProjectPage />,
+          </Router>
+        </DialogContextProvider>
+      </CodesContext.Provider>
+    </AuthStateContext.Provider>
   );
 };
 
@@ -179,11 +185,13 @@ describe('CreateProjectPage', () => {
         });
 
         const { queryAllByText } = render(
-          <CodesContext.Provider value={mockCodesContext}>
-            <MemoryRouter initialEntries={['?draftId=1']}>
-              <CreateProjectPage />
-            </MemoryRouter>
-          </CodesContext.Provider>
+          <AuthStateContext.Provider value={authState}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <MemoryRouter initialEntries={['?draftId=1']}>
+                <CreateProjectPage />
+              </MemoryRouter>
+            </CodesContext.Provider>
+          </AuthStateContext.Provider>
         );
 
         await waitFor(() => {
@@ -203,11 +211,13 @@ describe('CreateProjectPage', () => {
         });
 
         const { getByText, findAllByText } = render(
-          <CodesContext.Provider value={mockCodesContext}>
-            <MemoryRouter initialEntries={['?draftId=1']}>
-              <CreateProjectPage />
-            </MemoryRouter>
-          </CodesContext.Provider>
+          <AuthStateContext.Provider value={authState}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <MemoryRouter initialEntries={['?draftId=1']}>
+                <CreateProjectPage />
+              </MemoryRouter>
+            </CodesContext.Provider>
+          </AuthStateContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -235,11 +245,13 @@ describe('CreateProjectPage', () => {
         });
 
         const { getByText, findAllByText, getByTestId, queryByText } = render(
-          <CodesContext.Provider value={mockCodesContext}>
-            <MemoryRouter initialEntries={['?draftId=1']}>
-              <CreateProjectPage />
-            </MemoryRouter>
-          </CodesContext.Provider>
+          <AuthStateContext.Provider value={authState}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <MemoryRouter initialEntries={['?draftId=1']}>
+                <CreateProjectPage />
+              </MemoryRouter>
+            </CodesContext.Provider>
+          </AuthStateContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -274,11 +286,13 @@ describe('CreateProjectPage', () => {
         });
 
         const { getByText, findAllByText, getByTestId } = render(
-          <CodesContext.Provider value={mockCodesContext}>
-            <MemoryRouter initialEntries={['?draftId=1']}>
-              <CreateProjectPage />
-            </MemoryRouter>
-          </CodesContext.Provider>
+          <AuthStateContext.Provider value={authState}>
+            <CodesContext.Provider value={mockCodesContext}>
+              <MemoryRouter initialEntries={['?draftId=1']}>
+                <CreateProjectPage />
+              </MemoryRouter>
+            </CodesContext.Provider>
+          </AuthStateContext.Provider>
         );
 
         const deleteButton = await findAllByText('Delete Draft', { exact: false });
@@ -315,11 +329,13 @@ describe('CreateProjectPage', () => {
       });
 
       const { getByDisplayValue } = render(
-        <CodesContext.Provider value={mockCodesContext}>
-          <MemoryRouter initialEntries={['?draftId=1']}>
-            <CreateProjectPage />
-          </MemoryRouter>
-        </CodesContext.Provider>
+        <AuthStateContext.Provider value={authState}>
+          <CodesContext.Provider value={mockCodesContext}>
+            <MemoryRouter initialEntries={['?draftId=1']}>
+              <CreateProjectPage />
+            </MemoryRouter>
+          </CodesContext.Provider>
+        </AuthStateContext.Provider>
       );
 
       await waitFor(() => {
@@ -478,7 +494,12 @@ describe('CreateProjectPage', () => {
           iucn: { classificationDetails: [] },
           participants: [
             {
-              project_role_names: ['Coordinator']
+              agency: 'agency',
+              display_name: 'admin-displayname',
+              email: 'admin@email.com',
+              identity_source: 'IDIR',
+              project_role_names: ['Coordinator'],
+              system_user_id: 1
             }
           ]
         });

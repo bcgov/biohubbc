@@ -199,7 +199,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         ON
           aa.administrative_activity_status_type_id = aast.administrative_activity_status_type_id
         WHERE
-            (aa.data -> 'userGuid')::text =  '"' || ${userGUID} || '"'
+            LOWER(aa.data ->> 'userGuid') =  LOWER(${userGUID})
         AND
           aast.name = 'Pending'
       ),
@@ -217,7 +217,7 @@ export class AdministrativeActivityRepository extends BaseRepository {
         ON
           pp.system_user_id = su.system_user_id 
         WHERE
-          su.user_guid = ${userGUID}
+          LOWER(su.user_guid) = LOWER(${userGUID})
       ) SELECT
         *
       FROM

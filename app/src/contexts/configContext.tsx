@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { KeycloakConfig } from 'keycloak-js';
 import React, { useEffect, useState } from 'react';
 import { ensureProtocol } from 'utils/Utils';
 
@@ -9,7 +8,11 @@ export interface IConfig {
   NODE_ENV: string;
   REACT_APP_NODE_ENV: string;
   VERSION: string;
-  KEYCLOAK_CONFIG: KeycloakConfig;
+  KEYCLOAK_CONFIG: {
+    authority: string;
+    realm: string;
+    clientId: string;
+  };
   SITEMINDER_LOGOUT_URL: string;
   MAX_UPLOAD_NUM_FILES: number;
   MAX_UPLOAD_FILE_SIZE: number;
@@ -23,7 +26,7 @@ export const ConfigContext = React.createContext<IConfig | undefined>({
   REACT_APP_NODE_ENV: '',
   VERSION: '',
   KEYCLOAK_CONFIG: {
-    url: '',
+    authority: '',
     realm: '',
     clientId: ''
   },
@@ -53,7 +56,7 @@ const getLocalConfig = (): IConfig => {
     REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
     VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
     KEYCLOAK_CONFIG: {
-      url: process.env.REACT_APP_KEYCLOAK_HOST || '',
+      authority: process.env.REACT_APP_KEYCLOAK_HOST || '',
       realm: process.env.REACT_APP_KEYCLOAK_REALM || '',
       clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || ''
     },
