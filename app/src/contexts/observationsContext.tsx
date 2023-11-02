@@ -212,11 +212,12 @@ export const ObservationsContextProvider = (props: PropsWithChildren<Record<neve
         }
 
         _setPendingDeletionObservations([]);
-        setInitialRows(
-          initialRows.filter((row) => {
-            return observationRecords.every((record) => record.id !== row.id);
-          })
-        );
+        setInitialRows(initialRows.filter((row) => {
+          return observationRecords.every((record) => record.id !== row.id);
+        }));
+        _setUnsavedRecordIds(unsavedRecordIds.filter((recordId) => {
+          return observationRecords.every((record) => record.id !== recordId);
+        }));
       } catch {
         // Close yes-no dialog
         dialogContext.setYesNoDialog({
