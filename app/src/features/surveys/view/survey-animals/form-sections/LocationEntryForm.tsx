@@ -191,21 +191,24 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   };
 
   return (
-    <Stack flexDirection="column" gap={3} maxWidth={800}>
+    <Stack flexDirection="column" gap={4} maxWidth={800}>
       <Box component="fieldset">
-        <Box display="flex">
-          {primaryLocationFields.fieldsetTitle ? (
-            <Typography flexGrow={1} component="legend">
-              {primaryLocationFields.fieldsetTitle}
-            </Typography>
-          ) : null}
-          <FormControlLabel
-            control={<Checkbox checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} />}
-            label="UTM Coordinates"
-          />
-        </Box>
-        <Box mb={2}>{renderLocationFields(primaryLocationFields)}</Box>
-        {otherPrimaryFields}
+        {primaryLocationFields.fieldsetTitle ? (
+          <Typography component="legend">{primaryLocationFields.fieldsetTitle}</Typography>
+        ) : null}
+        <FormControlLabel
+          control={
+            <Checkbox size="small" checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} />
+          }
+          label="UTM Coordinates"
+          sx={{
+            display: 'none'
+          }}
+        />
+        <Stack gap={1}>
+          {renderLocationFields(primaryLocationFields)}
+          {otherPrimaryFields}
+        </Stack>
       </Box>
 
       <Box component="fieldset">
