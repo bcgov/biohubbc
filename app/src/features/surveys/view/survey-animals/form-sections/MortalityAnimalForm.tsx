@@ -23,24 +23,118 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
 
   const value = values.mortality[index];
 
-  const renderFields = (): JSX.Element => {
-    return (
-      <Stack 
-        key={'mortality-fields'}
-        gap={3}
-      >
-        
+  return (
+    <Stack gap={4}>
+
+      <SingleDateField
+        name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
+        required={isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp')}
+        label={'Mortality Date'}
+      />
+
+      <Box component="fieldset">
+        <Typography component="legend">Location</Typography>
+        <LocationEntryForm
+          name={name}
+          index={index}
+          value={value}
+          primaryLocationFields={{
+            latitude: 'mortality_latitude',
+            longitude: 'mortality_longitude',
+            coordinate_uncertainty: 'mortality_coordinate_uncertainty',
+            utm_northing: 'mortality_utm_northing',
+            utm_easting: 'mortality_utm_easting'
+          }}
+        />
+      </Box>
+
+      <Box component="fieldset">
+        <Typography component="legend">Proximate Cause of Death</Typography>
         <Grid container spacing={1}>
-          <Grid item xs={12} md={4}>
-            <SingleDateField
-              name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
-              required={isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp')}
-              label={'Mortality Date'}
-              other={{ size: 'medium' }}
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_id', index)}
+              handleChangeSideEffect={(_value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
+              label={'Reason'}
+              controlProps={{
+                required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_id')
+              }}
+              id={`${index}-pcod-reason`}
+              route={'lookups/cods'}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_confidence', index)}
+              label={'Confidence'}
+              controlProps={{
+                required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_confidence')
+              }}
+              id={`${index}-pcod-confidence`}
+              route={'lookups/cause-of-death-confidence'}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_predated_by_taxon_id', index)}
+              label={'Taxon'}
+              controlProps={{
+                disabled: pcodTaxonDisabled,
+                required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_predated_by_taxon_id')
+              }}
+              id={`${index}-pcod-taxon`}
+              route={'lookups/taxons'}
             />
           </Grid>
         </Grid>
+      </Box>
 
+      <Box component="fieldset">
+        <Typography component="legend">Ultimate Cause of Death</Typography>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_id', index)}
+              handleChangeSideEffect={(_value, label) => {
+                setUcodTaxonDisabled(!label.includes('Predation'));
+              }}
+              label={'Reason'}
+              controlProps={{
+                required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_id')
+              }}
+              id={`${index}-ucod-reason`}
+              route={'lookups/cods'}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_confidence', index)}
+              label={'Confidence'}
+              controlProps={{
+                required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_confidence')
+              }}
+              id={`${index}-ucod-confidence`}
+              route={'lookups/cause-of-death-confidence'}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <CbSelectField
+              name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_predated_by_taxon_id', index)}
+              label={'Taxon'}
+              controlProps={{
+                disabled: ucodTaxonDisabled,
+                required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_predated_by_taxon_id')
+              }}
+              id={`${index}-ucod-taxon`}
+              route={'lookups/taxons'}
+            />
+          </Grid>
+
+        </Grid>
+      </Box>
+
+      <Box component="fieldset">
+        <Typography component="legend">Additional Details</Typography>
         <CustomTextField
           other={{
             required: isRequiredInSchema(AnimalMortalitySchema, 'mortality_comment'),
@@ -51,113 +145,10 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
           name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_comment', index)}
           handleBlur={handleBlur}
         />
-
-        <Box component="fieldset">
-          <Typography component="legend">Proximate Cause of Death</Typography>
-          <Grid container spacing={1}>
-            <Grid item xs={12} sm={4}>
-              <CbSelectField
-                name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_id', index)}
-                handleChangeSideEffect={(_value, label) => setPcodTaxonDisabled(!label.includes('Predation'))}
-                label={'Reason'}
-                controlProps={{
-                  required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_id')
-                }}
-                id={`${index}-pcod-reason`}
-                route={'lookups/cods'}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <CbSelectField
-                name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_cause_of_death_confidence', index)}
-                label={'Confidence'}
-                controlProps={{
-                  required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_cause_of_death_confidence')
-                }}
-                id={`${index}-pcod-confidence`}
-                route={'lookups/cause-of-death-confidence'}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <CbSelectField
-                name={getAnimalFieldName<IAnimalMortality>(name, 'proximate_predated_by_taxon_id', index)}
-                label={'Taxon'}
-                controlProps={{
-                  disabled: pcodTaxonDisabled,
-                  required: isRequiredInSchema(AnimalMortalitySchema, 'proximate_predated_by_taxon_id')
-                }}
-                id={`${index}-pcod-taxon`}
-                route={'lookups/taxons'}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-
-        <Box component="fieldset">
-          <Typography component="legend">Ultimate Cause of Death</Typography>
-          <Grid container spacing={1}>
-            <Grid item xs={12} sm={4}>
-              <CbSelectField
-                name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_id', index)}
-                handleChangeSideEffect={(_value, label) => {
-                  setUcodTaxonDisabled(!label.includes('Predation'));
-                }}
-                label={'Reason'}
-                controlProps={{
-                  required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_id')
-                }}
-                id={`${index}-ucod-reason`}
-                route={'lookups/cods'}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <CbSelectField
-                name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_cause_of_death_confidence', index)}
-                label={'Confidence'}
-                controlProps={{
-                  required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_cause_of_death_confidence')
-                }}
-                id={`${index}-ucod-confidence`}
-                route={'lookups/cause-of-death-confidence'}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <CbSelectField
-                name={getAnimalFieldName<IAnimalMortality>(name, 'ultimate_predated_by_taxon_id', index)}
-                label={'Taxon'}
-                controlProps={{
-                  disabled: ucodTaxonDisabled,
-                  required: isRequiredInSchema(AnimalMortalitySchema, 'ultimate_predated_by_taxon_id')
-                }}
-                id={`${index}-ucod-taxon`}
-                route={'lookups/taxons'}
-              />
-            </Grid>
-
-          </Grid>
-        </Box>
-
-      </Stack>
-    );
-  };
-
-return (
-  <>
-    <LocationEntryForm
-      name={name}
-      index={index}
-      value={value}
-      primaryLocationFields={{
-        latitude: 'mortality_latitude',
-        longitude: 'mortality_longitude',
-        coordinate_uncertainty: 'mortality_coordinate_uncertainty',
-        utm_northing: 'mortality_utm_northing',
-        utm_easting: 'mortality_utm_easting'
-      }}
-      otherPrimaryFields={[renderFields()]}
-    />
-  </>
-);
+      </Box>
+      
+    </Stack>
+  );
 };
 
 export default MortalityAnimalFormContent;
