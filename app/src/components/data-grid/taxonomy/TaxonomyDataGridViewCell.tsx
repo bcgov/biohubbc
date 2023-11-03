@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
+import { TaxonomyContext } from 'contexts/taxonomyContext';
+import { useContext } from 'react';
 
 export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
@@ -19,29 +19,15 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
 ) => {
   const { dataGridProps } = props;
 
-  const biohubApi = useBiohubApi();
+  const taxonomyContext = useContext(TaxonomyContext);
 
-  const taxonomyDataLoader = useDataLoader(async () => {
-    if (!dataGridProps.value) {
-      return { searchResponse: [] };
-    }
-
-    const id = Number(dataGridProps.value);
-
-    if (isNaN(id)) {
-      return { searchResponse: [] };
-    }
-
-    return biohubApi.taxonomy.getSpeciesFromIds([Number(dataGridProps.value)]);
-  });
-
-  taxonomyDataLoader.load();
-
-  if (!taxonomyDataLoader.isReady) {
+  if (!dataGridProps.value) {
     return null;
   }
 
-  if (taxonomyDataLoader.data?.searchResponse?.length !== 1) {
+  const response = taxonomyContext.getSpeciesTaxonomyById(dataGridProps.value);
+
+  if (!response) {
     return null;
   }
 
@@ -50,7 +36,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
       variant="body2"
       component="div"
       sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-      {taxonomyDataLoader.data?.searchResponse[0].label}
+      {response.label}
     </Typography>
   );
 };

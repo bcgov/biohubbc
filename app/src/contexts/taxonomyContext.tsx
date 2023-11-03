@@ -3,32 +3,45 @@ import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
 import { PropsWithChildren, createContext, useCallback, useRef } from 'react';
 
 export interface ITaxonomyContext {
-  getSpeciesTaxonomyById: (id: number) => Promise<ITaxonomy>
+  getSpeciesTaxonomyById: (id: number) => ITaxonomy | null
 }
 
 export const TaxonomyContext = createContext<ITaxonomyContext>({
-  getSpeciesTaxonomyById: () => Promise.reject()
+  getSpeciesTaxonomyById: () => null
 });
 
 export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const biohubApi = useBiohubApi();
-  const _taxonomyCache = useRef<Record<number, Promise<ITaxonomy>>>({});
+  const _taxonomyCache = useRef<Record<number, ITaxonomy | null>>({});
+  const _dispatchedIds = useRef<Set<number>>(new Set<number>());
 
-  const getSpeciesTaxonomyById: (id: number) => Promise<ITaxonomy> = useCallback(async (id: number) => {
-    if (Object.hasOwn(_taxonomyCache.current, id)) {
-      return _taxonomyCache.current[id]
+  const getSpeciesTaxonomyById: (id: number) => ITaxonomy | null = useCallback((id: number) => {
+    console.log('getSpeciesTaxonomyById()')
+    if (_taxonomyCache.current[id]) {
+      // Result is in the cache
+      console.log('Found for', id, _taxonomyCache.current[id])
+      return _taxonomyCache.current[id];
     }
 
-    _taxonomyCache.current[id] = biohubApi.taxonomy.getSpeciesFromIds([id]).then((result) => {
-      return result.searchResponse[0]
+    if (_dispatchedIds.current.has(id)) {
+      // Promise is pending
+      return null;
+    }
+
+    // Dispatch the request to cache the result
+    _dispatchedIds.current.add(id);
+    biohubApi.taxonomy.getSpeciesFromIds([id]).then((result) => {
+      _taxonomyCache.current[id] = result.searchResponse[0];
     });
 
-    return _taxonomyCache.current[id];
-  }, []);
+    return null;
+  }, [_taxonomyCache, _dispatchedIds]);
 
   const taxonomyContext: ITaxonomyContext = {
     getSpeciesTaxonomyById
   }
+
+  console.log({ _taxonomyCache })
 
   return (
     <TaxonomyContext.Provider value={taxonomyContext}>
