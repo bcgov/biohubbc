@@ -37,9 +37,8 @@ export const EditDeleteStubCard = (props: EditDeleteStubCardProps) => {
   const { header, subHeader, onClickEdit, onClickDelete } = props;
   return (
     <Card
-      variant="outlined"
       sx={{
-        mb: 1,
+        mb: 2,
         '& .MuiCardHeader-subheader': {
           display: '-webkit-box',
           WebkitLineClamp: '2',

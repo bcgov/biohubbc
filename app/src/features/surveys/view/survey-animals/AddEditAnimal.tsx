@@ -338,7 +338,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             <Typography
               variant="body1"
               color="textSecondary"
-              maxWidth={'110ch'}
+              maxWidth={'88ch'}
               sx={{
                 mb: 5
               }}>
