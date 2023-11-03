@@ -78,6 +78,9 @@ export function getSpeciesFromIds(): RequestHandler {
       const taxonomyService = new TaxonomyService();
       const response = await taxonomyService.getSpeciesFromIds(ids as string[]);
 
+      // Overwrite default cache-control header, allow caching up to 7 days
+      res.setHeader('Cache-Control', 'max-age=604800'); 
+
       res.status(200).json({ searchResponse: response });
     } catch (error) {
       defaultLog.error({ label: 'getSearchResults', message: 'error', error });
