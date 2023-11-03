@@ -1,4 +1,4 @@
-import { Feature, Geometry, GeometryCollection, Properties } from '@turf/helpers';
+import { Feature } from '@turf/helpers';
 import { IDBConnection } from '../database/db';
 import {
   SampleLocationRecord,
@@ -12,9 +12,11 @@ import { SampleMethodService } from './sample-method-service';
 export interface PostSampleLocations {
   survey_sample_site_id: number | null;
   survey_id: number;
-  name: string;
-  description: string;
-  survey_sample_sites: Feature[];
+  survey_sample_sites: {
+    name: string;
+    description: string;
+    feature: Feature;
+  }[];
   methods: InsertSampleMethodRecord[];
 }
 
@@ -79,25 +81,13 @@ export class SampleLocationService extends DBService {
    */
   async insertSampleLocations(sampleLocations: PostSampleLocations): Promise<SampleLocationRecord[]> {
     const methodService = new SampleMethodService(this.connection);
-    const shapeFileFeatureName = (geometry: Feature<Geometry | GeometryCollection, Properties>): string | undefined => {
-      const nameKey = Object.keys(geometry.properties ?? {}).find(
-        (key) => key.toLowerCase() === 'name' || key.toLowerCase() === 'label'
-      );
-      return nameKey && geometry.properties ? geometry.properties[nameKey].substring(0, 50) : undefined;
-    };
-    const shapeFileFeatureDesc = (geometry: Feature<Geometry | GeometryCollection, Properties>): string | undefined => {
-      const descKey = Object.keys(geometry.properties ?? {}).find(
-        (key) => key.toLowerCase() === 'desc' || key.toLowerCase() === 'descr' || key.toLowerCase() === 'des'
-      );
-      return descKey && geometry.properties ? geometry.properties[descKey].substring(0, 250) : undefined;
-    };
     // Create a sample location for each feature found
     const promises = sampleLocations.survey_sample_sites.map((item) => {
       const sampleLocation = {
         survey_id: sampleLocations.survey_id,
-        name: shapeFileFeatureName(item), // If this function returns undefined, insertSampleLocation will auto-generate a name instead.
-        description: shapeFileFeatureDesc(item) || sampleLocations.description,
-        geojson: item
+        name: item.name,
+        description: item.description,
+        geojson: item.feature
       };
 
       return this.sampleLocationRepository.insertSampleLocation(sampleLocation);

@@ -40,11 +40,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export interface ICreateSamplingSiteRequest {
+interface ISurveySampleSite {
   name: string;
   description: string;
+  feature: Feature;
+}
+
+export interface ICreateSamplingSiteRequest {
   survey_id: number;
-  survey_sample_sites: Feature[]; // extracted list from shape files
+  survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
   methods: ISurveySampleMethodData[];
 }
 
@@ -66,9 +70,11 @@ const SamplingSitePage = () => {
   }
 
   const samplingSiteYupSchema = yup.object({
-    name: yup.string().default(''),
-    description: yup.string().default(''),
-    survey_sample_sites: yup.array(yup.object()).min(1, 'At least one sampling site location is required'),
+    survey_sample_sites: yup
+      .array(
+        yup.object({ name: yup.string().default(''), description: yup.string().default(''), feature: yup.object({}) })
+      )
+      .min(1, 'At least one sampling site location is required'),
     methods: yup
       .array(yup.object().concat(SamplingSiteMethodYupSchema))
       .min(1, 'At least one sampling method is required')
@@ -92,7 +98,7 @@ const SamplingSitePage = () => {
   const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
     try {
       setIsSubmitting(true);
-
+      
       await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
 
       // Disable cancel prompt so we can navigate away from the page after saving
