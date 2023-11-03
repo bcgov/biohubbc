@@ -17,8 +17,9 @@ import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
+import { ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import ObservationsTable from 'features/surveys/observations/ObservationsTable';
+import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
@@ -29,6 +30,7 @@ const ObservationComponent = () => {
   const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
   const observationsContext = useContext(ObservationsContext);
+  const observationsTableContext = useContext(ObservationsTableContext);
   const surveyContext = useContext(SurveyContext);
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
@@ -57,7 +59,7 @@ const ObservationComponent = () => {
               </Typography>
             )
           });
-          observationsContext.refreshRecords().then(() => {
+          observationsTableContext.refreshObservationRecords().then(() => {
             setProcessingRecords(false);
           });
         })
@@ -67,13 +69,8 @@ const ObservationComponent = () => {
     });
   };
 
-  const handleDeleteSelectedObservations = () => {
-    const selectedRecords = observationsContext.getSelectedObservations();
-    observationsContext.deleteObservationRecords(selectedRecords);
-  };
-
-  const hasUnsavedChanges = observationsContext.hasUnsavedChanges();
-  const numSelectedRows = observationsContext.rowSelectionModel.length;
+  const hasUnsavedChanges = observationsTableContext.hasUnsavedChanges;
+  const numSelectedRows = observationsTableContext.rowSelectionModel.length;
   const observationCount =
     observationsContext.observationsDataLoader?.data?.supplementaryObservationData?.observationCount ?? 0;
 
@@ -98,7 +95,7 @@ const ObservationComponent = () => {
         open={showConfirmRemoveAllDialog}
         onYes={() => {
           setShowConfirmRemoveAllDialog(false);
-          observationsContext.revertRecords();
+          observationsTableContext.revertObservationRecords();
         }}
         onClose={() => setShowConfirmRemoveAllDialog(false)}
         onNo={() => setShowConfirmRemoveAllDialog(false)}
@@ -124,12 +121,7 @@ const ObservationComponent = () => {
             </Typography>
           </Typography>
 
-
-          <Box
-            display="flex"
-            overflow="hidden"
-            gap={1}
-            whiteSpace='nowrap'>
+          <Box display="flex" overflow="hidden" gap={1} whiteSpace="nowrap">
             <Button
               variant="contained"
               color="primary"
@@ -141,25 +133,25 @@ const ObservationComponent = () => {
               variant="contained"
               color="primary"
               startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => observationsContext.createNewRecord()}
-              disabled={observationsContext.isSaving}>
+              onClick={() => observationsTableContext.addObservationRecord()}
+              disabled={observationsTableContext.isSaving}>
               Add Record
             </Button>
             <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
               <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
                 <LoadingButton
-                  loading={observationsContext.isSaving}
+                  loading={observationsTableContext.isSaving}
                   variant="contained"
                   color="primary"
-                  onClick={() => observationsContext.stopEditAndSaveRows()}
-                  disabled={observationsContext.isSaving}>
+                  onClick={() => observationsTableContext.saveObservationRecords()}
+                  disabled={observationsTableContext.isSaving}>
                   Save
                 </LoadingButton>
                 <Button
                   variant="outlined"
                   color="primary"
                   onClick={() => setShowConfirmRemoveAllDialog(true)}
-                  disabled={observationsContext.isSaving}>
+                  disabled={observationsTableContext.isSaving}>
                   Discard Changes
                 </Button>
               </Box>
@@ -169,7 +161,7 @@ const ObservationComponent = () => {
                 onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
                   setMenuAnchorEl(event.currentTarget);
                 }}
-                size='small'
+                size="small"
                 disabled={numSelectedRows === 0}
                 aria-label="observation options">
                 <Icon size={1} path={mdiDotsVertical} />
@@ -192,9 +184,10 @@ const ObservationComponent = () => {
                 }}>
                 <MenuItem
                   onClick={() => {
-                    handleDeleteSelectedObservations();
+                    observationsTableContext.deleteSelectedObservationRecords();
                     handleCloseMenu();
-                  }}>
+                  }}
+                  disabled={observationsTableContext.isSaving}>
                   <ListItemIcon>
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </ListItemIcon>
@@ -203,7 +196,6 @@ const ObservationComponent = () => {
               </Menu>
             </Box>
           </Box>
-
         </Toolbar>
         <Box
           display="flex"

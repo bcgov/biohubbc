@@ -58,7 +58,14 @@ POST.apiDoc = {
               type: 'array',
               minItems: 1,
               items: {
-                type: 'integer'
+                anyOf: [
+                  {
+                    type: 'integer'
+                  },
+                  {
+                    type: 'string'
+                  }
+                ]
               }
             }
           }

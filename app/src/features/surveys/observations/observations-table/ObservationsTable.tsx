@@ -4,11 +4,7 @@ import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
-import {
-  DataGrid,
-  GridColDef,
-  GridEventListener
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
@@ -18,7 +14,8 @@ import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyData
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { CodesContext } from 'contexts/codesContext';
-import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import { ObservationsContext } from 'contexts/observationsContext';
+import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import {
   IGetSampleLocationRecord,
@@ -84,12 +81,13 @@ const LoadingOverlay = () => {
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const location = useLocation();
   const observationsContext = useContext(ObservationsContext);
+  const observationsTableContext = useContext(ObservationsTableContext);
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
 
   const { observationsDataLoader } = observationsContext;
-  const apiRef = observationsContext._muiDataGridApiRef;
+  const apiRef = observationsTableContext._muiDataGridApiRef;
 
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
@@ -415,9 +413,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       cellClassName: 'pinnedColumn',
       getActions: (params) => [
         <IconButton
-          onClick={() => {
-            observationsContext.deleteObservationRecords([params.row]);
-          }}
+          onClick={() => observationsTableContext.deleteObservationRecords([params.row])}
+          disabled={observationsTableContext.isSaving}
           key={`actions[${params.id}].handleDeleteRow`}>
           <Icon path={mdiTrashCanOutline} size={1} />
         </IconButton>
@@ -425,55 +422,35 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     }
   ];
 
-  useEffect(() => {
-    if (observationsDataLoader.data?.surveyObservations) {
-      const rows: IObservationTableRow[] = observationsDataLoader.data.surveyObservations.map(
-        (row: IObservationRecord) => ({
-          ...row,
-          id: String(row.survey_observation_id)
-        })
-      );
-
-      observationsContext.setInitialRows(rows);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [observationsDataLoader.data]);
-
-  const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
-    event.defaultMuiPrevented = true;
-  };
-
-  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, _event) => {
-    observationsContext.markRecordWithUnsavedChanges(params.id);
-  };
-
   /**
    * On first render, pre-selected the observation row based on the URL
    */
   useEffect(() => {
     if (location.hash.startsWith('#view-')) {
       const selectedId = location.hash.split('-')[1];
-      observationsContext.setRowSelectionModel([selectedId]);
+      observationsTableContext.onRowSelectionModelChange([selectedId]);
     }
-  }, []);
+  }, [location.hash, observationsTableContext]);
 
   return (
     <DataGrid
       checkboxSelection
-      loading={observationsDataLoader.isLoading || props.isLoading}
+      disableRowSelectionOnClick
+      loading={(observationsDataLoader.isLoading && !observationsDataLoader.hasLoaded) || props.isLoading}
       rowHeight={56}
       apiRef={apiRef}
       editMode="row"
-      onRowEditStop={handleRowEditStop}
-      onRowEditStart={handleRowEditStart}
       columns={observationColumns}
-      rows={observationsContext.initialRows}
-      disableRowSelectionOnClick
+      rows={observationsTableContext.rows}
+      onRowEditStart={(params) => observationsTableContext.onRowEditStart(params.id)}
+      onRowEditStop={(_params, event) => {
+        event.defaultMuiPrevented = true;
+      }}
       localeText={{
         noRowsLabel: 'No Records'
       }}
-      onRowSelectionModelChange={observationsContext.setRowSelectionModel}
-      rowSelectionModel={observationsContext.rowSelectionModel}
+      onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
+      rowSelectionModel={observationsTableContext.rowSelectionModel}
       getRowHeight={() => 'auto'}
       slots={{
         loadingOverlay: LoadingOverlay
