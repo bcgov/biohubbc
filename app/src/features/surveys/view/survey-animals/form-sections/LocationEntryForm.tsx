@@ -198,54 +198,83 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
 
   return (
     <Stack flexDirection="column" gap={4} maxWidth={800}>
+      
       <Box component="fieldset">
         {primaryLocationFields.fieldsetTitle ? (
           <Typography component="legend">{primaryLocationFields.fieldsetTitle}</Typography>
         ) : null}
-        <FormControlLabel
-          control={
-            <Checkbox size="small" checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} />
-          }
-          label="UTM Coordinates"
-          sx={{
-            display: 'none'
-          }}
-        />
-        <Stack gap={1}>
+
+        <Stack gap={1} alignItems="flex-start">
           {renderLocationFields(primaryLocationFields)}
-          {otherPrimaryFields}
+          <FormControlLabel
+            sx={{ ml: 0 }}
+            control={
+              <Checkbox size="small" checked={value.projection_mode === 'utm'} onChange={onProjectionModeSwitch} />
+            }
+            label="Use UTM Coordinates"
+          />
         </Stack>
       </Box>
 
-      {secondaryLocationFields && secondaryLocationFields.fieldsetTitle ? (
-        <Box component="fieldset">
-          <Typography flexGrow={1} component="legend">
-            {secondaryLocationFields.fieldsetTitle}
-          </Typography>
-          <Box>{renderLocationFields(secondaryLocationFields)}</Box>
-        </Box>
+      <Box component="fieldset">
+        <Typography component="legend">Release Location</Typography>
+        {otherPrimaryFields}
+        {secondaryLocationFields && secondaryLocationFields.fieldsetTitle ? (
+          <Box mt={2}>{renderLocationFields(secondaryLocationFields)}</Box>
       ) : null}
+      </Box>
 
       <Box component="fieldset" flex="0 0 auto">
         <Typography component="legend">Location Preview</Typography>
-        <ToggleButtonGroup value={markerEnabled} size="small" onChange={handleMarkerSelected} exclusive>
-          {primaryLocationFields ? (
-            <ToggleButton value="primary">
-              {`Set ${primaryLocationFields?.fieldsetTitle}` ?? 'Set Primary Location'}
-            </ToggleButton>
-          ) : null}
-          {secondaryLocationFields ? (
-            <ToggleButton value="secondary">
-              {`Set ${secondaryLocationFields?.fieldsetTitle}` ?? 'Set Secondary Location'}
-            </ToggleButton>
-          ) : null}
-        </ToggleButtonGroup>
-
         <Paper
           variant="outlined"
           sx={{
-            height: 400
+            position: 'relative',
+            height: 350
           }}>
+          <Stack
+            sx={{
+              display: 'none',
+              position: 'absolute',
+              bottom: '10px',
+              right: '10px',
+              zIndex: '999',
+              transformOrigin: '50% 50%',
+              transform: 'translateX(-50%)',
+              '& .MuiToggleButton-root': {
+                px: 2,
+                fontSize: '12px',
+                fontWeight: 700,
+                '&.Mui-selected': {
+                  background: '#003366',
+                  color: '#fff'
+                }
+              }
+            }}
+          >
+            <ToggleButtonGroup value={markerEnabled} onChange={handleMarkerSelected} exclusive>
+              {primaryLocationFields ? (
+                <ToggleButton size="small" value="primary"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  {`Set ${primaryLocationFields?.fieldsetTitle}` ?? 'Set Primary Location'}
+                </ToggleButton>
+              ) : null}
+              {secondaryLocationFields ? (
+                <ToggleButton size="small" value="secondary"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  {`Set ${secondaryLocationFields?.fieldsetTitle}` ?? 'Set Secondary Location'}
+                </ToggleButton>
+              ) : null}
+            </ToggleButtonGroup>
+          </Stack>
           <MapContainer
             mapId={`location-entry-${name}-${index}`}
             scrollWheelZoom={false}

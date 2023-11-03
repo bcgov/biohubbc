@@ -25,11 +25,15 @@ export const MortalityAnimalFormContent = ({ index }: MortalityAnimalFormContent
 
   return (
     <Stack gap={4}>
+      <Box component="fieldset">
+        <Typography component="legend">Date of Event</Typography>
       <SingleDateField
         name={getAnimalFieldName<IAnimalMortality>(name, 'mortality_timestamp', index)}
         required={isRequiredInSchema(AnimalMortalitySchema, 'mortality_timestamp')}
-        label={'Mortality Date'}
+        label={''}
+        aria-label='Mortality Date'
       />
+      </Box>
 
       <LocationEntryForm
         name={name}
