@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface ISurveySampleSite {
+export interface ISurveySampleSite {
   name: string;
   description: string;
   feature: Feature;
@@ -98,7 +98,7 @@ const SamplingSitePage = () => {
   const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
     try {
       setIsSubmitting(true);
-      
+
       await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
 
       // Disable cancel prompt so we can navigate away from the page after saving

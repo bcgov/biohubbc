@@ -9,14 +9,16 @@ import { InsertSampleMethodRecord } from '../repositories/sample-method-reposito
 import { DBService } from './db-service';
 import { SampleMethodService } from './sample-method-service';
 
+interface SampleSite {
+  name: string;
+  description: string;
+  feature: Feature;
+}
+
 export interface PostSampleLocations {
   survey_sample_site_id: number | null;
   survey_id: number;
-  survey_sample_sites: {
-    name: string;
-    description: string;
-    feature: Feature;
-  }[];
+  survey_sample_sites: SampleSite[];
   methods: InsertSampleMethodRecord[];
 }
 
