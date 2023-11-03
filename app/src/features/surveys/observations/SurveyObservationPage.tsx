@@ -2,9 +2,10 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
+import { ObservationsTableContext, ObservationsTableContextProvider } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
-import ObservationComponent from './ObservationComponent';
+import ObservationComponent from './observations-table/ObservationComponent';
 import SamplingSiteList from './sampling-sites/SamplingSiteList';
 import SurveyObservationHeader from './SurveyObservationHeader';
 
@@ -43,7 +44,17 @@ export const SurveyObservationPage = () => {
 
         {/* Observations Component */}
         <Box flex="1 1 auto" overflow="hidden">
-          <ObservationComponent />
+          <ObservationsTableContextProvider>
+            <ObservationsTableContext.Consumer>
+              {(context) => {
+                if (!context._muiDataGridApiRef.current) {
+                  return <CircularProgress className="pageProgress" size={40} />;
+                }
+
+                return <ObservationComponent />;
+              }}
+            </ObservationsTableContext.Consumer>
+          </ObservationsTableContextProvider>
         </Box>
       </Paper>
     </Box>

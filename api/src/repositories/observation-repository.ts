@@ -283,14 +283,13 @@ export class ObservationRepository extends BaseRepository {
    * @memberof ObservationService
    */
   async getObservationSubmissionById(submissionId: number): Promise<ObservationSubmissionRecord> {
-    const knex = getKnex();
-    const sqlStatement = knex
+    const queryBuilder = getKnex()
       .queryBuilder()
       .select('*')
       .from('survey_observation_submission')
       .where('submission_id', submissionId);
 
-    const response = await this.connection.knex(sqlStatement, ObservationSubmissionRecord);
+    const response = await this.connection.knex(queryBuilder, ObservationSubmissionRecord);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get observation submission', [
@@ -300,6 +299,33 @@ export class ObservationRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Deletes all of the given survey observations by ID.
+   *
+   * @param {number[]} observationIds
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async deleteObservationsByIds(observationIds: number[]): Promise<number> {
+    const queryBuilder = getKnex()
+      .queryBuilder()
+      .delete()
+      .from('survey_observation')
+      .whereIn('survey_observation_id', observationIds)
+      .returning('*');
+
+    const response = await this.connection.knex(queryBuilder, ObservationRecord);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete observation records', [
+        'ObservationRepository->deleteObservationsByIds',
+        'rowCount was null or undefined, expected rowCount = 1'
+      ]);
+    }
+
+    return response.rowCount;
   }
 
   /**

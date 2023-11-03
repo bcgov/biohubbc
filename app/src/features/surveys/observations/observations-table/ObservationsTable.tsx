@@ -4,13 +4,7 @@ import Box from '@mui/material/Box';
 import { cyan, grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Skeleton from '@mui/material/Skeleton';
-import {
-  DataGrid,
-  GridColDef,
-  GridEventListener,
-  GridInputRowSelectionModel,
-  GridRowModelUpdate
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
@@ -19,10 +13,9 @@ import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyData
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
-import YesNoDialog from 'components/dialog/YesNoDialog';
-import { ObservationsTableI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
-import { IObservationRecord, IObservationTableRow, ObservationsContext } from 'contexts/observationsContext';
+import { ObservationsContext } from 'contexts/observationsContext';
+import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import {
   IGetSampleLocationRecord,
@@ -30,7 +23,7 @@ import {
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { getCodesName } from 'utils/Utils';
 
@@ -86,15 +79,15 @@ const LoadingOverlay = () => {
 };
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const [deletingObservation, setDeletingObservation] = useState<string | number | null>(null);
   const location = useLocation();
   const observationsContext = useContext(ObservationsContext);
+  const observationsTableContext = useContext(ObservationsTableContext);
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
 
   const { observationsDataLoader } = observationsContext;
-  const apiRef = observationsContext._muiDataGridApiRef;
+  const apiRef = observationsTableContext._muiDataGridApiRef;
 
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
@@ -420,10 +413,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       cellClassName: 'pinnedColumn',
       getActions: (params) => [
         <IconButton
-          onClick={(event) => {
-            event.preventDefault(); // Prevent row from going into edit mode
-            handleConfirmDeleteRow(params.id);
-          }}
+          onClick={() => observationsTableContext.deleteObservationRecords([params.row])}
+          disabled={observationsTableContext.isSaving}
           key={`actions[${params.id}].handleDeleteRow`}>
           <Icon path={mdiTrashCanOutline} size={1} />
         </IconButton>
@@ -431,192 +422,140 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     }
   ];
 
+  /**
+   * On first render, pre-selected the observation row based on the URL
+   */
   useEffect(() => {
-    if (observationsDataLoader.data?.surveyObservations) {
-      const rows: IObservationTableRow[] = observationsDataLoader.data.surveyObservations.map(
-        (row: IObservationRecord) => ({
-          ...row,
-          id: String(row.survey_observation_id)
-        })
-      );
-
-      observationsContext.setInitialRows(rows);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [observationsDataLoader.data]);
-
-  const handleCancelDeleteRow = () => {
-    setDeletingObservation(null);
-  };
-
-  const handleConfirmDeleteRow = (id: string | number) => {
-    setDeletingObservation(id);
-  };
-
-  const handleDeleteRow = (id: string | number) => {
-    observationsContext.markRecordWithUnsavedChanges(id);
-    apiRef?.current.updateRows([{ id, _action: 'delete' } as GridRowModelUpdate]);
-  };
-
-  const handleRowEditStop: GridEventListener<'rowEditStop'> = (_params, event) => {
-    event.defaultMuiPrevented = true;
-  };
-
-  const handleRowEditStart: GridEventListener<'rowEditStart'> = (params, _event) => {
-    observationsContext.markRecordWithUnsavedChanges(params.id);
-  };
-
-  const showConfirmDeleteDialog = Boolean(deletingObservation);
-
-  const rowSelectionModel: GridInputRowSelectionModel | undefined = useMemo(() => {
     if (location.hash.startsWith('#view-')) {
       const selectedId = location.hash.split('-')[1];
-      return [selectedId];
+      observationsTableContext.onRowSelectionModelChange([selectedId]);
     }
-
-    return undefined;
-  }, []);
+  }, [location.hash, observationsTableContext]);
 
   return (
-    <>
-      <YesNoDialog
-        dialogTitle={ObservationsTableI18N.removeRecordDialogTitle}
-        dialogText={ObservationsTableI18N.removeRecordDialogText}
-        yesButtonProps={{ color: 'error' }}
-        yesButtonLabel={'Delete Record'}
-        noButtonProps={{ color: 'primary', variant: 'outlined' }}
-        noButtonLabel={'Cancel'}
-        open={showConfirmDeleteDialog}
-        onYes={() => {
-          if (deletingObservation) {
-            handleDeleteRow(deletingObservation);
-          }
-          setDeletingObservation(null);
-        }}
-        onClose={() => handleCancelDeleteRow()}
-        onNo={() => handleCancelDeleteRow()}
-      />
-      <DataGrid
-        checkboxSelection
-        loading={observationsDataLoader.isLoading || props.isLoading}
-        rowHeight={56}
-        apiRef={apiRef}
-        editMode="row"
-        onRowEditStop={handleRowEditStop}
-        onRowEditStart={handleRowEditStart}
-        columns={observationColumns}
-        rows={observationsContext.initialRows}
-        disableRowSelectionOnClick
-        localeText={{
-          noRowsLabel: 'No Records'
-        }}
-        rowSelectionModel={rowSelectionModel}
-        getRowHeight={() => 'auto'}
-        slots={{
-          loadingOverlay: LoadingOverlay
-        }}
-        sx={{
-          background: grey[50],
-          border: 'none',
-          '& .pinnedColumn': {
-            position: 'sticky',
+    <DataGrid
+      checkboxSelection
+      disableRowSelectionOnClick
+      loading={(observationsDataLoader.isLoading && !observationsDataLoader.hasLoaded) || props.isLoading}
+      rowHeight={56}
+      apiRef={apiRef}
+      editMode="row"
+      columns={observationColumns}
+      rows={observationsTableContext.rows}
+      onRowEditStart={(params) => observationsTableContext.onRowEditStart(params.id)}
+      onRowEditStop={(_params, event) => {
+        event.defaultMuiPrevented = true;
+      }}
+      localeText={{
+        noRowsLabel: 'No Records'
+      }}
+      onRowSelectionModelChange={observationsTableContext.onRowSelectionModelChange}
+      rowSelectionModel={observationsTableContext.rowSelectionModel}
+      getRowHeight={() => 'auto'}
+      slots={{
+        loadingOverlay: LoadingOverlay
+      }}
+      sx={{
+        background: grey[50],
+        border: 'none',
+        '& .pinnedColumn': {
+          position: 'sticky',
+          right: 0,
+          top: 0,
+          borderLeft: '1px solid' + grey[300]
+        },
+        '& .MuiDataGrid-columnHeaders': {
+          background: '#fff',
+          position: 'relative',
+          '&:after': {
+            content: "''",
+            position: 'absolute',
+            top: '0',
             right: 0,
-            top: 0,
+            width: '70px',
+            height: '60px',
+            background: '#fff',
             borderLeft: '1px solid' + grey[300]
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            background: '#fff',
-            position: 'relative',
-            '&:after': {
-              content: "''",
-              position: 'absolute',
-              top: '0',
-              right: 0,
-              width: '70px',
-              height: '60px',
-              background: '#fff',
-              borderLeft: '1px solid' + grey[300]
-            }
-          },
-          '& .MuiDataGrid-columnHeader': {
-            // px: 3,
-            py: 1,
-            '&:focus': {
-              outline: 'none'
-            }
-          },
-          '& .MuiDataGrid-columnHeaderTitle': {
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            color: 'text.secondary'
-          },
-          '& .MuiDataGrid-cell': {
-            // px: 3,
-            py: 1,
-            background: '#fff',
-            '&.MuiDataGrid-cell--editing:focus-within': {
-              outline: 'none'
-            },
-            '&.MuiDataGrid-cell--editing': {
-              p: 0.5,
-              backgroundColor: cyan[100]
-            }
-          },
-          '& .MuiDataGrid-row--editing': {
-            boxShadow: 'none',
-            backgroundColor: cyan[50],
-            '& .MuiDataGrid-cell': {
-              backgroundColor: cyan[50]
-            }
-          },
-          '& .MuiDataGrid-editInputCell': {
-            border: '1px solid #ccc',
-            '&:hover': {
-              borderColor: 'primary.main'
-            },
-            '&.Mui-focused': {
-              borderColor: 'primary.main',
-              outlineWidth: '2px',
-              outlineStyle: 'solid',
-              outlineColor: 'primary.main',
-              outlineOffset: '-2px'
-            }
-          },
-          '& .MuiInputBase-root': {
-            height: '40px',
-            borderRadius: '4px',
-            background: '#fff',
-            fontSize: '0.875rem',
-            '&.MuiDataGrid-editInputCell': {
-              padding: 0
-            }
-          },
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '4px',
-            background: '#fff',
-            border: 'none',
-            '&:hover': {
-              borderColor: 'primary.main'
-            },
-            '&:hover > fieldset': {
-              border: '1px solid primary.main'
-            }
-          },
-          '& .MuiOutlinedInput-notchedOutline': {
-            border: '1px solid ' + grey[300],
-            '&.Mui-focused': {
-              borderColor: 'primary.main'
-            }
-          },
-          '& .MuiDataGrid-virtualScrollerContent': {
-            background: grey[100]
-          },
-          '& .MuiDataGrid-footerContainer': {
-            background: '#fff'
           }
-        }}
-      />
-    </>
+        },
+        '& .MuiDataGrid-columnHeader': {
+          // px: 3,
+          py: 1,
+          '&:focus': {
+            outline: 'none'
+          }
+        },
+        '& .MuiDataGrid-columnHeaderTitle': {
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          color: 'text.secondary'
+        },
+        '& .MuiDataGrid-cell': {
+          // px: 3,
+          py: 1,
+          background: '#fff',
+          '&.MuiDataGrid-cell--editing:focus-within': {
+            outline: 'none'
+          },
+          '&.MuiDataGrid-cell--editing': {
+            p: 0.5,
+            backgroundColor: cyan[100]
+          }
+        },
+        '& .MuiDataGrid-row--editing': {
+          boxShadow: 'none',
+          backgroundColor: cyan[50],
+          '& .MuiDataGrid-cell': {
+            backgroundColor: cyan[50]
+          }
+        },
+        '& .MuiDataGrid-editInputCell': {
+          border: '1px solid #ccc',
+          '&:hover': {
+            borderColor: 'primary.main'
+          },
+          '&.Mui-focused': {
+            borderColor: 'primary.main',
+            outlineWidth: '2px',
+            outlineStyle: 'solid',
+            outlineColor: 'primary.main',
+            outlineOffset: '-2px'
+          }
+        },
+        '& .MuiInputBase-root': {
+          height: '40px',
+          borderRadius: '4px',
+          background: '#fff',
+          fontSize: '0.875rem',
+          '&.MuiDataGrid-editInputCell': {
+            padding: 0
+          }
+        },
+        '& .MuiOutlinedInput-root': {
+          borderRadius: '4px',
+          background: '#fff',
+          border: 'none',
+          '&:hover': {
+            borderColor: 'primary.main'
+          },
+          '&:hover > fieldset': {
+            border: '1px solid primary.main'
+          }
+        },
+        '& .MuiOutlinedInput-notchedOutline': {
+          border: '1px solid ' + grey[300],
+          '&.Mui-focused': {
+            borderColor: 'primary.main'
+          }
+        },
+        '& .MuiDataGrid-virtualScrollerContent': {
+          background: grey[100]
+        },
+        '& .MuiDataGrid-footerContainer': {
+          background: '#fff'
+        }
+      }}
+    />
   );
 };
 
