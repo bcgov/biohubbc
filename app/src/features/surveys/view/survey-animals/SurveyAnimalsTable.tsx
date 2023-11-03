@@ -2,8 +2,8 @@ import { GridColDef } from '@mui/x-data-grid';
 import { CustomDataGrid } from 'components/tables/CustomDataGrid';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { IAnimalDeployment } from './device';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
+import { IAnimalDeployment } from './telemetry-device/device';
 
 interface ISurveyAnimalsTableEntry {
   survey_critter_id: number;

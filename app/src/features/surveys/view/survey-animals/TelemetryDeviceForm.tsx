@@ -30,8 +30,8 @@ import {
   IAnimalDeployment,
   IAnimalTelemetryDevice,
   IDeploymentTimespan
-} from './device';
-import { TelemetryFileUpload } from './TelemetryFileUpload';
+} from './telemetry-device/device';
+import { TelemetryFileUpload } from './telemetry-device/TelemetryFileUpload';
 
 export enum TELEMETRY_DEVICE_FORM_MODE {
   ADD = 'add',

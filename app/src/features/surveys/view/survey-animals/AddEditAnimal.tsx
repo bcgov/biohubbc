@@ -18,10 +18,9 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { dateRangesOverlap, setMessageSnackbar } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import { AnimalSchema, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
+import { AnimalSchema, ANIMAL_FORM_MODE, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import { AnimalSectionDataCards } from './AnimalSectionDataCards';
-import { AnimalDeploymentTimespanSchema, AnimalTelemetryDeviceSchema, IAnimalDeployment } from './device';
 import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
 import { CollectionUnitAnimalFormContent } from './form-sections/CollectionUnitAnimalForm';
 import { FamilyAnimalFormContent } from './form-sections/FamilyAnimalForm';
@@ -29,31 +28,39 @@ import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalFormContent } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalFormContent from './form-sections/MeasurementAnimalForm';
 import { MortalityAnimalFormContent } from './form-sections/MortalityAnimalForm';
-import { DeviceFormSection, IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
+import {
+  AnimalDeploymentTimespanSchema,
+  AnimalTelemetryDeviceSchema,
+  IAnimalDeployment
+} from './telemetry-device/device';
+import TelemetryDeviceFormContent from './telemetry-device/TelemetryDeviceFormContent';
+import { IAnimalTelemetryDeviceFile } from './TelemetryDeviceForm';
 
 interface AddEditAnimalProps {
   section: IAnimalSections;
   critterData?: IDetailedCritterWithInternalId[];
   deploymentData?: IAnimalDeployment[];
-  telemetrySaveAction: (data: IAnimalTelemetryDeviceFile[], formMode: TELEMETRY_DEVICE_FORM_MODE) => Promise<void>;
+  telemetrySaveAction: (data: IAnimalTelemetryDeviceFile[], formMode: ANIMAL_FORM_MODE) => Promise<void>;
   deploymentRemoveAction: (deploymentId: string) => void;
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, critterData, telemetrySaveAction, deploymentRemoveAction } = props;
   const surveyContext = useContext(SurveyContext);
-  const { submitForm, initialValues, values, isSubmitting, status, setFieldValue } = useFormikContext<IAnimal>();
+  const { submitForm, initialValues, values, isSubmitting, isValidating, status, setFieldValue } =
+    useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
   const [showDialog, setShowDialog] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const [openedFromAddButton, setOpenedFromAddButton] = useState(false);
+  const [formMode, setFormMode] = useState<ANIMAL_FORM_MODE>(ANIMAL_FORM_MODE.EDIT);
 
   const { cid: survey_critter_id } = useQuery();
 
-  const dialogTitle = openedFromAddButton
-    ? `Add ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`
-    : `Edit ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`;
+  const dialogTitle =
+    formMode === ANIMAL_FORM_MODE.ADD
+      ? `Add ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`
+      : `Edit ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`;
 
   const cbApi = useCritterbaseApi();
   const telemetryApi = useTelemetryApi();
@@ -91,21 +98,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         <FamilyAnimalFormContent index={selectedIndex} allFamilies={allFamilies} />
       ),
       [SurveyAnimalsI18N.animalCollectionUnitTitle]: <CollectionUnitAnimalFormContent index={selectedIndex} />,
-      Telemetry: (
-        <DeviceFormSection
-          values={values.device}
-          mode={openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT}
-          index={selectedIndex}
-          removeAction={(id) => {
-            deploymentRemoveAction(id);
-            const deployments = props.deploymentData?.filter((a) => a.critter_id === survey_critter_id) ?? [];
-            if (deployments.length <= 1) {
-              setShowDialog(false);
-            }
-            refreshDeviceDetails(values.device[selectedIndex].device_id);
-          }}
-        />
-      )
+      Telemetry: <TelemetryDeviceFormContent index={selectedIndex} mode={formMode} />
     };
     const gridWrappedComp = section === 'Telemetry' ? sectionMap[section] : <>{sectionMap[section]}</>;
     return gridWrappedComp ?? <Typography>Unimplemented</Typography>;
@@ -114,8 +107,8 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     allFamilies,
     deploymentRemoveAction,
     measurements,
-    openedFromAddButton,
     props.deploymentData,
+    formMode,
     section,
     selectedIndex,
     survey_critter_id,
@@ -236,12 +229,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   }
 
   const handleSaveTelemetry = async (saveValues: IAnimal) => {
-    const vals = openedFromAddButton ? [saveValues.device[selectedIndex]] : saveValues.device;
+    const vals = formMode === ANIMAL_FORM_MODE.ADD ? [saveValues.device[selectedIndex]] : saveValues.device;
     try {
-      await telemetrySaveAction(
-        vals,
-        openedFromAddButton ? TELEMETRY_DEVICE_FORM_MODE.ADD : TELEMETRY_DEVICE_FORM_MODE.EDIT
-      );
+      await telemetrySaveAction(vals, formMode);
       refreshDeviceDetails(Number(saveValues.device[selectedIndex].device_id));
     } catch (err) {
       setMessageSnackbar('Telemetry save failed!', dialogContext);
@@ -311,7 +301,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                       dialogTitle={dialogTitle}
                       open={showDialog}
                       dialogSaveButtonLabel={'Save'}
-                      dialogLoading={isSubmitting}
+                      dialogLoading={isSubmitting || isValidating}
                       dialogError={status?.isError && status?.message}
                       component={{
                         initialValues: values,
@@ -319,17 +309,19 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         validationSchema: AnimalSchemaWithDeployments
                       }}
                       onCancel={() => {
-                        if (openedFromAddButton) {
+                        if (formMode === ANIMAL_FORM_MODE.ADD) {
                           remove(selectedIndex);
                         }
-                        setOpenedFromAddButton(false);
+                        setFormMode(ANIMAL_FORM_MODE.EDIT);
                         setShowDialog(false);
                       }}
                       onSave={async (saveVals) => {
                         if (section === 'Telemetry') {
-                          handleSaveTelemetry(saveVals);
+                          await handleSaveTelemetry(saveVals);
+                          setFormMode(ANIMAL_FORM_MODE.EDIT);
+                          return;
                         }
-                        setOpenedFromAddButton(false);
+                        setFormMode(ANIMAL_FORM_MODE.EDIT);
                         setFieldValue(
                           ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
                           saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
@@ -343,7 +335,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                         variant="contained"
                         color="primary"
                         onClick={() => {
-                          setOpenedFromAddButton(true);
+                          setFormMode(ANIMAL_FORM_MODE.ADD);
                           const animalData = ANIMAL_SECTIONS_FORM_MAP[section];
                           const sectionValues = values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName];
                           push(animalData?.defaultFormValue());

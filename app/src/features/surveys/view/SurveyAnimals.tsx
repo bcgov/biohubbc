@@ -16,19 +16,19 @@ import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
+import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
 import {
   AnimalDeploymentTimespanSchema,
   AnimalTelemetryDeviceSchema,
   Device,
   IAnimalTelemetryDevice,
   IDeploymentTimespan
-} from './survey-animals/device';
-import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
+} from './survey-animals/telemetry-device/device';
+import TelemetryMap from './survey-animals/telemetry-device/TelemetryMap';
 import TelemetryDeviceForm, {
   IAnimalTelemetryDeviceFile,
   TELEMETRY_DEVICE_FORM_MODE
 } from './survey-animals/TelemetryDeviceForm';
-import TelemetryMap from './survey-animals/TelemetryMap';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();

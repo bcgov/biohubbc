@@ -27,6 +27,8 @@ const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
     bctwLookupLoader.load();
   }
 
+  const value = bctwLookupLoader.hasLoaded && get(values, props.name) ? get(values, props.name) : '';
+
   return (
     <FormControl variant="outlined" fullWidth {...props.controlProps} error={!!err}>
       <InputLabel id={`${props.name}-label`}>{props.label}</InputLabel>
@@ -34,7 +36,7 @@ const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
         name={props.name}
         labelId="telemetry_select"
         label={props.label}
-        value={get(values, props.name) ?? ''}
+        value={value}
         onChange={handleChange}
         onBlur={handleBlur}
         displayEmpty>

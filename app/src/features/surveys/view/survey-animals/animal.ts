@@ -4,7 +4,7 @@ import moment from 'moment';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 import { AnyObjectSchema, InferType, reach } from 'yup';
-import { AnimalTelemetryDeviceSchema } from './device';
+import { AnimalTelemetryDeviceSchema } from './telemetry-device/device';
 
 export enum ANIMAL_FORM_MODE {
   ADD = 'add',
@@ -162,10 +162,22 @@ export const AnimalMortalitySchema = yup.object({}).shape({
   _id: yup.string().required(),
   mortality_id: yup.string(),
   location_id: yup.string(),
-  mortality_longitude: lonSchema.when('projection_mode', { is: 'wgs', then: lonSchema.required('Longitude is required') }),
-  mortality_latitude: latSchema.when('projection_mode', { is: 'wgs', then: latSchema.required('Latitude is required') }),
-  mortality_utm_northing: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required('UTM Northing is required') }),
-  mortality_utm_easting: numSchema.when('projection_mode', { is: 'utm', then: numSchema.required('UTM Easting is required') }),
+  mortality_longitude: lonSchema.when('projection_mode', {
+    is: 'wgs',
+    then: lonSchema.required('Longitude is required')
+  }),
+  mortality_latitude: latSchema.when('projection_mode', {
+    is: 'wgs',
+    then: latSchema.required('Latitude is required')
+  }),
+  mortality_utm_northing: numSchema.when('projection_mode', {
+    is: 'utm',
+    then: numSchema.required('UTM Northing is required')
+  }),
+  mortality_utm_easting: numSchema.when('projection_mode', {
+    is: 'utm',
+    then: numSchema.required('UTM Easting is required')
+  }),
   mortality_timestamp: dateSchema.required('Mortality Date is required'),
   mortality_coordinate_uncertainty: numSchema,
   mortality_comment: yup.string(),

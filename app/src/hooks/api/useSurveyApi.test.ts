@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { AnimalSex, Critter, IAnimal } from 'features/surveys/view/survey-animals/animal';
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
+import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';

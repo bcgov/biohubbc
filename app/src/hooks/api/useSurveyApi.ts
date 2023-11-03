@@ -7,7 +7,7 @@ import {
   IAnimalTelemetryDevice,
   IDeploymentTimespan,
   ITelemetryPointCollection
-} from 'features/surveys/view/survey-animals/device';
+} from 'features/surveys/view/survey-animals/telemetry-device/device';
 import {
   IGetAttachmentDetails,
   IGetReportDetails,

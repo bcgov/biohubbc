@@ -19,9 +19,9 @@ import { AnimalSchema, AnimalSex, ANIMAL_FORM_MODE, Critter, IAnimal } from './a
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
 import { IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
-import { Device, IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
-import { IAnimalTelemetryDeviceFile, TELEMETRY_DEVICE_FORM_MODE } from './TelemetryDeviceForm';
+import { Device, IAnimalTelemetryDevice, IDeploymentTimespan } from './telemetry-device/device';
+import { IAnimalTelemetryDeviceFile } from './TelemetryDeviceForm';
 
 export const SurveyAnimalsPage = () => {
   const [selectedSection, setSelectedSection] = useState<IAnimalSections>(SurveyAnimalsI18N.animalGeneralTitle);
@@ -250,11 +250,11 @@ export const SurveyAnimalsPage = () => {
   const handleTelemetrySave = async (
     survey_critter_id: number,
     data: IAnimalTelemetryDeviceFile[],
-    telemetryFormMode: TELEMETRY_DEVICE_FORM_MODE
+    telemetryFormMode: ANIMAL_FORM_MODE
   ) => {
-    if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
+    if (telemetryFormMode === ANIMAL_FORM_MODE.ADD) {
       await handleAddTelemetry(survey_critter_id, data);
-    } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
+    } else if (telemetryFormMode === ANIMAL_FORM_MODE.EDIT) {
       await handleEditTelemetry(survey_critter_id, data);
     }
     refreshDeployments();

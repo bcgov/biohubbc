@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { Device, IAnimalDeployment } from 'features/surveys/view/survey-animals/device';
+import { Device, IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 
 interface ICodeResponse {
   code_header_title: string;

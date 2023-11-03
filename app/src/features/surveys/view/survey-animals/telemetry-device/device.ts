@@ -27,9 +27,9 @@ export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
 export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
   device_id: intSchema,
   device_make: yup.string().required(req),
-  frequency: numSchema,
+  frequency: numSchema.nullable(),
   frequency_unit: yup.string().nullable(),
-  device_model: yup.string(),
+  device_model: yup.string().nullable(),
   deployments: yup.array(AnimalDeploymentTimespanSchema)
 });
 
