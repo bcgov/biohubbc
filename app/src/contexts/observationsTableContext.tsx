@@ -129,9 +129,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   // Stores the currently selected row ids
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
   // Existing rows that are in edit mode
-  const [modifiedRowIds, setModifiedRowIds] = useState<GridRowId[]>([]);
+  const [modifiedRowIds, setModifiedRowIds] = useState<string[]>([]);
   // New rows (regardless of mode)
-  const [addedRowIds, setAddedRowIds] = useState<GridRowId[]>([]);
+  const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
   // True if the records are in the process of being saved to the server
@@ -143,7 +143,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         return;
       }
 
-      const allRowIdsToDelete = observationRecords.map((item) => item.id);
+      const allRowIdsToDelete = observationRecords.map((item) => String(item.id));
 
       // Get all row ids that are new, which only need to be removed from local state
       const addedRowIdsToDelete = allRowIdsToDelete.filter((id) => addedRowIds.includes(id));
@@ -157,7 +157,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         }
 
         // Update all rows, removing deleted rows
-        setRows((current) => current.filter((item) => !allRowIdsToDelete.includes(item.id)));
+        setRows((current) => current.filter((item) => !allRowIdsToDelete.includes(String(item.id))));
 
         // Update added rows, removing deleted rows
         setAddedRowIds((current) => current.filter((id) => !addedRowIdsToDelete.includes(id)));
@@ -222,7 +222,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   };
 
   const onRowEditStart = (id: GridRowId) => {
-    setModifiedRowIds((current) => Array.from(new Set([...current, id])));
+    setModifiedRowIds((current) => Array.from(new Set([...current, String(id)])));
   };
 
   /**
@@ -269,7 +269,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     const allEditingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
 
     // Remove any row ids that the data grid might still be tracking, but which have been removed from local state
-    const editingIdsToSave = allEditingIds.filter((id) => rows.find((row) => row.id === id));
+    const editingIdsToSave = allEditingIds.filter((id) => rows.find((row) => String(row.id) === id));
 
     if (!editingIdsToSave.length) {
       // No rows in edit mode, nothing to stop or save
@@ -302,7 +302,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     editingIds.forEach((id) => _muiDataGridApiRef.current.stopRowEditMode({ id, ignoreModifications: true }));
 
     // Remove any rows that are newly created
-    setRows(rows.filter((row) => !addedRowIds.includes(row.id)));
+    setRows(rows.filter((row) => !addedRowIds.includes(String(row.id))));
   };
 
   const refreshObservationRecords = useCallback(async () => {
