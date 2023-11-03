@@ -7,12 +7,12 @@ import { SetMapBounds } from 'components/map/components/Bounds';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
 import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import StaticLayers from 'components/map/components/StaticLayers';
-import { MAP_DEFAULT_CENTER } from 'constants/spatial';
+import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Feature, Position } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { coloredPoint, INonEditableGeometries } from 'utils/mapUtils';
@@ -83,11 +83,29 @@ const ObservationsMap = () => {
     return calculateUpdatedMapBounds([...features, ...studyAreaFeatures, ...sampleSiteFeatures]);
   }, [surveyObservations, studyAreaFeatures, sampleSiteFeatures]);
 
-  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(getDefaultMapBounds());
+  // set default bounds to encompass all of BC
+  const [bounds, setBounds] = useState<LatLngBoundsExpression | undefined>(
+    calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY])
+  );
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(getDefaultMapBounds());
   }, [getDefaultMapBounds]);
+
+  useEffect(() => {
+    // Once all data loaders have finished loading it will zoom the map to include all features
+    if (
+      !surveyContext.surveyDataLoader.isLoading &&
+      !surveyContext.sampleSiteDataLoader.isLoading &&
+      !observationsContext.observationsDataLoader.isLoading
+    ) {
+      zoomToBoundaryExtent();
+    }
+  }, [
+    surveyContext.surveyDataLoader.isLoading,
+    surveyContext.sampleSiteDataLoader.isLoading,
+    observationsContext.observationsDataLoader.isLoading
+  ]);
 
   return (
     <Box position="relative">
