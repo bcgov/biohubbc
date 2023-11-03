@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
+import { coloredPoint } from 'utils/mapUtils';
 
 /**
  * Custom subset of `L.Control.DrawConstructorOptions` that omits `edit.featureGroup` as this will be added automatically
@@ -89,16 +90,31 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
   const getDrawControls = (): L.Control.Draw => {
     const featureGroup = getFeatureGroup();
 
+    const CustomMarker = L.Icon.extend({
+      // The preview icon rendered when you are in the process of adding a marker to the map
+      options: {
+        iconUrl: 'assets/icon/circle-medium.svg',
+        iconRetinaUrl: 'assets/icon/circle-medium.svg',
+        iconSize: new L.Point(36, 36),
+        iconAnchor: new L.Point(18, 18),
+        popupAnchor: [18, 18],
+        shadowUrl: null
+      }
+    });
+
     const drawOptions: L.Control.DrawConstructorOptions = {
+      draw: {
+        ...options?.draw,
+        marker: {
+          icon: new CustomMarker()
+        }
+      },
       edit: {
         ...options?.edit,
         featureGroup: featureGroup
-      }
+      },
+      position: options?.position || 'topright'
     };
-
-    drawOptions.draw = { ...options?.draw };
-
-    drawOptions.position = drawOptions?.position || 'topright';
 
     return new L.Control.Draw(drawOptions);
   };
@@ -170,7 +186,7 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
               return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
             }
 
-            return new L.Marker([latlng.lat, latlng.lng]);
+            return coloredPoint({ latlng });
           },
           onEachFeature: function (_feature, layer) {
             featureGroup.addLayer(layer);

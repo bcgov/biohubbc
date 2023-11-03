@@ -1,4 +1,4 @@
-import { IObservationRecord } from 'contexts/observationsContext';
+import { IObservationRecord } from 'contexts/observationsTableContext';
 
 export interface IGetSurveyObservationsResponse {
   surveyObservations: IObservationRecord[];
