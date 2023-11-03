@@ -26,7 +26,8 @@
     "lodash.isfunction": "^3.0.9",
     "lodash.isplainobject": "^4.0.6",
     "lodash.isstring": "^4.0.1",
-    "pipeline-cli": "git+https://github.com/NickPhura/pipeline-cli.git"
+    "pipeline-cli": "git+https://github.com/NickPhura/pipeline-cli.git",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "prettier": "~2.3.2"

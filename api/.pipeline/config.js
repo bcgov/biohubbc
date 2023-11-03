@@ -1,30 +1,30 @@
 'use strict';
 
-let options = require('pipeline-cli').Util.parseArguments();
+const { PipelineConfigMapSchema } = require('./utils/configMapSchema');
+const PipelineCli = require('pipeline-cli');
 
-// The root config for common values
-const config = require('../../.config/config.json');
+// Options passed in from the git action
+const rawOptions = PipelineCli.Util.parseArguments();
 
-const appName = config.module.app;
-const name = config.module.api;
-const dbName = config.module.db;
+// Pull-request number or branch name
+const changeId = rawOptions.pr;
 
-const version = config.version;
-
-const changeId = options.pr; // pull-request number or branch name
+// Pipeline config map from openshift
+const rawPipelineConfigMap = rawOptions.config;
+// Validate the pipeline config map is not missing any fields
+const pipelineConfigMap = PipelineConfigMapSchema.parse(JSON.parse(rawPipelineConfigMap));
 
 // A static deployment is when the deployment is updating dev, test, or prod (rather than a temporary PR)
 // See `--type=static` in the `deployStatic.yml` git workflow
-const isStaticDeployment = options.type === 'static';
+const isStaticDeployment = rawOptions.type === 'static';
 
 const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
-const branch = (isStaticDeployment && options.branch) || null;
-const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
+const branch = (isStaticDeployment && rawOptions.branch) || null;
+const tag =
+  (branch && `build-${pipelineConfigMap.version}-${changeId}-${branch}`) ||
+  `build-${pipelineConfigMap.version}-${changeId}`;
 
-const staticUrlsAPI = config.staticUrlsAPI;
-const staticUrls = config.staticUrls;
-
-const processOptions = (options) => {
+function processOptions(options) {
   const result = { ...options };
 
   // Check git
@@ -44,23 +44,23 @@ const processOptions = (options) => {
   }
 
   return result;
-};
+}
 
-options = processOptions(options);
+const options = processOptions(rawOptions);
 
 const phases = {
   build: {
     namespace: 'af2668-tools',
-    name: `${name}`,
-    dbName: `${dbName}`,
+    name: pipelineConfigMap.module.api,
+    dbName: pipelineConfigMap.module.db,
     phase: 'build',
     changeId: changeId,
     suffix: `-build-${changeId}`,
-    instance: `${name}-build-${changeId}`,
-    version: `${version}-${changeId}`,
+    instance: `${pipelineConfigMap.module.api}-build-${changeId}`,
+    version: `${pipelineConfigMap.version}-${changeId}`,
     tag: tag,
     env: 'build',
-    tz: config.timezone.api,
+    tz: pipelineConfigMap.timezone.api,
     branch: branch,
     cpuRequest: '50m',
     cpuLimit: '1000m',
@@ -69,16 +69,20 @@ const phases = {
   },
   dev: {
     namespace: 'af2668-dev',
-    name: `${name}`,
-    dbName: `${dbName}`,
+    name: pipelineConfigMap.module.api,
+    dbName: pipelineConfigMap.module.db,
     phase: 'dev',
     changeId: deployChangeId,
     suffix: `-dev-${deployChangeId}`,
-    instance: `${name}-dev-${deployChangeId}`,
+    instance: `${pipelineConfigMap.module.api}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
-    tag: `dev-${version}-${deployChangeId}`,
-    host: (isStaticDeployment && staticUrlsAPI.dev) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    appHost: (isStaticDeployment && staticUrls.dev) || `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`,
+    host:
+      (isStaticDeployment && pipelineConfigMap.staticUrlsAPI.dev) ||
+      `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    appHost:
+      (isStaticDeployment && pipelineConfigMap.staticUrls.dev) ||
+      `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     backboneApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
     backboneIntakePath: '/api/dwc/submission/queue',
     backboneArtifactIntakePath: '/api/artifact/intake',
@@ -89,8 +93,8 @@ const phases = {
     elasticsearchURL: 'http://es01.a0ec71-dev:9200',
     elasticsearchTaxonomyIndex: 'taxonomy_3.0.0',
     s3KeyPrefix: (isStaticDeployment && 'sims') || `local/${deployChangeId}/sims`,
-    tz: config.timezone.api,
-    sso: config.sso.dev,
+    tz: pipelineConfigMap.timezone.api,
+    sso: pipelineConfigMap.sso.dev,
     logLevel: 'debug',
     cpuRequest: '50m',
     cpuLimit: '400m',
@@ -101,16 +105,16 @@ const phases = {
   },
   test: {
     namespace: 'af2668-test',
-    name: `${name}`,
-    dbName: `${dbName}`,
+    name: pipelineConfigMap.module.api,
+    dbName: pipelineConfigMap.module.db,
     phase: 'test',
     changeId: deployChangeId,
     suffix: `-test`,
-    instance: `${name}-test`,
-    version: `${version}`,
-    tag: `test-${version}`,
-    host: staticUrlsAPI.test,
-    appHost: staticUrls.test,
+    instance: `${pipelineConfigMap.module.api}-test`,
+    version: pipelineConfigMap.version,
+    tag: `test-${pipelineConfigMap.version}`,
+    host: pipelineConfigMap.staticUrlsAPI.test,
+    appHost: pipelineConfigMap.staticUrls.test,
     backboneApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
     backboneIntakePath: '/api/dwc/submission/queue',
     backboneArtifactIntakePath: '/api/artifact/intake',
@@ -121,8 +125,8 @@ const phases = {
     elasticsearchURL: 'http://es01.a0ec71-dev:9200',
     elasticsearchTaxonomyIndex: 'taxonomy_3.0.0',
     s3KeyPrefix: 'sims',
-    tz: config.timezone.api,
-    sso: config.sso.test,
+    tz: pipelineConfigMap.timezone.api,
+    sso: pipelineConfigMap.sso.test,
     logLevel: 'info',
     cpuRequest: '50m',
     cpuLimit: '1000m',
@@ -133,16 +137,16 @@ const phases = {
   },
   prod: {
     namespace: 'af2668-prod',
-    name: `${name}`,
-    dbName: `${dbName}`,
+    name: pipelineConfigMap.module.api,
+    dbName: pipelineConfigMap.module.db,
     phase: 'prod',
     changeId: deployChangeId,
     suffix: `-prod`,
-    instance: `${name}-prod`,
-    version: `${version}`,
-    tag: `prod-${version}`,
-    host: staticUrlsAPI.prod,
-    appHost: staticUrls.prodVanityUrl,
+    instance: `${pipelineConfigMap.module.api}-prod`,
+    version: pipelineConfigMap.version,
+    tag: `prod-${pipelineConfigMap.version}`,
+    host: pipelineConfigMap.staticUrlsAPI.prod,
+    appHost: pipelineConfigMap.staticUrls.prodVanityUrl,
     backboneApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
     backboneIntakePath: '/api/dwc/submission/queue',
     backboneArtifactIntakePath: '/api/artifact/intake',
@@ -153,8 +157,8 @@ const phases = {
     elasticsearchURL: 'http://es01.a0ec71-prod:9200',
     elasticsearchTaxonomyIndex: 'taxonomy_3.0.0',
     s3KeyPrefix: 'sims',
-    tz: config.timezone.api,
-    sso: config.sso.prod,
+    tz: pipelineConfigMap.timezone.api,
+    sso: pipelineConfigMap.sso.prod,
     logLevel: 'info',
     cpuRequest: '50m',
     cpuLimit: '1000m',

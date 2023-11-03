@@ -6,11 +6,9 @@ const path = require('path');
 /**
  * Build the database image.
  *
- * @param {*} settings
+ * @param {*} { phases, options }
  */
-const dbBuild = (settings) => {
-  const phases = settings.phases;
-  const options = settings.options;
+const dbBuild = ({ phases, options }) => {
   const phase = 'build';
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
@@ -23,8 +21,8 @@ const dbBuild = (settings) => {
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.bc.yaml`, {
       param: {
         NAME: phases[phase].name,
-        SUFFIX: `${phases[phase].suffix}`,
-        TAG_NAME: `${phases[phase].tag}`
+        SUFFIX: phases[phase].suffix,
+        TAG_NAME: phases[phase].tag
       }
     })
   );

@@ -6,11 +6,9 @@ const path = require('path');
 /**
  * Build the api image.
  *
- * @param {*} settings
+ * @param {*} { phases, options }
  */
-const apiBuild = (settings) => {
-  const phases = settings.phases;
-  const options = settings.options;
+const apiBuild = ({ phases, options }) => {
   const phase = 'build';
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
@@ -26,7 +24,7 @@ const apiBuild = (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
-        SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref,
+        SOURCE_REPOSITORY_REF: phases[phase].branch,
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,
         MEMORY_REQUEST: phases[phase].memoryRequest,
