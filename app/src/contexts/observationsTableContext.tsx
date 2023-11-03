@@ -162,6 +162,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         // Update added rows, removing deleted rows
         setAddedRowIds((current) => current.filter((id) => !addedRowIdsToDelete.includes(id)));
 
+        // Updated editing rows, removing deleted rows
+        setModifiedRowIds((current) => current.filter((id) => !allRowIdsToDelete.includes(id)));
+
         // Close yes-no dialog
         dialogContext.setYesNoDialog({ open: false });
       } catch {
@@ -296,6 +299,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const revertObservationRecords = () => {
     // Mark all rows as saved
     setModifiedRowIds([]);
+    setAddedRowIds([]);
 
     // Revert any current edits
     const editingIds = Object.keys(_muiDataGridApiRef.current.state.editRows);
@@ -310,7 +314,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   }, [observationsContext.observationsDataLoader]);
 
   // True if the data grid contains at least 1 unsaved record
-  const hasUnsavedChanges = modifiedRowIds.length !== 0 || addedRowIds.length !== 0;
+  const hasUnsavedChanges = modifiedRowIds.length > 0 || addedRowIds.length > 0;
 
   /**
    * Send all observation rows to the backend.
