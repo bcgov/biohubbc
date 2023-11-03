@@ -133,10 +133,10 @@ const SamplingSiteList = () => {
           </Button>
         </Toolbar>
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+          
           {/* Display spinner if data loaders are still waiting for a response */}
           <Fade
-            in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}
-            timeout={1000}>
+            in={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}>
             <Box
               sx={{
                 position: 'absolute',
@@ -163,6 +163,7 @@ const SamplingSiteList = () => {
               p: 1,
               background: grey[100]
             }}>
+
             {/* Display text if the sample site data loader has no items in it */}
             {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length &&
               !surveyContext.sampleSiteDataLoader.isLoading && (

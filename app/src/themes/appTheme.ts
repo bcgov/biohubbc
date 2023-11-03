@@ -178,7 +178,7 @@ const appTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paperWidthXl: {
-          minWidth: '800px'
+          width: '800px'
         }
       }
     },

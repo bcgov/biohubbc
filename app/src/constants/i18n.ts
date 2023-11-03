@@ -305,7 +305,7 @@ export const SurveyAnimalsI18N = {
   animalSectionComment: (section: string) => `Add comment about this ${section}`,
   animalGeneralTitle: 'General',
   animalGeneralHelp: 'General information about this animal.',
-  animalCaptureTitle: 'Capture Information',
+  animalCaptureTitle: 'Capture Events',
   animalCaptureTitle2: 'Capture Event',
   animalCaptureHelp:
     'Capture Events are when animals have been deliberately handled or immobilized. All capture events should be reported by adding a Capture Event to a new or existing individual.',
@@ -326,7 +326,7 @@ export const SurveyAnimalsI18N = {
   animalFamilyHelp:
     'Family Relationships describe how multiple individuals are related to one another. You must add an individual before it can be referenced as a parent or child of another individual.',
   animalFamilyAddBtn: 'Add Relationship',
-  animalMortalityTitle: 'Mortality',
+  animalMortalityTitle: 'Mortality Events',
   animalMortalityTitle2: 'Mortality Event',
   animalMortalityHelp:
     "Mortality Events describe an individual's death, including the suspected location, date, and cause of death. An individual can only have one Mortality Event.",

@@ -27,8 +27,8 @@ export type IAnimalSections =
   | 'Ecological Units'
   | 'Markings'
   | 'Measurements'
-  | 'Capture Information'
-  | 'Mortality'
+  | 'Capture Events'
+  | 'Mortality Events'
   | 'Family'
   | 'Telemetry';
 //| 'Observations'

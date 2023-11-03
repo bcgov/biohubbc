@@ -5,6 +5,7 @@ import Stack from '@mui/system/Stack';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
 import SurveySectionHeader from '../components/SurveySectionHeader';
+import Paper from '@mui/material/Paper';
 
 interface SurveySectionFullPageLayoutProps {
   sideBarComponent: JSX.Element;
@@ -31,21 +32,37 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
 
       <Divider flexItem></Divider>
 
-      <Stack
+      <Paper 
+        component={Stack}
         direction="row"
         divider={<Divider orientation="vertical" flexItem />}
         sx={{
           flex: '1 1 auto',
-          background: '#fff'
-        }}>
-        <Box flex="0 0 auto" width="400px">
-          {sideBarComponent}
-        </Box>
+          m: 1
+        }}
+      >
 
-        <Box flex="1 1 auto" position="relative">
-          {mainComponent}
-        </Box>
-      </Stack>
+          <Box
+            sx={{
+              flex: '0 0 auto',
+              position: 'relative',
+              width: '400px'
+            }}
+          >
+            {sideBarComponent}
+          </Box>
+
+          <Box
+            sx={{
+              flex: '1 1 auto',
+              position: 'relative'
+            }}
+          >
+            {mainComponent}
+          </Box>
+
+      </Paper>
+
     </Box>
   );
 };

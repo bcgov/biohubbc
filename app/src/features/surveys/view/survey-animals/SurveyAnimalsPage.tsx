@@ -1,4 +1,5 @@
-import { Box, Grid, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { AttachmentType } from 'constants/attachments';
 import { SurveyAnimalsI18N } from 'constants/i18n';
@@ -306,9 +307,7 @@ export const SurveyAnimalsPage = () => {
                 Add basic animal info from this form. If you need to add captures, markings, or other details, you may
                 do so after submitting these fields first.
               </Typography>
-              <Grid container spacing={2}>
-                <GeneralAnimalForm />
-              </Grid>
+              <GeneralAnimalForm />
             </Box>
           ),
           initialValues: defaultFormValues,
