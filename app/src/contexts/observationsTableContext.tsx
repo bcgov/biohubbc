@@ -6,7 +6,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
 
@@ -184,45 +184,58 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     [addedRowIds, dialogContext, biohubApi.observation, projectId, surveyId]
   );
 
-  const deleteObservationRecords = (observationRecords: IObservationTableRow[]) => {
-    if (!observationRecords.length) {
-      return;
+  const getSelectedObservationRecords: () => IObservationTableRow[] = useCallback(() => {
+    if (!_muiDataGridApiRef?.current?.getRowModels) {
+      // Data grid is not fully initialized
+      return [];
     }
 
-    dialogContext.setYesNoDialog({
-      dialogTitle:
-        observationRecords.length === 1
-          ? ObservationsTableI18N.removeSingleRecordDialogTitle
-          : ObservationsTableI18N.removeMultipleRecordsDialogTitle,
-      dialogText:
-        observationRecords.length === 1
-          ? ObservationsTableI18N.removeSingleRecordDialogText
-          : ObservationsTableI18N.removeMultipleRecordsDialogText,
-      yesButtonProps: {
-        color: 'error',
-        loading: false
-      },
-      yesButtonLabel:
-        observationRecords.length === 1
-          ? ObservationsTableI18N.removeSingleRecordButtonText
-          : ObservationsTableI18N.removeMultipleRecordsButtonText,
-      noButtonProps: { color: 'primary', variant: 'outlined', disabled: false },
-      noButtonLabel: 'Cancel',
-      open: true,
-      onYes: () => _deleteRecords(observationRecords),
-      onClose: () => dialogContext.setYesNoDialog({ open: false }),
-      onNo: () => dialogContext.setYesNoDialog({ open: false })
-    });
-  };
+    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value);
+    return rowValues.filter((row): row is IObservationTableRow => rowSelectionModel.includes(row.id));
+  }, [_muiDataGridApiRef, rowSelectionModel]);
 
-  const deleteSelectedObservationRecords = () => {
+  const deleteObservationRecords = useCallback(
+    (observationRecords: IObservationTableRow[]) => {
+      if (!observationRecords.length) {
+        return;
+      }
+
+      dialogContext.setYesNoDialog({
+        dialogTitle:
+          observationRecords.length === 1
+            ? ObservationsTableI18N.removeSingleRecordDialogTitle
+            : ObservationsTableI18N.removeMultipleRecordsDialogTitle,
+        dialogText:
+          observationRecords.length === 1
+            ? ObservationsTableI18N.removeSingleRecordDialogText
+            : ObservationsTableI18N.removeMultipleRecordsDialogText,
+        yesButtonProps: {
+          color: 'error',
+          loading: false
+        },
+        yesButtonLabel:
+          observationRecords.length === 1
+            ? ObservationsTableI18N.removeSingleRecordButtonText
+            : ObservationsTableI18N.removeMultipleRecordsButtonText,
+        noButtonProps: { color: 'primary', variant: 'outlined', disabled: false },
+        noButtonLabel: 'Cancel',
+        open: true,
+        onYes: () => _deleteRecords(observationRecords),
+        onClose: () => dialogContext.setYesNoDialog({ open: false }),
+        onNo: () => dialogContext.setYesNoDialog({ open: false })
+      });
+    },
+    [_deleteRecords, dialogContext]
+  );
+
+  const deleteSelectedObservationRecords = useCallback(() => {
     const selectedRecords = getSelectedObservationRecords();
     if (!selectedRecords.length) {
       return;
     }
 
     deleteObservationRecords(selectedRecords);
-  };
+  }, [deleteObservationRecords, getSelectedObservationRecords]);
 
   const onRowEditStart = (id: GridRowId) => {
     setModifiedRowIds((current) => Array.from(new Set([...current, String(id)])));
@@ -231,7 +244,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   /**
    * Add a new empty record to the data grid.
    */
-  const addObservationRecord = () => {
+  const addObservationRecord = useCallback(() => {
     const id = uuidv4();
 
     const newRecord: IObservationTableRow = {
@@ -255,12 +268,12 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Set edit mode for the new row
     _muiDataGridApiRef.current.startRowEditMode({ id, fieldToFocus: 'wldtaxonomic_units' });
-  };
+  }, [_muiDataGridApiRef, rows]);
 
   /**
    * Transition all editable rows from edit mode to view mode.
    */
-  const saveObservationRecords = () => {
+  const saveObservationRecords = useCallback(() => {
     if (isStoppingEdit) {
       // Stop edit mode already in progress
       return;
@@ -287,7 +300,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Store ids of rows that were in edit mode
     setModifiedRowIds(editingIdsToSave);
-  };
+  }, [_muiDataGridApiRef, isStoppingEdit, rows]);
 
   /**
    * Transition all rows tracked by `modifiedRowIds` to view mode.
@@ -296,7 +309,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     modifiedRowIds.forEach((id) => _muiDataGridApiRef.current.startRowEditMode({ id }));
   }, [_muiDataGridApiRef, modifiedRowIds]);
 
-  const revertObservationRecords = () => {
+  const revertObservationRecords = useCallback(() => {
     // Mark all rows as saved
     setModifiedRowIds([]);
     setAddedRowIds([]);
@@ -307,7 +320,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
     // Remove any rows that are newly created
     setRows(rows.filter((row) => !addedRowIds.includes(String(row.id))));
-  };
+  }, [_muiDataGridApiRef, addedRowIds, rows]);
 
   const refreshObservationRecords = useCallback(async () => {
     return observationsContext.observationsDataLoader.refresh();
@@ -358,16 +371,6 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     },
     [biohubApi.observation, projectId, surveyId, dialogContext, refreshObservationRecords, _revertAllRowsEditMode]
   );
-
-  const getSelectedObservationRecords: () => IObservationTableRow[] = useCallback(() => {
-    if (!_muiDataGridApiRef?.current?.getRowModels) {
-      // Data grid is not fully initialized
-      return [];
-    }
-
-    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value);
-    return rowValues.filter((row): row is IObservationTableRow => rowSelectionModel.includes(row.id));
-  }, [_muiDataGridApiRef, rowSelectionModel]);
 
   useEffect(() => {
     if (!observationsContext.observationsDataLoader.data?.surveyObservations?.length) {
@@ -423,23 +426,39 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     _saveRecords(rowValues);
   }, [_muiDataGridApiRef, _saveRecords, isSaving, isStoppingEdit, modifiedRowIds]);
 
-  const observationsTableContext: IObservationsTableContext = {
-    _muiDataGridApiRef,
-    rows,
-    setRows,
-    addObservationRecord,
-    saveObservationRecords,
-    deleteObservationRecords,
-    deleteSelectedObservationRecords,
-    revertObservationRecords,
-    refreshObservationRecords,
-    getSelectedObservationRecords,
-    hasUnsavedChanges,
-    onRowEditStart,
-    rowSelectionModel,
-    onRowSelectionModelChange: setRowSelectionModel,
-    isSaving
-  };
+  const observationsTableContext: IObservationsTableContext = useMemo(
+    () => ({
+      _muiDataGridApiRef,
+      rows,
+      setRows,
+      addObservationRecord,
+      saveObservationRecords,
+      deleteObservationRecords,
+      deleteSelectedObservationRecords,
+      revertObservationRecords,
+      refreshObservationRecords,
+      getSelectedObservationRecords,
+      hasUnsavedChanges,
+      onRowEditStart,
+      rowSelectionModel,
+      onRowSelectionModelChange: setRowSelectionModel,
+      isSaving
+    }),
+    [
+      _muiDataGridApiRef,
+      rows,
+      addObservationRecord,
+      saveObservationRecords,
+      deleteObservationRecords,
+      deleteSelectedObservationRecords,
+      revertObservationRecords,
+      getSelectedObservationRecords,
+      refreshObservationRecords,
+      hasUnsavedChanges,
+      rowSelectionModel,
+      isSaving
+    ]
+  );
 
   return (
     <ObservationsTableContext.Provider value={observationsTableContext}>
