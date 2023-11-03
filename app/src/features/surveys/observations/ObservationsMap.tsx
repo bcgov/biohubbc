@@ -87,7 +87,7 @@ const ObservationsMap = () => {
 
   const zoomToBoundaryExtent = useCallback(() => {
     setBounds(getDefaultMapBounds());
-  }, [getDefaultMapBounds, surveyObservations, studyAreaFeatures, sampleSiteFeatures]);
+  }, [getDefaultMapBounds]);
 
   return (
     <Box position="relative">
@@ -106,7 +106,7 @@ const ObservationsMap = () => {
           <GeoJSON
             key={uuidv4()}
             data={nonEditableGeo.feature}
-            pointToLayer={(feature, latlng) => coloredPoint({ feature, latlng, fillColor: '#F28C28' })}>
+            pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: '#F28C28' })}>
             {nonEditableGeo.popupComponent}
           </GeoJSON>
         ))}

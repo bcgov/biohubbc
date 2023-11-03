@@ -11,6 +11,7 @@ import {
   Tooltip,
   TooltipProps
 } from 'react-leaflet';
+import { coloredPoint } from 'utils/mapUtils';
 
 export interface IStaticLayerFeature {
   geoJSON: Feature;
@@ -38,7 +39,7 @@ const StaticLayers: React.FC<React.PropsWithChildren<IStaticLayersProps>> = (pro
 
   const layerControls: ReactElement[] = [];
 
-  props.layers.forEach((layer, index) => {
+  props.layers.forEach((layer) => {
     if (!layer.features?.length) {
       return;
     }
@@ -57,7 +58,7 @@ const StaticLayers: React.FC<React.PropsWithChildren<IStaticLayersProps>> = (pro
                     return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
                   }
 
-                  return new L.Marker([latlng.lat, latlng.lng]);
+                  return coloredPoint({ latlng });
                 }}
                 data={item.geoJSON}
                 {...item.GeoJSONProps}>
