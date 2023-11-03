@@ -1,4 +1,10 @@
+import { mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 import { IDrawControlsRef } from 'components/map/components/DrawControls';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
@@ -51,9 +57,9 @@ const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
   const { handleSubmit, values, setFieldValue } = formikProps;
   const [isOpen, setIsOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | undefined>(undefined);
   const drawRef = createRef<IDrawControlsRef>();
-
   const locationDialogFormData = useMemo(() => {
     // Initial Dialog Data
     const dialogData = {
@@ -80,6 +86,18 @@ const StudyAreaForm = () => {
     setFieldValue(`locations[${currentIndex}].description`, data.description);
   };
 
+  const onDeleteAll = () => {
+    // Use Draw Ref to remove editable layers from the map
+    values.locations.forEach((item) => {
+      if (item.leaflet_id) {
+        drawRef.current?.deleteLayer(item.leaflet_id);
+      }
+    });
+
+    // set field to an empty array
+    setFieldValue('locations', []);
+  };
+
   const onDelete = (index: number) => {
     // remove the item at index
     const data = values.locations;
@@ -98,6 +116,21 @@ const StudyAreaForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
+      <YesNoDialog
+        dialogTitle={`Delete all ${values.locations.length} Study Areas?`}
+        dialogText="Are you sure you want to remove these study areas? This action can be undone by exiting the survey page without saving"
+        yesButtonProps={{ color: 'error' }}
+        yesButtonLabel={'Delete'}
+        noButtonProps={{ color: 'primary', variant: 'outlined' }}
+        noButtonLabel={'Cancel'}
+        open={isDeleteOpen}
+        onYes={() => {
+          setIsDeleteOpen(false);
+          onDeleteAll();
+        }}
+        onClose={() => {}}
+        onNo={() => setIsDeleteOpen(false)}
+      />
       <EditDialog
         dialogTitle={'Edit Location Details'}
         open={isOpen}
@@ -123,6 +156,25 @@ const StudyAreaForm = () => {
         formik_props={formikProps}
         draw_controls_ref={drawRef}
       />
+
+      {values.locations.length > 0 && (
+        <Box mt={2} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+          <Typography component="h4" variant="h4">
+            Study Areas &zwnj;
+            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+              ({values.locations.length})
+            </Typography>
+          </Typography>
+          <Button
+            color="primary"
+            variant="outlined"
+            data-testid="boundary_file-upload"
+            startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+            onClick={() => setIsDeleteOpen(true)}>
+            Remove all study areas
+          </Button>
+        </Box>
+      )}
 
       <SurveyAreaList
         openEdit={(index) => {
