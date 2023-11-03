@@ -93,12 +93,12 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
     const CustomMarker = L.Icon.extend({
       // The preview icon rendered when you are in the process of adding a marker to the map
       options: {
-        shadowUrl: null,
-        iconSize: new L.Point(36, 36),
-        iconAnchor: new L.Point(18, 18),
         iconUrl: 'assets/icon/circle-medium.svg',
         iconRetinaUrl: 'assets/icon/circle-medium.svg',
-        popupAnchor: [20, 20]
+        iconSize: new L.Point(36, 36),
+        iconAnchor: new L.Point(18, 18),
+        popupAnchor: [18, 18],
+        shadowUrl: null
       }
     });
 

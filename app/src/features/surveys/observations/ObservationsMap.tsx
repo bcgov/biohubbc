@@ -102,9 +102,10 @@ const ObservationsMap = () => {
       zoomToBoundaryExtent();
     }
   }, [
-    surveyContext.surveyDataLoader.isLoading,
+    observationsContext.observationsDataLoader.isLoading,
     surveyContext.sampleSiteDataLoader.isLoading,
-    observationsContext.observationsDataLoader.isLoading
+    surveyContext.surveyDataLoader.isLoading,
+    zoomToBoundaryExtent
   ]);
 
   return (

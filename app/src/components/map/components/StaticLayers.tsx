@@ -63,7 +63,7 @@ const StaticLayers: React.FC<React.PropsWithChildren<IStaticLayersProps>> = (pro
                 data={item.geoJSON}
                 {...item.GeoJSONProps}>
                 {item.tooltip && (
-                  <Tooltip key={`static-feature-tooltip-${id}`} direction="top" {...item.TooltipProps}>
+                  <Tooltip key={`static-feature-tooltip-${id}`} direction="top" sticky={true} {...item.TooltipProps}>
                     {item.tooltip}
                   </Tooltip>
                 )}
