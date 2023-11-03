@@ -39,13 +39,15 @@ export const SurveyLocationDetailsYupSchema = yup.object({
 });
 
 export const SurveyLocationYupSchema = yup.object({
-  locations: yup.array(
-    yup.object({
-      name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
-      description: yup.string().max(250, 'Description cannot exceed 250 characters').default(''),
-      geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
-    })
-  )
+  locations: yup
+    .array(
+      yup.object({
+        name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
+        description: yup.string().max(250, 'Description cannot exceed 250 characters').default(''),
+        geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
+      })
+    )
+    .min(1, 'At least 1 feature or boundary is required for a survey study area')
 });
 
 /**
@@ -55,7 +57,7 @@ export const SurveyLocationYupSchema = yup.object({
  */
 const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
-  const { handleSubmit, values, setFieldValue } = formikProps;
+  const { handleSubmit, values, setFieldValue, errors } = formikProps;
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | undefined>(undefined);
@@ -111,7 +113,7 @@ const StudyAreaForm = () => {
     });
 
     // set values
-    setFieldValue('locations', data);
+    setFieldValue('locations', data, true);
   };
 
   return (
@@ -156,6 +158,12 @@ const StudyAreaForm = () => {
         formik_props={formikProps}
         draw_controls_ref={drawRef}
       />
+
+      {errors.locations && !Array.isArray(errors?.locations) && (
+        <Box pt={2}>
+          <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.locations}</Typography>
+        </Box>
+      )}
 
       {values.locations.length > 0 && (
         <Box mt={2} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
