@@ -16,10 +16,8 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const _dispatchedIds = useRef<Set<number>>(new Set<number>());
 
   const getSpeciesTaxonomyById: (id: number) => ITaxonomy | null = useCallback((id: number) => {
-    console.log('getSpeciesTaxonomyById()')
     if (_taxonomyCache.current[id]) {
       // Result is in the cache
-      console.log('Found for', id, _taxonomyCache.current[id])
       return _taxonomyCache.current[id];
     }
 
@@ -40,8 +38,6 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const taxonomyContext: ITaxonomyContext = {
     getSpeciesTaxonomyById
   }
-
-  console.log({ _taxonomyCache })
 
   return (
     <TaxonomyContext.Provider value={taxonomyContext}>
