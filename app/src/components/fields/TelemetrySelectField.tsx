@@ -1,5 +1,5 @@
 import { FormControl, FormControlProps, FormHelperText, InputLabel, MenuItem, Select } from '@mui/material';
-import { useFormikContext } from 'formik';
+import { FormikContextType, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';
 import React from 'react';
@@ -10,6 +10,7 @@ interface ITelemetrySelectField {
   id: string;
   fetchData: () => Promise<(string | number)[]>;
   controlProps?: FormControlProps;
+  handleBlur?: FormikContextType<any>['handleBlur'];
 }
 
 interface ISelectOption {
@@ -19,7 +20,7 @@ interface ISelectOption {
 
 const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
   const bctwLookupLoader = useDataLoader(() => props.fetchData());
-  const { values, touched, errors, handleChange, handleBlur } = useFormikContext<ISelectOption>();
+  const { values, touched, errors, handleChange } = useFormikContext<ISelectOption>();
 
   const err = get(touched, props.name) && get(errors, props.name);
 
@@ -36,9 +37,9 @@ const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
         name={props.name}
         labelId="telemetry_select"
         label={props.label}
-        value={value}
+        value={value ?? ''}
         onChange={handleChange}
-        onBlur={handleBlur}
+        onBlur={props.handleBlur}
         displayEmpty>
         {bctwLookupLoader.data?.map((bctwValue: string | number) => {
           return (

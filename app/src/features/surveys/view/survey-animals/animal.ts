@@ -112,7 +112,7 @@ export const AnimalCaptureSchema = yup.object({}).shape({
   release_comment: yup.string().optional()
 });
 
-export const AnimalMarkingSchema = yup.object({}).shape({
+export const AnimalMarkingSchema = yup.object({
   _id: yup.string().required(),
   marking_id: yup.string(),
   marking_type_id: yup.string().required('Type is required'),

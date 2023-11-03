@@ -11,7 +11,7 @@ import { setMessageSnackbar } from 'utils/Utils';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 
-export type SubHeaderData = Record<string, string | number | undefined>;
+export type SubHeaderData = Record<string, string | number | null | undefined>;
 
 interface AnimalSectionDataCardsProps {
   /*

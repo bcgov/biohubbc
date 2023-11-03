@@ -5,7 +5,6 @@ import { AttachmentType } from 'constants/attachments';
 import { useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { useEffect } from 'react';
 import { ANIMAL_FORM_MODE, IAnimal } from '../animal';
 import { DeploymentFormSection } from './DeploymentFormSection';
 import TelemetryFileUpload from './TelemetryFileUpload';
@@ -21,13 +20,6 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
   const device = values.device?.[index];
 
   const { data: bctwDeviceData, refresh } = useDataLoader(() => api.devices.getDeviceDetails(device.device_id));
-
-  useEffect(() => {
-    if (device.device_id) {
-      refresh();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [device.device_id]);
 
   if (!device) {
     return <></>;
@@ -45,6 +37,11 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
               label="Device ID"
               name={`device.${index}.device_id`}
               other={{ disabled: mode === ANIMAL_FORM_MODE.EDIT }}
+              handleBlur={() => {
+                if (device.device_id) {
+                  refresh();
+                }
+              }}
             />
           </Grid>
           <Grid item xs={6}>

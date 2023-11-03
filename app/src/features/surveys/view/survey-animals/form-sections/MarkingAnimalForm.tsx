@@ -1,14 +1,63 @@
-import { Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
+import EditDialog from 'components/dialog/EditDialog';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
+import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { useFormikContext } from 'formik';
-import { AnimalMarkingSchema, getAnimalFieldName, IAnimal, IAnimalMarking, isRequiredInSchema } from '../animal';
+import { useState } from 'react';
+import {
+  AnimalMarkingSchema,
+  ANIMAL_FORM_MODE,
+  getAnimalFieldName,
+  IAnimal,
+  IAnimalMarking,
+  isRequiredInSchema
+} from '../animal';
+import { ANIMAL_SECTIONS_FORM_MAP } from '../animal-sections';
 
-/**
- * Renders the Marking section for the Individual Animal form
- *
- * @return {*}
+type MarkingAnimalFormProps =
+  | {
+      taxon_id: string; // temp will probably place inside a context
+      display: 'button';
+      marking?: never;
+    }
+  | {
+      taxon_id: string;
+      display: 'card';
+      marking: IAnimalMarking;
+    };
+/*
+ * Note: This is a placeholder component for how to handle the form sections individually
+ * allows easier management of the individual form sections with push / patch per form
+ * vs how it's currently implemented with one large payload that updates/removes/creates critter meta
  */
+export const MarkingAnimalForm = (props: MarkingAnimalFormProps) => {
+  const [dialogMode, setDialogMode] = useState<ANIMAL_FORM_MODE | null>(null);
+  const markingInfo = ANIMAL_SECTIONS_FORM_MAP['Markings'];
+  return (
+    <>
+      <EditDialog
+        dialogTitle={markingInfo.dialogTitle}
+        open={!!dialogMode}
+        component={{
+          element: <div>placeholder for marking component</div>,
+          initialValues: props?.marking ?? markingInfo.defaultFormValue(),
+          validationSchema: AnimalMarkingSchema
+        }}
+        onCancel={() => setDialogMode(null)}
+        onSave={(values) => {
+          setDialogMode(null);
+          console.log(values);
+        }}
+      />
+      {props.display === 'button' ? (
+        <Button onClick={() => setDialogMode(ANIMAL_FORM_MODE.ADD)}>{markingInfo.addBtnText}</Button>
+      ) : (
+        <EditDeleteStubCard header={props?.marking?.marking_type ?? 'Marking'} subHeader={'test test'} />
+      )}
+    </>
+  );
+};
 
 interface IMarkingAnimalFormContentProps {
   index: number;
@@ -101,5 +150,3 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
     </Grid>
   );
 };
-
-export default MarkingAnimalFormContent;

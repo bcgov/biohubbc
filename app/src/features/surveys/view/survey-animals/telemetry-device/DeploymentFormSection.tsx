@@ -40,23 +40,9 @@ export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.El
       }
       await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
       setMessageSnackbar('Deployment deleted', dialogContext);
-      if (!deployments) {
-        return;
-      }
-      if (deployments.length === 1) {
-        values[animalKeyName].pop();
-        return;
-      }
-      const deploymentIndex = deployments.findIndex((deployment) => deployment.deployment_id === deployment_id);
-      deployments?.splice(deploymentIndex, 1);
-      setMessageSnackbar('Deployment deleted', dialogContext);
     } catch (e) {
       setMessageSnackbar('Failed to delete deployment.', dialogContext);
-      return;
     }
-
-    //TODO is this still needed?
-    //refreshDeployments();
   };
 
   if (!deployments) {
