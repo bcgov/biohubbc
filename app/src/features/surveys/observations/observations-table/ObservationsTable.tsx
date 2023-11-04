@@ -14,6 +14,7 @@ import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyData
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { CodesContext } from 'contexts/codesContext';
+import { ObservationsContext } from 'contexts/observationsContext';
 import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import {
@@ -94,14 +95,19 @@ const LoadingOverlay = () => {
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const location = useLocation();
   const observationsTableContext = useContext(ObservationsTableContext);
+  const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
 
   const apiRef = observationsTableContext._muiDataGridApiRef;
   const isLoading = useMemo(() => {
-    return true;
-  }, []);
+    return [
+      observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
+      props.isLoading,
+      surveyContext.sampleSiteDataLoader.isLoading
+    ].some(Boolean)
+  }, [observationsContext.observationsDataLoader, surveyContext.sampleSiteDataLoader, props.isLoading]);
 
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
@@ -451,7 +457,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       checkboxSelection
       disableRowSelectionOnClick
       loading={isLoading}
-      //loading={(observationsDataLoader.isLoading && !observationsDataLoader.hasLoaded) || props.isLoading}
       rowHeight={56}
       apiRef={apiRef}
       editMode="row"
