@@ -198,7 +198,6 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
 
   return (
     <Stack flexDirection="column" gap={4} maxWidth={800}>
-      
       <Box component="fieldset">
         {primaryLocationFields.fieldsetTitle ? (
           <Typography component="legend">{primaryLocationFields.fieldsetTitle}</Typography>
@@ -221,7 +220,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
         {otherPrimaryFields}
         {secondaryLocationFields && secondaryLocationFields.fieldsetTitle ? (
           <Box mt={2}>{renderLocationFields(secondaryLocationFields)}</Box>
-      ) : null}
+        ) : null}
       </Box>
 
       <Box component="fieldset" flex="0 0 auto">
@@ -250,26 +249,27 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                   color: '#fff'
                 }
               }
-            }}
-          >
+            }}>
             <ToggleButtonGroup value={markerEnabled} onChange={handleMarkerSelected} exclusive>
               {primaryLocationFields ? (
-                <ToggleButton size="small" value="primary"
+                <ToggleButton
+                  size="small"
+                  value="primary"
                   sx={{
                     display: 'flex',
                     alignItems: 'center'
-                  }}
-                >
+                  }}>
                   {`Set ${primaryLocationFields?.fieldsetTitle}` ?? 'Set Primary Location'}
                 </ToggleButton>
               ) : null}
               {secondaryLocationFields ? (
-                <ToggleButton size="small" value="secondary"
+                <ToggleButton
+                  size="small"
+                  value="secondary"
                   sx={{
                     display: 'flex',
                     alignItems: 'center'
-                  }}
-                >
+                  }}>
                   {`Set ${secondaryLocationFields?.fieldsetTitle}` ?? 'Set Secondary Location'}
                 </ToggleButton>
               ) : null}

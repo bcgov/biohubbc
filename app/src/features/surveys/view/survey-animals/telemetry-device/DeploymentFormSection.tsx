@@ -4,46 +4,25 @@ import { IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import SingleDateField from 'components/fields/SingleDateField';
-import { DialogContext } from 'contexts/dialogContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useQuery } from 'hooks/useQuery';
-import { Fragment, useContext, useState } from 'react';
-import { setMessageSnackbar } from 'utils/Utils';
+import { Fragment, useState } from 'react';
 import { ANIMAL_FORM_MODE, IAnimal } from '../animal';
 
 interface DeploymentFormSectionProps {
   index: number;
   mode: ANIMAL_FORM_MODE;
+  handleRemoveDeployment: (deployment_id: string) => Promise<void>;
 }
 
 export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.Element => {
-  const { index, mode } = props;
+  const { index, mode, handleRemoveDeployment } = props;
   const animalKeyName: keyof IAnimal = 'device';
 
-  const bhApi = useBiohubApi();
-
-  const { cid: survey_critter_id } = useQuery();
   const { values } = useFormikContext<IAnimal>();
-  const dialogContext = useContext(DialogContext);
-  const { surveyId, projectId } = useContext(SurveyContext);
   const [deploymentIDToDelete, setDeploymentIDToDelete] = useState<null | string>(null);
 
   const device = values[animalKeyName]?.[index];
   const deployments = device.deployments;
-
-  const handleRemoveDeployment = async (deployment_id: string) => {
-    try {
-      if (survey_critter_id === undefined) {
-        setMessageSnackbar('No critter set!', dialogContext);
-      }
-      await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
-      setMessageSnackbar('Deployment deleted', dialogContext);
-    } catch (e) {
-      setMessageSnackbar('Failed to delete deployment.', dialogContext);
-    }
-  };
 
   if (!deployments) {
     return <></>;

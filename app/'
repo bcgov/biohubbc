@@ -7,7 +7,6 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Field, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useContext } from 'react';
@@ -24,16 +23,15 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
   const bhApi = useBiohubApi();
-  const telemetryApi = useTelemetryApi();
   const api = useTelemetryApi();
   const { cid: survey_critter_id } = useQuery();
   const { values, handleBlur } = useFormikContext<IAnimal>();
   const { surveyId, projectId } = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
 
-  const { data: bctwDeviceData } = useDataLoader(() => api.devices.getDeviceDetails(device.device_id));
-
   const device = values.device?.[index];
+
+  //const { data: bctwDeviceData, refresh } = useDataLoader(() => api.devices.getDeviceDetails(device.device_id));
 
   const handleRemoveDeployment = async (deployment_id: string) => {
     try {
@@ -53,25 +51,16 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
     }
   };
 
+  if (!device) {
+    return <></>;
+  }
+
   const validateDeviceID = (value: number | '') => {
     console.log('validating');
     if (value) {
       return 'error';
     }
   };
-
-  const validateDeviceMake = async (value: number | '') => {
-    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device.device_id);
-    const deviceMake = deviceDetails.device?.device_make;
-    console.log('validating device make');
-    if (device.device_id && deviceMake && deviceMake !== value) {
-      return 'The current make for this device is incorrect.';
-    }
-  };
-
-  if (!device) {
-    return <></>;
-  }
 
   return (
     <>
@@ -126,15 +115,12 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
             </Grid>
           </Grid>
           <Grid item xs={6}>
-            <Field
-              as={TelemetrySelectField}
+            <TelemetrySelectField
               label="Device Manufacturer"
               name={`device.${index}.device_make`}
               id="manufacturer"
               fetchData={api.devices.getCollarVendors}
               controlProps={{ disabled: mode === ANIMAL_FORM_MODE.EDIT }}
-              handleBlur={handleBlur}
-              validate={validateDeviceMake}
             />
           </Grid>
           <Grid item xs={6}>

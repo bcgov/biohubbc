@@ -13,6 +13,7 @@ import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formi
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { setMessageSnackbar } from 'utils/Utils';
@@ -41,6 +42,7 @@ interface AddEditAnimalProps {
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, critterData, telemetrySaveAction, deploymentRemoveAction } = props;
   const surveyContext = useContext(SurveyContext);
+  const telemetryApi = useTelemetryApi();
   const { submitForm, initialValues, values, isSubmitting, setFieldValue, isValidating, status } =
     useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
@@ -125,10 +127,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     } else {
       return '';
     }
-  };
+  }; */
 
-  const { data: deviceDetails, refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
-  const getDeviceDetails = async (deviceId: number | string) => {
+  const { refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
+  /* const getDeviceDetails = async (deviceId: number | string) => {
     if (deviceDetails?.device?.device_id !== Number(deviceId)) {
       await refreshDeviceDetails(Number(deviceId));
     }
@@ -146,6 +148,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
         }
         const deviceDetails = await getDeviceDetails(context.parent.device_id);
         if (deviceDetails?.device?.device_make && deviceDetails.device?.device_make !== value) {
+          console.log(deviceDetails?.device?.device_make, value);
           return context.createError({
             message: `The current make for this device is ${deviceDetails.device?.device_make}, this value should not be changed.`
           });
@@ -203,8 +206,8 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       })
     )
   });
-*/
-  /* const AnimalSchemaWithDeployments = AnimalSchema.shape({
+
+  const AnimalSchemaWithDeployments = AnimalSchema.shape({
     device: yup.array().of(AnimalDeploymentSchemaAsyncValidation)
   }); */
 
@@ -216,7 +219,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     const vals = formMode === ANIMAL_FORM_MODE.ADD ? [saveValues.device[selectedIndex]] : saveValues.device;
     try {
       await telemetrySaveAction(vals, formMode);
-      //refreshDeviceDetails(Number(saveValues.device[selectedIndex].device_id));
+      refreshDeviceDetails(Number(saveValues.device[selectedIndex].device_id));
     } catch (err) {
       setMessageSnackbar('Telemetry save failed!', dialogContext);
     }
@@ -302,16 +305,15 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                       onSave={async (saveVals) => {
                         if (section === 'Telemetry') {
                           await handleSaveTelemetry(saveVals);
-                          setShowDialog(false);
-                          return;
+                        } else {
+                          submitForm();
                         }
+                        setShowDialog(false);
                         setFormMode(ANIMAL_FORM_MODE.EDIT);
                         setFieldValue(
                           ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
                           saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
                         );
-                        submitForm();
-                        setShowDialog(false);
                       }}
                     />
                     {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
