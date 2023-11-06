@@ -458,7 +458,7 @@ jobs:
       - name: Deploy APP Image
         working-directory: app/.pipeline
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=dev
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr
 
   # Deploy Database image
   deployDatabase:
@@ -515,7 +515,7 @@ jobs:
       - name: Deploy Database Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=dev
+          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -573,7 +573,7 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=dev
+          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr
 
   # Deploy API image
   deployAPI:
@@ -633,7 +633,7 @@ jobs:
       - name: Deploy API Image
         working-directory: api/.pipeline/
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=dev
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --env=pr
 
   # Report the overall status of all jobs.
   # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than

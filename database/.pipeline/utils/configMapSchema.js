@@ -10,9 +10,6 @@ const PipelineConfigMapSchema = z.object({
     prod: z.string()
   }),
   version: z.string(),
-  tz: z.object({
-    db: z.string()
-  }),
   module: z.object({
     db: z.string(),
     api: z.string(),
