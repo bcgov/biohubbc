@@ -10,7 +10,7 @@ const PipelineConfigMapSchema = z.object({
     prod: z.string()
   }),
   version: z.string(),
-  timezone: z.object({
+  tz: z.object({
     db: z.string()
   }),
   module: z.object({
@@ -18,21 +18,203 @@ const PipelineConfigMapSchema = z.object({
     api: z.string(),
     app: z.string()
   }),
-  staticUrls: z.object({
-    dev: z.string(),
-    test: z.string(),
-    prod: z.string(),
-    prodVanityUrl: z.string()
+  api: z.object({
+    build: z.object({
+      tz: z.string(),
+      cpuRequest: z.string(),
+      cpuLimit: z.string(),
+      memoryRequest: z.string(),
+      memoryLimit: z.string()
+    }),
+    deploy: z.object({
+      pr: z.object({
+        tz: z.string(),
+        backboneApiHost: z.string(),
+        backboneIntakePath: z.string(),
+        backboneArtifactIntakePath: z.string(),
+        backboneIntakeEnabled: z.boolean(),
+        bctwApiHost: z.string(),
+        critterbaseApiHost: z.string(),
+        elasticsearchURL: z.string(),
+        elasticsearchTaxonomyIndex: z.string(),
+        s3KeyPrefix: z.string(),
+        logLevel: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      }),
+      dev: z.object({
+        staticApiUrl: z.string(),
+        staticAppUrl: z.string(),
+        tz: z.string(),
+        backboneApiHost: z.string(),
+        backboneIntakePath: z.string(),
+        backboneArtifactIntakePath: z.string(),
+        backboneIntakeEnabled: z.boolean(),
+        bctwApiHost: z.string(),
+        critterbaseApiHost: z.string(),
+        elasticsearchURL: z.string(),
+        elasticsearchTaxonomyIndex: z.string(),
+        s3KeyPrefix: z.string(),
+        logLevel: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      }),
+      test: z.object({
+        staticApiUrl: z.string(),
+        staticAppUrl: z.string(),
+        tz: z.string(),
+        backboneApiHost: z.string(),
+        backboneIntakePath: z.string(),
+        backboneArtifactIntakePath: z.string(),
+        backboneIntakeEnabled: z.boolean(),
+        bctwApiHost: z.string(),
+        critterbaseApiHost: z.string(),
+        elasticsearchURL: z.string(),
+        elasticsearchTaxonomyIndex: z.string(),
+        s3KeyPrefix: z.string(),
+        logLevel: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      }),
+      prod: z.object({
+        staticApiUrl: z.string(),
+        staticAppUrl: z.string(),
+        staticAppVanityUrl: z.string(),
+        tz: z.string(),
+        backboneApiHost: z.string(),
+        backboneIntakePath: z.string(),
+        backboneArtifactIntakePath: z.string(),
+        backboneIntakeEnabled: z.boolean(),
+        bctwApiHost: z.string(),
+        critterbaseApiHost: z.string(),
+        elasticsearchURL: z.string(),
+        elasticsearchTaxonomyIndex: z.string(),
+        s3KeyPrefix: z.string(),
+        logLevel: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      })
+    })
   }),
-  staticUrlsAPI: z.object({
-    dev: z.string(),
-    test: z.string(),
-    prod: z.string()
+  app: z.object({
+    build: z.object({
+      cpuRequest: z.string(),
+      cpuLimit: z.string(),
+      memoryRequest: z.string(),
+      memoryLimit: z.string()
+    }),
+    deploy: z.object({
+      pr: z.object({
+        siteminderLogoutURL: z.string(),
+        maxUploadNumFiles: z.number(),
+        maxUploadFileSize: z.number(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      }),
+      dev: z.object({
+        staticApiUrl: z.string(),
+        staticAppUrl: z.string(),
+        siteminderLogoutURL: z.string(),
+        maxUploadNumFiles: z.number(),
+        maxUploadFileSize: z.number(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      }),
+      test: z.object({
+        staticApiUrl: z.string(),
+        staticAppUrl: z.string(),
+        siteminderLogoutURL: z.string(),
+        maxUploadNumFiles: z.number(),
+        maxUploadFileSize: z.number(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      }),
+      prod: z.object({
+        staticApiUrl: z.string(),
+        staticAppUrl: z.string(),
+        staticAppVanityUrl: z.string(),
+        siteminderLogoutURL: z.string(),
+        maxUploadNumFiles: z.number(),
+        maxUploadFileSize: z.number(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string(),
+        replicasMax: z.string()
+      })
+    })
   }),
-  siteminderLogoutURL: z.object({
-    dev: z.string(),
-    test: z.string(),
-    prod: z.string()
+  database: z.object({
+    build: z.object({
+      tz: z.string()
+    }),
+    deploy: z.object({
+      pr: z.object({
+        tz: z.string(),
+        volumeCapacity: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string()
+      }),
+      dev: z.object({
+        tz: z.string(),
+        volumeCapacity: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string()
+      }),
+      test: z.object({
+        tz: z.string(),
+        volumeCapacity: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string()
+      }),
+      prod: z.object({
+        tz: z.string(),
+        volumeCapacity: z.string(),
+        cpuRequest: z.string(),
+        cpuLimit: z.string(),
+        memoryRequest: z.string(),
+        memoryLimit: z.string(),
+        replicas: z.string()
+      })
+    })
   }),
   sso: z.object({
     dev: z.object({

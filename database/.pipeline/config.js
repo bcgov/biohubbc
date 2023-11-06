@@ -57,6 +57,7 @@ const options = processOptions(rawOptions);
 
 const phases = {
   build: {
+    ...pipelineConfigMap.database.build,
     namespace: 'af2668-tools',
     name: pipelineConfigMap.module.db,
     phase: 'build',
@@ -66,11 +67,12 @@ const phases = {
     version: `${pipelineConfigMap.version}-${changeId}`,
     tag: tag,
     env: 'build',
-    tz: pipelineConfigMap.timezone.db,
+    // tz: pipelineConfigMap.tz.db,
     branch: branch,
     dbSetupDockerfilePath: dbSetupDockerfilePath
   },
-  dev: {
+  pr: {
+    ...pipelineConfigMap.database.deploy.pr,
     namespace: 'af2668-dev',
     name: pipelineConfigMap.module.db,
     phase: 'dev',
@@ -80,16 +82,37 @@ const phases = {
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`,
     env: 'dev',
-    tz: pipelineConfigMap.timezone.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath,
-    volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',
-    cpuRequest: '50m',
-    cpuLimit: '400m',
-    memoryRequest: '100Mi',
-    memoryLimit: '2Gi',
-    replicas: '1'
+    // tz: pipelineConfigMap.tz.db,
+    dbSetupDockerfilePath: dbSetupDockerfilePath
+    // volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',
+    // cpuRequest: '50m',
+    // cpuLimit: '400m',
+    // memoryRequest: '100Mi',
+    // memoryLimit: '2Gi',
+    // replicas: '1'
+  },
+  dev: {
+    ...pipelineConfigMap.database.deploy.dev,
+    namespace: 'af2668-dev',
+    name: pipelineConfigMap.module.db,
+    phase: 'dev',
+    changeId: deployChangeId,
+    suffix: `-dev-${deployChangeId}`,
+    instance: `${pipelineConfigMap.module.db}-dev-${deployChangeId}`,
+    version: `${deployChangeId}-${changeId}`,
+    tag: `dev-${pipelineConfigMap.version}-${deployChangeId}`,
+    env: 'dev',
+    // tz: pipelineConfigMap.tz.db,
+    dbSetupDockerfilePath: dbSetupDockerfilePath
+    // volumeCapacity: (isStaticDeployment && '3Gi') || '500Mi',
+    // cpuRequest: '50m',
+    // cpuLimit: '400m',
+    // memoryRequest: '100Mi',
+    // memoryLimit: '2Gi',
+    // replicas: '1'
   },
   test: {
+    ...pipelineConfigMap.database.deploy.test,
     namespace: 'af2668-test',
     name: pipelineConfigMap.module.db,
     phase: 'test',
@@ -99,16 +122,17 @@ const phases = {
     version: pipelineConfigMap.version,
     tag: `test-${pipelineConfigMap.version}`,
     env: 'test',
-    tz: pipelineConfigMap.timezone.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath,
-    volumeCapacity: '3Gi',
-    cpuRequest: '50m',
-    cpuLimit: '1000m',
-    memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
-    replicas: '1'
+    // tz: pipelineConfigMap.tz.db,
+    dbSetupDockerfilePath: dbSetupDockerfilePath
+    // volumeCapacity: '3Gi',
+    // cpuRequest: '50m',
+    // cpuLimit: '1000m',
+    // memoryRequest: '100Mi',
+    // memoryLimit: '3Gi',
+    // replicas: '1'
   },
   prod: {
+    ...pipelineConfigMap.database.deploy.prod,
     namespace: 'af2668-prod',
     name: pipelineConfigMap.module.db,
     phase: 'prod',
@@ -118,15 +142,21 @@ const phases = {
     version: pipelineConfigMap.version,
     tag: `prod-${pipelineConfigMap.version}`,
     env: 'prod',
-    tz: pipelineConfigMap.timezone.db,
-    dbSetupDockerfilePath: dbSetupDockerfilePath,
-    volumeCapacity: '5Gi',
-    cpuRequest: '50m',
-    cpuLimit: '1000m',
-    memoryRequest: '100Mi',
-    memoryLimit: '3Gi',
-    replicas: '1'
+    // tz: pipelineConfigMap.tz.db,
+    dbSetupDockerfilePath: dbSetupDockerfilePath
+    // volumeCapacity: '5Gi',
+    // cpuRequest: '50m',
+    // cpuLimit: '1000m',
+    // memoryRequest: '100Mi',
+    // memoryLimit: '3Gi',
+    // replicas: '1'
   }
 };
+
+console.log('1==============================================');
+console.log('api phases', phases);
+console.log('2==============================================');
+console.log('api options', options);
+console.log('3==============================================');
 
 module.exports = exports = { phases, options };
