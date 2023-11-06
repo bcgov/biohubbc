@@ -16,6 +16,7 @@ import FullScreenScrollingEventHandler from 'components/map/components/FullScree
 import { MapBaseCss } from 'components/map/components/MapBaseCss';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
+import { SurveyContext } from 'contexts/surveyContext';
 import SampleSiteFileUploadItemActionButton from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemActionButton';
 import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemProgressBar';
 import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/SampleSiteFileUploadItemSubtext';
@@ -26,10 +27,11 @@ import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet/dist/leaflet.css';
 import get from 'lodash-es/get';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import { pluralize } from 'utils/Utils';
+import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
+import { ISurveySampleSite } from '../SamplingSitePage';
 
 const useStyles = makeStyles(() => ({
   zoomToBoundaryExtentBtn: {
@@ -61,6 +63,8 @@ export interface ISamplingSiteMapControlProps {
 const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const classes = useStyles();
 
+  const surveyContext = useContext(SurveyContext);
+
   const { name, mapId, formikProps } = props;
 
   const { values, errors, setFieldValue, setFieldError } = formikProps;
@@ -72,7 +76,10 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   };
 
   // Array of sampling site features
-  const samplingSiteGeoJsonFeatures: Feature[] = get(values, name);
+  const samplingSiteGeoJsonFeatures: Feature[] = useMemo(
+    () => get(values, name).map((site: ISurveySampleSite) => site.feature),
+    [name, values]
+  );
 
   useEffect(() => {
     setUpdatedBounds(calculateUpdatedMapBounds(samplingSiteGeoJsonFeatures));
@@ -95,7 +102,15 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
           <FileUpload
             uploadHandler={boundaryUploadHelper({
               onSuccess: (features: Feature[]) => {
-                setFieldValue(name, [...features]);
+                let numSites = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
+                setFieldValue(
+                  name,
+                  features.map((feature) => ({
+                    name: shapeFileFeatureName(feature) ?? `Sample Site ${++numSites}`,
+                    description: shapeFileFeatureDesc(feature) ?? '',
+                    feature: feature
+                  }))
+                );
               },
               onFailure: (message: string) => {
                 setFieldError(name, message);
