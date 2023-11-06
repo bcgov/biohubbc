@@ -1,7 +1,7 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
 import { PropsWithChildren, createContext, useCallback, useRef, useState, useEffect } from 'react';
-import { has as hasProperty } from 'lodash'
+import { has as hasProperty, get as getProperty } from 'lodash'
 
 export interface ITaxonomyContext {
   /**
@@ -24,40 +24,49 @@ export const TaxonomyContext = createContext<ITaxonomyContext>({
 export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const [isLoading, _setIsLoading] = useState<boolean>(false);
   const biohubApi = useBiohubApi();
-  const _taxonomyCache = useRef<Record<number, ITaxonomy | null>>({});
-  const _promises = useRef<Record<number, Promise<void>>>({});
+  const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, ITaxonomy | null>>({});
+  const _dispatchedIds = useRef<Set<number>>(new Set<number>([]));
 
   const getSpeciesTaxonomyById: (id: number) => ITaxonomy | null = useCallback((id: number) => {
-    if (_taxonomyCache.current[id]) {
+    
+    if (hasProperty(_taxonomyCache, id)) {
       // Result is in the cache
-      return _taxonomyCache.current[id];
+      return getProperty(_taxonomyCache, id);
     }
 
-    if (hasProperty(_promises.current, id)) {
+    if (_dispatchedIds.current.has(id)) {
       // Promise is pending
       return null;
     }
 
     // Dispatch the request to cache the result
     _setIsLoading(true);
-    _promises.current[id] = biohubApi.taxonomy.getSpeciesFromIds([id]).then((result) => {
-      _taxonomyCache.current[id] = result.searchResponse[0];
+    _dispatchedIds.current.add(id);
+    biohubApi.taxonomy.getSpeciesFromIds([id]).then((result) => {
+      _setTaxonomyCache((previous) => ({
+        ...previous,
+        [id]: result?.searchResponse?.[0] ?? null
+      }));
     });
 
     return null;
-  }, [_taxonomyCache, _promises, isLoading]);
+  }, [_taxonomyCache]);
 
   // Used to maintain loading state
   useEffect(() => {
-    console.log('promises:', _promises.current)
     if (!isLoading) {
       return;
     }
-  
-    Promise.all(Object.values(_promises.current)).then(() => {
+
+    const hasFinishedLoading = Array
+      .from(_dispatchedIds.current)
+      .every((id) => hasProperty(_taxonomyCache, id));
+
+    if (hasFinishedLoading) {
       _setIsLoading(false);
-    });
-  }, [isLoading]);
+    }
+
+  }, [isLoading, _taxonomyCache]);
 
   const taxonomyContext: ITaxonomyContext = {
     isLoading,

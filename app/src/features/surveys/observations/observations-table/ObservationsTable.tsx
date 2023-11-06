@@ -104,6 +104,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
 
   const apiRef = observationsTableContext._muiDataGridApiRef;
+
   const isLoading = useMemo(() => {
     return [
       observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
@@ -111,7 +112,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       surveyContext.sampleSiteDataLoader.isLoading,
       isLoadingInitialTaxonomy
     ].some(Boolean)
-  }, [observationsContext.observationsDataLoader, surveyContext.sampleSiteDataLoader, props.isLoading]);
+  }, [observationsContext.observationsDataLoader, surveyContext.sampleSiteDataLoader, props.isLoading, isLoadingInitialTaxonomy]);
 
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
@@ -466,6 +467,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
     setIsLoadingInitialTaxonomy(false);
   }, [taxonomyContext.isLoading])
+
+  console.log('loading:', taxonomyContext.isLoading)
 
   return (
     <DataGrid
