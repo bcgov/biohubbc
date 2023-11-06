@@ -31,7 +31,7 @@ interface AnimalListProps {
   onAddButton: () => void;
 }
 
-const SampleSiteSkeleton = () => (
+const AnimalListSkeleton = () => (
   <Box
     flexDirection="column"
     sx={{
@@ -105,14 +105,20 @@ const AnimalList = (props: AnimalListProps) => {
             overflowY: 'auto',
             zIndex: 1000
           }}>
-          {isLoading && !sortedCritterData.length ? (
-            <>
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-            </>
+          {!sortedCritterData.length ? (
+            isLoading ? (
+              <>
+                <AnimalListSkeleton />
+                <AnimalListSkeleton />
+                <AnimalListSkeleton />
+                <AnimalListSkeleton />
+                <AnimalListSkeleton />
+              </>
+            ) : (
+              <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
+                <Typography variant="body2">No Animals</Typography>
+              </Box>
+            )
           ) : (
             sortedCritterData.map((critter) => (
               <Accordion
