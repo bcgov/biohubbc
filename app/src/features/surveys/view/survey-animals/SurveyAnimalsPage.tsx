@@ -299,9 +299,7 @@ export const SurveyAnimalsPage = () => {
         dialogTitle={'Add New Animal'}
         open={openAddDialog}
         component={{
-          element: (
-            <GeneralAnimalForm />
-          ),
+          element: <GeneralAnimalForm />,
           initialValues: defaultFormValues,
           validationSchema: AnimalSchema
         }}

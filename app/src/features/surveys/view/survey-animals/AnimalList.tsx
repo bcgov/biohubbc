@@ -14,6 +14,7 @@ import {
   Toolbar,
   Typography
 } from '@mui/material';
+import grey from '@mui/material/colors/grey';
 import { Box } from '@mui/system';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { useQuery } from 'hooks/useQuery';
@@ -21,7 +22,6 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
-import grey from '@mui/material/colors/grey';
 
 interface AnimalListProps {
   isLoading?: boolean;
@@ -47,7 +47,6 @@ const SampleSiteSkeleton = () => (
 );
 
 const AnimalList = (props: AnimalListProps) => {
-  
   const { isLoading, selectedSection, onSelectSection, critterData, onAddButton } = props;
   const { cid: survey_critter_id } = useQuery();
 
@@ -96,7 +95,7 @@ const AnimalList = (props: AnimalListProps) => {
       </Toolbar>
 
       <Divider flexItem></Divider>
-      <Box flex="1 1 auto" sx={{position: 'relative', background: grey[100]}}>
+      <Box flex="1 1 auto" sx={{ position: 'relative', background: grey[100] }}>
         <Box
           sx={{
             position: 'absolute',
@@ -104,7 +103,7 @@ const AnimalList = (props: AnimalListProps) => {
             height: '100%',
             p: 1,
             overflowY: 'auto',
-            zIndex: 1000,
+            zIndex: 1000
           }}>
           {isLoading && !sortedCritterData.length ? (
             <>
@@ -186,8 +185,8 @@ const AnimalList = (props: AnimalListProps) => {
                 </AccordionDetails>
               </Accordion>
             ))
-          )}    
-        </Box>         
+          )}
+        </Box>
       </Box>
     </Box>
   );

@@ -33,9 +33,7 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
   return (
     <Stack gap={4}>
       <Box component="fieldset">
-        <Typography component="legend">
-          Event Dates
-        </Typography>
+        <Typography component="legend">Event Dates</Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <SingleDateField
@@ -82,7 +80,7 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
             sx={{ mt: -1, ml: 0 }}
             control={
               <Checkbox
-                size='small'
+                size="small"
                 onChange={handleChange}
                 checked={values.captures[index].show_release}
                 disabled={!!values.captures[index].release_location_id}

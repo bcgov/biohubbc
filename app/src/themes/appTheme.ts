@@ -117,7 +117,7 @@ const appTheme = createTheme({
             display: 'block',
             fontSize: 'inherit',
             overflow: 'hidden',
-            textOverflow: 'ellipsis',
+            textOverflow: 'ellipsis'
           },
           '& span': {
             fontSize: 'inherit'
