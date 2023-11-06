@@ -14,7 +14,7 @@ const {
 const dbSetupDeploy = async (settings) => {
   const phases = settings.phases;
   const options = settings.options;
-  const phase = options.env;
+  const phase = options.phase;
 
   const oc = new OpenShiftClientX(Object.assign({ namespace: phases[phase].namespace }, options));
 

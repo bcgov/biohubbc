@@ -334,7 +334,7 @@ jobs:
       - name: Deploy APP Image
         working-directory: "app/.pipeline"
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --phase=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database image
   deployDatabase:
@@ -385,7 +385,7 @@ jobs:
       - name: Deploy Database Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
+          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --phase=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy Database setup image
   deployDatabaseSetup:
@@ -437,7 +437,7 @@ jobs:
       - name: Deploy Database Setup Image
         working-directory: "database/.pipeline/"
         run: |
-          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
+          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --phase=$BRANCH --branch=$BRANCH --type=static
 
   # Deploy API image
   deployAPI:
@@ -489,7 +489,7 @@ jobs:
       - name: Deploy API Image
         working-directory: "api/.pipeline/"
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=$BRANCH --branch=$BRANCH --type=static
+          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --phase=$BRANCH --branch=$BRANCH --type=static
 
   # Clean build/deployment artifacts
   clean:
@@ -538,24 +538,24 @@ jobs:
         working-directory: "app/.pipeline/"
         run: |
           npm ci
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --phase=build
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --phase=dev
 
       # Clean the database build/deployment artifacts
       - name: Clean Database Artifacts
         working-directory: "database/.pipeline/"
         run: |
           npm ci
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --phase=build
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --phase=dev
 
       # Clean the api deployment artifacts
       - name: Clean API Deployment
         working-directory: "api/.pipeline/"
         run: |
           npm ci
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --phase=build
+          DEBUG=* npm run clean -- --pr=$PR_NUMBER --phase=dev
 
       # Clean the reamaining build/deployment artifacts
       - name: Clean remaining Artifacts
