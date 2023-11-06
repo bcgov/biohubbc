@@ -38,7 +38,8 @@ export const SurveySectionFullPageLayout = (props: SurveySectionFullPageLayoutPr
         divider={<Divider orientation="vertical" flexItem />}
         sx={{
           flex: '1 1 auto',
-          m: 1
+          m: 1,
+          overflow: 'hidden'
         }}
       >
 

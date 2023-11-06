@@ -113,10 +113,11 @@ const appTheme = createTheme({
           maxWidth: '40ch',
           padding: '4px',
           whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
           '& a': {
-            fontSize: 'inherit'
+            display: 'block',
+            fontSize: 'inherit',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           },
           '& span': {
             fontSize: 'inherit'

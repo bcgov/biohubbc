@@ -36,10 +36,11 @@ const SampleSiteSkeleton = () => (
   <Box
     flexDirection="column"
     sx={{
-      px: 3,
+      px: 2,
       py: 1.2,
       height: '70px',
-      borderBottom: '1px solid ' + grey[300]
+      borderBottom: '1px solid ' + grey[300],
+      background: '#fff'
     }}>
     <Skeleton variant="text" sx={{ fontSize: '1.125rem' }} />
     <Skeleton variant="text" sx={{ fontSize: '0.875rem' }} width="50%" />
@@ -96,7 +97,14 @@ const AnimalList = (props: AnimalListProps) => {
       </Toolbar>
 
       <Divider flexItem></Divider>
-      <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+      <Box 
+        position="relative" 
+        display="flex" 
+        flex="1 1 auto" 
+        overflow="hidden"
+        sx={{
+          background: grey[100]
+        }}>
         
         <Fade
           in={isLoading}
@@ -106,7 +114,8 @@ const AnimalList = (props: AnimalListProps) => {
               position: 'absolute',
               width: '100%',
               height: '100%',
-              zIndex: 1000
+              p: 1,
+              zIndex: 1000,
             }}>
             <SampleSiteSkeleton />
             <SampleSiteSkeleton />
@@ -121,6 +130,7 @@ const AnimalList = (props: AnimalListProps) => {
             position: 'absolute',
             width: '100%',
             height: '100%',
+            p: 1,
             overflowY: 'auto',
             zIndex: 1
           }}>
@@ -145,7 +155,7 @@ const AnimalList = (props: AnimalListProps) => {
                     flex: '1 1 auto',
                     gap: '16px',
                     height: '70px',
-                    px: 3,
+                    px: 2,
                     overflow: 'hidden',
                     '& .MuiAccordionSummary-content': {
                       flex: '1 1 auto',
