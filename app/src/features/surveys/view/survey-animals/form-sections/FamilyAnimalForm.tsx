@@ -7,7 +7,7 @@ import { useFormikContext } from 'formik';
 import { IFamily } from 'hooks/cb_api/useFamilyApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import {
   AnimalRelationshipSchema,
   getAnimalFieldName,
@@ -58,7 +58,7 @@ export const FamilyAnimalFormContent = ({ index, allFamilies }: IFamilyAnimalFor
   const critterbase = useCritterbaseApi();
   const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbase.family.getImmediateFamily);
   return (
-    <Fragment>
+    <Grid container spacing={3}>
       <Grid item xs={12}>
         <CbSelectWrapper
           label={'Family ID'}
@@ -170,7 +170,7 @@ export const FamilyAnimalFormContent = ({ index, allFamilies }: IFamilyAnimalFor
           </Paper>
         </Box>
       </ComponentDialog>
-    </Fragment>
+    </Grid>
   );
 };
 

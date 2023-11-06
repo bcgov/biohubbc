@@ -302,6 +302,15 @@ const appTheme = createTheme({
           background: '#fff'
         }
       }
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          '& h2, h3': {
+            fontSize: '1.125rem'
+          }
+        }
+      }
     }
   }
 });

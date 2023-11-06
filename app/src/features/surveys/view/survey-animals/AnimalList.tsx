@@ -6,7 +6,6 @@ import {
   AccordionSummary,
   Button,
   Divider,
-  Fade,
   List,
   ListItem,
   ListItemIcon,
@@ -97,34 +96,7 @@ const AnimalList = (props: AnimalListProps) => {
       </Toolbar>
 
       <Divider flexItem></Divider>
-      <Box 
-        position="relative" 
-        display="flex" 
-        flex="1 1 auto" 
-        overflow="hidden"
-        sx={{
-          background: grey[100]
-        }}>
-        
-        <Fade
-          in={isLoading}
-        >
-          <Box
-            sx={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              p: 1,
-              zIndex: 1000,
-            }}>
-            <SampleSiteSkeleton />
-            <SampleSiteSkeleton />
-            <SampleSiteSkeleton />
-            <SampleSiteSkeleton />
-            <SampleSiteSkeleton />
-          </Box>
-        </Fade>
-        
+      <Box flex="1 1 auto" sx={{position: 'relative', background: grey[100]}}>
         <Box
           sx={{
             position: 'absolute',
@@ -132,82 +104,90 @@ const AnimalList = (props: AnimalListProps) => {
             height: '100%',
             p: 1,
             overflowY: 'auto',
-            zIndex: 1
+            zIndex: 1000,
           }}>
-
-          {sortedCritterData.map((critter) => (
-            <Accordion
-              disableGutters
-              sx={{
-                boxShadow: 'none',
-                '&.Mui-expanded::before': {
-                  opacity: 1
-                }
-              }}
-              key={critter.critter_id}
-              expanded={critter.survey_critter_id.toString() === survey_critter_id}>
-              <Box display="flex" overflow="hidden" alignItems="center" className="sampleSiteHeader">
-                <AccordionSummary
-                  expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                  onClick={() => handleCritterSelect(critter.survey_critter_id.toString())}
-                  aria-controls="panel1bh-content"
-                  sx={{
-                    flex: '1 1 auto',
-                    gap: '16px',
-                    height: '70px',
-                    px: 2,
-                    overflow: 'hidden',
-                    '& .MuiAccordionSummary-content': {
-                      flex: '1 1 auto',
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap'
-                    }
-                  }}>
-                  <Box>
-                    <Typography fontSize="0.9rem" fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {critter.animal_id}
-                    </Typography>
-                    <Typography variant="subtitle2" color="textSecondary">
-                      {critter.taxon} • {critter.sex}
-                    </Typography>
-                  </Box>
-                </AccordionSummary>
-              </Box>
-              <AccordionDetails
+          {isLoading && !sortedCritterData.length ? (
+            <>
+              <SampleSiteSkeleton />
+              <SampleSiteSkeleton />
+              <SampleSiteSkeleton />
+              <SampleSiteSkeleton />
+              <SampleSiteSkeleton />
+            </>
+          ) : (
+            sortedCritterData.map((critter) => (
+              <Accordion
+                disableGutters
                 sx={{
-                  p: 0
-                }}>
-                <List
-                  disablePadding
+                  boxShadow: 'none',
+                  '&.Mui-expanded::before': {
+                    opacity: 1
+                  }
+                }}
+                key={critter.critter_id}
+                expanded={critter.survey_critter_id.toString() === survey_critter_id}>
+                <Box display="flex" overflow="hidden" alignItems="center" className="sampleSiteHeader">
+                  <AccordionSummary
+                    expandIcon={<Icon path={mdiChevronDown} size={1} />}
+                    onClick={() => handleCritterSelect(critter.survey_critter_id.toString())}
+                    aria-controls="panel1bh-content"
+                    sx={{
+                      flex: '1 1 auto',
+                      gap: '16px',
+                      height: '70px',
+                      px: 2,
+                      overflow: 'hidden',
+                      '& .MuiAccordionSummary-content': {
+                        flex: '1 1 auto',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap'
+                      }
+                    }}>
+                    <Box>
+                      <Typography fontWeight="bold" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {critter.animal_id}
+                      </Typography>
+                      <Typography variant="subtitle2" color="textSecondary">
+                        {critter.taxon} • {critter.sex}
+                      </Typography>
+                    </Box>
+                  </AccordionSummary>
+                </Box>
+                <AccordionDetails
                   sx={{
-                    '& .MuiListItemText-primary': {
-                      fontSize: '0.875rem'
-                    }
+                    p: 0
                   }}>
-                  {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
-                    <ListItem
-                      sx={{
-                        px: 3
-                      }}
-                      key={section}
-                      divider
-                      button
-                      selected={section === selectedSection}
-                      onClick={() => {
-                        onSelectSection(section);
-                      }}>
-                      <ListItemIcon>
-                        <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
-                      </ListItemIcon>
-                      <ListItemText>{section}</ListItemText>
-                    </ListItem>
-                  ))}
-                </List>
-              </AccordionDetails>
-            </Accordion>
-          ))}
-                     
-        </Box>
+                  <List
+                    disablePadding
+                    sx={{
+                      '& .MuiListItemText-primary': {
+                        fontSize: '0.875rem'
+                      }
+                    }}>
+                    {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
+                      <ListItem
+                        sx={{
+                          px: 3
+                        }}
+                        key={section}
+                        divider
+                        button
+                        selected={section === selectedSection}
+                        onClick={() => {
+                          onSelectSection(section);
+                        }}>
+                        <ListItemIcon>
+                          <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
+                        </ListItemIcon>
+                        <ListItemText>{section}</ListItemText>
+                      </ListItem>
+                    ))}
+                  </List>
+                </AccordionDetails>
+              </Accordion>
+            ))
+          )}    
+        </Box>         
       </Box>
     </Box>
   );
