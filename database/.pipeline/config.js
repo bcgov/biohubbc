@@ -53,7 +53,7 @@ function processOptions(options) {
   return result;
 }
 
-options = processOptions(options);
+const options = processOptions(rawOptions);
 
 const phases = {
   build: {

@@ -49,7 +49,7 @@ function processOptions(options) {
   return result;
 }
 
-options = processOptions(options);
+const options = processOptions(rawOptions);
 
 const phases = {
   build: {
@@ -81,7 +81,7 @@ const phases = {
       (isStaticDeployment && pipelineConfigMap.staticUrls.dev) ||
       `${pipelineConfigMap.module.app}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     apiHost:
-      (isStaticDeployment && pipelineConfigMap.pipelineConfigMap.staticUrlsAPI.dev) ||
+      (isStaticDeployment && pipelineConfigMap.staticUrlsAPI.dev) ||
       `${pipelineConfigMap.module.api}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.dev,
     maxUploadNumFiles,
@@ -105,7 +105,7 @@ const phases = {
     version: pipelineConfigMap.version,
     tag: `test-${pipelineConfigMap.version}`,
     host: pipelineConfigMap.staticUrls.test,
-    apiHost: pipelineConfigMap.pipelineConfigMap.staticUrlsAPI.test,
+    apiHost: pipelineConfigMap.staticUrlsAPI.test,
     siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.test,
     maxUploadNumFiles,
     maxUploadFileSize,
@@ -128,7 +128,7 @@ const phases = {
     version: pipelineConfigMap.version,
     tag: `prod-${pipelineConfigMap.version}`,
     host: pipelineConfigMap.staticUrls.prod,
-    apiHost: pipelineConfigMap.pipelineConfigMap.staticUrlsAPI.prod,
+    apiHost: pipelineConfigMap.staticUrlsAPI.prod,
     siteminderLogoutURL: pipelineConfigMap.siteminderLogoutURL.prod,
     maxUploadNumFiles,
     maxUploadFileSize,
