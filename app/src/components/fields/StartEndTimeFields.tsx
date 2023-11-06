@@ -1,7 +1,7 @@
 import { mdiClockOutline, mdiClockPlusOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Grid from '@mui/material/Grid';
-import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider, renderTimeViewClock, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { TIME_FORMAT } from 'constants/dateTimeFormats';
 import get from 'lodash-es/get';
@@ -94,6 +94,11 @@ const StartEndTimeFields: React.FC<IStartEndTimeFieldsProps> = (props) => {
 
               setFieldValue(startName, moment(value).format(TIME_FORMAT.ShortTimeFormatAmPm));
             }}
+            viewRenderers={{
+              hours: renderTimeViewClock,
+              minutes: renderTimeViewClock,
+              seconds: renderTimeViewClock
+            }}
           />
         </Grid>
         <Grid item xs={6}>
@@ -130,6 +135,11 @@ const StartEndTimeFields: React.FC<IStartEndTimeFieldsProps> = (props) => {
               }
 
               setFieldValue(endName, moment(value).format(TIME_FORMAT.ShortTimeFormatAmPm));
+            }}
+            viewRenderers={{
+              hours: renderTimeViewClock,
+              minutes: renderTimeViewClock,
+              seconds: renderTimeViewClock
             }}
           />
         </Grid>

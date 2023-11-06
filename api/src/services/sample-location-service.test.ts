@@ -52,7 +52,9 @@ describe('SampleLocationService', () => {
               {
                 survey_sample_method_id: 1,
                 start_date: '2023-01-01',
-                end_date: '2023-01-03'
+                end_date: '2023-01-03',
+                start_time: '12:00:00',
+                end_time: '13:00:00'
               }
             ]
           }

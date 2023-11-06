@@ -339,8 +339,8 @@ const SamplingSiteList = () => {
                                           <Icon path={mdiClockOutline} size={1}></Icon>
                                         </ListItemIcon>
                                         <ListItemText
-                                          primary={`${samplePeriod.start_time} to ${
-                                            samplePeriod.end_time || 'undefined'
+                                          primary={`${samplePeriod.start_time} ${
+                                            (samplePeriod.end_time && `to ${samplePeriod.end_time}`) || ''
                                           }`}
                                         />
                                       </>
