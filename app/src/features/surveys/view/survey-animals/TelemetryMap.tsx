@@ -2,7 +2,7 @@ import { Box, Paper, Typography } from '@mui/material';
 import AdditionalLayers from 'components/map/components/AdditionalLayers';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
-import { MapBaseCss } from 'components/map/components/MapBaseCss';
+import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { Feature } from 'geojson';
 import L, { LatLng } from 'leaflet';

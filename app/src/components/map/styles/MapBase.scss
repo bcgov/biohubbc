@@ -1,0 +1,4 @@
+// CSS rule to remove focus outline from items/ features selected on a leaflet map
+path.leaflet-interactive:focus {
+  outline: none;
+}
