@@ -113,10 +113,11 @@ const appTheme = createTheme({
           maxWidth: '40ch',
           padding: '4px',
           whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
           '& a': {
-            fontSize: 'inherit'
+            display: 'block',
+            fontSize: 'inherit',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           },
           '& span': {
             fontSize: 'inherit'
@@ -299,6 +300,15 @@ const appTheme = createTheme({
       styleOverrides: {
         root: {
           background: '#fff'
+        }
+      }
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          '& h2, h3': {
+            fontSize: '1.125rem'
+          }
         }
       }
     }

@@ -97,16 +97,16 @@ export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
       })),
       [SurveyAnimalsI18N.animalMeasurementTitle]: initialValues.measurements.map((measurement) => ({
         header: `${measurement.measurement_name}: ${measurement.option_label ?? measurement.value}`,
-        subHeader: `Date: ${formatDate(measurement.measured_timestamp)}`,
+        subHeader: `Date of Measurement: ${formatDate(measurement.measured_timestamp)}`,
         key: measurement.measurement_qualitative_id ?? measurement.measurement_quantitative_id ?? 'new-measurement-key'
       })),
       [SurveyAnimalsI18N.animalCaptureTitle]: initialValues.captures.map((capture) => ({
-        header: `Animal Captured: ${formatDate(capture.capture_timestamp)}`,
+        header: `${formatDate(capture.capture_timestamp)}`,
         subHeader: formatSubHeader({ Latitude: capture.capture_latitude, Longitude: capture.capture_longitude }),
         key: capture.capture_id ?? 'new-capture-key'
       })),
       [SurveyAnimalsI18N.animalMortalityTitle]: initialValues.mortality.map((mortality) => ({
-        header: `Animal Mortality: ${formatDate(mortality.mortality_timestamp)}`,
+        header: `${formatDate(mortality.mortality_timestamp)}`,
         subHeader: formatSubHeader({
           Latitude: mortality.mortality_latitude,
           Longitude: mortality.mortality_longitude
@@ -116,8 +116,8 @@ export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
       [SurveyAnimalsI18N.animalFamilyTitle]: initialValues.family.map((family) => {
         const family_label = allFamilies?.find((a) => a.family_id === family.family_id)?.family_label;
         return {
-          header: family_label ? `Animal Relationship: ${family_label}` : `Animal Relationship`,
-          subHeader: formatSubHeader({ Status: family.relationship }),
+          header: `${family_label}`,
+          subHeader: formatSubHeader({ Relationship: family.relationship }),
           key: family.family_id ?? 'new-family-key'
         };
       }),

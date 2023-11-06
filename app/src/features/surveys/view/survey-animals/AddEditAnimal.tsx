@@ -166,7 +166,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               maxWidth: '1200px',
               mx: 'auto'
             }}>
-            <Box display="flex" flexDirection="row" alignItems="flex-start" mb={3}>
+            <Box display="flex" flexDirection="row" alignItems="flex-start" mb={2}>
               <Typography
                 component="h1"
                 variant="h2"
@@ -289,7 +289,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
             background: grey[100]
           }}>
           <Typography component="span" variant="body2">
-            No Critter Selected
+            No Animal Selected
           </Typography>
         </Box>
       )}

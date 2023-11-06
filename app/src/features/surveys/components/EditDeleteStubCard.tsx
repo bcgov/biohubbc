@@ -37,8 +37,9 @@ export const EditDeleteStubCard = (props: EditDeleteStubCardProps) => {
   const { header, subHeader, onClickEdit, onClickDelete } = props;
   return (
     <Card
+      elevation={0}
       sx={{
-        mb: 2,
+        mb: 1,
         '& .MuiCardHeader-subheader': {
           display: '-webkit-box',
           WebkitLineClamp: '2',
