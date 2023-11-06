@@ -205,7 +205,7 @@ export const SurveyAnimalsPage = () => {
     const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
     if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
       try {
-        console.log(`WOuld upsert collar in edit mode: ${JSON.stringify(formDevice, null, 2)}`);
+        console.log(`Would upsert collar in edit mode: ${JSON.stringify(formDevice, null, 2)}`);
         await telemetryApi.devices.upsertCollar(formDevice);
       } catch (error) {
         throw new Error(`Failed to update collar ${formDevice.collar_id}`);

@@ -3,15 +3,10 @@ import CustomTextField from 'components/fields/CustomTextField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { AttachmentType } from 'constants/attachments';
-import { DialogContext } from 'contexts/dialogContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { Field, useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useQuery } from 'hooks/useQuery';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { useContext } from 'react';
-import { setMessageSnackbar } from 'utils/Utils';
+import { useEffect } from 'react';
 import { ANIMAL_FORM_MODE, IAnimal } from '../animal';
 import { DeploymentFormSection } from './DeploymentFormSection';
 import TelemetryFileUpload from './TelemetryFileUpload';
@@ -23,49 +18,26 @@ interface telemetryDeviceFormContentProps {
 const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
-  const bhApi = useBiohubApi();
-  const telemetryApi = useTelemetryApi();
   const api = useTelemetryApi();
-  const { cid: survey_critter_id } = useQuery();
   const { values, handleBlur } = useFormikContext<IAnimal>();
-  const { surveyId, projectId } = useContext(SurveyContext);
-  const dialogContext = useContext(DialogContext);
-
-  const { data: bctwDeviceData } = useDataLoader(() => api.devices.getDeviceDetails(device.device_id));
 
   const device = values.device?.[index];
 
-  const handleRemoveDeployment = async (deployment_id: string) => {
-    try {
-      if (survey_critter_id === undefined) {
-        setMessageSnackbar('No critter set!', dialogContext);
-      }
-      await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
-      //refresh();
-      const deployments = values.device[index].deployments;
-      const indexOfDeployment = deployments?.findIndex((deployment) => deployment.deployment_id === deployment_id);
-      if (indexOfDeployment !== undefined) {
-        deployments?.splice(indexOfDeployment);
-      }
-      setMessageSnackbar('Deployment deleted', dialogContext);
-    } catch (e) {
-      setMessageSnackbar('Failed to delete deployment.', dialogContext);
-    }
-  };
+  const { data: deviceDetails, refresh: refreshDevice } = useDataLoader(() =>
+    api.devices.getDeviceDetails(device.device_id)
+  );
 
-  const validateDeviceID = (value: number | '') => {
-    console.log('validating');
-    if (value) {
-      return 'error';
+  useEffect(() => {
+    if (device.device_id) {
+      refreshDevice();
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [device.device_id]);
 
-  const validateDeviceMake = async (value: number | '') => {
-    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device.device_id);
-    const deviceMake = deviceDetails.device?.device_make;
-    console.log('validating device make');
-    if (device.device_id && deviceMake && deviceMake !== value) {
-      return 'The current make for this device is incorrect.';
+  const validateDeviceMake = (value: number | '') => {
+    const deviceMake = deviceDetails?.device?.device_make;
+    if (device.device_id && deviceMake && deviceMake !== value && mode === ANIMAL_FORM_MODE.ADD) {
+      return `The current make for this device is ${deviceMake}`;
     }
   };
 
@@ -81,13 +53,10 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={6}>
-            <Field
-              as={CustomTextField}
+            <CustomTextField
               label="Device ID"
               name={`device.${index}.device_id`}
               other={{ disabled: mode === ANIMAL_FORM_MODE.EDIT }}
-              validate={validateDeviceID}
-              handleBlur={handleBlur}
             />
           </Grid>
           <Grid item xs={6}>
@@ -142,7 +111,7 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
           </Grid>
         </Grid>
       </Box>
-      {((device.device_make === 'Vectronic' && !bctwDeviceData?.keyXStatus) || device.device_make === 'Lotek') && (
+      {((device.device_make === 'Vectronic' && !deviceDetails?.keyXStatus) || device.device_make === 'Lotek') && (
         <Box sx={{ mt: 3 }}>
           <Typography component="legend" variant="body2">
             Upload Attachment
@@ -177,7 +146,7 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
         <Typography component="legend" variant="body2">
           Deployments
         </Typography>
-        <DeploymentFormSection mode={mode} handleRemoveDeployment={handleRemoveDeployment} index={index} />
+        <DeploymentFormSection mode={mode} deviceDetails={deviceDetails} index={index} />
       </Box>
       <FormikDevDebugger />
     </>

@@ -12,9 +12,9 @@ export interface ICustomTextField {
 }
 
 const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
-  const { touched, errors, values, handleChange } = useFormikContext<any>();
+  const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
 
-  const { name, label, other, handleBlur } = props;
+  const { name, label, other } = props;
 
   return (
     <TextField
@@ -23,9 +23,9 @@ const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (pr
       id={name}
       inputProps={{ 'data-testid': name, maxLength: props.maxLength || undefined }} // targets the internal input rather than the react component
       onChange={handleChange}
-      onBlur={handleBlur}
+      onBlur={props?.handleBlur ?? handleBlur}
       variant="outlined"
-      value={get(values, name)}
+      value={get(values, name) ?? ''}
       fullWidth={true}
       error={get(touched, name) && Boolean(get(errors, name))}
       helperText={get(touched, name) && (get(errors, name) as string)}

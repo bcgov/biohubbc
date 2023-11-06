@@ -4,45 +4,99 @@ import { IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import SingleDateField from 'components/fields/SingleDateField';
-import { useFormikContext } from 'formik';
-import { Fragment, useState } from 'react';
+import { DialogContext } from 'contexts/dialogContext';
+import { SurveyContext } from 'contexts/surveyContext';
+import { Field, useFormikContext } from 'formik';
+import { IGetDeviceDetailsResponse } from 'hooks/telemetry/useDeviceApi';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useQuery } from 'hooks/useQuery';
+import { Fragment, useContext, useState } from 'react';
+import { dateRangesOverlap, setMessageSnackbar } from 'utils/Utils';
 import { ANIMAL_FORM_MODE, IAnimal } from '../animal';
+import { IDeploymentTimespan } from './device';
 
 interface DeploymentFormSectionProps {
   index: number;
   mode: ANIMAL_FORM_MODE;
-  handleRemoveDeployment: (deployment_id: string) => Promise<void>;
+  deviceDetails?: IGetDeviceDetailsResponse;
 }
 
 export const DeploymentFormSection = (props: DeploymentFormSectionProps): JSX.Element => {
-  const { index, mode, handleRemoveDeployment } = props;
+  const { index, mode, deviceDetails } = props;
   const animalKeyName: keyof IAnimal = 'device';
 
+  const bhApi = useBiohubApi();
+  const { cid: survey_critter_id } = useQuery();
   const { values } = useFormikContext<IAnimal>();
+  const { surveyId, projectId } = useContext(SurveyContext);
+  const dialogContext = useContext(DialogContext);
+
   const [deploymentIDToDelete, setDeploymentIDToDelete] = useState<null | string>(null);
 
   const device = values[animalKeyName]?.[index];
   const deployments = device.deployments;
 
-  if (!deployments) {
-    return <></>;
-  }
+  const handleRemoveDeployment = async (deployment_id: string) => {
+    try {
+      if (survey_critter_id === undefined) {
+        setMessageSnackbar('No critter set!', dialogContext);
+      }
+      await bhApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
+      const deployments = values.device[index].deployments;
+      const indexOfDeployment = deployments?.findIndex((deployment) => deployment.deployment_id === deployment_id);
+      if (indexOfDeployment !== undefined) {
+        deployments?.splice(indexOfDeployment);
+      }
+      setMessageSnackbar('Deployment deleted', dialogContext);
+    } catch (e) {
+      setMessageSnackbar('Failed to delete deployment.', dialogContext);
+    }
+  };
+
+  const deploymentOverlapTest = (deployment: IDeploymentTimespan) => {
+    if (!deviceDetails) {
+      return;
+    }
+    const existingDeployment = deviceDetails.deployments.find(
+      (existingDeployment) =>
+        deployment.deployment_id !== existingDeployment.deployment_id &&
+        dateRangesOverlap(
+          deployment.attachment_start,
+          deployment.attachment_end,
+          existingDeployment.attachment_start,
+          existingDeployment.attachment_end
+        )
+    );
+    if (!existingDeployment) {
+      return;
+    }
+    return `This will conflict with an existing deployment for the device running from ${
+      existingDeployment.attachment_start
+    } until ${existingDeployment.attachment_end ?? 'indefinite.'}`;
+  };
 
   return (
     <>
       <Grid container spacing={3}>
-        {deployments.map((deploy, i) => {
+        {deployments?.map((deploy, i) => {
           return (
             <Fragment key={`deployment-item-${deploy.deployment_id}`}>
               <Grid item xs={mode === ANIMAL_FORM_MODE.ADD ? 6 : 5.5}>
-                <SingleDateField
+                <Field
+                  as={SingleDateField}
                   name={`device.${index}.deployments.${i}.attachment_start`}
                   required={true}
                   label={'Start Date'}
+                  validate={() => deploymentOverlapTest(deploy)}
                 />
               </Grid>
               <Grid item xs={mode === ANIMAL_FORM_MODE.ADD ? 6 : 5.5}>
-                <SingleDateField name={`device.${index}.deployments.${i}.attachment_end`} label={'End Date'} />
+                <Field
+                  as={SingleDateField}
+                  name={`device.${index}.deployments.${i}.attachment_end`}
+                  label={'End Date'}
+                  validate={() => deploymentOverlapTest(deploy)}
+                />
               </Grid>
               {mode === ANIMAL_FORM_MODE.EDIT && (
                 <Grid item xs={1}>

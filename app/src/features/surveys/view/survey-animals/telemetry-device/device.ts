@@ -50,16 +50,16 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
 export class Device implements Omit<IAnimalTelemetryDevice, 'deployments'> {
   device_id: number;
   device_make: string;
-  device_model: string;
-  frequency: number;
-  frequency_unit: string;
+  device_model: string | null;
+  frequency: number | null;
+  frequency_unit: string | null;
   collar_id: string;
   constructor(obj: Record<string, unknown>) {
     this.device_id = Number(obj.device_id);
     this.device_make = String(obj.device_make);
-    this.device_model = String(obj.device_model);
-    this.frequency = Number(obj.frequency);
-    this.frequency_unit = String(obj.frequency_unit);
+    this.device_model = obj.device_model ? String(obj.device_model) : null;
+    this.frequency = obj.frequency ? Number(obj.frequency) : null;
+    this.frequency_unit = obj.frequency_unit ? String(obj.frequency_unit) : null;
     this.collar_id = String(obj.collar_id);
   }
 }

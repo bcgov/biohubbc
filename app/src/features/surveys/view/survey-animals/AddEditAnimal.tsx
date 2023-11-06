@@ -59,9 +59,10 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
       : `Edit ${ANIMAL_SECTIONS_FORM_MAP[section].dialogTitle}`;
 
   const cbApi = useCritterbaseApi();
-  //const telemetryApi = useTelemetryApi();
 
   const { data: allFamilies, refresh: refreshFamilies } = useDataLoader(cbApi.family.getAllFamilies);
+
+  const { refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
 
   useEffect(() => {
     refreshFamilies();
@@ -104,112 +105,6 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
     values.device,
     values.mortality
   ]);
-
-  /* const deploymentOverlapTest = async (
-    device_id: number,
-    deployment_id: string,
-    attachment_start: string | undefined,
-    attachment_end: string | null | undefined
-  ): Promise<string> => {
-    const deviceDetails = await getDeviceDetails(device_id);
-    if (!attachment_start) {
-      return 'Attachment start is required.'; //It probably won't actually display this but just in case.
-    }
-    const existingDeployment = deviceDetails?.deployments?.find(
-      (a) =>
-        a.deployment_id !== deployment_id &&
-        dateRangesOverlap(a.attachment_start, a.attachment_end, attachment_start, attachment_end)
-    );
-    if (existingDeployment) {
-      return `This will conflict with an existing deployment for the device running from ${
-        existingDeployment.attachment_start
-      } until ${existingDeployment.attachment_end ?? 'indefinite.'}`;
-    } else {
-      return '';
-    }
-  }; */
-
-  const { refresh: refreshDeviceDetails } = useDataLoader(telemetryApi.devices.getDeviceDetails);
-  /* const getDeviceDetails = async (deviceId: number | string) => {
-    if (deviceDetails?.device?.device_id !== Number(deviceId)) {
-      await refreshDeviceDetails(Number(deviceId));
-    }
-    return deviceDetails;
-  }; */
-
-  /* const AnimalDeploymentSchemaAsyncValidation = AnimalTelemetryDeviceSchema.shape({
-    device_make: yup
-      .string()
-      .required('Required')
-      .test('checkDeviceMakeIsNotChanged', '', async (value, context) => {
-        const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches device[0].deployments[0].attachment_start for the number contained in first index.
-        if (selectedIndex !== upperLevelIndex) {
-          return true;
-        }
-        const deviceDetails = await getDeviceDetails(context.parent.device_id);
-        if (deviceDetails?.device?.device_make && deviceDetails.device?.device_make !== value) {
-          console.log(deviceDetails?.device?.device_make, value);
-          return context.createError({
-            message: `The current make for this device is ${deviceDetails.device?.device_make}, this value should not be changed.`
-          });
-        }
-        return true;
-      }),
-    deployments: yup.array(
-      AnimalDeploymentTimespanSchema.shape({
-        attachment_start: yup
-          .string()
-          .required('Required.')
-          .isValidDateString()
-          .typeError('Required.')
-          .test('checkDeploymentRange', '', async (value, context) => {
-            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches device[0].deployments[0].attachment_start for the number contained in first index.
-            if (selectedIndex !== upperLevelIndex) {
-              return true;
-            }
-            const deviceId = context.options.context?.device?.[upperLevelIndex]?.device_id;
-            const errStr = await deploymentOverlapTest(
-              deviceId,
-              context.parent.deployment_id,
-              value,
-              context.parent.attachment_end
-            );
-            if (errStr.length) {
-              return context.createError({ message: errStr });
-            } else {
-              return true;
-            }
-          }),
-        attachment_end: yup
-          .string()
-          .isValidDateString()
-          .isEndDateSameOrAfterStartDate('attachment_start')
-          .nullable()
-          .test('checkDeploymentRangeEnd', '', async (value, context) => {
-            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches device[0].deployments[0].attachment_start for the number contained in first index.
-            if (selectedIndex !== upperLevelIndex) {
-              return true;
-            }
-            const deviceId = context.options.context?.device?.[upperLevelIndex]?.device_id;
-            const errStr = await deploymentOverlapTest(
-              deviceId,
-              context.parent.deployment_id,
-              context.parent.attachment_start,
-              value
-            );
-            if (errStr.length) {
-              return context.createError({ message: errStr });
-            } else {
-              return true;
-            }
-          })
-      })
-    )
-  });
-
-  const AnimalSchemaWithDeployments = AnimalSchema.shape({
-    device: yup.array().of(AnimalDeploymentSchemaAsyncValidation)
-  }); */
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
