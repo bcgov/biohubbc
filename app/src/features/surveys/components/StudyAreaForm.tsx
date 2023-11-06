@@ -130,7 +130,7 @@ const StudyAreaForm = () => {
           setIsDeleteOpen(false);
           onDeleteAll();
         }}
-        onClose={() => {}}
+        onClose={() => setIsDeleteOpen(false)}
         onNo={() => setIsDeleteOpen(false)}
       />
       <EditDialog
