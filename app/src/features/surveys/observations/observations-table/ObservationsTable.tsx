@@ -17,13 +17,14 @@ import { CodesContext } from 'contexts/codesContext';
 import { ObservationsContext } from 'contexts/observationsContext';
 import { IObservationTableRow, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { TaxonomyContext } from 'contexts/taxonomyContext';
 import {
   IGetSampleLocationRecord,
   IGetSampleMethodRecord,
   IGetSamplePeriodRecord
 } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
 import { getCodesName } from 'utils/Utils';
 
@@ -93,11 +94,13 @@ const LoadingOverlay = () => {
 };
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
+  const [isLoadingInitialTaxonomy, setIsLoadingInitialTaxonomy] = useState<boolean>(true);
   const location = useLocation();
   const observationsTableContext = useContext(ObservationsTableContext);
   const observationsContext = useContext(ObservationsContext);
   const surveyContext = useContext(SurveyContext);
   const codesContext = useContext(CodesContext);
+  const taxonomyContext = useContext(TaxonomyContext);
   const hasLoadedCodes = Boolean(codesContext.codesDataLoader.data);
 
   const apiRef = observationsTableContext._muiDataGridApiRef;
@@ -105,7 +108,8 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
     return [
       observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
       props.isLoading,
-      surveyContext.sampleSiteDataLoader.isLoading
+      surveyContext.sampleSiteDataLoader.isLoading,
+      isLoadingInitialTaxonomy
     ].some(Boolean)
   }, [observationsContext.observationsDataLoader, surveyContext.sampleSiteDataLoader, props.isLoading]);
 
@@ -451,6 +455,17 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       observationsTableContext.onRowSelectionModelChange([selectedId]);
     }
   }, [location.hash, observationsTableContext]);
+
+  /**
+   * On first render, show skeleton loader until first set of taxonomies has loaded.
+   */
+  useEffect(() => {
+    if (!isLoadingInitialTaxonomy || taxonomyContext.isLoading) {
+      return;
+    }
+
+    setIsLoadingInitialTaxonomy(false);
+  }, [taxonomyContext.isLoading])
 
   return (
     <DataGrid
