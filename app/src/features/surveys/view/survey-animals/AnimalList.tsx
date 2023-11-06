@@ -7,7 +7,7 @@ import {
   Button,
   Divider,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Skeleton,
@@ -164,13 +164,12 @@ const AnimalList = (props: AnimalListProps) => {
                       }
                     }}>
                     {(Object.keys(ANIMAL_SECTIONS_FORM_MAP) as IAnimalSections[]).map((section) => (
-                      <ListItem
+                      <ListItemButton
                         sx={{
                           px: 3
                         }}
                         key={section}
                         divider
-                        button
                         selected={section === selectedSection}
                         onClick={() => {
                           onSelectSection(section);
@@ -179,7 +178,7 @@ const AnimalList = (props: AnimalListProps) => {
                           <Icon path={ANIMAL_SECTIONS_FORM_MAP[section].mdiIcon} size={1} />
                         </ListItemIcon>
                         <ListItemText>{section}</ListItemText>
-                      </ListItem>
+                      </ListItemButton>
                     ))}
                   </List>
                 </AccordionDetails>
