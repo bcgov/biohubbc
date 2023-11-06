@@ -216,7 +216,7 @@ jobs:
       - name: Build APP Image
         working-directory: app/.pipeline/
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG --config=$PIPELINE_CONFIG
+          DEBUG=* npm run build -- --pr=$PR_NUMBER --config=$PIPELINE_CONFIG
 
   # Build the Database image
   buildDatabase:
