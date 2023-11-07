@@ -334,7 +334,7 @@ export const SurveyAnimalsI18N = {
   animalCollectionUnitTitle: 'Ecological Units',
   animalCollectionUnitTitle2: 'Ecological Unit',
   animalCollectionUnitHelp:
-    'Ecological units are groups such as population units, herds, and packs. Different species may different units and unit names.',
+    'Ecological units are groups such as population units, herds, and packs. Different species may have different units and unit names.',
   animalCollectionUnitAddBtn: 'Add Unit',
   // Input help strings
   taxonHelp:

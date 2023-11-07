@@ -55,7 +55,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, critterData, telemetrySaveAction, deploymentRemoveAction, formikArrayHelpers } = props;
   const surveyContext = useContext(SurveyContext);
   const telemetryApi = useTelemetryApi();
-  const { submitForm, isValid, values, isSubmitting, initialValues, setFieldValue, isValidating, status } =
+  const { submitForm, isValid, values, isSubmitting, setFieldValue, isValidating, status } =
     useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
@@ -235,8 +235,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                   </Button>
                 </DialogActions>
               </Dialog>
-              {!ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ||
-              (section === 'Mortality Events' && initialValues.mortality.length >= 1) ? null : (
+              {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
                 <Button
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   variant="contained"
@@ -252,7 +251,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                   }}>
                   {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
                 </Button>
-              )}
+              ) : null}
             </Box>
 
             <Typography
