@@ -75,7 +75,7 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
             : undefined
         }
         otherSecondaryFields={[
-          <Box component="fieldset" mb={0}>
+          <Box key="release-location" component="fieldset" mb={0}>
             <Typography component="legend">Release Location</Typography>
             <FormControlLabel
               sx={{ mt: -1, ml: 0 }}

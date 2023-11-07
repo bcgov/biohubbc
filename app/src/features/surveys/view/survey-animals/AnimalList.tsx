@@ -31,20 +31,25 @@ interface AnimalListProps {
   onAddButton: () => void;
 }
 
-const AnimalListSkeleton = () => (
-  <Box
-    flexDirection="column"
-    sx={{
-      px: 2,
-      py: 1.2,
-      height: '70px',
-      borderBottom: '1px solid ' + grey[300],
-      background: '#fff'
-    }}>
-    <Skeleton variant="text" sx={{ fontSize: '1.125rem' }} />
-    <Skeleton variant="text" sx={{ fontSize: '0.875rem' }} width="50%" />
-  </Box>
-);
+const SkeletonOrEmpty = (props: { displaySkeleton: boolean }) =>
+  props.displaySkeleton ? (
+    <Box
+      flexDirection="column"
+      sx={{
+        px: 2,
+        py: 1.2,
+        height: '70px',
+        borderBottom: '1px solid ' + grey[300],
+        background: '#fff'
+      }}>
+      <Skeleton variant="text" sx={{ fontSize: '1.125rem' }} />
+      <Skeleton variant="text" sx={{ fontSize: '0.875rem' }} width="50%" />
+    </Box>
+  ) : (
+    <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
+      <Typography variant="body2">No Animals</Typography>
+    </Box>
+  );
 
 const AnimalList = (props: AnimalListProps) => {
   const { isLoading, selectedSection, onSelectSection, critterData, onAddButton } = props;
@@ -106,19 +111,7 @@ const AnimalList = (props: AnimalListProps) => {
             zIndex: 1000
           }}>
           {!sortedCritterData.length ? (
-            isLoading ? (
-              <>
-                <AnimalListSkeleton />
-                <AnimalListSkeleton />
-                <AnimalListSkeleton />
-                <AnimalListSkeleton />
-                <AnimalListSkeleton />
-              </>
-            ) : (
-              <Box display="flex" flex="1 1 auto" height="100%" alignItems="center" justifyContent="center">
-                <Typography variant="body2">No Animals</Typography>
-              </Box>
-            )
+            <SkeletonOrEmpty displaySkeleton={!!isLoading && !sortedCritterData?.length} />
           ) : (
             sortedCritterData.map((critter) => (
               <Accordion

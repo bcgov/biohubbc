@@ -210,14 +210,6 @@ export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
           );
         }}
       </FieldArray>
-      {/* Empty State */}
-      {/* {sectionCardData.length === 0 ? (
-        <Paper variant="outlined">
-          <Typography component="strong" color="textSecondary" fontWeight={700}>
-            No records found
-          </Typography>
-        </Paper>
-      ) : null} */}
     </>
   );
 };

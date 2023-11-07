@@ -11,11 +11,11 @@ import { ANIMAL_FORM_MODE, IAnimal } from '../animal';
 import { DeploymentFormSection } from './DeploymentFormSection';
 import TelemetryFileUpload from './TelemetryFileUpload';
 
-interface telemetryDeviceFormContentProps {
+interface TelemetryDeviceFormContentProps {
   index: number;
   mode: ANIMAL_FORM_MODE;
 }
-const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
+const TelemetryDeviceFormContent = (props: TelemetryDeviceFormContentProps) => {
   const { index, mode } = props;
 
   const api = useTelemetryApi();
@@ -39,7 +39,6 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
     if (device.device_id && deviceMake && deviceMake !== value && mode === ANIMAL_FORM_MODE.ADD) {
       return `The current make for this device is ${deviceMake}`;
     }
-    return;
   };
 
   if (!device) {
