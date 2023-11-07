@@ -7,59 +7,74 @@ export interface ITaxonomyContext {
   /**
    * Denotes whether or not the context is currently loading taxonomic data
    */
-  isLoading: boolean;
+  // isLoading: boolean;
   /**
-   * Fetches taxonomy data for the given ID. If the results of this query are already in
-   * the cache, they are immediately returned. Otherwise, `null` is returned, and the 
-   * the taxonomic data is fetched and subsequently cached.
+   * Fetches taxonomy data for the given IDs. For each ID, if the results of its query
+   * is already in the cache, it is immediately available. Otherwise, `null` is
+   * returned, and the  the taxonomic data is fetched and subsequently cached.
    */
-  getSpeciesTaxonomyById: (id: number) => ITaxonomy | null;
+  getSpeciesTaxonomyByIds: (ids: number[]) => (ITaxonomy | null)[];
+  /**
+   * Caches taxonomy data for the given IDs.
+   */
+  cacheSpeciesTaxonomyByIds: (ids: number[]) => Promise<void>;
 }
 
 export const TaxonomyContext = createContext<ITaxonomyContext>({
-  isLoading: false,
-  getSpeciesTaxonomyById: () => null
+  // isLoading: false,
+  getSpeciesTaxonomyByIds: () => [],
+  cacheSpeciesTaxonomyByIds: () => Promise.resolve()
 });
 
 export const TaxonomyContextProvider = (props: PropsWithChildren) => {
-  // const [isLoading, _setIsLoading] = useState<boolean>(false);
   const biohubApi = useBiohubApi();
   const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, ITaxonomy | null>>({});
-  const _dispatchedIds = useRef<Set<number>>(new Set<number>([]));
+  const _dispatched = useRef<Record<number, Promise<void>>>({});
 
-  const getSpeciesTaxonomyById: (id: number) => ITaxonomy | null = useCallback((id: number) => {
-    
-    if (hasProperty(_taxonomyCache, id)) {
-      // Result is in the cache
-      return getProperty(_taxonomyCache, id);
-    }
+  const cacheSpeciesTaxonomyByIds = useCallback(async (ids: number[]) => {
+    const promises = ids.map((id) => {
+      _dispatched.current[id] = biohubApi.taxonomy.getSpeciesFromIds([id]).then((result) => {
+        _setTaxonomyCache((previous) => ({
+          ...previous,
+          [id]: result?.searchResponse?.[0] ?? null
+        }));
+      });
 
-    if (_dispatchedIds.current.has(id)) {
-      // Promise is pending
-      return null;
-    }
 
-    // Dispatch the request to cache the result
-    // _setIsLoading(true);
-    _dispatchedIds.current.add(id);
-    biohubApi.taxonomy.getSpeciesFromIds([id]).then((result) => {
-      _setTaxonomyCache((previous) => ({
-        ...previous,
-        [id]: result?.searchResponse?.[0] ?? null
-      }));
     });
 
-    return null;
+    await Promise.all(promises)
+  }, [biohubApi.taxonomy.getSpeciesFromIds]);
+
+
+  const getSpeciesTaxonomyByIds = useCallback((ids: number[]): (ITaxonomy | null)[] => {
+    const pendingCacheIds: number[] = [];
+    const response = ids.map((id) => {
+      if (hasProperty(_taxonomyCache, id)) {
+        // Result is in the cache
+        return getProperty(_taxonomyCache, id);
+      }
+
+      if (hasProperty(_dispatched.current, id)) {
+        // Promise is pending
+        return null;
+      }
+
+      // Dispatch the request to cache the result
+      pendingCacheIds.push(id);
+      return null;
+    });
+
+    cacheSpeciesTaxonomyByIds(pendingCacheIds);
+    return response;
   }, [_taxonomyCache]);
 
-  const isLoading = useMemo(() => {
-    return _dispatchedIds.current.size > Object.keys(_taxonomyCache).length;
-  }, [_dispatchedIds.current]);
 
   const taxonomyContext: ITaxonomyContext = useMemo(() => ({
-    isLoading,
-    getSpeciesTaxonomyById
-  }), [isLoading, getSpeciesTaxonomyById]);
+    // isLoading,
+    getSpeciesTaxonomyByIds,
+    cacheSpeciesTaxonomyByIds
+  }), [getSpeciesTaxonomyByIds, cacheSpeciesTaxonomyByIds]);
 
   return (
     <TaxonomyContext.Provider value={taxonomyContext}>

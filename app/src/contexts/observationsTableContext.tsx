@@ -9,6 +9,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { SurveyContext } from './surveyContext';
+import { TaxonomyContext } from './taxonomyContext';
 
 export interface IObservationRecord {
   survey_observation_id: number;
@@ -139,6 +140,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const _muiDataGridApiRef = useGridApiRef();
 
   const observationsContext = useContext(ObservationsContext);
+  const taxonomyContext = useContext(TaxonomyContext);
   const dialogContext = useContext(DialogContext);
 
   const biohubApi = useBiohubApi();
@@ -153,8 +155,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
-  // True if there is observation table content that is still loading
-  const [isLoading, setIsLoading] = useState(false);
+  // True if there is taxonomic data that is still loading
+  const [isLoadingTaxonomy, setIsLoadingTaxonomy] = useState(true);
   // True if the records are in the process of being saved to the server
   const [isSaving, setIsSaving] = useState(false);
   // Stores the current count of observations for this survey
@@ -408,11 +410,20 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     [biohubApi.observation, projectId, surveyId, dialogContext, refreshObservationRecords, _revertAllRowsEditMode]
   );
 
+  const isLoading: boolean = useMemo(() => {
+    return isLoadingTaxonomy || observationsContext.observationsDataLoader.isLoading;
+  }, [isLoadingTaxonomy, observationsContext.observationsDataLoader.isLoading]);
+
+  /**
+   * Runs when observation context data has changed. This does not occur when records are
+   * deleted; Only on initial page load, and whenever records are saved.
+   */
   useEffect(() => {
     if (!observationsContext.observationsDataLoader.data?.surveyObservations?.length) {
       return;
     }
 
+    // Collect rows from the observations data loader
     const rows: IObservationTableRow[] = observationsContext.observationsDataLoader.data.surveyObservations.map(
       (row: IObservationRecord) => ({ ...row, id: row.survey_observation_id })
     );
@@ -421,8 +432,27 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       return;
     }
 
+    // Set initial rows for the table context
     setRows(rows);
+
+    // Set initial observations count
     setObservationCount(observationsContext.observationsDataLoader.data.supplementaryObservationData.observationCount);
+
+    // Cache all unique taxonomic IDs
+    setIsLoadingTaxonomy(true);
+    const uniqueTaxonomicIds: Set<number> = observationsContext
+      .observationsDataLoader
+      .data
+      .surveyObservations
+      .reduce((acc: Set<number>, record: IObservationRecord) => {
+        acc.add(record.wldtaxonomic_units_id);
+        return acc;
+      }, new Set<number>([]));
+      
+    taxonomyContext.cacheSpeciesTaxonomyByIds(Array.from(uniqueTaxonomicIds)).then(() => {
+      setIsLoadingTaxonomy(false);
+    })
+
   }, [observationsContext.observationsDataLoader.data]);
 
   useEffect(() => {
