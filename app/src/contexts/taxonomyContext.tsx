@@ -13,7 +13,7 @@ export interface ITaxonomyContext {
    * is already in the cache, it is immediately available. Otherwise, `null` is
    * returned, and the  the taxonomic data is fetched and subsequently cached.
    */
-  getSpeciesTaxonomyById: (ids: number[]) => ITaxonomy | null;
+  getSpeciesTaxonomyById: (id: number) => ITaxonomy | null;
   /**
    * Caches taxonomy data for the given IDs.
    */

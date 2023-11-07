@@ -21,14 +21,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
 
   const taxonomyContext = useContext(TaxonomyContext);
 
-  const response = 
-  taxonomyContext.getSpeciesTaxonomyById(dataGridProps.value);
-  /*
-  useMemo(
-    () => taxonomyContext.getSpeciesTaxonomyById(dataGridProps.value),
-    [taxonomyContext.getSpeciesTaxonomyById]
-  );
-  */
+  const response =  taxonomyContext.getSpeciesTaxonomyById(dataGridProps.value);
 
   if (!dataGridProps.value) {
     return null;
