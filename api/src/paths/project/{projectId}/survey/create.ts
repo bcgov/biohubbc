@@ -216,6 +216,7 @@ POST.apiDoc = {
             locations: {
               description: 'Survey location data',
               type: 'array',
+              minItems: 1,
               items: {
                 type: 'object',
                 required: ['name', 'description', 'geojson'],

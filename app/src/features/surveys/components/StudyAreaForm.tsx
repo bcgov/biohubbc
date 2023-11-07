@@ -39,13 +39,15 @@ export const SurveyLocationDetailsYupSchema = yup.object({
 });
 
 export const SurveyLocationYupSchema = yup.object({
-  locations: yup.array(
-    yup.object({
-      name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
-      description: yup.string().max(250, 'Description cannot exceed 250 characters').default(''),
-      geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
-    })
-  )
+  locations: yup
+    .array(
+      yup.object({
+        name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
+        description: yup.string().max(250, 'Description cannot exceed 250 characters').default(''),
+        geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
+      })
+    )
+    .min(1, 'At least 1 feature or boundary is required for a survey study area')
 });
 
 /**
