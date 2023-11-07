@@ -215,7 +215,7 @@ const SamplingSiteList = () => {
                 background: grey[100],
                 zIndex: 2
               }}>
-              <Paper elevation={0} sx={{overflow: 'hidden'}}>
+              <Paper elevation={0} sx={{ overflow: 'hidden' }}>
                 <SampleSiteSkeleton />
                 <SampleSiteSkeleton />
                 <SampleSiteSkeleton />
