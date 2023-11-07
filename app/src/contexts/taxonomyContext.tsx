@@ -1,6 +1,6 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
-import { PropsWithChildren, createContext, useCallback, useRef, useState, useEffect, useMemo } from 'react';
+import { PropsWithChildren, createContext, useCallback, useRef, useState, useMemo } from 'react';
 import { has as hasProperty, get as getProperty } from 'lodash'
 
 export interface ITaxonomyContext {
@@ -52,53 +52,9 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
     return null;
   }, [_taxonomyCache]);
 
-  // Used to maintain loading state
-  /*
-  useEffect(() => {
-    if (!isLoading) {
-      return;
-    }
-
-    const hasFinishedLoading = Array
-      .from(_dispatchedIds.current)
-      .every((id) => hasProperty(_taxonomyCache, id));
-
-      if (hasFinishedLoading) {
-    console.log('hasFinishedLoading;', {  _taxonomyCache,
-      _dispatchedIds: _dispatchedIds.current
-    
-    
-    })
-  }
-
-    if (hasFinishedLoading) {
-      _setIsLoading(false);
-    }
-
-  }, [isLoading, _taxonomyCache, _dispatchedIds.current]);
-  */
-  /*
   const isLoading = useMemo(() => {
-
-    const xs = Array.from(_dispatchedIds.current).map((id) => {
-      return !hasProperty(_taxonomyCache, id)
-    });
-
-    return xs.some(Boolean);
-  }, [_taxonomyCache, _dispatchedIds.current])
-  */
-
-  const isLoading = _dispatchedIds.current.size > Object.keys(_taxonomyCache).length;
-
-  console.log('_dispatchedIds.current.size', _dispatchedIds.current.size)
-  console.log('Object.keys(_taxonomyCache).length', Object.keys(_taxonomyCache).length)
-
-  console.log({
-    isLoading,
-    // xs,
-    _taxonomyCache,
-    _dispatchedIds: _dispatchedIds.current
-  });
+    return _dispatchedIds.current.size > Object.keys(_taxonomyCache).length;
+  }, [_dispatchedIds.current]);
 
   const taxonomyContext: ITaxonomyContext = useMemo(() => ({
     isLoading,
