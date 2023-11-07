@@ -22,6 +22,7 @@ import SurveySummaryResults from './summary-results/SurveySummaryResults';
 import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
+import { LinearProgress } from '@mui/material';
 
 //TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
 
@@ -73,6 +74,7 @@ const SurveyPage: React.FC = () => {
               Manage Observations
             </Button>
           </Toolbar>
+          <LinearProgress variant='indeterminate' sx={{ borderRadius: 0 }} />
           <ObservationsMap />
         </Paper>
 

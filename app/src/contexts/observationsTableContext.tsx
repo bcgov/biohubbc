@@ -99,6 +99,10 @@ export type IObservationsTableContext = {
    */
   isSaving: boolean;
   /**
+   * Indicates whether or not content in the observations table is loading.
+   */
+  isLoading: boolean;
+  /**
    * Reflects the count of total observations for the survey
    */
   observationCount: number;
@@ -124,6 +128,7 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   rowSelectionModel: [],
   onRowSelectionModelChange: () => {},
   isSaving: false,
+  isLoading: false,
   observationCount: 0,
   setObservationCount: () => undefined
 });
@@ -148,9 +153,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
+  // True if there is observation table content that is still loading
+  const [isLoading, setIsLoading] = useState(false);
   // True if the records are in the process of being saved to the server
   const [isSaving, setIsSaving] = useState(false);
-  //
+  // Stores the current count of observations for this survey
   const [observationCount, setObservationCount] = useState<number>(0);
 
   const _deleteRecords = useCallback(
@@ -472,6 +479,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       onRowEditStart,
       rowSelectionModel,
       onRowSelectionModelChange: setRowSelectionModel,
+      isLoading,
       isSaving,
       observationCount,
       setObservationCount
