@@ -31,5 +31,5 @@ export enum DATE_LIMIT {
  */
 export enum TIME_FORMAT {
   ShortTimeFormatAmPm = 'hh:mm A', //11:00 AM
-  LongTimeFormat24Hour = 'HH:mm:ss' //23:00
+  LongTimeFormat24Hour = 'HH:mm:ss' //23:00:00
 }
