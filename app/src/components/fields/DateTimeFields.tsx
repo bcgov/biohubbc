@@ -1,9 +1,11 @@
 import Icon from '@mdi/react';
 import Grid from '@mui/material/Grid';
-import { DatePicker, renderTimeViewClock, TimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DATE_FORMAT, DATE_LIMIT, TIME_FORMAT } from 'constants/dateTimeFormats';
+import { ISurveySampleMethodData } from 'features/surveys/components/MethodForm';
+import { FormikContextType } from 'formik';
 import get from 'lodash-es/get';
 import moment from 'moment';
 import React from 'react';
@@ -25,7 +27,7 @@ interface IDateTimeFieldsProps {
     timeHelperText?: string;
     timeIcon: string;
   };
-  formikProps: any;
+  formikProps: FormikContextType<ISurveySampleMethodData>;
 }
 
 export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
@@ -125,20 +127,16 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
             format={TIME_FORMAT.LongTimeFormat24Hour}
             value={formattedTimeValue}
             onChange={(value: moment.Moment | null) => {
-              if (!value || String(value.creationData().input) === 'Invalid Time') {
-                // The creation input value will be 'Invalid Time' when the Time field is cleared (empty), and will
-                // contain an actual Time string value if the field is not empty but is invalid.
+              if (!value || !moment(value).isValid()) {
+                // Check if the value is null or invalid, and if so, clear the field.
                 setFieldValue(timeName, null);
                 return;
               }
 
               setFieldValue(timeName, moment(value).format(TIME_FORMAT.LongTimeFormat24Hour));
             }}
-            viewRenderers={{
-              hours: renderTimeViewClock,
-              minutes: renderTimeViewClock,
-              seconds: renderTimeViewClock
-            }}
+            views={['hours', 'minutes', 'seconds']}
+            timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
           />
         </Grid>
       </Grid>

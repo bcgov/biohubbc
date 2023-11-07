@@ -25,6 +25,7 @@ import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { CodesContext } from 'contexts/codesContext';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
+import moment from 'moment';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
@@ -85,7 +86,23 @@ export const SamplingSiteMethodYupSchema = yup.object({
           .required('End Date is required')
           .isEndDateSameOrAfterStartDate('start_date'),
         start_time: yup.string().nullable(),
-        end_time: yup.string().nullable()
+        end_time: yup
+          .string()
+          .nullable()
+          .test(
+            'checkDatesAreSameAndEndTimeIsAfterStart',
+            'End Date and Time must be after Start Date and Time',
+            function (value) {
+              const { start_date, end_date, start_time } = this.parent;
+              if (start_date === end_date && start_time && value) {
+                const val = moment(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
+                  moment(`${end_date} ${value}`, 'YYYY-MM-DD HH:mm:ss')
+                );
+                return val;
+              }
+              return true;
+            }
+          )
       })
     )
     .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_date')

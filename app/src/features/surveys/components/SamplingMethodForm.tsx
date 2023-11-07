@@ -62,9 +62,11 @@ const SamplingMethodForm = () => {
         onSubmit={(data) => {
           setFieldValue(`methods[${values.methods.length}]`, data);
           validateField('methods');
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
       />
@@ -75,9 +77,11 @@ const SamplingMethodForm = () => {
         open={isEditModalOpen}
         onSubmit={(data, index) => {
           setFieldValue(`methods[${index}]`, data);
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
       />

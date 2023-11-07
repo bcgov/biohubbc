@@ -68,9 +68,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
         onSubmit={(data) => {
           setFieldValue(`${name}[${values.sampleSite.methods.length}]`, data);
           validateField(`${name}`);
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
       />
@@ -81,9 +83,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
         open={isEditModalOpen}
         onSubmit={(data, index) => {
           setFieldValue(`${name}[${index}]`, data);
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
         onClose={() => {
+          setAnchorEl(null);
           setIsEditModalOpen(false);
         }}
       />
@@ -100,7 +104,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem key={'edit-details'} onClick={() => setIsEditModalOpen(true)}>
+        <MenuItem
+          key={'edit-details'}
+          onClick={() => {
+            setIsEditModalOpen(true);
+          }}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
