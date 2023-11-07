@@ -20,6 +20,7 @@ import L, { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import { useEffect, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
@@ -49,8 +50,8 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           // Map features into form data
           const formData = features.map((item: Feature, index) => {
             return {
-              name: `Study Area ${index + 1}`,
-              description: '',
+              name: shapeFileFeatureName(item) ?? `Study Area ${index + 1}`,
+              description: shapeFileFeatureDesc(item) ?? '',
               geojson: [item],
               revision_count: 0
             };

@@ -21,24 +21,26 @@ describe('SampleLocationService', () => {
       const mockData: PostSampleLocations = {
         survey_sample_site_id: null,
         survey_id: 1,
-        name: `Sample Site 1`,
-        description: ``,
         survey_sample_sites: [
           {
-            type: 'Feature',
-            geometry: {
-              type: 'Polygon',
-              coordinates: [
-                [
-                  [-121.904297, 50.930738],
-                  [-121.904297, 51.971346],
-                  [-120.19043, 51.971346],
-                  [-120.19043, 50.930738],
-                  [-121.904297, 50.930738]
+            name: `Sample Site 1`,
+            description: ``,
+            feature: {
+              type: 'Feature',
+              geometry: {
+                type: 'Polygon',
+                coordinates: [
+                  [
+                    [-121.904297, 50.930738],
+                    [-121.904297, 51.971346],
+                    [-120.19043, 51.971346],
+                    [-120.19043, 50.930738],
+                    [-121.904297, 50.930738]
+                  ]
                 ]
-              ]
-            },
-            properties: {}
+              },
+              properties: {}
+            }
           }
         ],
         methods: [
