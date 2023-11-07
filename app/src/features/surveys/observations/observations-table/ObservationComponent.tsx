@@ -1,10 +1,14 @@
-import { mdiImport, mdiPlus } from '@mdi/js';
+import { mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
+import { ListItemIcon } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import FileUploadDialog from 'components/dialog/FileUploadDialog';
@@ -13,21 +17,30 @@ import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { ObservationsContext } from 'contexts/observationsContext';
+import { ObservationsTableContext } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import ObservationsTable from 'features/surveys/observations/ObservationsTable';
+import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
+import { pluralize as p } from 'utils/Utils';
 
 const ObservationComponent = () => {
   const [showImportDiaolog, setShowImportDiaolog] = useState<boolean>(false);
   const [processingRecords, setProcessingRecords] = useState<boolean>(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<Element | null>(null);
+  const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
   const observationsContext = useContext(ObservationsContext);
+  const observationsTableContext = useContext(ObservationsTableContext);
   const surveyContext = useContext(SurveyContext);
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
+
+  const handleCloseMenu = () => {
+    setMenuAnchorEl(null);
   };
 
   const { projectId, surveyId } = surveyContext;
@@ -46,7 +59,7 @@ const ObservationComponent = () => {
               </Typography>
             )
           });
-          observationsContext.refreshRecords().then(() => {
+          observationsTableContext.refreshObservationRecords().then(() => {
             setProcessingRecords(false);
           });
         })
@@ -56,8 +69,8 @@ const ObservationComponent = () => {
     });
   };
 
-  const hasUnsavedChanges = observationsContext.hasUnsavedChanges();
-  const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState<boolean>(false);
+  const hasUnsavedChanges = observationsTableContext.hasUnsavedChanges;
+  const numSelectedRows = observationsTableContext.rowSelectionModel.length;
   const observationCount =
     observationsContext.observationsDataLoader?.data?.supplementaryObservationData?.observationCount ?? 0;
 
@@ -69,9 +82,6 @@ const ObservationComponent = () => {
         onClose={() => setShowImportDiaolog(false)}
         onUpload={handleImportObservations}
         FileUploadProps={{
-          fileHandler: (file) => {
-            console.log(file);
-          },
           dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED
         }}></FileUploadDialog>
@@ -85,7 +95,7 @@ const ObservationComponent = () => {
         open={showConfirmRemoveAllDialog}
         onYes={() => {
           setShowConfirmRemoveAllDialog(false);
-          observationsContext.revertRecords();
+          observationsTableContext.revertObservationRecords();
         }}
         onClose={() => setShowConfirmRemoveAllDialog(false)}
         onNo={() => setShowConfirmRemoveAllDialog(false)}
@@ -98,16 +108,7 @@ const ObservationComponent = () => {
         sx={{
           overflow: 'hidden'
         }}>
-        <Toolbar
-          sx={{
-            flex: '0 0 auto',
-            '& button': {
-              minWidth: '6rem'
-            },
-            '& button + button': {
-              ml: 1
-            }
-          }}>
+        <Toolbar>
           <Typography
             sx={{
               flexGrow: '1',
@@ -120,49 +121,79 @@ const ObservationComponent = () => {
             </Typography>
           </Typography>
 
-          <Box
-            sx={{
-              '& div:first-of-type': {
-                display: 'flex',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap'
-              }
-            }}>
-            <Box display="flex" overflow="hidden">
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiImport} size={1} />}
-                onClick={() => setShowImportDiaolog(true)}>
-                Import
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Icon path={mdiPlus} size={1} />}
-                onClick={() => observationsContext.createNewRecord()}
-                disabled={observationsContext.isSaving}>
-                Add Record
-              </Button>
-              <Collapse in={hasUnsavedChanges} orientation="horizontal">
-                <Box ml={1} whiteSpace="nowrap">
-                  <LoadingButton
-                    loading={observationsContext.isSaving}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => observationsContext.stopEditAndSaveRows()}
-                    disabled={observationsContext.isSaving}>
-                    Save
-                  </LoadingButton>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => setShowConfirmRemoveAllDialog(true)}
-                    disabled={observationsContext.isSaving}>
-                    Discard Changes
-                  </Button>
-                </Box>
-              </Collapse>
+          <Box display="flex" overflow="hidden" gap={1} whiteSpace="nowrap">
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiImport} size={1} />}
+              onClick={() => setShowImportDiaolog(true)}>
+              Import
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => observationsTableContext.addObservationRecord()}
+              disabled={observationsTableContext.isSaving}>
+              Add Record
+            </Button>
+            <Collapse in={hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
+              <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
+                <LoadingButton
+                  loading={observationsTableContext.isSaving}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => observationsTableContext.saveObservationRecords()}
+                  disabled={observationsTableContext.isSaving}>
+                  Save
+                </LoadingButton>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setShowConfirmRemoveAllDialog(true)}
+                  disabled={observationsTableContext.isSaving}>
+                  Discard Changes
+                </Button>
+              </Box>
+            </Collapse>
+            <Box>
+              <IconButton
+                onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                  setMenuAnchorEl(event.currentTarget);
+                }}
+                size="small"
+                disabled={numSelectedRows === 0}
+                aria-label="observation options">
+                <Icon size={1} path={mdiDotsVertical} />
+              </IconButton>
+              <Menu
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right'
+                }}
+                id="survey-observations-table-actions-menu"
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={handleCloseMenu}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button'
+                }}>
+                <MenuItem
+                  onClick={() => {
+                    observationsTableContext.deleteSelectedObservationRecords();
+                    handleCloseMenu();
+                  }}
+                  disabled={observationsTableContext.isSaving}>
+                  <ListItemIcon>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </ListItemIcon>
+                  <Typography variant="inherit">Delete {p(numSelectedRows, 'Observation')}</Typography>
+                </MenuItem>
+              </Menu>
             </Box>
           </Box>
         </Toolbar>

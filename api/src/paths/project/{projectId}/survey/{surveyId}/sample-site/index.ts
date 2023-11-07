@@ -233,14 +233,8 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['name', 'description', 'methods', 'survey_sample_sites'],
+          required: ['methods', 'survey_sample_sites'],
           properties: {
-            name: {
-              type: 'string'
-            },
-            description: {
-              type: 'string'
-            },
             methods: {
               type: 'array',
               minItems: 1,
@@ -277,7 +271,16 @@ POST.apiDoc = {
               type: 'array',
               minItems: 1,
               items: {
-                ...(GeoJSONFeature as object)
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string'
+                  },
+                  description: {
+                    type: 'string'
+                  },
+                  feature: { ...(GeoJSONFeature as object) }
+                }
               }
             }
           }

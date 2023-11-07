@@ -225,7 +225,7 @@ PUT.apiDoc = {
           type: 'object',
           properties: {
             surveyObservations: {
-              description: 'Survey observation reords.',
+              description: 'Survey observation records.',
               type: 'array',
               items: {
                 type: 'object',

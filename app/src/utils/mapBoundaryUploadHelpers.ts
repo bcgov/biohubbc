@@ -220,7 +220,7 @@ export const calculateFeatureBoundingBox = (features: Feature[]): BBox | undefin
 
   /**
    * If there are multiple points or a polygon and a point, we can automatically
-   * create a bouding box using Turf.
+   * create a bounding box using Turf.
    */
   const allGeosFeatureCollection = {
     type: 'FeatureCollection',
