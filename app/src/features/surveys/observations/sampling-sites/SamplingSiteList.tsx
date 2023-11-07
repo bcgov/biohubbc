@@ -21,6 +21,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -40,6 +41,7 @@ const SampleSiteSkeleton = () => (
       py: 1.5,
       px: 2,
       height: '52px',
+      background: '#fff',
       borderBottom: '1px solid ' + grey[300]
     }}>
     <Skeleton sx={{ flex: '1 1 auto' }} />
@@ -213,11 +215,13 @@ const SamplingSiteList = () => {
                 background: grey[100],
                 zIndex: 2
               }}>
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
-              <SampleSiteSkeleton />
+              <Paper elevation={0} sx={{ overflow: 'hidden' }}>
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+                <SampleSiteSkeleton />
+              </Paper>
             </Box>
           </Fade>
 
