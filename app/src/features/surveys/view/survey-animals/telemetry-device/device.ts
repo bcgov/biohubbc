@@ -1,3 +1,4 @@
+import { AttachmentType } from 'constants/attachments';
 import { FeatureCollection } from 'geojson';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
@@ -46,6 +47,11 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   frequency: numSchema,
   frequency_unit: yup.string()
 });
+
+export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
+  attachmentFile?: File;
+  attachmentType?: AttachmentType;
+}
 
 export class Device implements Omit<IAnimalTelemetryDevice, 'deployments'> {
   device_id: number;

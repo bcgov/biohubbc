@@ -18,8 +18,6 @@ interface ISurveyAnimalsTableProps {
   deviceData?: IAnimalDeployment[];
   onMenuOpen: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
-  onAddDevice: (critter_id: number) => void;
-  onEditDevice: (device_id: number) => void;
   onEditCritter: (critter_id: number) => void;
   onMapOpen: () => void;
 }
@@ -29,8 +27,6 @@ export const SurveyAnimalsTable = ({
   deviceData,
   onMenuOpen,
   onRemoveCritter,
-  onAddDevice,
-  onEditDevice,
   onEditCritter,
   onMapOpen
 }: ISurveyAnimalsTableProps): JSX.Element => {

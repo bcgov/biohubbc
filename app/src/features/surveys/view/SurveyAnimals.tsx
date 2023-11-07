@@ -2,49 +2,26 @@ import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Divider, Toolbar, Typography } from '@mui/material';
 import ComponentDialog from 'components/dialog/ComponentDialog';
-import EditDialog from 'components/dialog/EditDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
-import { AttachmentType } from 'constants/attachments';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { isEqual as _deepEquals } from 'lodash-es';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { dateRangesOverlap, datesSameNullable } from 'utils/Utils';
-import yup from 'utils/YupSchema';
 import NoSurveySectionData from '../components/NoSurveySectionData';
 import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
-import {
-  AnimalDeploymentTimespanSchema,
-  AnimalTelemetryDeviceSchema,
-  Device,
-  IAnimalTelemetryDevice,
-  IDeploymentTimespan
-} from './survey-animals/telemetry-device/device';
 import TelemetryMap from './survey-animals/telemetry-device/TelemetryMap';
-import TelemetryDeviceForm, {
-  IAnimalTelemetryDeviceFile,
-  TELEMETRY_DEVICE_FORM_MODE
-} from './survey-animals/TelemetryDeviceForm';
 
 const SurveyAnimals: React.FC = () => {
   const bhApi = useBiohubApi();
-  const telemetryApi = useTelemetryApi();
   const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
   const history = useHistory();
 
   const [openRemoveCritterDialog, setOpenRemoveCritterDialog] = useState(false);
-  const [openDeviceDialog, setOpenDeviceDialog] = useState(false);
   const [openViewTelemetryDialog, setOpenViewTelemetryDialog] = useState(false);
-  const [isSubmittingTelemetry, setIsSubmittingTelemetry] = useState(false);
   const [selectedCritterId, setSelectedCritterId] = useState<number | null>(null);
-  const [telemetryFormMode, setTelemetryFormMode] = useState<TELEMETRY_DEVICE_FORM_MODE>(
-    TELEMETRY_DEVICE_FORM_MODE.ADD
-  );
 
   const { projectId, surveyId } = surveyContext;
   const {
@@ -53,11 +30,9 @@ const SurveyAnimals: React.FC = () => {
     data: critterData
   } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
 
-  const {
-    refresh: refreshDeployments,
-    load: loadDeployments,
-    data: deploymentData
-  } = useDataLoader(() => bhApi.survey.getDeploymentsInSurvey(projectId, surveyId));
+  const { load: loadDeployments, data: deploymentData } = useDataLoader(() =>
+    bhApi.survey.getDeploymentsInSurvey(projectId, surveyId)
+  );
 
   if (!critterData) {
     loadCritters();
@@ -104,239 +79,6 @@ const SurveyAnimals: React.FC = () => {
     });
   };
 
-  const DeviceFormValues: IAnimalTelemetryDevice = {
-    device_id: '' as unknown as number,
-    device_make: '',
-    frequency: '' as unknown as number,
-    frequency_unit: '',
-    device_model: '',
-    deployments: [
-      {
-        deployment_id: '',
-        attachment_start: '',
-        attachment_end: undefined
-      }
-    ]
-  };
-
-  const deploymentOverlapTest = async (
-    device_id: number,
-    deployment_id: string,
-    attachment_start: string | undefined,
-    attachment_end: string | null | undefined
-  ): Promise<string> => {
-    const deviceDetails = await telemetryApi.devices.getDeviceDetails(device_id);
-    if (!attachment_start) {
-      return 'Attachment start is required.'; //It probably won't actually display this but just in case.
-    }
-    const existingDeployment = deviceDetails?.deployments?.find(
-      (a) =>
-        a.deployment_id !== deployment_id &&
-        dateRangesOverlap(a.attachment_start, a.attachment_end, attachment_start, attachment_end)
-    );
-    if (existingDeployment) {
-      return `This will conflict with an existing deployment for the device running from ${
-        existingDeployment.attachment_start
-      } until ${existingDeployment.attachment_end ?? 'indefinite.'}`;
-    } else {
-      return '';
-    }
-  };
-
-  const AnimalDeploymentSchemaAsyncValidation = AnimalTelemetryDeviceSchema.shape({
-    device_make: yup
-      .string()
-      .required('Required')
-      .test('checkDeviceMakeIsNotChanged', '', async (value, context) => {
-        // Bypass to avoid an api call when invalid device_id
-        if (!context.parent.device_id) {
-          return true;
-        }
-        const deviceDetails = await telemetryApi.devices.getDeviceDetails(Number(context.parent.device_id));
-        if (deviceDetails.device?.device_make && deviceDetails.device?.device_make !== value) {
-          return context.createError({
-            message: `The current make for this device is ${deviceDetails.device?.device_make}, this value should not be changed.`
-          });
-        }
-        return true;
-      }),
-    deployments: yup.array(
-      AnimalDeploymentTimespanSchema.shape({
-        attachment_start: yup
-          .string()
-          .required('Required.')
-          .isValidDateString()
-          .typeError('Required.')
-          .test('checkDeploymentRange', '', async (value, context) => {
-            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
-            const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
-            const errStr = deviceId
-              ? await deploymentOverlapTest(
-                  deviceId,
-                  context.parent.deployment_id,
-                  value,
-                  context.parent.attachment_end
-                )
-              : '';
-            if (errStr.length) {
-              return context.createError({ message: errStr });
-            } else {
-              return true;
-            }
-          }),
-        attachment_end: yup
-          .string()
-          .isValidDateString()
-          .isEndDateSameOrAfterStartDate('attachment_start')
-          .nullable()
-          .test('checkDeploymentRangeEnd', '', async (value, context) => {
-            const upperLevelIndex = Number(context.path.match(/\[(\d+)\]/)?.[1]); //Searches [0].deployments[0].attachment_start for the number contained in first index.
-            const deviceId = context.options.context?.[upperLevelIndex]?.device_id;
-            const errStr = deviceId
-              ? await deploymentOverlapTest(
-                  deviceId,
-                  context.parent.deployment_id,
-                  context.parent.attachment_start,
-                  value
-                )
-              : '';
-            if (errStr.length) {
-              return context.createError({ message: errStr });
-            } else {
-              return true;
-            }
-          })
-      })
-    )
-  });
-
-  const obtainDeviceFormInitialValues = (mode: TELEMETRY_DEVICE_FORM_MODE) => {
-    switch (mode) {
-      case TELEMETRY_DEVICE_FORM_MODE.ADD:
-        return [DeviceFormValues];
-      case TELEMETRY_DEVICE_FORM_MODE.EDIT: {
-        const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId);
-        if (deployments) {
-          //Any suggestions on something better than this reduce is welcome.
-          //Idea is to transform flat rows of {device_id, ..., deployment_id, attachment_end, attachment_start}
-          //to {device_id, ..., deployments: [{deployment_id, attachment_start, attachment_end}]}
-          const red = deployments.reduce((acc: IAnimalTelemetryDevice[], curr) => {
-            const currObj = acc.find((a: any) => a.device_id === curr.device_id);
-            const { attachment_end, attachment_start, deployment_id, ...rest } = curr;
-            const deployment = {
-              deployment_id,
-              attachment_start: attachment_start?.split('T')?.[0] ?? '',
-              attachment_end: attachment_end?.split('T')?.[0]
-            };
-            if (!currObj) {
-              acc.push({ ...rest, deployments: [deployment] });
-            } else {
-              currObj.deployments?.push(deployment);
-            }
-            return acc;
-          }, []);
-          return red;
-        } else {
-          return [DeviceFormValues];
-        }
-      }
-    }
-  };
-
-  const uploadAttachment = async (file?: File, attachmentType?: AttachmentType) => {
-    try {
-      if (file && attachmentType === AttachmentType.KEYX) {
-        await bhApi.survey.uploadSurveyKeyx(projectId, surveyId, file);
-      } else if (file && attachmentType === AttachmentType.OTHER) {
-        await bhApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
-      }
-    } catch (error) {
-      throw new Error(`Failed to upload attachment ${file?.name}`);
-    }
-  };
-
-  const handleAddTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
-    const critter = critterData?.find((a) => a.survey_critter_id === survey_critter_id);
-    const { attachmentFile, attachmentType, ...critterTelemetryDevice } = {
-      ...data[0],
-      critter_id: critter?.critter_id ?? ''
-    };
-    try {
-      // Upload attachment if there is one
-      await uploadAttachment(attachmentFile, attachmentType);
-      // create new deployment record
-      await bhApi.survey.addDeployment(projectId, surveyId, survey_critter_id, critterTelemetryDevice);
-      setPopup('Successfully added deployment.');
-      surveyContext.artifactDataLoader.refresh(projectId, surveyId);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setPopup('Failed to add deployment' + (error?.message ? `: ${error.message}` : '.'));
-      } else {
-        setPopup('Failed to add deployment.');
-      }
-    }
-  };
-
-  const updateDevice = async (formValues: IAnimalTelemetryDevice) => {
-    const existingDevice = deploymentData?.find((deployment) => deployment.device_id === formValues.device_id);
-    const formDevice = new Device({ collar_id: existingDevice?.collar_id, ...formValues });
-    if (existingDevice && !_deepEquals(new Device(existingDevice), formDevice)) {
-      try {
-        await telemetryApi.devices.upsertCollar(formDevice);
-      } catch (error) {
-        throw new Error(`Failed to update collar ${formDevice.collar_id}`);
-      }
-    }
-  };
-
-  const updateDeployments = async (formDeployments: IDeploymentTimespan[], survey_critter_id: number) => {
-    for (const formDeployment of formDeployments ?? []) {
-      const existingDeployment = deploymentData?.find(
-        (animalDeployment) => animalDeployment.deployment_id === formDeployment.deployment_id
-      );
-      if (
-        !datesSameNullable(formDeployment?.attachment_start, existingDeployment?.attachment_start) ||
-        !datesSameNullable(formDeployment?.attachment_end, existingDeployment?.attachment_end)
-      ) {
-        try {
-          await bhApi.survey.updateDeployment(projectId, surveyId, survey_critter_id, formDeployment);
-        } catch (error) {
-          throw new Error(`Failed to update deployment ${formDeployment.deployment_id}`);
-        }
-      }
-    }
-  };
-
-  const handleEditTelemetry = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
-    const errors: string[] = [];
-    for (const { attachmentFile, attachmentType, ...formValues } of data) {
-      try {
-        await uploadAttachment(attachmentFile, attachmentType);
-        await updateDevice(formValues);
-        await updateDeployments(formValues.deployments ?? [], survey_critter_id);
-      } catch (error) {
-        errors.push(`Device ${formValues.device_id} - ` + (error instanceof Error ? error.message : 'Unknown error'));
-      }
-    }
-    errors.length
-      ? setPopup('Failed to save some data: ' + errors.join(', '))
-      : setPopup('Updated deployment and device data successfully.');
-  };
-
-  const handleTelemetrySave = async (survey_critter_id: number, data: IAnimalTelemetryDeviceFile[]) => {
-    setIsSubmittingTelemetry(true);
-    if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD) {
-      await handleAddTelemetry(survey_critter_id, data);
-    } else if (telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.EDIT) {
-      await handleEditTelemetry(survey_critter_id, data);
-    }
-
-    setIsSubmittingTelemetry(false);
-    setOpenDeviceDialog(false);
-    refreshDeployments();
-    surveyContext.artifactDataLoader.refresh(projectId, surveyId);
-  };
-
   const handleRemoveCritter = async () => {
     try {
       if (!selectedCritterId) {
@@ -351,48 +93,8 @@ const SurveyAnimals: React.FC = () => {
     refreshCritters();
   };
 
-  const handleRemoveDeployment = async (deployment_id: string) => {
-    try {
-      if (!selectedCritterId) {
-        setPopup('Failed to delete deployment.');
-        return;
-      }
-      await bhApi.survey.removeDeployment(projectId, surveyId, selectedCritterId, deployment_id);
-    } catch (e) {
-      setPopup('Failed to delete deployment.');
-      return;
-    }
-
-    const deployments = deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId) ?? [];
-    if (deployments.length <= 1) {
-      setOpenDeviceDialog(false);
-    }
-    refreshDeployments();
-  };
-
   return (
     <Box>
-      <EditDialog
-        dialogTitle={
-          telemetryFormMode === TELEMETRY_DEVICE_FORM_MODE.ADD ? 'Add Telemetry Device' : 'Edit Telemetry Devices'
-        }
-        dialogSaveButtonLabel="Save"
-        open={openDeviceDialog}
-        dialogLoading={isSubmittingTelemetry}
-        component={{
-          element: <TelemetryDeviceForm removeAction={handleRemoveDeployment} survey_critter_id={-1} />, // This section will be removed
-          initialValues: obtainDeviceFormInitialValues(telemetryFormMode),
-          validationSchema: yup.array(AnimalDeploymentSchemaAsyncValidation),
-          validateOnBlur: false,
-          validateOnChange: true
-        }}
-        onCancel={() => setOpenDeviceDialog(false)}
-        onSave={(values) => {
-          if (selectedCritterId) {
-            handleTelemetrySave(selectedCritterId, values);
-          }
-        }}
-      />
       <YesNoDialog
         dialogTitle={'Remove critter from survey?'}
         dialogText={`Are you sure you would like to remove this critter from the survey?
@@ -433,14 +135,6 @@ const SurveyAnimals: React.FC = () => {
             onMenuOpen={setSelectedCritterId}
             onRemoveCritter={() => {
               setOpenRemoveCritterDialog(true);
-            }}
-            onAddDevice={() => {
-              setTelemetryFormMode(TELEMETRY_DEVICE_FORM_MODE.ADD);
-              setOpenDeviceDialog(true);
-            }}
-            onEditDevice={() => {
-              setTelemetryFormMode(TELEMETRY_DEVICE_FORM_MODE.EDIT);
-              setOpenDeviceDialog(true);
             }}
             onEditCritter={() => {
               history.push(`animals/?cid=${selectedCritterId}`);
