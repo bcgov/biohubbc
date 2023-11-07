@@ -94,7 +94,7 @@ const LoadingOverlay = () => {
 };
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const [isLoadingInitialTaxonomy, setIsLoadingInitialTaxonomy] = useState<boolean>(true);
+  // const [isLoadingInitialTaxonomy, setIsLoadingInitialTaxonomy] = useState<boolean>(true);
   const location = useLocation();
   const observationsTableContext = useContext(ObservationsTableContext);
   const observationsContext = useContext(ObservationsContext);
@@ -110,9 +110,10 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       observationsContext.observationsDataLoader.isLoading && !observationsContext.observationsDataLoader.hasLoaded,
       props.isLoading,
       surveyContext.sampleSiteDataLoader.isLoading,
-      isLoadingInitialTaxonomy
+      // isLoadingInitialTaxonomy,
+      taxonomyContext.isLoading,
     ].some(Boolean)
-  }, [observationsContext.observationsDataLoader, surveyContext.sampleSiteDataLoader, props.isLoading, isLoadingInitialTaxonomy]);
+  }, [observationsContext.observationsDataLoader, surveyContext.sampleSiteDataLoader, props.isLoading, taxonomyContext.isLoading]);
 
   // Collect sample sites
   const surveySampleSites: IGetSampleLocationRecord[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
@@ -459,7 +460,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   /**
    * On first render, show skeleton loader until first set of taxonomies has loaded.
-   */
+   
   useEffect(() => {
     if (!isLoadingInitialTaxonomy || taxonomyContext.isLoading) {
       return;
@@ -467,8 +468,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
     setIsLoadingInitialTaxonomy(false);
   }, [taxonomyContext.isLoading])
-
-  console.log('loading:', taxonomyContext.isLoading)
+  */
 
   return (
     <DataGrid

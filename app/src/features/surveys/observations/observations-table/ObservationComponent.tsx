@@ -71,8 +71,6 @@ const ObservationComponent = () => {
 
   const hasUnsavedChanges = observationsTableContext.hasUnsavedChanges;
   const numSelectedRows = observationsTableContext.rowSelectionModel.length;
-  const observationCount =
-    observationsContext.observationsDataLoader?.data?.supplementaryObservationData?.observationCount ?? 0;
 
   return (
     <>
@@ -117,7 +115,7 @@ const ObservationComponent = () => {
             }}>
             Observations &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-              ({observationCount})
+              ({observationsTableContext.observationCount})
             </Typography>
           </Typography>
 

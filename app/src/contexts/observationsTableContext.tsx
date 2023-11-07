@@ -23,6 +23,10 @@ export interface IObservationRecord {
   longitude: number | null;
 }
 
+export interface ISupplementaryObservationData {
+  observationCount: number;
+}
+
 export interface IObservationTableRow extends Partial<IObservationRecord> {
   id: GridRowId;
 }
@@ -94,6 +98,14 @@ export type IObservationsTableContext = {
    * Indicates if the data is in the process of being persisted to the server.
    */
   isSaving: boolean;
+  /**
+   * Reflects the count of total observations for the survey
+   */
+  observationCount: number;
+  /**
+   * Updates the total observation count for the survey
+   */
+  setObservationCount: (observationCount: number) => void;
 };
 
 export const ObservationsTableContext = createContext<IObservationsTableContext>({
@@ -111,7 +123,9 @@ export const ObservationsTableContext = createContext<IObservationsTableContext>
   onRowEditStart: () => {},
   rowSelectionModel: [],
   onRowSelectionModelChange: () => {},
-  isSaving: false
+  isSaving: false,
+  observationCount: 0,
+  setObservationCount: () => undefined
 });
 
 export const ObservationsTableContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -136,6 +150,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
   // True if the records are in the process of being saved to the server
   const [isSaving, setIsSaving] = useState(false);
+  //
+  const [observationCount, setObservationCount] = useState<number>(0);
 
   const _deleteRecords = useCallback(
     async (observationRecords: IObservationTableRow[]): Promise<void> => {
@@ -153,7 +169,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await biohubApi.observation.deleteObservationRecords(projectId, surveyId, modifiedRowIdsToDelete);
+          const response = await biohubApi.observation.deleteObservationRecords(projectId, surveyId, modifiedRowIdsToDelete);
+          setObservationCount(response.supplementaryObservationData.observationCount);
         }
 
         // Update all rows, removing deleted rows
@@ -386,6 +403,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     }
 
     setRows(rows);
+    setObservationCount(observationsContext.observationsDataLoader.data.supplementaryObservationData.observationCount);
   }, [observationsContext.observationsDataLoader.data]);
 
   useEffect(() => {
@@ -442,7 +460,9 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       onRowEditStart,
       rowSelectionModel,
       onRowSelectionModelChange: setRowSelectionModel,
-      isSaving
+      isSaving,
+      observationCount,
+      setObservationCount
     }),
     [
       _muiDataGridApiRef,

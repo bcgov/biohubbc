@@ -1,6 +1,6 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
-import { PropsWithChildren, createContext, useCallback, useRef, useState, useEffect } from 'react';
+import { PropsWithChildren, createContext, useCallback, useRef, useState, useEffect, useMemo } from 'react';
 import { has as hasProperty, get as getProperty } from 'lodash'
 
 export interface ITaxonomyContext {
@@ -22,7 +22,7 @@ export const TaxonomyContext = createContext<ITaxonomyContext>({
 });
 
 export const TaxonomyContextProvider = (props: PropsWithChildren) => {
-  const [isLoading, _setIsLoading] = useState<boolean>(false);
+  // const [isLoading, _setIsLoading] = useState<boolean>(false);
   const biohubApi = useBiohubApi();
   const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, ITaxonomy | null>>({});
   const _dispatchedIds = useRef<Set<number>>(new Set<number>([]));
@@ -40,7 +40,7 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
     }
 
     // Dispatch the request to cache the result
-    _setIsLoading(true);
+    // _setIsLoading(true);
     _dispatchedIds.current.add(id);
     biohubApi.taxonomy.getSpeciesFromIds([id]).then((result) => {
       _setTaxonomyCache((previous) => ({
@@ -53,6 +53,7 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   }, [_taxonomyCache]);
 
   // Used to maintain loading state
+  /*
   useEffect(() => {
     if (!isLoading) {
       return;
@@ -62,16 +63,47 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
       .from(_dispatchedIds.current)
       .every((id) => hasProperty(_taxonomyCache, id));
 
+      if (hasFinishedLoading) {
+    console.log('hasFinishedLoading;', {  _taxonomyCache,
+      _dispatchedIds: _dispatchedIds.current
+    
+    
+    })
+  }
+
     if (hasFinishedLoading) {
       _setIsLoading(false);
     }
 
-  }, [isLoading, _taxonomyCache]);
+  }, [isLoading, _taxonomyCache, _dispatchedIds.current]);
+  */
+  /*
+  const isLoading = useMemo(() => {
 
-  const taxonomyContext: ITaxonomyContext = {
+    const xs = Array.from(_dispatchedIds.current).map((id) => {
+      return !hasProperty(_taxonomyCache, id)
+    });
+
+    return xs.some(Boolean);
+  }, [_taxonomyCache, _dispatchedIds.current])
+  */
+
+  const isLoading = _dispatchedIds.current.size > Object.keys(_taxonomyCache).length;
+
+  console.log('_dispatchedIds.current.size', _dispatchedIds.current.size)
+  console.log('Object.keys(_taxonomyCache).length', Object.keys(_taxonomyCache).length)
+
+  console.log({
+    isLoading,
+    // xs,
+    _taxonomyCache,
+    _dispatchedIds: _dispatchedIds.current
+  });
+
+  const taxonomyContext: ITaxonomyContext = useMemo(() => ({
     isLoading,
     getSpeciesTaxonomyById
-  }
+  }), [isLoading, getSpeciesTaxonomyById]);
 
   return (
     <TaxonomyContext.Provider value={taxonomyContext}>
