@@ -184,6 +184,18 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
         // Close yes-no dialog
         dialogContext.setYesNoDialog({ open: false });
+
+        // Show snackbar for successful deletion
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              {observationRecords.length === 1
+                ? ObservationsTableI18N.deleteSingleRecordSuccessSnackbarMessage
+                : ObservationsTableI18N.deleteMultipleRecordSuccessSnackbarMessage(observationRecords.length)}
+            </Typography>
+          ),
+          open: true
+        });
       } catch {
         // Close yes-no dialog
         dialogContext.setYesNoDialog({ open: false });
@@ -221,7 +233,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         dialogTitle:
           observationRecords.length === 1
             ? ObservationsTableI18N.removeSingleRecordDialogTitle
-            : ObservationsTableI18N.removeMultipleRecordsDialogTitle,
+            : ObservationsTableI18N.removeMultipleRecordsDialogTitle(observationRecords.length),
         dialogText:
           observationRecords.length === 1
             ? ObservationsTableI18N.removeSingleRecordDialogText
@@ -364,7 +376,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
         dialogContext.setSnackbar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
-              Updated survey observations successfully.
+              {ObservationsTableI18N.saveRecordsSuccessSnackbarMessage}
             </Typography>
           ),
           open: true
