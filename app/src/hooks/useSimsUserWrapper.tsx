@@ -77,8 +77,8 @@ function useSimsUserWrapper(): ISimsUserWrapper {
 
   const userGuid =
     simsUserDataLoader.data?.user_guid ||
-    (auth.user?.profile?.idir_user_guid as string)?.toLowerCase() ||
-    (auth.user?.profile?.bceid_user_guid as string)?.toLowerCase();
+    (auth.user?.profile?.idir_user_guid as string) ||
+    (auth.user?.profile?.bceid_user_guid as string);
 
   const userIdentifier =
     simsUserDataLoader.data?.user_identifier ||
