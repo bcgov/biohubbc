@@ -13,7 +13,10 @@ import yup from 'utils/YupSchema';
 import { SurveyAreaList } from './locations/SurveyAreaList';
 import SurveyAreaLocationForm from './locations/SurveyAreaLocationForm';
 import { SurveyAreaMapControl } from './locations/SurveyAreaMapControl';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
 
 export interface ISurveyLocation {
   survey_location_id?: number;
@@ -48,7 +51,7 @@ export const SurveyLocationYupSchema = yup.object({
         geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
       })
     )
-    .min(1, 'At least 1 feature or boundary is required for a survey study area')
+    .min(1, 'At least one feature or boundary is required for a survey study area.')
 });
 
 /**
@@ -153,50 +156,62 @@ const StudyAreaForm = () => {
         }}
       />
 
-      <SurveyAreaMapControl
-        map_id={'study_area_map'}
-        formik_key="locations"
-        formik_props={formikProps}
-        draw_controls_ref={drawRef}
-      />
-
-      {errors.locations && !Array.isArray(errors?.locations) && (
-        <Box pt={2}>
-          <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.locations}</Typography>
-        </Box>
-      )}
-
-
-        {values.locations.length > 0 && (
-          <Box mb={1} display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
-            <Typography component="h4" variant="body1" sx={{fontWeight: 700}}>
-              Study Areas &zwnj;
-              <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                ({values.locations.length})
-              </Typography>
-            </Typography>
-            <Button
-              color="primary"
-              variant="outlined"
-              size="small"
-              data-testid="boundary_file-upload"
-              startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-              onClick={() => setIsDeleteOpen(true)}
-              aria-label="Remove all study areas"
-              >
-              Remove All
-            </Button>
-          </Box>
+      <Stack gap={3}>
+        {errors.locations && !Array.isArray(errors?.locations) && (
+          <Alert severity='error' variant="outlined">
+            <AlertTitle>Study Area Missing</AlertTitle>
+            {errors.locations}
+          </Alert>
         )}
+        <Paper variant="outlined" sx={{overflow: 'hidden'}}>
+          <SurveyAreaMapControl
+            map_id={'study_area_map'}
+            formik_key="locations"
+            formik_props={formikProps}
+            draw_controls_ref={drawRef}
+          />
 
-        <SurveyAreaList
-          openEdit={(index) => {
-            setCurrentIndex(index);
-            onOpen();
-          }}
-          openDelete={onDelete}
-          data={values.locations}
-        />
+          {values.locations.length > 0 && (
+            <Box mb={1} display={'none'} justifyContent={'space-between'} alignItems={'center'}>
+              <Typography component="h4" variant="body1" sx={{fontWeight: 700}}>
+                Study Areas &zwnj;
+                <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+                  ({values.locations.length})
+                </Typography>
+              </Typography>
+              <Button
+                color="primary"
+                variant="outlined"
+                size="small"
+                data-testid="boundary_file-upload"
+                startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                onClick={() => setIsDeleteOpen(true)}
+                aria-label="Remove all study areas"
+                >
+                Remove All
+              </Button>
+            </Box>
+          )}
+
+          <Box
+            sx={{
+              p: 1,
+              maxHeight: 400,
+              overflowY: 'auto'
+            }}
+          >
+            <SurveyAreaList
+              openEdit={(index) => {
+                setCurrentIndex(index);
+                onOpen();
+              }}
+              openDelete={onDelete}
+              data={values.locations}
+            />
+          </Box>
+
+        </Paper>
+      </Stack>
 
     </form>
   );

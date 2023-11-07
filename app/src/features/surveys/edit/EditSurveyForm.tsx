@@ -1,4 +1,4 @@
-import { Theme, Typography } from '@mui/material';
+import { Stack, Theme, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -241,10 +241,12 @@ const EditSurveyForm: React.FC<IEditSurveyForm> = (props) => {
             component={
               <Box component="fieldset">
                 <Typography component="legend">Define Survey Study Area</Typography>
+                <Stack gap={3}>
                 <Typography variant="body1" color="textSecondary">
                   Import, draw or select a feature from an existing layer to define the study areas for this survey.
                 </Typography>
                 <StudyAreaForm />
+                </Stack>
               </Box>
             }
           />
