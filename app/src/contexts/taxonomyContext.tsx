@@ -13,7 +13,7 @@ export interface ITaxonomyContext {
    * is already in the cache, it is immediately available. Otherwise, `null` is
    * returned, and the  the taxonomic data is fetched and subsequently cached.
    */
-  getSpeciesTaxonomyByIds: (ids: number[]) => (ITaxonomy | null)[];
+  getSpeciesTaxonomyById: (ids: number[]) => ITaxonomy | null;
   /**
    * Caches taxonomy data for the given IDs.
    */
@@ -22,7 +22,7 @@ export interface ITaxonomyContext {
 
 export const TaxonomyContext = createContext<ITaxonomyContext>({
   // isLoading: false,
-  getSpeciesTaxonomyByIds: () => [],
+  getSpeciesTaxonomyById: () => null,
   cacheSpeciesTaxonomyByIds: () => Promise.resolve()
 });
 
@@ -47,34 +47,30 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   }, [biohubApi.taxonomy.getSpeciesFromIds]);
 
 
-  const getSpeciesTaxonomyByIds = useCallback((ids: number[]): (ITaxonomy | null)[] => {
-    const pendingCacheIds: number[] = [];
-    const response = ids.map((id) => {
-      if (hasProperty(_taxonomyCache, id)) {
-        // Result is in the cache
-        return getProperty(_taxonomyCache, id);
-      }
+  const getSpeciesTaxonomyById = useCallback((id: number): ITaxonomy | null => {
+    
+    if (hasProperty(_taxonomyCache, id)) {
+      // Result is in the cache
+      return getProperty(_taxonomyCache, id);
+    }
 
-      if (hasProperty(_dispatched.current, id)) {
-        // Promise is pending
-        return null;
-      }
-
-      // Dispatch the request to cache the result
-      pendingCacheIds.push(id);
+    if (hasProperty(_dispatched.current, id)) {
+      // Promise is pending
       return null;
-    });
+    }
 
-    cacheSpeciesTaxonomyByIds(pendingCacheIds);
-    return response;
+    // Dispatch the request to cache the result
+    cacheSpeciesTaxonomyByIds([id]);
+
+    return null;
   }, [_taxonomyCache]);
 
 
   const taxonomyContext: ITaxonomyContext = useMemo(() => ({
     // isLoading,
-    getSpeciesTaxonomyByIds,
+    getSpeciesTaxonomyById,
     cacheSpeciesTaxonomyByIds
-  }), [getSpeciesTaxonomyByIds, cacheSpeciesTaxonomyByIds]);
+  }), [getSpeciesTaxonomyById, cacheSpeciesTaxonomyByIds]);
 
   return (
     <TaxonomyContext.Provider value={taxonomyContext}>
