@@ -10,6 +10,7 @@ import { TransitionGroup } from 'react-transition-group';
 import { setMessageSnackbar } from 'utils/Utils';
 import { IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
+import GeneralAnimalSummary from './GeneralAnimalSummary';
 
 export type SubHeaderData = Record<string, string | number | null | undefined>;
 
@@ -58,7 +59,7 @@ export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
         statusRef.current && setMessageSnackbar(statusRef.current, dialogContext);
         statusRef.current = undefined;
         setCanDisplaySnackbar(false);
-      }, 1000);
+      }, 500);
     }
     if (status) {
       statusRef.current = status;
@@ -172,11 +173,17 @@ export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
   return (
     <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
       {({ remove }: FieldArrayRenderProps) => {
+        const handleClickEdit = (idx: number) => {
+          setCanDisplaySnackbar(true);
+          onEditClick(idx);
+        };
+        if (section === SurveyAnimalsI18N.animalGeneralTitle) {
+          return <GeneralAnimalSummary handleEdit={() => handleClickEdit(0)} />;
+        }
         return (
           <TransitionGroup>
             {sectionCardData.map((cardData, index) => {
               const submitFormRemoveCard = () => {
-                console.log('called');
                 remove(index);
                 submitForm();
               };
@@ -193,14 +200,9 @@ export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
                     header={cardData.header}
                     subHeader={cardData.subHeader}
                     onClickEdit={() => {
-                      setCanDisplaySnackbar(true);
-                      onEditClick(index);
+                      handleClickEdit(index);
                     }}
-                    onClickDelete={
-                      section === SurveyAnimalsI18N.animalGeneralTitle || section === 'Telemetry'
-                        ? undefined
-                        : handleDelete
-                    }
+                    onClickDelete={section === 'Telemetry' ? undefined : handleDelete}
                   />
                 </Collapse>
               );

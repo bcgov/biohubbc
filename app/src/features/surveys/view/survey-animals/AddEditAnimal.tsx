@@ -1,4 +1,4 @@
-import { mdiContentCopy, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
 import {
@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  IconButton,
   Toolbar,
   Typography,
   useMediaQuery,
@@ -18,11 +17,10 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import Stack from '@mui/system/Stack';
-import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { FieldArrayRenderProps, Form, useFormikContext } from 'formik';
+import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
@@ -30,7 +28,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { setMessageSnackbar } from 'utils/Utils';
-import { ANIMAL_FORM_MODE, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
+import { ANIMAL_FORM_MODE, IAnimal } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import { AnimalSectionDataCards } from './AnimalSectionDataCards';
 import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
@@ -57,7 +55,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, critterData, telemetrySaveAction, deploymentRemoveAction, formikArrayHelpers } = props;
   const surveyContext = useContext(SurveyContext);
   const telemetryApi = useTelemetryApi();
-  const { submitForm, isValid, initialValues, values, isSubmitting, setFieldValue, isValidating, status } =
+  const { submitForm, isValid, values, isSubmitting, setFieldValue, isValidating, status } =
     useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
@@ -266,39 +264,15 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
               {ANIMAL_SECTIONS_FORM_MAP[section].infoText}
             </Typography>
 
-            {section === SurveyAnimalsI18N.animalGeneralTitle ? (
-              <CustomTextField
-                label="Critter ID"
-                name={getAnimalFieldName<IAnimalGeneral>('general', 'critter_id')}
-                other={{
-                  InputProps: {
-                    endAdornment: (
-                      <IconButton
-                        aria-label={`Copy Critter ID`}
-                        onClick={() => {
-                          navigator.clipboard.writeText(initialValues.general?.critter_id ?? '');
-                          setMessageSnackbar('Copied Critter ID', dialogContext);
-                        }}>
-                        <Icon path={mdiContentCopy} size={0.8} />
-                      </IconButton>
-                    )
-                  },
-                  disabled: true
-                }}
-              />
-            ) : null}
-
-            <Form>
-              <AnimalSectionDataCards
-                key={section}
-                onEditClick={(idx) => {
-                  setSelectedIndex(idx);
-                  setShowDialog(true);
-                }}
-                section={section}
-                allFamilies={allFamilies}
-              />
-            </Form>
+            <AnimalSectionDataCards
+              key={section}
+              onEditClick={(idx) => {
+                setSelectedIndex(idx);
+                setShowDialog(true);
+              }}
+              section={section}
+              allFamilies={allFamilies}
+            />
           </Box>
         </Box>
       ) : (
