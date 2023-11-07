@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
+import { surveyObservationsSupplementaryData } from './index';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/delete');
 
@@ -79,8 +80,11 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'number',
-            description: 'Number of affected rows'
+            type: 'object',
+            required: ['supplementaryObservationData'],
+            properties: {
+              supplementaryObservationData: { ...surveyObservationsSupplementaryData }
+            }
           }
         }
       }
@@ -125,11 +129,12 @@ export function deleteSurveyObservations(): RequestHandler {
       const deleteObservationIds =
         req.body?.surveyObservationIds?.map((observationId: string | number) => Number(observationId)) ?? [];
 
-      const numRows = await observationService.deleteObservationsByIds(deleteObservationIds);
+      await observationService.deleteObservationsByIds(deleteObservationIds);
+      const supplementaryObservationData = await observationService.getSurveyObservationsSupplementaryData(surveyId);
 
       await connection.commit();
 
-      return res.status(200).json(numRows);
+      return res.status(200).json({ supplementaryObservationData });
     } catch (error) {
       defaultLog.error({ label: 'deleteSurveyObservations', message: 'error', error });
       await connection.rollback();

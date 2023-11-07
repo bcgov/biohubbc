@@ -103,8 +103,24 @@ export class ObservationService extends DBService {
     surveyId: number
   ): Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }> {
     const surveyObservations = await this.observationRepository.getSurveyObservations(surveyId);
-    const supplementaryObservationData = await this.observationRepository.getSurveyObservationCount(surveyId);
+    const supplementaryObservationData = await this.getSurveyObservationsSupplementaryData(surveyId);
+
     return { surveyObservations, supplementaryObservationData };
+  }
+
+  /**
+   * Retrieves all supplementary data for the given survey's observations
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ surveyObservations: ObservationRecord[]; supplementaryObservationData: ObservationSupplementaryData }>}
+   * @memberof ObservationService
+   */
+  async getSurveyObservationsSupplementaryData(
+    surveyId: number
+  ): Promise<ObservationSupplementaryData> {
+    const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
+  
+    return { observationCount };
   }
 
   /**
