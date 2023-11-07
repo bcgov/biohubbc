@@ -1,5 +1,6 @@
-import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCalendarStart, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -13,9 +14,11 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import CustomTextField from 'components/fields/CustomTextField';
-import StartEndDateFields from 'components/fields/StartEndDateFields';
-import StartEndTimeFields from 'components/fields/StartEndTimeFields';
+import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { CodesContext } from 'contexts/codesContext';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import get from 'lodash-es/get';
@@ -163,24 +166,31 @@ const MethodForm = () => {
                           }
                         }}>
                         <Box width="100%">
-                          <Box width="100%">
-                            <StartEndDateFields
+                          <Box width="100%" pt={1}>
+                            <DateTimeFields
+                              date={{
+                                dateLabel: '',
+                                dateName: '',
+                                dateId: '',
+                                dateRequired: true,
+                                dateHelperText: '',
+                                dateIcon: <Icon path={mdiCalendarStart} size={1} />
+                              }}
                               formikProps={formikProps}
-                              startName={`periods[${index}].start_date`}
-                              endName={`periods[${index}].end_date`}
-                              startRequired={true}
-                              endRequired={true}
                             />
                           </Box>
 
                           <Box width="100%" pt={1}>
-                            <StartEndTimeFields
-                              formikProps={formikProps}
-                              startName={`periods[${index}].start_time`}
-                              endName={`periods[${index}].end_time`}
-                              startRequired={false}
-                              endRequired={false}
-                            />
+                            <LocalizationProvider dateAdapter={AdapterMoment}>
+                              <Grid container item spacing={3}>
+                                <Grid item xs={6}>
+                                  <DatePicker />
+                                </Grid>
+                                <Grid item xs={6}>
+                                  <TimePicker />
+                                </Grid>
+                              </Grid>
+                            </LocalizationProvider>
                           </Box>
                         </Box>
                         <ListItemSecondaryAction
