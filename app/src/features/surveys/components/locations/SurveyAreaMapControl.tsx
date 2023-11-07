@@ -135,11 +135,12 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 });
               }}
               onLayerDelete={(event: DrawEvents.Deleted) => {
+                let locationsToFilter = values.locations;
                 event.layers.getLayers().forEach((item) => {
                   const layer_id = L.stamp(item);
-                  const updatedLocations = values.locations.filter((location) => location.leaflet_id !== layer_id);
-                  setFieldValue(formik_key, [...updatedLocations]);
+                  locationsToFilter = locationsToFilter.filter((location) => location.leaflet_id !== layer_id);
                 });
+                setFieldValue(formik_key, [...locationsToFilter]);
               }}
             />
           </FeatureGroup>
