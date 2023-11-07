@@ -26,9 +26,9 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
 
   const { values, handleBlur, handleChange } = useFormikContext<IAnimal>();
 
-  const showReleaseSection = values.captures[index].show_release;
+  const value = values.captures?.[index];
 
-  const value = values.captures[index];
+  const showReleaseSection = value?.show_release;
 
   return (
     <Stack gap={4}>
@@ -66,7 +66,6 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
         secondaryLocationFields={
           showReleaseSection
             ? {
-                fieldsetTitle: 'Release Location',
                 latitude: 'release_latitude',
                 longitude: 'release_longitude',
                 coordinate_uncertainty: 'release_coordinate_uncertainty',
@@ -75,20 +74,23 @@ export const CaptureAnimalFormContent = ({ index }: CaptureAnimalFormContentProp
               }
             : undefined
         }
-        otherPrimaryFields={[
-          <FormControlLabel
-            sx={{ mt: -1, ml: 0 }}
-            control={
-              <Checkbox
-                size="small"
-                onChange={handleChange}
-                checked={values.captures[index].show_release}
-                disabled={!!values.captures[index].release_location_id}
-                name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
-              />
-            }
-            label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
-          />
+        otherSecondaryFields={[
+          <Box component="fieldset">
+            <Typography component="legend">Release Location</Typography>
+            <FormControlLabel
+              sx={{ mt: -1, ml: 0 }}
+              control={
+                <Checkbox
+                  size="small"
+                  onChange={handleChange}
+                  checked={value?.show_release}
+                  disabled={!!value?.release_location_id}
+                  name={getAnimalFieldName<IAnimalCapture>(name, 'show_release', index)}
+                />
+              }
+              label={SurveyAnimalsI18N.animalCaptureReleaseRadio}
+            />
+          </Box>
         ]}
       />
 

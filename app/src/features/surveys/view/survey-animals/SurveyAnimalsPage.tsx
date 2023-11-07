@@ -4,7 +4,7 @@ import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
-import { Formik } from 'formik';
+import { FieldArray, FieldArrayRenderProps, Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
@@ -16,7 +16,7 @@ import { datesSameNullable, setMessageSnackbar } from 'utils/Utils';
 import { AddEditAnimal } from './AddEditAnimal';
 import { AnimalSchema, AnimalSex, ANIMAL_FORM_MODE, Critter, IAnimal } from './animal';
 import { createCritterUpdatePayload, transformCritterbaseAPIResponseToForm } from './animal-form-helpers';
-import { IAnimalSections } from './animal-sections';
+import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import AnimalList from './AnimalList';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { Device, IAnimalTelemetryDevice, IDeploymentTimespan } from './telemetry-device/device';
@@ -113,6 +113,7 @@ export const SurveyAnimalsPage = () => {
   };
 
   const handleCritterSave = async (currentFormValues: IAnimal, formMode: ANIMAL_FORM_MODE) => {
+    console.log('saving');
     const postCritterPayload = async () => {
       const critter = new Critter(currentFormValues);
       setOpenAddDialog(false);
@@ -268,6 +269,7 @@ export const SurveyAnimalsPage = () => {
         validateOnBlur={false}
         validateOnChange={true}
         onSubmit={async (values, actions) => {
+          console.log('submitting');
           const status = await handleCritterSave(values, ANIMAL_FORM_MODE.EDIT);
           if (status) {
             actions.setStatus(status);
@@ -285,13 +287,18 @@ export const SurveyAnimalsPage = () => {
             />
           }
           mainComponent={
-            <AddEditAnimal
-              critterData={critterData}
-              deploymentData={deploymentData}
-              section={selectedSection}
-              telemetrySaveAction={(data, mode) => handleTelemetrySave(Number(survey_critter_id), data, mode)}
-              deploymentRemoveAction={handleRemoveDeployment}
-            />
+            <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[selectedSection].animalKeyName}>
+              {(formikArrayHelpers: FieldArrayRenderProps) => (
+                <AddEditAnimal
+                  critterData={critterData}
+                  deploymentData={deploymentData}
+                  section={selectedSection}
+                  telemetrySaveAction={(data, mode) => handleTelemetrySave(Number(survey_critter_id), data, mode)}
+                  deploymentRemoveAction={handleRemoveDeployment}
+                  formikArrayHelpers={formikArrayHelpers}
+                />
+              )}
+            </FieldArray>
           }
         />
       </Formik>

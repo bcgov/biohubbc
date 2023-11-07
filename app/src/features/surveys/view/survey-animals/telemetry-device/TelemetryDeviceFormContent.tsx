@@ -39,6 +39,7 @@ const TelemetryDeviceFormContent = (props: telemetryDeviceFormContentProps) => {
     if (device.device_id && deviceMake && deviceMake !== value && mode === ANIMAL_FORM_MODE.ADD) {
       return `The current make for this device is ${deviceMake}`;
     }
+    return;
   };
 
   if (!device) {

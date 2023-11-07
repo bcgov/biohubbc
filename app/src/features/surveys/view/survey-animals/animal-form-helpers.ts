@@ -40,7 +40,6 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       release_utm_easting: 0,
       release_utm_northing: 0,
       projection_mode: 'wgs',
-      _id: v4(),
       show_release: !!cap.release_location,
       capture_location_id: cap.capture_location_id ?? undefined,
       release_location_id: cap.release_location_id ?? undefined
@@ -52,12 +51,10 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       marking_comment: mark.comment ?? '',
       primary_colour: mark.primary_colour ?? undefined,
       marking_type: mark.marking_type ?? undefined,
-      body_location: mark.body_location ?? undefined,
-      _id: v4()
+      body_location: mark.body_location ?? undefined
     })),
     mortality: existingCritter?.mortality.map((mor) => ({
       ...mor,
-      _id: v4(),
       mortality_comment: mor.mortality_comment ?? '',
       mortality_timestamp: new Date(mor.mortality_timestamp),
       mortality_latitude: mor.location.latitude,
@@ -75,14 +72,12 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       location_id: mor.location_id ?? undefined
     })),
     collectionUnits: existingCritter.collection_units.map((a) => ({
-      ...a,
-      _id: v4()
+      ...a
     })),
     measurements: [
       ...existingCritter.measurement.qualitative.map((meas) => ({
         ...meas,
         measurement_quantitative_id: undefined,
-        _id: v4(),
         value: undefined,
         measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
         measurement_comment: meas.measurement_comment ?? '',
@@ -91,7 +86,6 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
       })),
       ...existingCritter.measurement.quantitative.map((meas) => ({
         ...meas,
-        _id: v4(),
         measurement_qualitative_id: undefined,
         qualitative_option_id: undefined,
         measured_timestamp: meas.measured_timestamp ? new Date(meas.measured_timestamp) : ('' as unknown as Date),
@@ -102,12 +96,10 @@ export const transformCritterbaseAPIResponseToForm = (existingCritter: IDetailed
     ],
     family: [
       ...existingCritter.family_child.map((ch) => ({
-        _id: v4(),
         family_id: ch.family_id,
         relationship: 'child'
       })),
       ...existingCritter.family_parent.map((par) => ({
-        _id: v4(),
         family_id: par.family_id,
         relationship: 'parent'
       }))

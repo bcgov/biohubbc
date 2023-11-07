@@ -2,6 +2,7 @@ import { Button, Grid } from '@mui/material';
 import EditDialog from 'components/dialog/EditDialog';
 import CbSelectField from 'components/fields/CbSelectField';
 import CustomTextField from 'components/fields/CustomTextField';
+import FormikDevDebugger from 'components/formik/FormikDevDebugger';
 import { EditDeleteStubCard } from 'features/surveys/components/EditDeleteStubCard';
 import { useFormikContext } from 'formik';
 import { useState } from 'react';
@@ -147,6 +148,7 @@ export const MarkingAnimalFormContent = ({ index }: IMarkingAnimalFormContentPro
           handleBlur={handleBlur}
         />
       </Grid>
+      <FormikDevDebugger />
     </Grid>
   );
 };

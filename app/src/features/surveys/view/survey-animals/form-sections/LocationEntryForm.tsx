@@ -84,7 +84,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   const onProjectionModeSwitch = (e: ChangeEvent<HTMLInputElement>) => {
     //This gets called everytime the toggle element fires. We need to do a projection each time so that the new fields that get shown
     //will be in sync with the values from the ones that were just hidden.
-    if (value.projection_mode === 'wgs') {
+    if (value?.projection_mode === 'wgs') {
       setLatLonFromUTM(primaryLocationFields);
       setLatLonFromUTM(secondaryLocationFields);
     } else {
@@ -95,7 +95,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
   };
 
   const getCurrentMarkerPos = (fields: LocationEntryFields<T>): LatLng => {
-    if (value.projection_mode === 'utm') {
+    if (value?.projection_mode === 'utm') {
       const latlng_coords = getUtmAsLatLng(
         coerceZero(value[fields.utm_northing]),
         coerceZero(value[fields.utm_easting])
@@ -116,7 +116,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
     }
     return (
       <Grid container spacing={1}>
-        {value.projection_mode === 'wgs' ? (
+        {value?.projection_mode === 'wgs' ? (
           <Fragment>
             <Grid item xs={12} sm={4}>
               <CustomTextField
@@ -215,13 +215,12 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
         </Stack>
       </Box>
 
-      <Box component="fieldset">
-        <Typography component="legend">Release Location</Typography>
-        {otherPrimaryFields}
-        {secondaryLocationFields && secondaryLocationFields.fieldsetTitle ? (
+      {otherSecondaryFields ? (
+        <Box>
+          {otherSecondaryFields}
           <Box mt={2}>{renderLocationFields(secondaryLocationFields)}</Box>
-        ) : null}
-      </Box>
+        </Box>
+      ) : null}
 
       <Box component="fieldset" flex="0 0 auto">
         <Typography component="legend">Location Preview</Typography>
@@ -259,7 +258,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                     display: 'flex',
                     alignItems: 'center'
                   }}>
-                  {`Set ${primaryLocationFields?.fieldsetTitle}` ?? 'Set Primary Location'}
+                  {`Set ${primaryLocationFields?.fieldsetTitle ?? 'Primary Location'}`}
                 </ToggleButton>
               ) : null}
               {secondaryLocationFields ? (
@@ -270,7 +269,7 @@ const LocationEntryForm = <T extends { projection_mode: ProjectionMode }>({
                     display: 'flex',
                     alignItems: 'center'
                   }}>
-                  {`Set ${secondaryLocationFields?.fieldsetTitle}` ?? 'Set Secondary Location'}
+                  {`Set ${secondaryLocationFields?.fieldsetTitle ?? 'Secondary Location'}`}
                 </ToggleButton>
               ) : null}
             </ToggleButtonGroup>

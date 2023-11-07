@@ -177,6 +177,7 @@ export const AnimalSectionDataCards = (props: AnimalSectionDataCardsProps) => {
             <TransitionGroup>
               {sectionCardData.map((cardData, index) => {
                 const submitFormRemoveCard = () => {
+                  console.log('called');
                   remove(index);
                   submitForm();
                 };

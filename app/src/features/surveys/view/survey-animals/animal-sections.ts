@@ -138,8 +138,6 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     animalKeyName: 'markings',
     addBtnText: 'Add Marking',
     defaultFormValue: () => ({
-      _id: v4(),
-
       marking_type_id: '',
       taxon_marking_body_location_id: '',
       primary_colour_id: '',
@@ -159,7 +157,6 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     animalKeyName: 'measurements',
     addBtnText: 'Add Measurement',
     defaultFormValue: () => ({
-      _id: v4(),
       measurement_qualitative_id: undefined,
       measurement_quantitative_id: undefined,
       taxon_measurement_id: '',
@@ -178,8 +175,6 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     animalKeyName: 'mortality',
     addBtnText: 'Add Mortality',
     defaultFormValue: () => ({
-      _id: v4(),
-
       mortality_longitude: '' as unknown as number,
       mortality_latitude: '' as unknown as number,
       mortality_utm_northing: '' as unknown as number,
@@ -205,8 +200,6 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     animalKeyName: 'family',
     addBtnText: 'Add Relationship',
     defaultFormValue: () => ({
-      _id: v4(),
-
       family_id: '',
       relationship: undefined
     }),
@@ -218,8 +211,6 @@ export const ANIMAL_SECTIONS_FORM_MAP: IAnimalSectionsMap = {
     animalKeyName: 'captures',
     addBtnText: 'Add Capture Event',
     defaultFormValue: () => ({
-      _id: v4(),
-
       capture_latitude: '' as unknown as number,
       capture_longitude: '' as unknown as number,
       capture_utm_northing: '' as unknown as number,

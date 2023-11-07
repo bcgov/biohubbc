@@ -1,15 +1,28 @@
 import { mdiContentCopy, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Divider, IconButton, Toolbar, Typography } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import Stack from '@mui/system/Stack';
-import EditDialog from 'components/dialog/EditDialog';
 import CustomTextField from 'components/fields/CustomTextField';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { FieldArray, FieldArrayRenderProps, Form, useFormikContext } from 'formik';
+import { FieldArrayRenderProps, Form, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
@@ -17,7 +30,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { setMessageSnackbar } from 'utils/Utils';
-import { AnimalSchema, ANIMAL_FORM_MODE, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
+import { ANIMAL_FORM_MODE, getAnimalFieldName, IAnimal, IAnimalGeneral } from './animal';
 import { ANIMAL_SECTIONS_FORM_MAP, IAnimalSections } from './animal-sections';
 import { AnimalSectionDataCards } from './AnimalSectionDataCards';
 import { CaptureAnimalFormContent } from './form-sections/CaptureAnimalForm';
@@ -37,10 +50,11 @@ interface AddEditAnimalProps {
   deploymentData?: IAnimalDeployment[];
   telemetrySaveAction: (data: IAnimalTelemetryDeviceFile[], formMode: ANIMAL_FORM_MODE) => Promise<void>;
   deploymentRemoveAction: (deploymentId: string) => void;
+  formikArrayHelpers: FieldArrayRenderProps;
 }
 
 export const AddEditAnimal = (props: AddEditAnimalProps) => {
-  const { section, critterData, telemetrySaveAction, deploymentRemoveAction } = props;
+  const { section, critterData, telemetrySaveAction, deploymentRemoveAction, formikArrayHelpers } = props;
   const surveyContext = useContext(SurveyContext);
   const telemetryApi = useTelemetryApi();
   const { submitForm, initialValues, values, isSubmitting, setFieldValue, isValidating, status } =
@@ -52,6 +66,9 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const [formMode, setFormMode] = useState<ANIMAL_FORM_MODE>(ANIMAL_FORM_MODE.EDIT);
 
   const { cid: survey_critter_id } = useQuery();
+
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const dialogTitle =
     formMode === ANIMAL_FORM_MODE.ADD
@@ -176,60 +193,66 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                 {section}
               </Typography>
 
-              <FieldArray name={ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName}>
-                {({ push, remove }: FieldArrayRenderProps) => (
-                  <>
-                    <EditDialog
-                      dialogTitle={dialogTitle}
-                      open={showDialog}
-                      dialogSaveButtonLabel={'Save'}
-                      dialogLoading={isSubmitting || isValidating}
-                      dialogError={status?.isError && status?.message}
-                      component={{
-                        initialValues: values,
-                        element: renderSingleForm,
-                        validationSchema: AnimalSchema
-                      }}
-                      onCancel={() => {
-                        if (formMode === ANIMAL_FORM_MODE.ADD) {
-                          remove(selectedIndex);
-                        }
-                        setFormMode(ANIMAL_FORM_MODE.EDIT);
-                        setShowDialog(false);
-                      }}
-                      onSave={async (saveVals) => {
-                        if (section === 'Telemetry') {
-                          await handleSaveTelemetry(saveVals);
-                        } else {
-                          submitForm();
-                        }
-                        setShowDialog(false);
-                        setFormMode(ANIMAL_FORM_MODE.EDIT);
-                        setFieldValue(
-                          ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
-                          saveVals[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
-                        );
-                      }}
-                    />
-                    {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
-                      <Button
-                        startIcon={<Icon path={mdiPlus} size={1} />}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => {
-                          setFormMode(ANIMAL_FORM_MODE.ADD);
-                          const animalData = ANIMAL_SECTIONS_FORM_MAP[section];
-                          const sectionValues = values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName];
-                          push(animalData?.defaultFormValue());
-                          setSelectedIndex((sectionValues as any)['length'] ?? 0);
-                          setShowDialog(true);
-                        }}>
-                        {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
-                      </Button>
-                    ) : null}
-                  </>
-                )}
-              </FieldArray>
+              {/* Not using EditDialog due to the parent component needing the formik state */}
+              <Dialog
+                open={showDialog}
+                fullScreen={fullScreen}
+                maxWidth="xl"
+                onTransitionExited={() => {
+                  if (formMode === ANIMAL_FORM_MODE.ADD) {
+                    formikArrayHelpers.remove(selectedIndex);
+                  }
+                  setFormMode(ANIMAL_FORM_MODE.EDIT);
+                }}>
+                <DialogTitle>{dialogTitle}</DialogTitle>
+                <DialogContent>{renderSingleForm}</DialogContent>
+                <DialogActions>
+                  <LoadingButton
+                    color="primary"
+                    variant="contained"
+                    onClick={async () => {
+                      if (section === 'Telemetry') {
+                        await handleSaveTelemetry(values);
+                      } else {
+                        submitForm();
+                      }
+                      setShowDialog(false);
+                      setFormMode(ANIMAL_FORM_MODE.EDIT);
+                      setFieldValue(
+                        ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName,
+                        values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName]
+                      );
+                    }}
+                    loading={isValidating || isSubmitting || !!status}>
+                    Save
+                  </LoadingButton>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    onClick={() => {
+                      setShowDialog(false);
+                    }}>
+                    Cancel
+                  </Button>
+                </DialogActions>
+              </Dialog>
+              {ANIMAL_SECTIONS_FORM_MAP[section]?.addBtnText ? (
+                <Button
+                  startIcon={<Icon path={mdiPlus} size={1} />}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setFormMode(ANIMAL_FORM_MODE.ADD);
+                    const animalData = ANIMAL_SECTIONS_FORM_MAP[section];
+                    const sectionValues = values[ANIMAL_SECTIONS_FORM_MAP[section].animalKeyName];
+                    const defaultValue = animalData?.defaultFormValue();
+                    setSelectedIndex((sectionValues as any)['length'] ?? 0);
+                    formikArrayHelpers.push(defaultValue);
+                    setShowDialog(true);
+                  }}>
+                  {ANIMAL_SECTIONS_FORM_MAP[section].addBtnText}
+                </Button>
+              ) : null}
             </Box>
 
             <Typography

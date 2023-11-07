@@ -5,7 +5,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import SingleDateField from 'components/fields/SingleDateField';
 import { Field, useFormikContext } from 'formik';
 import { IMeasurementStub } from 'hooks/cb_api/useLookupApi';
-import { has } from 'lodash-es';
+import { has, startCase } from 'lodash-es';
 import { useEffect, useState } from 'react';
 import {
   AnimalMeasurementSchema,
@@ -29,7 +29,7 @@ interface MeasurementFormContentProps {
 export const MeasurementAnimalFormContent = ({ index, measurements }: MeasurementFormContentProps) => {
   const name: keyof IAnimal = 'measurements';
   const { values, handleChange, setFieldValue, handleBlur } = useFormikContext<IAnimal>();
-  const taxonMeasurementId = values.measurements[index].taxon_measurement_id;
+  const taxonMeasurementId = values.measurements?.[index]?.taxon_measurement_id;
   const [currentMeasurement, setCurrentMeasurement] = useState<IMeasurementStub | undefined>(
     measurements?.find((lookup_measurement) => lookup_measurement.taxon_measurement_id === taxonMeasurementId)
   );
@@ -89,7 +89,7 @@ export const MeasurementAnimalFormContent = ({ index, measurements }: Measuremen
           }}>
           {measurements?.map((m) => (
             <MenuItem key={m.taxon_measurement_id} value={m.taxon_measurement_id}>
-              {m.measurement_name}
+              {startCase(m.measurement_name)}
             </MenuItem>
           ))}
         </CbSelectWrapper>

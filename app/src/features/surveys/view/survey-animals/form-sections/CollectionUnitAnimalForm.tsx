@@ -56,7 +56,7 @@ export const CollectionUnitAnimalFormContent = ({ index }: ICollectionUnitAnimal
           label="Name"
           id={'collection_unit_id'}
           route={'lookups/collection-units'}
-          query={`category_id=${values.collectionUnits[index].collection_category_id}`}
+          query={`category_id=${values.collectionUnits[index]?.collection_category_id}`}
           name={getAnimalFieldName<IAnimalCollectionUnit>(name, 'collection_unit_id', index)}
           controlProps={{
             size: 'medium',

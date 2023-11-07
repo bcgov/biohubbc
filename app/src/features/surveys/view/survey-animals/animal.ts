@@ -78,7 +78,6 @@ export const AnimalGeneralSchema = yup.object({}).shape({
 });
 
 export const AnimalCaptureSchema = yup.object({}).shape({
-  _id: yup.string().required(),
   capture_id: yup.string(),
   capture_location_id: yup.string(),
   release_location_id: yup.string(),
@@ -113,7 +112,6 @@ export const AnimalCaptureSchema = yup.object({}).shape({
 });
 
 export const AnimalMarkingSchema = yup.object({
-  _id: yup.string().required(),
   marking_id: yup.string(),
   marking_type_id: yup.string().required('Type is required'),
   taxon_marking_body_location_id: yup.string().required('Location is required'),
@@ -126,7 +124,6 @@ export const AnimalMarkingSchema = yup.object({
 });
 
 export const AnimalCollectionUnitSchema = yup.object({}).shape({
-  _id: yup.string().required(),
   collection_unit_id: yup.string().required('Name is required'),
   collection_category_id: yup.string().required('Category is required'),
   critter_collection_unit_id: yup.string(),
@@ -136,7 +133,6 @@ export const AnimalCollectionUnitSchema = yup.object({}).shape({
 
 export const AnimalMeasurementSchema = yup.object({}).shape(
   {
-    _id: yup.string().required(),
     measurement_qualitative_id: yup.string(),
     measurement_quantitative_id: yup.string(),
     taxon_measurement_id: yup.string().required('Type is required'),
@@ -159,7 +155,6 @@ export const AnimalMeasurementSchema = yup.object({}).shape(
 );
 
 export const AnimalMortalitySchema = yup.object({}).shape({
-  _id: yup.string().required(),
   mortality_id: yup.string(),
   location_id: yup.string(),
   mortality_longitude: lonSchema.when('projection_mode', {
@@ -191,8 +186,6 @@ export const AnimalMortalitySchema = yup.object({}).shape({
 });
 
 export const AnimalRelationshipSchema = yup.object({}).shape({
-  _id: yup.string().required(),
-
   family_id: yup.string().required(req),
   relationship: yup.mixed().oneOf(['parent', 'child', 'sibling']).required(req)
 });
@@ -277,7 +270,7 @@ type ICritterCapture = Omit<
 
 export type ICritterMarking = Omit<ICritterID & IAnimalMarking, '_id'>;
 
-export type ICritterCollection = Omit<ICritterID & IAnimalCollectionUnit, '_id' | 'collection_category_id'>;
+export type ICritterCollection = Omit<ICritterID & IAnimalCollectionUnit, 'collection_category_id'>;
 
 type ICritterQualitativeMeasurement = Omit<
   ICritterID & IAnimalMeasurement,
@@ -454,7 +447,7 @@ export class Critter {
   _formatCritterCollectionUnits(animal_collections: IAnimalCollectionUnit[]): ICritterCollection[] {
     return animal_collections.map((collection) => ({
       critter_id: this.critter_id,
-      ...omit(collection, ['_id', 'collection_category_id'])
+      ...omit(collection, ['collection_category_id'])
     }));
   }
 
