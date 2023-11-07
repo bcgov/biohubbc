@@ -39,7 +39,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       return null;
     }
 
-    const response = taxonomyContext.getSpeciesTaxonomyById(id);
+    const response = taxonomyContext.getCachedSpeciesTaxonomyById(id);
 
     if (!response) {
       return null;

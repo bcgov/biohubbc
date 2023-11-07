@@ -61,20 +61,21 @@ const SampleSiteSkeleton = () => (
         transform: 'none !important'
       }
     }}>
-    <Skeleton height={22} width={22}/>
-    <Box sx={{
-      display: 'flex',
-      gap: '16px',
-      alignItems: 'center',
-      px: 4,
-      flex: '1'
-    }}>
+    <Skeleton height={22} width={22} />
+    <Box
+      sx={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'center',
+        px: 4,
+        flex: '1'
+      }}>
       <Skeleton height={22} sx={{ flex: '1' }} />
       <Skeleton height={22} sx={{ flex: '2' }} />
       <Skeleton height={22} sx={{ flex: '3' }} />
       <Skeleton height={22} sx={{ flex: '1' }} />
     </Box>
-    <Skeleton height={40} width={40} variant='circular'/>
+    <Skeleton height={40} width={40} variant="circular" />
   </Box>
 );
 
@@ -108,7 +109,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
       props.isLoading,
       surveyContext.sampleSiteDataLoader.isLoading,
       observationsTableContext.isLoading
-    ].some(Boolean)
+    ].some(Boolean);
   }, [
     observationsContext.observationsDataLoader,
     surveyContext.sampleSiteDataLoader,

@@ -406,5 +406,5 @@ export const ObservationsTableI18N = {
     'An error has occurred while attempting to delete observation records for this survey. Please try again. If the error persists, please contact your system administrator.',
   saveRecordsSuccessSnackbarMessage: 'Updated survey observations successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted observation record successfully.',
-  deleteMultipleRecordSuccessSnackbarMessage: (count: number) => `Deleted ${count} observation records successfully.`,
+  deleteMultipleRecordSuccessSnackbarMessage: (count: number) => `Deleted ${count} observation records successfully.`
 };

@@ -155,8 +155,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   const [addedRowIds, setAddedRowIds] = useState<string[]>([]);
   // True if the rows are in the process of transitioning from edit to view mode
   const [isStoppingEdit, setIsStoppingEdit] = useState(false);
-  // True if there is taxonomic data that is still loading
-  const [isLoadingTaxonomy, setIsLoadingTaxonomy] = useState(true);
+  // True if the taxonomy cache has loaded
+  const [hasLoadedTaxonomy, setHasLoadedTaxonomy] = useState(false);
   // True if the records are in the process of being saved to the server
   const [isSaving, setIsSaving] = useState(false);
   // Stores the current count of observations for this survey
@@ -178,7 +178,11 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          const response = await biohubApi.observation.deleteObservationRecords(projectId, surveyId, modifiedRowIdsToDelete);
+          const response = await biohubApi.observation.deleteObservationRecords(
+            projectId,
+            surveyId,
+            modifiedRowIdsToDelete
+          );
           setObservationCount(response.supplementaryObservationData.observationCount);
         }
 
@@ -411,8 +415,8 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
   );
 
   const isLoading: boolean = useMemo(() => {
-    return isLoadingTaxonomy || observationsContext.observationsDataLoader.isLoading;
-  }, [isLoadingTaxonomy, observationsContext.observationsDataLoader.isLoading]);
+    return !hasLoadedTaxonomy || observationsContext.observationsDataLoader.isLoading;
+  }, [hasLoadedTaxonomy, observationsContext.observationsDataLoader.isLoading]);
 
   /**
    * Runs when observation context data has changed. This does not occur when records are
@@ -420,6 +424,7 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
    */
   useEffect(() => {
     if (!observationsContext.observationsDataLoader.data?.surveyObservations?.length) {
+      // Existing observation records have not yet loaded, or don't exist
       return;
     }
 
@@ -438,22 +443,29 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
     // Set initial observations count
     setObservationCount(observationsContext.observationsDataLoader.data.supplementaryObservationData.observationCount);
 
-    // Cache all unique taxonomic IDs
-    setIsLoadingTaxonomy(true);
-    const uniqueTaxonomicIds: Set<number> = observationsContext
-      .observationsDataLoader
-      .data
-      .surveyObservations
-      .reduce((acc: Set<number>, record: IObservationRecord) => {
-        acc.add(record.wldtaxonomic_units_id);
-        return acc;
-      }, new Set<number>([]));
-      
-    taxonomyContext.cacheSpeciesTaxonomyByIds(Array.from(uniqueTaxonomicIds)).then(() => {
-      setIsLoadingTaxonomy(false);
-    })
+    if (taxonomyContext.isLoading || hasLoadedTaxonomy) {
+      // Taxonomy cache is currently loading, or has already loadedF
+      return;
+    }
 
-  }, [observationsContext.observationsDataLoader.data]);
+    const uniqueTaxonomicIds: number[] = Array.from(
+      observationsContext.observationsDataLoader.data.surveyObservations.reduce(
+        (acc: Set<number>, record: IObservationRecord) => {
+          acc.add(record.wldtaxonomic_units_id);
+          return acc;
+        },
+        new Set<number>([])
+      )
+    );
+
+    // Fetch and cache all unique taxonomic IDs
+    taxonomyContext
+      .cacheSpeciesTaxonomyByIds(uniqueTaxonomicIds)
+      .catch(() => {})
+      .finally(() => {
+        setHasLoadedTaxonomy(true);
+      });
+  }, [hasLoadedTaxonomy, observationsContext.observationsDataLoader.data, taxonomyContext]);
 
   useEffect(() => {
     if (!_muiDataGridApiRef?.current?.getRowModels) {
@@ -522,11 +534,13 @@ export const ObservationsTableContextProvider = (props: PropsWithChildren<Record
       deleteObservationRecords,
       deleteSelectedObservationRecords,
       revertObservationRecords,
-      getSelectedObservationRecords,
       refreshObservationRecords,
+      getSelectedObservationRecords,
       hasUnsavedChanges,
       rowSelectionModel,
-      isSaving
+      isLoading,
+      isSaving,
+      observationCount
     ]
   );
 

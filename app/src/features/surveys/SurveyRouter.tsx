@@ -10,7 +10,6 @@ import EditSurveyPage from './edit/EditSurveyPage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
-import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -31,9 +30,7 @@ const SurveyRouter: React.FC = () => {
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/observations" title={getTitle('Observations')}>
-        <TaxonomyContextProvider>
-          <SurveyObservationPage />
-        </TaxonomyContextProvider>
+        <SurveyObservationPage />
       </RouteWithTitle>
 
       {/* Sample Site Routes */}

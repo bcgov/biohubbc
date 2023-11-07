@@ -1,19 +1,19 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ITaxonomy } from 'interfaces/useTaxonomy.interface';
-import { PropsWithChildren, createContext, useCallback, useRef, useState, useMemo } from 'react';
-import { has as hasProperty, get as getProperty } from 'lodash'
+import { get as getProperty, has as hasProperty } from 'lodash';
+import { createContext, PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 
 export interface ITaxonomyContext {
   /**
-   * Denotes whether or not the context is currently loading taxonomic data
+   * Indicates whether or not the taxonomy context is currently fetching data.
    */
-  // isLoading: boolean;
+  isLoading: boolean;
   /**
    * Fetches taxonomy data for the given IDs. For each ID, if the results of its query
    * is already in the cache, it is immediately available. Otherwise, `null` is
    * returned, and the  the taxonomic data is fetched and subsequently cached.
    */
-  getSpeciesTaxonomyById: (id: number) => ITaxonomy | null;
+  getCachedSpeciesTaxonomyById: (id: number) => ITaxonomy | null;
   /**
    * Caches taxonomy data for the given IDs.
    */
@@ -21,60 +21,70 @@ export interface ITaxonomyContext {
 }
 
 export const TaxonomyContext = createContext<ITaxonomyContext>({
-  // isLoading: false,
-  getSpeciesTaxonomyById: () => null,
+  isLoading: false,
+  getCachedSpeciesTaxonomyById: () => null,
   cacheSpeciesTaxonomyByIds: () => Promise.resolve()
 });
 
 export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const biohubApi = useBiohubApi();
+
   const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, ITaxonomy | null>>({});
   const _dispatched = useRef<Record<number, Promise<void>>>({});
 
-  const cacheSpeciesTaxonomyByIds = useCallback(async (ids: number[]) => {
-    const promises = ids.map((id) => {
-      _dispatched.current[id] = biohubApi.taxonomy.getSpeciesFromIds([id]).then((result) => {
-        _setTaxonomyCache((previous) => ({
-          ...previous,
-          [id]: result?.searchResponse?.[0] ?? null
-        }));
-      });
+  const [isLoading, setIsLoading] = useState(false);
 
+  const cacheSpeciesTaxonomyByIds = useCallback(
+    async (ids: number[]) => {
+      setIsLoading(true);
 
-    });
+      await biohubApi.taxonomy
+        .getSpeciesFromIds(ids)
+        .then((result) => {
+          const newTaxonomyItems: Record<string, ITaxonomy> = {};
 
-    await Promise.all(promises)
-  }, [biohubApi.taxonomy.getSpeciesFromIds]);
+          for (const item of result.searchResponse) {
+            newTaxonomyItems[item.id] = item;
+          }
 
-
-  const getSpeciesTaxonomyById = useCallback((id: number): ITaxonomy | null => {
-    
-    if (hasProperty(_taxonomyCache, id)) {
-      // Result is in the cache
-      return getProperty(_taxonomyCache, id);
-    }
-
-    if (hasProperty(_dispatched.current, id)) {
-      // Promise is pending
-      return null;
-    }
-
-    // Dispatch the request to cache the result
-    cacheSpeciesTaxonomyByIds([id]);
-
-    return null;
-  }, [_taxonomyCache]);
-
-
-  const taxonomyContext: ITaxonomyContext = useMemo(() => ({
-    // isLoading,
-    getSpeciesTaxonomyById,
-    cacheSpeciesTaxonomyByIds
-  }), [getSpeciesTaxonomyById, cacheSpeciesTaxonomyByIds]);
-
-  return (
-    <TaxonomyContext.Provider value={taxonomyContext}>
-      {props.children}
-    </TaxonomyContext.Provider>
+          _setTaxonomyCache((previous) => ({ ...previous, ...newTaxonomyItems }));
+        })
+        .catch(() => {})
+        .finally(() => {
+          setIsLoading(false);
+        });
+    },
+    [biohubApi.taxonomy]
   );
+
+  const getCachedSpeciesTaxonomyById = useCallback(
+    (id: number): ITaxonomy | null => {
+      if (hasProperty(_taxonomyCache, id)) {
+        // Taxonomy id was found in the cache, return cached data
+        return getProperty(_taxonomyCache, id);
+      }
+
+      if (hasProperty(_dispatched.current, id)) {
+        // Request to fetch this taxon id is still pending
+        return null;
+      }
+
+      // Dispatch a request to fetch the taxonomy and cache the result
+      cacheSpeciesTaxonomyByIds([id]);
+
+      return null;
+    },
+    [_taxonomyCache, cacheSpeciesTaxonomyByIds]
+  );
+
+  const taxonomyContext: ITaxonomyContext = useMemo(
+    () => ({
+      isLoading,
+      getCachedSpeciesTaxonomyById,
+      cacheSpeciesTaxonomyByIds
+    }),
+    [isLoading, getCachedSpeciesTaxonomyById, cacheSpeciesTaxonomyByIds]
+  );
+
+  return <TaxonomyContext.Provider value={taxonomyContext}>{props.children}</TaxonomyContext.Provider>;
 };

@@ -1,5 +1,9 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
-import { IObservationRecord, IObservationTableRow, ISupplementaryObservationData } from 'contexts/observationsTableContext';
+import {
+  IObservationRecord,
+  IObservationTableRow,
+  ISupplementaryObservationData
+} from 'contexts/observationsTableContext';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 
 /**
