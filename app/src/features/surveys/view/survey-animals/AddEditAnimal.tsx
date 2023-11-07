@@ -57,7 +57,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
   const { section, critterData, telemetrySaveAction, deploymentRemoveAction, formikArrayHelpers } = props;
   const surveyContext = useContext(SurveyContext);
   const telemetryApi = useTelemetryApi();
-  const { submitForm, initialValues, values, isSubmitting, setFieldValue, isValidating, status } =
+  const { submitForm, isValid, initialValues, values, isSubmitting, setFieldValue, isValidating, status } =
     useFormikContext<IAnimal>();
   const dialogContext = useContext(DialogContext);
 
@@ -210,6 +210,7 @@ export const AddEditAnimal = (props: AddEditAnimalProps) => {
                   <LoadingButton
                     color="primary"
                     variant="contained"
+                    disabled={!isValid}
                     onClick={async () => {
                       if (section === 'Telemetry') {
                         await handleSaveTelemetry(values);
